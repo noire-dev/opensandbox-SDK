@@ -278,7 +278,7 @@ static void CG_General( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, wheelfr.origin);
 	VectorCopy( cent->lerpOrigin, wheelfr.oldorigin);
 	
-	wheelfr.hModel = trap_R_RegisterModel_SourceTech( "props/v_wheel" );
+	wheelfr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
 	wheelfr.customSkin = ent.customSkin;
 	wheelfr.customShader = ent.customShader;
 	wheelfr.reType = RT_MODEL;
@@ -302,7 +302,7 @@ static void CG_General( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, wheelfl.origin);
 	VectorCopy( cent->lerpOrigin, wheelfl.oldorigin);
 	
-	wheelfl.hModel = trap_R_RegisterModel_SourceTech( "props/v_wheel" );
+	wheelfl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
 	wheelfl.customSkin = ent.customSkin;
 	wheelfl.customShader = ent.customShader;
 	wheelfl.reType = RT_MODEL;
@@ -326,7 +326,7 @@ static void CG_General( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, wheelrr.origin);
 	VectorCopy( cent->lerpOrigin, wheelrr.oldorigin);
 	
-	wheelrr.hModel = trap_R_RegisterModel_SourceTech( "props/v_wheel" );
+	wheelrr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
 	wheelrr.customSkin = ent.customSkin;
 	wheelrr.customShader = ent.customShader;
 	wheelrr.reType = RT_MODEL;
@@ -350,7 +350,7 @@ static void CG_General( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, wheelrl.origin);
 	VectorCopy( cent->lerpOrigin, wheelrl.oldorigin);
 	
-	wheelrl.hModel = trap_R_RegisterModel_SourceTech( "props/v_wheel" );
+	wheelrl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
 	wheelrl.customSkin = ent.customSkin;
 	wheelrl.customShader = ent.customShader;
 	wheelrl.reType = RT_MODEL;

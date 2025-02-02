@@ -52,10 +52,19 @@ char* gametype_cvar_base[NUM_GAMETYPES] = {
 };
 
 const char* idmap_list[] = {
-	"gm_construct",
-	"gm_flatgrass",
-	"qs_construct",
-	"qs_flatgrass",
+	"oacmpdm1",
+	"oacmpdm2",
+	"oacmpdm3",
+	"oacmpdm4",
+	"oacmpdm5",
+	"oacmpdm6",
+	"oacmpdm7",
+	"oacmpdm8",
+	"oacmpdm9",
+	"oacmpdm10",
+	"oacmpctf1",
+	"oacmpctf2",
+	"oacmpctf3",
 	0
 };
 

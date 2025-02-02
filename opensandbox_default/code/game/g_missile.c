@@ -1655,7 +1655,7 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	vec3_t		end;
     trace_t 	tr;
 	float		r, u, scale;
-	int 		random_mt = (rand() % 254) + 1;
+	int 		random_mt = (rand() % 15) + 1;
 
 	bolt = G_Spawn();
 	bolt->s.eType = ET_GENERAL;

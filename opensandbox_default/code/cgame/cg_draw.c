@@ -573,10 +573,10 @@ static float CG_DrawCounters( float y ) {
 	if(cgs.gametype == GT_SANDBOX){
 		if(seconds == 3 && !n_tip1){
 			if(cl_language.integer == 0){
-				CG_AddNotify ("Welcome to OpenSandbox v1.0", 1);
+				CG_AddNotify ("Welcome to OpenSandbox v1.1", 1);
 			}
 			if(cl_language.integer == 1){
-				CG_AddNotify ("Добро пожаловать в OpenSandbox v1.0", 1);
+				CG_AddNotify ("Добро пожаловать в OpenSandbox v1.1", 1);
 			}
 			n_tip1 = qtrue;
 		}
@@ -3092,14 +3092,14 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	}
 	}
 
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
-		return;
-	}
-
 	// draw overlay for target_effect
 	CG_DrawOverlay();
 	
 	CG_DrawPostProcess();
+
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
+		return;
+	}
 
 	// draw status bar and other floating elements
  	CG_Draw2D(stereoView);
