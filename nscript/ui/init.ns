@@ -1,0 +1,51 @@
+print ("^4---Noire.Script Initialization---")
+print ("^4---Noire.Script in ui.qvm")
+
+//#######################
+//Spawnlists variables
+//#######################
+
+//Props
+char    spawn_model = 0
+char    spawn_classname = 0
+int     spawn_private = 0
+int     spawn_colsize = 0
+int     spawn_grid = 0
+int     spawn_spawnflags = 0
+int     spawn_material = 0
+int     spawn_phys = 0
+int     spawn_coll = 0
+char    spawn_sound = 0
+int     spawn_health = 0
+int     spawn_lightred = 0
+int     spawn_lightgreen = 0
+int     spawn_lightblue = 0
+int     spawn_lightradius = 0
+float   spawn_scalex = 0
+float   spawn_scaley = 0
+float   spawn_scalez = 0
+int     spawn_type = 0
+int     spawn_vehicle = 0
+float   spawn_bounce = 0
+int   spawn_mass = 0
+
+//NPCs
+//      spawn_model
+char    spawn_class = 0
+	    //NPC_Citizen
+	    //NPC_Enemy
+	    //NPC_Guard
+	    //NPC_Partner
+	    //NPC_PartnerEnemy
+float   spawn_skill = 0
+//      spawn_health
+char    spawn_name = 0
+//      spawn_sound
+int     spawn_weapon = 0
+
+//#######################
+//Gui variables
+//#######################
+
+float screen_offset = 0
+screen_offset = getCvar ("cl_screenoffset")
