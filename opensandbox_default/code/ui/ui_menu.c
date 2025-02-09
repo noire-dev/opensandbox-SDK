@@ -263,7 +263,7 @@ static void Main_MenuDraw( void ) {
 	   }
 	   // standard menu drawing
 	   Menu_Draw( &s_main.menu );
-	   UI_DrawString( 218 - uis.wideoffset, 108, "v1.1", UI_RIGHT|UI_SMALLFONT, color );
+	   UI_DrawString( 218 - uis.wideoffset, 108, "v1.2", UI_RIGHT|UI_SMALLFONT, color );
    }
 }
 

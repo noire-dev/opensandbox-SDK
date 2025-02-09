@@ -274,30 +274,6 @@ typedef struct
 static InitialVideoOptions_s	s_ivo;
 static graphicsoptions_t		s_graphicsoptions;	
 
-static InitialVideoOptions_s s_ivo_templates[] =
-{
-	{
-		6, qtrue, 3, 0, qfalse,qfalse,qfalse, 2, 2, 1, 0, 0, qtrue
-	},
-	{
-		4, qtrue, 2, 0, qfalse,qfalse,qfalse, 2, 1, 1, 0, 0, qtrue	// JDC: this was tq 3
-	},
-	{
-		3, qtrue, 2, 0, qfalse,qfalse,qfalse, 0, 1, 0, 0, 0, qtrue
-	},
-	{
-		2, qtrue, 1, 0, qfalse,qfalse,qfalse, 0, 0, 0, 0, 0, qtrue
-	},
-	{
-		2, qtrue, 1, 1, qfalse,qfalse,qfalse, 0, 0, 0, 0, 0, qtrue
-	},
-	{
-		3, qtrue, 1, 0, qfalse,qfalse,qfalse, 0, 1, 0, 0, 0, qtrue
-	}
-};
-
-#define NUM_IVO_TEMPLATES ( sizeof( s_ivo_templates ) / sizeof( s_ivo_templates[0] ) )
-
 static const char *builtinResolutions[ ] =
 {
 "320x240",
@@ -428,49 +404,6 @@ static void GraphicsOptions_GetInitialVideo( void )
 
 /*
 =================
-GraphicsOptions_CheckConfig
-=================
-*/
-static void GraphicsOptions_CheckConfig( void )
-{
-	int i;
-
-	for ( i = 0; i < NUM_IVO_TEMPLATES-1; i++ )
-	{
-		if ( s_ivo_templates[i].detail != s_graphicsoptions.detail.curvalue )
-			continue;
-		if ( s_ivo_templates[i].mode != s_graphicsoptions.mode.curvalue )
-			continue;
-		if ( s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue )
-			continue;
-		if ( s_ivo_templates[i].tq != s_graphicsoptions.tq.curvalue )
-			continue;
-		if ( s_ivo_templates[i].envlevel != s_graphicsoptions.envlevel.curvalue )
-			continue;
-                if ( s_ivo_templates[i].postfx != s_graphicsoptions.postfx.curvalue )
-			continue;
-		if ( s_ivo_templates[i].hdr != s_graphicsoptions.hdr.curvalue )
-			continue;
-		if ( s_ivo_templates[i].bloomlevel != s_graphicsoptions.bloomlevel.curvalue )
-			continue;
-		if ( s_ivo_templates[i].filter != s_graphicsoptions.filter.curvalue )
-			continue;
-                if ( s_ivo_templates[i].aniso != s_graphicsoptions.aniso.curvalue )
-			continue;
-                if ( s_ivo_templates[i].aniso2 != s_graphicsoptions.aniso2.curvalue )
-			continue;
-//		if ( s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue )
-//			continue;
-		s_graphicsoptions.list.curvalue = i;
-		return;
-	}
-
-	// return 'Custom' ivo template
-	s_graphicsoptions.list.curvalue = NUM_IVO_TEMPLATES - 1;
-}
-
-/*
-=================
 GraphicsOptions_UpdateMenuItems
 =================
 */
@@ -538,8 +471,6 @@ static void GraphicsOptions_UpdateMenuItems( void )
 	{
 		s_graphicsoptions.apply.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
-
-	GraphicsOptions_CheckConfig();
 }	
 
 /*
@@ -669,20 +600,7 @@ static void GraphicsOptions_Event( void* ptr, int event ) {
 		break;
 
 	case ID_LIST:
-		ivo = &s_ivo_templates[s_graphicsoptions.list.curvalue];
-
-		s_graphicsoptions.mode.curvalue        = ivo->mode;
-		s_graphicsoptions.ratio.curvalue       = resToRatio[ s_graphicsoptions.mode.curvalue ];
-		s_graphicsoptions.tq.curvalue          = ivo->tq;
-		s_graphicsoptions.envlevel.curvalue    = ivo->envlevel;
-		s_graphicsoptions.texturebits.curvalue = ivo->texturebits;
-		s_graphicsoptions.bloomlevel.curvalue    = ivo->bloomlevel;
-		s_graphicsoptions.filter.curvalue      = ivo->filter;
-		s_graphicsoptions.aniso.curvalue       = ivo->aniso;
-		s_graphicsoptions.aniso2.curvalue       = ivo->aniso2;
-		s_graphicsoptions.fs.curvalue          = ivo->fullscreen;
-		s_graphicsoptions.postfx.curvalue      = ivo->postfx;
-		s_graphicsoptions.hdr.curvalue      = ivo->hdr;
+		trap_Cvar_SetValue("r_fx_filmic", s_graphicsoptions.list.curvalue);
 		break;
 
 	case ID_DRIVERINFO:
@@ -885,22 +803,14 @@ void GraphicsOptions_MenuInit( void )
 
 	static const char *s_graphics_options_names[] =
 	{
-		"Very High Quality",
-		"High Quality",
-		"Normal",
-		"Fast",
-		"Fastest",
-		"Custom",
+		"Off",
+		"On",
 		NULL
 	};
 	static const char *s_graphics_options_namesru[] =
 	{
-		"Ультра",
-		"Высокие",
-		"Средние",
-		"Низкие",
-		"Минимальные",
-		"Свои",
+		"Откл",
+		"Вкл",
 		NULL
 	};
 
@@ -1185,7 +1095,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "DISPLAY";
 	s_graphicsoptions.sound.string				= "SOUND";
 	s_graphicsoptions.network.string			= "NETWORK";
-	s_graphicsoptions.list.generic.name     = "Graphics Settings:";
+	s_graphicsoptions.list.generic.name     = "Realistic shader:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_names;
 	s_graphicsoptions.detail.generic.name  = "Level of Detail:";
 	s_graphicsoptions.detail.itemnames     = s_detail_names;
@@ -1221,7 +1131,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "ЭКРАН";
 	s_graphicsoptions.sound.string				= "ЗВУК";
 	s_graphicsoptions.network.string			= "СЕТЬ";
-	s_graphicsoptions.list.generic.name     = "Графические Настройки:";
+	s_graphicsoptions.list.generic.name     = "Реалистичный шейдер:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_namesru;
 	s_graphicsoptions.detail.generic.name  = "Уровень детализации:";
 	s_graphicsoptions.detail.itemnames     = s_detail_namesru;
@@ -1258,7 +1168,8 @@ void GraphicsOptions_MenuInit( void )
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.sound );
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.network );
 
-	//Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.list );
+	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.list );
+	s_graphicsoptions.list.curvalue = get_cvar_int("r_fx_filmic");
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.detail );
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.allow_extensions );
     Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.ratio );

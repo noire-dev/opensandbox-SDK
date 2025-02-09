@@ -239,7 +239,7 @@ void CG_DrawInformation( void ) {
 	}
 	
 	// OpenSandbox
-		CG_DrawBigString( 320, y, "^4OpenSandbox v1.1", 1.0F );
+		CG_DrawBigString( 320, y, "^4OpenSandbox v1.2", 1.0F );
 		y += PROP_HEIGHT;
 
 	// cheats warning

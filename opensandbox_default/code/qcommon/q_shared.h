@@ -1046,7 +1046,7 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			256		// absolute limit
+#define	MAX_CLIENTS			99		// absolute limit
 #define MAX_LOCATIONS		64
 
 #define	GENTITYNUM_BITS		12		// don't need to send any more

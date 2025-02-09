@@ -459,7 +459,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName, headName, headSkinName, legsModelName, legsSkinName ) ) {
-		Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
+		//Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
 		return qfalse;
 	}
 	
@@ -531,7 +531,7 @@ static qboolean CG_ReloadClientModelname( clientInfo_t *ci, const char *modelNam
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName, headName, headSkinName, legsModelName, legsSkinName ) ) {
-		Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
+		//Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
 		return qfalse;
 	}
 

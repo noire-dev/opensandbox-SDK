@@ -237,7 +237,7 @@ fieldCopy_t fieldsCopy[] = {
 	{"targetname", FOFS(targetname), F_STRING},
 	{"message", FOFS(message), F_STRING},
 	{"botname", FOFS(botname), F_STRING},
-	{"team", FOFS(team), F_STRING},
+	//{"team", FOFS(team), F_STRING}, //it's crashing
 	{"wait", FOFS(wait), F_FLOAT},
 	{"random", FOFS(random), F_FLOAT},
 	{"count", FOFS(count), F_INT},
