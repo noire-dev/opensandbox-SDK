@@ -117,6 +117,10 @@ void create_variable(const char *name, const char *value, VarType type);
 ###############
 */
 
+float parse_expression(const char** expr);
+float parse_term(const char** expr);
+float parse_number(const char** expr);
+float parse_factor(const char** expr);
 void NS_ArgumentText(const char *input, char *result, int resultSize);
 
 /*

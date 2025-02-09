@@ -444,77 +444,109 @@ char* get_variable_char(const char *name) {
 */
 
 float NS_Exp(const char* expr) {
-    float result = 0, currentNumber = 0, decimalFactor = 1;
-    char operation = '+';
-    int i;
-    Variable* var;
+    return parse_expression(&expr);
+}
 
-    for (i = 0; expr[i] != '\0'; ++i) {
-        char currentChar = expr[i];
-
-        if (isdigit(currentChar)) {
-            currentNumber = currentNumber * 10 + (currentChar - '0');
-        } else if (currentChar == '.') {
-            decimalFactor = 0.1f; // Сброс decimalFactor
-            currentChar = expr[++i];
-            while (isdigit(currentChar)) {
-                currentNumber += (currentChar - '0') * decimalFactor;
-                decimalFactor *= 0.1f;
-                currentChar = expr[++i];
-            }
-            --i; // Уменьшаем индекс
-        } else if (isalpha(currentChar)) {
-            char varName[MAX_VAR_NAME];
-            int j = 0;
-
-            while (isalnum(currentChar) || currentChar == '_') {
-                varName[j++] = currentChar;
-                currentChar = expr[++i];
-            }
-            varName[j] = '\0';
-
-            var = find_variable(varName);
-            currentNumber = var ? (var->type == TYPE_INT ? (float)var->value.i : var->value.f) : 0;
-            --i;
-        }
-
-        if (!isdigit(currentChar) && currentChar != ' ' || expr[i + 1] == '\0') {
-            switch (operation) {
-                case '+': result += currentNumber; break;
-                case '-': result -= currentNumber; break;
-                case '*': result *= currentNumber; break;
-                case '/':
-                    if (currentNumber != 0) result /= currentNumber;
-                    else {
-                        return 0.0;
-                    }
-                    break;
-            }
-            currentNumber = 0; // Сброс текущего числа
-            decimalFactor = 1; // Сброс decimalFactor
-            operation = currentChar; // Обновляем операцию
-        }
+float parse_expression(const char** expr) {
+    float result = parse_term(expr);
+    while (**expr == '+' || **expr == '-') {
+        char op = *(*expr)++;
+        float term = parse_term(expr);
+        if (op == '+') result += term;
+        else result -= term;
     }
     return result;
 }
 
-int NS_ifResult(int num1, NSOperator operator, int num2) {
-    //Com_Printf("Noire.Script Debug: left = %i, operator = %i, right = %i\n", num1, operator, num2);
+float parse_term(const char** expr) {
+    float result = parse_factor(expr);
+    while (**expr == '*' || **expr == '/') {
+        char op = *(*expr)++;
+        float factor = parse_factor(expr);
+        if (op == '*') result *= factor;
+        else if (factor != 0) result /= factor;
+        else return 0.0; // Деление на 0
+    }
+    return result;
+}
+
+float parse_number(const char** expr) {
+    float result = 0.0f, factor = 1.0f;
+    int hasDecimal = 0;
+
+    while (isdigit(**expr) || **expr == '.') {
+        if (**expr == '.') {
+            if (hasDecimal) break; // Вторая точка — конец числа
+            hasDecimal = 1;
+            factor = 0.1f;
+        } else {
+            if (hasDecimal) {
+                result += (**expr - '0') * factor;
+                factor *= 0.1f;
+            } else {
+                result = result * 10.0f + (**expr - '0');
+            }
+        }
+        (*expr)++;
+    }
+    return result;
+}
+
+float parse_factor(const char** expr) {
+    float result;
+    while (**expr == ' ') (*expr)++; // Пропуск пробелов
+
+    if (**expr == '(') {
+        (*expr)++; // Пропустить '('
+        result = parse_expression(expr);
+        if (**expr == ')') (*expr)++; // Пропустить ')'
+        return result;
+    }
+
+    if (isdigit(**expr) || **expr == '.') {
+        return parse_number(expr);
+    }
+
+    // Считаем слово целиком, если первый символ — буква или _
+    if (isalpha(**expr) || **expr == '_') {
+        char varName[MAX_VAR_NAME];
+        int i = 0;
+        Variable* var;
+
+        // Считываем возможное имя переменной (разрешаем точки)
+        while (isalnum(**expr) || **expr == '_' || **expr == '.') {
+            varName[i++] = *(*expr)++;
+        }
+        varName[i] = '\0';
+
+        // Проверяем, является ли это переменной
+        var = find_variable(varName);
+        if (var) {
+            return (var->type == TYPE_INT) ? (float)var->value.i : var->value.f;
+        }
+        return 0.0; // Если переменной нет — вернуть 0
+    }
+
+    return 0.0;
+}
+
+qboolean NS_ifResult(float num1, NSOperator operator, float num2) {
+    //Com_Printf("Noire.Script Debug: left = %f, operator = %i, right = %f\n", num1, operator, num2);
     switch (operator) {
         case EQUAL:
-            return (num1 == num2) ? 1 : 0;
+            return (num1 == num2) ? qtrue : qfalse;
         case NOT_EQUAL:
-            return (num1 != num2) ? 1 : 0;
+            return (num1 != num2) ? qtrue : qfalse;
         case LESS_THAN:
-            return (num1 < num2) ? 1 : 0;
+            return (num1 < num2) ? qtrue : qfalse;
         case GREATER_THAN:
-            return (num1 > num2) ? 1 : 0;
+            return (num1 > num2) ? qtrue : qfalse;
         case LESS_OR_EQUAL:
-            return (num1 <= num2) ? 1 : 0;
+            return (num1 <= num2) ? qtrue : qfalse;
         case GREATER_OR_EQUAL:
-            return (num1 >= num2) ? 1 : 0;
+            return (num1 >= num2) ? qtrue : qfalse;
         default:
-            return 0; // Возвращаем 0, если оператор не распознан
+            return qfalse; // Возвращаем 0, если оператор не распознан
     }
 }
 
@@ -837,9 +869,13 @@ int is_operand(const char *token) {
 }
 
 /*
-###############
 Выполнение
-###############
+
+Здесь ищем ключевые токены, проводим анализ и направляем
+Если int, float, char то это инициализация
+Если if, for, while то структура
+Если токен совпадает с именем переменной то берем и присваеваем ему значение из обработчика выражений
+Если токен совпадает с именем функции то берем и вызываем эту функцию
 */
 
 char originalExecuteBuffer[MAX_CYCLE_SIZE]; // Оригинальный буфер для хранения кода
@@ -869,9 +905,9 @@ void Interpret(char* script) {
 
         // Упрощённый блок обработки if
         if (strcmp(token, "if") == 0) {
-            int firstValue = (int)NS_Exp(NS_Parse(&pointer));
+            float firstValue = NS_Exp(NS_Parse(&pointer));
             NSOperator op = NS_CharToOp(NS_Parse(&pointer));
-            int secondValue = (int)NS_Exp(NS_Parse(&pointer));
+            float secondValue = NS_Exp(NS_Parse(&pointer));
 
             // Выполняем условие
             if (NS_ifResult(firstValue, op, secondValue)) {
@@ -940,10 +976,10 @@ void Interpret(char* script) {
         // Упрощённый блок обработки while
         if (strcmp(token, "while") == 0) {
             char *firstValuePointer = pointer;                  //Сохраняем указатель на первое значение
-            int firstValue = (int)NS_Exp(NS_Parse(&pointer));
+            float firstValue = NS_Exp(NS_Parse(&pointer));
             NSOperator op = NS_CharToOp(NS_Parse(&pointer));
             char *secondValuePointer = pointer;                 //Сохраняем указатель на второе значение
-            int secondValue = (int)NS_Exp(NS_Parse(&pointer));
+            float secondValue = NS_Exp(NS_Parse(&pointer));
             int originalBufferIndex = 0;
             int tokenLength = 0;
 
@@ -982,9 +1018,9 @@ void Interpret(char* script) {
 
                 // Восстанавливаем указатель и повторно считываем значения для проверки условия
                 pointer = firstValuePointer; // Возвращаем указатель на первое значение
-                firstValue = (int)NS_Exp(NS_Parse(&pointer));
+                firstValue = NS_Exp(NS_Parse(&pointer));
                 pointer = secondValuePointer; // Возвращаем указатель на второе значение
-                secondValue = (int)NS_Exp(NS_Parse(&pointer));
+                secondValue = NS_Exp(NS_Parse(&pointer));
             }
 
             continue; // Переходим к следующему токену после блока while
@@ -995,8 +1031,6 @@ void Interpret(char* script) {
             char* varName = NS_Parse(&pointer);
             VarType type;
             VarValue value;
-            char* valueToken;
-            float resultValue;
             if (variable_exists(varName)){
             continue; // Пропускаем, если переменная уже существует
             }
@@ -1004,18 +1038,15 @@ void Interpret(char* script) {
             type =  strcmp(token, "int") == 0 ? TYPE_INT :
                     strcmp(token, "float") == 0 ? TYPE_FLOAT : TYPE_CHAR;
 
-            token = NS_Parse(&pointer); // Пропускаем "="
-            valueToken = NS_Parse(&pointer);
-            resultValue = NS_Exp(valueToken);
             switch (type) {
                 case TYPE_INT:
-                    value.i = (int)resultValue;
+                    value.i = 0;
                     break;
                 case TYPE_FLOAT:
-                    value.f = resultValue;
+                    value.f = 0.0;
                     break;
                 case TYPE_CHAR:
-                    NS_Text(valueToken, value.c, sizeof(value.c));
+                    NS_Text("<NULL>", value.c, sizeof(value.c));
                     break;
                 default:
                     break;
@@ -1060,9 +1091,7 @@ void Interpret(char* script) {
 }
 
 /*
-###############
 Потоки
-###############
 */
 
 // Определяем массив для хранения скриптов
@@ -1141,9 +1170,7 @@ int thread_exists(const char *threadName) {
 }
 
 /*
-###############
-Запуск
-###############
+Запуск скриптов
 */
 
 char scriptbuffer[MAX_NSSCRIPT_SIZE];
