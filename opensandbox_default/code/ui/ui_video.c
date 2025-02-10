@@ -556,15 +556,15 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 
 	if ( s_graphicsoptions.bloomlevel.curvalue == 2 )
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.15 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.10 );
 	}
 	else if ( s_graphicsoptions.bloomlevel.curvalue == 1 )
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.10 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.05 );
 	}
 	else
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.05 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.00 );
 	}
 
 	if ( s_graphicsoptions.filter.curvalue )
@@ -745,11 +745,11 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.filter.curvalue = 1;
 	}
 	
-	if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.15 )
+	if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.10 )
 	{
 		s_graphicsoptions.bloomlevel.curvalue = 2;
 	}
-	else if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.10 )
+	else if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.05 )
 	{
 		s_graphicsoptions.bloomlevel.curvalue = 1;
 	}
@@ -1095,7 +1095,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "DISPLAY";
 	s_graphicsoptions.sound.string				= "SOUND";
 	s_graphicsoptions.network.string			= "NETWORK";
-	s_graphicsoptions.list.generic.name     = "Realistic shader:";
+	s_graphicsoptions.list.generic.name     = "Realistic rendering:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_names;
 	s_graphicsoptions.detail.generic.name  = "Level of Detail:";
 	s_graphicsoptions.detail.itemnames     = s_detail_names;
@@ -1131,7 +1131,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "ЭКРАН";
 	s_graphicsoptions.sound.string				= "ЗВУК";
 	s_graphicsoptions.network.string			= "СЕТЬ";
-	s_graphicsoptions.list.generic.name     = "Реалистичный шейдер:";
+	s_graphicsoptions.list.generic.name     = "Реалистичный рендеринг:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_namesru;
 	s_graphicsoptions.detail.generic.name  = "Уровень детализации:";
 	s_graphicsoptions.detail.itemnames     = s_detail_namesru;
