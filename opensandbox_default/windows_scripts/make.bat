@@ -22,7 +22,7 @@ copy windows_scripts\game.q3asm windows\build\
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -DQAGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\game -I..\..\..\code\qcommon %1
+set cc=lcc -w -DQAGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\game -I..\..\..\code\qcommon %1
 
 cd windows\build\game
 
@@ -36,7 +36,6 @@ cd windows\build\game
 %cc%  ../../../code/game/ai_dmq3.c
 %cc%  ../../../code/game/ai_main.c
 %cc%  ../../../code/game/ai_team.c
-%cc%  ../../../code/game/ai_vcmd.c
 %cc%  ../../../code/game/bg_lib.c
 %cc%  ../../../code/game/bg_misc.c
 %cc%  ../../../code/game/bg_pmove.c
@@ -103,7 +102,7 @@ copy windows_scripts\cgame.q3asm windows\build\cgame.q3asm
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -DCGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon %1
+set cc=lcc -w -DCGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon %1
 
 cd windows\build\cgame
 
@@ -174,7 +173,7 @@ copy windows_scripts\ui.q3asm windows\build\
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -DQ3_UI -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\ui -I..\..\..\code\qcommon %1
+set cc=lcc -w -DQ3_UI -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\ui -I..\..\..\code\qcommon %1
 
 cd windows\build\ui
 

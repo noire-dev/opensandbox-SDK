@@ -1114,7 +1114,7 @@ sfxHandle_t UIObject_Key( menuobject_s* b, int key )
 		case K_MWHEELUP:
 			if(b->columns <= 1){
 				UIObject_Key(b, K_LEFTARROW);
-				return;
+				return 0;
 			}
 			if( b->columns == 1 ) {
 				return menu_null_sound;
@@ -1147,7 +1147,7 @@ sfxHandle_t UIObject_Key( menuobject_s* b, int key )
 		case K_MWHEELDOWN:
 			if(b->columns <= 1){
 				UIObject_Key(b, K_RIGHTARROW);
-				return;
+				return 0;
 			}
 			if( b->columns == 1 ) {
 				return menu_null_sound;
@@ -2009,7 +2009,7 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int key )
 		case K_MWHEELUP:
 			if(l->columns <= 1){
 				ScrollList_Key(l, K_LEFTARROW);
-				return;
+				return 0;
 			}
 			if( l->curvalue == 0 ) {
 				return menu_buzz_sound;
@@ -2038,7 +2038,7 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int key )
 		case K_MWHEELDOWN:
 			if(l->columns <= 1){
 				ScrollList_Key(l, K_RIGHTARROW);
-				return;
+				return 0;
 			}
 			if( l->curvalue == l->numitems - 1 ) {
 				return menu_buzz_sound;

@@ -1692,7 +1692,7 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 
 	if (tr.startsolid) {
 		G_FreeEntity(bolt);
-		return;
+		return NULL;
 	}
 
 	VectorCopy( start, bolt->s.pos.trBase );
@@ -1759,7 +1759,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 
 	if (tr.startsolid) {
 		G_FreeEntity(bolt);
-		return;
+		return NULL;
 	}
 
 	VectorCopy( start, bolt->s.pos.trBase );
