@@ -529,17 +529,14 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_SPAWNOBJECT:
 		if(uis.sb_tab == STAB_CREATE){
-		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
 		}
 		if(uis.sb_tab == STAB_ENTITIES){
-		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
 		}
 		if(uis.sb_tab == STAB_NPC){
-		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
 		}
@@ -547,7 +544,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("give %s\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 		}
 		if(uis.sb_tab == STAB_LISTS){
-		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
 		}
