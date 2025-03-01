@@ -633,7 +633,7 @@ gui_cvarTable_t gui_cvarTable[] = {
 	{ "gui_sandbox_BotSkillValue", "0" },
 	{ "gui_sandbox_BotSkillBias", "0" },
 	{ "gui_sandbox_PlayerJoinAs", "0" },
-	{ "gui_sandbox_hostname", "OpenSandbox Sandbox" },
+	{ "gui_sandbox_hostname", "OpenSandbox" },
 	{ "gui_sandbox_ForceRespawn", "0" },
 	{ "gui_sandbox_itemGroups", "" },
 	{ "gui_sandbox_itemsHidden", "" },

@@ -35,38 +35,22 @@ static int			loadingItemIconCount;
 static qhandle_t	loadingPlayerIcons[MAX_LOADING_PLAYER_ICONS];
 static qhandle_t	loadingItemIcons[MAX_LOADING_ITEM_ICONS];
 
-
-/*
-===================
-CG_DrawLoadingIcons
-===================
-*/
-static void CG_DrawLoadingIcons( void ) {
-	int		n;
-	int		x, y;
-
-	for( n = 0; n < loadingPlayerIconCount; n++ ) {
-		x = 8 + n * 36 - cl_screenoffset.value;
-		y = 440-32;
-		CG_DrawPic( x, y, 32, 32, loadingPlayerIcons[n] );
-	}
-
-	for( n = 0; n < loadingItemIconCount; n++ ) {
-		y = 480-20;
-		x = 8 + n * 18- cl_screenoffset.value;
-		CG_DrawPic( x, y, 16, 16, loadingItemIcons[n] );
-	}
-}
-
-
 /*
 ======================
 CG_LoadingString
 
 ======================
 */
-void CG_LoadingString( const char *s ) {
-	Q_strncpyz( cg.infoScreenText, s, sizeof( cg.infoScreenText ) );
+void CG_LoadingString( const char *s, float value ) {
+	if(cl_language.integer == 0){
+		Q_strncpyz( cg.infoScreenText, va("Loading... %s", s), sizeof( cg.infoScreenText ) );
+	}
+	if(cl_language.integer == 1){
+		Q_strncpyz( cg.infoScreenText, va("Загрузка... %s", s), sizeof( cg.infoScreenText ) );
+	}
+	if(value != -1){
+	cg.infoScreenValue = value;
+	}
 
 	trap_UpdateScreen();
 }
@@ -81,14 +65,11 @@ void CG_LoadingItem( int itemNum ) {
 
 	item = &bg_itemlist[itemNum];
 	
-	if ( item->icon && loadingItemIconCount < MAX_LOADING_ITEM_ICONS ) {
-		loadingItemIcons[loadingItemIconCount++] = trap_R_RegisterShaderNoMip( item->icon );
-	}
 	if(cl_language.integer == 0){
-	CG_LoadingString( item->pickup_name );
+	CG_LoadingString( item->pickup_name, -1 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( item->pickup_nameru );
+	CG_LoadingString( item->pickup_nameru, -1 );
 	}
 }
 
@@ -134,7 +115,7 @@ void CG_LoadingClient( int clientNum ) {
 	Q_strncpyz( personality, Info_ValueForKey( info, "n" ), sizeof(personality) );
 	Q_CleanStr( personality );
 
-	CG_LoadingString( personality );
+	CG_LoadingString( personality, -1 );
 }
 
 
@@ -148,111 +129,57 @@ Draw all the status / pacifier stuff during level loading
 void CG_DrawInformation( void ) {
 	const char	*s;
 	const char	*info;
-	const char	*sysInfo;
 	int			y;
-	int			value;
 	qhandle_t	levelshot;
 	qhandle_t	detail;
+	qhandle_t	fade;
+	qhandle_t	logo;
+	qhandle_t	loading;
 	char		buf[1024];
+	vec4_t 		color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
+	vec4_t 		color_whiteblack	= {0.90f, 0.90f, 0.90f, 1.00f};
+	vec4_t 		color_grey	    	= {0.30f, 0.30f, 0.30f, 1.00f};
+	vec4_t 		color_lightgrey	    = {0.50f, 0.50f, 0.50f, 1.00f};
 
 	info = CG_ConfigString( CS_SERVERINFO );
-	sysInfo = CG_ConfigString( CS_SYSTEMINFO );
 
 	s = Info_ValueForKey( info, "mapname" );
-    if(cgs.gametype == GT_SINGLE || Q_stricmp (s, "uimap_1") == 0){
-		return;
-    }
-	levelshot = trap_R_RegisterShaderNoMip( va( "levelshots/%s.tga", s ) );
+	levelshot = trap_R_RegisterShaderNoMip( va( "levelshots/%s", s ) );
+	detail = trap_R_RegisterShaderNoMip( "menu/assets/loadingoverlay" );
+	fade = trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" );
+	logo = trap_R_RegisterShaderNoMip( "menu/logo" );
+	loading = trap_R_RegisterShaderNoMip( "menu/assets/loading" );
 	if ( !levelshot ) {
 		levelshot = trap_R_RegisterShaderNoMip( "menu/assets/unknownmap" );
 	}
 	trap_R_SetColor( NULL );
 
-	// blend a detail texture over it
-	detail	= trap_R_RegisterShaderNoMip( "menu/animbg" );
-	CG_DrawPic( -1 - cl_screenoffset.value, 0, 642 + cl_screenoffset.value*2, 480, detail );
-	CG_DrawPic( -1 - cl_screenoffset.value, 0, 642 + cl_screenoffset.value*2, 480, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
-	CG_DrawPic( 30, 180-58, 280, 200, levelshot );
+	CG_DrawPic( 0-cl_screenoffset.value, 0, 640+(cl_screenoffset.value*2), 480, levelshot );
+	CG_DrawPic( 0-cl_screenoffset.value, 0, 640+(cl_screenoffset.value*2), 480, detail );
 
-	// draw the icons of things as they are loaded
-	CG_DrawLoadingIcons();
+	CG_DrawRoundedRect(410+cl_screenoffset.value, 445, 220, 30, 1, color_lightgrey);
+	CG_DrawProgressBar(415+cl_screenoffset.value, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
+	CG_DrawStringExt( 413+cl_screenoffset.value, 449, cg.infoScreenText, color_whiteblack, qfalse, qfalse, 8, 7, 128, -3.0 );
 
-	// the first 150 rows are reserved for the client connection
-	// screen to write into
-	if ( cg.infoScreenText[0] ) {
-		if(cl_language.integer == 0){
-		CG_DrawBigString( 320, 128, va("Loading... %s", cg.infoScreenText), 1.0F );
-		}
-		if(cl_language.integer == 1){
-		CG_DrawBigString( 320, 128, va("Загрузка... %s", cg.infoScreenText), 1.0F );
-		}
-	} else {
-		if(cl_language.integer == 0){
-		CG_DrawBigString( 320, 128, "Connecting...", 1.0F );
-		}
-		if(cl_language.integer == 1){
-		CG_DrawBigString( 320, 128, "Подключение...", 1.0F );	
-		}
-	}
+	CG_DrawPic( 320-50, 240-75, 100, 100, logo );
+	CG_DrawPic( 320-24, 320-48, 48, 48, loading );
 
-	// draw info string information
+	CG_DrawPic( 0-cl_screenoffset.value, 0, 300, 85, fade );
+	CG_DrawPic( 5-cl_screenoffset.value, 5, 100, 75, levelshot );
 
-	y = 220-32;
+	y = 15;
 
-	// don't print server lines if playing a local game
-	trap_Cvar_VariableStringBuffer( "sv_running", buf, sizeof( buf ) );
-	if ( !atoi( buf ) ) {
-		// server hostname
-		Q_strncpyz(buf, Info_ValueForKey( info, "sv_hostname" ), 1024);
-		Q_CleanStr(buf);
-		CG_DrawBigString( 320, y, buf, 1.0F );
-		y += PROP_HEIGHT;
+	// server hostname
+	Q_strncpyz(buf, Info_ValueForKey( info, "sv_hostname" ), 1024);
+	Q_CleanStr(buf);
+	CG_DrawBigString( 110-cl_screenoffset.value, y, buf, 1.0F );
+	y += PROP_HEIGHT;
 
-		// pure server
-		s = Info_ValueForKey( sysInfo, "sv_pure" );
-		if ( s[0] == '1' ) {
-			if(cl_language.integer == 0){
-			CG_DrawBigString( 320, y, "Pure Server", 1.0F );
-			}
-			if(cl_language.integer == 1){
-			CG_DrawBigString( 320, y, "Чистый Сервер", 1.0F );
-			}
-			y += PROP_HEIGHT;
-		}
-
-		// server-specific message of the day
-		s = CG_ConfigString( CS_MOTD );
-		if ( s[0] ) {
-			CG_DrawBigString( 320, y, s, 1.0F );
-			y += PROP_HEIGHT;
-		}
-
-		// some extra space after hostname and motd
-		y += 10;
-	}
-
-	// map-specific message (long map name)
-	s = CG_ConfigString( CS_MESSAGE );
-	if ( s[0] ) {
-		CG_DrawBigString( 320, y, s, 1.0F );
-		y += PROP_HEIGHT;
-	}
-	
-	// OpenSandbox
-		CG_DrawBigString( 320, y, "^4OpenSandbox v2.0", 1.0F );
-		y += PROP_HEIGHT;
-
-	// cheats warning
-	s = Info_ValueForKey( sysInfo, "sv_cheats" );
-	if ( s[0] == '1' ) {
-		if(cl_language.integer == 0){
-		CG_DrawBigString( 320, y, "CHEATS ARE ENABLED", 1.0F );
-		}
-		if(cl_language.integer == 1){
-		CG_DrawBigString( 320, y, "ЧИТЫ ВКЛЮЧЕНЫ", 1.0F );
-		}
-		y += PROP_HEIGHT;
-	}
+	// server mapname
+	Q_strncpyz(buf, Info_ValueForKey( info, "mapname" ), 1024);
+	Q_CleanStr(buf);
+	CG_DrawBigString( 110-cl_screenoffset.value, y, buf, 1.0F );
+	y += PROP_HEIGHT;
 
 if(cl_language.integer == 0){
 	// game type
@@ -354,43 +281,6 @@ if(cl_language.integer == 1){
 		break;
 	}
 }
-	CG_DrawBigString( 320, y, s, 1.0F );
-	y += PROP_HEIGHT;
-	value = atoi( Info_ValueForKey( info, "timelimit" ) );
-	if ( value ) {
-		if(cl_language.integer == 0){
-		CG_DrawBigString( 320, y, va( "Time limit %i", value ), 1.0F );
-		}
-		if(cl_language.integer == 1){
-		CG_DrawBigString( 320, y, va( "Лимит времени %i", value ), 1.0F );
-		}
-		y += PROP_HEIGHT;
-	}
-
-	if (cgs.gametype < GT_CTF || cgs.ffa_gt>0) {
-		value = atoi( Info_ValueForKey( info, "fraglimit" ) );
-		if ( value ) {
-			if(cl_language.integer == 0){
-			CG_DrawBigString( 320, y, va( "Frag limit %i", value ), 1.0F );
-			}
-			if(cl_language.integer == 1){
-			CG_DrawBigString( 320, y, va( "Лимит фрагов %i", value ), 1.0F );
-			}
-			y += PROP_HEIGHT;
-		}
-	}
-
-	if (cgs.gametype >= GT_CTF && cgs.ffa_gt == 0) {
-		value = atoi( Info_ValueForKey( info, "capturelimit" ) );
-		if ( value ) {
-			if(cl_language.integer == 0){
-			CG_DrawBigString( 320, y, va( "Сapture limit %i", value ), 1.0F );
-			}
-			if(cl_language.integer == 1){
-			CG_DrawBigString( 320, y, va( "Лимит захвата %i", value ), 1.0F );
-			}
-			y += PROP_HEIGHT;
-		}
-	}
+	CG_DrawBigString( 110-cl_screenoffset.value, y, s, 1.0F );
 }
 

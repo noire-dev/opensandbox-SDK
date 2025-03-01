@@ -1163,7 +1163,7 @@ static void CG_RegisterGraphics( void ) {
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
 	trap_R_ClearScene();
 
-	CG_LoadingString( cgs.mapname );
+	CG_LoadingString( cgs.mapname, -1 );
 
 	trap_R_LoadWorldMap( cgs.mapname );
 	
@@ -1171,10 +1171,10 @@ static void CG_RegisterGraphics( void ) {
 
 	// precache status bar pics
 	if(cl_language.integer == 0){
-	CG_LoadingString( "game media" );
+	CG_LoadingString( "game media", 0.72 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игровые ресурсы" );
+	CG_LoadingString( "игровые ресурсы", 0.72 );
 	}
 
 	for ( i=0 ; i<11 ; i++) {
@@ -1466,7 +1466,7 @@ static void CG_RegisterGraphics( void ) {
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
 		if ( items[ i ] == '1' || 1 ) {
-			//CG_LoadingItem( i );
+			CG_LoadingItem( i );
 			CG_RegisterItemVisuals( i );
 		}
 	}
@@ -1666,6 +1666,13 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
 	memset( cg_items, 0, sizeof(cg_items) );
 
+	if(cl_language.integer == 0){
+	CG_LoadingString( "game core", 0.12 );
+	}
+	if(cl_language.integer == 1){
+	CG_LoadingString( "игровое ядро", 0.12 );
+	}
+
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -1677,6 +1684,13 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.media.defaultFont[2]		= trap_R_RegisterShader( "gfx/2d/default_font2" ); //128x128
 	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
 	cgs.media.corner          	= trap_R_RegisterShader( "menu/corner" );
+
+	if(cl_language.integer == 0){
+	CG_LoadingString( "noire.script", 0.24 );
+	}
+	if(cl_language.integer == 1){
+	CG_LoadingString( "noire.script", 0.24 );
+	}
 
 	CG_RegisterCvars();
 
@@ -1741,10 +1755,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	// load the new map
 	if(cl_language.integer == 0){
-	CG_LoadingString( "collision map" );
+	CG_LoadingString( "collision map", 0.36 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "карта столкновений" );
+	CG_LoadingString( "карта столкновений", 0.36 );
 	}
 
 	trap_CM_LoadMap( cgs.mapname );
@@ -1752,51 +1766,67 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cg.loading = qtrue;		// force players to load instead of defer
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "sounds" );
+	CG_LoadingString( "sounds", 0.48 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "звуки" );
+	CG_LoadingString( "звуки", 0.48 );
 	}
 
 	CG_RegisterSounds();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "graphics" );
+	CG_LoadingString( "graphics", 0.60 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "графика" );
+	CG_LoadingString( "графика", 0.60 );
 	}
 
 	CG_RegisterGraphics();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "clients" );
+	CG_LoadingString( "clients", 0.84 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игроки" );
+	CG_LoadingString( "игроки", 0.84 );
 	}
 
 	CG_RegisterClients();		// if low on memory, some clients will be deferred
 
 	cg.loading = qfalse;	// future players will be deferred
 
+	if(cl_language.integer == 0){
+	CG_LoadingString( "entities", 0.96 );
+	}
+	if(cl_language.integer == 1){
+	CG_LoadingString( "объекты", 0.96 );
+	}
+
 	CG_InitLocalEntities();
 
 	CG_InitMarkPolys();
 
-	// remove the last loading update
-	cg.infoScreenText[0] = 0;
-
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
+	if(cl_language.integer == 0){
+	CG_LoadingString( "100%", 1.00 );
+	}
+	if(cl_language.integer == 1){
+	CG_LoadingString( "100%", 1.00 );
+	}
+	
+
 	CG_StartMusic();
 
-	CG_LoadingString( "" );
+	CG_LoadingString( "", 0.0 );
 
 	CG_ShaderStateChanged();
 
 	trap_S_ClearLoopingSounds( qtrue );
+
+	// remove the last loading update
+	cg.infoScreenText[0] = 0;
+	cg.infoScreenValue = 0.0;
 	
 	trap_SendConsoleCommand("ns_openscript_ui tools/create.ns\n");
 	trap_SendConsoleCommand( va("weapon %i\n", WP_TOOLGUN) );

@@ -95,6 +95,37 @@ void CG_DrawRoundedRect(float x, float y, float width, float height, float radiu
 	trap_R_SetColor( NULL );
 }
 
+void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor) {
+    int numSegments;
+    int filledSegments;
+	float segmentX;
+	int i;
+	int xy_offset = 2 * cgs.screenYScale;
+	int w_offset = 3 * cgs.screenYScale;
+	int h_offset = 3.75 * cgs.screenYScale;
+
+	if (progress < 0.0f) progress = 0.0f;
+    if (progress > 1.0f) progress = 1.0f;
+
+    CG_AdjustFrom640(&x, &y, &width, &height);
+
+	segmentWidth *= cgs.screenXScale;
+
+    trap_R_SetColor(bgColor);
+    trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, cgs.media.whiteShader);
+    trap_R_SetColor(NULL);
+    
+    numSegments = (int)(width / segmentWidth);
+    filledSegments = (int)(numSegments * progress);
+    
+    trap_R_SetColor(barColor);
+    for (i = 0; i < filledSegments; i++) {
+        segmentX = x + i * segmentWidth;
+        trap_R_DrawStretchPic(segmentX+xy_offset, y+xy_offset, segmentWidth - w_offset, height-h_offset, 0, 0, 1, 1, cgs.media.whiteShader);
+    }
+    trap_R_SetColor(NULL);
+}
+
 /*
 ================
 CG_DrawSides

@@ -627,6 +627,7 @@ typedef struct {
 
 	// information screen text during loading
 	char		infoScreenText[MAX_STRING_CHARS];
+	float		infoScreenValue;
 
 	qboolean	teamoverlay;
 
@@ -1735,6 +1736,7 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void CG_FillRect( float x, float y, float width, float height, const float *color );
 void CG_FillRect2( float x, float y, float width, float height, const float *color );
 void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
+void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor);
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars, float offset );
 void CG_DrawBigString( int x, int y, const char *s, float alpha );
@@ -1939,11 +1941,9 @@ void CG_TransitionEntity( centity_t *cent );
 //
 // cg_info.c
 //
-void CG_LoadingString( const char *s );
-void CG_LoadingItem( int itemNum );
+void CG_LoadingString( const char *s, float value );
 void CG_LoadingClient( int clientNum );
 void CG_DrawInformation( void );
-void CG_DrawInformationRus( void );
 
 //
 // cg_scoreboard.c

@@ -68,6 +68,9 @@ char* get_cvar_char(const char *name) {
 void NS_setCvar(const char *cvarName, const char *cvarValue)
 {
     trap_Cvar_Set(cvarName, cvarValue);
+
+    if (!strcmp(cvarName, "r_postprocess"))
+        trap_Cvar_Set("r_fx_blur", "0");
 }
 
 void NS_initNSGui(const char *cvarName, const char *cvarValue)

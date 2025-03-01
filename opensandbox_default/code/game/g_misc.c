@@ -1128,6 +1128,8 @@ void SP_func_prop( gentity_t *ent ) {
 			ent->s.torsoAnim = ent->objectType;
 			ent->classname = "func_prop";
 			ent->r.svFlags &= ~SVF_NOCLIENT;
+			VectorCopy(ent->s.apos.trBase, ent->s.angles);
+			VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
 			setModel(ent, ent->model);
 			trap_LinkEntity( ent );
 			return;
@@ -1173,6 +1175,8 @@ void SP_func_prop( gentity_t *ent ) {
 	VectorSet( ent->r.maxs, 25, 25, 15 );
 	}
 	ent->touch = G_TouchProp;
+	VectorCopy(ent->s.apos.trBase, ent->s.angles);
+	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
 	setModel(ent, ent->model);
 	trap_LinkEntity( ent );
 }
@@ -1464,7 +1468,7 @@ void G_BounceProp( gentity_t *ent, trace_t *trace ) {
     }
     VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
 	// check for stop
-	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 ) {
+	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed) {
         ent->s.apos.trBase[0] = 0;
         ent->s.apos.trBase[2] = 0;
         ent->r.currentAngles[0] = 0;

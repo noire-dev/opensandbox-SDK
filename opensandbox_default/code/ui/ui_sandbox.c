@@ -273,12 +273,13 @@ SandboxMain_SaveChanges
 static void SandboxMain_SaveChanges( void ) {
 	//save cvars
 	trap_Cvar_Set( "sb_classnum_view", "none" );
-	if(uis.sb_tab == STAB_CREATE){
+	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < 0){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_spawnpreset.string, tool_spawnpreset_arg(1), tool_spawnpreset_arg(2), tool_spawnpreset_arg(3), tool_spawnpreset_arg(4), MODIF_LIST) );
 	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 	trap_Cvar_Set( "sb_classnum_view", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue] );
 	trap_Cvar_Set( "sb_texturename", s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue] );
 	}
+	if(trap_Cvar_VariableValue("toolgun_tool") >= 0){
 	if(uis.sb_tab == STAB_ENTITIES){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(spawn_preset.string, s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.priv.curvalue, s_sandboxmain.grid.field.buffer, "0") );
 	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
@@ -290,6 +291,7 @@ static void SandboxMain_SaveChanges( void ) {
 	}
 	if(uis.sb_tab == STAB_LISTS){
 	trap_Cvar_Set( "toolcmd_spawn", va("ns_openscript_ui spawnlists/%s/%s.ns\n", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
+	}
 	}
 	trap_Cvar_SetValue( "sb_private", s_sandboxmain.priv.curvalue );
 	trap_Cvar_Set( "sb_grid", s_sandboxmain.grid.field.buffer );
@@ -314,7 +316,7 @@ static void SandboxMain_SaveChanges( void ) {
 	trap_Cvar_Set( "toolgun_mod16", s_sandboxmain.modif[15].field.buffer );
 	trap_Cvar_Set( "toolgun_mod17", s_sandboxmain.modif[16].field.buffer );
 	trap_Cvar_Set( "toolgun_mod18", s_sandboxmain.modif[17].field.buffer );
-	if(uis.sb_tab == STAB_CREATE){
+	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < 0){
 	if(trap_Cvar_VariableValue("toolgun_tool") == 1){
 	trap_Cvar_Set( "toolgun_mod1", s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue]);
 	Q_strncpyz( s_sandboxmain.modif[0].field.buffer, s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue], sizeof(s_sandboxmain.modif[0].field.buffer) );
@@ -530,19 +532,16 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
-		trap_Cmd_ExecuteText( EXEC_INSERT, "menuback\n" );	
 		}
 		if(uis.sb_tab == STAB_ENTITIES){
 		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
-		trap_Cmd_ExecuteText( EXEC_INSERT, "menuback\n" );	
 		}
 		if(uis.sb_tab == STAB_NPC){
 		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
-		trap_Cmd_ExecuteText( EXEC_INSERT, "menuback\n" );	
 		}
 		if(uis.sb_tab == STAB_ITEMS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("give %s\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
@@ -551,7 +550,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
-		trap_Cmd_ExecuteText( EXEC_INSERT, "menuback\n" );	
 		}
 		if(uis.sb_tab == STAB_SCRIPTS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("ns_openscript_ui dscripts/%s.ns\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );

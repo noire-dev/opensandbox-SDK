@@ -183,6 +183,9 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	uiClientState_t	cstate;
 	char			info[MAX_INFO_VALUE];
 	int strWidth;
+	qhandle_t	black;
+	qhandle_t	logo;
+	qhandle_t	loading;
 	
 	UI_ScreenOffset();
 	trap_Cvar_Set( "r_fx_blur", "0" );			//blur UI postFX
@@ -193,36 +196,15 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	info[0] = '\0';
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 
-	if(!cl_sprun.integer && Q_stricmp (Info_ValueForKey( info, "mapname" ), "uimap_1") != 0 && uis.onmap){
-
 	Menu_Cache();
 
-	if ( !overlay ) {
-		// draw the dialog background
-		trap_R_SetColor( color_white );
-		UI_DrawHandlePic( 0-uis.wideoffset, 0, SCREEN_WIDTH+uis.wideoffset*2, SCREEN_HEIGHT, uis.menuWallpapers );
-		UI_DrawHandlePic( 0-uis.wideoffset, 0, SCREEN_WIDTH+uis.wideoffset*2, SCREEN_HEIGHT, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
-	}
-
-	if( strlen(info) ) {
-		UI_DrawString( 320, 16, va( "Loading %s", Info_ValueForKey( info, "mapname" ) ), UI_GIANTFONT|UI_CENTER|UI_DROPSHADOW, color_white );
-	}
-
-		if(cl_language.integer == 0){
-		UI_DrawString( 320, 80, va("Connecting to %s", cstate.servername), UI_CENTER|UI_BIGFONT|UI_DROPSHADOW, menu_text_color );
-		}
-		if(cl_language.integer == 1){
-		UI_DrawString( 320, 80, va("Подключение к %s", cstate.servername), UI_CENTER|UI_BIGFONT|UI_DROPSHADOW, menu_text_color );
-		}
-	//UI_DrawString( 320, 96, "Press Esc to disconnect", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
-
-	// display global MOTD at bottom
-	UI_DrawString( SCREEN_WIDTH/2, SCREEN_HEIGHT-32, 
-		Info_ValueForKey( cstate.updateInfoString, "motd" ), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+	black = trap_R_RegisterShaderNoMip( "gfx/colors/black" );
+	logo = trap_R_RegisterShaderNoMip( "menu/logo" );
+	loading = trap_R_RegisterShaderNoMip( "menu/assets/loading" );
 	
 	// print any server info (server full, bad version, etc)
 	if ( cstate.connState < CA_CONNECTED ) {
-		UI_DrawString( 320, 192, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+		UI_DrawString( 2-cl_screenoffset.value, 2, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
 	}
 	if ( lastConnState > cstate.connState ) {
 		lastLoadingText[0] = '\0';
@@ -270,49 +252,9 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 		return;
 	}
 
-	UI_DrawString( 320, 128, s, UI_CENTER|UI_BIGFONT|UI_DROPSHADOW, color_white );
+	UI_DrawHandlePic( 0-(uis.wideoffset+1), 0, SCREEN_WIDTH+(uis.wideoffset*2)+2, SCREEN_HEIGHT*3, black );
+	UI_DrawHandlePic( 320-50, 240-75, 100, 100, logo );
+	UI_DrawHandlePic( 320-24, 320-48, 48, 48, loading );
 
-	// password required / connection rejected information goes here
-	}
-	if(cl_sprun.integer || Q_stricmp (Info_ValueForKey( info, "mapname" ), "uimap_1") == 0 || !uis.onmap){
-
-	Menu_Cache();
-
-	if(cl_language.integer == 0){
-	strWidth = strlen("Loading...") * 8;
-	}
-	if(cl_language.integer == 1){
-	strWidth = strlen("Загрузка...") * 8;
-	}
-
-	trap_R_SetColor( color_white );
-	UI_DrawHandlePic( 0-(uis.wideoffset+1), 0, SCREEN_WIDTH+(uis.wideoffset*2)+2, SCREEN_HEIGHT*777, trap_R_RegisterShaderNoMip( "gfx/colors/black" ) );
-	if(cl_language.integer == 0){
-	UI_DrawString( (SCREEN_WIDTH+uis.wideoffset - strWidth) - 16, SCREEN_HEIGHT - 32, "Loading...", UI_SMALLFONT, color_white );
-	}
-	if(cl_language.integer == 1){
-	UI_DrawString( (SCREEN_WIDTH+uis.wideoffset - strWidth) - 16, SCREEN_HEIGHT - 32, "Загрузка...", UI_SMALLFONT, color_white );
-	}
-	if(Q_stricmp (Info_ValueForKey( info, "mapname" ), "uimap_1") != 0 && uis.onmap){
-	UI_DrawHandlePic( (SCREEN_WIDTH+uis.wideoffset - strWidth) - 80, SCREEN_HEIGHT - 64, 64, 64, uis.menuLoadingIcon );
-	}
-
-	trap_GetClientState( &cstate );
-	if ( cstate.connState < CA_CONNECTED ) {
-		UI_DrawString( 320, 192, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
-	}
-	}
-}
-
-
-/*
-===================
-UI_KeyConnect
-===================
-*/
-void UI_KeyConnect( int key ) {
-	if ( key == K_ESCAPE ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
-		return;
-	}
+	UI_DrawString( 2-cl_screenoffset.value, 2, s, UI_SMALLFONT|UI_DROPSHADOW, color_white );
 }
