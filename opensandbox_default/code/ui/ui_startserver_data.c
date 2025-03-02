@@ -65,6 +65,7 @@ const char* idmap_list[] = {
 	"oacmpctf1",
 	"oacmpctf2",
 	"oacmpctf3",
+	"oa_destruct",
 	0
 };
 
