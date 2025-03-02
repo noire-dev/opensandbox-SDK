@@ -573,10 +573,10 @@ static float CG_DrawCounters( float y ) {
 	if(cgs.gametype == GT_SANDBOX){
 		if(seconds == 3 && !n_tip1){
 			if(cl_language.integer == 0){
-				CG_AddNotify ("Welcome to OpenSandbox v1.3", 1);
+				CG_AddNotify ("Welcome to OpenSandbox v1.3.1", 1);
 			}
 			if(cl_language.integer == 1){
-				CG_AddNotify ("Добро пожаловать в OpenSandbox v1.3", 1);
+				CG_AddNotify ("Добро пожаловать в OpenSandbox v1.3.1", 1);
 			}
 			n_tip1 = qtrue;
 		}
