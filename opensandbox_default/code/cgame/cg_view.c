@@ -587,9 +587,6 @@ static int CG_CalcFov( void ) {
                         } else if ( zoomFov > 160 ) {
                                 zoomFov = 160;
                         }
-
-                        if( (cgs.videoflags & VF_LOCK_CVARS_BASIC) && zoomFov>140 )
-                                zoomFov = 140;
                 }
 
 		if ( cg.zoomed ) {

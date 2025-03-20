@@ -43,7 +43,7 @@
 // versions of the browser
 
 static const char* saveparam_list[] = {
-"gui_gametype", "gui_pure", "gui_inactivity", "gui_allowmaxrate",
+"gui_gametype", "gui_anticheatengine", "gui_inactivity", "gui_allowmaxrate",
 "gui_maxrate", "gui_allowpass","gui_password", "gui_allowvote",
 "gui_allowdownload", "gui_smoothclients", "gui_pmove_fixed",
 "gui_pmove_msec", "gui_syncclients", "gui_minPing", "gui_maxPing",
@@ -681,7 +681,7 @@ static qboolean StartServer_WriteServerParams( void )
 	if (s_scriptdata.server.hostname[0])
 		AddScript(va("sv_hostname \"%s\"\n", s_scriptdata.server.hostname));
 
-	AddScript(va("sv_pure 0\n", s_scriptdata.server.pure));
+	AddScript(va("sv_anticheatengine %i\n", s_scriptdata.server.anticheatengine));
 	if (s_scriptdata.multiplayer) {
 		AddScript(va("dedicated %i\n", s_scriptdata.server.dedicatedServer));
 		AddScript(va("g_inactivity %i\n", s_scriptdata.server.inactivityTime));

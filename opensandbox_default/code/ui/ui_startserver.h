@@ -551,7 +551,7 @@ typedef struct serverparameters_s {
 	int allowMaxPing;
 	int maxPing;
 
-	int pure;
+	int anticheatengine;
 	
 	int dynamiclight;
 

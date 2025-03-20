@@ -32,7 +32,7 @@
 #define ID_SERVER_FRIENDLY 304
 #define ID_SERVER_AUTOJOIN 305
 #define ID_SERVER_TEAMBALANCE 306
-#define ID_SERVER_PURE 307
+#define ID_SERVER_ANTICHEAT 307
 #define ID_SERVER_DEDICATED 308
 #define ID_SERVER_INACTIVITY 309
 #define ID_SERVER_SAVE 310
@@ -513,8 +513,8 @@ static const char *slickmove_list[] = {
 
 // connect controls
 static controlinit_t srv_connect[] = {
-	/*{ SRVCTRL_RADIO, 0, ID_SERVER_PURE, ITEM_ALWAYSON|ITEM_HALFGAP,
-		"Pure server:", &s_scriptdata.server.pure, 0, 0, NULL, 0, 0, NULL },*/
+	{ SRVCTRL_RADIO, 0, ID_SERVER_ANTICHEAT, ITEM_ALWAYSON|ITEM_HALFGAP,
+		"Anti-cheat engine:", &s_scriptdata.server.anticheatengine, 0, 0, NULL, 0, 0, NULL },
 
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWMINPING, ITEM_ALWAYSON,
 		"Use min ping:", &s_scriptdata.server.allowMinPing, 0, 0, NULL, 0, 0, NULL },

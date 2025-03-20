@@ -55,7 +55,6 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
 		CG_DrawActiveFrame( arg0, arg1, arg2 );
-        CG_FairCvars();
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
@@ -298,7 +297,6 @@ vmCvar_t	cg_alwaysWeaponBar;
 vmCvar_t	cg_hitsound;
 vmCvar_t    cg_voteflags;
 
-vmCvar_t    cg_autovertex;
 // custom variable used in modified atmospheric effects from q3f
 vmCvar_t	cg_atmosphericLevel;
 
@@ -532,7 +530,6 @@ static cvarTable_t cvarTable[] = { // bk001129
     { &cg_voteflags, "cg_voteflags", "*", CVAR_ROM},
 	{ &cg_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO },	// communicated by systeminfo
 
-    { &cg_autovertex, "cg_autovertex", "0", CVAR_ARCHIVE },
 	{ &cg_enableDust, "g_enableDust", "0", CVAR_SERVERINFO},
 	{ &cg_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO},
 	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", CVAR_SERVERINFO},
@@ -1896,78 +1893,6 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 	}
 }
 //unlagged - attack prediction #3
-
-static qboolean do_vid_restart = qfalse;
-
-void CG_FairCvars() {
-    qboolean vid_restart_required = qfalse;
-    char rendererinfos[128];
-
-    if(cgs.videoflags & VF_LOCK_CVARS_EXTENDED) {
-        //Lock extended cvars.
-        trap_Cvar_VariableStringBuffer("r_subdivisions",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) > 20 ) {
-            trap_Cvar_Set("r_subdivisions","20");
-            vid_restart_required = qtrue;
-        }
-
-        trap_Cvar_VariableStringBuffer("r_picmip",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) > 3 ) {
-            trap_Cvar_Set("r_picmip","3");
-            vid_restart_required = qtrue;
-        } else if(atoi( rendererinfos ) < 0 ) {
-            trap_Cvar_Set("r_picmip","0");
-            vid_restart_required = qtrue;
-        }
-
-        trap_Cvar_VariableStringBuffer("r_intensity",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) > 2 ) {
-            trap_Cvar_Set("r_intensity","2");
-            vid_restart_required = qtrue;
-        } else if(atoi( rendererinfos ) < 0 ) {
-            trap_Cvar_Set("r_intensity","0");
-            vid_restart_required = qtrue;
-        }
-
-        trap_Cvar_VariableStringBuffer("r_mapoverbrightbits",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) > 2 ) {
-            trap_Cvar_Set("r_mapoverbrightbits","2");
-            vid_restart_required = qtrue;
-        } else if(atoi( rendererinfos ) < 0 ) {
-            trap_Cvar_Set("r_mapoverbrightbits","0");
-            vid_restart_required = qtrue;
-        }
-
-        trap_Cvar_VariableStringBuffer("r_overbrightbits",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) > 2 ) {
-            trap_Cvar_Set("r_overbrightbits","2");
-            vid_restart_required = qtrue;
-        } else if(atoi( rendererinfos ) < 0 ) {
-            trap_Cvar_Set("r_overbrightbits","0");
-            vid_restart_required = qtrue;
-        }
-    }
-
-    if(cgs.videoflags & VF_LOCK_VERTEX) {
-        trap_Cvar_VariableStringBuffer("r_vertexlight",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) != 0 ) {
-            trap_Cvar_Set("r_vertexlight","0");
-            vid_restart_required = qtrue;
-        }
-    } else if(cg_autovertex.integer){
-        trap_Cvar_VariableStringBuffer("r_vertexlight",rendererinfos,sizeof(rendererinfos) );
-        if(atoi( rendererinfos ) == 0 ) {
-            trap_Cvar_Set("r_vertexlight","1");
-            vid_restart_required = qtrue;
-        }
-    }
-
-    if(vid_restart_required && do_vid_restart)
-        trap_SendConsoleCommand("vid_restart");
-
-    do_vid_restart = qtrue;
-
-}
 
 qhandle_t trap_R_RegisterModel_SourceTech( const char *name ) {
     char cvarname[1024];

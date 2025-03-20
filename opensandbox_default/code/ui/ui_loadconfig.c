@@ -101,6 +101,7 @@ static const char* configfiles[] = {
 
 	"q3config", "default", "autoexec", "uiautoexec", "q3config_server", "screen", "voice", "maps_ctf", "maps_dd", "maps_dom",
 	"maps_dm", "maps_elimination", "maps_harvester", "maps_obelisk", "maps_oneflag", "maps_tdm", "maps_tourney", "maps_lms",
+	"maps/default",
 
 	0
 };

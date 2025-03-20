@@ -1280,8 +1280,7 @@ typedef struct {
 	// parsed from serverinfo
 	gametype_t		gametype;
 	int				dmflags;
-        int                             videoflags;
-        int				elimflags;
+    int				elimflags;
 	int				teamflags;
 	int				fraglimit;
 	int				capturelimit;
@@ -1661,8 +1660,6 @@ extern	vmCvar_t		cl_timeNudge;
 extern	vmCvar_t		cg_alwaysWeaponBar;
 extern  vmCvar_t                cg_voteflags;
 
-extern  vmCvar_t                cg_autovertex;
-
 extern	vmCvar_t		cg_atmosphericLevel;
 
 extern	vmCvar_t		cg_crosshairPulse;
@@ -1709,8 +1706,6 @@ void CG_RegisterOverlay( void );
 
 //unlagged, sagos modfication
 void SnapVectorTowards( vec3_t v, vec3_t to );
-
-void CG_FairCvars( void );
 
 //
 // cg_view.c

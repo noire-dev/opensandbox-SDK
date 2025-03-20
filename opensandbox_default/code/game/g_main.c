@@ -390,7 +390,6 @@ vmCvar_t	g_megahealthrespawn;
 vmCvar_t	g_poweruprespawn;
 vmCvar_t	g_gametype;
 vmCvar_t	g_dmflags;
-vmCvar_t    g_videoflags;
 vmCvar_t	g_elimflags;
 vmCvar_t	g_voteflags;
 vmCvar_t	g_fraglimit;
@@ -966,7 +965,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_megahealthrespawn, "g_megahealthrespawn", "35", 0, 0, qtrue  },
 	{ &g_poweruprespawn, "g_poweruprespawn", "120", 0, 0, qtrue  },
 	{ &g_dmflags, "dmflags", "1024", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
-    { &g_videoflags, "videoflags", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
     { &g_elimflags, "elimflags", "0", CVAR_SERVERINFO, 0, qfalse  },
     { &g_voteflags, "voteflags", "0", CVAR_SERVERINFO, 0, qfalse  },
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },

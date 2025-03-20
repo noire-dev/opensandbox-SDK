@@ -213,7 +213,7 @@ typedef struct {
 
 gui_cvarTable_t gui_cvarTable[] = {
 { "gui_gametype", "0" },
-{ "gui_pure", "0" },
+{ "gui_anticheatengine", "0" },
 { "gui_dynamiclight", "0" },
 { "gui_dedicated", "0" },
 { "gui_inactivity", "0" },
@@ -3271,7 +3271,7 @@ static void StartServer_LoadServerScriptData(void)
 	char* s, *t;
 	int value, gametype;
 
-	s_scriptdata.server.pure = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_pure" );
+	s_scriptdata.server.anticheatengine = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_anticheatengine" );
 	s_scriptdata.server.dynamiclight = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_dynamiclight" );
 	s_scriptdata.server.pmove_fixed = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_pmove_fixed" );
 	s_scriptdata.server.pmove_msec = GUI_GetSkirmishCvarIntClamp(0, 999, NULL, "gui_pmove_msec" );
@@ -3731,7 +3731,7 @@ static void StartServer_SaveServerScriptData(void)
 	char* s;
 	int friendly, gametype;
 
-	GUI_SetSkirmishCvarInt( NULL, "gui_pure", s_scriptdata.server.pure);
+	GUI_SetSkirmishCvarInt( NULL, "gui_anticheatengine", s_scriptdata.server.anticheatengine);
 	GUI_SetSkirmishCvarInt( NULL, "gui_dynamiclight", s_scriptdata.server.dynamiclight);
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_pmove_fixed", s_scriptdata.server.pmove_fixed);
