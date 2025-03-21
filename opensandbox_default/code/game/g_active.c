@@ -1344,7 +1344,7 @@ if ( !ent->speed ){
 		client->ps.speed *= g_speedfactor.value;
 	}
 	if ( ent->botskill == 9 ) {
-		client->ps.speed *= 1.80;
+		client->ps.speed *= 2.25;
 	}
 
 	// Let go of the hook if we aren't firing
