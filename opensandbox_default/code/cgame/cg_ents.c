@@ -477,17 +477,6 @@ if(cg_itemstyle.integer == 3){
 	ent.hModel = cg_items[es->modelindex].models[0];
 	
 	ent.reType = RT_MODEL;
-	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString( CS_MODELS+es->modelindex ), es->generic2));
-	if(es->generic2 > 0){			
-	ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString( CS_MODELS+es->modelindex ), es->generic2));
-	}					
-	if(es->generic2 == 255){	
-	if(cg_hide255.integer){		
-	ent.customShader = cgs.media.ptexShader[0];
-	} else {
-	ent.customShader = cgs.media.ptexShader[1];
-	}
-	}
 
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
