@@ -432,8 +432,9 @@ static void CG_OffsetFirstPersonView( void ) {
 	// add angles based on weapon kick
 	VectorAdd (angles, cg.kick_angles, angles);
 
-	// add angles based on damage kick
-	if ( cg.damageTime && cgs.gametype!=GT_ELIMINATION && cgs.gametype!=GT_CTF_ELIMINATION && cgs.gametype!=GT_LMS) {
+	// add angles based on damage kick 
+	// noire.dev disabled annoying thing
+	/*if ( cg.damageTime && cgs.gametype!=GT_ELIMINATION && cgs.gametype!=GT_CTF_ELIMINATION && cgs.gametype!=GT_LMS) {
 		ratio = cg.time - cg.damageTime;
 		if ( ratio < DAMAGE_DEFLECT_TIME ) {
 			ratio /= DAMAGE_DEFLECT_TIME;
@@ -446,7 +447,7 @@ static void CG_OffsetFirstPersonView( void ) {
 				angles[ROLL] += ratio * cg.v_dmg_roll;
 			}
 		}
-	}
+	}*/
 
 	// add angles based on velocity
 	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
