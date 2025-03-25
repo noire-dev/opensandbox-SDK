@@ -168,8 +168,6 @@ vmCvar_t	team_legsskin;
 vmCvar_t	cg_itemstyle;
 vmCvar_t	cg_gibtime;
 vmCvar_t	cg_paintballMode;
-vmCvar_t	cg_disableLevelStartFade;
-vmCvar_t	cg_bigheadMode;
 vmCvar_t	cg_railTrailTime;
 vmCvar_t	cg_centertime;
 vmCvar_t	cg_drawsubtitles;
@@ -234,7 +232,6 @@ vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
 vmCvar_t	cg_teamChatsOnly;
 vmCvar_t 	cg_scorePlum;
-vmCvar_t	cg_newFont;
 vmCvar_t	cg_newConsole;
 vmCvar_t	cg_chatTime;
 vmCvar_t 	cg_teamChatTime;
@@ -274,7 +271,6 @@ vmCvar_t	cg_leiBrassNoise;
 vmCvar_t	cg_leiGoreNoise;
 vmCvar_t	cg_trueLightning;
 vmCvar_t    cg_music;
-vmCvar_t    cg_weaponOrder;
 
 vmCvar_t    cg_cameramode;
 vmCvar_t    cg_cameraEyes;
@@ -294,8 +290,6 @@ vmCvar_t	cl_timeNudge;
 
 //elimination addition
 vmCvar_t	cg_alwaysWeaponBar;
-vmCvar_t	cg_hitsound;
-vmCvar_t    cg_voteflags;
 
 // custom variable used in modified atmospheric effects from q3f
 vmCvar_t	cg_atmosphericLevel;
@@ -306,7 +300,6 @@ vmCvar_t	cg_crosshairColorRed;
 vmCvar_t	cg_crosshairColorGreen;
 vmCvar_t	cg_crosshairColorBlue;
 
-vmCvar_t	cg_weaponBarStyle;
 vmCvar_t	cg_chatBeep;
 vmCvar_t	cg_teamChatBeep;
 
@@ -451,8 +444,8 @@ static cvarTable_t cvarTable[] = { // bk001129
     { &cg_plightblue, "cg_plightblue", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
 	{ &cg_itemstyle, "cg_itemstyle", "2", CVAR_ARCHIVE },
-	{ &legsskin, "legsskin", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE },
-	{ &team_legsskin, "team_legsskin", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &legsskin, "legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &team_legsskin, "team_legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_gibtime, "cg_gibtime", "30", CVAR_ARCHIVE },
 	{ &cg_gibjump, "cg_gibjump", "350", CVAR_ARCHIVE },
 	{ &cg_gibvelocity, "cg_gibvelocity", "350", CVAR_ARCHIVE },
@@ -480,8 +473,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_addMarks, "cg_marks", "1", CVAR_ARCHIVE },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 	{ &cg_paintballMode, "cg_paintballMode", "0", CVAR_ARCHIVE },
-	{ &cg_disableLevelStartFade , "cg_disableLevelStartFade", "0", CVAR_ARCHIVE | CVAR_CHEAT},
-	{ &cg_bigheadMode, "cg_bigheadMode", "0", CVAR_ARCHIVE },
 	{ &cg_railTrailTime, "cg_railTrailTime", "400", CVAR_ARCHIVE  },
 	{ &cg_gun_x, "cg_gunX", "5", CVAR_ARCHIVE },
 	{ &cg_gun_y, "cg_gunY", "-1", CVAR_ARCHIVE },
@@ -526,13 +517,11 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
 	{ &cg_alwaysWeaponBar, "cg_alwaysWeaponBar", "0", CVAR_ARCHIVE},	//Elimination
-    { &cg_hitsound, "cg_hitsound", "0", CVAR_ARCHIVE},
-    { &cg_voteflags, "cg_voteflags", "*", CVAR_ROM},
 	{ &cg_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO },	// communicated by systeminfo
 
 	{ &cg_enableDust, "g_enableDust", "0", CVAR_SERVERINFO},
 	{ &cg_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO},
-	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", CVAR_SERVERINFO},
+	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", 0},
 
 	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
 	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
@@ -546,8 +535,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_teamChatY, "cg_teamChatY", "180", CVAR_ARCHIVE  },
 	{ &cg_chatY, "cg_chatY", "-230", CVAR_ARCHIVE  },
-
-	{ &cg_newFont ,     "cg_newFont", "1", CVAR_ARCHIVE},
 
 	{ &cg_newConsole ,  "cg_newConsole", "1", CVAR_ARCHIVE},
 
@@ -598,8 +585,6 @@ static cvarTable_t cvarTable[] = { // bk001129
     { &cg_crosshairColorGreen, "cg_crosshairColorGreen", "0.75", CVAR_ARCHIVE | CVAR_USERINFO},
     { &cg_crosshairColorBlue, "cg_crosshairColorBlue", "1.0", CVAR_ARCHIVE | CVAR_USERINFO},
 
-	{ &cg_weaponBarStyle, "cg_weaponBarStyle", "0", CVAR_ARCHIVE},
-    { &cg_weaponOrder,"cg_weaponOrder", "/1/2/4/3/6/7/8/9/5/", CVAR_ARCHIVE},
     { &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
     { &cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE }
 };
@@ -624,10 +609,10 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
 	cgs.localServer = atoi( var );
 
-	trap_Cvar_Register(NULL, "model", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "headmodel", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "team_model", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "team_headmodel", "sarge/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 }
 
 /*
@@ -1075,7 +1060,7 @@ void CG_RegisterOverlay( void ) {
 	}
 }
 
-void CG_SetDefaultWeaponProperties(void) {
+void CG_SetDefaultGameCvars(void) {
 	mod_sgspread = 700;
 	mod_sgcount = 11;
 	mod_lgrange = 768;
@@ -1164,7 +1149,7 @@ static void CG_RegisterGraphics( void ) {
 
 	trap_R_LoadWorldMap( cgs.mapname );
 	
-	CG_SetDefaultWeaponProperties();
+	CG_SetDefaultGameCvars();
 
 	// precache status bar pics
 	if(cl_language.integer == 0){

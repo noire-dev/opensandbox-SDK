@@ -39,7 +39,6 @@ $cc ../../../code/game/bg_misc.c
 $cc ../../../code/game/bg_pmove.c
 $cc ../../../code/game/bg_slidemove.c
 $cc ../../../code/game/g_active.c
-$cc ../../../code/game/g_arenas.c
 $cc ../../../code/game/g_bot.c
 $cc ../../../code/game/g_client.c
 $cc ../../../code/game/g_cmds.c
@@ -63,7 +62,6 @@ $cc ../../../code/game/g_team.c
 $cc ../../../code/game/g_trigger.c
 $cc ../../../code/game/g_unlagged.c
 $cc ../../../code/game/g_utils.c
-$cc ../../../code/game/g_vote.c
 $cc ../../../code/game/g_weapon.c
 
 $cc ../../../code/qcommon/q_math.c
@@ -205,7 +203,6 @@ $cc ../../../code/ui/ui_qmenu.c
 $cc ../../../code/ui/ui_removebots.c
 $cc ../../../code/ui/ui_sandbox.c
 $cc ../../../code/ui/ui_saveconfiged.c
-$cc ../../../code/ui/ui_serverinfo.c
 $cc ../../../code/ui/ui_servers2.c
 $cc ../../../code/ui/ui_setup.c
 $cc ../../../code/ui/ui_sound.c
@@ -221,7 +218,6 @@ $cc ../../../code/ui/ui_startserver_mapsel.c
 $cc ../../../code/ui/ui_startserver_script.c
 $cc ../../../code/ui/ui_startserver_server.c
 $cc ../../../code/ui/ui_startserver_weapon.c
-$cc ../../../code/ui/ui_team.c
 $cc ../../../code/ui/ui_teamorders.c
 $cc ../../../code/ui/ui_video.c
 $cc ../../../code/ui/ui_workshop.c

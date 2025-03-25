@@ -185,8 +185,6 @@ extern vmCvar_t	ui_ctf_capturelimit;
 extern vmCvar_t	ui_ctf_timelimit;
 extern vmCvar_t	ui_ctf_friendly;
 
-extern vmCvar_t	ui_arenasFile;
-extern vmCvar_t	ui_botsFile;
 extern vmCvar_t	ui_spScores1;
 extern vmCvar_t	ui_spScores2;
 extern vmCvar_t	ui_spScores3;
@@ -245,7 +243,6 @@ extern vmCvar_t	ui_server32;
 extern vmCvar_t	gui_animsfx;
 extern vmCvar_t	gui_mapicons;
 extern vmCvar_t	gui_autoclosebotmenu;
-extern vmCvar_t	gui_ingame_dynamicmenu;
 
 qboolean UI_IsValidCvar(const char* cvar);
 
@@ -553,7 +550,6 @@ extern void UI_CreditMenu( int num );
 // ui_ingame.c
 //
 extern int UI_CurrentPlayerTeam( void );
-extern void InGame_Cache( void );
 extern void UI_InGameMenu(void);
 extern void UI_DynamicMenuCache(void);
 extern void UI_BotCommandMenu_f( void );
@@ -576,12 +572,6 @@ extern void UI_SandboxMainMenu(void);
 //
 extern void UI_SetupMenu_Cache( void );
 extern void UI_SetupMenu(void);
-
-//
-// ui_team.c
-//
-extern void UI_TeamMainMenu( void );
-extern void TeamMain_Cache( void );
 
 //
 // ui_connect.c
@@ -665,12 +655,6 @@ extern void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int i
 extern void GUI_InGame_EnabledItems(void);
 extern void GUI_StartServer_RegisterDisableCvars(qboolean init);
 extern const char* GUI_DefaultIconFromGameType(int gametype);
-
-//
-// ui_serverinfo.c
-//
-extern void UI_ServerInfoMenu( void );
-extern void ServerInfo_Cache( void );
 
 //
 // ui_video.c
@@ -927,7 +911,6 @@ typedef struct {
 	char				theme;
 	int					spawnlist_folder;
 	int					texturelist_folder;
-	qboolean			demoversion;
 	qboolean			firstdraw;
 	qboolean			onmap;
 	qboolean			addonsdraw;
@@ -1111,7 +1094,6 @@ extern void UI_SetDefaultCvar(const char* cvar, const char* value);
 //
 const char *UI_GetArenaInfoByNumber( int num );
 const char *UI_GetArenaInfoByMap( const char *map );
-const char *UI_GetSpecialArenaInfo( const char *tag );
 int UI_GetNumArenas( void );
 
 char *UI_GetBotInfoByNumber( int num );

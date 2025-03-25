@@ -70,16 +70,15 @@ GAME OPTIONS MENU
 #define ID_PREDICTITEMS			143
 #define ID_SHADOWS				144
 #define ID_TEAMCHATHEIGHT		145
-#define ID_NEWESCAPEMENU		146
-#define ID_FOV					147
-#define ID_ZOOMFOV				148
-#define ID_AMMOWARNING			149
-#define ID_DRAWGUN				150
-#define ID_TRUELIGHTNING		151
-#define ID_COLORRED             152
-#define ID_COLORGREEN           153
-#define ID_COLORBLUE            154
-#define ID_WEAPONBAR            155
+#define ID_FOV					146
+#define ID_ZOOMFOV				147
+#define ID_AMMOWARNING			148
+#define ID_DRAWGUN				149
+#define ID_TRUELIGHTNING		150
+#define ID_COLORRED             151
+#define ID_COLORGREEN           152
+#define ID_COLORBLUE            153
+#define ID_WEAPONBAR            154
 
 #define	NUM_CROSSHAIRS			10
 
@@ -118,14 +117,12 @@ typedef struct {
 	menuradiobutton_s	drawgun;
 	menuradiobutton_s	predictitems;
 	menulist_s			shadows;
-	menuradiobutton_s	newESCmenu;
 
 	menufield_s			teamchatheight;
 	menufield_s			fov;
 	menufield_s			zoomfov;
 
 	menuradiobutton_s	truelightning;
-
 
 	menubitmap_s		back;
 
@@ -203,7 +200,6 @@ static menucommon_s* g_prefmisc_controls[] = {
 	(menucommon_s*) &s_preferences.predictitems,
 	(menucommon_s*) &s_preferences.allowdownload,
 	(menucommon_s*) &s_preferences.botmenu,
-	(menucommon_s*) &s_preferences.newESCmenu,
 	NULL
 };
 
@@ -246,7 +242,6 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.drawgun.curvalue			= trap_Cvar_VariableValue( "cg_paintballMode" ) != 0;
 	s_preferences.predictitems.curvalue		= trap_Cvar_VariableValue( "cg_predictItems" ) != 0;
 	s_preferences.shadows.curvalue			= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_shadows" ) );
-	s_preferences.newESCmenu.curvalue		= trap_Cvar_VariableValue( "gui_ingame_dynamicmenu" ) != 0;
 
 	s_preferences.truelightning.curvalue	= trap_Cvar_VariableValue( "cg_truelightning" ) != 0;
 
@@ -511,10 +506,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_SHADOWS:
 		trap_Cvar_SetValue( "cg_shadows", s_preferences.shadows.curvalue );
-		break;
-
-	case ID_NEWESCAPEMENU:
-		trap_Cvar_SetValue( "gui_ingame_dynamicmenu", s_preferences.newESCmenu.curvalue );
 		break;
 
 	case ID_TRUELIGHTNING:
@@ -862,11 +853,6 @@ static void Preferences_MenuInit( void )
 	s_preferences.botmenu.generic.flags	  = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_preferences.botmenu.generic.callback = Preferences_Event;
 	s_preferences.botmenu.generic.id       = ID_BOTMENU;
-
-	s_preferences.newESCmenu.generic.type     = MTYPE_RADIOBUTTON;
-	s_preferences.newESCmenu.generic.flags	   = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_preferences.newESCmenu.generic.callback = Preferences_Event;
-	s_preferences.newESCmenu.generic.id       = ID_NEWESCAPEMENU;
 	
 if(cl_language.integer == 0){
 s_preferences.banner.string		   = "GAME OPTIONS";
@@ -900,7 +886,6 @@ s_preferences.truelightning.generic.name	  = "True lightning:";
 s_preferences.synceveryframe.generic.name	  = "V-Sync:";
 s_preferences.allowdownload.generic.name	   = "Automatic Downloading:";
 s_preferences.botmenu.generic.name	  = "AutoClose Bot Menu:";
-s_preferences.newESCmenu.generic.name	   = "Dynamic Escape Menu:";
 s_preferences.shadows.itemnames			= shadow_types;
 }
 if(cl_language.integer == 1){
@@ -935,7 +920,6 @@ s_preferences.truelightning.generic.name	  = "Правильный эффект 
 s_preferences.synceveryframe.generic.name	  = "Вертикальная синхронизация:";
 s_preferences.allowdownload.generic.name	   = "Автоматическое скачивание:";
 s_preferences.botmenu.generic.name	  = "Авто закрытие Бот Меню:";
-s_preferences.newESCmenu.generic.name	   = "Новый вид меню:";
 s_preferences.shadows.itemnames			= shadow_typesru;
 }
 
@@ -968,7 +952,6 @@ s_preferences.shadows.itemnames			= shadow_typesru;
 	Menu_AddItem( &s_preferences.menu, &s_preferences.drawlagometer);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.predictitems);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.shadows);
-	Menu_AddItem( &s_preferences.menu, &s_preferences.newESCmenu);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.drawgun);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.teamchatheight);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.fov);

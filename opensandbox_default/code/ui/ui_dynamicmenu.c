@@ -79,8 +79,6 @@ typedef struct {
 	float trueW;
 } dynamicitem_t;
 
-
-
 typedef struct {
 	menuframework_s menu;
 
@@ -95,17 +93,13 @@ typedef struct {
 
 	int gametype;
 	int depth;
+	char serverinfo[MAX_INFO_STRING];
 } dynamicmenu_t;
 
 static dynamicmenu_t s_dynamic;
-
-
 static vec4_t dynamicmenu_edgecolor = { 1.0f, 1.0f, 1.0f, 0.5f };
 static vec4_t dynamicmenu_infillcolor = { 1.0f, 1.0f, 1.0f, 0.33f };
 static vec4_t dynamicmenu_backgrcolor = { 0.0f, 0.0f, 0.0f, 0.60f };
-
-
-
 
 /*
 =======================================================================
@@ -114,8 +108,6 @@ DYANMIC MENU CORE SERVICES
 
 =======================================================================
 */
-
-
 
 typedef struct {
 	const char* longname;
@@ -126,8 +118,6 @@ typedef struct {
 
 	int game;
 } itemList_t;
-
-
 
 // The machine gun is excluded from the list because it
 // is the default weapon, maps usually don't have it as
@@ -156,13 +146,7 @@ static itemList_t dm_itemList[] = {
 	{ "Haste", "haste", "item_haste", qfalse, "ui_icons/haste", 0 }
 };
 
-
 static int dm_numMenuItems = sizeof(dm_itemList)/sizeof(dm_itemList[0]);
-
-
-
-
-
 
 /*
 =================
@@ -177,8 +161,6 @@ int DynamicMenu_ServerGametype(void)
 	return atoi( Info_ValueForKey( info, "g_gametype" ) );
 }
 
-
-
 /*
 =================
 DynamicMenu_ItemShortname
@@ -188,12 +170,6 @@ const char* DynamicMenu_ItemShortname(int index)
 {
 	return dm_itemList[index].shortname;
 }
-
-
-
-
-
-
 
 /*
 =================
@@ -222,8 +198,6 @@ void DynamicMenu_AddListOfItems( int exclude, createHandler crh, eventHandler ev
 		}
 	}
 }
-
-
 
 /*
 =================
@@ -257,7 +231,6 @@ static void DynamicMenu_InitMapItems( void )
 		}
 	}
 }
-
 
 /*
 =================
@@ -339,10 +312,6 @@ void DynamicMenu_AddListOfPlayers( int type, createHandler crh, eventHandler evh
 	}
 }
 
-
-
-
-
 /*
 =======================================================================
 
@@ -350,8 +319,6 @@ DYANMIC MENU
 
 =======================================================================
 */
-
-
 
 /*
 =================
@@ -363,8 +330,6 @@ int DynamicMenu_Depth(void)
 	return s_dynamic.depth;
 }
 
-
-
 /*
 =================
 DynamicMenu_ActiveIdAtDepth
@@ -374,9 +339,6 @@ int DynamicMenu_ActiveIdAtDepth(int depth)
 {
 	return s_dynamic.data[s_dynamic.active[depth - 1]].id;
 }
-
-
-
 
 /*
 =================
@@ -388,7 +350,6 @@ int DynamicMenu_ActiveIndexAtDepth(int depth)
 	return s_dynamic.active[depth - 1];
 }
 
-
 /*
 =================
 DynamicMenu_IdAtIndex
@@ -399,8 +360,6 @@ int DynamicMenu_IdAtIndex(int index)
 	return s_dynamic.data[index].id;
 }
 
-
-
 /*
 =================
 DynamicMenu_StringAtIndex
@@ -410,8 +369,6 @@ const char* DynamicMenu_StringAtIndex(int index)
 {
 	return s_dynamic.data[index].text;
 }
-
-
 
 /*
 =================
@@ -429,9 +386,6 @@ void DynamicMenu_SetFlags(int depth, int id, int flags)
 		}
 	}
 }
-
-
-
 
 /*
 =================
@@ -462,9 +416,6 @@ qboolean DynamicMenu_SubMenuInit( void)
 
 	return qtrue;
 }
-
-
-
 
 /*
 =================
@@ -506,9 +457,6 @@ qboolean DynamicMenu_AddIconItem( const char* string, int id, const char* icon, 
 	return qtrue;
 }
 
-
-
-
 /*
 =================
 DynamicMenu_AddItem
@@ -518,8 +466,6 @@ qboolean DynamicMenu_AddItem( const char* string, int id, createHandler crh, eve
 {
 	return DynamicMenu_AddIconItem(string, id, NULL, crh, evh);
 }
-
-
 
 /*
 =================
@@ -534,8 +480,6 @@ void DynamicMenu_AddBackground( const char* background)
 	s_dynamic.background[ s_dynamic.depth - 1 ] = trap_R_RegisterShaderNoMip(background);
 }
 
-
-
 /*
 =================
 DynamicMenu_IconSpace
@@ -545,8 +489,6 @@ static float DynamicMenu_IconSpace( void )
 {
 	return (MENUICON_WIDTH + 2*MENUICON_GAP);
 }
-
-
 
 /*
 =================
@@ -648,9 +590,6 @@ void DynamicMenu_FinishSubMenuInit( void )
 	}
 }
 
-
-
-
 /*
 =================
 DynamicMenu_OnActiveList
@@ -669,8 +608,6 @@ qboolean DynamicMenu_OnActiveList( int index )
 
 	return qfalse;
 }
-
-
 
 /*
 =================
@@ -711,8 +648,6 @@ static void DynamicMenu_DrawBackground( int depth )
 
 	UI_DrawHandlePic(x, y, w, h, s_dynamic.background[ depth ]);
 }
-
-
 
 /*
 =================
@@ -818,9 +753,6 @@ static void DynamicMenu_MenuItemDraw( void* self )
 	}
 }
 
-
-
-
 /*
 =================
 DynamicMenu_MenuDraw
@@ -828,15 +760,97 @@ DynamicMenu_MenuDraw
 */
 static void DynamicMenu_MenuDraw( void )
 {
+	const char		*s;
+	char			key[MAX_INFO_KEY];
+	char			value[MAX_INFO_VALUE];
+	int				y, x;
+
+    const char* gametypes[] = {
+		"Sandbox",
+		"Free For All",
+		"Single Player",
+		"Tournament",
+		"Team Deathmatch",
+		"Capture the Flag",
+		"One Flag Capture",
+		"Overload",
+		"Harvester",
+		"Elimination",
+		"CTF Elimination",
+		"Last Man Standing",
+		"Double Domination",
+		"Domination",
+		0
+    };
+
 	if (uis.debug) {
 		UI_DrawString(0, SMALLCHAR_HEIGHT, va("depth:%i", s_dynamic.depth), UI_SMALLFONT, color_white);
 		UI_DrawString(0, 32 + SMALLCHAR_HEIGHT, va("active: %i %i %i", s_dynamic.active[0], s_dynamic.active[1], s_dynamic.active[2] ), UI_SMALLFONT, color_white);
 	}
+	y = 5;
+	x = 635 + uis.wideoffset;
+	s = s_dynamic.serverinfo;
+	while ( s ) {
+		Info_NextPair( &s, key, value );
+		if ( !key[0] ) {
+			break;
+		}
+
+		if (strcmp(key, "sv_hostname") == 0) {
+			strcpy(key, "Hostname");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "cl_selectedmod") == 0) {
+			strcpy(key, "Mod");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "mapname") == 0) {
+			strcpy(key, "Map");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "g_gametype") == 0) {
+            int gametype = atoi(value);
+			strcpy(key, "Gametype");
+            if (gametype >= 0 && gametype < sizeof(gametypes) / sizeof(gametypes[0])) {
+                UI_DrawString(x - 8, y, va("%s: %s", key, gametypes[gametype]), UI_RIGHT | UI_TINYFONT, color_white);
+                y += TINYCHAR_HEIGHT;
+            }
+        }
+		if (strcmp(key, "fraglimit") == 0) {
+			strcpy(key, "Fraglimit");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "capturelimit") == 0) {
+			strcpy(key, "Capturelimit");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "timelimit") == 0) {
+			strcpy(key, "Timelimit");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "sv_maxclients") == 0) {
+			strcpy(key, "Max players");
+            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			y += TINYCHAR_HEIGHT;
+		}
+		if (strcmp(key, "sv_anticheatengine") == 0) {
+			strcpy(key, "Anti-cheat status");
+			if(atoi(value)){
+            	UI_DrawString(x - 8, y, va("%s: enabled", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			} else {
+				UI_DrawString(x - 8, y, va("%s: disabled", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+			}
+			y += TINYCHAR_HEIGHT;
+		}
+	}
 	Menu_Draw(&s_dynamic.menu);
 }
-
-
-
 
 /*
 =================
@@ -861,8 +875,6 @@ int DynamicMenu_DepthOfIndex( int pos )
 
 	return depth;
 }
-
-
 
 /*
 =================
@@ -903,7 +915,6 @@ void DynamicMenu_SetFocus( int pos )
 		s_dynamic.data[pos].createSubMenu();
 }
 
-
 /*
 =================
 DynamicMenu_ClearFocus
@@ -912,8 +923,6 @@ DynamicMenu_ClearFocus
 void DynamicMenu_ClearFocus( int pos )
 {
 }
-
-
 
 /*
 =================
@@ -943,8 +952,6 @@ static void DynamicMenu_ActivateControl( int pos )
 		Com_Printf("ActivateControl: index %i has no event\n", pos);
 }
 
-
-
 /*
 =================
 DynamicMenu_MenuEvent
@@ -969,10 +976,6 @@ static void DynamicMenu_MenuEvent( void* self, int event )
 		break;
 	}
 }
-
-
-
-
 
 /*
 =================
@@ -1005,6 +1008,8 @@ void DynamicMenu_MenuInit( qboolean full, qboolean wrap)
 	uis.cursorx = 50;
 	uis.cursory = 240;
 
+	trap_GetConfigString( CS_SERVERINFO, s_dynamic.serverinfo, MAX_INFO_STRING );
+
 	for (i = 0; i < MAX_MENUITEMS; i++)
 	{
 		s_dynamic.item[i].generic.type = MTYPE_PTEXT;
@@ -1023,10 +1028,3 @@ void DynamicMenu_MenuInit( qboolean full, qboolean wrap)
 
 	UI_PushMenu( &s_dynamic.menu );
 }
-
-
-
-
-
-
-

@@ -136,7 +136,7 @@ void TossClientItems( gentity_t *self ) {
 
 if(!self->singlebot){
 if(g_gametype.integer != GT_SINGLE){
-	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination_allgametypes.integer || weapon == WP_GAUNTLET){
+	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
 	//Nothing!
 	}
 	else
@@ -155,7 +155,7 @@ if(g_gametype.integer == GT_SINGLE){
 }
 }
 if(self->singlebot){
-	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination_allgametypes.integer || weapon == WP_GAUNTLET){
+	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
 	//Nothing!
 	}
 	else
@@ -953,23 +953,6 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 }
 
 /*
-catchup_damage
-*/
-static int catchup_damage(int damage, int attacker_points, int target_points) {
-    int newdamage;
-    if(g_catchup.integer <= 0 )
-        return damage;
-    //Reduce damage
-    if(attacker_points<=target_points+5)
-        return damage; //Never reduce damage if only 5 points ahead.
-
-    newdamage=damage-((attacker_points-target_points-5) * (g_catchup.integer*damage))/100;
-    if(newdamage<damage/2)
-        return damage/2;
-    return newdamage;
-}
-
-/*
 ============
 T_Damage
 
@@ -1136,7 +1119,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
     client = targ->client;
     //Sago: See if the client was sent flying
     //Check if damage is by somebody who is not a player!
-    if( (!attacker || (attacker->s.eType != ET_PLAYER && attacker->s.eType != ET_GENERAL)) && client && client->lastSentFlying>-1 && ( mod==MOD_FALLING || mod==MOD_LAVA || mod==MOD_SLIME || mod==MOD_TRIGGER_HURT || mod==MOD_SUICIDE) )  {
+    if( (!attacker || attacker->s.eType != ET_PLAYER) && client && client->lastSentFlying>-1 && ( mod==MOD_FALLING || mod==MOD_LAVA || mod==MOD_SLIME || mod==MOD_TRIGGER_HURT || mod==MOD_SUICIDE ) )  {
         if( client->lastSentFlyingTime+5000<level.time) {
             client->lastSentFlying = -1; //More than 5 seconds, not a kill!
         } else {
@@ -1367,14 +1350,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage *= 0.20;
 	}
 
-        if(targ && targ->client && attacker->client )
-            damage = catchup_damage(damage, attacker->client->ps.persistant[PERS_SCORE], targ->client->ps.persistant[PERS_SCORE]);
+    if(g_damageModifier.value > 0.01) {
+        damage *= g_damageModifier.value;
+    }
 
-        if(g_damageModifier.value > 0.01) {
-            damage *= g_damageModifier.value;
-        }
-
-	if ((g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS || g_elimination_allgametypes.integer)
+	if ((g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS || g_elimination.integer)
 				&& g_elimination_selfdamage.integer<1 && ( targ == attacker ||  mod == MOD_FALLING )) {
 		damage = 0;
 	}

@@ -31,11 +31,6 @@
 static int		g_numBots;
 static char		*g_botInfos[MAX_BOTS];
 
-
-int				g_numArenas;
-static char		*g_arenaInfos[MAX_ARENAS];
-
-
 #define BOT_BEGIN_DELAY_BASE		2000
 #define BOT_BEGIN_DELAY_INCREMENT	1500
 
@@ -50,10 +45,6 @@ typedef struct {
 static botSpawnQueue_t	botSpawnQueue[BOT_SPAWN_QUEUE_DEPTH];
 
 vmCvar_t bot_minplayers;
-
-extern gentity_t	*podium1;
-extern gentity_t	*podium2;
-extern gentity_t	*podium3;
 
 float trap_Cvar_VariableValue( const char *var_name ) {
 	char buf[128];
@@ -121,92 +112,6 @@ int G_ParseInfos( char *buf, int max, char *infos[] ) {
 		}
 	}
 	return count;
-}
-
-/*
-===============
-G_LoadArenasFromFile
-===============
-*/
-static void G_LoadArenasFromFile( char *filename ) {
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_ARENAS_TEXT];
-
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		//trap_Printf( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
-	if ( len >= MAX_ARENAS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_ARENAS_TEXT ) );
-		trap_FS_FCloseFile( f );
-		return;
-	}
-
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
-	trap_FS_FCloseFile( f );
-
-	g_numArenas += G_ParseInfos( buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas] );
-}
-
-/*
-===============
-G_LoadArenas
-===============
-*/
-static void G_LoadArenas( void ) {
-	int			numdirs;
-	vmCvar_t	arenasFile;
-	char		filename[128];
-	char		dirlist[1024];
-	char*		dirptr;
-	int			i, n;
-	int			dirlen;
-
-	g_numArenas = 0;
-
-	trap_Cvar_Register( &arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM );
-	if( *arenasFile.string ) {
-		G_LoadArenasFromFile(arenasFile.string);
-	}
-	else {
-		G_LoadArenasFromFile("scripts/arenas.txt");
-	}
-
-	// get all arenas from .arena files
-	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, 1024 );
-	dirptr  = dirlist;
-	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
-		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
-		G_LoadArenasFromFile(filename);
-	}
-	trap_Printf( va( "%i arenas parsed\n", g_numArenas ) );
-
-	for( n = 0; n < g_numArenas; n++ ) {
-		Info_SetValueForKey( g_arenaInfos[n], "num", va( "%i", n ) );
-	}
-}
-
-
-/*
-===============
-G_GetArenaInfoByNumber
-===============
-*/
-const char *G_GetArenaInfoByMap( const char *map ) {
-	int			n;
-
-	for( n = 0; n < g_numArenas; n++ ) {
-		if( Q_stricmp( Info_ValueForKey( g_arenaInfos[n], "map" ), map ) == 0 ) {
-			return g_arenaInfos[n];
-		}
-	}
-
-	return NULL;
 }
 
 /*
@@ -587,7 +492,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	key = "model";
 	model = Info_ValueForKey( botinfo, key );
 	if ( !*model ) {
-		model = "sarge/default";
+		model = "beret/default";
 	}
 	Info_SetValueForKey( userinfo, key, model );
 	key = "team_model";
@@ -740,99 +645,6 @@ void Svcmd_AddBot_f( void ) {
 
 /*
 ===============
-Svcmd_BotList_f
-===============
-*/
-void Svcmd_BotList_f( void ) {
-	int i;
-	char name[MAX_TOKEN_CHARS];
-	char funname[MAX_TOKEN_CHARS];
-	char model[MAX_TOKEN_CHARS];
-	char aifile[MAX_TOKEN_CHARS];
-
-	trap_Printf("^1name             model            aifile              funname\n");
-	for (i = 0; i < g_numBots; i++) {
-		strcpy(name, Info_ValueForKey( g_botInfos[i], "name" ));
-		if ( !*name ) {
-			strcpy(name, "Sandbox Player");
-		}
-		strcpy(funname, Info_ValueForKey( g_botInfos[i], "funname" ));
-		if ( !*funname ) {
-			strcpy(funname, "");
-		}
-		strcpy(model, Info_ValueForKey( g_botInfos[i], "model" ));
-		if ( !*model ) {
-			strcpy(model, "sarge/default");
-		}
-		strcpy(aifile, Info_ValueForKey( g_botInfos[i], "aifile"));
-		if (!*aifile ) {
-			strcpy(aifile, "bots/default_c.c");
-		}
-		trap_Printf(va("%-16s %-16s %-20s %-20s\n", name, model, aifile, funname));
-	}
-}
-
-
-/*
-===============
-G_SpawnBots
-===============
-*/
-static void G_SpawnBots( char *botList, int baseDelay ) {
-	char		*bot;
-	char		*p;
-	float		skill;
-	int			delay;
-	char		bots[MAX_INFO_VALUE];
-
-	podium1 = NULL;
-	podium2 = NULL;
-	podium3 = NULL;
-
-	skill = trap_Cvar_VariableValue( "g_spSkill" );
-	if( skill < 1 ) {
-		trap_Cvar_Set( "g_spSkill", "1" );
-		skill = 1;
-	}
-	else if ( skill > 14 ) {
-		trap_Cvar_Set( "g_spSkill", "14" );
-		skill = 14;
-	}
-
-	Q_strncpyz( bots, botList, sizeof(bots) );
-	p = &bots[0];
-	delay = baseDelay;
-	while( *p ) {
-		//skip spaces
-		while( *p && *p == ' ' ) {
-			p++;
-		}
-		if( !p ) {
-			break;
-		}
-
-		// mark start of bot name
-		bot = p;
-
-		// skip until space of null
-		while( *p && *p != ' ' ) {
-			p++;
-		}
-		if( *p ) {
-			*p++ = 0;
-		}
-
-		// we must add the bot this way, calling G_AddBot directly at this stage
-		// does "Bad Things"
-		trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %f free %i\n", bot, skill, delay) );
-
-		delay += BOT_BEGIN_DELAY_INCREMENT;
-	}
-}
-
-
-/*
-===============
 G_LoadBotsFromFile
 ===============
 */
@@ -879,13 +691,7 @@ static void G_LoadBots( void ) {
 
 	g_numBots = 0;
 
-	trap_Cvar_Register( &botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM );
-	if( *botsFile.string ) {
-		G_LoadBotsFromFile(botsFile.string);
-	}
-	else {
-		G_LoadBotsFromFile("scripts/bots.txt");
-	}
+	G_LoadBotsFromFile("scripts/bots.txt");
 
 	// get all bots from .bot files
 	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, 1024 );
@@ -949,9 +755,8 @@ void G_InitBots( qboolean restart ) {
 	char		serverinfo[MAX_INFO_STRING];
 
 	G_LoadBots();
-	G_LoadArenas();
 
-	trap_Cvar_Register( &bot_minplayers, "bot_minplayers", "0", CVAR_SERVERINFO );
+	trap_Cvar_Register( &bot_minplayers, "bot_minplayers", "0", 0 );
 }
 
 /*

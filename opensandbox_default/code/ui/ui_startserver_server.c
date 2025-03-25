@@ -79,7 +79,7 @@
 #define ID_SERVER_MAXENTITIES 351
 #define ID_SERVER_DRAWDISTANCE 352
 #define ID_SERVER_SINGLESKILL 353
-#define ID_SERVER_KILL 354
+#define ID_SERVER_EXTENDEDSANDBOX 354
 #define ID_SERVER_DAMAGEMODIFIER           355
 #define ID_SERVER_ELIMINATION               356
 #define ID_SERVER_OBELISKHEALTH             357
@@ -112,7 +112,7 @@
 #define ID_SERVER_VAMPIRE                     384
 #define ID_SERVER_VAMPIRE_MAX_HEALTH         385
 #define ID_SERVER_REGEN                       386
-#define ID_SERVER_MAXWEAPONPICKUP            387
+#define ID_SERVER_NEXTBOT_SPEED            387
 #define ID_SERVER_DROPPEDITEMTIME            388
 #define ID_SERVER_AUTOFLAGRETURN              389
 #define ID_SERVER_ARMORPROTECT               390
@@ -149,9 +149,9 @@
 #define ID_SERVER_TEAMRED_INFAMMO            421
 #define ID_SERVER_TEAMRED_RESPAWNWAIT       422
 #define ID_SERVER_TEAMRED_PICKUPITEMS        423
-#define ID_SERVER_ELIMINATIONREDRESPAWN      424
-#define ID_SERVER_ELIMINATIONRED_STARTHEALTH 425
-#define ID_SERVER_ELIMINATIONRED_STARTARMOR   426
+#define ID_SERVER_ELIMINATION_RED_RESPAWN      424
+#define ID_SERVER_REDSPAWN_HEALTH 				425
+#define ID_SERVER_REDSPAWN_ARMOR   				426
 #define ID_SERVER_TEAMBLUE_SPEED              427
 #define ID_SERVER_TEAMBLUE_GRAVITYMODIFIER    428
 #define ID_SERVER_TEAMBLUE_FIRESPEED          429
@@ -159,54 +159,54 @@
 #define ID_SERVER_TEAMBLUE_INFAMMO            431
 #define ID_SERVER_TEAMBLUE_RESPAWNWAIT       432
 #define ID_SERVER_TEAMBLUE_PICKUPITEMS        433
-#define ID_SERVER_ELIMINATIONRESPAWN          434
-#define ID_SERVER_ELIMINATION_STARTHEALTH     435
-#define ID_SERVER_ELIMINATION_STARTARMOR      436
-#define ID_SERVER_ELIMINATIONRED_GRAPPLE      437
-#define ID_SERVER_ELIMINATIONRED_GAUNTLET     438
-#define ID_SERVER_ELIMINATIONRED_MACHINEGUN   439
-#define ID_SERVER_ELIMINATIONRED_SHOTGUN      440
-#define ID_SERVER_ELIMINATIONRED_GRENADE      441
-#define ID_SERVER_ELIMINATIONRED_ROCKET       442
-#define ID_SERVER_ELIMINATIONRED_RAILGUN      443
-#define ID_SERVER_ELIMINATIONRED_LIGHTNING    444
-#define ID_SERVER_ELIMINATIONRED_PLASMAGUN    445
-#define ID_SERVER_ELIMINATIONRED_BFG          446
-#define ID_SERVER_ELIMINATIONRED_CHAIN        447
-#define ID_SERVER_ELIMINATIONRED_MINE         448
-#define ID_SERVER_ELIMINATIONRED_NAIL         449
-#define ID_SERVER_ELIMINATIONRED_FLAME        450
-#define ID_SERVER_ELIMINATIONRED_ANTIMATTER   451
-#define ID_SERVER_ELIMINATION_GRAPPLE         452
-#define ID_SERVER_ELIMINATION_GAUNTLET       453
-#define ID_SERVER_ELIMINATION_MACHINEGUN     454
-#define ID_SERVER_ELIMINATION_SHOTGUN        455
-#define ID_SERVER_ELIMINATION_GRENADE        456
-#define ID_SERVER_ELIMINATION_ROCKET         457
-#define ID_SERVER_ELIMINATION_RAILGUN        458
-#define ID_SERVER_ELIMINATION_LIGHTNING      459
-#define ID_SERVER_ELIMINATION_PLASMAGUN      460
-#define ID_SERVER_ELIMINATION_BFG            461
-#define ID_SERVER_ELIMINATION_CHAIN          462
-#define ID_SERVER_ELIMINATION_MINE           463
-#define ID_SERVER_ELIMINATION_NAIL           464
-#define ID_SERVER_ELIMINATION_FLAME          465
-#define ID_SERVER_ELIMINATION_ANTIMATTER     466
-#define ID_SERVER_ELIMINATIONRED_QUAD        467
-#define ID_SERVER_ELIMINATIONRED_HASTE       468
-#define ID_SERVER_ELIMINATIONRED_BSUIT       469
-#define ID_SERVER_ELIMINATIONRED_INVIS       470
-#define ID_SERVER_ELIMINATIONRED_REGEN       471
-#define ID_SERVER_ELIMINATIONRED_FLIGHT      472
-#define ID_SERVER_ELIMINATIONRED_HOLDABLE    473
-#define ID_SERVER_ELIMINATION_QUAD           474
-#define ID_SERVER_ELIMINATION_HASTE          475
-#define ID_SERVER_ELIMINATION_BSUIT          476
-#define ID_SERVER_ELIMINATION_INVIS          477
-#define ID_SERVER_ELIMINATION_REGEN          478
-#define ID_SERVER_ELIMINATION_FLIGHT         479
+#define ID_SERVER_ELIMINATION_BLUE_RESPAWN    434
+#define ID_SERVER_BLUESPAWN_HEALTH      435
+#define ID_SERVER_BLUESPAWN_ARMOR       436
+#define ID_SERVER_REDSPAWN_GRAPPLE      437
+#define ID_SERVER_REDSPAWN_GAUNTLET     438
+#define ID_SERVER_REDSPAWN_MACHINEGUN   439
+#define ID_SERVER_REDSPAWN_SHOTGUN      440
+#define ID_SERVER_REDSPAWN_GRENADE      441
+#define ID_SERVER_REDSPAWN_ROCKET       442
+#define ID_SERVER_REDSPAWN_RAILGUN      443
+#define ID_SERVER_REDSPAWN_LIGHTNING    444
+#define ID_SERVER_REDSPAWN_PLASMAGUN    445
+#define ID_SERVER_REDSPAWN_BFG          446
+#define ID_SERVER_REDSPAWN_CHAIN        447
+#define ID_SERVER_REDSPAWN_MINE         448
+#define ID_SERVER_REDSPAWN_NAIL         449
+#define ID_SERVER_REDSPAWN_FLAME        450
+#define ID_SERVER_REDSPAWN_ANTIMATTER   451
+#define ID_SERVER_BLUESPAWN_GRAPPLE         452
+#define ID_SERVER_BLUESPAWN_GAUNTLET       453
+#define ID_SERVER_BLUESPAWN_MACHINEGUN     454
+#define ID_SERVER_BLUESPAWN_SHOTGUN        455
+#define ID_SERVER_BLUESPAWN_GRENADE        456
+#define ID_SERVER_BLUESPAWN_ROCKET         457
+#define ID_SERVER_BLUESPAWN_RAILGUN        458
+#define ID_SERVER_BLUESPAWN_LIGHTNING      459
+#define ID_SERVER_BLUESPAWN_PLASMAGUN      460
+#define ID_SERVER_BLUESPAWN_BFG            461
+#define ID_SERVER_BLUESPAWN_CHAIN          462
+#define ID_SERVER_BLUESPAWN_MINE           463
+#define ID_SERVER_BLUESPAWN_NAIL           464
+#define ID_SERVER_BLUESPAWN_FLAME          465
+#define ID_SERVER_BLUESPAWN_ANTIMATTER     466
+#define ID_SERVER_REDSPAWN_QUAD        467
+#define ID_SERVER_REDSPAWN_HASTE       468
+#define ID_SERVER_REDSPAWN_BSUIT       469
+#define ID_SERVER_REDSPAWN_INVIS       470
+#define ID_SERVER_REDSPAWN_REGEN       471
+#define ID_SERVER_REDSPAWN_FLIGHT      472
+#define ID_SERVER_REDSPAWN_HOLDABLE    473
+#define ID_SERVER_BLUESPAWN_QUAD           474
+#define ID_SERVER_BLUESPAWN_HASTE          475
+#define ID_SERVER_BLUESPAWN_BSUIT          476
+#define ID_SERVER_BLUESPAWN_INVIS          477
+#define ID_SERVER_BLUESPAWN_REGEN          478
+#define ID_SERVER_BLUESPAWN_FLIGHT         479
 #define ID_SERVER_ELIMINATION_ITEMS          480
-#define ID_SERVER_ELIMINATION_HOLDABLE       481
+#define ID_SERVER_BLUESPAWN_HOLDABLE       481
 #define ID_SERVER_OVERLAY                    482
 #define ID_SERVER_RANDOMITEMS                483
 #define ID_SERVER_ALLOWVOTE                  484
@@ -611,8 +611,8 @@ static controlinit_t srv_general[] = {
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SINGLESKILL, ITEM_ALWAYSON,
 		"Singleplayer skill:", &s_scriptdata.server.singleskill, 1, 14, NULL, 9, 9, NULL },
 		
-	{ SRVCTRL_RADIO, 0, ID_SERVER_KILL, ITEM_ALWAYSON,
-		"Allow kill command:", &s_scriptdata.server.kill, -9999999, 9999999, NULL, 0, 0, NULL },
+	{ SRVCTRL_RADIO, 0, ID_SERVER_EXTENDEDSANDBOX, ITEM_ALWAYSON,
+		"Extended sandbox:", &s_scriptdata.server.extendedsandbox, -9999999, 9999999, NULL, 0, 0, NULL },
 		
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DAMAGEMODIFIER, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Damage modifier(float):", NULL, 0, 0, s_scriptdata.server.damageModifier, 9, 9, NULL },
@@ -704,8 +704,8 @@ static controlinit_t srv_rules[] = {
 		"Vampire max health:", &s_scriptdata.server.vampire_max_health, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REGEN, ITEM_ALWAYSON,
 		"Regen health:", &s_scriptdata.server.regen, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_MAXWEAPONPICKUP, ITEM_ALWAYSON,
-		"Max weapon pickup:", &s_scriptdata.server.maxweaponpickup, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_NEXTBOT_SPEED, ITEM_ALWAYSON,
+		"Nextbot speed(float):", NULL, 0, 0, s_scriptdata.server.nextbot_speed, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_DROPPEDITEMTIME, ITEM_ALWAYSON,
 		"Dropped item time:", &s_scriptdata.server.droppeditemtime, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_AUTOFLAGRETURN, ITEM_ALWAYSON,
@@ -783,25 +783,25 @@ static controlinit_t srv_rune2[] = {
 static controlinit_t srv_redteam[] = {
 
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMRED_SPEED, ITEM_ALWAYSON,
-		"Team red speed:", &s_scriptdata.server.teamred_speed, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Speed:", &s_scriptdata.server.teamred_speed, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_GRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Team red gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamred_gravityModifier, 9, 9, NULL },
+		"Gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamred_gravityModifier, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_FIRESPEED, ITEM_ALWAYSON,
-		"Team red fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamred_firespeed, 9, 9, NULL },
+		"Fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamred_firespeed, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_DAMAGE, ITEM_ALWAYSON,
-		"Team red damage(float):", NULL, 0, 0, s_scriptdata.server.teamred_damage, 9, 9, NULL },
+		"Damage(float):", NULL, 0, 0, s_scriptdata.server.teamred_damage, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMRED_INFAMMO, ITEM_ALWAYSON,
-		"Team red unlimited ammo:", &s_scriptdata.server.teamred_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Unlimited ammo:", &s_scriptdata.server.teamred_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMRED_RESPAWNWAIT, ITEM_ALWAYSON,
-		"Team red respawn wait:", &s_scriptdata.server.teamred_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Respawn wait:", &s_scriptdata.server.teamred_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMRED_PICKUPITEMS, ITEM_ALWAYSON,
-		"Team red pickup items:", &s_scriptdata.server.teamred_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATIONREDRESPAWN, ITEM_ALWAYSON,
-		"Elimination red respawn:", &s_scriptdata.server.eliminationredrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_STARTHEALTH, ITEM_ALWAYSON,
-		"Elimination red start health:", &s_scriptdata.server.eliminationred_startHealth, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_STARTARMOR, ITEM_ALWAYSON,
-		"Elimination red start armor:", &s_scriptdata.server.eliminationred_startArmor, -999999999, 999999999, NULL, 9, 9, NULL }
+		"Pickup items:", &s_scriptdata.server.teamred_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_RED_RESPAWN, ITEM_ALWAYSON,
+		"Elimination respawn:", &s_scriptdata.server.elimination_red_respawn, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_HEALTH, ITEM_ALWAYSON,
+		"Start health:", &s_scriptdata.server.redspawn_health, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ARMOR, ITEM_ALWAYSON,
+		"Start armor:", &s_scriptdata.server.redspawn_armor, -999999999, 999999999, NULL, 9, 9, NULL }
 
 };
 
@@ -809,131 +809,131 @@ static controlinit_t srv_redteam[] = {
 static controlinit_t srv_blueteam[] = {
 
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMBLUE_SPEED, ITEM_ALWAYSON,
-		"Team blue speed:", &s_scriptdata.server.teamblue_speed, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Speed:", &s_scriptdata.server.teamblue_speed, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_GRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Team blue gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamblue_gravityModifier, 9, 9, NULL },
+		"Gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamblue_gravityModifier, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_FIRESPEED, ITEM_ALWAYSON,
-		"Team blue fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamblue_firespeed, 9, 9, NULL },
+		"Fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamblue_firespeed, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_DAMAGE, ITEM_ALWAYSON,
-		"Team blue damage(float):", NULL, 0, 0, s_scriptdata.server.teamblue_damage, 9, 9, NULL },
+		"Damage(float):", NULL, 0, 0, s_scriptdata.server.teamblue_damage, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMBLUE_INFAMMO, ITEM_ALWAYSON,
-		"Team blue unlimited ammo:", &s_scriptdata.server.teamblue_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Unlimited ammo:", &s_scriptdata.server.teamblue_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMBLUE_RESPAWNWAIT, ITEM_ALWAYSON,
-		"Team blue respawn wait:", &s_scriptdata.server.teamblue_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
+		"Respawn wait:", &s_scriptdata.server.teamblue_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMBLUE_PICKUPITEMS, ITEM_ALWAYSON,
-		"Team blue pickup items:", &s_scriptdata.server.teamblue_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATIONRESPAWN, ITEM_ALWAYSON,
-		"Elimination respawn:", &s_scriptdata.server.eliminationrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_STARTHEALTH, ITEM_ALWAYSON,
-		"Elimination start health:", &s_scriptdata.server.elimination_startHealth, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_STARTARMOR, ITEM_ALWAYSON,
-		"Elimination start armor:", &s_scriptdata.server.elimination_startArmor, -999999999, 999999999, NULL, 9, 9, NULL }
+		"Pickup items:", &s_scriptdata.server.teamblue_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_BLUE_RESPAWN, ITEM_ALWAYSON,
+		"Elimination respawn:", &s_scriptdata.server.elimination_blue_respawn, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_HEALTH, ITEM_ALWAYSON,
+		"Start health:", &s_scriptdata.server.bluespawn_health, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ARMOR, ITEM_ALWAYSON,
+		"Start armor:", &s_scriptdata.server.bluespawn_armor, -999999999, 999999999, NULL, 9, 9, NULL }
 
 };
 
 // redteamweapons controls
 static controlinit_t srv_redteamweapons[] = {
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_GRAPPLE, ITEM_ALWAYSON,
-		"Elimination red grapple:", &s_scriptdata.server.eliminationred_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_GAUNTLET, ITEM_ALWAYSON,
-		"Elimination red gauntlet:", &s_scriptdata.server.eliminationred_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_MACHINEGUN, ITEM_ALWAYSON,
-		"Elimination red machinegun:", &s_scriptdata.server.eliminationred_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_SHOTGUN, ITEM_ALWAYSON,
-		"Elimination red shotgun:", &s_scriptdata.server.eliminationred_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_GRENADE, ITEM_ALWAYSON,
-		"Elimination red grenade:", &s_scriptdata.server.eliminationred_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_ROCKET, ITEM_ALWAYSON,
-		"Elimination red rocket:", &s_scriptdata.server.eliminationred_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_RAILGUN, ITEM_ALWAYSON,
-		"Elimination red railgun:", &s_scriptdata.server.eliminationred_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_LIGHTNING, ITEM_ALWAYSON,
-		"Elimination red lightning:", &s_scriptdata.server.eliminationred_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_PLASMAGUN, ITEM_ALWAYSON,
-		"Elimination red plasmagun:", &s_scriptdata.server.eliminationred_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_BFG, ITEM_ALWAYSON,
-		"Elimination red bfg:", &s_scriptdata.server.eliminationred_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_CHAIN, ITEM_ALWAYSON,
-		"Elimination red chain:", &s_scriptdata.server.eliminationred_chain, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_MINE, ITEM_ALWAYSON,
-		"Elimination red mine:", &s_scriptdata.server.eliminationred_mine, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_NAIL, ITEM_ALWAYSON,
-		"Elimination red nail:", &s_scriptdata.server.eliminationred_nail, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_FLAME, ITEM_ALWAYSON,
-		"Elimination red flame:", &s_scriptdata.server.eliminationred_flame, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_ANTIMATTER, ITEM_ALWAYSON,
-		"Elimination red antimatter:", &s_scriptdata.server.eliminationred_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GRAPPLE, ITEM_ALWAYSON,
+		"Grapple:", &s_scriptdata.server.redspawn_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GAUNTLET, ITEM_ALWAYSON,
+		"Gauntlet:", &s_scriptdata.server.redspawn_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_MACHINEGUN, ITEM_ALWAYSON,
+		"Machinegun:", &s_scriptdata.server.redspawn_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_SHOTGUN, ITEM_ALWAYSON,
+		"Shotgun:", &s_scriptdata.server.redspawn_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GRENADE, ITEM_ALWAYSON,
+		"Grenade:", &s_scriptdata.server.redspawn_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ROCKET, ITEM_ALWAYSON,
+		"Rocket:", &s_scriptdata.server.redspawn_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_RAILGUN, ITEM_ALWAYSON,
+		"Railgun:", &s_scriptdata.server.redspawn_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_LIGHTNING, ITEM_ALWAYSON,
+		"Lightning:", &s_scriptdata.server.redspawn_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_PLASMAGUN, ITEM_ALWAYSON,
+		"Plasmagun:", &s_scriptdata.server.redspawn_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_BFG, ITEM_ALWAYSON,
+		"BFG10K:", &s_scriptdata.server.redspawn_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_CHAIN, ITEM_ALWAYSON,
+		"Chaingun:", &s_scriptdata.server.redspawn_chain, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_MINE, ITEM_ALWAYSON,
+		"Prox launcher:", &s_scriptdata.server.redspawn_mine, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_NAIL, ITEM_ALWAYSON,
+		"Nailgun:", &s_scriptdata.server.redspawn_nail, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_FLAME, ITEM_ALWAYSON,
+		"Flamethrower:", &s_scriptdata.server.redspawn_flame, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ANTIMATTER, ITEM_ALWAYSON,
+		"Dark flare:", &s_scriptdata.server.redspawn_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
 
 };
 
 // blueteamweapons controls
 static controlinit_t srv_blueteamweapons[] = {
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_GRAPPLE, ITEM_ALWAYSON,
-		"Elimination blue grapple:", &s_scriptdata.server.elimination_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_GAUNTLET, ITEM_ALWAYSON,
-		"Elimination blue gauntlet:", &s_scriptdata.server.elimination_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_MACHINEGUN, ITEM_ALWAYSON,
-		"Elimination blue machinegun:", &s_scriptdata.server.elimination_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_SHOTGUN, ITEM_ALWAYSON,
-		"Elimination blue shotgun:", &s_scriptdata.server.elimination_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_GRENADE, ITEM_ALWAYSON,
-		"Elimination blue grenade:", &s_scriptdata.server.elimination_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ROCKET, ITEM_ALWAYSON,
-		"Elimination blue rocket:", &s_scriptdata.server.elimination_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_RAILGUN, ITEM_ALWAYSON,
-		"Elimination blue railgun:", &s_scriptdata.server.elimination_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_LIGHTNING, ITEM_ALWAYSON,
-		"Elimination blue lightning:", &s_scriptdata.server.elimination_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_PLASMAGUN, ITEM_ALWAYSON,
-		"Elimination blue plasmagun:", &s_scriptdata.server.elimination_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_BFG, ITEM_ALWAYSON,
-		"Elimination blue bfg:", &s_scriptdata.server.elimination_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_CHAIN, ITEM_ALWAYSON,
-		"Elimination blue chain:", &s_scriptdata.server.elimination_chain, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_MINE, ITEM_ALWAYSON,
-		"Elimination blue mine:", &s_scriptdata.server.elimination_mine, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_NAIL, ITEM_ALWAYSON,
-		"Elimination blue nail:", &s_scriptdata.server.elimination_nail, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_FLAME, ITEM_ALWAYSON,
-		"Elimination blue flame:", &s_scriptdata.server.elimination_flame, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ANTIMATTER, ITEM_ALWAYSON,
-		"Elimination blue antimatter:", &s_scriptdata.server.elimination_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GRAPPLE, ITEM_ALWAYSON,
+		"Grapple:", &s_scriptdata.server.bluespawn_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GAUNTLET, ITEM_ALWAYSON,
+		"Gauntlet:", &s_scriptdata.server.bluespawn_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_MACHINEGUN, ITEM_ALWAYSON,
+		"Machinegun:", &s_scriptdata.server.bluespawn_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_SHOTGUN, ITEM_ALWAYSON,
+		"Shotgun:", &s_scriptdata.server.bluespawn_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GRENADE, ITEM_ALWAYSON,
+		"Grenade:", &s_scriptdata.server.bluespawn_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ROCKET, ITEM_ALWAYSON,
+		"Rocket:", &s_scriptdata.server.bluespawn_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_RAILGUN, ITEM_ALWAYSON,
+		"Railgun:", &s_scriptdata.server.bluespawn_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_LIGHTNING, ITEM_ALWAYSON,
+		"Lightning:", &s_scriptdata.server.bluespawn_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_PLASMAGUN, ITEM_ALWAYSON,
+		"Plasmagun:", &s_scriptdata.server.bluespawn_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_BFG, ITEM_ALWAYSON,
+		"BFG10K:", &s_scriptdata.server.bluespawn_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_CHAIN, ITEM_ALWAYSON,
+		"Chaingun:", &s_scriptdata.server.bluespawn_chain, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_MINE, ITEM_ALWAYSON,
+		"Prox launcher:", &s_scriptdata.server.bluespawn_mine, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_NAIL, ITEM_ALWAYSON,
+		"Nailgun:", &s_scriptdata.server.bluespawn_nail, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_FLAME, ITEM_ALWAYSON,
+		"Flamethrower:", &s_scriptdata.server.bluespawn_flame, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ANTIMATTER, ITEM_ALWAYSON,
+		"Dark flare:", &s_scriptdata.server.bluespawn_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
 
 };
 
 // teamother controls
 static controlinit_t srv_teamother[] = {
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_QUAD, ITEM_ALWAYSON,
-		"Elimination red quad damage:", &s_scriptdata.server.eliminationred_quad, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_HASTE, ITEM_ALWAYSON,
-		"Elimination red haste:", &s_scriptdata.server.eliminationred_haste, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_BSUIT, ITEM_ALWAYSON,
-		"Elimination red battle suit:", &s_scriptdata.server.eliminationred_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_INVIS, ITEM_ALWAYSON,
-		"Elimination red invisibility:", &s_scriptdata.server.eliminationred_invis, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_REGEN, ITEM_ALWAYSON,
-		"Elimination red regeneration:", &s_scriptdata.server.eliminationred_regen, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATIONRED_FLIGHT, ITEM_ALWAYSON,
-		"Elimination red flight:", &s_scriptdata.server.eliminationred_flight, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_SPIN, 0, ID_SERVER_ELIMINATIONRED_HOLDABLE, ITEM_ALWAYSON,
-		"Elimination red holdable:", &s_scriptdata.server.eliminationred_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_QUAD, ITEM_ALWAYSON,
-		"Elimination blue quad damage:", &s_scriptdata.server.elimination_quad, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_HASTE, ITEM_ALWAYSON,
-		"Elimination blue haste:", &s_scriptdata.server.elimination_haste, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_BSUIT, ITEM_ALWAYSON,
-		"Elimination blue battle suit:", &s_scriptdata.server.elimination_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_INVIS, ITEM_ALWAYSON,
-		"Elimination blue invisibility:", &s_scriptdata.server.elimination_invis, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_REGEN, ITEM_ALWAYSON,
-		"Elimination blue regeneration:", &s_scriptdata.server.elimination_regen, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_FLIGHT, ITEM_ALWAYSON,
-		"Elimination blue flight:", &s_scriptdata.server.elimination_flight, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_SPIN, 0, ID_SERVER_ELIMINATION_HOLDABLE, ITEM_ALWAYSON,
-		"Elimination blue holdable:", &s_scriptdata.server.elimination_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list }
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_QUAD, ITEM_ALWAYSON,
+		"Team red quad damage:", &s_scriptdata.server.redspawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_HASTE, ITEM_ALWAYSON,
+		"Team red haste:", &s_scriptdata.server.redspawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_BSUIT, ITEM_ALWAYSON,
+		"Team red battle suit:", &s_scriptdata.server.redspawn_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_INVIS, ITEM_ALWAYSON,
+		"Team red invisibility:", &s_scriptdata.server.redspawn_invis, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_REGEN, ITEM_ALWAYSON,
+		"Team red regeneration:", &s_scriptdata.server.redspawn_regen, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_FLIGHT, ITEM_ALWAYSON,
+		"Team red flight:", &s_scriptdata.server.redspawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_SPIN, 0, ID_SERVER_REDSPAWN_HOLDABLE, ITEM_ALWAYSON,
+		"Team red holdable:", &s_scriptdata.server.redspawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_QUAD, ITEM_ALWAYSON,
+		"Team blue quad damage:", &s_scriptdata.server.bluespawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_HASTE, ITEM_ALWAYSON,
+		"Team blue haste:", &s_scriptdata.server.bluespawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_BSUIT, ITEM_ALWAYSON,
+		"Team blue battle suit:", &s_scriptdata.server.bluespawn_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_INVIS, ITEM_ALWAYSON,
+		"Team blue invisibility:", &s_scriptdata.server.bluespawn_invis, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_REGEN, ITEM_ALWAYSON,
+		"Team blue regeneration:", &s_scriptdata.server.bluespawn_regen, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_FLIGHT, ITEM_ALWAYSON,
+		"Team blue flight:", &s_scriptdata.server.bluespawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_SPIN, 0, ID_SERVER_BLUESPAWN_HOLDABLE, ITEM_ALWAYSON,
+		"Team blue holdable:", &s_scriptdata.server.bluespawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list }
 
 };
 

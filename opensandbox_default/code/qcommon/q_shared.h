@@ -351,8 +351,8 @@ extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 #define	SCREEN_WIDTH		640
 #define	SCREEN_HEIGHT		480
 
-#define TINYCHAR_WIDTH		(cl_smallcharwidth.integer/2)
-#define TINYCHAR_HEIGHT		(cl_smallcharheight.integer/2)
+#define TINYCHAR_WIDTH		(cl_smallcharwidth.integer*0.80)
+#define TINYCHAR_HEIGHT		(cl_smallcharheight.integer*0.80)
 
 #define SMALLCHAR_WIDTH		cl_smallcharwidth.integer
 #define SMALLCHAR_HEIGHT	cl_smallcharheight.integer
@@ -1046,7 +1046,7 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			99		// absolute limit
+#define	MAX_CLIENTS			128		// absolute limit
 #define MAX_LOCATIONS		64
 
 #define	GENTITYNUM_BITS		12		// don't need to send any more

@@ -1942,7 +1942,6 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.actionDest.itemnames	   = botCopyTo_itemsru;
 	}
 
-
 	//
 	// register page controls
 	//

@@ -36,7 +36,6 @@ typedef struct {
 	int			cvarFlags;
 	int			modificationCount;  // for tracking changes
 	qboolean	trackChange;	    // track this variable, and announce if changed
-  qboolean teamShader;        // track and if changed, update shader state
 } cvarTable_t;
 
 gentity_t		g_entities[MAX_GENTITIES];
@@ -316,6 +315,7 @@ vmCvar_t	g_skyColorG;
 vmCvar_t	g_skyColorB;
 vmCvar_t	g_skyColorA;
 
+vmCvar_t	g_extendedsandbox;
 vmCvar_t	g_allowprops;
 vmCvar_t	g_allownpc;
 vmCvar_t	g_allowitems;
@@ -328,23 +328,12 @@ vmCvar_t	g_npcdrop;
 vmCvar_t	g_maxEntities;
 vmCvar_t	cl_selectedmod;
 vmCvar_t	cl_language;
-vmCvar_t	g_tests;
-vmCvar_t	g_connectmsg;
-vmCvar_t	g_scoreboardlock;
-vmCvar_t	tex_name;
-vmCvar_t	tex_newname;
 vmCvar_t	g_regenarmor;
 vmCvar_t	g_spectatorspeed;
-vmCvar_t	eliminationrespawn;
-vmCvar_t	eliminationredrespawn;
 vmCvar_t	g_overlay;
 vmCvar_t	g_slickmove;
 vmCvar_t	g_accelerate;
 vmCvar_t	g_randomItems;
-vmCvar_t    g_mapcycle;
-vmCvar_t    g_useMapcycle;
-vmCvar_t    g_mapcycleposition;
-vmCvar_t	g_kill;
 vmCvar_t	g_kamikazeinf;
 vmCvar_t	g_invulinf;
 vmCvar_t	g_medkitinf;
@@ -354,7 +343,7 @@ vmCvar_t	g_medkitlimit;
 vmCvar_t	g_waterdamage;
 vmCvar_t	g_lavadamage;
 vmCvar_t	g_slimedamage;
-vmCvar_t	g_maxweaponpickup;
+vmCvar_t	g_nextbot_speed;
 vmCvar_t	g_randomteleport;
 vmCvar_t	g_falldamagesmall;
 vmCvar_t	g_falldamagebig;
@@ -391,13 +380,11 @@ vmCvar_t	g_poweruprespawn;
 vmCvar_t	g_gametype;
 vmCvar_t	g_dmflags;
 vmCvar_t	g_elimflags;
-vmCvar_t	g_voteflags;
 vmCvar_t	g_fraglimit;
 vmCvar_t	g_timelimit;
 vmCvar_t	g_capturelimit;
 vmCvar_t	g_friendlyFire;
 vmCvar_t	g_password;
-vmCvar_t	g_needpass;
 vmCvar_t	g_maxclients;
 vmCvar_t	g_maxGameClients;
 vmCvar_t	g_dedicated;
@@ -422,10 +409,7 @@ vmCvar_t	g_debugBotspawns;
 vmCvar_t	g_allowSyncCutscene;
 vmCvar_t	g_weaponRespawn;
 vmCvar_t	g_weaponTeamRespawn;
-vmCvar_t	g_motd;
-vmCvar_t        g_motdfile;
-vmCvar_t        g_votemaps;
-vmCvar_t        g_votecustom;
+vmCvar_t    g_votemaps;
 vmCvar_t	g_synchronousClients;
 vmCvar_t	g_warmup;
 vmCvar_t	g_doWarmup;
@@ -433,19 +417,13 @@ vmCvar_t	g_restarted;
 vmCvar_t	g_logfile;
 vmCvar_t	g_logfileSync;
 vmCvar_t	g_blood;
-vmCvar_t	g_podiumDist;
-vmCvar_t	g_podiumDrop;
 vmCvar_t	g_allowVote;
 vmCvar_t	g_teamAutoJoin;
 vmCvar_t	g_teamForceBalance;
-vmCvar_t	g_banIPs;
-vmCvar_t	g_filterBan;
 vmCvar_t	g_smoothClients;
 vmCvar_t	pmove_fixed;
 vmCvar_t	pmove_msec;
-vmCvar_t        pmove_float;
-vmCvar_t	g_rankings;
-vmCvar_t	g_listEntity;
+vmCvar_t    pmove_float;
 vmCvar_t	g_obeliskHealth;
 vmCvar_t	g_obeliskRegenPeriod;
 vmCvar_t	g_obeliskRegenAmount;
@@ -455,66 +433,77 @@ vmCvar_t	g_enableDust;
 vmCvar_t	g_enableBreath;
 vmCvar_t	g_proxMineTimeout;
 vmCvar_t	g_music;
-vmCvar_t        g_spawnprotect;
-//Following for elimination:
+vmCvar_t    g_spawnprotect;
+
+//Settings for elimination:
 vmCvar_t	g_elimination_selfdamage;
-vmCvar_t	g_elimination_startHealth;
-vmCvar_t	g_elimination_startArmor;
-vmCvar_t	g_elimination_bfg;
-vmCvar_t	g_elimination_grapple;
 vmCvar_t	g_elimination_roundtime;
 vmCvar_t	g_elimination_warmup;
 vmCvar_t	g_elimination_activewarmup;
-vmCvar_t        g_elimination_allgametypes;
-vmCvar_t	g_elimination_gauntlet;
-vmCvar_t	g_elimination_machinegun;
-vmCvar_t	g_elimination_shotgun;
-vmCvar_t	g_elimination_grenade;
-vmCvar_t	g_elimination_rocket;
-vmCvar_t	g_elimination_railgun;
-vmCvar_t	g_elimination_lightning;
-vmCvar_t	g_elimination_plasmagun;
-vmCvar_t	g_elimination_chain;
-vmCvar_t	g_elimination_mine;
-vmCvar_t	g_elimination_nail;
-vmCvar_t	g_elimination_flame;
-vmCvar_t	g_elimination_antimatter;
-vmCvar_t	g_elimination_quad;
-vmCvar_t	g_elimination_haste;
-vmCvar_t	g_elimination_bsuit;
-vmCvar_t	g_elimination_invis;
-vmCvar_t	g_elimination_regen;
-vmCvar_t	g_elimination_flight;
+vmCvar_t    g_elimination;
 vmCvar_t 	g_elimination_items;
-vmCvar_t 	g_elimination_holdable;
+vmCvar_t    g_elimination_lockspectator;
+vmCvar_t	g_elimination_ctf_oneway;
+vmCvar_t	g_elimination_red_respawn;
+vmCvar_t	g_elimination_blue_respawn;
 
-//Following for elimination:
-vmCvar_t	g_eliminationred_startHealth;
-vmCvar_t	g_eliminationred_startArmor;
-vmCvar_t	g_eliminationred_bfg;
-vmCvar_t	g_eliminationred_grapple;
-vmCvar_t	g_eliminationred_gauntlet;
-vmCvar_t	g_eliminationred_machinegun;
-vmCvar_t	g_eliminationred_shotgun;
-vmCvar_t	g_eliminationred_grenade;
-vmCvar_t	g_eliminationred_rocket;
-vmCvar_t	g_eliminationred_railgun;
-vmCvar_t	g_eliminationred_lightning;
-vmCvar_t	g_eliminationred_plasmagun;
-vmCvar_t	g_eliminationred_chain;
-vmCvar_t	g_eliminationred_mine;
-vmCvar_t	g_eliminationred_nail;
-vmCvar_t	g_eliminationred_flame;
-vmCvar_t	g_eliminationred_antimatter;
-vmCvar_t	g_eliminationred_quad;
-vmCvar_t	g_eliminationred_haste;
-vmCvar_t	g_eliminationred_bsuit;
-vmCvar_t	g_eliminationred_invis;
-vmCvar_t	g_eliminationred_regen;
-vmCvar_t	g_eliminationred_flight;
-vmCvar_t 	g_eliminationred_holdable;
+//Spawn settings for blue and white:
+vmCvar_t	g_bluespawn_health;
+vmCvar_t	g_bluespawn_armor;
 
-vmCvar_t        g_elimination_lockspectator;
+vmCvar_t	g_bluespawn_gauntlet;
+vmCvar_t	g_bluespawn_machinegun;
+vmCvar_t	g_bluespawn_shotgun;
+vmCvar_t	g_bluespawn_grenade;
+vmCvar_t	g_bluespawn_rocket;
+vmCvar_t	g_bluespawn_lightning;
+vmCvar_t	g_bluespawn_railgun;
+vmCvar_t	g_bluespawn_plasmagun;
+vmCvar_t	g_bluespawn_bfg;
+vmCvar_t	g_bluespawn_grapple;
+vmCvar_t	g_bluespawn_nail;
+vmCvar_t	g_bluespawn_mine;
+vmCvar_t	g_bluespawn_chain;
+vmCvar_t	g_bluespawn_flame;
+vmCvar_t	g_bluespawn_antimatter;
+
+vmCvar_t	g_bluespawn_quad;
+vmCvar_t	g_bluespawn_haste;
+vmCvar_t	g_bluespawn_bsuit;
+vmCvar_t	g_bluespawn_invis;
+vmCvar_t	g_bluespawn_regen;
+vmCvar_t	g_bluespawn_flight;
+
+vmCvar_t 	g_bluespawn_holdable;
+
+//Spawn settings for red:
+vmCvar_t	g_redspawn_health;
+vmCvar_t	g_redspawn_armor;
+
+vmCvar_t	g_redspawn_gauntlet;
+vmCvar_t	g_redspawn_machinegun;
+vmCvar_t	g_redspawn_shotgun;
+vmCvar_t	g_redspawn_grenade;
+vmCvar_t	g_redspawn_rocket;
+vmCvar_t	g_redspawn_lightning;
+vmCvar_t	g_redspawn_railgun;
+vmCvar_t	g_redspawn_plasmagun;
+vmCvar_t	g_redspawn_bfg;
+vmCvar_t	g_redspawn_grapple;
+vmCvar_t	g_redspawn_nail;
+vmCvar_t	g_redspawn_mine;
+vmCvar_t	g_redspawn_chain;
+vmCvar_t	g_redspawn_flame;
+vmCvar_t	g_redspawn_antimatter;
+
+vmCvar_t	g_redspawn_quad;
+vmCvar_t	g_redspawn_haste;
+vmCvar_t	g_redspawn_bsuit;
+vmCvar_t	g_redspawn_invis;
+vmCvar_t	g_redspawn_regen;
+vmCvar_t	g_redspawn_flight;
+
+vmCvar_t 	g_redspawn_holdable;
 
 vmCvar_t	g_vampire;
 vmCvar_t	g_vampireMaxHealth;
@@ -523,31 +512,15 @@ vmCvar_t	g_regen;
 int	g_ffa_gt; //Are this a FFA gametype even if gametype is high?
 vmCvar_t	g_lms_lives;
 vmCvar_t	g_lms_mode;
-vmCvar_t	g_elimination_ctf_oneway;
-vmCvar_t        g_awardpushing; //The server can decide if players are awarded for pushing people in lave etc.
-
-vmCvar_t        g_catchup; //Favors the week players
-
-vmCvar_t         g_autonextmap; //Autochange map
-vmCvar_t         g_mappools; //mappools to be used for autochange
-
-vmCvar_t        g_voteNames;
-vmCvar_t        g_voteBan;
-vmCvar_t        g_voteGametypes;
-vmCvar_t        g_voteMinTimelimit;
-vmCvar_t        g_voteMaxTimelimit;
-vmCvar_t        g_voteMinFraglimit;
-vmCvar_t        g_voteMaxFraglimit;
-vmCvar_t        g_maxvotes;
+vmCvar_t    g_awardpushing; //The server can decide if players are awarded for pushing people in lave etc.
 
 //unlagged - server options
 vmCvar_t	g_delagHitscan;
 vmCvar_t	g_truePing;
 vmCvar_t	sv_fps;
-vmCvar_t        g_lagLightning; //Adds a little lag to the lightninggun to make it less powerfull
+vmCvar_t    g_lagLightning; //Adds a little lag to the lightninggun to make it less powerfull
 //unlagged - server options
 
-int CustomModRun;
 char cmapname[64];
 int mod_jumpheight;
 int mod_ammolimit;
@@ -609,16 +582,15 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
 	// noset vars
-	{ NULL, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
+	{ NULL, "gamename", GAMEVERSION , CVAR_ROM, 0, qfalse  },
 	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
-	{ NULL, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
-	{ &g_maxclients, "sv_maxclients", "99", CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse  },
-	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse  },
+	{ &g_maxclients, "sv_maxclients", "128", CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse  },
+	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_LATCH, 0, qfalse  },
 	
 	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", 0, 0, qtrue  },
 	{ &cl_propheight, "cl_propheight", "21", 0, 0, qtrue  },
@@ -879,6 +851,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_teamblue_respawnwait, "g_teamblue_respawnwait", "3000", 0, 0, qtrue  },
 	{ &g_teamblue_pickupitems, "g_teamblue_pickupitems", "1", 0, 0, qtrue  },
 	// change anytime vars
+	{ &g_extendedsandbox, "g_extendedsandbox", "0", 0, 0, qtrue  },
 	{ &g_fogModel, "g_fogModel", "1", 0, 0, qtrue  },
 	{ &g_fogShader, "g_fogShader", "1", 0, 0, qtrue  },
 	{ &g_fogDistance, "g_fogDistance", "8", 0, 0, qtrue  },
@@ -904,23 +877,12 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE, 0, qtrue},
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE, 0, qtrue},
 	{ &g_maxEntities, "g_maxEntities", "1024", 0, 0, qtrue},
-	{ &g_tests, "g_tests", "0", 0, 0, qtrue},
-	{ &g_connectmsg, "g_connectmsg", "1", 0, 0, qtrue},
-	{ &g_scoreboardlock, "g_scoreboardlock", "0", 0, 0, qtrue},
-	{ &tex_name, "tex_name", "0", 0, 0, qtrue  },
-	{ &tex_newname, "tex_newname", "0", 0, 0, qtrue  },
 	{ &g_regenarmor, "g_regenarmor", "0", 0, 0, qtrue  },
 	{ &g_spectatorspeed, "g_spectatorspeed", "700", 0, 0, qtrue  },
-	{ &eliminationredrespawn, "eliminationredrespawn", "0", 0, 0, qtrue  },
-	{ &eliminationrespawn, "eliminationrespawn", "0", 0, 0, qtrue  },
 	{ &g_overlay, "g_overlay", "0", 0, 0, qtrue  },
 	{ &g_slickmove, "g_slickmove", "0", 0, 0, qtrue  },
 	{ &g_accelerate, "g_accelerate", "1", 0, 0, qtrue  },
 	{ &g_randomItems, "g_randomItems", "0", 0, 0, qtrue  },
-	{ &g_mapcycle, "g_mapcycle", "mapcycle.cfg", CVAR_ARCHIVE, 0, qtrue},
-	{ &g_useMapcycle, "g_useMapcycle", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue},
-	{ &g_mapcycleposition, "g_mapcycleposition", "0", CVAR_ARCHIVE, 0, qtrue},
-	{ &g_kill, "g_kill", "1", 0, 0, qtrue  },
 	{ &g_invulinf, "g_invulinf", "0", 0, 0, qtrue  },
 	{ &g_kamikazeinf, "g_kamikazeinf", "0", 0, 0, qtrue  },
 	{ &g_portalinf, "g_portalinf", "0", 0, 0, qtrue  },
@@ -930,7 +892,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_waterdamage, "g_waterdamage", "0", 0, 0, qtrue  },
 	{ &g_lavadamage, "g_lavadamage", "30", 0, 0, qtrue  },
 	{ &g_slimedamage, "g_slimedamage", "10", 0, 0, qtrue  },
-	{ &g_maxweaponpickup, "g_maxweaponpickup", "1", 0, 0, qtrue  },
+	{ &g_nextbot_speed, "g_nextbot_speed", "2.00", 0, 0, qtrue  },
 	{ &g_randomteleport, "g_randomteleport", "0", 0, 0, qtrue  },
 	{ &g_falldamagesmall, "g_falldamagesmall", "5", 0, 0, qtrue  },
 	{ &g_falldamagebig, "g_falldamagebig", "10", 0, 0, qtrue  },
@@ -966,7 +928,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_poweruprespawn, "g_poweruprespawn", "120", 0, 0, qtrue  },
 	{ &g_dmflags, "dmflags", "1024", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
     { &g_elimflags, "elimflags", "0", CVAR_SERVERINFO, 0, qfalse  },
-    { &g_voteflags, "voteflags", "0", CVAR_SERVERINFO, 0, qfalse  },
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
@@ -984,11 +945,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_logfileSync, "g_logsync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_password, "g_password", "", CVAR_USERINFO, 0, qfalse  },
-
-	{ &g_banIPs, "g_banIPs", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_filterBan, "g_filterBan", "1", CVAR_ARCHIVE, 0, qfalse  },
-
-	{ &g_needpass, "g_needpass", "0", CVAR_SERVERINFO, 0, qfalse },
 
 	{ &g_dedicated, "dedicated", "0", 0, 0, qfalse  },
 
@@ -1012,27 +968,9 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_debugVariables, "g_debugVariables", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
 	{ &g_debugBotspawns, "g_debugBotspawns", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
 	{ &g_allowSyncCutscene, "g_allowSyncCutscene", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_motd, "g_motd", "", 0, 0, qfalse },
-        { &g_motdfile, "g_motdfile", "motd.cfg", 0, 0, qfalse },
 	{ &g_blood, "com_blood", "1", 0, 0, qfalse },
 
-	{ &g_podiumDist, "g_podiumDist", "80", 0, 0, qfalse },
-	{ &g_podiumDrop, "g_podiumDrop", "70", 0, 0, qfalse },
-
-        //Votes start:
 	{ &g_allowVote, "g_allowVote", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_maxvotes, "g_maxVotes", MAX_VOTE_COUNT, CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteNames, "g_voteNames", "/map_restart/nextmap/map/g_gametype/kick/clientkick/g_doWarmup/timelimit/fraglimit/shuffle/", CVAR_ARCHIVE, 0, qfalse }, //clientkick g_doWarmup timelimit fraglimit
-        { &g_voteBan, "g_voteBan", "0", CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteGametypes, "g_voteGametypes", "/0/1/2/3/4/5/6/7/8/9/10/11/12/13", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteMaxTimelimit, "g_voteMaxTimelimit", "1000", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteMinTimelimit, "g_voteMinTimelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteMaxFraglimit, "g_voteMaxFraglimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_voteMinFraglimit, "g_voteMinFraglimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_votemaps, "g_votemapsfile", "votemaps.cfg", 0, 0, qfalse },
-        { &g_votecustom, "g_votecustomfile", "votecustom.cfg", 0, 0, qfalse },
-
-	{ &g_listEntity, "g_listEntity", "0", 0, 0, qfalse },
 
 	{ &g_obeliskHealth, "g_obeliskHealth", "2500", 0, 0, qfalse },
 	{ &g_obeliskRegenPeriod, "g_obeliskRegenPeriod", "1", 0, 0, qfalse },
@@ -1041,8 +979,8 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_cubeTimeout, "g_cubeTimeout", "30", 0, 0, qfalse },
 
-	{ &g_enableDust, "g_enableDust", "0", CVAR_SERVERINFO, 0, qtrue, qfalse },
-	{ &g_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO, 0, qtrue, qfalse },
+	{ &g_enableDust, "g_enableDust", "0", CVAR_SERVERINFO, 0, qtrue },
+	{ &g_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO, 0, qtrue },
 	{ &g_proxMineTimeout, "g_proxMineTimeout", "180000", 0, 0, qfalse },
 
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
@@ -1055,77 +993,80 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_delagHitscan, "g_delagHitscan", "0", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },
 	{ &g_truePing, "g_truePing", "0", CVAR_ARCHIVE, 0, qtrue },
 	// it's CVAR_SYSTEMINFO so the client's sv_fps will be automagically set to its value
-	{ &sv_fps, "sv_fps", "20", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse },
+	{ &sv_fps, "sv_fps", "60", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse },
         { &g_lagLightning, "g_lagLightning", "1", CVAR_ARCHIVE, 0, qtrue },
 //unlagged - server options
 
-	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse},
-        { &g_music, "g_music", "", 0, 0, qfalse},
-        { &g_spawnprotect, "g_spawnprotect", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
-	//Now for elimination stuff:
-	{ &g_elimination_selfdamage, "elimination_selfdamage", "0", 0, 0, qtrue },
-	{ &g_elimination_startHealth, "elimination_startHealth", "200", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_startArmor, "elimination_startArmor", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_bfg, "elimination_bfg", "0", CVAR_NORESTART, 0, qtrue },
-        { &g_elimination_grapple, "elimination_grapple", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_roundtime, "elimination_roundtime", "600", CVAR_SERVERINFO | CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_warmup, "elimination_warmup", "0", CVAR_NORESTART , 0, qtrue },
-	{ &g_elimination_activewarmup, "elimination_activewarmup", "0", CVAR_NORESTART , 0, qtrue },
-        { &g_elimination_allgametypes, "g_elimination", "0", CVAR_NORESTART, 0, qfalse },
+    { &g_music, "g_music", "", 0, 0, qfalse},
+    { &g_spawnprotect, "g_spawnprotect", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 
-	{ &g_elimination_gauntlet, "elimination_gauntlet", "1", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_machinegun, "elimination_machinegun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_shotgun, "elimination_shotgun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_grenade, "elimination_grenade", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_rocket, "elimination_rocket", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_railgun, "elimination_railgun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_lightning, "elimination_lightning", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_plasmagun, "elimination_plasmagun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_chain, "elimination_chain", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_mine, "elimination_mine", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_nail, "elimination_nail", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_flame, "elimination_flame", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_antimatter, "elimination_antimatter", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_quad, "elimination_quad", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_haste, "elimination_haste", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_bsuit, "elimination_bsuit", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_invis, "elimination_invis", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_regen, "elimination_regen", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_flight, "elimination_flight", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_elimination_items, "elimination_items", "0", CVAR_LATCH, 0, qtrue },
-	{ &g_elimination_holdable, "elimination_holdable", "0", CVAR_LATCH, 0, qtrue },
+	//Settings for elimination:
+	{ &g_elimination_selfdamage, "g_elimination_selfdamage", "0", 0, 0, qtrue },
+	{ &g_elimination_roundtime, "g_elimination_roundtime", "600", CVAR_SERVERINFO | CVAR_NORESTART, 0, qtrue },
+	{ &g_elimination_warmup, "g_elimination_warmup", "0", CVAR_NORESTART , 0, qtrue },
+	{ &g_elimination_activewarmup, "g_elimination_activewarmup", "0", CVAR_NORESTART , 0, qtrue },
+    { &g_elimination, "g_elimination", "0", CVAR_NORESTART, 0, qfalse },
+	{ &g_elimination_items, "g_elimination_items", "0", CVAR_LATCH, 0, qtrue },
+	{ &g_elimination_lockspectator, "g_elimination_lockspectator", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_elimination_ctf_oneway, "g_elimination_ctf_oneway", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_elimination_red_respawn, "g_elimination_red_respawn", "0", 0, 0, qtrue  },
+	{ &g_elimination_blue_respawn, "g_elimination_blue_respawn", "0", 0, 0, qtrue  },
 
+	//Spawn settings for blue and white:
+	{ &g_bluespawn_health, "g_bluespawn_health", "100", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_armor, "g_bluespawn_armor", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_gauntlet, "g_bluespawn_gauntlet", "1", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_machinegun, "g_bluespawn_machinegun", "500", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_shotgun, "g_bluespawn_shotgun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_grenade, "g_bluespawn_grenade", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_rocket, "g_bluespawn_rocket", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_lightning, "g_bluespawn_lightning", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_railgun, "g_bluespawn_railgun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_plasmagun, "g_bluespawn_plasmagun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_bfg, "g_bluespawn_bfg", "0", CVAR_NORESTART, 0, qtrue },
+    { &g_bluespawn_grapple, "g_bluespawn_grapple", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_nail, "g_bluespawn_nail", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_mine, "g_bluespawn_mine", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_chain, "g_bluespawn_chain", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_flame, "g_bluespawn_flame", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_antimatter, "g_bluespawn_antimatter", "0", CVAR_NORESTART, 0, qtrue },
 
-	//Now for elimination stuff:
-	{ &g_eliminationred_startHealth, "eliminationred_startHealth", "200", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_startArmor, "eliminationred_startArmor", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_bfg, "eliminationred_bfg", "0", CVAR_NORESTART, 0, qtrue },
-    { &g_eliminationred_grapple, "eliminationred_grapple", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_gauntlet, "eliminationred_gauntlet", "1", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_machinegun, "eliminationred_machinegun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_shotgun, "eliminationred_shotgun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_grenade, "eliminationred_grenade", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_rocket, "eliminationred_rocket", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_railgun, "eliminationred_railgun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_lightning, "eliminationred_lightning", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_plasmagun, "eliminationred_plasmagun", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_chain, "eliminationred_chain", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_mine, "eliminationred_mine", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_nail, "eliminationred_nail", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_flame, "eliminationred_flame", "0",  CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_antimatter, "eliminationred_antimatter", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_quad, "eliminationred_quad", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_haste, "eliminationred_haste", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_bsuit, "eliminationred_bsuit", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_invis, "eliminationred_invis", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_regen, "eliminationred_regen", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_flight, "eliminationred_flight", "0", CVAR_NORESTART, 0, qtrue },
-	{ &g_eliminationred_holdable, "eliminationred_holdable", "0", CVAR_LATCH, 0, qtrue },
+	{ &g_bluespawn_quad, "g_bluespawn_quad", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_haste, "g_bluespawn_haste", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_bsuit, "g_bluespawn_bsuit", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_invis, "g_bluespawn_invis", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_regen, "g_bluespawn_regen", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_bluespawn_flight, "g_bluespawn_flight", "0", CVAR_NORESTART, 0, qtrue },
 
+	{ &g_bluespawn_holdable, "g_bluespawn_holdable", "0", CVAR_LATCH, 0, qtrue },
 
-	{ &g_elimination_ctf_oneway, "elimination_ctf_oneway", "0", CVAR_NORESTART, 0, qtrue },
+	//Spawn settings for red:
+	{ &g_redspawn_health, "g_redspawn_health", "100", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_armor, "g_redspawn_armor", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_gauntlet, "g_redspawn_gauntlet", "1", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_machinegun, "g_redspawn_machinegun", "500", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_shotgun, "g_redspawn_shotgun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_grenade, "g_redspawn_grenade", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_rocket, "g_redspawn_rocket", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_lightning, "g_redspawn_lightning", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_railgun, "g_redspawn_railgun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_plasmagun, "g_redspawn_plasmagun", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_bfg, "g_redspawn_bfg", "0", CVAR_NORESTART, 0, qtrue },
+    { &g_redspawn_grapple, "g_redspawn_grapple", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_nail, "g_redspawn_nail", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_mine, "g_redspawn_mine", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_chain, "g_redspawn_chain", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_flame, "g_redspawn_flame", "0",  CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_antimatter, "g_redspawn_antimatter", "0", CVAR_NORESTART, 0, qtrue },
 
-    { &g_elimination_lockspectator, "elimination_lockspectator", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_quad, "g_redspawn_quad", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_haste, "g_redspawn_haste", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_bsuit, "g_redspawn_bsuit", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_invis, "g_redspawn_invis", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_regen, "g_redspawn_regen", "0", CVAR_NORESTART, 0, qtrue },
+	{ &g_redspawn_flight, "g_redspawn_flight", "0", CVAR_NORESTART, 0, qtrue },
+
+	{ &g_redspawn_holdable, "g_redspawn_holdable", "0", CVAR_LATCH, 0, qtrue },
 
     { &g_awardpushing, "g_awardpushing", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 
@@ -1133,13 +1074,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_regen, "g_regen", "0", CVAR_NORESTART, 0, qtrue },
 	{ &g_vampireMaxHealth, "g_vampire_max_health", "500", CVAR_NORESTART, 0, qtrue },
 	{ &g_lms_lives, "g_lms_lives", "1", CVAR_NORESTART, 0, qtrue },
-	{ &g_lms_mode, "g_lms_mode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-
-        { &g_catchup, "g_catchup", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
-
-        { &g_autonextmap, "g_autonextmap", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse},
-        { &g_mappools, "g_mappools", "0\\maps_dm.cfg\\1\\maps_tourney.cfg\\3\\maps_tdm.cfg\\4\\maps_ctf.cfg\\5\\maps_oneflag.cfg\\6\\maps_obelisk.cfg\
-\\7\\maps_harvester.cfg\\8\\maps_elimination.cfg\\9\\maps_ctf.cfg\\10\\maps_lms.cfg\\11\\maps_dd.cfg\\12\\maps_dom.cfg\\", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse}
+	{ &g_lms_mode, "g_lms_mode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue }
 };
 
 // bk001129 - made static to avoid aliasing
@@ -1315,6 +1250,7 @@ G_UpdateCvars
 void G_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
+	qboolean remapped = qfalse;
 
 	for ( i = 0, cv = gameCvarTable ; i < gameCvarTableSize ; i++, cv++ ) {
 		if ( cv->vmCvar ) {
@@ -1322,50 +1258,6 @@ void G_UpdateCvars( void ) {
 
 			if ( cv->modificationCount != cv->vmCvar->modificationCount ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
-
-				if ( cv->trackChange ) {
-					//trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string ) );
-				}
-                                //Here comes the cvars that must trigger a map_restart
-                                if (cv->vmCvar == &g_elimination_allgametypes) {
-                                    trap_Cvar_Set("sv_dorestart","1");
-                                }
-
-                                if ( cv->vmCvar == &g_voteNames ) {
-                                    //Set vote flags
-                                    int voteflags=0;
-                                    if( allowedVote("map_restart") )
-                                        voteflags|=VF_map_restart;
-
-                                    if( allowedVote("map") )
-                                        voteflags|=VF_map;
-
-                                    if( allowedVote("clientkick") )
-                                        voteflags|=VF_clientkick;
-
-                                    if( allowedVote("shuffle") )
-                                        voteflags|=VF_shuffle;
-
-                                    if( allowedVote("nextmap") )
-                                        voteflags|=VF_nextmap;
-
-                                    if( allowedVote("g_gametype") )
-                                        voteflags|=VF_g_gametype;
-
-                                    if( allowedVote("g_doWarmup") )
-                                        voteflags|=VF_g_doWarmup;
-
-                                    if( allowedVote("timelimit") )
-                                        voteflags|=VF_timelimit;
-
-                                    if( allowedVote("fraglimit") )
-                                        voteflags|=VF_fraglimit;
-
-                                    if( allowedVote("custom") )
-                                        voteflags|=VF_custom;
-
-                                    trap_Cvar_Set("voteflags",va("%i",voteflags));
-                                }
 			}
 		}
 	}
@@ -1394,8 +1286,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	srand( randomSeed );
 
 	G_RegisterCvars();
-
-	G_ProcessIPBans();
 
     //KK-OAX Changed to Tremulous's BG_InitMemory
 	BG_InitMemory();
@@ -1462,7 +1352,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	InitBodyQue();
 
 	ClearRegisteredItems();
-	CustomModRun = 0;
 
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
@@ -1504,41 +1393,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		level.domination_points_count = 0; //make sure its not too big
 	}
 
-        PlayerStoreInit();
-        {
-            int voteflags=0;
-            if( allowedVote("map_restart") )
-                voteflags|=VF_map_restart;
-
-            if( allowedVote("map") )
-                voteflags|=VF_map;
-
-            if( allowedVote("clientkick") )
-                voteflags|=VF_clientkick;
-
-            if( allowedVote("shuffle") )
-                voteflags|=VF_shuffle;
-
-            if( allowedVote("nextmap") )
-                voteflags|=VF_nextmap;
-
-            if( allowedVote("g_gametype") )
-                voteflags|=VF_g_gametype;
-
-            if( allowedVote("g_doWarmup") )
-                voteflags|=VF_g_doWarmup;
-
-            if( allowedVote("timelimit") )
-                voteflags|=VF_timelimit;
-
-            if( allowedVote("fraglimit") )
-                voteflags|=VF_fraglimit;
-
-            if( allowedVote("custom") )
-                voteflags|=VF_custom;
-
-            trap_Cvar_Set("voteflags",va("%i",voteflags));
-        }
+    PlayerStoreInit();
 }
 
 
@@ -2157,7 +2012,6 @@ void BeginIntermission( void ) {
 
 }
 
-
 /*
 =============
 ExitLevel
@@ -2176,8 +2030,6 @@ void ExitLevel (void) {
 
 	//bot interbreeding
 	BotInterbreedEndMatch();
-	CustomModRun = 0;
-
 
 	// if we are running a tournement map, kick the loser to spectator status,
 	// which will automatically grab the next spectator and restart
@@ -2195,56 +2047,7 @@ void ExitLevel (void) {
 	trap_Cvar_VariableStringBuffer( "nextmap", nextmap, sizeof(nextmap) );
 	trap_Cvar_VariableStringBuffer( "d1", d1, sizeof(d1) );
 
-        trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
-
-        //Here the game finds the nextmap if g_autonextmap is set
-        if(g_autonextmap.integer ) {
-            char filename[MAX_FILEPATH];
-            fileHandle_t file,mapfile;
-            //Look in g_mappools.string for the file to look for maps in
-            Q_strncpyz(filename,Info_ValueForKey(g_mappools.string, va("%i",g_gametype.integer)),MAX_FILEPATH);
-            //If we found a filename:
-            if(filename[0]) {
-                //Read the file:
-                /*int len =*/ trap_FS_FOpenFile(filename, &file, FS_READ);
-                if(!file)
-                    trap_FS_FOpenFile(va("%s.org",filename), &file, FS_READ);
-                if(file) {
-                    char  buffer[4*1024]; // buffer to read file into
-                    char mapnames[1024][20]; // Array of mapnames in the map pool
-                    char *pointer;
-                    int choice, count=0; //The random choice from mapnames and count of mapnames
-                    int i;
-                    memset(&buffer,0,sizeof(buffer));
-                    trap_FS_Read(&buffer,sizeof(buffer),file);
-                    pointer = buffer;
-                    while ( qtrue ) {
-                        Q_strncpyz(mapnames[count],COM_Parse( &pointer ),20);
-                        if ( !mapnames[count][0] ) {
-                            break;
-                        }
-                        G_Printf("Mapname in mappool: %s\n",mapnames[count]);
-                        count++;
-                    }
-                    trap_FS_FCloseFile(file);
-                    //It is possible that the maps in the file read are flawed, so we try up to ten times:
-                    for(i=0;i<10;i++) {
-                        choice = (count > 0)? rand()%count : 0;
-                        if(Q_strequal(mapnames[choice],Info_ValueForKey(serverinfo,"mapname")))
-                            continue;
-                        //Now check that the map exists:
-                        trap_FS_FOpenFile(va("maps/%s.bsp",mapnames[choice]),&mapfile,FS_READ);
-                        if(mapfile) {
-                            G_Printf("Picked map number %i - %s\n",choice,mapnames[choice]);
-                            Q_strncpyz(nextmap,va("map %s",mapnames[choice]),sizeof(nextmap));
-                            trap_Cvar_Set("nextmap",nextmap);
-                            trap_FS_FCloseFile(mapfile);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 
 	if( !Q_stricmp( nextmap, "map_restart 0" ) && Q_stricmp( d1, "" ) ) {
 		trap_Cvar_Set( "nextmap", "vstr d2" );
@@ -3182,9 +2985,6 @@ void CheckTournament( void ) {
 	}
 }
 
-
-
-
 /*
 ==================
 PrintTeam
@@ -3263,6 +3063,40 @@ void CheckTeamLeader( int team ) {
 
 /*
 ==================
+CheckVote
+==================
+*/
+void CheckVote( void ) {
+	if ( level.voteExecuteTime && level.voteExecuteTime < level.time ) {
+		level.voteExecuteTime = 0;
+		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
+	}
+	if ( !level.voteTime ) {
+		return;
+	}
+	if ( level.time - level.voteTime >= VOTE_TIME ) {
+		trap_SendServerCommand( -1, "print \"Vote failed.\n\"" );
+	} else {
+		// ATVI Q3 1.32 Patch #9, WNF
+		if ( level.voteYes > level.numVotingClients/2 ) {
+			// execute the command, then remove the vote
+			trap_SendServerCommand( -1, "print \"Vote passed.\n\"" );
+			level.voteExecuteTime = level.time + 3000;
+		} else if ( level.voteNo >= level.numVotingClients/2 ) {
+			// same behavior as a timeout
+			trap_SendServerCommand( -1, "print \"Vote failed.\n\"" );
+		} else {
+			// still waiting for a majority
+			return;
+		}
+	}
+	level.voteTime = 0;
+	trap_SetConfigstring( CS_VOTE_TIME, "" );
+
+}
+
+/*
+==================
 CheckTeamVote
 ==================
 */
@@ -3304,25 +3138,6 @@ void CheckTeamVote( int team ) {
 	level.teamVoteTime[cs_offset] = 0;
 	trap_SetConfigstring( CS_TEAMVOTE_TIME + cs_offset, "" );
 
-}
-
-
-/*
-==================
-CheckCvars
-==================
-*/
-void CheckCvars( void ) {
-	static int lastMod = -1;
-
-	/*if ( g_password.modificationCount != lastMod ) {
-		lastMod = g_password.modificationCount;
-		if ( *g_password.string && Q_stricmp( g_password.string, "none" ) ) {
-			trap_Cvar_Set( "g_needpass", "1" );
-		} else {
-			trap_Cvar_Set( "g_needpass", "0" );
-		}
-	}*/
 }
 
 /*
@@ -3625,17 +3440,7 @@ end = trap_Milliseconds();
 	CheckTeamVote( TEAM_RED );
 	CheckTeamVote( TEAM_BLUE );
 
-	// for tracking changes
-	CheckCvars();
-
-	Newmodcommands ();
-
-	if (g_listEntity.integer) {
-		for (i = 0; i < MAX_GENTITIES; i++) {
-			G_Printf("%4i: %s\n", i, g_entities[i].classname);
-		}
-		trap_Cvar_Set("g_listEntity", "0");
-	}
+	UpdateGameCvars ();
 
 //unlagged - backward reconciliation #4
 	// record the time at the end of this frame - it should be about
@@ -3646,7 +3451,7 @@ end = trap_Milliseconds();
     //cutscene
 	G_RunCutscene( levelTime );
 }
-void Newmodcommands( void ){
+void UpdateGameCvars( void ){
 mod_jumpheight = g_jumpheight.integer;
 mod_ammolimit = g_ammolimit.integer;
 mod_gdelay = g_gdelay.integer;

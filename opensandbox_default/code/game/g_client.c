@@ -1466,11 +1466,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
     if( !strcmp( value, "localhost" ) )
         client->pers.localClient = qtrue;
 
-	if ( G_FilterPacket( value ) && !Q_stricmp(value,"localhost") ) {
-            G_Printf("Player with IP: %s is banned\n",value);
-		return "You are banned from this server.";
-	}
-
 	if ( !isBot && (strcmp(value, "localhost") != 0)) {
 		// check for a password
 		value = Info_ValueForKey (userinfo, "password");
@@ -1543,33 +1538,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	return NULL;
 }
 
-void motd (gentity_t *ent)
-{
-	char motd[1024];
-	fileHandle_t motdFile;
-	int motdLen;
-	int fileLen;
-
-	strcpy (motd, "cp \"");
-	fileLen = trap_FS_FOpenFile(g_motdfile.string, &motdFile, FS_READ);
-	if(motdFile)
-	{
-		char * p;
-
-		motdLen = strlen(motd);
-		if((motdLen + fileLen) > (sizeof(motd) - 2))
-			fileLen = (sizeof(motd) - 2 - motdLen);
-		trap_FS_Read(motd + motdLen, fileLen, motdFile);
-		motd[motdLen + fileLen] = '"';
-		motd[motdLen + fileLen + 1] = 0;
-		trap_FS_FCloseFile(motdFile);
-
-		while((p = strchr(motd, '\r'))) //Remove carrier return. 0x0D
-		memmove(p, p + 1, motdLen + fileLen - (p - motd));
-	}
-	trap_SendServerCommand(ent - g_entities, motd);
-}
-
 /*
 ===========
 ClientBegin
@@ -1640,7 +1608,6 @@ void ClientBegin( int clientNum ) {
 		}
 	}
 
-    motd ( ent );
 	// set info that persisted after mapchange
 	if (!IsBot(ent)) {
 		G_Sav_LoadData(ent, 0);
@@ -1654,7 +1621,7 @@ void ClientBegin( int clientNum ) {
 	}
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-	G_SendWeaponProperties( ent );
+	G_SendGameCvars( ent );
 }
 /*
 ===========
@@ -1711,7 +1678,7 @@ void ClientSpawn(gentity_t *ent) {
 			TeamCount( -1, TEAM_RED )  ) )
 		{
 		if	(client->sess.sessionTeam == TEAM_BLUE) {
-			if(eliminationrespawn.integer == 0){
+			if(g_elimination_blue_respawn.integer == 0){
 			client->sess.spectatorState = SPECTATOR_FREE;
 			client->isEliminated = qtrue;
                         if(g_gametype.integer == GT_LMS)
@@ -1720,7 +1687,7 @@ void ClientSpawn(gentity_t *ent) {
 			}
 		}
 		if	(client->sess.sessionTeam == TEAM_RED) {
-			if(eliminationredrespawn.integer == 0){
+			if(g_elimination_red_respawn.integer == 0){
 			client->sess.spectatorState = SPECTATOR_FREE;
 			client->isEliminated = qtrue;
                         if(g_gametype.integer == GT_LMS)
@@ -1731,7 +1698,7 @@ void ClientSpawn(gentity_t *ent) {
 
 
 			if	(client->sess.sessionTeam == TEAM_BLUE) {
-			if(eliminationrespawn.integer == 1){
+			if(g_elimination_blue_respawn.integer == 1){
 				// find a spawn point
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
@@ -1951,7 +1918,7 @@ void ClientSpawn(gentity_t *ent) {
 			}
 			}
 			if	(client->sess.sessionTeam == TEAM_RED) {
-			if(eliminationredrespawn.integer == 1){
+			if(g_elimination_red_respawn.integer == 1){
 				// find a spawn point
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
@@ -2462,7 +2429,6 @@ void ClientDisconnect( int clientNum ) {
 		return;
 	}
 
-    ClientLeaving( clientNum);
     trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
 	// stop any following clients
@@ -2527,7 +2493,6 @@ void ClientDisconnect( int clientNum ) {
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "");
 
 	CalculateRanks();
-        CountVotes();
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		BotAIShutdownClient( clientNum, qfalse );
@@ -2618,213 +2583,213 @@ void SetCustomWeapons( gentity_t *ent ) {
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
 	if (ent->client->sess.sessionTeam == TEAM_FREE || ent->client->sess.sessionTeam == TEAM_BLUE) {
-		if (g_elimination_gauntlet.integer) {
+		if (g_bluespawn_gauntlet.integer) {
 			Set_Weapon(ent, WP_GAUNTLET, 1);
 		}
-		if (g_elimination_machinegun.integer > 0) {
+		if (g_bluespawn_machinegun.integer > 0) {
 			Set_Weapon(ent, WP_MACHINEGUN, 1);
-			Set_Ammo(ent, WP_MACHINEGUN, g_elimination_machinegun.integer);
+			Set_Ammo(ent, WP_MACHINEGUN, g_bluespawn_machinegun.integer);
 		}
-		if (g_elimination_shotgun.integer > 0) {
+		if (g_bluespawn_shotgun.integer > 0) {
 			Set_Weapon(ent, WP_SHOTGUN, 1);
-			Set_Ammo(ent, WP_SHOTGUN, g_elimination_shotgun.integer);
+			Set_Ammo(ent, WP_SHOTGUN, g_bluespawn_shotgun.integer);
 		}
-		if (g_elimination_grenade.integer > 0) {
+		if (g_bluespawn_grenade.integer > 0) {
 			Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
-			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_elimination_grenade.integer);
+			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_bluespawn_grenade.integer);
 		}
-		if (g_elimination_rocket.integer > 0) {
+		if (g_bluespawn_rocket.integer > 0) {
 			Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
-			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_elimination_rocket.integer);
+			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_bluespawn_rocket.integer);
 		}
-		if (g_elimination_lightning.integer > 0) {
+		if (g_bluespawn_lightning.integer > 0) {
 			Set_Weapon(ent, WP_LIGHTNING, 1);
-			Set_Ammo(ent, WP_LIGHTNING, g_elimination_lightning.integer);
+			Set_Ammo(ent, WP_LIGHTNING, g_bluespawn_lightning.integer);
 		}
-		if (g_elimination_railgun.integer > 0) {
+		if (g_bluespawn_railgun.integer > 0) {
 			Set_Weapon(ent, WP_RAILGUN, 1);
-			Set_Ammo(ent, WP_RAILGUN, g_elimination_railgun.integer);
+			Set_Ammo(ent, WP_RAILGUN, g_bluespawn_railgun.integer);
 		}
-		if (g_elimination_plasmagun.integer > 0) {
+		if (g_bluespawn_plasmagun.integer > 0) {
 			Set_Weapon(ent, WP_PLASMAGUN, 1);
-			Set_Ammo(ent, WP_PLASMAGUN, g_elimination_plasmagun.integer);
+			Set_Ammo(ent, WP_PLASMAGUN, g_bluespawn_plasmagun.integer);
 		}
-		if (g_elimination_bfg.integer > 0) {
+		if (g_bluespawn_bfg.integer > 0) {
 			Set_Weapon(ent, WP_BFG, 1);
-			Set_Ammo(ent, WP_BFG, g_elimination_bfg.integer);
+			Set_Ammo(ent, WP_BFG, g_bluespawn_bfg.integer);
 		}
-		if (g_elimination_grapple.integer) {
+		if (g_bluespawn_grapple.integer) {
 			Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
 		}
-		if (g_elimination_nail.integer > 0) {
+		if (g_bluespawn_nail.integer > 0) {
 			Set_Weapon(ent, WP_NAILGUN, 1);
-			Set_Ammo(ent, WP_NAILGUN, g_elimination_nail.integer);
+			Set_Ammo(ent, WP_NAILGUN, g_bluespawn_nail.integer);
 		}
-		if (g_elimination_mine.integer > 0) {
+		if (g_bluespawn_mine.integer > 0) {
 			Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
-			Set_Ammo(ent, WP_PROX_LAUNCHER, g_elimination_mine.integer);
+			Set_Ammo(ent, WP_PROX_LAUNCHER, g_bluespawn_mine.integer);
 		}
-		if (g_elimination_chain.integer > 0) {
+		if (g_bluespawn_chain.integer > 0) {
 			Set_Weapon(ent, WP_CHAINGUN, 1);
-			Set_Ammo(ent, WP_CHAINGUN, g_elimination_chain.integer);
+			Set_Ammo(ent, WP_CHAINGUN, g_bluespawn_chain.integer);
 		}
-		if (g_elimination_flame.integer > 0) {
+		if (g_bluespawn_flame.integer > 0) {
 			Set_Weapon(ent, WP_FLAMETHROWER, 1);
-			Set_Ammo(ent, WP_FLAMETHROWER, g_elimination_flame.integer);
+			Set_Ammo(ent, WP_FLAMETHROWER, g_bluespawn_flame.integer);
 		}
-		if (g_elimination_antimatter.integer > 0) {
+		if (g_bluespawn_antimatter.integer > 0) {
 			Set_Weapon(ent, WP_ANTIMATTER, 1);
-			Set_Ammo(ent, WP_ANTIMATTER, g_elimination_antimatter.integer);
+			Set_Ammo(ent, WP_ANTIMATTER, g_bluespawn_antimatter.integer);
 		}
-		if(g_elimination_quad.integer) {
+		if(g_bluespawn_quad.integer) {
 			ent->client->ps.powerups[PW_QUAD] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_QUAD] +=  g_elimination_quad.integer * 1000;
+			ent->client->ps.powerups[PW_QUAD] +=  g_bluespawn_quad.integer * 1000;
 		}
-		if(g_elimination_regen.integer) {
+		if(g_bluespawn_regen.integer) {
 			ent->client->ps.powerups[PW_REGEN] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_REGEN] +=  g_elimination_regen.integer * 1000;
+			ent->client->ps.powerups[PW_REGEN] +=  g_bluespawn_regen.integer * 1000;
 		}
-		if(g_elimination_haste.integer) {
+		if(g_bluespawn_haste.integer) {
 			ent->client->ps.powerups[PW_HASTE] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_HASTE] +=  g_elimination_haste.integer * 1000;
+			ent->client->ps.powerups[PW_HASTE] +=  g_bluespawn_haste.integer * 1000;
 		}
-		if(g_elimination_bsuit.integer) {
+		if(g_bluespawn_bsuit.integer) {
 			ent->client->ps.powerups[PW_BATTLESUIT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_elimination_bsuit.integer * 1000;
+			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_bluespawn_bsuit.integer * 1000;
 		}
-		if(g_elimination_invis.integer) {
+		if(g_bluespawn_invis.integer) {
 			ent->client->ps.powerups[PW_INVIS] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_INVIS] +=  g_elimination_invis.integer * 1000;
+			ent->client->ps.powerups[PW_INVIS] +=  g_bluespawn_invis.integer * 1000;
 		}
-		if(g_elimination_flight.integer) {
+		if(g_bluespawn_flight.integer) {
 			ent->client->ps.powerups[PW_FLIGHT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_FLIGHT] +=  g_elimination_flight.integer * 1000;
+			ent->client->ps.powerups[PW_FLIGHT] +=  g_bluespawn_flight.integer * 1000;
 		}
-		if(g_elimination_holdable.integer == 1) {
+		if(g_bluespawn_holdable.integer == 1) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
 		}
-		if(g_elimination_holdable.integer == 2) {
+		if(g_bluespawn_holdable.integer == 2) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
 		}
-		if(g_elimination_holdable.integer == 3) {
+		if(g_bluespawn_holdable.integer == 3) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
 			ent->client->ps.eFlags |= EF_KAMIKAZE;
 		}
-		if(g_elimination_holdable.integer == 4) {
+		if(g_bluespawn_holdable.integer == 4) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
 		}
-		if(g_elimination_holdable.integer == 5) {
+		if(g_bluespawn_holdable.integer == 5) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 		}
 
-		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_elimination_startArmor.integer;
-		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_elimination_startHealth.integer;
+		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_bluespawn_armor.integer;
+		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_bluespawn_health.integer;
 		if(ent->botskill == 7){
 			ent->health = ent->client->ps.stats[STAT_HEALTH] = 65000;
 		}
 	}
 	if (ent->client->sess.sessionTeam == TEAM_RED) {
-		if (g_eliminationred_gauntlet.integer) {
+		if (g_redspawn_gauntlet.integer) {
 			Set_Weapon(ent, WP_GAUNTLET, 1);
 		}
-		if (g_eliminationred_machinegun.integer > 0) {
+		if (g_redspawn_machinegun.integer > 0) {
 			Set_Weapon(ent, WP_MACHINEGUN, 1);
-			Set_Ammo(ent, WP_MACHINEGUN, g_eliminationred_machinegun.integer);
+			Set_Ammo(ent, WP_MACHINEGUN, g_redspawn_machinegun.integer);
 		}
-		if (g_eliminationred_shotgun.integer > 0) {
+		if (g_redspawn_shotgun.integer > 0) {
 			Set_Weapon(ent, WP_SHOTGUN, 1);
-			Set_Ammo(ent, WP_SHOTGUN, g_eliminationred_shotgun.integer);
+			Set_Ammo(ent, WP_SHOTGUN, g_redspawn_shotgun.integer);
 		}
-		if (g_eliminationred_grenade.integer > 0) {
+		if (g_redspawn_grenade.integer > 0) {
 			Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
-			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_eliminationred_grenade.integer);
+			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_redspawn_grenade.integer);
 		}
-		if (g_eliminationred_rocket.integer > 0) {
+		if (g_redspawn_rocket.integer > 0) {
 			Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
-			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_eliminationred_rocket.integer);
+			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_redspawn_rocket.integer);
 		}
-		if (g_eliminationred_lightning.integer > 0) {
+		if (g_redspawn_lightning.integer > 0) {
 			Set_Weapon(ent, WP_LIGHTNING, 1);
-			Set_Ammo(ent, WP_LIGHTNING, g_eliminationred_lightning.integer);
+			Set_Ammo(ent, WP_LIGHTNING, g_redspawn_lightning.integer);
 		}
-		if (g_eliminationred_railgun.integer > 0) {
+		if (g_redspawn_railgun.integer > 0) {
 			Set_Weapon(ent, WP_RAILGUN, 1);
-			Set_Ammo(ent, WP_RAILGUN, g_eliminationred_railgun.integer);
+			Set_Ammo(ent, WP_RAILGUN, g_redspawn_railgun.integer);
 		}
-		if (g_eliminationred_plasmagun.integer > 0) {
+		if (g_redspawn_plasmagun.integer > 0) {
 			Set_Weapon(ent, WP_PLASMAGUN, 1);
-			Set_Ammo(ent, WP_PLASMAGUN, g_eliminationred_plasmagun.integer);
+			Set_Ammo(ent, WP_PLASMAGUN, g_redspawn_plasmagun.integer);
 		}
-		if (g_eliminationred_bfg.integer > 0) {
+		if (g_redspawn_bfg.integer > 0) {
 			Set_Weapon(ent, WP_BFG, 1);
-			Set_Ammo(ent, WP_BFG, g_eliminationred_bfg.integer);
+			Set_Ammo(ent, WP_BFG, g_redspawn_bfg.integer);
 		}
-		if (g_eliminationred_grapple.integer) {
+		if (g_redspawn_grapple.integer) {
 			Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
 		}
-		if (g_eliminationred_nail.integer > 0) {
+		if (g_redspawn_nail.integer > 0) {
 			Set_Weapon(ent, WP_NAILGUN, 1);
-			Set_Ammo(ent, WP_NAILGUN, g_eliminationred_nail.integer);
+			Set_Ammo(ent, WP_NAILGUN, g_redspawn_nail.integer);
 		}
-		if (g_eliminationred_mine.integer > 0) {
+		if (g_redspawn_mine.integer > 0) {
 			Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
-			Set_Ammo(ent, WP_PROX_LAUNCHER, g_eliminationred_mine.integer);
+			Set_Ammo(ent, WP_PROX_LAUNCHER, g_redspawn_mine.integer);
 		}
-		if (g_eliminationred_chain.integer > 0) {
+		if (g_redspawn_chain.integer > 0) {
 			Set_Weapon(ent, WP_CHAINGUN, 1);
-			Set_Ammo(ent, WP_CHAINGUN, g_eliminationred_chain.integer);
+			Set_Ammo(ent, WP_CHAINGUN, g_redspawn_chain.integer);
 		}
-		if (g_eliminationred_flame.integer > 0) {
+		if (g_redspawn_flame.integer > 0) {
 			Set_Weapon(ent, WP_FLAMETHROWER, 1);
-			Set_Ammo(ent, WP_FLAMETHROWER, g_eliminationred_flame.integer);
+			Set_Ammo(ent, WP_FLAMETHROWER, g_redspawn_flame.integer);
 		}
-		if (g_eliminationred_antimatter.integer > 0) {
+		if (g_redspawn_antimatter.integer > 0) {
 			Set_Weapon(ent, WP_ANTIMATTER, 1);
-			Set_Ammo(ent, WP_ANTIMATTER, g_eliminationred_antimatter.integer);
+			Set_Ammo(ent, WP_ANTIMATTER, g_redspawn_antimatter.integer);
 		}
-		if(g_eliminationred_quad.integer) {
+		if(g_redspawn_quad.integer) {
 			ent->client->ps.powerups[PW_QUAD] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_QUAD] +=  g_eliminationred_quad.integer * 1000;
+			ent->client->ps.powerups[PW_QUAD] +=  g_redspawn_quad.integer * 1000;
 		}
-		if(g_eliminationred_regen.integer) {
+		if(g_redspawn_regen.integer) {
 			ent->client->ps.powerups[PW_REGEN] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_REGEN] +=  g_eliminationred_regen.integer * 1000;
+			ent->client->ps.powerups[PW_REGEN] +=  g_redspawn_regen.integer * 1000;
 		}
-		if(g_eliminationred_haste.integer) {
+		if(g_redspawn_haste.integer) {
 			ent->client->ps.powerups[PW_HASTE] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_HASTE] +=  g_eliminationred_haste.integer * 1000;
+			ent->client->ps.powerups[PW_HASTE] +=  g_redspawn_haste.integer * 1000;
 		}
-		if(g_eliminationred_bsuit.integer) {
+		if(g_redspawn_bsuit.integer) {
 			ent->client->ps.powerups[PW_BATTLESUIT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_eliminationred_bsuit.integer * 1000;
+			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_redspawn_bsuit.integer * 1000;
 		}
-		if(g_eliminationred_invis.integer) {
+		if(g_redspawn_invis.integer) {
 			ent->client->ps.powerups[PW_INVIS] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_INVIS] +=  g_eliminationred_invis.integer * 1000;
+			ent->client->ps.powerups[PW_INVIS] +=  g_redspawn_invis.integer * 1000;
 		}
-		if(g_eliminationred_flight.integer) {
+		if(g_redspawn_flight.integer) {
 			ent->client->ps.powerups[PW_FLIGHT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_FLIGHT] +=  g_eliminationred_flight.integer * 1000;
+			ent->client->ps.powerups[PW_FLIGHT] +=  g_redspawn_flight.integer * 1000;
 		}
-		if(g_eliminationred_holdable.integer == 1) {
+		if(g_redspawn_holdable.integer == 1) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
 		}
-		if(g_eliminationred_holdable.integer == 2) {
+		if(g_redspawn_holdable.integer == 2) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
 		}
-		if(g_eliminationred_holdable.integer == 3) {
+		if(g_redspawn_holdable.integer == 3) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
 			ent->client->ps.eFlags |= EF_KAMIKAZE;
 		}
-		if(g_eliminationred_holdable.integer == 4) {
+		if(g_redspawn_holdable.integer == 4) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
 		}
-		if(g_eliminationred_holdable.integer == 5) {
+		if(g_redspawn_holdable.integer == 5) {
 			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 		}
 
-		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_eliminationred_startArmor.integer;
-		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_eliminationred_startHealth.integer;
+		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_redspawn_armor.integer;
+		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_redspawn_health.integer;
 		if(ent->botskill == 7){
 			ent->health = ent->client->ps.stats[STAT_HEALTH] = 65000;
 		}

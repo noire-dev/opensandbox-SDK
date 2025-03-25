@@ -107,51 +107,6 @@ static void CG_ParseElimination( void ) {
 
 /*
 =================
-CG_ParseMappage
-Sago: This parses values from the server rather directly. Some checks are performed, but beware if you change it or new
-security holes are found
-=================
-*/
-static void CG_ParseMappage( void ) {
-    char command[1024];
-    const char *temp;
-    const char*	c;
-    int i;
-
-    temp = CG_Argv( 1 );
-    for( c = temp; *c; ++c) {
-		switch(*c) {
-			case '\n':
-			case '\r':
-			case ';':
-				//The server tried something bad!
-				return;
-			break;
-		}
-        }
-    Q_strncpyz(command,va("ui_mappage %s",temp),1024);
-    for(i=2;i<12;i++) {
-        temp = CG_Argv( i );
-        for( c = temp; *c; ++c) {
-                    switch(*c) {
-                            case '\n':
-                            case '\r':
-                            case ';':
-                                    //The server tried something bad!
-                                    return;
-                            break;
-                    }
-            }
-        if(strlen(temp)<1)
-            temp = "---";
-        Q_strcat(command,1024,va(" %s ",temp));
-    }
-    trap_SendConsoleCommand(command);
-
-}
-
-/*
-=================
 CG_ParseDDtimetaken
 
 =================
@@ -262,7 +217,7 @@ static void CG_ParseTeamInfo( void ) {
 	}
 }
 
-static void CG_ParseWeaponProperties(void) {
+static void CG_ParseGameCvars(void) {
 	mod_sgspread     = atoi(CG_Argv(1));
 	mod_sgcount     = atoi(CG_Argv(2));
 	mod_lgrange     = atoi(CG_Argv(3));
@@ -383,7 +338,7 @@ void CG_ParseServerinfo( void ) {
 		cgs.ffa_gt = 1;
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
-        cgs.elimflags = atoi( Info_ValueForKey( info, "elimflags" ) );
+    cgs.elimflags = atoi( Info_ValueForKey( info, "elimflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
@@ -400,9 +355,6 @@ void CG_ParseServerinfo( void ) {
 	cgs.delagHitscan = atoi( Info_ValueForKey( info, "g_delagHitscan" ) );
 	trap_Cvar_Set("g_delagHitscan", va("%i", cgs.delagHitscan));
 //unlagged - server options
-
-        //Copy allowed votes directly to the client:
-        trap_Cvar_Set("cg_voteflags",Info_ValueForKey( info, "voteflags" ) );
 }
 
 /*
@@ -692,9 +644,9 @@ static void CG_MapRestart( void ) {
 	// we really should clear more parts of cg here and stop sounds
 
 	// play the "fight" sound if this is a restart without warmup
-	if ( cg.warmup == 0 /* && cgs.gametype == GT_TOURNAMENT */) {
+	if ( cg.warmup == 0  && cgs.gametype != GT_SANDBOX ) {
 		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
-		CG_CenterPrint( "FIGHT!", 120, GIANTCHAR_WIDTH*2 );
+		//CG_CenterPrint( "FIGHT!", 120, GIANTCHAR_WIDTH*2 );
 	}
 }
 
@@ -815,11 +767,6 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	if ( !strcmp( cmd, "printChat" ) ) {
-		CG_PrintfChat(qfalse, "%s", CG_Argv(1) );
-		return;
-	}
-
 	if ( !strcmp( cmd, "chat" ) ) {
 		if ( !cg_teamChatsOnly.integer ) {
                         if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
@@ -863,11 +810,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "elimination" ) ) {
 		CG_ParseElimination();
-		return;
-	}
-
-	if ( !strcmp( cmd, "mappage" ) ) {
-		CG_ParseMappage();
 		return;
 	}
 
@@ -921,8 +863,8 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	if ( !strcmp( cmd, "weaponProperties" ) ) {
-        CG_ParseWeaponProperties();
+	if ( !strcmp( cmd, "gCvars" ) ) {
+        CG_ParseGameCvars();
         return;
     }
 	

@@ -22,69 +22,17 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-/*
-=======================================================================
-
-INGAME MENU
-
-=======================================================================
-*/
-
-
-
-
 
 #include "ui_local.h"
 #include "ui_dynamicmenu.h"
 
-
-#define INGAME_FRAME		"menu/assets/cut_frame"
-#define INGAME_SCROLL		"menu/assets/separator"
-//#define INGAME_FRAME					"menu/assets/cut_frame"
-#define INGAME_MENU_VERTICAL_SPACING	26
-
-#define MAX_INGAME_SCROLLS 		6
-#define SCROLL_HEIGHT			16
-
-#define ID_TEAM					10
-#define ID_ADDBOTS				11
-#define ID_REMOVEBOTS			12
-#define ID_SETUP				13
-#define ID_SERVERINFO			14
-#define ID_LEAVEARENA			15
-#define ID_RESTART				16
-#define ID_QUIT					17
-#define ID_RESUME				18
-#define ID_TEAMORDERS			19
-#define ID_NEXTMAP				20
-#define ID_ENABLEDITEMS			21
-
-
-typedef struct {
-	menuframework_s	menu;
-
-	menubitmap_s	frame;
-	menutext_s		team;
-	menutext_s		setup;
-	menutext_s		server;
-	menutext_s		leave;
-	menutext_s		restart;
-	menutext_s		addbots;
-	menutext_s		removebots;
-	menutext_s		teamorders;
-	menutext_s		quit;
-	menutext_s		resume;
-	menutext_s		nextmap;
-	menutext_s		enableditems;
-
-	int num_scrolls;
-	int scroll_y[MAX_INGAME_SCROLLS];
-} ingamemenu_t;
-
-static ingamemenu_t	s_ingame;
-
-
-
+#define ID_ADDBOTS				10
+#define ID_REMOVEBOTS			11
+#define ID_LEAVEARENA			12
+#define ID_RESTART				13
+#define ID_QUIT					14
+#define ID_NEXTMAP				15
+#define ID_ENABLEDITEMS			16
 
 /*
 =================
@@ -101,8 +49,6 @@ int UI_CurrentPlayerTeam( void )
 	return atoi(Info_ValueForKey(info, "t"));
 }
 
-
-
 /*
 =================
 InGame_RestartAction
@@ -117,7 +63,6 @@ static void InGame_RestartAction( qboolean result ) {
 	trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
 }
 
-
 /*
 =================
 InGame_QuitAction
@@ -130,7 +75,6 @@ static void InGame_QuitAction( qboolean result ) {
 	UI_ForceMenuOff();
 	UI_CreditMenu(0);
 }
-
 
 /*
 =================
@@ -171,8 +115,6 @@ static void InGame_NextMap( qboolean result )
 	trap_Cmd_ExecuteText( EXEC_APPEND, "vstr nextmap\n");
 }
 
-
-
 /*
 =================
 InGame_EventHandler
@@ -183,14 +125,6 @@ May be used by dynamic menu system also
 static void InGame_EventHandler(int id)
 {
 	switch( id ) {
-	case ID_TEAM:
-		UI_TeamMainMenu();
-		break;
-
-	case ID_SETUP:
-		UI_SetupMenu();
-		break;
-
 	case ID_LEAVEARENA:
 		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		break;
@@ -213,24 +147,12 @@ static void InGame_EventHandler(int id)
 		}
 		break;
 
-	case ID_SERVERINFO:
-		UI_ServerInfoMenu();
-		break;
-
 	case ID_ADDBOTS:
 		UI_AddBotsMenu();
 		break;
 
 	case ID_REMOVEBOTS:
 		UI_RemoveBotsMenu(RBM_KICKBOT);
-		break;
-
-	case ID_TEAMORDERS:
-		UI_BotCommandMenu_f();
-		break;
-
-	case ID_RESUME:
-		UI_ForceMenuOff();
 		break;
 
 	case ID_NEXTMAP:
@@ -248,339 +170,10 @@ static void InGame_EventHandler(int id)
 	}
 }
 
-
-
-
-/*
-=================
-InGame_Event
-=================
-*/
-static void InGame_Event( void *ptr, int notification ) {
-	if( notification != QM_ACTIVATED ) {
-		return;
-	}
-
-	InGame_EventHandler(((menucommon_s*)ptr)->id );
-}
-
-
-
-/*
-=================
-InGame_MenuDraw
-=================
-*/
-static void InGame_MenuDraw(void)
-{
-	int i;
-
-	for (i = 0; i < s_ingame.num_scrolls; i++) {
-		UI_DrawNamedPic(320 - 64, s_ingame.scroll_y[i],  128, SCROLL_HEIGHT, INGAME_SCROLL);
-	}
-
-	// draw the controls
-	Menu_Draw(&s_ingame.menu);
-}
-
-
-
-/*
-=================
-InGame_MenuInit
-=================
-*/
-void InGame_MenuInit( void ) {
-	int		y;
-	int gametype;
-
-	memset( &s_ingame, 0 ,sizeof(ingamemenu_t) );
-
-	InGame_Cache();
-
-	gametype = DynamicMenu_ServerGametype();
-	s_ingame.menu.wrapAround = qtrue;
-	s_ingame.menu.native = qfalse;
-	s_ingame.menu.fullscreen = qfalse;
-	s_ingame.menu.draw = InGame_MenuDraw;
-
-	s_ingame.frame.generic.type			= MTYPE_BITMAP;
-	s_ingame.frame.generic.flags		= QMF_INACTIVE;
-	s_ingame.frame.generic.name			= INGAME_FRAME;
-	s_ingame.frame.generic.x			= 320-233;
-	s_ingame.frame.generic.y			= 232-196;
-	s_ingame.frame.width				= 466;
-	s_ingame.frame.height				= 396;
-
-	//y = 96;
-	y = 50;
-	s_ingame.team.generic.type			= MTYPE_PTEXT;
-	s_ingame.team.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.team.generic.x				= 320;
-	s_ingame.team.generic.y				= y;
-	s_ingame.team.generic.id			= ID_TEAM;
-	s_ingame.team.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.team.string				= "START";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.team.string				= "СТАРТ";
-	}
-	s_ingame.team.color					= color_white;
-	s_ingame.team.style					= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.addbots.generic.type		= MTYPE_PTEXT;
-	s_ingame.addbots.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.addbots.generic.x			= 320;
-	s_ingame.addbots.generic.y			= y;
-	s_ingame.addbots.generic.id			= ID_ADDBOTS;
-	s_ingame.addbots.generic.callback	= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.addbots.string				= "ADD BOTS";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.addbots.string				= "ДОБАВИТЬ БОТОВ";
-	}
-	s_ingame.addbots.color				= color_white;
-	s_ingame.addbots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) ) {
-		s_ingame.addbots.generic.flags |= QMF_GRAYED;
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.removebots.generic.type		= MTYPE_PTEXT;
-	s_ingame.removebots.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.removebots.generic.x			= 320;
-	s_ingame.removebots.generic.y			= y;
-	s_ingame.removebots.generic.id			= ID_REMOVEBOTS;
-	s_ingame.removebots.generic.callback	= InGame_Event; 
-	if(cl_language.integer == 0){
-	s_ingame.removebots.string				= "REMOVE BOTS";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.removebots.string				= "УДАЛИТЬ БОТОВ";
-	}
-	s_ingame.removebots.color				= color_white;
-	s_ingame.removebots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) ) {
-		s_ingame.removebots.generic.flags |= QMF_GRAYED;
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.teamorders.generic.type		= MTYPE_PTEXT;
-	s_ingame.teamorders.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.teamorders.generic.x			= 320;
-	s_ingame.teamorders.generic.y			= y;
-	s_ingame.teamorders.generic.id			= ID_TEAMORDERS;
-	s_ingame.teamorders.generic.callback	= InGame_Event; 
-	if(cl_language.integer == 0){
-	s_ingame.teamorders.string				= "TEAM ORDERS";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.teamorders.string				= "КОМАНДНЫЕ ПРИКАЗЫ";
-	}
-	s_ingame.teamorders.color				= color_white;
-	s_ingame.teamorders.style				= UI_CENTER|UI_SMALLFONT;
-	if( !(gametype >= GT_TEAM) ) {
-		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
-	}
-	else if( UI_CurrentPlayerTeam() == TEAM_SPECTATOR ) {
-		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
-	}
-	
-	if(gametype == GT_LMS) {
-	s_ingame.teamorders.generic.flags |= QMF_GRAYED;	
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-    s_ingame.scroll_y[ s_ingame.num_scrolls++ ] = y;
-
-    y += SCROLL_HEIGHT + 2;
-	s_ingame.setup.generic.type			= MTYPE_PTEXT;
-	s_ingame.setup.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.setup.generic.x			= 320;
-	s_ingame.setup.generic.y			= y;
-	s_ingame.setup.generic.id			= ID_SETUP;
-	s_ingame.setup.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.setup.string				= "SETUP";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.setup.string				= "НАСТРОЙКИ";
-	}
-	s_ingame.setup.color				= color_white;
-	s_ingame.setup.style				= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.server.generic.type		= MTYPE_PTEXT;
-	s_ingame.server.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.server.generic.x			= 320;
-	s_ingame.server.generic.y			= y;
-	s_ingame.server.generic.id			= ID_SERVERINFO;
-	s_ingame.server.generic.callback	= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.server.string				= "SERVER INFO";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.server.string				= "ИНФОРМАЦИЯ О СЕРВЕРЕ";
-	}
-	s_ingame.server.color				= color_white;
-	s_ingame.server.style				= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-    s_ingame.scroll_y[ s_ingame.num_scrolls++ ] = y;
-
-    y += SCROLL_HEIGHT + 2;
-	s_ingame.enableditems.generic.type			= MTYPE_PTEXT;
-	s_ingame.enableditems.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.enableditems.generic.x			= 320;
-	s_ingame.enableditems.generic.y			= y;
-	s_ingame.enableditems.generic.id			= ID_ENABLEDITEMS;
-	s_ingame.enableditems.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.enableditems.string				= "DISABLE ITEMS";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.enableditems.string				= "ОТКЛЮЧЕНИЕ ПРЕДМЕТОВ";
-	}
-	s_ingame.enableditems.color				= color_white;
-	s_ingame.enableditems.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) )
-	{
-		s_ingame.enableditems.generic.flags |= QMF_GRAYED;
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.restart.generic.type		= MTYPE_PTEXT;
-	s_ingame.restart.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.restart.generic.x			= 320;
-	s_ingame.restart.generic.y			= y;
-	s_ingame.restart.generic.id			= ID_RESTART;
-	s_ingame.restart.generic.callback	= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.restart.string				= "RESTART ARENA";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.restart.string				= "РЕСТАРТ АРЕНЫ";
-	}
-	s_ingame.restart.color				= color_white;
-	s_ingame.restart.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) ) {
-		s_ingame.restart.generic.flags |= QMF_GRAYED;
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.nextmap.generic.type		= MTYPE_PTEXT;
-	s_ingame.nextmap.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.nextmap.generic.x			= 320;
-	s_ingame.nextmap.generic.y			= y;
-	s_ingame.nextmap.generic.id			= ID_NEXTMAP;
-	s_ingame.nextmap.generic.callback	= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.nextmap.string				= "NEXT MAP";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.nextmap.string				= "СЛЕДУЮШАЯ КАРТА";
-	}
-	s_ingame.nextmap.color				= color_white;
-	s_ingame.nextmap.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) ) {
-		s_ingame.nextmap.generic.flags |= QMF_GRAYED;
-	}
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.resume.generic.type			= MTYPE_PTEXT;
-	s_ingame.resume.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.resume.generic.x				= 320;
-	s_ingame.resume.generic.y				= y;
-	s_ingame.resume.generic.id				= ID_RESUME;
-	s_ingame.resume.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.resume.string					= "RESUME GAME";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.resume.string					= "ПРОДОЛЖИТЬ ИГРУ";
-	}
-	s_ingame.resume.color					= color_white;
-	s_ingame.resume.style					= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-    s_ingame.scroll_y[ s_ingame.num_scrolls++ ] = y;
-
-    y += SCROLL_HEIGHT + 2;
-	s_ingame.leave.generic.type			= MTYPE_PTEXT;
-	s_ingame.leave.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.leave.generic.x			= 320;
-	s_ingame.leave.generic.y			= y;
-	s_ingame.leave.generic.id			= ID_LEAVEARENA;
-	s_ingame.leave.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.leave.string				= "LEAVE ARENA";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.leave.string				= "ПОКИНУТЬ АРЕНУ";
-	}
-	s_ingame.leave.color				= color_white;
-	s_ingame.leave.style				= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.quit.generic.type			= MTYPE_PTEXT;
-	s_ingame.quit.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.quit.generic.x				= 320;
-	s_ingame.quit.generic.y				= y;
-	s_ingame.quit.generic.id			= ID_QUIT;
-	s_ingame.quit.generic.callback		= InGame_Event;
-	if(cl_language.integer == 0){
-	s_ingame.quit.string				= "EXIT GAME";
-	}
-	if(cl_language.integer == 1){
-	s_ingame.quit.string				= "ВЫЙТИ ИЗ ИГРЫ";
-	}
-	s_ingame.quit.color					= color_white;
-	s_ingame.quit.style					= UI_CENTER|UI_SMALLFONT;
-
-	Menu_AddItem( &s_ingame.menu, &s_ingame.frame );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.team );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.addbots );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.removebots );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.teamorders );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.setup );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.server );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.enableditems );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.restart );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.nextmap );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.resume );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.leave );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.quit );
-}
-
-
-/*
-=================
-InGame_Cache
-=================
-*/
-void InGame_Cache( void ) {
-	trap_R_RegisterShaderNoMip( INGAME_FRAME );
-}
-
-
-
-/*
-=======================================================================
-
-INGAME ESCAPE MENU, USING DYNAMIC MENU SYSTEM
-
-=======================================================================
-*/
-
-
 typedef struct {
 	int 	gametype;
 	char* 	menu;
 } gametypeMenu;
-
-
 
 static gametypeMenu gametypeMenu_data[] = {
 	{ GT_SANDBOX, "SandBox"},
@@ -598,6 +191,7 @@ static gametypeMenu gametypeMenu_data[] = {
 	{ GT_DOUBLE_D, "2 Domination"},
 	{ GT_DOMINATION, "Domination"},
 };
+
 static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_SANDBOX, "Песочница"},
 	{ GT_FFA, "Все против всех"},
@@ -615,10 +209,7 @@ static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_DOMINATION, "Доминирование"},
 };
 
-
 static int gametypeMenu_size = sizeof(gametypeMenu_data)/sizeof(gametypeMenu_data[0]);
-
-
 
 // main dynamic in game menu
 enum {
@@ -635,14 +226,11 @@ enum {
 	IGM_EXIT
 };
 
-
-
 // callvote misc options
 enum {
 	CVM_NEXTMAP,
 	CVM_MAPRESTART
 };
-
 
 // callvote options
 enum {
@@ -653,7 +241,6 @@ enum {
 	IGCV_MISC
 };
 
-
 // vote options
 enum {
 	IGV_YES,
@@ -661,7 +248,6 @@ enum {
 	IGV_TEAMYES,
 	IGV_TEAMNO
 };
-
 
 // setup options
 enum {
@@ -701,7 +287,6 @@ enum {
 	IGS_SAVE8
 };
 
-
 // join team options
 enum {
 	DM_START_SPECTATOR,
@@ -725,24 +310,6 @@ static char* jointeam_cmd[DM_START_MAX] = {
 	"follow2"	// DM_START_FOLLOW2
 };
 
-
-
-
-
-/*
-=================
-InGameDynamic_Close
-=================
-*/
-static void InGameDynamic_Close( void )
-{
-//	UI_PopMenu();
-}
-
-
-
-
-
 /*
 =================
 IG_FragLimit_Event
@@ -757,7 +324,6 @@ static void IG_FragLimit_Event( int index )
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote fraglimit %i\n",id));
 }
-
 
 /*
 =================
@@ -774,8 +340,6 @@ static void IG_TimeLimit_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote timelimit %i\n",id));
 }
 
-
-
 /*
 =================
 IG_DoWarmup_Event
@@ -791,8 +355,6 @@ static void IG_DoWarmup_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote g_doWarmup %i\n",id));
 }
 
-
-
 /*
 =================
 IG_UseOldInGame_Event
@@ -804,7 +366,6 @@ static void IG_UseOldInGame_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case ID_ADDBOTS:
@@ -823,9 +384,6 @@ static void IG_UseOldInGame_Event( int index )
 	InGame_EventHandler(id);
 }
 
-
-
-
 /*
 =================
 IG_Setup_Event
@@ -837,7 +395,6 @@ static void IG_Setup_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case IGS_PLAYER:
@@ -884,7 +441,6 @@ static void IG_Actions_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case IGS_RECORD:
@@ -932,7 +488,6 @@ static void IG_Save_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case IGS_SAVE1:
@@ -964,9 +519,6 @@ static void IG_Save_Event( int index )
 		return;
 	}
 }
-
-
-
 
 /*
 =================
@@ -1005,8 +557,6 @@ static void IG_CallVoteGameType_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote g_gametype %i\n",id));
 }
 
-
-
 /*
 =================
 IG_CallVoteMisc_Event
@@ -1035,9 +585,6 @@ static void IG_CallVoteMisc_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote %s\n",s));
 }
 
-
-
-
 /*
 =================
 IG_CallVote_Event
@@ -1049,7 +596,6 @@ static void IG_CallVote_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case IGCV_KICK:
@@ -1067,9 +613,6 @@ static void IG_CallVote_Event( int index )
 	}
 }
 
-
-
-
 /*
 =================
 IG_Vote_Event
@@ -1081,7 +624,6 @@ static void IG_Vote_Event( int index )
 	char* s;
 
 	id = DynamicMenu_IdAtIndex(index);
-	InGameDynamic_Close();
 
 	switch (id) {
 	case IGV_YES:
@@ -1104,8 +646,6 @@ static void IG_Vote_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, s);
 }
 
-
-
 /*
 =================
 IG_TeamOrders_Event
@@ -1116,7 +656,6 @@ static void IG_TeamOrders_Event( int index )
 	UI_PopMenu();
 	UI_BotCommandMenu_f();
 }
-
 
 /*
 =================
@@ -1138,10 +677,6 @@ static void IG_Start_Event( int index )
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("team %s\n", jointeam_cmd[id]));
 }
-
-
-
-
 
 /*
 =================
@@ -1179,8 +714,6 @@ static void IG_TimeLimit_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
 /*
 =================
 IG_FragLimit_SubMenu
@@ -1217,7 +750,6 @@ static void IG_FragLimit_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
 /*
 =================
 IG_DoWarmup_SubMenu
@@ -1239,8 +771,6 @@ static void IG_DoWarmup_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -1267,8 +797,6 @@ static void IG_Map_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -1307,8 +835,6 @@ static void IG_CallVoteMisc_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
 /*
 =================
 IG_CallVoteMisc_SubMenu
@@ -1344,8 +870,6 @@ if(cl_language.integer == 1){
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -1383,8 +907,6 @@ static void IG_CallVote_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -1424,8 +946,6 @@ static void IG_Vote_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -1530,8 +1050,6 @@ static void IG_Save_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
 /*
 =================
 IG_AddBot_SubMenu
@@ -1552,10 +1070,6 @@ static void IG_AddBot_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
-
 
 /*
 =================
@@ -1578,9 +1092,6 @@ static void IG_Exit_SubMenu( void )
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
 
 /*
 =================
@@ -1636,9 +1147,6 @@ static void IG_Start_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
-
 /*
 =================
 IG_Close_Event
@@ -1648,8 +1156,6 @@ static void IG_Close_Event( int index )
 {
 	UI_ForceMenuOff();
 }
-
-
 
 /*
 =================
@@ -1707,9 +1213,6 @@ static void InGameDynamic_InitPrimaryMenu( void )
 
 	depth = DynamicMenu_Depth();
 	gametype = trap_Cvar_VariableValue("g_gametype");
-	//if (gametype < GT_TEAM || team == TEAM_SPECTATOR || gametype == GT_LMS) {
-	//	DynamicMenu_SetFlags(depth, IGM_TEAMORDERS, QMF_GRAYED);
-	//}
 
 	// disable map commands if non-local server
 	localserver = trap_Cvar_VariableValue( "sv_running" );
@@ -1743,13 +1246,8 @@ static void InGameDynamic_InitPrimaryMenu( void )
 		DynamicMenu_SetFlags(depth, IGM_VOTE, QMF_GRAYED);
 	}
 
-	//DynamicMenu_AddBackground(INGAME_FRAME);
-
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
 
 /*
 =================
@@ -1762,9 +1260,6 @@ void UI_InGameDynamic( void )
 	InGameDynamic_InitPrimaryMenu();
 }
 
-
-
-
 /*
 =================
 UI_InGameMenu
@@ -1772,40 +1267,11 @@ UI_InGameMenu
 */
 void UI_InGameMenu( void )
 {
-	if (gui_ingame_dynamicmenu.integer) {
-		UI_InGameDynamic();
-	}
-	else {
-		// force as top level menu
-		uis.menusp = 0;
-
-		// set menu cursor to a nice location
-		uis.cursorx = 319;
-		uis.cursory = 80;
-
-		InGame_MenuInit();
-		UI_PushMenu( &s_ingame.menu );
-	}
+	UI_InGameDynamic();
 }
-
-
-
-
-
-
-/*
-=======================================================================
-
-INGAME DYNAMIC BOT COMMAND MENU
-
-=======================================================================
-*/
-
 
 // stores current gametype for fast access by menus
 static int botcommandmenu_gametype = 0;
-
-
 
 enum {
 	COM_WHOLEADER,
@@ -1814,7 +1280,6 @@ enum {
 	COM_MYTASK
 } commandId;
 
-
 static char* commandString[] = {
 	"Who is the leader", // COM_WHOLEADER
 	"I am the leader",	// COM_IAMLEADER
@@ -1822,7 +1287,6 @@ static char* commandString[] = {
 	"What is my job",	// COM_MYTASK
 	0
 };
-
 
 enum {
 	BC_NULL,
@@ -1842,7 +1306,6 @@ enum {
 	BC_DOMINATEA,
 	BC_DOMINATEB
 } botCommandId;
-
 
 static char* botCommandStrings[] = {
 	"", // BC_NULL
@@ -1864,12 +1327,6 @@ static char* botCommandStrings[] = {
 	0
 };
 
-
-
-
-
-
-
 /*
 =================
 BotCommand_MenuClose
@@ -1880,10 +1337,6 @@ void BotCommand_MenuClose( void )
 	if (gui_autoclosebotmenu.integer)
 		UI_PopMenu();
 }
-
-
-
-
 
 /*
 =================
@@ -1932,10 +1385,6 @@ static void DM_BotPlayerTarget_Event( int index)
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("say_team \"%s\"\n", s));
 }
 
-
-
-
-
 /*
 =================
 DM_BotItemItemTarget_Event
@@ -1983,9 +1432,6 @@ static void DM_BotItemItemTarget_Event( int index)
 	BotCommand_MenuClose();
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("say_team \"%s\"\n", s));
 }
-
-
-
 
 /*
 =================
@@ -2039,8 +1485,6 @@ static void DM_BotItemTarget_Event( int index)
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("say_team \"%s\"\n", s));
 }
 
-
-
 /*
 =================
 DM_BotCommand_Event
@@ -2091,10 +1535,6 @@ static void DM_BotCommand_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("say_team \"%s\"\n", s));
 }
 
-
-
-
-
 /*
 =================
 DM_Command_Event
@@ -2136,8 +1576,6 @@ static void DM_Command_Event( int index )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("say_team \"%s\"\n", commandString[cmd]));
 }
 
-
-
 /*
 =================
 DM_Close_Event
@@ -2147,10 +1585,6 @@ static void DM_Close_Event( int index )
 {
 	UI_PopMenu();
 }
-
-
-
-
 
 /*
 =================
@@ -2171,9 +1605,6 @@ static void DM_TeamList_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
-
 /*
 =================
 DM_ItemPatrol2_SubMenu
@@ -2189,16 +1620,10 @@ static void DM_ItemPatrol2_SubMenu( void )
 
 	depth = DynamicMenu_Depth() - 1;
 	exclude = DynamicMenu_ActiveIdAtDepth(depth);
-//	index = s_dynamic.active[depth - 1];	// previous menu level
-//	exclude = s_dynamic.data[index].id;
 	DynamicMenu_AddListOfItems(exclude, 0, DM_BotItemItemTarget_Event);
 
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
-
 
 /*
 =================
@@ -2211,10 +1636,6 @@ static void DM_ItemPatrol_SubMenu( void )
 	DynamicMenu_AddListOfItems(-1, DM_ItemPatrol2_SubMenu, 0);
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
-
 
 /*
 =================
@@ -2230,12 +1651,6 @@ static void DM_CampItemList_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
-
-
-
-
 /*
 =================
 DM_ItemList_SubMenu
@@ -2247,10 +1662,6 @@ void DM_ItemList_SubMenu( void )
 	DynamicMenu_AddListOfItems(-1, 0, DM_BotItemTarget_Event);
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
-
-
 
 /*
 =================
@@ -2267,8 +1678,6 @@ static void DM_EnemyList_SubMenu( void )
 	}
 	DynamicMenu_FinishSubMenuInit();
 }
-
-
 
 /*
 =================
@@ -2378,8 +1787,6 @@ static void DM_CommandList_SubMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
 /*
 =================
 BotCommand_InitPrimaryMenu
@@ -2433,24 +1840,6 @@ static void BotCommand_InitPrimaryMenu( void )
 	DynamicMenu_FinishSubMenuInit();
 }
 
-
-
-
-
-
-
-/*
-=================
-UI_BotCommand_Cache
-=================
-*/
-void UI_BotCommand_Cache( void )
-{
-}
-
-
-
-
 /*
 =================
 UI_BotCommandMenu
@@ -2462,14 +1851,10 @@ void UI_BotCommandMenu( void )
 		return;
 
 	botcommandmenu_gametype = DynamicMenu_ServerGametype();
-	//if ( botcommandmenu_gametype< GT_TEAM || botcommandmenu_gametype == GT_LMS)
-		//return;
 
 	DynamicMenu_MenuInit(qfalse, qtrue);
 	BotCommand_InitPrimaryMenu();
 }
-
-
 
 /*
 =================
@@ -2480,9 +1865,3 @@ void UI_BotCommandMenu_f( void )
 {
 	UI_BotCommandMenu();
 }
-
-
-
-
-
-

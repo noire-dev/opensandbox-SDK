@@ -684,12 +684,8 @@ void CG_DrawTourneyScoreboard( void ) {
 	color[2] = 1;
 	color[3] = 1;
 
-	// print the mesage of the day
-	s = CG_ConfigString( CS_MOTD );
-	if ( !s[0] ) {
-		s = "Scoreboard";
-	}
-
+	s = "Scoreboard";
+	
 	// print optional title
 	CG_CenterGiantLine( 8, s );
 

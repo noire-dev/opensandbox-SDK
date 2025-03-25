@@ -267,70 +267,6 @@ void Svcmd_PropNpc_AS_f( void ){
 
 /*
 ============
-Svcmd_BannerPrint_f
-Does a BannerPrint from the Console
-KK-OAX Commented out in g_svccmds.c, so right now it's useless.
-============
-*/
-void Svcmd_BannerPrint_f( void )
-{
-  if( trap_Argc( ) < 2 )
-  {
-    G_Printf( "usage: bp <message>\n" );
-    return;
-  }
-
-  trap_SendServerCommand( -1, va( "bp \"%s\"", ConcatArgs( 1 ) ) );
-}
-/*
-============
-Svcmd_EjectClient_f
-Kicks a Client from Console
-KK-OAX, I'm pretty sure this is also done in the "server" portion 
-of the engine code with "kick," but oh well. 
-============
-*/
-void Svcmd_EjectClient_f( void )
-{
-  char *reason, name[ MAX_STRING_CHARS ];
-
-  if( trap_Argc( ) < 2 )
-  {
-    G_Printf( "usage: eject <player|-1> <reason>\n" );
-    return;
-  }
-
-  trap_Argv( 1, name, sizeof( name ) );
-  reason = ConcatArgs( 2 );
-
-  if( atoi( name ) == -1 )
-  {
-    int i;
-    for( i = 0; i < level.maxclients; i++ )
-    {
-      if( level.clients[ i ].pers.connected == CON_DISCONNECTED )
-        continue;
-      if( level.clients[ i ].pers.localClient )
-        continue;
-      trap_DropClient( i, reason );
-    }
-  }
-  else
-  {
-    gclient_t *cl = ClientForString( name );
-    if( !cl )
-      return;
-    if( cl->pers.localClient )
-    {
-      G_Printf( "eject: cannot eject local clients\n" );
-      return;
-    }
-    trap_DropClient( cl-level.clients, reason );
-  }
-}
-
-/*
-============
 Svcmd_DumpUser_f
 Shows User Info
 ============
@@ -365,23 +301,6 @@ void Svcmd_DumpUser_f( void )
 
     G_Printf( "%-20s%s\n", key, value );
   }
-}
-
-void Svcmd_Chat_f( void )
-{
-    trap_SendServerCommand( -1, va( "chat \"%s\"", ConcatArgs( 1 ) ) );
-    G_LogPrintf("chat: %s\n", ConcatArgs( 1 ) );
-}
-
-/*
-=============
-Svcmd_ListIP_f
-Dumb Wrapper for the trap_Send command
-=============
-*/
-void Svcmd_ListIP_f( void )
-{
-    trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
 }
 
 /*

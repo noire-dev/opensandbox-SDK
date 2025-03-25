@@ -781,7 +781,6 @@ UI_Cache
 */
 void UI_Cache_f( void ) {
 	MainMenu_Cache();
-	InGame_Cache();
 	ConfirmMenu_Cache();
 	PlayerModel_Cache();
 	PlayerSettings_Cache();
@@ -789,7 +788,6 @@ void UI_Cache_f( void ) {
 	Demos_Cache();
 	UI_CinematicsMenu_Cache();
 	Preferences_Cache();
-	ServerInfo_Cache();
 	SpecifyServer_Cache();
 	ArenaServers_Cache();
 	StartServer_Cache();
@@ -798,7 +796,6 @@ void UI_Cache_f( void ) {
 	UI_DisplayOptionsMenu_Cache();
 	UI_SoundOptionsMenu_Cache();
 	UI_NetworkOptionsMenu_Cache();
-	TeamMain_Cache();
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
 	UI_SetupMenu_Cache();
@@ -965,10 +962,6 @@ if( Q_stricmp (UI_Argv(0), "ui_saveconfiged") == 0 ){
 UI_saveMapEdMenu();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_serverinfo") == 0 ){
-UI_ServerInfoMenu();
-return qtrue;
-}
 if( Q_stricmp (UI_Argv(0), "ui_servers2") == 0 ){
 UI_ArenaServersMenu();
 return qtrue;
@@ -983,10 +976,6 @@ return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_specifyserver") == 0 ){
 UI_SpecifyServerMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_team") == 0 ){
-UI_TeamMainMenu();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_teamorders") == 0 ){
@@ -1111,7 +1100,6 @@ void UI_Init( void ) {
 	// cache redundant calulations
 	trap_GetGlconfig( &uis.glconfig );
 	
-
 	// for native screen
 	uis.sw = uis.glconfig.vidWidth;
 	uis.sh = uis.glconfig.vidHeight;

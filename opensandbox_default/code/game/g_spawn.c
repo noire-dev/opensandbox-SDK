@@ -928,8 +928,6 @@ void SP_worldspawn( void ) {
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );				// map specific message
 
-	trap_SetConfigstring( CS_MOTD, g_motd.string );		// message of the day
-
 	G_SpawnString( "gravity", "800", &s );
 	trap_Cvar_Set( "g_gravity", s );
 

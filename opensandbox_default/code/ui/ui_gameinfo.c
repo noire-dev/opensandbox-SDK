@@ -42,9 +42,6 @@ static char		*ui_botInfos[MAX_BOTS];
 static int		ui_numArenas;
 static char		*ui_arenaInfos[MAX_ARENAS];
 
-static int		ui_numSinglePlayerArenas;
-static int		ui_numSpecialSinglePlayerArenas;
-
 static char		dirlist[DIRLIST_SIZE];
 static int		allocPoint, outOfMemory;
 
@@ -253,50 +250,6 @@ static void UI_LoadUnscriptedMaps( void )
 
 /*
 ===============
-GameInfo_RemoveSingleFromArena
-
-The replacement value is always the same length or shorter, so
-we won't have problems with overruns in UI_Alloc()
-===============
-*/
-static void GameInfo_RemoveSingleFromArena( char* info )
-{
-	char newvalue[MAX_INFO_STRING];
-	char* value;
-	char* single;
-	char *p, *q;
-
-	value = Info_ValueForKey(info, "type");
-	if (!value[0])
-		return;
-
-	single = strstr(value, "single");
-	if (!single)
-		return;
-
-	p = newvalue;
-	q = value;
-	while (qtrue) {
-		if (q == single) {
-			q += strlen("single");
-			while (*q == ' ')
-				q++;
-		}
-
-		*p = *q;
-
-		if (!*p)
-			break;
-		p++;
-		q++;
-	};
-
-//	trap_Print(va("replacement value: %s\n", newvalue));
-	Info_SetValueForKey(info, "type", newvalue);
-}
-
-/*
-===============
 UI_LoadArenas
 ===============
 */
@@ -309,8 +262,6 @@ void UI_LoadArenas( void ) {
 	int			dirlen;
 	char		*type;
 	char		*tag;
-	int			singlePlayerNum, specialNum, otherNum;
-//	char		tmpinfo[MAX_INFO_STRING];
 	char*		tmpinfo;
 	int			startArenaScript;
 	int			swap;
@@ -319,13 +270,7 @@ void UI_LoadArenas( void ) {
 
 	ui_numArenas = 0;
 
-	trap_Cvar_Register( &arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM );
-	if( *arenasFile.string ) {
-		UI_LoadArenasFromFile(arenasFile.string);
-	}
-	else {
-		UI_LoadArenasFromFile("scripts/arenas.txt");
-	}
+	UI_LoadArenasFromFile("scripts/arenas.txt");
 
 	startArenaScript = ui_numArenas;
 
@@ -343,9 +288,7 @@ void UI_LoadArenas( void ) {
 
 	trap_Print( va( "%i arenas parsed\n", ui_numArenas ) );
 
-	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not anough memory in pool to load all arenas\n");
-
-//	trap_Print(va("Sort: %i to %i\n", startArenaScript, ui_numArenas));
+	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
 
 	// sort the arenas we loaded from the .arena files, by mapname
 	// we leave the original Id levels (and those in an overriding
@@ -371,7 +314,6 @@ void UI_LoadArenas( void ) {
 		}
 
 		if (swap) {
-//			trap_Print(va("swap: %s with %s\n", bestMap, Info_ValueForKey(ui_arenaInfos[i], "map")));
 			tmpinfo = ui_arenaInfos[i];
 			ui_arenaInfos[i] = ui_arenaInfos[swap];
 			ui_arenaInfos[swap] = tmpinfo;
@@ -384,8 +326,6 @@ void UI_LoadArenas( void ) {
 	}
 
 	// go through and count single players levels
-	ui_numSinglePlayerArenas = 0;
-	ui_numSpecialSinglePlayerArenas = 0;
 	for( n = 0; n < ui_numArenas; n++ ) {
 		// determine type
 		type = Info_ValueForKey( ui_arenaInfos[n], "type" );
@@ -394,65 +334,6 @@ void UI_LoadArenas( void ) {
 		if( !*type ) {
 			continue;
 		}
-
-		if( strstr( type, "single" ) ) {
-			// check for special single player arenas (training, final)
-			tag = Info_ValueForKey( ui_arenaInfos[n], "special" );
-			if( *tag ) {
-				ui_numSpecialSinglePlayerArenas++;
-				continue;
-			}
-
-			ui_numSinglePlayerArenas++;
-		}
-	}
-
-	n = ui_numSinglePlayerArenas % ARENAS_PER_TIER;
-	if( n != 0 ) {
-		ui_numSinglePlayerArenas -= n;
-		trap_Print( va( "%i arenas ignored to make count divisible by %i\n", n, ARENAS_PER_TIER ) );
-	}
-
-	// go through once more and assign number to the levels
-	singlePlayerNum = 0;
-	specialNum = singlePlayerNum + ui_numSinglePlayerArenas;
-	otherNum = specialNum + ui_numSpecialSinglePlayerArenas;
-	for( n = 0; n < ui_numArenas; n++ ) {
-		// determine type
-		type = Info_ValueForKey( ui_arenaInfos[n], "type" );
-
-		// if no type specified, it will be treated as "ffa"
-		if( *type ) {
-			if( strstr( type, "single" ) ) {
-				// check for special single player arenas (training, final)
-				tag = Info_ValueForKey( ui_arenaInfos[n], "special" );
-				if( *tag ) {
-					Info_SetValueForKey( ui_arenaInfos[n], "num", va( "%i", specialNum++ ) );
-					continue;
-				}
-
-				// if some arenas were ignored (above), then we bypass giving them
-				// a single player number, and give them an otherNum instead.
-				// Id maps will always grab the single player values first because
-				// they're in the legacy arenas.txt. Other multiples of ARENAS_PER_TIER
-				// will also get through, so we can still add in tier packs.
-				// Unfortunately, 1 map pk3's (like halven.pk3) with the "single" tag set
-				// might "push" off one of the tier maps... there's nothing we can
-				// do about this except provide an over-riding .arena script
-				// that removes the "single" tag
-				if (singlePlayerNum < ui_numSinglePlayerArenas) {
-					Info_SetValueForKey( ui_arenaInfos[n], "num", va( "%i", singlePlayerNum++ ) );
-					continue;
-				}
-				else {
-					trap_Print(va("..single player map \"%s\" dropped\n", Info_ValueForKey(ui_arenaInfos[n], "map")));
-					GameInfo_RemoveSingleFromArena(ui_arenaInfos[n]);
-				}
-			}
-		}	/* (*type) */
-
-		Info_SetValueForKey( ui_arenaInfos[n], "num", va( "%i", otherNum++ ) );
-
 	}
 }
 
@@ -490,23 +371,6 @@ const char *UI_GetArenaInfoByMap( const char *map ) {
 
 	for( n = 0; n < ui_numArenas; n++ ) {
 		if( Q_stricmp( Info_ValueForKey( ui_arenaInfos[n], "map" ), map ) == 0 ) {
-			return ui_arenaInfos[n];
-		}
-	}
-
-	return NULL;
-}
-
-/*
-===============
-UI_GetSpecialArenaInfo
-===============
-*/
-const char *UI_GetSpecialArenaInfo( const char *tag ) {
-	int			n;
-
-	for( n = 0; n < ui_numArenas; n++ ) {
-		if( Q_stricmp( Info_ValueForKey( ui_arenaInfos[n], "special" ), tag ) == 0 ) {
 			return ui_arenaInfos[n];
 		}
 	}
@@ -560,13 +424,7 @@ void UI_LoadBots( void ) {
 
 	ui_numBots = 0;
 
-	trap_Cvar_Register( &botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM );
-	if( *botsFile.string ) {
-		UI_LoadBotsFromFile(botsFile.string);
-	}
-	else {
-		UI_LoadBotsFromFile("scripts/bots.txt");
-	}
+	UI_LoadBotsFromFile("scripts/bots.txt");
 
 	// get all bots from .bot files
 	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, DIRLIST_SIZE );
@@ -663,18 +521,7 @@ UI_InitGameinfo
 ===============
 */
 void UI_InitGameinfo( void ) {
-
 	UI_InitMemory();
 	UI_LoadArenas();
 	UI_LoadBots();
-
-	if( (trap_Cvar_VariableValue( "fs_restrict" )) || (ui_numSpecialSinglePlayerArenas == 0 && ui_numSinglePlayerArenas == 4) ) {
-		uis.demoversion = qtrue;
-	}
-	else {
-		uis.demoversion = qfalse;
-	}
 }
-
-
-

@@ -585,7 +585,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 		client->ps.stats[STAT_MONEY] = client->pers.oldmoney;
 
-		G_SendWeaponProperties( ent );		//send game setting to client for sync
+		G_SendGameCvars( ent );		//send game setting to client for sync
 		G_SendSwepWeapons( ent );			//send sweps list to client for sync
 
 		// count down armor when over max
@@ -1344,7 +1344,7 @@ if ( !ent->speed ){
 		client->ps.speed *= g_speedfactor.value;
 	}
 	if ( ent->botskill == 9 ) {
-		client->ps.speed *= 2.00;
+		client->ps.speed *= g_nextbot_speed.value;
 	}
 
 	// Let go of the hook if we aren't firing

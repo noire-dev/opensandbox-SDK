@@ -1561,8 +1561,6 @@ extern	vmCvar_t		cg_debugPosition;
 extern	vmCvar_t		cg_debugEvents;
 extern	vmCvar_t		cg_railTrailTime;
 extern	vmCvar_t		cg_paintballMode;
-extern	vmCvar_t		cg_disableLevelStartFade;
-extern	vmCvar_t		cg_bigheadMode;
 extern	vmCvar_t		cg_errorDecay;
 extern	vmCvar_t		cg_nopredict;
 extern	vmCvar_t		cg_noPlayerAnims;
@@ -1603,7 +1601,6 @@ extern	vmCvar_t		cg_drawFriend;
 extern	vmCvar_t		cg_teamChatsOnly;
 extern	vmCvar_t		cg_noVoiceText;
 extern  vmCvar_t		cg_scorePlum;
-extern vmCvar_t			cg_newFont;
 extern vmCvar_t			cg_newConsole;
 extern vmCvar_t			cg_chatTime;
 extern vmCvar_t			cg_consoleTime;
@@ -1658,19 +1655,15 @@ extern	vmCvar_t		cl_timeNudge;
 
 //extra CVARS elimination
 extern	vmCvar_t		cg_alwaysWeaponBar;
-extern  vmCvar_t                cg_voteflags;
 
 extern	vmCvar_t		cg_atmosphericLevel;
 
 extern	vmCvar_t		cg_crosshairPulse;
 
-extern	vmCvar_t                cg_crosshairColorRed;
-extern	vmCvar_t                cg_crosshairColorGreen;
-extern	vmCvar_t                cg_crosshairColorBlue;
+extern	vmCvar_t       	cg_crosshairColorRed;
+extern	vmCvar_t       	cg_crosshairColorGreen;
+extern	vmCvar_t       	cg_crosshairColorBlue;
 
-extern vmCvar_t			cg_weaponBarStyle;
-
-extern vmCvar_t                 cg_weaponOrder;
 extern vmCvar_t			cg_chatBeep;
 extern vmCvar_t			cg_teamChatBeep;
 

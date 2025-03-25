@@ -650,10 +650,10 @@ static float CG_DrawCounters( float y ) {
 	}
 	if (cg_drawFPS.integer == 1) {
 		if(cl_language.integer == 0){
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "Fps");
+		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "fps");
 		}
 		if(cl_language.integer == 1){
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "Fps");
+		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "к/с");
 		}
 		y += 24;
 	}

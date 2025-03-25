@@ -45,21 +45,6 @@ void CG_PrintClientNumbers( void ) {
     }
 }
 
-void CG_TargetCommand_f( void ) {
-	int		targetNum;
-	char	test[4];
-
-	targetNum = CG_CrosshairPlayer();
-	if (!targetNum ) {
-		return;
-	}
-
-	trap_Argv( 1, test, 4 );
-	trap_SendConsoleCommand( va( "gc %i %i", targetNum, atoi( test ) ) );
-}
-
-
-
 /*
 =================
 CG_SizeUp_f
@@ -123,43 +108,6 @@ static void CG_ScoresUp_f( void ) {
 		cg.showScores = qfalse;
 		cg.scoreFadeTime = cg.time;
 	}
-}
-
-static void CG_TellTarget_f( void ) {
-	int		clientNum;
-	char	command[128];
-	char	message[128];
-
-	clientNum = CG_CrosshairPlayer();
-	if ( clientNum == -1 ) {
-		return;
-	}
-
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
-}
-
-static void CG_Echoo_f( void ) {
-	char	message[128];
-
-	trap_Args( message, 128 );
-	CG_Printf( "| %s\n", message);
-}
-
-static void CG_TellAttacker_f( void ) {
-	int		clientNum;
-	char	command[128];
-	char	message[128];
-
-	clientNum = CG_LastAttacker();
-	if ( clientNum == -1 ) {
-		return;
-	}
-
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
 }
 
 /*
@@ -287,11 +235,7 @@ static consoleCommand_t	commands[] = {
 	{ "weapnext", CG_NextWeapon_f },
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },
-	{ "tell_target", CG_TellTarget_f },
-	{ "echoo", CG_Echoo_f },
 	{ "changetexture", CG_ReplaceTexture_f },
-	{ "tell_attacker", CG_TellAttacker_f },
-	{ "tcmd", CG_TargetCommand_f },
   	//Noire.Script
   	{ "ns_openscript_cl", CG_NS_OpenScript_f },
   	{ "ns_interpret_cl", CG_NS_Interpret_f },
@@ -346,54 +290,79 @@ void CG_InitConsoleCommands( void ) {
 	// the game server will interpret these commands, which will be automatically
 	// forwarded to the server after they are not recognized locally
 	//
-	trap_AddCommand ("kill");
+	// normal commands
+	trap_AddCommand ("team");
+	trap_AddCommand ("vote");
+
+	// communication commands
+	trap_AddCommand ("callvote");
+	trap_AddCommand ("callteamvote");
+
+	// can be used even during intermission
 	trap_AddCommand ("say");
 	trap_AddCommand ("say_team");
-	trap_AddCommand ("tell");
-	trap_AddCommand ("vsay");
-	trap_AddCommand ("echoo");
-	trap_AddCommand ("vsay_team");
-	trap_AddCommand ("vtell");
-	trap_AddCommand ("vosay");
-	trap_AddCommand ("vosay_team");
-	trap_AddCommand ("votell");
+	trap_AddCommand ("score");
+
+	// cheats
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
 	trap_AddCommand ("notarget");
-	trap_AddCommand ("noclip");
-	trap_AddCommand ("team");
-	trap_AddCommand ("follow");
 	trap_AddCommand ("levelshot");
-	trap_AddCommand ("addbot");
 	trap_AddCommand ("setviewpos");
-	trap_AddCommand ("callvote");
-	trap_AddCommand ("getmappage");
-	trap_AddCommand ("vote");
-	trap_AddCommand ("callteamvote");
-	trap_AddCommand ("teamvote");
-	trap_AddCommand ("stats");
-	trap_AddCommand ("teamtask");
-	trap_AddCommand ("replacetexture");
-	trap_AddCommand ("picktarget");
+	trap_AddCommand ("noclip");
+
+	// interaction
+	trap_AddCommand ("exitvehicle");
+	trap_AddCommand ("kill");
+	trap_AddCommand ("flashlight");
+	trap_AddCommand ("dropweapon");
+	trap_AddCommand ("dropholdable");
 	trap_AddCommand ("usetarget");
-	trap_AddCommand ("random");
+	trap_AddCommand ("where");
+
+  	// game commands
+	trap_AddCommand ("follow");
+	trap_AddCommand ("follownext");
+	trap_AddCommand ("followprev");
+	trap_AddCommand ("teamvote");
+	trap_AddCommand ("teamtask");
+	trap_AddCommand ("freespectator");
+
+	// server commands
+	trap_AddCommand ("entityList");
+	trap_AddCommand ("forceTeam");
+	trap_AddCommand ("game_memory");
+	trap_AddCommand ("addbot");
+	trap_AddCommand ("status");
+	trap_AddCommand ("dumpuser");
+	trap_AddCommand ("centerprint");
+	trap_AddCommand ("replacetexture");
+	trap_AddCommand ("say_team");
+	trap_AddCommand ("say");
+	trap_AddCommand ("shuffle");
 	trap_AddCommand ("savemap");
 	trap_AddCommand ("loadmap");
-	trap_AddCommand ("save_menu");
-	trap_AddCommand ("load_menu");
+	trap_AddCommand ("sp_load");
+	trap_AddCommand ("sp_save");
+	trap_AddCommand ("picktarget");
+	trap_AddCommand ("create");
+
 	//Noire.Script
+	//server
 	trap_AddCommand ("ns_openscript");
 	trap_AddCommand ("ns_interpret");
 	trap_AddCommand ("ns_variablelist");
 	trap_AddCommand ("ns_threadlist");
 	trap_AddCommand ("ns_sendvariable");
 
+	//client
 	trap_AddCommand ("ns_openscript_cl");
 	trap_AddCommand ("ns_interpret_cl");
 	trap_AddCommand ("ns_variablelist_cl");
 	trap_AddCommand ("ns_threadlist_cl");
 	trap_AddCommand ("ns_sendvariable_cl");
 
+	//ui
 	trap_AddCommand ("ns_openscript_ui");
 	trap_AddCommand ("ns_interpret_ui");
 	trap_AddCommand ("ns_variablelist_ui");

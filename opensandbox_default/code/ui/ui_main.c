@@ -193,8 +193,6 @@ vmCvar_t	ui_loaded;
 vmCvar_t	ui_backcolors;
 vmCvar_t	sensitivitymenu;
 
-vmCvar_t	ui_arenasFile;
-vmCvar_t	ui_botsFile;
 vmCvar_t	ui_spScores1;
 vmCvar_t	ui_spScores2;
 vmCvar_t	ui_spScores3;
@@ -254,7 +252,6 @@ vmCvar_t	ui_server32;
 vmCvar_t	gui_animsfx;
 vmCvar_t	gui_mapicons;
 vmCvar_t	gui_autoclosebotmenu;
-vmCvar_t	gui_ingame_dynamicmenu;
 vmCvar_t	gui_map_multisel;
 vmCvar_t	gui_map_list;
 vmCvar_t	gui_bot_multisel;
@@ -357,8 +354,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_backcolors, "ui_backcolors", "1", CVAR_ARCHIVE },
 	{ &sensitivitymenu, "sensitivitymenu", "1", CVAR_ARCHIVE },
 
-	{ &ui_arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM },
-	{ &ui_botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM },
 	{ &ui_spScores1, "g_spScores1", "", CVAR_ARCHIVE | CVAR_ROM },
 	{ &ui_spScores2, "g_spScores2", "", CVAR_ARCHIVE | CVAR_ROM },
 	{ &ui_spScores3, "g_spScores3", "", CVAR_ARCHIVE | CVAR_ROM },
@@ -418,7 +413,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &gui_map_list, "gui_map_list", "0", CVAR_ROM|CVAR_ARCHIVE },
 	{ &gui_bot_multisel, "gui_bot_multisel", "0", CVAR_ROM|CVAR_ARCHIVE },
 	{ &gui_bot_list, "gui_bot_list", "0", CVAR_ROM|CVAR_ARCHIVE },
-	{ &gui_ingame_dynamicmenu, "gui_ingame_dynamicmenu", "1", CVAR_ROM|CVAR_ARCHIVE },
 	{ &gui_animsfx, "gui_s_animsfx", "1", CVAR_ROM|CVAR_ARCHIVE },
 	{ &gui_mapicons, "gui_mapicons", "0", CVAR_ROM|CVAR_ARCHIVE },
 	{ &gui_autoclosebotmenu, "gui_autoclosebotmenu", "0", CVAR_ROM|CVAR_ARCHIVE },
@@ -427,7 +421,6 @@ static cvarTable_t		cvarTable[] = {
 static int		cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);
 int 	mod_ammolimit = 200;
 int 	mod_gravity = 800;
-
 
 /*
 =================

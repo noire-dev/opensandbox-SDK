@@ -263,7 +263,7 @@ static void Main_MenuDraw( void ) {
 	   }
 	   // standard menu drawing
 	   Menu_Draw( &s_main.menu );
-	   UI_DrawString( 610 + uis.wideoffset, 2, "2025.03.20", UI_RIGHT|UI_SMALLFONT, color );
+	   UI_DrawString( 610 + uis.wideoffset, 2, "2025.03.26", UI_RIGHT|UI_SMALLFONT, color );
    }
 }
 

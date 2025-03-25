@@ -853,22 +853,6 @@ if(cl_language.integer == 1){
 
 }
 
-static qboolean CG_WeaponHigher(int currentWeapon, int newWeapon) {
-    char *currentScore = NULL;
-    char *newScore = NULL;
-    char weapon[5];
-    Com_sprintf(weapon,5,"/%i/",currentWeapon);
-    currentScore = strstr(cg_weaponOrder.string,weapon);
-    Com_sprintf(weapon,5,"/%i/",newWeapon);
-    newScore = strstr(cg_weaponOrder.string,weapon);
-    if(!newScore || !currentScore)
-        return qfalse;
-    if(newScore>currentScore)
-        return qtrue;
-    else
-        return qfalse;
-}
-
 /*
 ================
 CG_ItemPickup

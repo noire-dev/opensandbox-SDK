@@ -16,7 +16,6 @@ ai_main
 ai_chat
 ai_cmd
 g_active
-g_arenas
 g_bot
 g_client
 g_cmds
@@ -38,5 +37,4 @@ g_team
 g_trigger
 g_unlagged
 g_utils
-g_vote
 g_weapon

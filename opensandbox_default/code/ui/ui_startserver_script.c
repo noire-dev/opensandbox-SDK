@@ -53,7 +53,7 @@ static const char* saveparam_list[] = {
 "gui_lanForceRate", 
 "gui_maxEntities",
 "gui_singleskill",
-"gui_kill",
+"gui_extendedsandbox",
 "gui_damageModifier",
 "gui_elimination",
 "gui_obeliskHealth",
@@ -86,7 +86,7 @@ static const char* saveparam_list[] = {
 "gui_vampire",
 "gui_vampire_max_health",
 "gui_regen",
-"gui_maxweaponpickup",
+"gui_nextbot_speed",
 "gui_droppeditemtime",
 "gui_autoflagreturn",
 "gui_armorprotect",
@@ -123,9 +123,6 @@ static const char* saveparam_list[] = {
 "gui_teamred_infammo",
 "gui_teamred_respawnwait",
 "gui_teamred_pickupitems",
-"gui_eliminationredrespawn",
-"gui_eliminationred_startHealth",
-"gui_eliminationred_startArmor",
 "gui_teamblue_speed",
 "gui_teamblue_gravityModifier",
 "gui_teamblue_firespeed",
@@ -133,54 +130,58 @@ static const char* saveparam_list[] = {
 "gui_teamblue_infammo",
 "gui_teamblue_respawnwait",
 "gui_teamblue_pickupitems",
-"gui_eliminationrespawn",
-"gui_elimination_startHealth",
-"gui_elimination_startArmor",
-"gui_eliminationred_grapple",
-"gui_eliminationred_gauntlet",
-"gui_eliminationred_machinegun",
-"gui_eliminationred_shotgun",
-"gui_eliminationred_grenade",
-"gui_eliminationred_rocket",
-"gui_eliminationred_railgun",
-"gui_eliminationred_lightning",
-"gui_eliminationred_plasmagun",
-"gui_eliminationred_bfg",
-"gui_eliminationred_chain",
-"gui_eliminationred_mine",
-"gui_eliminationred_nail",
-"gui_eliminationred_flame",
-"gui_eliminationred_antimatter",
-"gui_elimination_grapple",
-"gui_elimination_gauntlet",
-"gui_elimination_machinegun",
-"gui_elimination_shotgun",
-"gui_elimination_grenade",
-"gui_elimination_rocket",
-"gui_elimination_railgun",
-"gui_elimination_lightning",
-"gui_elimination_plasmagun",
-"gui_elimination_bfg",
-"gui_elimination_chain",
-"gui_elimination_mine",
-"gui_elimination_nail",
-"gui_elimination_flame",
-"gui_elimination_antimatter",
-"gui_eliminationred_quad",
-"gui_eliminationred_haste",
-"gui_eliminationred_bsuit",
-"gui_eliminationred_invis",
-"gui_eliminationred_regen",
-"gui_eliminationred_flight",
-"gui_eliminationred_holdable",
-"gui_elimination_quad",
-"gui_elimination_haste",
-"gui_elimination_bsuit",
-"gui_elimination_invis",
-"gui_elimination_regen",
-"gui_elimination_flight",
+"gui_elimination_blue_respawn",
+"gui_elimination_red_respawn",
+"gui_bluespawn_health",
+"gui_bluespawn_armor",
+"gui_bluespawn_grapple",
+"gui_bluespawn_gauntlet",
+"gui_bluespawn_machinegun",
+"gui_bluespawn_shotgun",
+"gui_bluespawn_grenade",
+"gui_bluespawn_rocket",
+"gui_bluespawn_railgun",
+"gui_bluespawn_lightning",
+"gui_bluespawn_plasmagun",
+"gui_bluespawn_bfg",
+"gui_bluespawn_chain",
+"gui_bluespawn_mine",
+"gui_bluespawn_nail",
+"gui_bluespawn_flame",
+"gui_bluespawn_antimatter",
+"gui_bluespawn_quad",
+"gui_bluespawn_haste",
+"gui_bluespawn_bsuit",
+"gui_bluespawn_invis",
+"gui_bluespawn_regen",
+"gui_bluespawn_flight",
+"gui_bluespawn_items",
+"gui_bluespawn_holdable",
+"gui_redspawn_health",
+"gui_redspawn_armor",
+"gui_redspawn_grapple",
+"gui_redspawn_gauntlet",
+"gui_redspawn_machinegun",
+"gui_redspawn_shotgun",
+"gui_redspawn_grenade",
+"gui_redspawn_rocket",
+"gui_redspawn_railgun",
+"gui_redspawn_lightning",
+"gui_redspawn_plasmagun",
+"gui_redspawn_bfg",
+"gui_redspawn_chain",
+"gui_redspawn_mine",
+"gui_redspawn_nail",
+"gui_redspawn_flame",
+"gui_redspawn_antimatter",
+"gui_redspawn_quad",
+"gui_redspawn_haste",
+"gui_redspawn_bsuit",
+"gui_redspawn_invis",
+"gui_redspawn_regen",
+"gui_redspawn_flight",
+"gui_redspawn_holdable",
 "gui_elimination_items",
-"gui_elimination_holdable",
 "gui_overlay",
 "gui_randomItems",
 "gui_slickmove",
@@ -695,7 +696,7 @@ static qboolean StartServer_WriteServerParams( void )
 	//Noire.dev
 AddScript(va("set g_maxEntities %i\n", s_scriptdata.server.maxEntities));
 AddScript(va("set g_spSkill %i\n", s_scriptdata.server.singleskill));
-AddScript(va("set g_kill %i\n", s_scriptdata.server.kill));
+AddScript(va("set g_extendedsandbox %i\n", s_scriptdata.server.extendedsandbox));
 AddScript(va("set g_damageModifier  \"%s\"\n", s_scriptdata.server.damageModifier));
 AddScript(va("set cl_selectedmod  \"%s\"\n", s_scriptdata.server.selectedmod));
 AddScript(va("set g_elimination %i\n", s_scriptdata.server.elimination));
@@ -729,7 +730,7 @@ AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forcerespawn));
 AddScript(va("set g_vampire  \"%s\"\n", s_scriptdata.server.vampire));
 AddScript(va("set g_vampire_max_health %i\n", s_scriptdata.server.vampire_max_health));
 AddScript(va("set g_regen %i\n", s_scriptdata.server.regen));
-AddScript(va("set g_maxweaponpickup %i\n", s_scriptdata.server.maxweaponpickup));
+AddScript(va("set g_nextbot_speed %s\n", s_scriptdata.server.nextbot_speed));
 AddScript(va("set g_droppeditemtime %i\n", s_scriptdata.server.droppeditemtime));
 AddScript(va("set g_autoflagreturn %i\n", s_scriptdata.server.autoflagreturn));
 AddScript(va("set g_armorprotect  \"%s\"\n", s_scriptdata.server.armorprotect));
@@ -766,9 +767,6 @@ AddScript(va("set g_teamred_damage  \"%s\"\n", s_scriptdata.server.teamred_damag
 AddScript(va("set g_teamred_infammo %i\n", s_scriptdata.server.teamred_infammo));
 AddScript(va("set g_teamred_respawnwait %i\n", s_scriptdata.server.teamred_respawnwait));
 AddScript(va("set g_teamred_pickupitems %i\n", s_scriptdata.server.teamred_pickupitems));
-AddScript(va("set eliminationredrespawn %i\n", s_scriptdata.server.eliminationredrespawn));
-AddScript(va("set eliminationred_startHealth %i\n", s_scriptdata.server.eliminationred_startHealth));
-AddScript(va("set eliminationred_startArmor %i\n", s_scriptdata.server.eliminationred_startArmor));
 AddScript(va("set g_teamblue_speed %i\n", s_scriptdata.server.teamblue_speed));
 AddScript(va("set g_teamblue_gravityModifier  \"%s\"\n", s_scriptdata.server.teamblue_gravityModifier));
 AddScript(va("set g_teamblue_firespeed  \"%s\"\n", s_scriptdata.server.teamblue_firespeed));
@@ -776,47 +774,57 @@ AddScript(va("set g_teamblue_damage  \"%s\"\n", s_scriptdata.server.teamblue_dam
 AddScript(va("set g_teamblue_infammo %i\n", s_scriptdata.server.teamblue_infammo));
 AddScript(va("set g_teamblue_respawnwait %i\n", s_scriptdata.server.teamblue_respawnwait));
 AddScript(va("set g_teamblue_pickupitems %i\n", s_scriptdata.server.teamblue_pickupitems));
-AddScript(va("set eliminationrespawn %i\n", s_scriptdata.server.eliminationrespawn));
-AddScript(va("set elimination_startHealth %i\n", s_scriptdata.server.elimination_startHealth));
-AddScript(va("set elimination_startArmor %i\n", s_scriptdata.server.elimination_startArmor));
-AddScript(va("set eliminationred_grapple %i\n", s_scriptdata.server.eliminationred_grapple));
-AddScript(va("set eliminationred_gauntlet %i\n", s_scriptdata.server.eliminationred_gauntlet));
-AddScript(va("set eliminationred_machinegun %i\n", s_scriptdata.server.eliminationred_machinegun));
-AddScript(va("set eliminationred_shotgun %i\n", s_scriptdata.server.eliminationred_shotgun));
-AddScript(va("set eliminationred_grenade %i\n", s_scriptdata.server.eliminationred_grenade));
-AddScript(va("set eliminationred_rocket %i\n", s_scriptdata.server.eliminationred_rocket));
-AddScript(va("set eliminationred_railgun %i\n", s_scriptdata.server.eliminationred_railgun));
-AddScript(va("set eliminationred_lightning %i\n", s_scriptdata.server.eliminationred_lightning));
-AddScript(va("set eliminationred_plasmagun %i\n", s_scriptdata.server.eliminationred_plasmagun));
-AddScript(va("set eliminationred_bfg %i\n", s_scriptdata.server.eliminationred_bfg));
-AddScript(va("set eliminationred_chain %i\n", s_scriptdata.server.eliminationred_chain));
-AddScript(va("set eliminationred_mine %i\n", s_scriptdata.server.eliminationred_mine));
-AddScript(va("set eliminationred_nail %i\n", s_scriptdata.server.eliminationred_nail));
-AddScript(va("set eliminationred_flame %i\n", s_scriptdata.server.eliminationred_flame));
-AddScript(va("set eliminationred_antimatter %i\n", s_scriptdata.server.eliminationred_antimatter));
-AddScript(va("set elimination_grapple %i\n", s_scriptdata.server.elimination_grapple));
-AddScript(va("set elimination_gauntlet %i\n", s_scriptdata.server.elimination_gauntlet));
-AddScript(va("set elimination_machinegun %i\n", s_scriptdata.server.elimination_machinegun));
-AddScript(va("set elimination_shotgun %i\n", s_scriptdata.server.elimination_shotgun));
-AddScript(va("set elimination_grenade %i\n", s_scriptdata.server.elimination_grenade));
-AddScript(va("set elimination_rocket %i\n", s_scriptdata.server.elimination_rocket));
-AddScript(va("set elimination_railgun %i\n", s_scriptdata.server.elimination_railgun));
-AddScript(va("set elimination_lightning %i\n", s_scriptdata.server.elimination_lightning));
-AddScript(va("set elimination_plasmagun %i\n", s_scriptdata.server.elimination_plasmagun));
-AddScript(va("set elimination_bfg %i\n", s_scriptdata.server.elimination_bfg));
-AddScript(va("set elimination_chain %i\n", s_scriptdata.server.elimination_chain));
-AddScript(va("set elimination_mine %i\n", s_scriptdata.server.elimination_mine));
-AddScript(va("set elimination_nail %i\n", s_scriptdata.server.elimination_nail));
-AddScript(va("set elimination_flame %i\n", s_scriptdata.server.elimination_flame));
-AddScript(va("set elimination_antimatter %i\n", s_scriptdata.server.elimination_antimatter));
-AddScript(va("set eliminationred_quad %i\n", s_scriptdata.server.eliminationred_quad));
-AddScript(va("set elimination_haste %i\n", s_scriptdata.server.elimination_haste));
-AddScript(va("set elimination_bsuit %i\n", s_scriptdata.server.elimination_bsuit));
-AddScript(va("set elimination_invis %i\n", s_scriptdata.server.elimination_invis));
-AddScript(va("set elimination_regen %i\n", s_scriptdata.server.elimination_regen));
-AddScript(va("set elimination_flight %i\n", s_scriptdata.server.elimination_flight));
+AddScript(va("set g_elimination_blue_respawn %i\n", s_scriptdata.server.elimination_blue_respawn));
+AddScript(va("set g_elimination_red_respawn %i\n", s_scriptdata.server.elimination_red_respawn));
+AddScript(va("set g_bluespawn_health %i\n", s_scriptdata.server.bluespawn_health));
+AddScript(va("set g_bluespawn_armor %i\n", s_scriptdata.server.bluespawn_armor));
+AddScript(va("set g_bluespawn_grapple %i\n", s_scriptdata.server.bluespawn_grapple));
+AddScript(va("set g_bluespawn_gauntlet %i\n", s_scriptdata.server.bluespawn_gauntlet));
+AddScript(va("set g_bluespawn_machinegun %i\n", s_scriptdata.server.bluespawn_machinegun));
+AddScript(va("set g_bluespawn_shotgun %i\n", s_scriptdata.server.bluespawn_shotgun));
+AddScript(va("set g_bluespawn_grenade %i\n", s_scriptdata.server.bluespawn_grenade));
+AddScript(va("set g_bluespawn_rocket %i\n", s_scriptdata.server.bluespawn_rocket));
+AddScript(va("set g_bluespawn_railgun %i\n", s_scriptdata.server.bluespawn_railgun));
+AddScript(va("set g_bluespawn_lightning %i\n", s_scriptdata.server.bluespawn_lightning));
+AddScript(va("set g_bluespawn_plasmagun %i\n", s_scriptdata.server.bluespawn_plasmagun));
+AddScript(va("set g_bluespawn_bfg %i\n", s_scriptdata.server.bluespawn_bfg));
+AddScript(va("set g_bluespawn_chain %i\n", s_scriptdata.server.bluespawn_chain));
+AddScript(va("set g_bluespawn_mine %i\n", s_scriptdata.server.bluespawn_mine));
+AddScript(va("set g_bluespawn_nail %i\n", s_scriptdata.server.bluespawn_nail));
+AddScript(va("set g_bluespawn_flame %i\n", s_scriptdata.server.bluespawn_flame));
+AddScript(va("set g_bluespawn_antimatter %i\n", s_scriptdata.server.bluespawn_antimatter));
+AddScript(va("set g_bluespawn_quad %i\n", s_scriptdata.server.bluespawn_quad));
+AddScript(va("set g_bluespawn_haste %i\n", s_scriptdata.server.bluespawn_haste));
+AddScript(va("set g_bluespawn_bsuit %i\n", s_scriptdata.server.bluespawn_bsuit));
+AddScript(va("set g_bluespawn_invis %i\n", s_scriptdata.server.bluespawn_invis));
+AddScript(va("set g_bluespawn_regen %i\n", s_scriptdata.server.bluespawn_regen));
+AddScript(va("set g_bluespawn_flight %i\n", s_scriptdata.server.bluespawn_flight));
+AddScript(va("set g_bluespawn_holdable %i\n", s_scriptdata.server.bluespawn_holdable));
+AddScript(va("set g_redspawn_health %i\n", s_scriptdata.server.redspawn_health));
+AddScript(va("set g_redspawn_armor %i\n", s_scriptdata.server.redspawn_armor));
+AddScript(va("set g_redspawn_grapple %i\n", s_scriptdata.server.redspawn_grapple));
+AddScript(va("set g_redspawn_gauntlet %i\n", s_scriptdata.server.redspawn_gauntlet));
+AddScript(va("set g_redspawn_machinegun %i\n", s_scriptdata.server.redspawn_machinegun));
+AddScript(va("set g_redspawn_shotgun %i\n", s_scriptdata.server.redspawn_shotgun));
+AddScript(va("set g_redspawn_grenade %i\n", s_scriptdata.server.redspawn_grenade));
+AddScript(va("set g_redspawn_rocket %i\n", s_scriptdata.server.redspawn_rocket));
+AddScript(va("set g_redspawn_railgun %i\n", s_scriptdata.server.redspawn_railgun));
+AddScript(va("set g_redspawn_lightning %i\n", s_scriptdata.server.redspawn_lightning));
+AddScript(va("set g_redspawn_plasmagun %i\n", s_scriptdata.server.redspawn_plasmagun));
+AddScript(va("set g_redspawn_bfg %i\n", s_scriptdata.server.redspawn_bfg));
+AddScript(va("set g_redspawn_chain %i\n", s_scriptdata.server.redspawn_chain));
+AddScript(va("set g_redspawn_mine %i\n", s_scriptdata.server.redspawn_mine));
+AddScript(va("set g_redspawn_nail %i\n", s_scriptdata.server.redspawn_nail));
+AddScript(va("set g_redspawn_flame %i\n", s_scriptdata.server.redspawn_flame));
+AddScript(va("set g_redspawn_antimatter %i\n", s_scriptdata.server.redspawn_antimatter));
+AddScript(va("set g_redspawn_quad %i\n", s_scriptdata.server.redspawn_quad));
+AddScript(va("set g_redspawn_haste %i\n", s_scriptdata.server.redspawn_haste));
+AddScript(va("set g_redspawn_bsuit %i\n", s_scriptdata.server.redspawn_bsuit));
+AddScript(va("set g_redspawn_invis %i\n", s_scriptdata.server.redspawn_invis));
+AddScript(va("set g_redspawn_regen %i\n", s_scriptdata.server.redspawn_regen));
+AddScript(va("set g_redspawn_flight %i\n", s_scriptdata.server.redspawn_flight));
+AddScript(va("set g_redspawn_holdable %i\n", s_scriptdata.server.redspawn_holdable));
 AddScript(va("set elimination_items %i\n", s_scriptdata.server.elimination_items));
-AddScript(va("set elimination_holdable %i\n", s_scriptdata.server.elimination_holdable));
 AddScript(va("set g_overlay %i\n", s_scriptdata.server.overlay));
 AddScript(va("set g_randomItems %i\n", s_scriptdata.server.randomItems));
 AddScript(va("set g_slickmove %i\n", s_scriptdata.server.slickmove));
@@ -1080,10 +1088,8 @@ AddScript(va("set g_amguided %i\n", s_scriptdata.server.g_amguided));
 	if (s_scriptdata.server.allowpass)
 		password = s_scriptdata.server.password;
 	if (!password[0]) {
-		AddScript("set g_needpass 0\n");
-	}
-	else {
-		AddScript(va("set g_needpass %i\n", s_scriptdata.server.allowpass));
+		//AddScript("set g_needpass 0\n");
+	} else {
 		AddScript(va("set g_password \"%s\"\n", password));
 		AddScript(va("set password \"%s\"\n", password));
 	}

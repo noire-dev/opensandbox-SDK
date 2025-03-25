@@ -367,8 +367,7 @@ typedef struct {
 	qboolean	teamLeader;			// true when this client is a team leader
 } clientSession_t;
 
-//
-#define	MAX_VOTE_COUNT		"3"
+#define	MAX_VOTE_COUNT		3
 
 //unlagged - true ping
 #define NUM_PING_SAMPLES 64
@@ -894,8 +893,6 @@ qboolean SpawnPointIsActive( gentity_t *spot );
 // g_svcmds.c
 //
 qboolean	ConsoleCommand( void );
-void G_ProcessIPBans(void);
-qboolean G_FilterPacket (char *from);
 
 //KK-OAX Added this to make accessible from g_svcmds_ext.c
 gclient_t	*ClientForString( const char *s );
@@ -995,13 +992,7 @@ void ShuffleTeams(void);
 //KK-OAX Added for Command Handling Changes (r24)
 team_t G_TeamFromString( char *str );
 
-//KK-OAX Removed these in Code in favor of bg_alloc.c from Tremulous
-// g_mem.c
 //
-//void *G_Alloc( int size );
-//void G_InitMemory( void );
-
-//KK-OAX This was moved
 // bg_alloc.c
 //
 void Svcmd_GameMem_f( void );
@@ -1011,15 +1002,8 @@ void Svcmd_GameMem_f( void );
 //
 void G_ReadSessionData( gclient_t *client );
 void G_InitSessionData( gclient_t *client, char *userinfo );
-
 void G_InitWorldSession( void );
 void G_WriteSessionData( void );
-
-//
-// g_arenas.c
-//
-void UpdateTournamentInfo( void );
-void SpawnModelsOnVictoryPads( void );
 
 //
 // g_bot.c
@@ -1031,7 +1015,6 @@ void G_CheckBotSpawn( void );
 void G_RemoveQueuedBotBegin( int clientNum );
 qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
-void Svcmd_BotList_f( void );
 void BotInterbreedEndMatch( void );
 
 //
@@ -1043,48 +1026,6 @@ void PlayerStore_store(char* guid, playerState_t ps);
 void PlayerStore_restore(char* guid, playerState_t *ps);
 
 //
-// g_vote.c
-//
-int allowedVote(char *commandStr);
-void CheckVote( void );
-void CountVotes( void );
-void ClientLeaving(int clientNumber);
-
-#define MAX_MAPNAME 32
-#define MAPS_PER_PAGE 10
-#define MAX_MAPNAME_BUFFER MAX_MAPNAME*600
-#define MAX_MAPNAME_LENGTH 34
-#define MAX_CUSTOMNAME  MAX_MAPNAME
-#define MAX_CUSTOMCOMMAND 100
-#define MAX_CUSTOMDISPLAYNAME 50
-
-typedef struct {
-	int pagenumber;
-	char mapname[MAPS_PER_PAGE][MAX_MAPNAME];
-} t_mappage;
-
-extern t_mappage getMappage(int page);
-extern int allowedMap(char *mapname);
-extern int allowedGametype(char *gametypeStr);
-extern int allowedTimelimit(int limit);
-extern int allowedFraglimit(int limit);
-
-//
-// g_mapcycle.c
-//
-void G_GotoNextMapCycle ( void );
-char *G_GetNextMapCycle ( char *map );
-char *G_GetNextMap ( char *map );
-void G_GetMapfile ( char *map );
-qboolean G_mapIsVoteable ( char* map );
-void G_drawAllowedMaps ( gentity_t *ent );
-void G_drawMapcycle ( gentity_t *ent );
-void G_sendMapcycle( void );
-void G_LoadMapcycle ( void );
-qboolean SkippedChar ( char in );
-int G_GetMapLockArena ( char *map );
-
-//
 // g_mapfiles.c
 //
 qboolean G_ClassnameAllowed( char *input );
@@ -1092,6 +1033,7 @@ qboolean G_ClassnameAllowedAll( char *input );
 void G_WriteMapfile_f( void );
 void G_LoadMapfile( char *filename );
 void G_LoadMapfile_f( void );
+qboolean SkippedChar ( char in );
 
 // ai_main.c
 #define MAX_FILEPATH			144
@@ -1120,10 +1062,9 @@ extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
-#define	FOFSCP(x) ((size_t)&(((clientPersistant_t *)0)->x))
 
 //CVARS
-void G_SendWeaponProperties( gentity_t *ent );
+void G_SendGameCvars( gentity_t *ent );
 void G_SendSwepWeapons( gentity_t *ent );
 void G_SendSpawnSwepWeapons( gentity_t *ent );
 void plasma_think( gentity_t *ent );
@@ -1131,8 +1072,7 @@ void rocket_think( gentity_t *ent );
 void grenade_think( gentity_t *ent );
 void bfg_think( gentity_t *ent );
 void nailgun_think( gentity_t *ent );
-void 	Newmodcommands( void );
-extern	int 		CustomModRun;
+void 	UpdateGameCvars( void );
 extern	char 		cmapname[64];
 extern	int			mod_ammolimit;
 extern 	int 		mod_jumpheight;
@@ -1446,7 +1386,7 @@ extern	vmCvar_t	g_teamred_infammo;
 extern	vmCvar_t	g_teamred_respawnwait;
 extern	vmCvar_t	g_teamred_pickupitems;
 //cvars
-
+extern	vmCvar_t	g_extendedsandbox;
 extern	vmCvar_t	g_fogModel;
 extern	vmCvar_t	g_fogShader;
 extern	vmCvar_t	g_fogDistance;
@@ -1460,7 +1400,6 @@ extern	vmCvar_t	g_skyColorR;
 extern	vmCvar_t	g_skyColorG;
 extern	vmCvar_t	g_skyColorB;
 extern	vmCvar_t	g_skyColorA;
-
 extern	vmCvar_t	g_allowprops;
 extern	vmCvar_t	g_allownpc;
 extern	vmCvar_t	g_allowitems;
@@ -1473,24 +1412,13 @@ extern	vmCvar_t	g_npcdrop;
 extern	vmCvar_t	g_maxEntities;
 extern	vmCvar_t	cl_selectedmod;
 extern  vmCvar_t	cl_language;
-extern	vmCvar_t	g_tests;
-extern	vmCvar_t	g_connectmsg;
-extern	vmCvar_t	g_scoreboardlock;
-extern	vmCvar_t	tex_name;
-extern	vmCvar_t	tex_newname;
 extern	vmCvar_t	g_regenarmor;
 extern	vmCvar_t	g_spectatorspeed;
-extern	vmCvar_t	eliminationredrespawn;
-extern	vmCvar_t	eliminationrespawn;
 extern	vmCvar_t	g_lavatowater;
 extern	vmCvar_t	g_overlay;
 extern	vmCvar_t	g_slickmove;
 extern	vmCvar_t	g_accelerate;
 extern	vmCvar_t	g_randomItems;
-extern 	vmCvar_t	g_mapcycle;
-extern 	vmCvar_t	g_useMapcycle;
-extern	vmCvar_t	g_mapcycleposition;
-extern	vmCvar_t	g_kill;
 extern	vmCvar_t	g_kamikazeinfinf;
 extern	vmCvar_t	g_invulinf;
 extern	vmCvar_t	g_medkitinf;
@@ -1502,7 +1430,7 @@ extern	vmCvar_t	g_medkitlimit;
 extern	vmCvar_t	g_waterdamage;
 extern	vmCvar_t	g_lavadamage;
 extern	vmCvar_t	g_slimedamage;
-extern	vmCvar_t	g_maxweaponpickup;
+extern	vmCvar_t	g_nextbot_speed;
 extern	vmCvar_t	g_randomteleport;
 extern	vmCvar_t	g_falldamagesmall;
 extern	vmCvar_t	g_falldamagebig;
@@ -1539,16 +1467,14 @@ extern	vmCvar_t	g_restarted;
 
 extern	vmCvar_t	g_dmflags;
 extern	vmCvar_t	g_elimflags;
-extern	vmCvar_t	g_voteflags;
 extern	vmCvar_t	g_fraglimit;
 extern	vmCvar_t	g_timelimit;
 extern	vmCvar_t	g_capturelimit;
 extern	vmCvar_t	g_friendlyFire;
 extern	vmCvar_t	g_password;
-extern	vmCvar_t	g_needpass;
 extern	vmCvar_t	g_gravity;
 extern	vmCvar_t	g_gravityModifier;
-extern  vmCvar_t        g_damageModifier;
+extern  vmCvar_t    g_damageModifier;
 extern	vmCvar_t	g_speed;
 extern	vmCvar_t	g_knockback;
 extern	vmCvar_t	g_quadfactor;
@@ -1567,18 +1493,13 @@ extern	vmCvar_t	g_allowSyncCutscene;
 extern	vmCvar_t	g_weaponRespawn;
 extern	vmCvar_t	g_weaponTeamRespawn;
 extern	vmCvar_t	g_synchronousClients;
-extern	vmCvar_t	g_motd;
-extern	vmCvar_t	g_motdfile;
-extern  vmCvar_t        g_votemaps;
-extern  vmCvar_t        g_votecustom;
+extern  vmCvar_t    g_votemaps;
 extern	vmCvar_t	g_warmup;
 extern	vmCvar_t	g_doWarmup;
 extern	vmCvar_t	g_blood;
 extern	vmCvar_t	g_allowVote;
 extern	vmCvar_t	g_teamAutoJoin;
 extern	vmCvar_t	g_teamForceBalance;
-extern	vmCvar_t	g_banIPs;
-extern	vmCvar_t	g_filterBan;
 extern	vmCvar_t	g_obeliskHealth;
 extern	vmCvar_t	g_obeliskRegenPeriod;
 extern	vmCvar_t	g_obeliskRegenAmount;
@@ -1588,73 +1509,81 @@ extern	vmCvar_t	g_smoothClients;
 extern	vmCvar_t	pmove_fixed;
 extern	vmCvar_t	pmove_msec;
 extern	vmCvar_t	pmove_float;
-extern	vmCvar_t	g_rankings;
 extern	vmCvar_t	g_enableDust;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	g_music;
-extern  vmCvar_t        g_spawnprotect;
+extern  vmCvar_t    g_spawnprotect;
 
-//elimination:
+//Settings for elimination:
 extern	vmCvar_t	g_elimination_selfdamage;
-extern	vmCvar_t	g_elimination_startHealth;
-extern	vmCvar_t	g_elimination_startArmor;
-extern	vmCvar_t	g_elimination_bfg;
-extern	vmCvar_t	g_elimination_grapple;
 extern	vmCvar_t	g_elimination_roundtime;
 extern	vmCvar_t	g_elimination_warmup;
 extern	vmCvar_t	g_elimination_activewarmup;
-extern  vmCvar_t    g_elimination_allgametypes;
-extern	vmCvar_t	g_elimination_gauntlet;
-extern	vmCvar_t	g_elimination_machinegun;
-extern	vmCvar_t	g_elimination_shotgun;
-extern	vmCvar_t	g_elimination_grenade;
-extern	vmCvar_t	g_elimination_rocket;
-extern	vmCvar_t	g_elimination_railgun;
-extern	vmCvar_t	g_elimination_lightning;
-extern	vmCvar_t	g_elimination_plasmagun;
-extern	vmCvar_t	g_elimination_chain;
-extern	vmCvar_t	g_elimination_mine;
-extern	vmCvar_t	g_elimination_nail;
-extern	vmCvar_t	g_elimination_flame;
-extern	vmCvar_t	g_elimination_antimatter;
-extern	vmCvar_t	g_elimination_quad;
-extern	vmCvar_t	g_elimination_haste;
-extern	vmCvar_t	g_elimination_bsuit;
-extern	vmCvar_t	g_elimination_invis;
-extern	vmCvar_t	g_elimination_regen;
-extern	vmCvar_t	g_elimination_flight;
+extern  vmCvar_t    g_elimination;
 extern	vmCvar_t	g_elimination_items;
-extern	vmCvar_t	g_elimination_holdable;
+extern  vmCvar_t    g_elimination_lockspectator; //If lockspectator: 0=no limit, 1 = cannot follow enemy, 2 = must follow friend
+extern  vmCvar_t	g_elimination_ctf_oneway;	//Only attack in one direction (level.eliminationSides+level.roundNumber)%2 == 0 red attacks
+extern	vmCvar_t	g_elimination_red_respawn;
+extern	vmCvar_t	g_elimination_blue_respawn;
 
-//elimination:
-extern	vmCvar_t	g_eliminationred_startHealth;
-extern	vmCvar_t	g_eliminationred_startArmor;
-extern	vmCvar_t	g_eliminationred_bfg;
-extern	vmCvar_t	g_eliminationred_grapple;
-extern	vmCvar_t	g_eliminationred_gauntlet;
-extern	vmCvar_t	g_eliminationred_machinegun;
-extern	vmCvar_t	g_eliminationred_shotgun;
-extern	vmCvar_t	g_eliminationred_grenade;
-extern	vmCvar_t	g_eliminationred_rocket;
-extern	vmCvar_t	g_eliminationred_railgun;
-extern	vmCvar_t	g_eliminationred_lightning;
-extern	vmCvar_t	g_eliminationred_plasmagun;
-extern	vmCvar_t	g_eliminationred_chain;
-extern	vmCvar_t	g_eliminationred_mine;
-extern	vmCvar_t	g_eliminationred_nail;
-extern	vmCvar_t	g_eliminationred_flame;
-extern	vmCvar_t	g_eliminationred_antimatter;
-extern	vmCvar_t	g_eliminationred_quad;
-extern	vmCvar_t	g_eliminationred_haste;
-extern	vmCvar_t	g_eliminationred_bsuit;
-extern	vmCvar_t	g_eliminationred_invis;
-extern	vmCvar_t	g_eliminationred_regen;
-extern	vmCvar_t	g_eliminationred_flight;
-extern	vmCvar_t	g_eliminationred_holdable;
+//Spawn settings for blue and white:
+extern	vmCvar_t	g_bluespawn_health;
+extern	vmCvar_t	g_bluespawn_armor;
 
-//If lockspectator: 0=no limit, 1 = cannot follow enemy, 2 = must follow friend
-extern  vmCvar_t        g_elimination_lockspectator;
+extern	vmCvar_t	g_bluespawn_gauntlet;
+extern	vmCvar_t	g_bluespawn_machinegun;
+extern	vmCvar_t	g_bluespawn_shotgun;
+extern	vmCvar_t	g_bluespawn_grenade;
+extern	vmCvar_t	g_bluespawn_rocket;
+extern	vmCvar_t	g_bluespawn_lightning;
+extern	vmCvar_t	g_bluespawn_railgun;
+extern	vmCvar_t	g_bluespawn_plasmagun;
+extern	vmCvar_t	g_bluespawn_bfg;
+extern	vmCvar_t	g_bluespawn_grapple;
+extern	vmCvar_t	g_bluespawn_nail;
+extern	vmCvar_t	g_bluespawn_mine;
+extern	vmCvar_t	g_bluespawn_chain;
+extern	vmCvar_t	g_bluespawn_flame;
+extern	vmCvar_t	g_bluespawn_antimatter;
+
+extern	vmCvar_t	g_bluespawn_quad;
+extern	vmCvar_t	g_bluespawn_haste;
+extern	vmCvar_t	g_bluespawn_bsuit;
+extern	vmCvar_t	g_bluespawn_invis;
+extern	vmCvar_t	g_bluespawn_regen;
+extern	vmCvar_t	g_bluespawn_flight;
+
+extern	vmCvar_t 	g_bluespawn_holdable;
+
+//Spawn settings for red:
+extern	vmCvar_t	g_redspawn_health;
+extern	vmCvar_t	g_redspawn_armor;
+
+extern	vmCvar_t	g_redspawn_gauntlet;
+extern	vmCvar_t	g_redspawn_machinegun;
+extern	vmCvar_t	g_redspawn_shotgun;
+extern	vmCvar_t	g_redspawn_grenade;
+extern	vmCvar_t	g_redspawn_rocket;
+extern	vmCvar_t	g_redspawn_lightning;
+extern	vmCvar_t	g_redspawn_railgun;
+extern	vmCvar_t	g_redspawn_plasmagun;
+extern	vmCvar_t	g_redspawn_bfg;
+extern	vmCvar_t	g_redspawn_grapple;
+extern	vmCvar_t	g_redspawn_nail;
+extern	vmCvar_t	g_redspawn_mine;
+extern	vmCvar_t	g_redspawn_chain;
+extern	vmCvar_t	g_redspawn_flame;
+extern	vmCvar_t	g_redspawn_antimatter;
+
+extern	vmCvar_t	g_redspawn_quad;
+extern	vmCvar_t	g_redspawn_haste;
+extern	vmCvar_t	g_redspawn_bsuit;
+extern	vmCvar_t	g_redspawn_invis;
+extern	vmCvar_t	g_redspawn_regen;
+extern	vmCvar_t	g_redspawn_flight;
+
+extern	vmCvar_t 	g_redspawn_holdable;
 
 extern vmCvar_t		g_vampire;
 extern vmCvar_t		g_vampireMaxHealth;
@@ -1667,23 +1596,7 @@ extern vmCvar_t		g_lms_lives;
 
 extern vmCvar_t		g_lms_mode; //How do we score: 0 = One Survivor get a point, 1 = same but without overtime, 2 = one point for each player killed (+overtime), 3 = same without overtime
 
-extern vmCvar_t		g_elimination_ctf_oneway;	//Only attack in one direction (level.eliminationSides+level.roundNumber)%2 == 0 red attacks
-
 extern vmCvar_t         g_awardpushing; //The server can decide if players are awarded for pushing people in lave etc.
-
-extern vmCvar_t        g_catchup; //Favors the week players
-
-extern vmCvar_t         g_autonextmap; //Autochange map
-extern vmCvar_t         g_mappools; //mappools to be used for autochange
-
-extern vmCvar_t        g_voteNames;
-extern vmCvar_t        g_voteBan;
-extern vmCvar_t        g_voteGametypes;
-extern vmCvar_t        g_voteMinTimelimit;
-extern vmCvar_t        g_voteMaxTimelimit;
-extern vmCvar_t        g_voteMinFraglimit;
-extern vmCvar_t        g_voteMaxFraglimit;
-extern vmCvar_t        g_maxvotes;
 
 //unlagged - server options
 // some new server-side variables
@@ -1923,11 +1836,7 @@ void Svcmd_Status_f( void );
 void Svcmd_TeamMessage_f( void );
 void Svcmd_CenterPrint_f( void );
 void Svcmd_ReplaceTexture_f( void );
-void Svcmd_BannerPrint_f( void );
-void Svcmd_EjectClient_f( void );
 void Svcmd_DumpUser_f( void );
-void Svcmd_Chat_f( void );
-void Svcmd_ListIP_f( void );
 void Svcmd_MessageWrapper( void );
 void Svcmd_PropNpc_AS_f( void );
 
