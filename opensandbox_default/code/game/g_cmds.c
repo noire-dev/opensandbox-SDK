@@ -780,7 +780,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 	client = ent->client;
 
 	clientNum = client - level.clients;
-        trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+    trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 	specClient = 0;
 	specState = SPECTATOR_NOT;
 	if ( Q_strequal( s, "scoreboard" ) || Q_strequal( s, "score" )  ) {
@@ -833,25 +833,26 @@ void SetTeam( gentity_t *ent, char *s ) {
 	// he starts at 'base'
 	client->pers.teamState.state = TEAM_BEGIN;
 	if ( oldTeam != TEAM_SPECTATOR ) {
-                int teamscore = -99;
-                //Prevent a team from loosing point because of player leaving team
-                if(g_gametype.integer == GT_TEAM && ent->client->ps.stats[STAT_HEALTH])
-                    teamscore = level.teamScores[ ent->client->sess.sessionTeam ];
+        int teamscore = -99;
+
+        //Prevent a team from loosing point because of player leaving team
+        if(g_gametype.integer == GT_TEAM && ent->client->ps.stats[STAT_HEALTH])
+            teamscore = level.teamScores[ ent->client->sess.sessionTeam ];
+
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die (ent, ent, ent, 100000, MOD_SUICIDE);
-                if(teamscore != -99)
-                    level.teamScores[ ent->client->sess.sessionTeam ] = teamscore;
-
+        if(teamscore != -99)
+            level.teamScores[ ent->client->sess.sessionTeam ] = teamscore;
 	}
 
-        if(oldTeam!=TEAM_SPECTATOR)
-            PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"),client->ps);
+    if(oldTeam!=TEAM_SPECTATOR)
+        PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"), client->ps);
 
 	// they go to the end of the line for tournements
-        if(team == TEAM_SPECTATOR && oldTeam != team)
-                AddTournamentQueue(client);
+    if(team == TEAM_SPECTATOR && oldTeam != team)
+        AddTournamentQueue(client);
 
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;

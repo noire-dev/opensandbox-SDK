@@ -1278,10 +1278,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	rgba[i] = 0;
 	G_Fade(0, rgba, rgba, -1);
 
-        G_Printf ("------- Game Initialization -------\n");
-        G_Printf ("gamename: %s\n", GAMEVERSION);
-        G_Printf ("gamedate: %s\n", __DATE__);
-
+    G_Printf ("------- Game Initialization -------\n");
+    G_Printf ("gamename: %s\n", GAMEVERSION);
+    G_Printf ("gamedate: %s\n", __DATE__);
 
 	srand( randomSeed );
 
@@ -1313,7 +1312,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 			G_LogPrintf("------------------------------------------------------------\n" );
 			G_LogPrintf("InitGame: %s\n", serverinfo );
-                        G_LogPrintf("Info: ServerInfo length: %d of %d\n", strlen(serverinfo), MAX_INFO_STRING );
+            G_LogPrintf("Info: ServerInfo length: %d of %d\n", strlen(serverinfo), MAX_INFO_STRING );
 		}
 	} else {
 		G_Printf( "Not logging to disk.\n" );
@@ -1390,6 +1389,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		level.dom_scoreGiven = 0;
 		for(i=0;i<MAX_DOMINATION_POINTS;i++)
 			level.pointStatusDom[i] = TEAM_NONE;
+
 		level.domination_points_count = 0; //make sure its not too big
 	}
 

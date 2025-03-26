@@ -1576,7 +1576,6 @@ void ClientBegin( int clientNum ) {
 	client->pers.roundReached = 0; //We will spawn in next round
 	if(g_gametype.integer == GT_LMS) {
 		client->isEliminated = qtrue; //So player does not give a point in gamemode 2 and 3
-		//trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " will start dead\n\"", client->pers.netname) );
 	}
 
 	// save eflags around this, because changing teams will
@@ -1586,8 +1585,10 @@ void ClientBegin( int clientNum ) {
 	// world to the new position
 	flags = client->ps.eFlags;
 	memset( &client->ps, 0, sizeof( client->ps ) );
-        if( client->sess.sessionTeam != TEAM_SPECTATOR )
-            PlayerStore_restore(Info_ValueForKey(userinfo,"cl_guid"),&(client->ps));
+
+    if( client->sess.sessionTeam != TEAM_SPECTATOR )
+        PlayerStore_restore(Info_ValueForKey(userinfo,"cl_guid"),&(client->ps));
+
 	client->ps.eFlags = flags;
 
 	// locate ent at a spawn point
@@ -1778,7 +1779,6 @@ void ClientSpawn(gentity_t *ent) {
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
 	vote = client->vote;
-//	savedAreaBits = client->areabits;
 	accuracy_hits = client->accuracy_hits;
 	accuracy_shots = client->accuracy_shots;
 
@@ -1791,7 +1791,6 @@ void ClientSpawn(gentity_t *ent) {
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
 	client->vote = vote;
-//	client->areabits = savedAreaBits;
 	client->accuracy_hits = accuracy_hits;
 	client->accuracy_shots = accuracy_shots;
 

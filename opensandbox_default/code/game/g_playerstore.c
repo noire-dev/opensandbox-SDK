@@ -25,8 +25,6 @@
 
 #include "g_local.h"
 
-#define MAX_PLAYERS_STORED 32
-
 #define GUID_SIZE 32
 
 typedef struct {
@@ -37,11 +35,11 @@ typedef struct {
     int	accuracy[MAX_WEAPONS][2];
 } playerstore_t;
 
-static playerstore_t playerstore[MAX_PLAYERS_STORED];
+static playerstore_t playerstore[MAX_CLIENTS];
 
 static int nextAge;
 
-/*
+ /*
  *Resets the player store. Should be called everytime game.qvm is loaded.
  */
 void PlayerStoreInit( void ) {
@@ -58,14 +56,14 @@ void PlayerStore_store(char* guid, playerState_t ps) {
         G_LogPrintf("Playerstore: Failed to store player. Invalid guid: %s\n",guid);
         return;
     }
-    for(i=0;i<MAX_PLAYERS_STORED;i++) {
+    for(i=0;i<MAX_CLIENTS;i++) {
         if(!Q_stricmp(guid,playerstore[i].guid)) {
             place2store=i;
         }
     }
 
     if(place2store<0)
-    for(i=0;i<MAX_PLAYERS_STORED;i++) {
+    for(i=0;i<MAX_CLIENTS;i++) {
         if(playerstore[i].age < lowestAge) {
             place2store = i;
             lowestAge = playerstore[i].age;
@@ -91,7 +89,7 @@ void PlayerStore_restore(char* guid, playerState_t *ps)  {
         G_LogPrintf("Playerstore: Failed to restore player. Invalid guid: %s\n",guid);
         return;
     }
-    for(i=0;i<MAX_PLAYERS_STORED;i++) {
+    for(i=0;i<MAX_CLIENTS;i++) {
         if(!Q_stricmpn(guid,playerstore[i].guid,GUID_SIZE) && playerstore[i].age != -1) {
             memcpy(ps->persistant,playerstore[i].persistant,sizeof(int[MAX_PERSISTANT]));
             memcpy(level.clients[ps->clientNum].accuracy, playerstore[i].accuracy,sizeof(playerstore[0].accuracy) );

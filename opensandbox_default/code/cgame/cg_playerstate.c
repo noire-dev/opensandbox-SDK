@@ -146,6 +146,7 @@ void CG_Respawn( void ) {
 
 	// select WP_NONE for updating from server
 	cg.weaponSelect = 0;
+	cg.zoomed = qfalse;
 }
 
 extern char *eventnames[];
