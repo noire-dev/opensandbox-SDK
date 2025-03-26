@@ -431,29 +431,6 @@ spawn_t	spawns[] = {
 };
 
 /*
-*****************
-G_WLF_GetLeft
-*****************
-*/
-void G_WLK_GetLeft(const char *pszSource, char *pszDest,  int iLen)
-{
-	int iSize; //size of string we need to copy
-
-	//see how much space we need
-	iSize = strlen(pszSource);
-	
-	//is len less that size?
-	if(iLen < iSize)
-		iSize = iLen;
-
-	//make a copy of the string
-	strcpy(pszDest, pszSource);
-
-	//end the string at iSize
-	pszDest[iSize] = '\0';
-}
-
-/*
 ===============
 G_CallSpawn
 
@@ -539,18 +516,6 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	if ( itemname[0]==0) {
                 G_Printf ("G_CallSpawn: NULL classname\n");
 		return qfalse;
-	}
-
-    if(g_randomItems.integer) {
-		if( 
-		strcmp(itemname, "team_CTF_redflag") || 
-		strcmp(itemname, "team_CTF_blueflag") || 
-		strcmp(itemname, "team_CTF_neutralflag") || 
-		strcmp(itemname, "info_player_dd") || 
-		strcmp(itemname, "info_player_dd_red") || 
-		strcmp(itemname, "info_player_dd_blue") ) {
-		randomiseitem(ent);
-		}
 	}
 
 	// check item spawn functions

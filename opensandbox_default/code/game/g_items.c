@@ -537,33 +537,80 @@ RespawnItem
 */
 void RespawnItem( gentity_t *ent ) {
 	int		spawn_item;
+	gitem_t	*item;
+	int i = 1;
 
     if(g_randomItems.integer) {
-		spawn_item = rq3_random(1, 56);
+		char* 			randomitem[] = {
+			"none",
+			"weapon_machinegun",
+			"weapon_shotgun",
+			"weapon_grenadelauncher",
+			"weapon_rocketlauncher",
+			"weapon_lightning",
+			"weapon_railgun",
+			"weapon_plasmagun",
+			"weapon_bfg",
+			"weapon_grapplinghook",
+			"weapon_nailgun",
+			"weapon_prox_launcher",
+			"weapon_chaingun",
+			"weapon_flamethrower",
+			"weapon_antimatter",
+			"weapon_thrower",
+			"weapon_bouncer",
+			"weapon_thunder",
+			"weapon_exploder",
+			"weapon_knocker",
+			"weapon_propgun",
+			"weapon_regenerator",
+			"weapon_nuke",
+			"weapon_gravitygun",
+			"ammo_bullets",
+			"ammo_shells",
+			"ammo_grenades",
+			"ammo_cells",
+			"ammo_lightning",
+			"ammo_rockets",
+			"ammo_slugs",
+			"ammo_bfg",
+			"ammo_nails",
+			"ammo_mines",
+			"ammo_belt",
+			"ammo_flame",
+			"item_armor_shard",
+			"item_armor_vest",
+			"item_armor_combat",
+			"item_armor_body",
+			"item_armor_full",
+			"item_health_small",
+			"item_health",
+			"item_health_large",
+			"item_health_mega",
+			"item_quad",
+			"item_enviro",
+			"item_haste",
+			"item_invis",
+			"item_regen",
+			"item_flight",
+			"holdable_teleporter",
+			"holdable_medkit",
+			"holdable_kamikaze",
+			"holdable_invulnerability",
+			"holdable_portal",
+			0
+		};
 
-		if(spawn_item == 8){
-		spawn_item = 55;
+		spawn_item = rq3_random(1, 54);
+
+		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
+			if ( !strcmp(item->classname, randomitem[spawn_item]) ) {
+				ent->item = &bg_itemlist[i];
+				ent->item->classname = bg_itemlist[i].classname;
+				ent->s.modelindex = i;
+			}
 		}
-		if(spawn_item == 34){
-		spawn_item = 55;
-		}
-		if(spawn_item == 35){
-		spawn_item = 55;
-		}
-		if(spawn_item == 46){
-		spawn_item = 55;
-		}
-		if(spawn_item == 47){
-		spawn_item = 55;
-		}
-		if(spawn_item == 48){
-		spawn_item = 55;
-		}
-		ent->item = &bg_itemlist[spawn_item];
-		ent->item->classname = bg_itemlist[spawn_item].classname;
-		ent->s.modelindex = spawn_item;
 	}
-	//end
 
 	// randomly select from teamed entities
 	if (ent->team) {

@@ -3098,10 +3098,8 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	CG_DrawPostProcess();
 
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
-		return;
-	}
-
-	// draw status bar and other floating elements
+		//return;
+	} else {
  	CG_Draw2D(stereoView);
 	if ( cg.snap->ps.pm_type != PM_CUTSCENE ) {
 	if ( cg.snap->ps.pm_type != PM_INTERMISSION ) {
@@ -3121,11 +3119,16 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	}
 	}
 	}
+	}
 
     CG_FadeLevelStart();
 
 	// draw fade-in/out
 	CG_DrawFade();
+
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
+		return;
+	}
 	
 	// don't draw center string if scoreboard is up
 	if(cgs.gametype != GT_SINGLE){

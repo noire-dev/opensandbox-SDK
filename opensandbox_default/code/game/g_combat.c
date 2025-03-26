@@ -1078,6 +1078,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	if(mod == MOD_GAUNTLET && attacker->health <= 0){
+		return;
+	}
+
 	if(mod == MOD_REGENERATOR && targ->client){
 		if (!targ->client->ps.powerups[PW_REGEN]) {
 			targ->client->ps.powerups[PW_REGEN] = level.time - ( level.time % 1000 );
