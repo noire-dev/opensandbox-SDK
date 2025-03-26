@@ -1064,14 +1064,14 @@ extern	gentity_t		g_entities[MAX_GENTITIES];
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
 //CVARS
-void G_SendGameCvars( gentity_t *ent );
-void G_SendSwepWeapons( gentity_t *ent );
-void G_SendSpawnSwepWeapons( gentity_t *ent );
-void plasma_think( gentity_t *ent );
-void rocket_think( gentity_t *ent );
-void grenade_think( gentity_t *ent );
-void bfg_think( gentity_t *ent );
-void nailgun_think( gentity_t *ent );
+void 	G_SendGameCvars( gentity_t *ent );
+void 	G_SendSwepWeapons( gentity_t *ent );
+void 	G_SendSpawnSwepWeapons( gentity_t *ent );
+void 	plasma_think( gentity_t *ent );
+void 	rocket_think( gentity_t *ent );
+void 	grenade_think( gentity_t *ent );
+void 	bfg_think( gentity_t *ent );
+void 	nailgun_think( gentity_t *ent );
 void 	UpdateGameCvars( void );
 extern	char 		cmapname[64];
 extern	int			mod_ammolimit;
