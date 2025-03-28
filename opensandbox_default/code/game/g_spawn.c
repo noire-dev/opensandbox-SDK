@@ -792,10 +792,6 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 ==============
 */
 void G_SpawnEntitiesFromString( void ) {
-	char mapname[64];
-
-	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
-
 	// allow calls to G_Spawn*()
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
@@ -816,9 +812,5 @@ void G_SpawnEntitiesFromString( void ) {
     G_LevelLoadComplete();
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
-	
-	if(strlen(g_entitypack.string)){
-		trap_SendConsoleCommand( EXEC_INSERT, va("wait 25; loadmap maps/%s/%s.add \n", g_entitypack.string, mapname) );	//load map file
-	}
 }
 

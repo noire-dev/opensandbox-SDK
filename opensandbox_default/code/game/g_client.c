@@ -1421,22 +1421,22 @@ void ClientUserinfoChanged( int clientNum ) {
 	teamLeader = client->sess.teamLeader;
 
 	// colors
-        if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0 ) {
-            switch(team) {
-                case TEAM_RED:
-                    c1[0] = COLOR_BLUE;
-                    c1[1] = 0;
-                    break;
-                case TEAM_BLUE:
-                    c1[0] = COLOR_RED;
-                    c1[1] = 0;
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
+    if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0 ) {
+        switch(team) {
+            case TEAM_RED:
+                c1[0] = COLOR_BLUE;
+                c1[1] = 0;
+                break;
+            case TEAM_BLUE:
+                c1[0] = COLOR_RED;
+                c1[1] = 0;
+                break;
+            default:
+                break;
         }
+    } else {
+        strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
+    }
 
 	strcpy(pligred, Info_ValueForKey( userinfo, "cg_plightred" ));
 	strcpy(pliggreen, Info_ValueForKey( userinfo, "cg_plightgreen" ));

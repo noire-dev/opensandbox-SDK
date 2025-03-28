@@ -1271,6 +1271,9 @@ G_InitGame
 void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	int					i;
 	vec4_t				rgba;
+	char mapname[64];
+
+	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
 
 	//clear any fades set by target_effect
 	for (i = 0; i < 4; i++) 
@@ -1393,6 +1396,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
     PlayerStoreInit();
+
+	if(strlen(g_entitypack.string)){
+		trap_SendConsoleCommand( EXEC_APPEND, va("loadmap maps/%s/%s.add \n", g_entitypack.string, mapname) );	//load map file
+	}
 }
 
 

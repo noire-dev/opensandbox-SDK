@@ -880,7 +880,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "t_info" ) ) {
 		Q_strncpyz(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
-		CG_Printf( "%s\n", CG_Argv(1) );
         return;
     }
 

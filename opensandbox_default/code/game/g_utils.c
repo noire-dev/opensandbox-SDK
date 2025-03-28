@@ -1571,6 +1571,10 @@ gentity_t *FindEntityForPhysgun( gentity_t *ent, int range ){
 	
 	traceEnt = &g_entities[ tr.entityNum ];		//entity for return
 
+	if(traceEnt->grabbedEntity == ent && g_gametype.integer > GT_MAPEDITOR){
+		return NULL;
+	}
+
 	if(g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER){
 			return NULL;
