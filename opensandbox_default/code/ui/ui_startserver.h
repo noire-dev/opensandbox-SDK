@@ -33,7 +33,7 @@ START SERVER MENU HEADER ( Q3 INTERFACE INDEPENDENT DEFINTIONS/DATA ) *****
 #define MAX_GAME_TYPE (GT_DOMINATION + 1)
 
 
-#define NUM_GAMETYPES 14
+#define NUM_GAMETYPES 15
 
 /*
 =============================================================================
@@ -530,7 +530,7 @@ typedef struct serverparameters_s {
 
 	int allowdownload;
 	int allowvote;
-	int allowpass;
+	char entitypack[32];
 
 	char password[MAX_PASSWORD_LENGTH];
 
@@ -1060,7 +1060,7 @@ extern const char *gametype_items[NUM_GAMETYPES + 1];
 extern const char *gametype_itemsru[NUM_GAMETYPES + 1];
 extern const char* randommaptype_items[MAP_RND_MAX + MAX_MAPTYPES + 1];
 extern const char* randommaptype_itemsru[MAP_RND_MAX + MAX_MAPTYPES + 1];
-extern char* gametype_cvar_base[NUM_GAMETYPES];
+extern char* var_cvar_base;
 extern const char* mapfilter_items[MAPFILTER_MAX + MAX_MAPTYPES + 1];
 extern const char* mapfilter_itemsru[MAPFILTER_MAX + MAX_MAPTYPES + 1];
 

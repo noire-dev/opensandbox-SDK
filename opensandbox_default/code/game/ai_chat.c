@@ -609,7 +609,7 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	//
 	if (TeamPlayIsOn() && BotSameTeam(bs, bs->lastkilledby)) {
 		if (bs->lastkilledby == bs->client) return qfalse;
-		if(gametype != GT_SANDBOX && gametype != GT_SINGLE){
+		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR && gametype != GT_SINGLE){
 		BotAI_BotInitialChat(bs, "death_teammate", name, NULL);
 		bs->chatto = CHAT_TEAM;
 		}
@@ -714,7 +714,7 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	//
 	bs->chatto = CHAT_ALL;
 	if (TeamPlayIsOn() && BotSameTeam(bs, bs->lastkilledplayer)) {
-		if(gametype != GT_SANDBOX && gametype != GT_SINGLE){
+		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR && gametype != GT_SINGLE){
 		BotAI_BotInitialChat(bs, "kill_teammate", name, NULL);
 		bs->chatto = CHAT_TEAM;
 		}

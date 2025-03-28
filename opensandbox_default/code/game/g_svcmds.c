@@ -196,6 +196,9 @@ struct
   { "say", qtrue, Svcmd_MessageWrapper },
   { "shuffle", qfalse, ShuffleTeams },
   { "savemap", qfalse, G_WriteMapfile_f },
+  { "deletemap", qfalse, G_DeleteMapfile_f },
+  { "clearmap", qfalse, G_ClearMap_f },
+  { "clearmap_sandbox", qfalse, G_ClearSandboxMap_f },
   { "loadmap", qfalse, G_LoadMapfile_f },
 
   { "sp_load", qfalse, SP_Load_f },

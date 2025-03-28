@@ -166,7 +166,7 @@ void Svcmd_PropNpc_AS_f( void ){
 	char		arg22[64];
 	char		arg23[64];
 	
-	if(g_gametype.integer != GT_SANDBOX){ return; }
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 		
 	//tr.endpos
 	trap_Argv( 1, cord_x, sizeof( cord_x ) );
@@ -202,16 +202,8 @@ void Svcmd_PropNpc_AS_f( void ){
 	
 	if(!Q_stricmp (arg01, "prop")){
 	if(!g_allowprops.integer){ return; }
-	if(g_safe.integer){
-	if(!Q_stricmp (arg03, "script_cmd")){
-	return;
-	}
-	if(!Q_stricmp (arg03, "target_modify")){
-	return;
-	}
-	}
+
 	G_BuildPropSL( arg02, arg03, end, level.player, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
-	
 	
 	return;
 	}

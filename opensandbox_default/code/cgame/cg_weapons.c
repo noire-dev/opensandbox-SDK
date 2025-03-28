@@ -1750,7 +1750,7 @@ void CG_NextWeapon_f( void ) {
 	}
 	}
 	
-	if(cg.weaponSelect == WP_TOOLGUN){
+	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
 	trap_Cvar_Set("cg_hide255", "0");
 	} else {
 	trap_Cvar_Set("cg_hide255", "1");
@@ -1798,7 +1798,7 @@ void CG_PrevWeapon_f( void ) {
 	}
 	}
 	
-	if(cg.weaponSelect == WP_TOOLGUN){
+	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
 	trap_Cvar_Set("cg_hide255", "0");
 	} else {
 	trap_Cvar_Set("cg_hide255", "1");
@@ -1829,7 +1829,7 @@ void CG_Weapon_f( void ) {
 
 	cg.weaponSelect = num;
 	
-	if(cg.weaponSelect == WP_TOOLGUN){
+	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
 	trap_Cvar_Set("cg_hide255", "0");
 	} else {
 	trap_Cvar_Set("cg_hide255", "1");

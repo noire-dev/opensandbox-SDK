@@ -315,6 +315,7 @@ vmCvar_t	g_skyColorG;
 vmCvar_t	g_skyColorB;
 vmCvar_t	g_skyColorA;
 
+vmCvar_t	g_entitypack;
 vmCvar_t	g_extendedsandbox;
 vmCvar_t	g_allowprops;
 vmCvar_t	g_allownpc;
@@ -323,7 +324,6 @@ vmCvar_t	g_allownoclip;
 vmCvar_t	g_allowtoolgun;
 vmCvar_t	g_allowphysgun;
 vmCvar_t	g_allowgravitygun;
-vmCvar_t	g_safe;
 vmCvar_t	g_npcdrop;
 vmCvar_t	g_maxEntities;
 vmCvar_t	cl_selectedmod;
@@ -521,7 +521,6 @@ vmCvar_t	sv_fps;
 vmCvar_t    g_lagLightning; //Adds a little lag to the lightninggun to make it less powerfull
 //unlagged - server options
 
-char cmapname[64];
 int mod_jumpheight;
 int mod_ammolimit;
 int	mod_ghtimeout;
@@ -851,6 +850,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_teamblue_respawnwait, "g_teamblue_respawnwait", "3000", 0, 0, qtrue  },
 	{ &g_teamblue_pickupitems, "g_teamblue_pickupitems", "1", 0, 0, qtrue  },
 	// change anytime vars
+	{ &g_entitypack, "g_entitypack", "default", 0, 0, qtrue  },
 	{ &g_extendedsandbox, "g_extendedsandbox", "0", 0, 0, qtrue  },
 	{ &g_fogModel, "g_fogModel", "1", 0, 0, qtrue  },
 	{ &g_fogShader, "g_fogShader", "1", 0, 0, qtrue  },
@@ -872,7 +872,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_allowtoolgun, "g_allowtoolgun", "1", 0, 0, qtrue  },
 	{ &g_allowphysgun, "g_allowphysgun", "1", 0, 0, qtrue  },
 	{ &g_allowgravitygun, "g_allowgravitygun", "1", 0, 0, qtrue  },
-	{ &g_safe, "g_safe", "1", 0, 0, qtrue},
 	{ &g_npcdrop, "g_npcdrop", "0", 0, 0, qtrue},
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE, 0, qtrue},
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE, 0, qtrue},
@@ -3276,8 +3275,6 @@ void G_RunFrame( int levelTime ) {
 	seconds -= mins * 60;
 	tens = seconds / 10;
 	seconds -= tens * 10;
-	
-	trap_Cvar_VariableStringBuffer("mapname", cmapname, sizeof(cmapname));
 
 	// get any cvar changes
 	G_UpdateCvars();
@@ -3340,16 +3337,6 @@ void G_RunFrame( int levelTime ) {
 		if ( !ent->r.linked && ent->neverFree ) {
 			continue;
 		}
-
-//unlagged - backward reconciliation #2
-		// we'll run missiles separately to save CPU in backward reconciliation
-/*
-		if ( ent->s.eType == ET_MISSILE ) {
-			G_RunMissile( ent );
-			continue;
-		}
-*/
-//unlagged - backward reconciliation #2
 
 		if ( ent->s.eType == ET_ITEM && !ent->sandboxObject || ent->physicsObject && !ent->sandboxObject ) {
 			G_RunItem( ent );

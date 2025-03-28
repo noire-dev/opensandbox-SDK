@@ -31,7 +31,7 @@ qboolean	G_SpawnString( const char *key, const char *defaultString, char **out )
 
 	if ( !level.spawning ) {
 		*out = (char *)defaultString;
-//		G_Error( "G_SpawnString() called while not spawning" );
+		//G_Error( "G_SpawnString() called while not spawning" );
 	}
 
 	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
@@ -135,7 +135,7 @@ field_t fields[] = {
 	{"mgravity", FOFS(mgravity), F_INT},
 	{"mnoclip", FOFS(mnoclip), F_INT},
 	{"allowuse", FOFS(allowuse), F_INT},
-	{"angle", FOFS(s.angles), F_ANGLEHACK},
+	{"angle", FOFS(s.angles), F_ANGLEHACK},		//deleted in mapfiles
 	{"targetShaderName", FOFS(targetShaderName), F_STRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
 	{"mapname", FOFS(mapname), F_STRING},
@@ -176,132 +176,7 @@ field_t fields[] = {
 	{NULL}
 };
 
-
-typedef struct {
-	char	*name;
-	void	(*spawn)(gentity_t *ent);
-} spawn_t;
-
-void SP_info_player_start (gentity_t *ent);
-void SP_info_player_deathmatch (gentity_t *ent);
-void SP_info_player_intermission (gentity_t *ent);
-//For Double Domination:
-void SP_info_player_dd (gentity_t *ent);
-void SP_info_player_dd_red (gentity_t *ent);
-void SP_info_player_dd_blue (gentity_t *ent);
-//standard domination:
-void SP_domination_point ( gentity_t *ent);
-
-void SP_info_firstplace(gentity_t *ent);
-void SP_info_secondplace(gentity_t *ent);
-void SP_info_thirdplace(gentity_t *ent);
-void SP_info_podium(gentity_t *ent);
-void SP_info_waypoint( gentity_t *self );
-void SP_info_backpack( gentity_t *self );
-
-void SP_func_plat (gentity_t *ent);
-void SP_func_static (gentity_t *ent);
-void SP_func_prop (gentity_t *ent);
-void SP_func_breakable (gentity_t *ent);
-void SP_func_rotating (gentity_t *ent);
-void SP_func_bobbing (gentity_t *ent);
-void SP_func_pendulum( gentity_t *ent );
-void SP_func_button (gentity_t *ent);
-void SP_func_door (gentity_t *ent);
-void SP_func_train (gentity_t *ent);
-void SP_func_timer (gentity_t *self);
-
-void SP_trigger_always (gentity_t *ent);
-void SP_trigger_multiple (gentity_t *ent);
-void SP_trigger_push (gentity_t *ent);
-void SP_trigger_teleport (gentity_t *ent);
-void SP_trigger_hurt (gentity_t *ent);
-
-void SP_trigger_death (gentity_t *ent);
-void SP_trigger_frag (gentity_t *ent);
-void SP_trigger_lock (gentity_t *ent);
-
-void SP_target_remove_powerups( gentity_t *ent );
-void SP_target_give (gentity_t *ent);
-void SP_target_delay (gentity_t *ent);
-void SP_target_speaker (gentity_t *ent);
-void SP_target_print (gentity_t *ent);
-void SP_target_laser (gentity_t *self);
-void SP_target_character (gentity_t *ent);
-void SP_target_score( gentity_t *ent );
-void SP_target_clienttarg( gentity_t *ent );
-void SP_target_teleporter( gentity_t *ent );
-void SP_target_relay (gentity_t *ent);
-void SP_target_kill (gentity_t *ent);
-void SP_target_position (gentity_t *ent);
-void SP_target_location (gentity_t *ent);
-void SP_target_push (gentity_t *ent);
-void SP_target_logic (gentity_t *ent);
-void SP_target_gravity (gentity_t *ent);
-void SP_target_mapchange (gentity_t *ent);
-void SP_target_botspawn (gentity_t *ent);
-void SP_target_unlink (gentity_t *ent);
-void SP_target_playerspeed (gentity_t *ent);
-void SP_target_debrisemitter (gentity_t *ent);
-void SP_target_objective (gentity_t *ent);
-void SP_target_skill (gentity_t *ent);
-void SP_target_earthquake (gentity_t *ent);
-void SP_target_effect (gentity_t *ent);
-void SP_target_finish (gentity_t *ent);
-void SP_target_modify (gentity_t *ent);
-void SP_target_secret (gentity_t *ent);
-void SP_target_playerstats (gentity_t *ent);
-void SP_target_cutscene (gentity_t *ent);
-void SP_target_botremove (gentity_t *ent);
-void SP_target_music (gentity_t *ent);
-void SP_target_stats (gentity_t *ent);
-
-void SP_script_variable (gentity_t *ent);
-void SP_script_layer (gentity_t *ent);
-void SP_script_cmd (gentity_t *ent);
-void SP_script_menu (gentity_t *ent);
-void SP_script_aicontrol (gentity_t *ent);
-
-void SP_light (gentity_t *self);
-void SP_info_null (gentity_t *self);
-void SP_info_notnull (gentity_t *self);
-void SP_info_camp (gentity_t *self);
-void SP_info_camera (gentity_t *self);
-void SP_path_corner (gentity_t *self);
-
-void SP_misc_teleporter_dest (gentity_t *self);
-void SP_misc_model(gentity_t *ent);
-void SP_misc_portal_camera(gentity_t *ent);
-void SP_misc_portal_surface(gentity_t *ent);
-
-void SP_shooter_rocket( gentity_t *ent );
-void SP_shooter_plasma( gentity_t *ent );
-void SP_shooter_grenade( gentity_t *ent );
-void SP_shooter_bfg( gentity_t *ent );
-void SP_shooter_prox( gentity_t *ent );
-void SP_shooter_flame( gentity_t *ent );
-void SP_shooter_antimatter( gentity_t *ent );
-void SP_shooter_custom( gentity_t *ent );
-
-void SP_team_CTF_redplayer( gentity_t *ent );
-void SP_team_CTF_blueplayer( gentity_t *ent );
-
-void SP_team_CTF_redspawn( gentity_t *ent );
-void SP_team_CTF_bluespawn( gentity_t *ent );
-
-void SP_func_door_rotating( gentity_t *ent );
-
-void SP_team_blueobelisk( gentity_t *ent );
-void SP_team_redobelisk( gentity_t *ent );
-void SP_team_neutralobelisk( gentity_t *ent );
-
-void SP_item_botroam( gentity_t *ent ) { }
-
-// weather
-void SP_rally_weather_rain( gentity_t *ent );
-void SP_rally_weather_snow( gentity_t *ent );
-
-spawn_t	spawns[] = {
+spawn_t	spawns_table[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
@@ -309,11 +184,10 @@ spawn_t	spawns[] = {
 	{"info_player_intermission", SP_info_player_intermission},
 //Double Domination player spawn:
 	{"info_player_dd", SP_info_player_dd},
-        {"info_player_dd_red", SP_info_player_dd_red},
-        {"info_player_dd_blue", SP_info_player_dd_blue},
+    {"info_player_dd_red", SP_info_player_dd_red},
+    {"info_player_dd_blue", SP_info_player_dd_blue},
 //Standard Domination point spawn:
 	{"domination_point", SP_domination_point},
-
 
 	{"info_null", SP_info_null},
 	{"info_notnull", SP_info_notnull},		// use target_position instead
@@ -422,7 +296,7 @@ spawn_t	spawns[] = {
 	{"team_blueobelisk", SP_team_blueobelisk},
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 
-	{"item_botroam", SP_item_botroam},
+	{"item_botroam", 0},
 
 	{"environment_rain", SP_rally_weather_rain},
 	{"environment_snow", SP_rally_weather_snow},
@@ -477,7 +351,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 				Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
 			}
 		}	
-		if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_FFA || g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_TEAM || g_gametype.integer == GT_LMS || g_gametype.integer == GT_DOMINATION ) {
+		if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM || g_gametype.integer == GT_LMS || g_gametype.integer == GT_DOMINATION ) {
 			if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
 				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 			}
@@ -514,7 +388,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 
 
 	if ( itemname[0]==0) {
-                G_Printf ("G_CallSpawn: NULL classname\n");
+        G_Printf ("G_CallSpawn: NULL classname\n");
 		return qfalse;
 	}
 
@@ -527,7 +401,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	}
 
 	// check normal spawn functions
-	for ( s=spawns ; s->name ; s++ ) {
+	for ( s=spawns_table ; s->name ; s++ ) {
 		if ( !strcmp(s->name, itemname) ) {
 			// found it
 			s->spawn(ent);
@@ -540,32 +414,26 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 
 /*
 ===============
-G_SandboxSpawn
+G_CanBeSpawned
 
-Finds the spawn function for the entity and calls it,
+Finds the spawn function for the entity, 
 returning qfalse if not found
 ===============
 */
-qboolean G_SandboxSpawn( gentity_t *ent ) {
+qboolean G_CanBeSpawned( const char *classname ) {
 	spawn_t	*s;
 	gitem_t	*item;
 
 	// check item spawn functions
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
-		if ( !strcmp(item->classname, ent->classname) ) {
-			G_SpawnItem( ent, item );
+		if ( !strcmp(item->classname, classname) ) {
 			return qtrue;
 		}
 	}
 
 	// check normal spawn functions
-	for ( s=spawns ; s->name ; s++ ) {
-		if ( !strcmp(s->name, ent->classname) ) {
-			// found it
-			ent->sb_class = BG_Alloc(sizeof(ent->classname));
-			strcpy(ent->sb_class, ent->classname);
-			s->spawn(ent);
-			ent->classname = "func_prop";
+	for ( s=spawns_table ; s->name ; s++ ) {
+		if ( !strcmp(s->name, classname) ) {
 			return qtrue;
 		}
 	}
@@ -606,9 +474,6 @@ char *G_NewString( const char *string ) {
 	
 	return newb;
 }
-
-
-
 
 /*
 ===============
@@ -660,9 +525,6 @@ void G_ParseField( const char *key, const char *value, gentity_t *ent ) {
 	}
 }
 
-
-
-
 /*
 ===================
 G_SpawnGEntityFromSpawnVars
@@ -675,7 +537,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-	static char *gametypeNames[] = {"sandbox", "ffa", "single", "tournament", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "lms", "dd", "dom"};
+	static char *gametypeNames[] = {"sandbox", "mapeditor", "single", "ffa", "tournament", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "lms", "dd", "dom"};
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -687,37 +549,37 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	// check for "notsingle" flag
 	if ( g_gametype.integer == GT_SINGLE ) {
 		G_SpawnInt( "notsingle", "0", &i );
-		if ( i ) {
+		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
 			G_FreeEntity( ent );
 			return;
 		}
 	}
 	if ( g_gametype.integer >= GT_TEAM && !g_ffa_gt ) {
 		G_SpawnInt( "notteam", "0", &i );
-		if ( i ) {
+		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
 			G_FreeEntity( ent );
 			return;
 		}
 	} else {
 		G_SpawnInt( "notfree", "0", &i );
-		if ( i ) {
+		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
 			G_FreeEntity( ent );
 			return;
 		}
 	}
 
 	G_SpawnInt( "notta", "0", &i );
-	if ( i ) {
+	if ( i && g_gametype.integer != GT_MAPEDITOR ) {
 		G_FreeEntity( ent );
 		return;
 	}
 
-        if( G_SpawnString( "!gametype", NULL, &value ) ) {
+    if( G_SpawnString( "!gametype", NULL, &value ) ) {
 		if( g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE ) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
 			s = strstr( value, gametypeName );
-			if( s ) {
+			if( s && g_gametype.integer != GT_MAPEDITOR ) {
 				G_FreeEntity( ent );
 				return;
 			}
@@ -729,7 +591,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
 			s = strstr( value, gametypeName );
-			if( !s ) {
+			if( !s && g_gametype.integer != GT_MAPEDITOR ) {
 				G_FreeEntity( ent );
 				return;
 			}
@@ -745,8 +607,6 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		G_FreeEntity( ent );
 	}
 }
-
-
 
 /*
 ====================
@@ -825,8 +685,6 @@ qboolean G_ParseSpawnVars( void ) {
 
 	return qtrue;
 }
-
-
 
 /*QUAKED worldspawn (0 0 0) ?
 
@@ -926,7 +784,6 @@ void SP_worldspawn( void ) {
 
 }
 
-
 /*
 ==============
 G_SpawnEntitiesFromString
@@ -935,6 +792,10 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 ==============
 */
 void G_SpawnEntitiesFromString( void ) {
+	char mapname[64];
+
+	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
+
 	// allow calls to G_Spawn*()
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
@@ -955,5 +816,9 @@ void G_SpawnEntitiesFromString( void ) {
     G_LevelLoadComplete();
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
+	
+	if(strlen(g_entitypack.string)){
+		trap_SendConsoleCommand( EXEC_APPEND, va("loadmap maps/%s/%s.add \n", g_entitypack.string, mapname) );	//load map file
+	}
 }
 

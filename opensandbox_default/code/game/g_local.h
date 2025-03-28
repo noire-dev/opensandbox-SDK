@@ -474,6 +474,8 @@ struct gclient_s {
 	// like health / armor countdowns and regeneration
 	int			timeResidual;
 
+	int			timeEntityInfo;
+
 	gentity_t	*persistantPowerup;
 	int			portalID;
 	int			ammoTimes[MAX_WEAPONS];
@@ -651,6 +653,130 @@ qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out )
 qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out );
 void		G_SpawnEntitiesFromString( void );
 char *G_NewString( const char *string );
+
+typedef struct {
+	char	*name;
+	void	(*spawn)(gentity_t *ent);
+} spawn_t;
+
+void SP_info_player_start (gentity_t *ent);
+void SP_info_player_deathmatch (gentity_t *ent);
+void SP_info_player_intermission (gentity_t *ent);
+//For Double Domination:
+void SP_info_player_dd (gentity_t *ent);
+void SP_info_player_dd_red (gentity_t *ent);
+void SP_info_player_dd_blue (gentity_t *ent);
+//standard domination:
+void SP_domination_point ( gentity_t *ent);
+
+void SP_info_firstplace(gentity_t *ent);
+void SP_info_secondplace(gentity_t *ent);
+void SP_info_thirdplace(gentity_t *ent);
+void SP_info_podium(gentity_t *ent);
+void SP_info_waypoint( gentity_t *self );
+void SP_info_backpack( gentity_t *self );
+
+void SP_func_plat (gentity_t *ent);
+void SP_func_static (gentity_t *ent);
+void SP_func_prop (gentity_t *ent);
+void SP_func_breakable (gentity_t *ent);
+void SP_func_rotating (gentity_t *ent);
+void SP_func_bobbing (gentity_t *ent);
+void SP_func_pendulum( gentity_t *ent );
+void SP_func_button (gentity_t *ent);
+void SP_func_door (gentity_t *ent);
+void SP_func_train (gentity_t *ent);
+void SP_func_timer (gentity_t *self);
+
+void SP_trigger_always (gentity_t *ent);
+void SP_trigger_multiple (gentity_t *ent);
+void SP_trigger_push (gentity_t *ent);
+void SP_trigger_teleport (gentity_t *ent);
+void SP_trigger_hurt (gentity_t *ent);
+
+void SP_trigger_death (gentity_t *ent);
+void SP_trigger_frag (gentity_t *ent);
+void SP_trigger_lock (gentity_t *ent);
+
+void SP_target_remove_powerups( gentity_t *ent );
+void SP_target_give (gentity_t *ent);
+void SP_target_delay (gentity_t *ent);
+void SP_target_speaker (gentity_t *ent);
+void SP_target_print (gentity_t *ent);
+void SP_target_laser (gentity_t *self);
+void SP_target_character (gentity_t *ent);
+void SP_target_score( gentity_t *ent );
+void SP_target_clienttarg( gentity_t *ent );
+void SP_target_teleporter( gentity_t *ent );
+void SP_target_relay (gentity_t *ent);
+void SP_target_kill (gentity_t *ent);
+void SP_target_position (gentity_t *ent);
+void SP_target_location (gentity_t *ent);
+void SP_target_push (gentity_t *ent);
+void SP_target_logic (gentity_t *ent);
+void SP_target_gravity (gentity_t *ent);
+void SP_target_mapchange (gentity_t *ent);
+void SP_target_botspawn (gentity_t *ent);
+void SP_target_unlink (gentity_t *ent);
+void SP_target_playerspeed (gentity_t *ent);
+void SP_target_debrisemitter (gentity_t *ent);
+void SP_target_objective (gentity_t *ent);
+void SP_target_skill (gentity_t *ent);
+void SP_target_earthquake (gentity_t *ent);
+void SP_target_effect (gentity_t *ent);
+void SP_target_finish (gentity_t *ent);
+void SP_target_modify (gentity_t *ent);
+void SP_target_secret (gentity_t *ent);
+void SP_target_playerstats (gentity_t *ent);
+void SP_target_cutscene (gentity_t *ent);
+void SP_target_botremove (gentity_t *ent);
+void SP_target_music (gentity_t *ent);
+void SP_target_stats (gentity_t *ent);
+
+void SP_script_variable (gentity_t *ent);
+void SP_script_layer (gentity_t *ent);
+void SP_script_cmd (gentity_t *ent);
+void SP_script_menu (gentity_t *ent);
+void SP_script_aicontrol (gentity_t *ent);
+
+void SP_light (gentity_t *self);
+void SP_info_null (gentity_t *self);
+void SP_info_notnull (gentity_t *self);
+void SP_info_camp (gentity_t *self);
+void SP_info_camera (gentity_t *self);
+void SP_path_corner (gentity_t *self);
+
+void SP_misc_teleporter_dest (gentity_t *self);
+void SP_misc_model(gentity_t *ent);
+void SP_misc_portal_camera(gentity_t *ent);
+void SP_misc_portal_surface(gentity_t *ent);
+
+void SP_shooter_rocket( gentity_t *ent );
+void SP_shooter_plasma( gentity_t *ent );
+void SP_shooter_grenade( gentity_t *ent );
+void SP_shooter_bfg( gentity_t *ent );
+void SP_shooter_prox( gentity_t *ent );
+void SP_shooter_flame( gentity_t *ent );
+void SP_shooter_antimatter( gentity_t *ent );
+void SP_shooter_custom( gentity_t *ent );
+
+void SP_team_CTF_redplayer( gentity_t *ent );
+void SP_team_CTF_blueplayer( gentity_t *ent );
+
+void SP_team_CTF_redspawn( gentity_t *ent );
+void SP_team_CTF_bluespawn( gentity_t *ent );
+
+void SP_func_door_rotating( gentity_t *ent );
+
+void SP_team_blueobelisk( gentity_t *ent );
+void SP_team_redobelisk( gentity_t *ent );
+void SP_team_neutralobelisk( gentity_t *ent );
+
+// weather
+void SP_rally_weather_rain( gentity_t *ent );
+void SP_rally_weather_snow( gentity_t *ent );
+
+extern spawn_t spawns_table[];
 
 //
 // g_cmds.c
@@ -845,8 +971,10 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
-	void Laser_Gen (gentity_t *ent);
-	void Laser_Think( gentity_t *self );
+void Laser_Gen (gentity_t *ent);
+void Laser_Think( gentity_t *self );
+
+void Weapon_Toolgun_Info( gentity_t *ent );
 
 //unlagged - g_unlagged.c
 void G_ResetHistory( gentity_t *ent );
@@ -1028,9 +1156,11 @@ void PlayerStore_restore(char* guid, playerState_t *ps);
 //
 // g_mapfiles.c
 //
-qboolean G_ClassnameAllowed( char *input );
-qboolean G_ClassnameAllowedAll( char *input );
+qboolean G_ClassnameAllowed( char *input, qboolean danger );
 void G_WriteMapfile_f( void );
+void G_DeleteMapfile_f( void );
+void G_ClearMap_f( void );
+void G_ClearSandboxMap_f( void );
 void G_LoadMapfile( char *filename );
 void G_LoadMapfile_f( void );
 qboolean SkippedChar ( char in );
@@ -1073,7 +1203,6 @@ void 	grenade_think( gentity_t *ent );
 void 	bfg_think( gentity_t *ent );
 void 	nailgun_think( gentity_t *ent );
 void 	UpdateGameCvars( void );
-extern	char 		cmapname[64];
 extern	int			mod_ammolimit;
 extern 	int 		mod_jumpheight;
 extern 	int			mod_gdelay;
@@ -1386,6 +1515,7 @@ extern	vmCvar_t	g_teamred_infammo;
 extern	vmCvar_t	g_teamred_respawnwait;
 extern	vmCvar_t	g_teamred_pickupitems;
 //cvars
+extern	vmCvar_t	g_entitypack;
 extern	vmCvar_t	g_extendedsandbox;
 extern	vmCvar_t	g_fogModel;
 extern	vmCvar_t	g_fogShader;
@@ -1407,7 +1537,6 @@ extern	vmCvar_t	g_allownoclip;
 extern	vmCvar_t	g_allowtoolgun;
 extern	vmCvar_t	g_allowphysgun;
 extern	vmCvar_t	g_allowgravitygun;
-extern	vmCvar_t	g_safe;
 extern	vmCvar_t	g_npcdrop;
 extern	vmCvar_t	g_maxEntities;
 extern	vmCvar_t	cl_selectedmod;

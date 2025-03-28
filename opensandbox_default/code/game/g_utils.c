@@ -1571,8 +1571,14 @@ gentity_t *FindEntityForPhysgun( gentity_t *ent, int range ){
 	
 	traceEnt = &g_entities[ tr.entityNum ];		//entity for return
 
-	if(!traceEnt->sandboxObject && !traceEnt->singlebot && ent->s.eType != ET_ITEM){
-		return NULL;
+	if(g_extendedsandbox.integer){
+		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER){
+			return NULL;
+		}
+	} else {
+		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+			return NULL;
+		}
 	}
 	
 	VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
@@ -1601,8 +1607,14 @@ gentity_t *FindEntityForGravitygun( gentity_t *ent, int range ){
 	
 	traceEnt = &g_entities[ tr.entityNum ];		//entity for return
 
-	if(!traceEnt->sandboxObject && !traceEnt->singlebot && ent->s.eType != ET_ITEM){
-		return NULL;
+	if(g_extendedsandbox.integer){
+		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER){
+			return NULL;
+		}
+	} else {
+		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+			return NULL;
+		}
 	}
 	
 	VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);

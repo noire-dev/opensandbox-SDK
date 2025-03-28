@@ -95,71 +95,28 @@ static void CG_DrawField (int x, int y, int width, int value, float size) {
 	}
 }
 
-/*
-================
-CG_Draw3DModel
-
-================
-*/
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles ) {
+void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
-
-	if ( !cg_draw3dIcons.integer || !cg_drawIcons.integer ) {
-		return;
-	}
+	vec3_t			origin, angles;
 
 	CG_AdjustFrom640( &x, &y, &w, &h );
 
 	memset( &refdef, 0, sizeof( refdef ) );
 
 	memset( &ent, 0, sizeof( ent ) );
+
+	origin[0] = 70;
+	origin[1] = 0;
+	origin[2] = 0;
+
+	angles[0] = 0;
+	angles[1] = ( cg.time & 4095 ) * 360 / 4096.0;
+	angles[2] = 0;
+
 	AnglesToAxis( angles, ent.axis );
 	VectorCopy( origin, ent.origin );
 	ent.hModel = model;
-	ent.customSkin = skin;
-	ent.shaderRGBA[0] = cg_helightred.integer;
-	ent.shaderRGBA[1] = cg_helightgreen.integer;
-	ent.shaderRGBA[2] = cg_helightblue.integer;
-	ent.shaderRGBA[3] = 255;
-	ent.renderfx = RF_NOSHADOW;		// no stencil shadows
-
-	refdef.rdflags = RDF_NOWORLDMODEL;
-
-	AxisClear( refdef.viewaxis );
-
-	refdef.fov_x = 30;
-	refdef.fov_y = 30;
-
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
-
-	refdef.time = cg.time;
-
-	trap_R_ClearScene();
-	trap_R_AddRefEntityToScene( &ent );
-	trap_R_RenderScene( &refdef );
-}
-
-void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles ) {
-	refdef_t		refdef;
-	refEntity_t		ent;
-
-	if ( !cg_draw3dIcons.integer || !cg_drawIcons.integer ) {
-		return;
-	}
-
-	CG_AdjustFrom640( &x, &y, &w, &h );
-
-	memset( &refdef, 0, sizeof( refdef ) );
-
-	memset( &ent, 0, sizeof( ent ) );
-	AnglesToAxis( angles, ent.axis );
-	VectorCopy( origin, ent.origin );
-	ent.hModel = model;
-	//ent.customSkin = skin;
 	ent.shaderRGBA[0] = 0;
 	ent.shaderRGBA[1] = 0;
 	ent.shaderRGBA[2] = 0;
@@ -174,11 +131,11 @@ void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model,
 	refdef.fov_y = 90;
 
 	ent.reType = RT_MODEL;
-	ent.customSkin = trap_R_RegisterSkin(va("%s/%s.skin", sb_texture_view.string, sb_texturename.string));
-	if(sb_texturename.integer > 0){		
-	ent.customShader = trap_R_RegisterShader(va("%s/%s", sb_texture_view.string, sb_texturename.string));
-	}					
-	if(sb_texturename.integer == 255){	
+	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%s.skin", texlocation, material));
+	if(atoi(material) > 0){		
+	ent.customShader = trap_R_RegisterShader(va("ptex/%s/%s", texlocation, material));
+	}		
+	if(atoi(material) == 255){	
 	ent.customShader = cgs.media.ptexShader[1];
 	}
 
@@ -215,126 +172,124 @@ CG_DrawFlagModel
 Used for both the status bar and the scoreboard
 ================
 */
-void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D ) {
-	qhandle_t		cm;
-	float			len;
-	vec3_t			origin, angles;
-	vec3_t			mins, maxs;
-	qhandle_t		handle;
-
-	if ( !force2D && cg_draw3dIcons.integer ) {
-
-		VectorClear( angles );
-
-		cm = cgs.media.redFlagModel;
-
-		// offset the origin y and z to center the flag
-		trap_R_ModelBounds( cm, mins, maxs );
-
-		origin[2] = -0.5 * ( mins[2] + maxs[2] );
-		origin[1] = 0.5 * ( mins[1] + maxs[1] );
-
-		// calculate distance so the flag nearly fills the box
-		// assume heads are taller than wide
-		len = 0.5 * ( maxs[2] - mins[2] );
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
-
-		angles[YAW] = 60 * sin( cg.time / 2000.0 );;
-
-		if( team == TEAM_RED ) {
-			handle = cgs.media.redFlagModel;
-			if(cgs.gametype == GT_DOUBLE_D){
-				if(cgs.redflag == TEAM_BLUE)
-					handle = cgs.media.blueFlagModel;
-				if(cgs.redflag == TEAM_FREE)
-					handle = cgs.media.neutralFlagModel;
-				if(cgs.redflag == TEAM_NONE)
-					handle = cgs.media.neutralFlagModel;
-			}
-		} else if( team == TEAM_BLUE ) {
-			handle = cgs.media.blueFlagModel;
-			if(cgs.gametype == GT_DOUBLE_D){
-				if(cgs.redflag == TEAM_BLUE)
-					handle = cgs.media.blueFlagModel;
-				if(cgs.redflag == TEAM_FREE)
-					handle = cgs.media.neutralFlagModel;
-				if(cgs.redflag == TEAM_NONE)
-					handle = cgs.media.neutralFlagModel;
-			}
-		} else if( team == TEAM_FREE ) {
-			handle = cgs.media.neutralFlagModel;
-		} else {
-			return;
-		}
-		CG_Draw3DModel( x, y, w, h, handle, 0, origin, angles );
-	} else if ( cg_drawIcons.integer ) {
-		gitem_t *item;
-
-		if( team == TEAM_RED ) {
-			item = BG_FindItemForPowerup( PW_REDFLAG );
-		} else if( team == TEAM_BLUE ) {
-			item = BG_FindItemForPowerup( PW_BLUEFLAG );
-		} else if( team == TEAM_FREE ) {
-			item = BG_FindItemForPowerup( PW_NEUTRALFLAG );
-		} else {
-			return;
-		}
-		if (item) {
-		  CG_DrawPic( x, y, w, h, cg_items[ ITEM_INDEX(item) ].icon );
-		}
+void CG_DrawFlagModel( float x, float y, float w, float h, int team ) {
+	gitem_t *item;
+	if( team == TEAM_RED ) {
+		item = BG_FindItemForPowerup( PW_REDFLAG );
+	} else if( team == TEAM_BLUE ) {
+		item = BG_FindItemForPowerup( PW_BLUEFLAG );
+	} else if( team == TEAM_FREE ) {
+		item = BG_FindItemForPowerup( PW_NEUTRALFLAG );
+	} else {
+		return;
+	}
+	if (item) {
+	  CG_DrawPic( x, y, w, h, cg_items[ ITEM_INDEX(item) ].icon );
 	}
 }
 
+void SplitStringBySpace(const char *str, char result[MAX_ENTITYINFO][64]) {
+    int i = 0;
+    int wordIndex = 0;
+    int charIndex = 0;
+
+    while (str[i] != '\0' && wordIndex < MAX_ENTITYINFO) {
+        while (isspace(str[i])) {
+            i++;
+        }
+
+        while (str[i] != '\0' && !isspace(str[i])) {
+            result[wordIndex][charIndex++] = str[i++];
+        }
+
+        result[wordIndex][charIndex] = '\0';
+
+        wordIndex++;
+        charIndex = 0;
+    }
+}
+
 static void CG_DrawToolgun() {
+	char entityInfos[MAX_ENTITYINFO][64];
 	float y;
-	vec3_t		angles;
 	vec3_t		origin;
 	gitem_t	*it;
+	int		count = 0;
+	int		i = 0;
 	
-		if(toolgun_tool.integer == 0){
+	if(toolgun_tool.integer == TL_CREATE){
 		trap_R_RemapShader( "models/weapons/toolgun/screen", "models/weapons/toolgun/screen", "0.005" );
-		} else {
+	} else {
 		if(trap_R_RegisterShader(va("models/weapons/toolgun/tool%i", toolgun_tool.integer)) != 0){
-		trap_R_RemapShader( "models/weapons/toolgun/screen", va("models/weapons/toolgun/tool%i", toolgun_tool.integer) , "0.005" );
+			trap_R_RemapShader( "models/weapons/toolgun/screen", va("models/weapons/toolgun/tool%i", toolgun_tool.integer) , "0.005" );
 		} else {
-		trap_R_RemapShader( "models/weapons/toolgun/screen", "models/weapons/toolgun/toolerror", "0.005" );
+			trap_R_RemapShader( "models/weapons/toolgun/screen", "models/weapons/toolgun/toolerror", "0.005" );
 		}
-		}
-		
-		CG_DrawPic( -1 - cl_screenoffset.value, 0+cg_toolguninfo.integer, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
-
-		CG_DrawGiantString( 0 - cl_screenoffset.value, 2+cg_toolguninfo.integer, toolgun_tooltext.string, 1.0F);
-		if(toolgun_mod19.integer == 0){
+	}
+	
+	CG_DrawPic( -1 - cl_screenoffset.value, 0+cg_toolguninfo.integer, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+	CG_DrawGiantString( 0 - cl_screenoffset.value, 2+cg_toolguninfo.integer, toolgun_tooltext.string, 1.0F);
+	if(toolgun_mod19.integer == 0){
 		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode1.string, 1.0F);
-		} else
-		if(toolgun_mod19.integer == 1){
+	} else if(toolgun_mod19.integer == 1){
 		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode2.string, 1.0F);
-		} else
-		if(toolgun_mod19.integer == 2){
+	} else if(toolgun_mod19.integer == 2){
 		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode3.string, 1.0F);
-		} else
-		if(toolgun_mod19.integer == 3){
+	} else if(toolgun_mod19.integer == 3){
 		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode4.string, 1.0F);
-		}
-		y = 50+cg_toolguninfo.integer;  CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip1.string, 1.0F);
-		y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip2.string, 1.0F);
-		y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip3.string, 1.0F);
-		y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip4.string, 1.0F);
+	}
+	y = 50+cg_toolguninfo.integer;  CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip1.string, 1.0F);
+	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip2.string, 1.0F);
+	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip3.string, 1.0F);
+	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip4.string, 1.0F);
+	
+	if(strlen(cg.entityInfo) > 0){
+    	SplitStringBySpace(cg.entityInfo, entityInfos);
 
-		origin[0] = 70;
-		origin[1] = 0;
-		origin[2] = 0;
-		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
-		if(!BG_CheckClassname(sb_classnum_view.string)){
-		CG_Draw3DModelToolgun( 640 + cl_screenoffset.value - TEXT_ICON_SPACE  - 160, 1 + 12, 160, 160,
-					   trap_R_RegisterModel_SourceTech( toolgun_modelst.string ), 0, origin, angles );
-		} else {
-		for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
-		if ( !Q_stricmp( it->classname, sb_classnum_view.string ) )
-				CG_Draw3DModelToolgun( 640 + cl_screenoffset.value - TEXT_ICON_SPACE  - 160, 1 + 12, 160, 160,
-					   trap_R_RegisterModel_SourceTech( it->world_model[0] ), 0, origin, angles );	
+    	if (strcmp(entityInfos[0], "<NULL>")) {
+			if(!BG_CheckClassname(entityInfos[0])){
+				//nothing
+			} else {
+				for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+					if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
+						CG_DrawPic( 330, 245-48, 48, 48, trap_R_RegisterShaderNoMip( it->icon ) );
+					}
+				}
+			}
+    	    CG_DrawSmallString(330, 248 + (count * 10), va("Class: %s", entityInfos[0]), 1.00F);
+			count++;
+    	}
+		if (strcmp(entityInfos[1], "<NULL>")) {
+			if(!BG_CheckClassname(entityInfos[0])){
+				CG_Draw3DModelToolgun( 330, 245-48, 48, 48,
+				trap_R_RegisterModel_SourceTech( entityInfos[1] ), entityInfos[1], entityInfos[2] );
+			} else {
+				//nothing
+			}
+			if(!strcmp(entityInfos[0], "player")) {
+				CG_DrawHead( 330, 245-48, 48, 48, atoi(entityInfos[1]) );
+			} else {
+    	    CG_DrawSmallString(330, 248 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
+			}
+			count++;
+    	}
+		if (strcmp(entityInfos[2], "0")) {
+    	    CG_DrawSmallString(330, 248 + (count * 10), va("Material: %s", entityInfos[2]), 1.00F);
+			count++;
+    	}
+
+		if (strcmp(entityInfos[3], "0")) {
+    	    CG_DrawSmallString(330, 248 + (count * 10), va("Count: %s", entityInfos[3]), 1.00F);
+			count++;
+    	} else {
+			for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+				if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
+					CG_DrawSmallString(330, 248 + (count * 10), va("Count: %i", it->quantity), 1.00F);
+					count++;
+				}
+			}
 		}
-	}	
+	}
 }
 
 static void CG_DrawStatusElement( float x, float y, int value, const char *text ) {
@@ -435,11 +390,11 @@ static void CG_DrawStatusBar( void ) {
 	}
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_RED, qfalse );
+		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_RED );
 	} else if( cg.predictedPlayerState.powerups[PW_BLUEFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_BLUE, qfalse );
+		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_BLUE );
 	} else if( cg.predictedPlayerState.powerups[PW_NEUTRALFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_FREE, qfalse );
+		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_FREE );
 	}
 
 	//
@@ -570,7 +525,7 @@ static float CG_DrawCounters( float y ) {
 		n_tip2 = qfalse;
 	}
 
-	if(cgs.gametype == GT_SANDBOX){
+	if(cgs.gametype == GT_SANDBOX || cgs.gametype == GT_MAPEDITOR){
 		if(seconds == 3 && !n_tip1){
 			if(cl_language.integer == 0){
 				CG_AddNotify ("Welcome to OpenSandbox", 1);
@@ -1252,7 +1207,7 @@ static void CG_DrawLowerRight( void ) {
 		y = CG_DrawTeamOverlay( y, qtrue, qfalse );
 	}
 
-	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_SINGLE){
+	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR && cgs.gametype != GT_SINGLE){
 	y = CG_DrawScores( y );
 	}
 	y = CG_DrawPowerups( y );
@@ -2602,18 +2557,21 @@ static void CG_DrawWarmup( void ) {
 		if ( cgs.gametype == GT_SANDBOX ) {
 			if(cl_language.integer == 0){s = "Sandbox";}
 			if(cl_language.integer == 1){s = "Песочница";}
-		} else if ( cgs.gametype == GT_FFA ) {
-			if(cl_language.integer == 0){s = "Free For All";}
-			if(cl_language.integer == 1){s = "Все Против Всех";}
+		} else if ( cgs.gametype == GT_MAPEDITOR ) {
+			if(cl_language.integer == 0){s = "Map Editor";}
+			if(cl_language.integer == 1){s = "Редактор Карт";}
 		} else if ( cgs.gametype == GT_SINGLE ) {
 			if(cl_language.integer == 0){s = "Single Player";}
 			if(cl_language.integer == 1){s = "Одиночная Игра";}
+		} else if ( cgs.gametype == GT_FFA ) {
+			if(cl_language.integer == 0){s = "Free For All";}
+			if(cl_language.integer == 1){s = "Все Против Всех";}
 		} else if ( cgs.gametype == GT_TEAM ) {
 			if(cl_language.integer == 0){s = "Team Deathmatch";}
 			if(cl_language.integer == 1){s = "Командный Бой";}
 		} else if ( cgs.gametype == GT_CTF ) {
 			if(cl_language.integer == 0){s = "Capture the Flag";}
-			if(cl_language.integer == 1){s = "Захват флага";}
+			if(cl_language.integer == 1){s = "Захват Флага";}
 		} else if ( cgs.gametype == GT_ELIMINATION ) {
 			if(cl_language.integer == 0){s = "Elimination";}
 			if(cl_language.integer == 1){s = "Устранение";}
@@ -2622,10 +2580,10 @@ static void CG_DrawWarmup( void ) {
 			if(cl_language.integer == 1){s = "CTF Устранение";}
 		} else if ( cgs.gametype == GT_LMS ) {
 			if(cl_language.integer == 0){s = "Last Man Standing";}
-			if(cl_language.integer == 1){s = "Последний оставшийся";}
+			if(cl_language.integer == 1){s = "Последний Оставшийся";}
 		} else if ( cgs.gametype == GT_DOUBLE_D ) {
 			if(cl_language.integer == 0){s = "Double Domination";}
-			if(cl_language.integer == 1){s = "Двойное доминирование";}
+			if(cl_language.integer == 1){s = "Двойное Доминирование";}
 		} else if ( cgs.gametype == GT_1FCTF ) {
 			if(cl_language.integer == 0){s = "One Flag CTF";}
 			if(cl_language.integer == 1){s = "Один Флаг";}

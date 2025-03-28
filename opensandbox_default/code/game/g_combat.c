@@ -1052,7 +1052,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( !G_NpcFactionProp(NP_HARM, attacker) && attacker->singlebot >= 1 && targ->singlebot == attacker->singlebot && attacker && mod != MOD_TELEFRAG )
 		return;
 
-	if(g_gametype.integer == GT_SANDBOX){
+	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		if(mod == MOD_TOOLGUN){
 			return;
 		}

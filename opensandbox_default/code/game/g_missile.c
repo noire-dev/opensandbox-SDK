@@ -1660,7 +1660,7 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt = G_Spawn();
 	bolt->s.eType = ET_GENERAL;
 	bolt->spawnflags = 0;
-	bolt->sandboxObject = 1;
+	bolt->sandboxObject = OBJ_SANDBOX;
 	bolt->objectType = OT_BASIC;
 	bolt->s.torsoAnim = OT_BASIC;
 	bolt->sb_takedamage = 1;
@@ -1727,7 +1727,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt = G_Spawn();
 	bolt->s.eType = ET_GENERAL;
 	bolt->spawnflags = 0;
-	bolt->sandboxObject = 1;
+	bolt->sandboxObject = OBJ_SANDBOX;
 	bolt->objectType = OT_NUKE;
 	bolt->s.torsoAnim = OT_NUKE;
 	bolt->sb_takedamage = 1;

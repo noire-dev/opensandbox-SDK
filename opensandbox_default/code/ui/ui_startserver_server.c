@@ -43,7 +43,7 @@
 #define ID_SERVER_MAXRATE 315
 #define ID_SERVER_ALLOWDOWNLOAD 316
 #define ID_SERVER_PASSWORD 317
-#define ID_SERVER_ALLOWPASS 318
+#define ID_SERVER_ENTITYPACK 318
 #define ID_SERVER_ALLOWMAXRATE 319
 #define ID_SERVER_ALLOWWARMUP 320
 #define ID_SERVER_SYNCCLIENTS 321
@@ -561,19 +561,19 @@ static controlinit_t srv_admin[] = {
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWDOWNLOAD, ITEM_ALWAYSON,
 		"Allow download:", &s_scriptdata.server.allowdownload, 0, 0, NULL, 0, 0, NULL },
 
-	{ SRVCTRL_RADIO, 0, ID_SERVER_SYNCCLIENTS, ITEM_ALWAYSON|ITEM_HALFGAP,
+	{ SRVCTRL_RADIO, 0, ID_SERVER_SYNCCLIENTS, ITEM_ALWAYSON,
 		"Sync clients:", &s_scriptdata.server.syncClients, 0, 0, NULL, 0, 0, NULL },
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_NETPORT, ITEM_ALWAYSON|ITEM_HALFGAP,
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_NETPORT, ITEM_ALWAYSON,
 		"Net port:", &s_scriptdata.server.netport, 1024, 65535, NULL, 6, 6, NULL },
 
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SVFPS, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Server FPS:", &s_scriptdata.server.sv_fps, 20, 160, NULL, 4, 4, NULL },
 		
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWPASS, ITEM_ALWAYSON,
-		"Private server:", &s_scriptdata.server.allowpass, 0, 0, NULL, 0, 0, NULL },
+	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_ENTITYPACK, ITEM_ALWAYSON|ITEM_HALFGAP,
+		"Entity pack:", NULL, 0, 0, s_scriptdata.server.entitypack, 20, 20, NULL },
 
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_PASSWORD, ITEM_GRAYIF_PREVOFF|ITEM_HALFGAP,
+	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_PASSWORD, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Private password:", NULL, 0, 0, s_scriptdata.server.password, 10, MAX_PASSWORD_LENGTH, NULL },
 
 	/*{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWPRIVATECLIENT, ITEM_ALWAYSON,
@@ -588,7 +588,7 @@ static controlinit_t srv_admin[] = {
 	{ SRVCTRL_SPIN, 0, ID_SERVER_DEDICATED, ITEM_ALWAYSON,
 		"Dedicated server:", &s_scriptdata.server.dedicatedServer, 0, 0, NULL, 0, 0, dedicated_list },
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_INACTIVITY, ITEM_ALWAYSON|ITEM_HALFGAP,
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_INACTIVITY, ITEM_ALWAYSON,
 		"Inactivity timeout:", &s_scriptdata.server.inactivityTime, 0, 999, NULL, 3, 3, NULL },
 
 	{ SRVCTRL_RADIO, 0, ID_SERVER_LANFORCERATE, ITEM_ALWAYSON,
@@ -597,8 +597,6 @@ static controlinit_t srv_admin[] = {
 
 // gameplay controls
 static controlinit_t srv_general[] = {
-		
-
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SELECTEDMOD, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Mod folder name:", NULL, 0, 0, s_scriptdata.server.selectedmod, 20, 20, NULL },
 		
@@ -734,7 +732,7 @@ static controlinit_t srv_rune1[] = {
 		"Scout rune infinity ammo:", &s_scriptdata.server.scout_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTHEALTHMODIFIER, ITEM_ALWAYSON,
 		"Scout rune health(float):", NULL, 0, 0, s_scriptdata.server.scouthealthmodifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERFIRESPEED, ITEM_ALWAYSON,
+	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERFIRESPEED, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Doubler rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.doublerfirespeed, 9, 9, NULL },
 	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERDAMAGEFACTOR, ITEM_ALWAYSON,
 		"Doubler rune damage(float):", NULL, 0, 0, s_scriptdata.server.doublerdamagefactor, 9, 9, NULL },
@@ -764,7 +762,7 @@ static controlinit_t srv_rune2[] = {
 		"Guard rune gravity(float):", NULL, 0, 0, s_scriptdata.server.guardgravitymodifier, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_GUARD_INFAMMO, ITEM_ALWAYSON,
 		"Guard rune Infinity ammo:", &s_scriptdata.server.guard_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENFIRESPEED, ITEM_ALWAYSON,
+	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENFIRESPEED, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Ammoregen rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.ammoregenfirespeed, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_AMMOREGEN_INFAMMO, ITEM_ALWAYSON,
 		"Ammoregen rune infinity ammo:", &s_scriptdata.server.ammoregen_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
@@ -920,7 +918,7 @@ static controlinit_t srv_teamother[] = {
 		"Team red flight:", &s_scriptdata.server.redspawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_SPIN, 0, ID_SERVER_REDSPAWN_HOLDABLE, ITEM_ALWAYSON,
 		"Team red holdable:", &s_scriptdata.server.redspawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_QUAD, ITEM_ALWAYSON,
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_QUAD, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Team blue quad damage:", &s_scriptdata.server.bluespawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_HASTE, ITEM_ALWAYSON,
 		"Team blue haste:", &s_scriptdata.server.bluespawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
@@ -1026,7 +1024,7 @@ static controlinit_t srv_time[] = {
 		"Regeneration powerup time:", &s_scriptdata.server.regentime, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLIGHTTIME, ITEM_ALWAYSON,
 		"Flight powerup time:", &s_scriptdata.server.flighttime, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLIGHTTIME, ITEM_ALWAYSON,
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLIGHTTIME, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Armor respawn:", &s_scriptdata.server.armorrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_HEALTHRESPAWN, ITEM_ALWAYSON,
 		"Health respawn:", &s_scriptdata.server.healthrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
@@ -1455,8 +1453,8 @@ static void StartServer_ServerPage_ControlListStatusBar(void* ptr)
 		StartServer_ServerPage_SetStatusBar("time before weapon respawns, default = 5, TeamDM = 30");
 		return;
 
-	case ID_SERVER_ALLOWPASS:
-		StartServer_ServerPage_SetStatusBar("all clients must use a password to connect");
+	case ID_SERVER_ENTITYPACK:
+		StartServer_ServerPage_SetStatusBar("load entity pack on server");
 		return;
 
 	case ID_SERVER_ALLOWMINPING:

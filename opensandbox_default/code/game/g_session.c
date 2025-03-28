@@ -127,8 +127,9 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 			switch ( g_gametype.integer ) {
 			default:
 			case GT_SANDBOX:
-			case GT_FFA:
+			case GT_MAPEDITOR:
 			case GT_SINGLE:
+			case GT_FFA:
 			case GT_LMS:
 				if ( g_maxGameClients.integer > 0 && 
 					level.numNonSpectatorClients >= g_maxGameClients.integer ) {
@@ -166,6 +167,9 @@ Updates session data for a client prior to a map change that's forced by a targe
 void G_Sav_SaveData( gentity_t *ent, int slot ) {
 	int secretFound, secretCount;
 	int i;
+	char mapname[64];
+
+	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
 
 	NS_createCvar(va("sav_%i_health", slot), va("%i", ent->client->ps.stats[STAT_HEALTH]));
 	NS_createCvar(va("sav_%i_armor", slot), va("%i", ent->client->ps.stats[STAT_ARMOR]));
@@ -190,8 +194,7 @@ void G_Sav_SaveData( gentity_t *ent, int slot ) {
 	NS_createCvar(va("sav_%i_accShots", slot), va("%i", ent->client->accuracy_shots));
 	NS_createCvar(va("sav_%i_accHits", slot), va("%i", ent->client->accuracy_hits));
 
-	NS_createCvar(va("sav_%i_mapName", slot), va("%s", cmapname));
-
+	NS_createCvar(va("sav_%i_mapName", slot), va("%s", mapname));
 }
 
 /*

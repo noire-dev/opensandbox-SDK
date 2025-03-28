@@ -644,7 +644,7 @@ static void CG_MapRestart( void ) {
 	// we really should clear more parts of cg here and stop sounds
 
 	// play the "fight" sound if this is a restart without warmup
-	if ( cg.warmup == 0  && cgs.gametype != GT_SANDBOX ) {
+	if ( cg.warmup == 0 && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR ) {
 		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
 		//CG_CenterPrint( "FIGHT!", 120, GIANTCHAR_WIDTH*2 );
 	}
@@ -769,8 +769,8 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "chat" ) ) {
 		if ( !cg_teamChatsOnly.integer ) {
-                        if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
-                                trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+            if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
+                trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 			Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 			CG_RemoveChatEscapeChar( text );
 			CG_PrintfChat( qfalse, "%s\n", text );
@@ -779,8 +779,8 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if ( !strcmp( cmd, "tchat" ) ) {
-                if( cg_teamChatBeep.integer && cgs.gametype != GT_SINGLE )
-                        trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+    	if( cg_teamChatBeep.integer && cgs.gametype != GT_SINGLE )
+    	    trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 		CG_RemoveChatEscapeChar( text );
 		CG_AddToTeamChat( text );
@@ -875,6 +875,11 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "wpspawn" ) ) {
         CG_ParseSpawnSweps();
+        return;
+    }
+
+	if ( !strcmp( cmd, "t_info" ) ) {
+		Q_strncpyz(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
         return;
     }
 

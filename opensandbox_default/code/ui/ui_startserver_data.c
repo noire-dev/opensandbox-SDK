@@ -34,22 +34,7 @@
 
 scriptdata_t s_scriptdata;
 
-char* gametype_cvar_base[NUM_GAMETYPES] = {
-	"gui_sandbox_%s",
-	"gui_ffa_%s",
-	"gui_single_%s",
-	"gui_tourney_%s",
-	"gui_team_%s",
-	"gui_ctf_%s",
-	"gui_oneflag_%s",
-	"gui_overload_%s",
-	"gui_harvester_%s",
-	"gui_elim_%s",
-	"gui_ctfelim_%s",
-	"gui_lms_%s",
-	"gui_doubledom_%s",
-	"gui_domination_%s"
-};
+char* var_cvar_base = "gui_var_%s";
 
 const char* idmap_list[] = {
 	"oacmpdm1",
@@ -71,8 +56,9 @@ const char* idmap_list[] = {
 
 const char *gametype_items[NUM_GAMETYPES + 1] = {
 	"Sandbox",
-	"Free For All",
+	"Map Editor",
 	"Single Player",
+	"Free For All",
 	"Tournament",
 	"Team Deathmatch",
 	"Capture the Flag",
@@ -89,18 +75,19 @@ const char *gametype_items[NUM_GAMETYPES + 1] = {
 
 const char *gametype_itemsru[NUM_GAMETYPES + 1] = {
 	"Песочница",
-	"Все Против Всех",
+	"Редактор Карт",
 	"Одиночная Игра",
+	"Все Против Всех",
 	"Турнир",
 	"Командный Бой",
-	"Захват флага",
+	"Захват Флага",
 	"Один Флаг",
 	"Атака Базы",
 	"Жнец",
 	"Устранение",
-	"Устранение: Захват флага",
-	"Последний оставшийся",
-	"Двойное доминирование",
+	"Устранение: Захват Флага",
+	"Последний Оставшийся",
+	"Двойное Доминирование",
 	"Доминирование",
 	0
 };
@@ -225,7 +212,7 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_allowmaxrate", "0" },
 { "gui_maxrate", "0" },
 { "gui_allowdownload", "0" },
-{ "gui_allowpass", "0" },
+{ "gui_entitypack", "default" },
 { "gui_password", "" },
 { "gui_allowvote", "1" },
 { "gui_minPing", "0" },
@@ -613,499 +600,38 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_amhoming", "0" },
 { "gui_amguided", "0" },
 
-	{ "gui_sandbox_fragtype", "0" },
-	{ "gui_sandbox_timetype", "0" },
-	{ "gui_sandbox_customfraglimits", "" },
-	{ "gui_sandbox_customtimelimits", "" },
-	{ "gui_sandbox_maplist", "" },
-	{ "gui_sandbox_maplistexclude", "" },
-	{ "gui_sandbox_MapRepeat", "1" },
-	{ "gui_sandbox_MapSource", "0" },
-	{ "gui_sandbox_RandomMapCount", "5" },
-	{ "gui_sandbox_RandomMapType", "0" },
-	{ "gui_sandbox_slottype", "" },
-	{ "gui_sandbox_botname", "" },
-	{ "gui_sandbox_botexclude", "" },
-	{ "gui_sandbox_botskill", "" },
-	{ "gui_sandbox_BotSelection", "1" },
-	{ "gui_sandbox_BotCount", "0" },
-	{ "gui_sandbox_BotChange", "0" },
-	{ "gui_sandbox_OpenSlotCount", "128" },
-	{ "gui_sandbox_BotSkillType", "0" },
-	{ "gui_sandbox_BotSkillValue", "0" },
-	{ "gui_sandbox_BotSkillBias", "0" },
-	{ "gui_sandbox_PlayerJoinAs", "0" },
-	{ "gui_sandbox_hostname", "OpenSandbox" },
-	{ "gui_sandbox_ForceRespawn", "0" },
-	{ "gui_sandbox_itemGroups", "" },
-	{ "gui_sandbox_itemsHidden", "" },
-	{ "gui_sandbox_WarmUp", "20" },
-	{ "gui_sandbox_doWarmUp", "0" },
-	{ "gui_sandbox_fraglimit", "0" },
-	{ "gui_sandbox_timelimit", "0" },
-	{ "gui_sandbox_weaponrespawn", "5" },
-	{ "gui_sandbox_viewdistance", "0" },
-	
-	{ "gui_single_fragtype", "0" },
-	{ "gui_single_timetype", "0" },
-	{ "gui_single_customfraglimits", "" },
-	{ "gui_single_customtimelimits", "" },
-	{ "gui_single_maplist", "" },
-	{ "gui_single_maplistexclude", "" },
-	{ "gui_single_MapRepeat", "1" },
-	{ "gui_single_MapSource", "0" },
-	{ "gui_single_RandomMapCount", "5" },
-	{ "gui_single_RandomMapType", "0" },
-	{ "gui_single_slottype", "" },
-	{ "gui_single_botname", "" },
-	{ "gui_single_botexclude", "" },
-	{ "gui_single_botskill", "" },
-	{ "gui_single_BotSelection", "1" },
-	{ "gui_single_BotCount", "0" },
-	{ "gui_single_BotChange", "0" },
-	{ "gui_single_OpenSlotCount", "128" },
-	{ "gui_single_BotSkillType", "0" },
-	{ "gui_single_BotSkillValue", "0" },
-	{ "gui_single_BotSkillBias", "0" },
-	{ "gui_single_PlayerJoinAs", "0" },
-	{ "gui_single_hostname", "OpenSandbox Single" },
-	{ "gui_single_ForceRespawn", "0" },
-	{ "gui_single_itemGroups", "" },
-	{ "gui_single_itemsHidden", "" },
-	{ "gui_single_WarmUp", "20" },
-	{ "gui_single_doWarmUp", "0" },
-	{ "gui_single_fraglimit", "0" },
-	{ "gui_single_timelimit", "0" },
-	{ "gui_single_weaponrespawn", "5" },
-	{ "gui_single_viewdistance", "0" },
-
-	{ "gui_ffa_fragtype", "0" },
-	{ "gui_ffa_timetype", "0" },
-	{ "gui_ffa_customfraglimits", "" },
-	{ "gui_ffa_customtimelimits", "" },
-	{ "gui_ffa_maplist", "" },
-	{ "gui_ffa_maplistexclude", "" },
-	{ "gui_ffa_MapRepeat", "1" },
-	{ "gui_ffa_MapSource", "0" },
-	{ "gui_ffa_RandomMapCount", "5" },
-	{ "gui_ffa_RandomMapType", "0" },
-	{ "gui_ffa_slottype", "" },
-	{ "gui_ffa_botname", "" },
-	{ "gui_ffa_botexclude", "" },
-	{ "gui_ffa_botskill", "" },
-	{ "gui_ffa_BotSelection", "1" },
-	{ "gui_ffa_BotCount", "4" },
-	{ "gui_ffa_BotChange", "0" },
-	{ "gui_ffa_OpenSlotCount", "128" },
-	{ "gui_ffa_BotSkillType", "0" },
-	{ "gui_ffa_BotSkillValue", "0" },
-	{ "gui_ffa_BotSkillBias", "0" },
-	{ "gui_ffa_PlayerJoinAs", "0" },
-	{ "gui_ffa_hostname", "OpenSandbox Deathmatch" },
-	{ "gui_ffa_ForceRespawn", "0" },
-	{ "gui_ffa_itemGroups", "" },
-	{ "gui_ffa_itemsHidden", "" },
-	{ "gui_ffa_WarmUp", "20" },
-	{ "gui_ffa_doWarmUp", "0" },
-	{ "gui_ffa_fraglimit", "30" },
-	{ "gui_ffa_timelimit", "20" },
-	{ "gui_ffa_weaponrespawn", "5" },
-	{ "gui_ffa_viewdistance", "0" },
-
-	{ "gui_tourney_fragtype", "0" },
-	{ "gui_tourney_timetype", "0" },
-	{ "gui_tourney_customfraglimits", "" },
-	{ "gui_tourney_customtimelimits", "" },
-	{ "gui_tourney_maplist", "" },
-	{ "gui_tourney_maplistexclude", "" },
-	{ "gui_tourney_MapRepeat", "1" },
-	{ "gui_tourney_MapSource", "0" },
-	{ "gui_tourney_RandomMapCount", "5" },
-	{ "gui_tourney_RandomMapType", "0" },
-	{ "gui_tourney_slottype", "" },
-	{ "gui_tourney_botname", "" },
-	{ "gui_tourney_botexclude", "" },
-	{ "gui_tourney_botskill", "" },
-	{ "gui_tourney_BotSelection", "1" },
-	{ "gui_tourney_BotCount", "4" },
-	{ "gui_tourney_BotChange", "0" },
-	{ "gui_tourney_OpenSlotCount", "128" },
-	{ "gui_tourney_BotSkillType", "0" },
-	{ "gui_tourney_BotSkillValue", "0" },
-	{ "gui_tourney_BotSkillBias", "0" },
-	{ "gui_tourney_PlayerJoinAs", "0" },
-	{ "gui_tourney_hostname", "OpenSandbox Tournament" },
-	{ "gui_tourney_ForceRespawn", "0" },
-	{ "gui_tourney_itemGroups", "" },
-	{ "gui_tourney_itemsHidden", "" },
-	{ "gui_tourney_WarmUp", "20" },
-	{ "gui_tourney_doWarmUp", "1" },
-	{ "gui_tourney_fraglimit", "0" },
-	{ "gui_tourney_timelimit", "15" },
-	{ "gui_tourney_weaponrespawn", "5" },
-	{ "gui_tourney_viewdistance", "0" },
-
-	{ "gui_team_fragtype", "0" },
-	{ "gui_team_timetype", "0" },
-	{ "gui_team_customfraglimits", "" },
-	{ "gui_team_customtimelimits", "" },
-	{ "gui_team_maplist", "" },
-	{ "gui_team_maplistexclude", "" },
-	{ "gui_team_MapRepeat", "1" },
-	{ "gui_team_MapSource", "0" },
-	{ "gui_team_RandomMapCount", "5" },
-	{ "gui_team_RandomMapType", "0" },
-	{ "gui_team_slottype", "" },
-	{ "gui_team_botname", "" },
-	{ "gui_team_botexclude", "" },
-	{ "gui_team_botexclude", "" },
-	{ "gui_team_botskill", "" },
-	{ "gui_team_BotSelection", "1" },
-	{ "gui_team_BotCount", "4" },
-	{ "gui_team_BotChange", "0" },
-	{ "gui_team_OpenSlotCount", "128" },
-	{ "gui_team_BotSkillType", "0" },
-	{ "gui_team_BotSkillValue", "0" },
-	{ "gui_team_BotSkillBias", "0" },
-	{ "gui_team_PlayerJoinAs", "0" },
-	{ "gui_team_TeamSwapped", "0" },
-	{ "gui_team_hostname", "OpenSandbox Team Deathmatch" },
-	{ "gui_team_ForceRespawn", "0" },
-	{ "gui_team_AutoJoin", "0" },
-	{ "gui_team_TeamBalance", "0" },
-	{ "gui_team_itemGroups", "" },
-	{ "gui_team_itemsHidden", "" },
-	{ "gui_team_WarmUp", "20" },
-	{ "gui_team_doWarmUp", "0" },
-	{ "gui_team_friendly", "0" },
-	{ "gui_team_fraglimit", "0" },
-	{ "gui_team_timelimit", "20" },
-	{ "gui_team_weaponrespawn", "30" },
-	{ "gui_team_viewdistance", "0" },
-
-	{ "gui_ctf_capturetype", "0" },
-	{ "gui_ctf_timetype", "0" },
-	{ "gui_ctf_customcapturelimits", "" },
-	{ "gui_ctf_customtimelimits", "" },
-	{ "gui_ctf_maplist", "" },
-	{ "gui_ctf_maplistexclude", "" },
-	{ "gui_ctf_MapRepeat", "1" },
-	{ "gui_ctf_MapSource", "0" },
-	{ "gui_ctf_RandomMapCount", "5" },
-	{ "gui_ctf_RandomMapType", "0" },
-	{ "gui_ctf_slottype", "" },
-	{ "gui_ctf_botname", "" },
-	{ "gui_ctf_botskill", "" },
-	{ "gui_ctf_BotSelection", "1" },
-	{ "gui_ctf_BotCount", "4" },
-	{ "gui_ctf_BotChange", "0" },
-	{ "gui_ctf_OpenSlotCount", "128" },
-	{ "gui_ctf_BotSkillType", "0" },
-	{ "gui_ctf_BotSkillValue", "0" },
-	{ "gui_ctf_BotSkillBias", "0" },
-	{ "gui_ctf_PlayerJoinAs", "0" },
-	{ "gui_ctf_TeamSwapped", "0" },
-	{ "gui_ctf_hostname", "OpenSandbox CTF" },
-	{ "gui_ctf_ForceRespawn", "0" },
-	{ "gui_ctf_AutoJoin", "0" },
-	{ "gui_ctf_TeamBalance", "0" },
-	{ "gui_ctf_itemGroups", "" },
-	{ "gui_ctf_itemsHidden", "" },
-	{ "gui_ctf_WarmUp", "20" },
-	{ "gui_ctf_doWarmUp", "0" },
-	{ "gui_ctf_friendly", "0" },
-	{ "gui_ctf_capturelimit", "0" },
-	{ "gui_ctf_timelimit", "20" },
-	{ "gui_ctf_weaponrespawn", "5" },
-	{ "gui_ctf_viewdistance", "0" },
-	
-	{ "gui_oneflag_capturetype", "0" },
-	{ "gui_oneflag_timetype", "0" },
-	{ "gui_oneflag_customcapturelimits", "" },
-	{ "gui_oneflag_customtimelimits", "" },
-	{ "gui_oneflag_maplist", "" },
-	{ "gui_oneflag_maplistexclude", "" },
-	{ "gui_oneflag_MapRepeat", "1" },
-	{ "gui_oneflag_MapSource", "0" },
-	{ "gui_oneflag_RandomMapCount", "5" },
-	{ "gui_oneflag_RandomMapType", "0" },
-	{ "gui_oneflag_slottype", "" },
-	{ "gui_oneflag_botname", "" },
-	{ "gui_oneflag_botskill", "" },
-	{ "gui_oneflag_BotSelection", "1" },
-	{ "gui_oneflag_BotCount", "4" },
-	{ "gui_oneflag_BotChange", "0" },
-	{ "gui_oneflag_OpenSlotCount", "128" },
-	{ "gui_oneflag_BotSkillType", "0" },
-	{ "gui_oneflag_BotSkillValue", "0" },
-	{ "gui_oneflag_BotSkillBias", "0" },
-	{ "gui_oneflag_PlayerJoinAs", "0" },
-	{ "gui_oneflag_TeamSwapped", "0" },
-	{ "gui_oneflag_hostname", "OpenSandbox Oneflag CTF" },
-	{ "gui_oneflag_ForceRespawn", "0" },
-	{ "gui_oneflag_AutoJoin", "0" },
-	{ "gui_oneflag_TeamBalance", "0" },
-	{ "gui_oneflag_itemGroups", "" },
-	{ "gui_oneflag_itemsHidden", "" },
-	{ "gui_oneflag_WarmUp", "20" },
-	{ "gui_oneflag_doWarmUp", "0" },
-	{ "gui_oneflag_friendly", "0" },
-	{ "gui_oneflag_capturelimit", "0" },
-	{ "gui_oneflag_timelimit", "20" },
-	{ "gui_oneflag_weaponrespawn", "5" },
-	{ "gui_oneflag_viewdistance", "0" },
-	
-	{ "gui_overload_capturetype", "0" },
-	{ "gui_overload_timetype", "0" },
-	{ "gui_overload_customcapturelimits", "" },
-	{ "gui_overload_customtimelimits", "" },
-	{ "gui_overload_maplist", "" },
-	{ "gui_overload_maplistexclude", "" },
-	{ "gui_overload_MapRepeat", "1" },
-	{ "gui_overload_MapSource", "0" },
-	{ "gui_overload_RandomMapCount", "5" },
-	{ "gui_overload_RandomMapType", "0" },
-	{ "gui_overload_slottype", "" },
-	{ "gui_overload_botname", "" },
-	{ "gui_overload_botskill", "" },
-	{ "gui_overload_BotSelection", "1" },
-	{ "gui_overload_BotCount", "4" },
-	{ "gui_overload_BotChange", "0" },
-	{ "gui_overload_OpenSlotCount", "128" },
-	{ "gui_overload_BotSkillType", "0" },
-	{ "gui_overload_BotSkillValue", "0" },
-	{ "gui_overload_BotSkillBias", "0" },
-	{ "gui_overload_PlayerJoinAs", "0" },
-	{ "gui_overload_TeamSwapped", "0" },
-	{ "gui_overload_hostname", "OpenSandbox Overload" },
-	{ "gui_overload_ForceRespawn", "0" },
-	{ "gui_overload_AutoJoin", "0" },
-	{ "gui_overload_TeamBalance", "0" },
-	{ "gui_overload_itemGroups", "" },
-	{ "gui_overload_itemsHidden", "" },
-	{ "gui_overload_WarmUp", "20" },
-	{ "gui_overload_doWarmUp", "0" },
-	{ "gui_overload_friendly", "0" },
-	{ "gui_overload_capturelimit", "0" },
-	{ "gui_overload_timelimit", "20" },
-	{ "gui_overload_weaponrespawn", "5" },
-	{ "gui_overload_viewdistance", "0" },
-	
-	{ "gui_harvester_capturetype", "0" },
-	{ "gui_harvester_timetype", "0" },
-	{ "gui_harvester_customcapturelimits", "" },
-	{ "gui_harvester_customtimelimits", "" },
-	{ "gui_harvester_maplist", "" },
-	{ "gui_harvester_maplistexclude", "" },
-	{ "gui_harvester_MapRepeat", "1" },
-	{ "gui_harvester_MapSource", "0" },
-	{ "gui_harvester_RandomMapCount", "5" },
-	{ "gui_harvester_RandomMapType", "0" },
-	{ "gui_harvester_slottype", "" },
-	{ "gui_harvester_botname", "" },
-	{ "gui_harvester_botskill", "" },
-	{ "gui_harvester_BotSelection", "1" },
-	{ "gui_harvester_BotCount", "4" },
-	{ "gui_harvester_BotChange", "0" },
-	{ "gui_harvester_OpenSlotCount", "128" },
-	{ "gui_harvester_BotSkillType", "0" },
-	{ "gui_harvester_BotSkillValue", "0" },
-	{ "gui_harvester_BotSkillBias", "0" },
-	{ "gui_harvester_PlayerJoinAs", "0" },
-	{ "gui_harvester_TeamSwapped", "0" },
-	{ "gui_harvester_hostname", "OpenSandbox Harvester" },
-	{ "gui_harvester_ForceRespawn", "0" },
-	{ "gui_harvester_AutoJoin", "0" },
-	{ "gui_harvester_TeamBalance", "0" },
-	{ "gui_harvester_itemGroups", "" },
-	{ "gui_harvester_itemsHidden", "" },
-	{ "gui_harvester_WarmUp", "20" },
-	{ "gui_harvester_doWarmUp", "0" },
-	{ "gui_harvester_friendly", "0" },
-	{ "gui_harvester_capturelimit", "0" },
-	{ "gui_harvester_timelimit", "20" },
-	{ "gui_harvester_weaponrespawn", "5" },
-	{ "gui_harvester_viewdistance", "0" },
-	
-	{ "gui_elim_capturetype", "0" },
-	{ "gui_elim_timetype", "0" },
-	{ "gui_elim_customcapturelimits", "" },
-	{ "gui_elim_customtimelimits", "" },
-	{ "gui_elim_maplist", "" },
-	{ "gui_elim_maplistexclude", "" },
-	{ "gui_elim_MapRepeat", "1" },
-	{ "gui_elim_MapSource", "0" },
-	{ "gui_elim_RandomMapCount", "5" },
-	{ "gui_elim_RandomMapType", "0" },
-	{ "gui_elim_slottype", "" },
-	{ "gui_elim_botname", "" },
-	{ "gui_elim_botskill", "" },
-	{ "gui_elim_BotSelection", "1" },
-	{ "gui_elim_BotCount", "4" },
-	{ "gui_elim_BotChange", "0" },
-	{ "gui_elim_OpenSlotCount", "128" },
-	{ "gui_elim_BotSkillType", "0" },
-	{ "gui_elim_BotSkillValue", "0" },
-	{ "gui_elim_BotSkillBias", "0" },
-	{ "gui_elim_PlayerJoinAs", "0" },
-	{ "gui_elim_TeamSwapped", "0" },
-	{ "gui_elim_hostname", "OpenSandbox Elimination" },
-	{ "gui_elim_ForceRespawn", "0" },
-	{ "gui_elim_AutoJoin", "0" },
-	{ "gui_elim_TeamBalance", "0" },
-	{ "gui_elim_itemGroups", "" },
-	{ "gui_elim_itemsHidden", "" },
-	{ "gui_elim_WarmUp", "20" },
-	{ "gui_elim_doWarmUp", "0" },
-	{ "gui_elim_friendly", "0" },
-	{ "gui_elim_capturelimit", "0" },
-	{ "gui_elim_timelimit", "20" },
-	{ "gui_elim_weaponrespawn", "5" },
-	{ "gui_elim_viewdistance", "0" },
-	
-	{ "gui_ctfelim_capturetype", "0" },
-	{ "gui_ctfelim_timetype", "0" },
-	{ "gui_ctfelim_customcapturelimits", "" },
-	{ "gui_ctfelim_customtimelimits", "" },
-	{ "gui_ctfelim_maplist", "" },
-	{ "gui_ctfelim_maplistexclude", "" },
-	{ "gui_ctfelim_MapRepeat", "1" },
-	{ "gui_ctfelim_MapSource", "0" },
-	{ "gui_ctfelim_RandomMapCount", "5" },
-	{ "gui_ctfelim_RandomMapType", "0" },
-	{ "gui_ctfelim_slottype", "" },
-	{ "gui_ctfelim_botname", "" },
-	{ "gui_ctfelim_botskill", "" },
-	{ "gui_ctfelim_BotSelection", "1" },
-	{ "gui_ctfelim_BotCount", "4" },
-	{ "gui_ctfelim_BotChange", "0" },
-	{ "gui_ctfelim_OpenSlotCount", "128" },
-	{ "gui_ctfelim_BotSkillType", "0" },
-	{ "gui_ctfelim_BotSkillValue", "0" },
-	{ "gui_ctfelim_BotSkillBias", "0" },
-	{ "gui_ctfelim_PlayerJoinAs", "0" },
-	{ "gui_ctfelim_TeamSwapped", "0" },
-	{ "gui_ctfelim_hostname", "OpenSandbox CTF Elimination" },
-	{ "gui_ctfelim_ForceRespawn", "0" },
-	{ "gui_ctfelim_AutoJoin", "0" },
-	{ "gui_ctfelim_TeamBalance", "0" },
-	{ "gui_ctfelim_itemGroups", "" },
-	{ "gui_ctfelim_itemsHidden", "" },
-	{ "gui_ctfelim_WarmUp", "20" },
-	{ "gui_ctfelim_doWarmUp", "0" },
-	{ "gui_ctfelim_friendly", "0" },
-	{ "gui_ctfelim_capturelimit", "0" },
-	{ "gui_ctfelim_timelimit", "20" },
-	{ "gui_ctfelim_weaponrespawn", "5" },
-	{ "gui_ctfelim_viewdistance", "0" },
-	
-	{ "gui_lms_fragtype", "0" },
-	{ "gui_lms_timetype", "0" },
-	{ "gui_lms_customcapturelimits", "" },
-	{ "gui_lms_customtimelimits", "" },
-	{ "gui_lms_maplist", "" },
-	{ "gui_lms_maplistexclude", "" },
-	{ "gui_lms_MapRepeat", "1" },
-	{ "gui_lms_MapSource", "0" },
-	{ "gui_lms_RandomMapCount", "5" },
-	{ "gui_lms_RandomMapType", "0" },
-	{ "gui_lms_slottype", "" },
-	{ "gui_lms_botname", "" },
-	{ "gui_lms_botskill", "" },
-	{ "gui_lms_BotSelection", "1" },
-	{ "gui_lms_BotCount", "4" },
-	{ "gui_lms_BotChange", "0" },
-	{ "gui_lms_OpenSlotCount", "128" },
-	{ "gui_lms_BotSkillType", "0" },
-	{ "gui_lms_BotSkillValue", "0" },
-	{ "gui_lms_BotSkillBias", "0" },
-	{ "gui_lms_PlayerJoinAs", "0" },
-	{ "gui_lms_TeamSwapped", "0" },
-	{ "gui_lms_hostname", "OpenSandbox LMS" },
-	{ "gui_lms_ForceRespawn", "0" },
-	{ "gui_lms_AutoJoin", "0" },
-	{ "gui_lms_TeamBalance", "0" },
-	{ "gui_lms_itemGroups", "" },
-	{ "gui_lms_itemsHidden", "" },
-	{ "gui_lms_WarmUp", "20" },
-	{ "gui_lms_doWarmUp", "0" },
-	{ "gui_lms_friendly", "0" },
-	{ "gui_lms_capturelimit", "0" },
-	{ "gui_lms_timelimit", "20" },
-	{ "gui_lms_weaponrespawn", "5" },
-	{ "gui_lms_viewdistance", "0" },
-	
-	{ "gui_doubledom_capturetype", "0" },
-	{ "gui_doubledom_timetype", "0" },
-	{ "gui_doubledom_customcapturelimits", "" },
-	{ "gui_doubledom_customtimelimits", "" },
-	{ "gui_doubledom_maplist", "" },
-	{ "gui_doubledom_maplistexclude", "" },
-	{ "gui_doubledom_MapRepeat", "1" },
-	{ "gui_doubledom_MapSource", "0" },
-	{ "gui_doubledom_RandomMapCount", "5" },
-	{ "gui_doubledom_RandomMapType", "0" },
-	{ "gui_doubledom_slottype", "" },
-	{ "gui_doubledom_botname", "" },
-	{ "gui_doubledom_botskill", "" },
-	{ "gui_doubledom_BotSelection", "1" },
-	{ "gui_doubledom_BotCount", "4" },
-	{ "gui_doubledom_BotChange", "0" },
-	{ "gui_doubledom_OpenSlotCount", "128" },
-	{ "gui_doubledom_BotSkillType", "0" },
-	{ "gui_doubledom_BotSkillValue", "0" },
-	{ "gui_doubledom_BotSkillBias", "0" },
-	{ "gui_doubledom_PlayerJoinAs", "0" },
-	{ "gui_doubledom_TeamSwapped", "0" },
-	{ "gui_doubledom_hostname", "OpenSandbox Double Domination" },
-	{ "gui_doubledom_ForceRespawn", "0" },
-	{ "gui_doubledom_AutoJoin", "0" },
-	{ "gui_doubledom_TeamBalance", "0" },
-	{ "gui_doubledom_itemGroups", "" },
-	{ "gui_doubledom_itemsHidden", "" },
-	{ "gui_doubledom_WarmUp", "20" },
-	{ "gui_doubledom_doWarmUp", "0" },
-	{ "gui_doubledom_friendly", "0" },
-	{ "gui_doubledom_capturelimit", "0" },
-	{ "gui_doubledom_timelimit", "20" },
-	{ "gui_doubledom_weaponrespawn", "5" },
-	{ "gui_doubledom_viewdistance", "0" },
-	
-	{ "gui_domination_capturetype", "0" },
-	{ "gui_domination_timetype", "0" },
-	{ "gui_domination_customcapturelimits", "" },
-	{ "gui_domination_customtimelimits", "" },
-	{ "gui_domination_maplist", "" },
-	{ "gui_domination_maplistexclude", "" },
-	{ "gui_domination_MapRepeat", "1" },
-	{ "gui_domination_MapSource", "0" },
-	{ "gui_domination_RandomMapCount", "5" },
-	{ "gui_domination_RandomMapType", "0" },
-	{ "gui_domination_slottype", "" },
-	{ "gui_domination_botname", "" },
-	{ "gui_domination_botskill", "" },
-	{ "gui_domination_BotSelection", "1" },
-	{ "gui_domination_BotCount", "4" },
-	{ "gui_domination_BotChange", "0" },
-	{ "gui_domination_OpenSlotCount", "128" },
-	{ "gui_domination_BotSkillType", "0" },
-	{ "gui_domination_BotSkillValue", "0" },
-	{ "gui_domination_BotSkillBias", "0" },
-	{ "gui_domination_PlayerJoinAs", "0" },
-	{ "gui_domination_TeamSwapped", "0" },
-	{ "gui_domination_hostname", "OpenSandbox Domination" },
-	{ "gui_domination_ForceRespawn", "0" },
-	{ "gui_domination_AutoJoin", "0" },
-	{ "gui_domination_TeamBalance", "0" },
-	{ "gui_domination_itemGroups", "" },
-	{ "gui_domination_itemsHidden", "" },
-	{ "gui_domination_WarmUp", "20" },
-	{ "gui_domination_doWarmUp", "0" },
-	{ "gui_domination_friendly", "0" },
-	{ "gui_domination_capturelimit", "0" },
-	{ "gui_domination_timelimit", "20" },
-	{ "gui_domination_weaponrespawn", "5" },
-	{ "gui_domination_viewdistance", "0" },
+{ "gui_var_fragtype", "0" },
+{ "gui_var_timetype", "0" },
+{ "gui_var_customfraglimits", "" },
+{ "gui_var_customtimelimits", "" },
+{ "gui_var_maplist", "" },
+{ "gui_var_maplistexclude", "" },
+{ "gui_var_MapRepeat", "1" },
+{ "gui_var_MapSource", "0" },
+{ "gui_var_RandomMapCount", "5" },
+{ "gui_var_RandomMapType", "0" },
+{ "gui_var_slottype", "" },
+{ "gui_var_botname", "" },
+{ "gui_var_botexclude", "" },
+{ "gui_var_botskill", "" },
+{ "gui_var_BotSelection", "1" },
+{ "gui_var_BotCount", "0" },
+{ "gui_var_BotChange", "0" },
+{ "gui_var_OpenSlotCount", "128" },
+{ "gui_var_BotSkillType", "0" },
+{ "gui_var_BotSkillValue", "0" },
+{ "gui_var_BotSkillBias", "0" },
+{ "gui_var_PlayerJoinAs", "0" },
+{ "gui_var_hostname", "OpenSandbox" },
+{ "gui_var_ForceRespawn", "0" },
+{ "gui_var_itemGroups", "" },
+{ "gui_var_itemsHidden", "" },
+{ "gui_var_WarmUp", "20" },
+{ "gui_var_doWarmUp", "0" },
+{ "gui_var_fraglimit", "0" },
+{ "gui_var_timelimit", "0" },
+{ "gui_var_weaponrespawn", "5" },
+{ "gui_var_viewdistance", "0" },
 };
 
 
@@ -1825,7 +1351,7 @@ void StartServer_LoadMapList(void)
 	if (s_scriptdata.map.listSource == MAP_MS_RANDOMEXCLUDE)
 		ml = "maplistexclude";
 
-	s = gametype_cvar_base[s_scriptdata.gametype];
+	s = var_cvar_base;
 	UI_LoadMultiArray(s, ml, SSMP_ShortName_Callback, MAX_NUMMAPS, SHORTMAP_BUFFER, ';');
 }
 
@@ -2213,7 +1739,7 @@ void StartServer_SaveMapList(void)
 	if (s_scriptdata.map.listSource == MAP_MS_RANDOMEXCLUDE)
 		s1 = "maplistexclude";
 
-	s = gametype_cvar_base[s_scriptdata.gametype];
+	s = var_cvar_base;
 	UI_SaveMultiArray(s, s1, SSMP_ShortName_Callback, MAX_NUMMAPS, SHORTMAP_BUFFER, ';');
 }
 
@@ -2242,7 +1768,7 @@ static void StartServer_LoadMapScriptData(void)
 	f = "customfraglimits";
 	f2 = "fragtype";
 
-	s = gametype_cvar_base[s_scriptdata.gametype];
+	s = var_cvar_base;
 
 	if (s_scriptdata.gametype >= GT_CTF && !(s_scriptdata.gametype == GT_LMS)) {
 		s_scriptdata.map.fragLimit = GUI_GetSkirmishCvarIntClamp(0, 999, s, "capturelimit");
@@ -2306,7 +1832,7 @@ static void StartServer_SaveMapScriptData(void)
 	char* s;
 	char *f, *f2;
 
-	s = gametype_cvar_base[s_scriptdata.gametype];
+	s = var_cvar_base;
 	f = "customfraglimits";
 	f2 = "fragtype";
 
@@ -2490,8 +2016,6 @@ static char* SSBP_BotBuffer_Callback(int index)
 {
 	return botskill_tmpbuffer[index];
 }
-
-
 
 
 /*
@@ -2899,7 +2423,7 @@ void StartServer_LoadBotNameList(int type)
 	int i;
 
 	s_scriptdata.bot.typeSelect = type;
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	memset(&s_scriptdata.bot.name, 0, PLAYER_SLOTS*MAX_NAME_LENGTH);
 
@@ -2975,7 +2499,7 @@ void StartServer_SaveBotNameList(void)
 	botskill_t* b;
 	qboolean exclude;
 
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	if (StartServer_IsRandomBotExclude(s_scriptdata.bot.typeSelect)) {
 		exclude = qtrue;
@@ -3021,7 +2545,7 @@ void StartServer_LoadBotScriptData(void)
 	int i, value, max;
 	botskill_t* b;
 
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	//
 	// load state values
@@ -3079,7 +2603,7 @@ static void StartServer_SaveBotScriptData(void)
 	// save state values
 	//
 
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	// method of selecting bots
 	GUI_SetSkirmishCvarInt(s, "BotSelection", s_scriptdata.bot.typeSelect);
@@ -3145,7 +2669,7 @@ void StartServer_LoadDisabledItems(void)
 	char* ptr, *ptr_last;
 	int i;
 
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	// load the group on/off/custom values
 	memset(buffer,0,sizeof(buffer));
@@ -3223,7 +2747,7 @@ static void StartServer_SaveItemScriptData(void)
 	char buffer[256];
 	int i;
 
-	s = gametype_cvar_base[ s_scriptdata.gametype ];
+	s = var_cvar_base;
 
 	// save the group values
 	for (i = 0; i < ITEMGROUP_COUNT; i++)
@@ -3290,7 +2814,7 @@ static void StartServer_LoadServerScriptData(void)
 
 	s_scriptdata.server.allowdownload = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_allowdownload" );
 	s_scriptdata.server.allowvote = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_allowvote" );
-	s_scriptdata.server.allowpass = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_allowpass" );
+	GUI_GetSkirmishCvar(NULL, "gui_entitypack",s_scriptdata.server.entitypack, 32);
 
 	s_scriptdata.server.netport = GUI_GetSkirmishCvarIntClamp(1024, 65535, NULL, "gui_netport" );
 	s_scriptdata.server.sv_fps = GUI_GetSkirmishCvarIntClamp(0, 160, NULL, "gui_svfps" );
@@ -3695,7 +3219,7 @@ GUI_GetSkirmishCvar(NULL, "gui_amknockback",s_scriptdata.server.g_amknockback, 3
 	trap_Cvar_Set( "cl_selectedmod", s_scriptdata.server.selectedmod );
 
 	gametype = s_scriptdata.gametype;
-	s = gametype_cvar_base[ gametype ];
+	s = var_cvar_base;
 
 	// reset server text control
 	GUI_GetSkirmishCvar( s, "hostname", s_scriptdata.server.hostname, MAX_HOSTNAME_LENGTH );
@@ -3757,7 +3281,7 @@ static void StartServer_SaveServerScriptData(void)
 	GUI_SetSkirmishCvarInt( NULL, "gui_allowmaxrate", s_scriptdata.server.allowmaxrate);
 	GUI_SetSkirmishCvarInt( NULL, "gui_allowdownload", s_scriptdata.server.allowdownload);
 	GUI_SetSkirmishCvarInt( NULL, "gui_allowvote", s_scriptdata.server.allowvote);
-	GUI_SetSkirmishCvarInt( NULL, "gui_allowpass", s_scriptdata.server.allowpass);
+	GUI_SetSkirmishCvar( NULL, "gui_entitypack", s_scriptdata.server.entitypack);
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_netport", s_scriptdata.server.netport);
 	GUI_SetSkirmishCvarInt( NULL, "gui_svfps", s_scriptdata.server.sv_fps);
@@ -4150,7 +3674,7 @@ GUI_SetSkirmishCvarInt( NULL, "gui_amguided", s_scriptdata.server.g_amguided);
 	//
 
 	gametype = s_scriptdata.gametype;
-	s = gametype_cvar_base[ gametype ];
+	s = var_cvar_base;
 
 	//
 	// save state values

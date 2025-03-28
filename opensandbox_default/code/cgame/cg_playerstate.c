@@ -147,6 +147,9 @@ void CG_Respawn( void ) {
 	// select WP_NONE for updating from server
 	cg.weaponSelect = 0;
 	cg.zoomed = qfalse;
+	if(cgs.gametype == GT_SANDBOX || cgs.gametype == GT_MAPEDITOR){
+		trap_Cvar_Set("cg_hide255", "1");
+	}
 }
 
 extern char *eventnames[];
@@ -258,15 +261,15 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	if ( ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS] ) {
 		armor  = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
 		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
-if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_SINGLE){
-		if (health > 100 ) {
-			trap_S_StartLocalSound( cgs.media.hitSoundHighArmor, CHAN_LOCAL_SOUND );
-		} else if (health > 50 ) {
-			trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
-		} else {
-			trap_S_StartLocalSound( cgs.media.hitSoundLowArmor, CHAN_LOCAL_SOUND );
+		if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR && cgs.gametype != GT_SINGLE){
+				if (health > 100 ) {
+					trap_S_StartLocalSound( cgs.media.hitSoundHighArmor, CHAN_LOCAL_SOUND );
+				} else if (health > 50 ) {
+					trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
+				} else {
+					trap_S_StartLocalSound( cgs.media.hitSoundLowArmor, CHAN_LOCAL_SOUND );
+				}
 		}
-}
 	} else if ( ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS] ) {
 		trap_S_StartLocalSound( cgs.media.hitTeamSound, CHAN_LOCAL_SOUND );
 	}

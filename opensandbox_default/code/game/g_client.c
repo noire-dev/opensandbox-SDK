@@ -70,10 +70,18 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	ent->classname = "info_player_deathmatch";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR ){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -87,10 +95,18 @@ void SP_info_player_start(gentity_t *ent) {
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 
 	SP_info_player_deathmatch( ent );
 }
@@ -102,10 +118,18 @@ void SP_info_player_dd(gentity_t *ent) {
 	ent->classname = "info_player_dd";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -115,10 +139,18 @@ void SP_info_player_dd_red(gentity_t *ent) {
 	ent->classname = "info_player_dd_red";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -128,10 +160,18 @@ void SP_info_player_dd_blue(gentity_t *ent) {
 	ent->classname = "info_player_dd_blue";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -282,10 +322,6 @@ gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	
 
 	if ( !count ) {	
-		// there are no active spots at all, so we'll allow spawning at a random non-active spot
-		// TODO: Make a more predictable solution for this
-		
-		//G_Error( "Couldn't find a spawn point" );
 		return G_Find( NULL, FOFS(classname), "info_player_deathmatch");
 	}
 
@@ -376,8 +412,13 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 	if (!numSpots) {
 		// there are no active spots at all, so we'll allow spawning at a random non-active spot
 		spot = G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-		if (!spot)
-			G_Error( "Couldn't find a spawn point" );
+		if (!spot) {
+			if(g_gametype.integer != GT_MAPEDITOR){
+				G_Error( "Couldn't find a spawn point" );
+			} else {
+				trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
+			}
+		}
 		VectorCopy (spot->s.origin, origin);
 		origin[2] += 9;
 		VectorCopy (spot->s.angles, angles);
@@ -446,7 +487,11 @@ gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) 
 
 	// find a single player start spot
 	if (!spot) {
-		G_Error( "Couldn't find a spawn point" );
+		if(g_gametype.integer != GT_MAPEDITOR){
+			G_Error( "Couldn't find a spawn point" );
+		} else {
+			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
+		}
 	}
 
 	VectorCopy (spot->s.origin, origin);
@@ -1518,23 +1563,9 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	CalculateRanks();
 
 	// for statistics
-//	client->areabits = areabits;
-//	if ( !client->areabits )
-//		client->areabits = G_Alloc( (trap_AAS_PointReachabilityAreaIndex( NULL ) + 7) / 8 );
 	if ( !isBot && !level.player ) {
 		level.player = ent;
 	}
-//Sago: Changed the message
-//unlagged - backward reconciliation #5
-	// announce it
-	if ( g_delagHitscan.integer ) {
-		trap_SendServerCommand( clientNum, "print \"Full lag compensation is ON!\n\"" );
-	}
-	else {
-		trap_SendServerCommand( clientNum, "print \"Full lag compensation is OFF!\n\"" );
-	}
-
-//unlagged - backward reconciliation #5
 	return NULL;
 }
 
@@ -2547,7 +2578,7 @@ void SetupCustomBot( gentity_t *bot ) {
 		G_UseTargets( bot->botspawn, bot);
 	}
 	
-	if(g_gametype.integer == GT_SANDBOX){
+	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 	CopyAlloc(bot->target, bot->botspawn->target);
 	}
 }
@@ -2561,7 +2592,7 @@ void SetUnlimitedWeapons( gentity_t *ent ) {
 }
 
 void SetSandboxWeapons( gentity_t *ent ) {
-	if(g_gametype.integer == GT_SANDBOX){
+	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		if(g_allowtoolgun.integer){
 		Set_Weapon(ent, WP_TOOLGUN, 1);
 		}
@@ -2794,7 +2825,7 @@ void SetCustomWeapons( gentity_t *ent ) {
 		}
 	}
 	//Set spawnweapon
-	if(g_gametype.integer == GT_SANDBOX){
+	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		ent->swep_id = WP_PHYSGUN;
 		ent->client->ps.generic2 = WP_PHYSGUN;
 		ClientUserinfoChanged( ent->s.clientNum );

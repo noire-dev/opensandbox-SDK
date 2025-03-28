@@ -25,253 +25,111 @@
 //
 // g_misc.c
 
-#include "g_local.h"
-
-typedef struct {
-	char	*name;
-	void	(*spawn)(gentity_t *ent);
-} spawn_t;
-
-void SP_info_player_start (gentity_t *ent);
-void SP_info_player_deathmatch (gentity_t *ent);
-void SP_info_player_intermission (gentity_t *ent);
-//For Double Domination:
-void SP_info_player_dd (gentity_t *ent);
-void SP_info_player_dd_red (gentity_t *ent);
-void SP_info_player_dd_blue (gentity_t *ent);
-//standard domination:
-void SP_domination_point ( gentity_t *ent);
-
-void SP_info_firstplace(gentity_t *ent);
-void SP_info_secondplace(gentity_t *ent);
-void SP_info_thirdplace(gentity_t *ent);
-void SP_info_podium(gentity_t *ent);
-void SP_info_waypoint( gentity_t *self );
-void SP_info_backpack( gentity_t *self );
-
-void SP_func_plat (gentity_t *ent);
-void SP_func_static (gentity_t *ent);
-void SP_func_prop (gentity_t *ent);
-void SP_func_breakable (gentity_t *ent);
-void SP_func_rotating (gentity_t *ent);
-void SP_func_bobbing (gentity_t *ent);
-void SP_func_pendulum( gentity_t *ent );
-void SP_func_button (gentity_t *ent);
-void SP_func_door (gentity_t *ent);
-void SP_func_train (gentity_t *ent);
-void SP_func_timer (gentity_t *self);
-
-void SP_trigger_always (gentity_t *ent);
-void SP_trigger_multiple (gentity_t *ent);
-void SP_trigger_push (gentity_t *ent);
-void SP_trigger_teleport (gentity_t *ent);
-void SP_trigger_hurt (gentity_t *ent);
-
-void SP_trigger_death (gentity_t *ent);
-void SP_trigger_frag (gentity_t *ent);
-void SP_trigger_lock (gentity_t *ent);
-
-void SP_target_remove_powerups( gentity_t *ent );
-void SP_target_give (gentity_t *ent);
-void SP_target_delay (gentity_t *ent);
-void SP_target_speaker (gentity_t *ent);
-void SP_target_print (gentity_t *ent);
-void SP_target_laser (gentity_t *self);
-void SP_target_character (gentity_t *ent);
-void SP_target_score( gentity_t *ent );
-void SP_target_clienttarg( gentity_t *ent );
-void SP_target_teleporter( gentity_t *ent );
-void SP_target_relay (gentity_t *ent);
-void SP_target_kill (gentity_t *ent);
-void SP_target_position (gentity_t *ent);
-void SP_target_location (gentity_t *ent);
-void SP_target_push (gentity_t *ent);
-void SP_target_logic (gentity_t *ent);
-void SP_target_gravity (gentity_t *ent);
-void SP_target_mapchange (gentity_t *ent);
-void SP_target_botspawn (gentity_t *ent);
-void SP_target_unlink (gentity_t *ent);
-void SP_target_playerspeed (gentity_t *ent);
-void SP_target_debrisemitter (gentity_t *ent);
-void SP_target_objective (gentity_t *ent);
-void SP_target_skill (gentity_t *ent);
-void SP_target_earthquake (gentity_t *ent);
-void SP_target_effect (gentity_t *ent);
-void SP_target_finish (gentity_t *ent);
-void SP_target_modify (gentity_t *ent);
-void SP_target_secret (gentity_t *ent);
-void SP_target_playerstats (gentity_t *ent);
-void SP_target_cutscene (gentity_t *ent);
-void SP_target_botremove (gentity_t *ent);
-void SP_target_stats (gentity_t *ent);
-
-void SP_script_variable (gentity_t *ent);
-void SP_script_layer (gentity_t *ent);
-
-void SP_light (gentity_t *self);
-void SP_info_null (gentity_t *self);
-void SP_info_notnull (gentity_t *self);
-void SP_info_camp (gentity_t *self);
-void SP_info_camera (gentity_t *self);
-void SP_path_corner (gentity_t *self);
-
-void SP_misc_teleporter_dest (gentity_t *self);
-void SP_misc_model(gentity_t *ent);
-void SP_misc_portal_camera(gentity_t *ent);
-void SP_misc_portal_surface(gentity_t *ent);
-
-void SP_shooter_rocket( gentity_t *ent );
-void SP_shooter_plasma( gentity_t *ent );
-void SP_shooter_grenade( gentity_t *ent );
-void SP_shooter_bfg( gentity_t *ent );
-void SP_shooter_prox( gentity_t *ent );
-void SP_shooter_flame( gentity_t *ent );
-void SP_shooter_antimatter( gentity_t *ent );
-void SP_shooter_custom( gentity_t *ent );
-
-void SP_team_CTF_redplayer( gentity_t *ent );
-void SP_team_CTF_blueplayer( gentity_t *ent );
-
-void SP_team_CTF_redspawn( gentity_t *ent );
-void SP_team_CTF_bluespawn( gentity_t *ent );
-
-void SP_func_door_rotating( gentity_t *ent );
-
-void SP_team_blueobelisk( gentity_t *ent );
-void SP_team_redobelisk( gentity_t *ent );
-void SP_team_neutralobelisk( gentity_t *ent );
-
-// weather
-void SP_rally_weather_rain( gentity_t *ent );
-void SP_rally_weather_snow( gentity_t *ent );
-
-spawn_t	sandspawns[] = {
-	// info entities don't do anything at all, but provide positional
-	// information for things controlled by other processes
-	{"info_player_start", SP_info_player_start},
-	{"info_player_deathmatch", SP_info_player_deathmatch},
-	{"info_player_intermission", SP_info_player_intermission},
-//Double Domination player spawn:
-	{"info_player_dd", SP_info_player_dd},
-        {"info_player_dd_red", SP_info_player_dd_red},
-        {"info_player_dd_blue", SP_info_player_dd_blue},
-//Standard Domination point spawn:
-	{"domination_point", SP_domination_point},
-
-
-	{"info_null", SP_info_null},
-	{"info_notnull", SP_info_notnull},		// use target_position instead
-	{"info_camp", SP_info_camp},
-	{"info_waypoint", SP_info_waypoint},
-	{"info_backpack", SP_info_backpack},
-	{"info_camera", SP_info_camera},
-
-	{"func_plat", SP_func_plat},
-	{"func_button", SP_func_button},
-	{"func_door", SP_func_door},
-	{"func_static", SP_func_static},
-	{"func_prop", SP_func_prop},
-	{"func_rotating", SP_func_rotating},
-	{"func_bobbing", SP_func_bobbing},
-	{"func_pendulum", SP_func_pendulum},
-	{"func_train", SP_func_train},
-	{"func_group", SP_info_null},
-	{"func_timer", SP_func_timer},			// rename trigger_timer?
-	{"func_breakable", SP_func_breakable},
-	{"func_timer", SP_func_timer},			// rename trigger_timer?
-
-	// Triggers are brush objects that cause an effect when contacted
-	// by a living player, usually involving firing targets.
-	// While almost everything could be done with
-	// a single trigger class and different targets, triggered effects
-	// could not be client side predicted (push and teleport).
-	{"trigger_always", SP_trigger_always},
-	{"trigger_multiple", SP_trigger_multiple},
-	{"trigger_push", SP_trigger_push},
-	{"trigger_teleport", SP_trigger_teleport},
-	{"trigger_hurt", SP_trigger_hurt},
-	{"trigger_death", SP_trigger_death},
-	{"trigger_frag", SP_trigger_frag},
-	{"trigger_lock", SP_trigger_lock},
-
-	// targets perform no action by themselves, but must be triggered
-	// by another entity
-	{"target_give", SP_target_give},
-	{"target_remove_powerups", SP_target_remove_powerups},
-	{"target_delay", SP_target_delay},
-	{"target_speaker", SP_target_speaker},
-	{"target_print", SP_target_print},
-	{"target_laser", SP_target_laser},
-	{"target_score", SP_target_score},
-	{"target_clienttarg", SP_target_clienttarg},
-	
-	{"target_teleporter", SP_target_teleporter},
-	{"target_relay", SP_target_relay},
-	{"target_kill", SP_target_kill},
-	{"target_position", SP_target_position},
-	{"target_location", SP_target_location},
-	{"target_push", SP_target_push},
-	{"target_logic", SP_target_logic},
-	{"target_gravity", SP_target_gravity},
-	{"target_mapchange", SP_target_mapchange},
-	{"target_botspawn", SP_target_botspawn},
-	{"target_unlink", SP_target_unlink},
-	{"target_disable", SP_target_unlink},
-	{"target_debrisemitter", SP_target_debrisemitter},
-	{"target_objective", SP_target_objective},
-	{"target_skill", SP_target_skill},
-	{"target_earthquake", SP_target_earthquake},
-	{"target_effect", SP_target_effect},
-	{"target_finish", SP_target_finish},
-	{"target_modify", SP_target_modify},
-	{"target_secret", SP_target_secret},
-	{"target_playerstats", SP_target_playerstats},
-	{"target_cutscene", SP_target_cutscene},
-	{"target_botremove", SP_target_botremove},
-	{"target_stats", SP_target_stats},
-	
-	{"script_variable", SP_script_variable},
-	{"script_layer", SP_script_layer},
-
-	{"light", SP_light},
-	{"path_corner", SP_path_corner},
-
-	{"misc_teleporter_dest", SP_misc_teleporter_dest},
-	{"misc_model", SP_misc_model},
-	{"misc_portal_surface", SP_misc_portal_surface},
-	{"misc_portal_camera", SP_misc_portal_camera},
-
-	{"shooter_rocket", SP_shooter_rocket},
-	{"shooter_grenade", SP_shooter_grenade},
-	{"shooter_plasma", SP_shooter_plasma},
-	{"shooter_bfg", SP_shooter_bfg},
-	{"shooter_prox", SP_shooter_prox},
-	{"shooter_flame", SP_shooter_flame},
-	{"shooter_antimatter", SP_shooter_antimatter},
-	{"shooter_custom", SP_shooter_custom},
-
-	{"team_CTF_redplayer", SP_team_CTF_redplayer},
-	{"team_CTF_blueplayer", SP_team_CTF_blueplayer},
-
-	{"team_CTF_redspawn", SP_team_CTF_redspawn},
-	{"team_CTF_bluespawn", SP_team_CTF_bluespawn},
-
-	{"func_door_rotating", SP_func_door_rotating},
-
-	{"team_redobelisk", SP_team_redobelisk},
-	{"team_blueobelisk", SP_team_blueobelisk},
-	{"team_neutralobelisk", SP_team_neutralobelisk},
-
-	{"environment_rain", SP_rally_weather_rain},
-	{"environment_snow", SP_rally_weather_snow},
-
-	{NULL, 0}
+char* 		sandbox_class_allowed[] = {		//classes allowed in Sandbox
+	"",
+	"none",
+	"weapon_machinegun",
+	"weapon_shotgun",
+	"weapon_grenadelauncher",
+	"weapon_rocketlauncher",
+	"weapon_lightning",
+	"weapon_railgun",
+	"weapon_plasmagun",
+	"weapon_bfg",
+	"weapon_grapplinghook",
+	"weapon_nailgun",
+	"weapon_prox_launcher",
+	"weapon_chaingun",
+	"weapon_flamethrower",
+	"weapon_antimatter",
+	"weapon_physgun",
+	"weapon_gravitygun",
+	"weapon_toolgun",
+	"weapon_thrower",
+	"weapon_bouncer",
+	"weapon_thunder",
+	"weapon_exploder",
+	"weapon_knocker",
+	"weapon_propgun",
+	"weapon_regenerator",
+	"weapon_nuke",
+	"ammo_bullets",
+	"ammo_shells",
+	"ammo_grenades",
+	"ammo_cells",
+	"ammo_lightning",
+	"ammo_rockets",
+	"ammo_slugs",
+	"ammo_bfg",
+	"ammo_nails",
+	"ammo_mines",
+	"ammo_belt",
+	"ammo_flame",
+	"item_armor_shard",
+	"item_armor_vest",
+	"item_armor_combat",
+	"item_armor_body",
+	"item_armor_full",
+	"item_health_small",
+	"item_health",
+	"item_health_large",
+	"item_health_mega",
+	"item_quad",
+	"item_enviro",
+	"item_haste",
+	"item_invis",
+	"item_regen",
+	"item_flight",
+	"item_scout",
+	"item_doubler",
+	"item_ammoregen",
+	"item_guard",
+	"holdable_teleporter",
+	"holdable_medkit",
+	"holdable_kamikaze",
+	"holdable_invulnerability",
+	"holdable_portal",
+	"holdable_key_blue",
+	"holdable_key_gold",
+	"holdable_key_green",
+	"holdable_key_iron",
+	"holdable_key_master",
+	"holdable_key_red",
+	"holdable_key_silver",
+	"holdable_key_yellow",
+	"team_CTF_redflag",
+	"team_CTF_blueflag",
+	"team_CTF_neutralflag",
+	0
 };
 
-/*QUAKED func_group (0 0 0) ?
-Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
-*/
+char* 		editor_class_allowed[] = {		//classes allowed in Map Editor
+	"info_player_deathmatch",
+	"info_player_dd",
+	"info_player_dd_red",
+	"info_player_dd_blue",
+	"team_CTF_redplayer",
+	"team_CTF_blueplayer",
+	"team_CTF_redspawn",
+	"team_CTF_bluespawn",
+	"misc_teleporter_dest",
+	0
+};
 
+char* 		standard_class_spawn[] = {		//classes spawned without sandbox settings
+	"info_player_deathmatch",
+	"info_player_dd",
+	"info_player_dd_red",
+	"info_player_dd_blue",
+	"team_CTF_redplayer",
+	"team_CTF_blueplayer",
+	"team_CTF_redspawn",
+	"team_CTF_bluespawn",
+	"misc_teleporter_dest",
+	0
+};
+
+#include "g_local.h"
 
 /*QUAKED info_camp (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
@@ -572,10 +430,18 @@ void SP_misc_teleporter_dest( gentity_t *ent ) {
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -1084,63 +950,46 @@ A bmodel that just sits there, doing nothing.  Can be used for conditional walls
 void SP_func_prop( gentity_t *ent ) {
 	spawn_t	*s;
 	gitem_t	*item;
-	int		len;
+	qboolean spawn_entity = qfalse;
 	
+	// Create entity
+	CopyAlloc(ent->classname, ent->sb_class);
+
+	//Origin
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->sandboxObject = 1;
-	CopyAlloc(ent->classname, ent->sb_class);
-	// check normal spawn functions
-	for ( s=sandspawns ; s->name ; s++ ) {
+
+	//Type
+	ent->sandboxObject = OBJ_SANDBOX;
+
+	// Entity spawn
+	for ( s=spawns_table ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
-			// found it
 			CopyAlloc(ent->sb_class, ent->classname);
 			s->spawn(ent);
-			//spawn another class
-			ent->s.constantLight = ent->sb_red | ( ent->sb_green << 8 ) | ( ent->sb_blue << 16 ) | ( ent->sb_radius << 24 );
-			ent->s.loopSound = G_SoundIndex(ent->sb_sound);	//звук
-			VectorCopy( ent->s.angles, ent->s.apos.trBase );
-			VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
-			VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
-			ent->s.pos.trTime = level.time;
-			if(ent->sb_takedamage == 0){
-				ent->takedamage = qfalse;
-			}
-			if(ent->sb_takedamage == 1){
-				ent->takedamage = qtrue;
-			}
-			if(ent->sb_takedamage2 == 0){
-				ent->takedamage2 = qfalse;
-			}
-			if(ent->sb_takedamage2 == 1){
-				ent->takedamage2 = qtrue;
-			}
-			if(ent->sb_phys == 1){ ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; }
-			if(ent->sb_phys == 2){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; }
-			if(ent->sb_coll == 0){
-			ent->r.contents = CONTENTS_SOLID | CONTENTS_BODY;	
-			}
-			if(ent->sb_coll == 1){
-			ent->r.contents = CONTENTS_TRIGGER;	
-			}
-			ent->s.generic2 = ent->sb_material;
-			ent->s.generic3 = ent->sb_gravity;
-			ent->s.torsoAnim = ent->objectType;
-			ent->classname = "func_prop";
-			ent->r.svFlags &= ~SVF_NOCLIENT;
-			VectorCopy(ent->s.apos.trBase, ent->s.angles);
-			VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
-			setModel(ent, ent->model);
-			trap_LinkEntity( ent );
-			return;
+
+			spawn_entity = qtrue;
 		}
 	}
-	ent->classname = "func_prop";
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
+	//Light
 	ent->s.constantLight = ent->sb_red | ( ent->sb_green << 8 ) | ( ent->sb_blue << 16 ) | ( ent->sb_radius << 24 );
+
+	//Sound
 	ent->s.loopSound = G_SoundIndex(ent->sb_sound);
-	ent->die = BlockDie;
+
+	//Setting collision
+	if(ent->vehicle <= 0 || spawn_entity){
+		VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
+		VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
+		} else {
+		VectorSet( ent->r.mins, -25, -25, -15);
+		VectorSet( ent->r.maxs, 25, 25, 15 );
+	}
+
+	//Phys frame
+	ent->s.pos.trTime = level.time;
+
+	//Damage
 	ent->takedamage = qtrue;
 	if(ent->sb_takedamage == 0){
 		ent->takedamage = qfalse;
@@ -1154,149 +1003,221 @@ void SP_func_prop( gentity_t *ent ) {
 	if(ent->sb_takedamage2 == 1){
 		ent->takedamage2 = qtrue;
 	}
-	ent->s.pos.trTime = level.time;
+
+	//Physics
 	if(ent->sb_phys == 1){ ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; }
 	if(ent->sb_phys == 2){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; }
+
+	//Collision
 	if(ent->sb_coll == 0){
-	ent->r.contents = CONTENTS_SOLID;	
+		ent->r.contents = CONTENTS_SOLID;	
 	}
 	if(ent->sb_coll == 1){
-	ent->r.contents = CONTENTS_TRIGGER;	
+		ent->r.contents = CONTENTS_TRIGGER;	
 	}
+
+	//Material
 	ent->s.generic2 = ent->sb_material;
+
+	//Mass
 	ent->s.generic3 = ent->sb_gravity;
+
+	//Type
 	ent->s.torsoAnim = ent->objectType;
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );
-	if(ent->vehicle <= 0){
-	VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
-	VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
-	} else {
-	VectorSet( ent->r.mins, -25, -25, -15);
-	VectorSet( ent->r.maxs, 25, 25, 15 );
+
+	//Prop class for saving
+	ent->classname = "func_prop";
+
+	if(!spawn_entity){
+		//Type
+		ent->s.eType = ET_GENERAL;
+
+		//Die function
+		ent->die = BlockDie;
+
+		//Touch function
+		ent->touch = G_TouchProp;
 	}
-	ent->touch = G_TouchProp;
+
+	//Angles
 	VectorCopy(ent->s.apos.trBase, ent->s.angles);
 	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
+	VectorCopy( ent->s.angles, ent->s.apos.trBase );
+
+	//Load model
 	setModel(ent, ent->model);
+
+	//Link
 	trap_LinkEntity( ent );
 }
 
 void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22, char *arg23) {
 	gentity_t	*ent;
-	vec3_t		snapped;
-	vec3_t		o;
-	spawn_t	*s;
-	gitem_t	*item;
-	int		len;
+	vec3_t		position;
+	spawn_t		*s;
+	gitem_t		*item;
+	qboolean spawn_entity = qfalse;
+	int			i;
+	qboolean extended_spawn = qtrue;
+	qboolean allow_spawn = qfalse;
 	
-	o[0] = ((int)((xyz[0] + (xyz[0] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
-	o[1] = ((int)((xyz[1] + (xyz[1] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
+	position[0] = ((int)((xyz[0] + (xyz[0] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
+	position[1] = ((int)((xyz[1] + (xyz[1] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
 	if(atoi(arg09) <= 0){
-	o[2] = ((int)((xyz[2] + (xyz[2] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
+		position[2] = ((int)((xyz[2] + (xyz[2] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
 	} else {
-	o[2] = xyz[2] + atoi(arg05);
+		position[2] = xyz[2] + atoi(arg05);
 	}
-
-	VectorCopy (o, snapped);
 	
-	// create new entity
+	// Create entity
 	ent = G_Spawn();
-	ent->spawnflags = atoi(arg07);
-	ent->sandboxObject = 1;
-	ent->objectType = OT_BASIC;
-	ent->s.torsoAnim = OT_BASIC;
-	ent->sb_takedamage = 1;
-	ent->sb_takedamage2 = 1;
-	if(atoi(arg12) == -1){
-		ent->sb_takedamage2 = 0;
-	}
 	CopyAlloc(ent->classname, arg03);
-
-	//spawn item or func
-	VectorCopy( snapped, ent->s.origin );
-	VectorCopy( snapped, ent->s.pos.trBase );
-	VectorCopy( snapped, ent->r.currentOrigin );
-	if(atoi(arg04) == 1){
-	ent->owner = player->s.clientNum + 1;
-	ent->ownername = player->client->pers.netname;
+	for ( i = 0; standard_class_spawn[i] != 0; i++ ) {		//Classlist for standard spawn
+		if ( !strcmp(ent->classname, standard_class_spawn[i]) ) {
+			extended_spawn = qfalse;
+		}
 	}
-	
-	ent->s.generic2 = atoi(arg08);
-	ent->sb_material = atoi(arg08);
-	
-	if(atoi(arg09) == 0){
-	ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; ent->sb_phys = 1;
+	for ( i = 0; sandbox_class_allowed[i] != 0; i++ ) {		//Check allowed sandbox list
+		if ( !strcmp(ent->classname, sandbox_class_allowed[i]) ) {
+			allow_spawn = qtrue;
+		}
 	}
-	if(atoi(arg09) == 1){
-	ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; ent->physicsBounce = atof(arg22); ent->sb_phys = 2;
+	if(g_gametype.integer == GT_MAPEDITOR){
+		for ( i = 0; editor_class_allowed[i] != 0; i++ ) {		//Check allowed editor list
+			if ( !strcmp(ent->classname, editor_class_allowed[i]) ) {
+				allow_spawn = qtrue;
+			}
+		}
 	}
 
-	if(atoi(arg10) == 0){
-	ent->r.contents = CONTENTS_SOLID;
-	ent->sb_coll = 0;
+	if(!allow_spawn){
+		G_FreeEntity(ent);
+		trap_SendServerCommand( player->s.clientNum, "cp \"Spawning of this class is not allowed\n\"" );
+		return;
 	}
-	if(atoi(arg10) == 1){
-	ent->r.contents = CONTENTS_TRIGGER;
-	ent->sb_coll = 1;
+
+	//Origin
+	VectorCopy( position, ent->s.origin );
+	VectorCopy( position, ent->s.pos.trBase );
+	VectorCopy( position, ent->r.currentOrigin );
+
+	//Basic
+	ent->sandboxObject = OBJ_SANDBOX;
+	ent->spawnflags = atoi(arg07);
+
+	if(extended_spawn){
+		//Type
+		ent->objectType = OT_BASIC;
+		ent->s.torsoAnim = OT_BASIC;
+
+		//Damage
+		ent->sb_takedamage = 1;
+		ent->sb_takedamage2 = 1;
+		if(atoi(arg12) == -1){
+			ent->sb_takedamage2 = 0;
+		}
+		ent->takedamage = ent->sb_takedamage;
+		ent->takedamage2 = ent->sb_takedamage2;
+
+		//Owner
+		if(atoi(arg04) == 1){
+		ent->owner = player->s.clientNum + 1;
+		ent->ownername = player->client->pers.netname;
+		}
+
+		//Material
+		ent->s.generic2 = atoi(arg08);
+		ent->sb_material = atoi(arg08);
+
+		//Physics
+		if(atoi(arg09) == 0){
+		ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; ent->sb_phys = 1;
+		}
+		if(atoi(arg09) == 1){
+		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; ent->physicsBounce = atof(arg22); ent->sb_phys = 2;
+		}
+
+		//Collision
+		if(atoi(arg10) == 0){
+		ent->r.contents = CONTENTS_SOLID;
+		ent->sb_coll = 0;
+		}
+		if(atoi(arg10) == 1){
+		ent->r.contents = CONTENTS_TRIGGER;
+		ent->sb_coll = 1;
+		}
+
+		//Sound
+		ent->s.loopSound = G_SoundIndex(arg11);
+		CopyAlloc(ent->sb_sound, arg11);
+
+		//HP
+		ent->health = atoi(arg12);
+
+		//Light
+		ent->s.constantLight = atoi(arg13) | ( atoi(arg14) << 8 ) | ( atoi(arg15) << 16 ) | ( atoi(arg16) << 24 );
+		ent->sb_red = atoi(arg13);
+		ent->sb_green = atoi(arg14);
+		ent->sb_blue = atoi(arg15);
+		ent->sb_radius = atoi(arg16);
+
+		//Scale
+		ent->s.scales[0] = atof(arg17);
+		ent->s.scales[1] = atof(arg18);
+		ent->s.scales[2] = atof(arg19);
+
+		//Type
+		ent->objectType = atoi(arg20);
+		ent->s.torsoAnim = atoi(arg20);
+		ent->vehicle = atoi(arg21);
+
+		//Mass
+		ent->sb_gravity = atoi(arg23);
+		ent->s.generic3 = atoi(arg23);
 	}
-	ent->s.loopSound = G_SoundIndex(arg11);
-	CopyAlloc(ent->sb_sound, arg11);
-	
-	ent->health = atoi(arg12);
-	
-	ent->s.constantLight = atoi(arg13) | ( atoi(arg14) << 8 ) | ( atoi(arg15) << 16 ) | ( atoi(arg16) << 24 );
-	ent->sb_red = atoi(arg13);
-	ent->sb_green = atoi(arg14);
-	ent->sb_blue = atoi(arg15);
-	ent->sb_radius = atoi(arg16);
 
-	ent->s.scales[0] = atof(arg17);
-	ent->s.scales[1] = atof(arg18);
-	ent->s.scales[2] = atof(arg19);
-	
-	ent->objectType = atoi(arg20);
-	ent->s.torsoAnim = atoi(arg20);
-	ent->vehicle = atoi(arg21);
-	ent->sb_gravity = atoi(arg23);
-	ent->s.generic3 = atoi(arg23);
-
-	// check item spawn functions
+	// Item spawn
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
-			snapped[2] += 48;
-			VectorCopy( snapped, ent->s.origin );
-			VectorCopy( snapped, ent->s.pos.trBase );
-			VectorCopy( snapped, ent->r.currentOrigin );
+			position[2] += 48;
+			VectorCopy( position, ent->s.origin );
+			VectorCopy( position, ent->s.pos.trBase );
+			VectorCopy( position, ent->r.currentOrigin );
 			G_SpawnItem( ent, item );
 			return;
 		}
 	}
 
-	// check normal spawn functions
-	for ( s=sandspawns ; s->name ; s++ ) {
+	// Entity spawn
+	for ( s=spawns_table ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
-			// found it
 			CopyAlloc(ent->sb_class, ent->classname);
 			s->spawn(ent);
-			//spawn another class
-			ent->sb_coltype = atoi(arg05);
-			ent->classname = "func_prop";
-			ent->r.svFlags &= ~SVF_NOCLIENT;
-			VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
-			VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
-			setModel(ent, arg02);
-			trap_LinkEntity( ent );
-			return;
+
+			spawn_entity = qtrue;
+
+			if(!extended_spawn){		//Standard spawn
+				return;
+			}
 		}
 	}
 
-	//prop init
-	ent->s.eType = ET_GENERAL;
+	//Prop class for saving
 	ent->classname = "func_prop";
-	ent->takedamage = ent->sb_takedamage;
-	ent->takedamage2 = ent->sb_takedamage2;
-	ent->die = BlockDie;		
-	if(atoi(arg21) <= 0){
+
+	if(!spawn_entity){
+		//Type
+		ent->s.eType = ET_GENERAL;
+
+		//Die function
+		ent->die = BlockDie;	
+
+		//Touch function
+		ent->touch = G_TouchProp;
+	}
+
+	//Setting collsion
+	if(atoi(arg21) <= 0 || spawn_entity){
 	ent->sb_coltype = atoi(arg05);
 	VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
 	VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
@@ -1305,14 +1226,17 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	VectorSet( ent->r.mins, -25, -25, -15);
 	VectorSet( ent->r.maxs, 25, 25, 15 );
 	}
-	ent->touch = G_TouchProp;
+
+	//Load model
 	setModel(ent, arg02);
+
+	//Link
 	trap_LinkEntity( ent );
 }
 
 void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 ) { //tool_id
-	int		len;
-	if(g_gametype.integer != GT_SANDBOX){
+
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){
 		return; 
 	}
 	if(!g_allowtoolgun.integer){
@@ -1330,24 +1254,29 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 			return;
 		}	
 	}
-	if(attacker->tool_id == 0){
+
+	if(attacker->tool_id == TL_CREATE){
 		// client-side command for spawn prop
 	}
-	if(attacker->tool_id == 1){
+
+	if(attacker->tool_id == TL_MATERIAL){
 		targ->s.generic2 = atoi(arg01);
 		targ->sb_material = atoi(arg01);
 	}
-	if(attacker->tool_id == 2){
+
+	if(attacker->tool_id == TL_DELETE){
 		if(!targ->singlebot){
 			G_FreeEntity(targ);
 		} else {
 			DropClientSilently( targ->client->ps.clientNum );	
 		}
 	}
-	if(attacker->tool_id == 3){
+
+	if(attacker->tool_id == TL_MODEL){
 		setModel(targ, arg01);
 	}
-	if(attacker->tool_id == 4){
+
+	if(attacker->tool_id == TL_PHYSICS){
 		if(atoi(arg19) == 0){
 		targ->s.pos.trType = TR_STATIONARY; targ->physicsObject = qfalse; targ->sb_phys = 1;
 		}
@@ -1355,7 +1284,8 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->physicsObject = qtrue; targ->sb_phys = 2;
 		}
 	}
-	if(attacker->tool_id == 5){
+
+	if(attacker->tool_id == TL_PRIVATE){
 		if(atoi(arg19) == 0){
 		targ->owner = 0;
 		targ->ownername = 0;
@@ -1373,7 +1303,8 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		} 
 		}
 	}
-	if(attacker->tool_id == 6){
+
+	if(attacker->tool_id == TL_COLLISION){
 		if(atoi(arg19) == 0){
 		targ->r.contents = CONTENTS_SOLID;
 		targ->sb_coll = 0;
@@ -1383,10 +1314,12 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		targ->sb_coll = 1;
 		}
 	}
-	if(attacker->tool_id == 7){
+
+	if(attacker->tool_id == TL_HEALTH){
 		targ->health = atoi(arg01);
 	}
-	if(attacker->tool_id == 8){
+
+	if(attacker->tool_id == TL_COLOR){
 		targ->s.constantLight = atoi(arg01) | ( atoi(arg02) << 8 ) | ( atoi(arg03) << 16 ) | ( atoi(arg04) << 24 );
 		targ->sb_red = atoi(arg01);
 		targ->sb_green = atoi(arg02);
@@ -1395,7 +1328,8 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		trap_UnlinkEntity( targ );
 		trap_LinkEntity( targ );
 	}
-	if(attacker->tool_id == 9){
+
+	if(attacker->tool_id == TL_ANGLE){
 	if(atoi(arg19) == 0){
 		targ->s.apos.trBase[0] += atof(arg01);
 	}
@@ -1406,7 +1340,8 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		targ->s.apos.trBase[2] += atof(arg01);
 	}
 	}
-	if(attacker->tool_id == 10){
+
+	if(attacker->tool_id == TL_SCALE){
 	if(atoi(arg19) == 0){
 		targ->s.scales[0] = atof(arg01);
 	}
@@ -1419,6 +1354,28 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		VectorSet( targ->r.mins, -targ->sb_coltype*targ->s.scales[0], -targ->sb_coltype*targ->s.scales[1], -targ->sb_coltype*targ->s.scales[2]);
 		VectorSet( targ->r.maxs, targ->sb_coltype*targ->s.scales[0], targ->sb_coltype*targ->s.scales[1], targ->sb_coltype*targ->s.scales[2] );
 	}
+
+	if(attacker->tool_id == TL_REPLACEITEM){
+		gitem_t	*item;
+		int i = 1;
+		if(targ->s.eType != ET_ITEM){
+			trap_SendServerCommand( attacker->s.clientNum, "cp \"This must be the item\n\"" );
+			return;
+		}
+		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
+			if ( !strcmp(item->classname, arg01) ) {
+				targ->item = &bg_itemlist[i];
+				targ->item->classname = bg_itemlist[i].classname;
+				targ->classname = bg_itemlist[i].classname;
+				targ->s.modelindex = i;
+			}
+		}
+	}
+
+	if(attacker->tool_id == TL_COUNT){
+		targ->count = atoi(arg01);
+	}
+
 }
 
 void G_PropSmoke( gentity_t *ent, float impact ){

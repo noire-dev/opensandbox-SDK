@@ -101,19 +101,20 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 #define GAMES_ALL			0
 #define GAMES_SANDBOX		1
-#define GAMES_FFA			2
-#define GAMES_SINGLE		3
-#define GAMES_TEAMPLAY		4
-#define GAMES_TOURNEY		5
-#define GAMES_CTF			6
-#define GAMES_ONEFLAG		7
-#define GAMES_OBELISK		8
-#define GAMES_HARVESTER		9
-#define GAMES_ELIMINATION	10
-#define GAMES_ELIM_CTF		11
-#define GAMES_LMS			12
-#define GAMES_DD			13
-#define GAMES_DOM			14
+#define GAMES_MAPEDITOR		2
+#define GAMES_FFA			3
+#define GAMES_SINGLE		4
+#define GAMES_TEAMPLAY		5
+#define GAMES_TOURNEY		6
+#define GAMES_CTF			7
+#define GAMES_ONEFLAG		8
+#define GAMES_OBELISK		9
+#define GAMES_HARVESTER		10
+#define GAMES_ELIMINATION	11
+#define GAMES_ELIM_CTF		12
+#define GAMES_LMS			13
+#define GAMES_DD			14
+#define GAMES_DOM			15
 
 static const char *master_items[] = {
 	"Local",
@@ -124,8 +125,9 @@ static const char *master_items[] = {
 static const char *servertype_items[] = {
 	"All",
 	"Sandbox",
-	"Free For All",
+	"Map Editor",
 	"Single Player",
+	"Free For All",
 	"Team Deathmatch",
 	"Tournament",
 	"Capture the Flag",
@@ -160,14 +162,14 @@ static const char *servertype_itemsru[] = {
 	"Все Против Всех",
 	"Командный Бой",
 	"Турнир",
-	"Захват флага",
+	"Захват Флага",
 	"Один Флаг",
 	"Атака Базы",
 	"Жнец",
 	"Устранение",
-	"Устранение: Захват флага",
-	"Последний оставшийся",
-	"Двойное доминирование",
+	"Устранение: Захват Флага",
+	"Последний Оставшийся",
+	"Двойное Доминирование",
 	"Доминирование",
 	0
 };
@@ -554,6 +556,12 @@ static void ArenaServers_UpdateMenu( void ) {
 			
 		case GAMES_SANDBOX:
 			if( servernodeptr->gametype != GT_SANDBOX ) {
+				continue;
+			}
+			break;
+
+		case GAMES_MAPEDITOR:
+			if( servernodeptr->gametype != GT_MAPEDITOR ) {
 				continue;
 			}
 			break;
@@ -1142,6 +1150,10 @@ static void ArenaServers_StartRefresh( void )
 
 		case GAMES_SANDBOX:
 			strcpy( myargs, " sandbox" );
+			break;
+
+		case GAMES_MAPEDITOR:
+			strcpy( myargs, " mapeditor" );
 			break;
 
 		case GAMES_SINGLE:

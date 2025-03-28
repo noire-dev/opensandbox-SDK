@@ -341,7 +341,7 @@ void G_CheckMinimumPlayers( void ) {
 			}
 		}
 	}
-	else if (g_gametype.integer == GT_FFA || g_gametype.integer == GT_LMS || g_gametype.integer == GT_SANDBOX) {
+	else if (g_gametype.integer == GT_FFA || g_gametype.integer == GT_LMS || g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR) {
 		if (minplayers >= g_maxclients.integer) {
 			minplayers = g_maxclients.integer-1;
 		}

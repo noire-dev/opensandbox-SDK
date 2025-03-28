@@ -432,7 +432,7 @@ if(cl_language.integer == 1){
 			s = va("Вы убили %s", targetName );
 		}
 }
-	if(cgs.gametype != GT_SINGLE && cgs.gametype != GT_SANDBOX){
+	if(cgs.gametype != GT_SINGLE && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
 		CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, (int)(BIGCHAR_WIDTH * 0.6) );
 	}
 

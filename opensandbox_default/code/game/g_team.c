@@ -1803,10 +1803,18 @@ void SP_team_CTF_redplayer( gentity_t *ent ) {
 	ent->classname = "team_CTF_redplayer";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -1821,10 +1829,18 @@ void SP_team_CTF_blueplayer( gentity_t *ent ) {
 	ent->classname = "team_CTF_blueplayer";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -1840,10 +1856,18 @@ void SP_team_CTF_redspawn(gentity_t *ent) {
 	ent->classname = "team_CTF_redspawn";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }
@@ -1858,10 +1882,18 @@ void SP_team_CTF_bluespawn(gentity_t *ent) {
 	ent->classname = "team_CTF_bluespawn";
 	ent->s.eType = ET_GENERAL;
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorSet( ent->r.mins, -10, -10, -10);
-	VectorSet( ent->r.maxs, 10, 10, 10 );
 	ent->r.contents = CONTENTS_TRIGGER;
-	//ent->s.modelindex = G_ModelIndex( "45.md3" );
+	if(g_gametype.integer == GT_MAPEDITOR){
+		VectorSet( ent->r.mins, -16, -16, -25);
+		VectorSet( ent->r.maxs, 16, 16, 25 );
+		ent->s.scales[0] = 0.64;
+		ent->s.scales[1] = 0.64;
+		ent->s.scales[2] = 1.00;
+		ent->s.modelindex = G_ModelIndex( "props/cube" );
+		ent->s.generic2 = 255;
+		ent->s.generic3 = 900;	//mass for correct physics
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	
 	trap_LinkEntity( ent );
 }

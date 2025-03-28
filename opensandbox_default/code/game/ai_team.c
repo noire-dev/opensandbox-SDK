@@ -2083,7 +2083,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			}
 			break;
 		}
-		case GT_FFA:
+		case GT_MAPEDITOR:
 		{
 			if (bs->numteammates != numteammates || bs->forceorders) {
 				bs->teamgiveorders_time = FloatTime();
@@ -2099,6 +2099,21 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			break;
 		}
 		case GT_SINGLE:
+		{
+			if (bs->numteammates != numteammates || bs->forceorders) {
+				bs->teamgiveorders_time = FloatTime();
+				bs->numteammates = numteammates;
+				bs->forceorders = qfalse;
+			}
+			//if it's time to give orders
+			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
+				BotTeamOrders(bs);
+				//give orders again after 120 seconds
+				bs->teamgiveorders_time = FloatTime() + 120;
+			}
+			break;
+		}
+		case GT_FFA:
 		{
 			if (bs->numteammates != numteammates || bs->forceorders) {
 				bs->teamgiveorders_time = FloatTime();

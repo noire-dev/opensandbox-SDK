@@ -404,7 +404,7 @@ void Cmd_Give_f (gentity_t *ent) {
 	gentity_t		*it_ent;
 	trace_t		trace;
 
-	if(g_gametype.integer != GT_SANDBOX && !CheatsOk(ent)){ return; }
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR && !CheatsOk(ent)){ return; }
 	if(!g_allowitems.integer){ return; }
 
 	name = ConcatArgs( 1 );
@@ -576,7 +576,7 @@ argv(0) noclip
 void Cmd_Noclip_f( gentity_t *ent ) {
 	char	*msg;
 
-	if(g_gametype.integer != GT_SANDBOX){ return; }
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 	if(!g_allownoclip.integer){ return; }
 
 	ent->client->noclip = !ent->client->noclip;
@@ -1271,7 +1271,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	char		arg22[64];
 	char		arg23[64];
 	
-	if(g_gametype.integer != GT_SANDBOX){ return; }
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 
 	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
 		return;
@@ -1312,14 +1312,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	
 	if(!Q_stricmp (arg01, "prop")){
 	if(!g_allowprops.integer){ return; }
-	if(g_safe.integer){
-	if(!Q_stricmp (arg03, "script_cmd")){
-	return;
-	}
-	if(!Q_stricmp (arg03, "target_modify")){
-	return;
-	}
-	}
+	
 	tent = G_TempEntity( tr.endpos, EV_PARTICLES_GRAVITY );
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8 ) | rand() % 256 << 16 ) | ( 255 << 24 ));
 	tent->s.eventParm = 24; //eventParm is used to determine the number of particles
@@ -1410,7 +1403,7 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 	char		arg18[64];
 	char		arg19[64];
 	
-	if(g_gametype.integer != GT_SANDBOX){ return; }
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 
 	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
 		return;
@@ -1581,8 +1574,9 @@ void Cmd_Where_f( gentity_t *ent ) {
 
 static const char *gameNames[] = {
 	"Sandbox",
-	"Free For All",
+	"Map Editor",
 	"Single Player",
+	"Free For All",
 	"Tournament",
 	"Team Deathmatch",
 	"Capture the Flag",

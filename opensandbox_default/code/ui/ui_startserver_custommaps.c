@@ -91,8 +91,9 @@ static vec4_t shadow_color = {0.0, 0.0, 0.0, 1.0 };
 
 static const char* maptype_icon[NUM_GAMETYPES] = {
 	"menu/assets/gt_sandbox",		// GT_SANDBOX
-	"menu/assets/gt_ffa",		// GT_FFA
+	"menu/assets/gt_mapeditor",		// GT_MAPEDITOR
 	"menu/assets/gt_single",		// GT_SINGLE
+	"menu/assets/gt_ffa",		// GT_FFA
 	"menu/assets/gt_tourney",		// GT_TOURNAMENT
 	"menu/assets/gt_team",	// GT_TEAM
 	"menu/assets/gt_ctf",		// GT_CTF
@@ -130,6 +131,24 @@ int GametypeBits( char *string ) {
 		
 		if( Q_stricmp( token, "sandbox" ) == 0 ) {
 			bits |= 1 << GT_SANDBOX;
+			bits |= 1 << GT_MAPEDITOR;
+			continue;
+		}
+	
+		if( Q_stricmp( token, "mapeditor" ) == 0 ) {
+			bits |= 1 << GT_MAPEDITOR;
+			continue;
+		}
+		
+		if( Q_stricmp( token, "entityplus" ) == 0 ) { //entityplus support
+			bits |= 1 << GT_SINGLE;
+			bits |= 1 << GT_MAPEDITOR;
+			continue;
+		}
+		
+		if( Q_stricmp( token, "singleplayer" ) == 0 ) {	//OpenSandbox single mode
+			bits |= 1 << GT_SINGLE;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
@@ -138,27 +157,20 @@ int GametypeBits( char *string ) {
 			bits |= 1 << GT_LMS;
 			bits |= 1 << GT_ELIMINATION;
 			bits |= 1 << GT_DOMINATION;
-			continue;
-		}
-		
-		if( Q_stricmp( token, "entityplus" ) == 0 ) { //entityplus support
-			bits |= 1 << GT_SINGLE;
-			continue;
-		}
-		
-		if( Q_stricmp( token, "singleplayer" ) == 0 ) {	//OpenSandbox single mode
-			bits |= 1 << GT_SINGLE;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "tourney" ) == 0 ) {
 			bits |= 1 << GT_TOURNAMENT;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "team" ) == 0 ) {
 			bits |= 1 << GT_TEAM;
 			bits |= 1 << GT_ELIMINATION;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
@@ -167,45 +179,54 @@ int GametypeBits( char *string ) {
 			bits |= 1 << GT_DOUBLE_D;
 			bits |= 1 << GT_CTF_ELIMINATION;
 			bits |= 1 << GT_ELIMINATION;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 		
 		if( Q_stricmp( token, "oneflag" ) == 0 ) {
 			bits |= 1 << GT_1FCTF;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
                 
 		if( Q_stricmp( token, "overload" ) == 0 ) {
 			bits |= 1 << GT_OBELISK;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
                 
 		if( Q_stricmp( token, "harvester" ) == 0 ) {
 			bits |= 1 << GT_HARVESTER;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "elimination" ) == 0 ) {
 			bits |= 1 << GT_ELIMINATION;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "ctfelimination" ) == 0 ) {
 			bits |= 1 << GT_CTF_ELIMINATION;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 	}
 
 		if( Q_stricmp( token, "lms" ) == 0 ) {
 			bits |= 1 << GT_LMS;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 		if( Q_stricmp( token, "dd" ) == 0 ) {
 			bits |= 1 << GT_DOUBLE_D;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
                 
 		if( Q_stricmp( token, "dom" ) == 0 ) {
 			bits |= 1 << GT_DOMINATION;
+			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 	}

@@ -1001,18 +1001,69 @@ void Weapon_Toolgun( gentity_t *ent ) {
 	VectorMA (muzzle, TOOLGUN_RANGE, forward, end);
 	trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
-	if ( tr.surfaceFlags & SURF_NOIMPACT ) {
-		return;
-	}
-
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if(!traceEnt->sandboxObject && !traceEnt->singlebot && ent->s.eType != ET_ITEM){
-		return;
+	if(g_extendedsandbox.integer){
+		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER){
+			return;
+		}
+	} else {
+		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+			return;
+		}
 	}
 
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 		1, 0, MOD_TOOLGUN );
+
+	return;
+}
+
+void Weapon_Toolgun_Info( gentity_t *ent ) {
+	trace_t		tr;
+	vec3_t		end;
+	gentity_t	*traceEnt;
+
+	char info_Classname[64];
+	char info_Model[64];
+	char info_Material[64];
+	char info_Count[64];
+
+	// set aiming directions
+	AngleVectors (ent->client->ps.viewangles, forward, right, up);
+
+	CalcMuzzlePoint ( ent, forward, right, up, muzzle );
+	VectorMA (muzzle, TOOLGUN_RANGE, forward, end);
+	trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SELECT);
+
+	traceEnt = &g_entities[ tr.entityNum ];
+
+	if(g_extendedsandbox.integer){
+		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER){
+			trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s\"", "") );
+			return;
+		}
+	} else {
+		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+			trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s\"", "") );
+			return;
+		}
+	}
+
+	if(ent->swep_id == WP_TOOLGUN){
+		strcpy(info_Classname, traceEnt->classname);
+		if(traceEnt->s.eType == ET_PLAYER){	
+			strcpy(info_Model, va("%i", traceEnt->s.clientNum));
+		} else if(traceEnt->s.eType == ET_ITEM){	
+			strcpy(info_Model, "<NULL>");
+		} else {
+			strcpy(info_Model, traceEnt->model);
+		}
+		strcpy(info_Material, va("%i", traceEnt->sb_material));
+		strcpy(info_Count, va("%i", traceEnt->count));
+
+		trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s %s %s %s\"", info_Classname, info_Model, info_Material, info_Count) );
+	}
 
 	return;
 }

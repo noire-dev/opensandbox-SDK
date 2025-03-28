@@ -187,11 +187,14 @@ if(cl_language.integer == 0){
 	case GT_SANDBOX:
 		s = "Sandbox";
 		break;
-	case GT_FFA:
-		s = "Free For All";
+	case GT_MAPEDITOR:
+		s = "Map Editor";
 		break;
 	case GT_SINGLE:
 		s = "Single Player";
+		break;
+	case GT_FFA:
+		s = "Free For All";
 		break;
 	case GT_TOURNAMENT:
 		s = "Tournament";
@@ -215,7 +218,7 @@ if(cl_language.integer == 0){
 		s = "Elimination";
 		break;
 	case GT_CTF_ELIMINATION:
-		s = " CTF Elimination";
+		s = "CTF Elimination";
 		break;
 	case GT_LMS:
 		s = "Last Man Standing";
@@ -237,26 +240,29 @@ if(cl_language.integer == 1){
 	case GT_SANDBOX:
 		s = "Песочница";
 		break;
-	case GT_FFA:
-		s = "Все против всех";
+	case GT_MAPEDITOR:
+		s = "Редактор Карт";
 		break;
 	case GT_SINGLE:
 		s = "Одиночная Игра";
+		break;
+	case GT_FFA:
+		s = "Все Против Всех";
 		break;
 	case GT_TOURNAMENT:
 		s = "Турнир";
 		break;
 	case GT_TEAM:
-		s = "Командный бой";
+		s = "Командный Бой";
 		break;
 	case GT_CTF:
-		s = "Захват флага";
+		s = "Захват Флага";
 		break;
 	case GT_1FCTF:
-		s = "Один флаг";
+		s = "Один Флаг";
 		break;
 	case GT_OBELISK:
-		s = "Атака базы";
+		s = "Атака Базы";
 		break;
 	case GT_HARVESTER:
 		s = "Жнец";
@@ -265,13 +271,13 @@ if(cl_language.integer == 1){
 		s = "Устранение";
 		break;
 	case GT_CTF_ELIMINATION:
-		s = "Устранение: Захват флага";
+		s = "Устранение: Захват Флага";
 		break;
 	case GT_LMS:
-		s = "Последний оставшийся";
+		s = "Последний Оставшийся";
 		break;
 	case GT_DOUBLE_D:
-		s = "Двойное доминирование";
+		s = "Двойное Доминирование";
 		break;
         case GT_DOMINATION:
 		s = "Доминирование";

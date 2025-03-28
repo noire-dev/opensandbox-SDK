@@ -361,9 +361,7 @@ int Pickup_Ammo (gentity_t *ent, gentity_t *other)
 
 int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	int		quantity;
-
-
-
+	
 	if ( ent->count < 0 ) {
 		quantity = 0; // None for you, sir!
 	} else {
@@ -540,7 +538,7 @@ void RespawnItem( gentity_t *ent ) {
 	gitem_t	*item;
 	int i = 1;
 
-    if(g_randomItems.integer) {
+    if(g_randomItems.integer && ent->item->giType != IT_PERSISTANT_POWERUP && ent->item->giType != IT_TEAM && ent->item->giType != IT_BACKPACK) {
 		char* 			randomitem[] = {
 			"none",
 			"weapon_machinegun",
@@ -601,7 +599,7 @@ void RespawnItem( gentity_t *ent ) {
 			0
 		};
 
-		spawn_item = rq3_random(1, 54);
+		spawn_item = rq3_random(1, 55);
 
 		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
 			if ( !strcmp(item->classname, randomitem[spawn_item]) ) {
@@ -623,13 +621,11 @@ void RespawnItem( gentity_t *ent ) {
 		}
 		master = ent->teammaster;
 
-		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
-			;
+		for (count = 0, ent = master; ent; ent = ent->teamchain, count++);
 
 		choice = (count > 0)? rand()%count : 0;
 
-		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++)
-			;
+		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++);
 	}
 
 	ent->r.contents = CONTENTS_TRIGGER;
@@ -872,7 +868,7 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 	}
 
 	// powerup pickups are global broadcasts
-	if ( /*ent->item->giType == IT_POWERUP ||*/ ent->item->giType == IT_TEAM) {	//disabled powerup sound for all cuz it annoying
+	if ( (ent->item->giType == IT_POWERUP && g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) || ent->item->giType == IT_TEAM) {	//disabled powerup sound for all cuz it annoying
 		// if we want the global sound to play
 		if (!ent->speed) {
 			gentity_t	*te;
@@ -965,6 +961,9 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	dropped = G_Spawn();
 
 	dropped->s.eType = ET_ITEM;
+	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
+		dropped->sandboxObject = OBJ_EDITOR;
+	}
 	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
 	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
 
@@ -1038,6 +1037,9 @@ gentity_t *LaunchBackpack( gitem_t *item, gentity_t *self, vec3_t velocity ) {
 	dropped = G_Spawn();
 
 	dropped->s.eType = ET_ITEM;
+	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
+		dropped->sandboxObject = OBJ_EDITOR;
+	}
 	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
 	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
 
@@ -1154,6 +1156,9 @@ void FinishSpawningItem( gentity_t *ent ) {
 	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
 	ent->s.eType = ET_ITEM;
+	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
+		ent->sandboxObject = OBJ_EDITOR;
+	}
 	ent->s.modelindex = ent->item - bg_itemlist;		// store item number in modelindex
 	ent->s.modelindex2 = 0; // zero indicates this isn't a dropped item
 
@@ -1301,8 +1306,8 @@ void ClearRegisteredItems( void ) {
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
 	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_MACHINEGUN ) );
 	RegisterItem( BG_FindItemForWeapon( WP_GAUNTLET ) );
+	RegisterItem( BG_FindItemForWeapon( WP_MACHINEGUN ) );
 	if(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION
                     || g_gametype.integer == GT_LMS || g_elimination.integer)
 	{
@@ -1313,6 +1318,7 @@ void ClearRegisteredItems( void ) {
 		RegisterItem( BG_FindItemForWeapon( WP_RAILGUN ) );
 		RegisterItem( BG_FindItemForWeapon( WP_PLASMAGUN ) );
 		RegisterItem( BG_FindItemForWeapon( WP_BFG ) );
+		RegisterItem( BG_FindItemForWeapon( WP_GRAPPLING_HOOK ) );
 		RegisterItem( BG_FindItemForWeapon( WP_NAILGUN ) );
 		RegisterItem( BG_FindItemForWeapon( WP_PROX_LAUNCHER ) );
 		RegisterItem( BG_FindItemForWeapon( WP_CHAINGUN ) );
@@ -1451,8 +1457,8 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	if( g_gametype.integer != GT_1FCTF && strcmp(ent->classname, "team_CTF_neutralflag") == 0)
 		ent->s.eFlags |= EF_NODRAW; // Don't draw the flag in CTF_elimination
 
-        if(strcmp(ent->classname, "domination_point") == 0)
-                ent->s.eFlags |= EF_NODRAW; // Don't draw domination_point. It is just a pointer to where the Domination points should be placed
+    if(strcmp(ent->classname, "domination_point") == 0)
+        ent->s.eFlags |= EF_NODRAW; // Don't draw domination_point. It is just a pointer to where the Domination points should be placed
 	if ( item->giType == IT_POWERUP ) {
 		G_SoundIndex( "sound/items/poweruprespawn.wav" );
 		G_SpawnFloat( "noglobalsound", "0", &ent->speed);

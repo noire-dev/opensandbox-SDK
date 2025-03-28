@@ -83,7 +83,7 @@ static ingame_mapvote_t s_mapvote;
 
 
 static int filter_gametype[] = {
-	-1, GT_SANDBOX, GT_FFA, GT_SINGLE, GT_TOURNAMENT, GT_TEAM, GT_CTF, GT_1FCTF, GT_OBELISK, GT_HARVESTER, GT_ELIMINATION, GT_CTF_ELIMINATION, GT_LMS, GT_DOUBLE_D, GT_DOMINATION
+	-1, GT_SANDBOX, GT_MAPEDITOR, GT_SINGLE, GT_FFA, GT_TOURNAMENT, GT_TEAM, GT_CTF, GT_1FCTF, GT_OBELISK, GT_HARVESTER, GT_ELIMINATION, GT_CTF_ELIMINATION, GT_LMS, GT_DOUBLE_D, GT_DOMINATION
 };
 
 
@@ -93,8 +93,9 @@ static int filter_gametype_size = sizeof(filter_gametype)/sizeof(filter_gametype
 static const char* filter_gametype_list[] = {
 	"All",
 	"Sandbox",
-	"Free for All",
+	"Map Editor",
 	"Single Player",
+	"Free for All",
 	"Tournament",
 	"Team DM",
 	"Capture the Flag",
@@ -111,18 +112,19 @@ static const char* filter_gametype_list[] = {
 static const char* filter_gametype_listru[] = {
 	"Все",
 	"Песочница",
+	"Редактор Карт",
 	"Одиночная Игра",
 	"Все Против Всех",
 	"Турнир",
 	"Командный Бой",
-	"Захват флага",
+	"Захват Флага",
 	"Один Флаг",
 	"Атака Базы",
 	"Жнец",
 	"Устранение",
-	"Устранение: Захват флага",
-	"Последний оставшийся",
-	"Двойное доминирование",
+	"Устранение: Захват Флага",
+	"Последний Оставшийся",
+	"Двойное Доминирование",
 	"Доминирование",
 	0
 };

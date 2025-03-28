@@ -60,76 +60,41 @@ qboolean SkippedChar ( char in ) {
 	return ( in == '\n' || in == '\r' || in == ';' || in == '\t' || in == ' ' );
 }
 
-qboolean G_ClassnameAllowed( char *input ){
-		if ( !strcmp(input, "info_player_deathmatch" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "domination_point" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_CTF_redspawn" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_CTF_bluespawn" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_redobelisk" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_blueobelisk" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_neutralobelisk" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "func_prop" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "target_botspawn" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_CTF_neutralflag" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_CTF_blueflag" ) ) {
-			return qtrue;
-		}
-		if ( !strcmp(input, "team_CTF_redflag" ) ) {
-			return qtrue;
-		}
-		
-		if ( BG_CheckClassname(input) ) {
-			return qtrue;
-		}
+qboolean G_ClassnameAllowed( char *input, qboolean danger ){
+	int i;
+	char* 			classes_allowed[] = {
+		"func_prop",
+		"target_botspawn",
+		"info_player_deathmatch",
+		"info_player_dd",
+		"info_player_dd_red",
+		"info_player_dd_blue",
+		"team_CTF_redplayer",
+		"team_CTF_blueplayer",
+		"team_CTF_redspawn",
+		"team_CTF_bluespawn",
+		"misc_teleporter_dest",
+		0
+	};
 
-	return qfalse;
-}
+	for ( i = 0; classes_allowed[i] != 0; i++ ) {		//Allowed classlist
+		if ( !strcmp(input, classes_allowed[i]) ) {
+			return qtrue;
+		}
+	}
 
-qboolean G_ClassnameAllowedAll( char *input ){
-
-
-	return qtrue;
+	return BG_CheckClassname(input);					//Items
 }
 
 void G_ClearEntities( void ){
 	int i;
-	for( i = 0; i < MAX_GENTITIES; i++ ) {
-		/*if( !g_entities[i].inuse )
-			continue;*/
-		if( !G_ClassnameAllowed(g_entities[i].classname) )
-			continue;
-		g_entities[i].nextthink = 0;
-		G_FreeEntity(&g_entities[i]);
-		
+	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
+		if ( g_entities[i].singlebot >= 1 ) {
+			DropClientSilently( g_entities[i].client->ps.clientNum );
+		}
 	}
-}
-
-void G_ClearEntitiesAll( void ){
-	int i;
-	for( i = 0; i < MAX_GENTITIES; i++ ) {
-		/*if( !g_entities[i].inuse )
-			continue;*/
-		if( !G_ClassnameAllowedAll(g_entities[i].classname) )
+	for( i = 0; i < MAX_GENTITIES; i++ ) {				//Items and Other
+		if( !G_ClassnameAllowed(g_entities[i].classname, qtrue) )
 			continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);
@@ -237,7 +202,7 @@ fieldCopy_t fieldsCopy[] = {
 	{"targetname", FOFS(targetname), F_STRING},
 	{"message", FOFS(message), F_STRING},
 	{"botname", FOFS(botname), F_STRING},
-	//{"team", FOFS(team), F_STRING}, //it's crashing
+	//{"team", FOFS(team), F_STRING}, //it's crashing idk why
 	{"wait", FOFS(wait), F_FLOAT},
 	{"random", FOFS(random), F_FLOAT},
 	{"count", FOFS(count), F_INT},
@@ -382,12 +347,16 @@ void G_LoadMapfile( char *filename ){
 		trap_FS_FCloseFile( f );
 		return;
 	}
-	ClearRegisteredItems();
-	G_ClearEntities();
 
 	trap_FS_Read( mapbuffer, len, f );
+	if(len <= 10){
+		return;
+	}
 	mapbuffer[len] = 0;
 	trap_FS_FCloseFile( f );
+
+	ClearRegisteredItems();
+	G_ClearEntities();
 	
 	COM_Compress(mapbuffer);
 	
@@ -448,57 +417,62 @@ void G_LoadMapfile( char *filename ){
 			}	
 	}
 	SaveRegisteredItems();
-	
 }
 
 void G_LoadMapfile_f( void ) {
-	char buf[MAX_QPATH];
+	char filename[MAX_QPATH];
 	char mapname[64];
-	int	i;
-	
-	for (i = 0; i < MAX_CLIENTS; i++ ) {
-		if ( g_entities[i].singlebot >= 1 ) {
-			DropClientSilently( g_entities[i].client->ps.clientNum );
-		}
-	}
 	
 	if ( trap_Argc() < 2 ) {
-                G_Printf("Usage: loadmap <filename>\n");
+    	G_Printf("Usage: loadmap <filename>\n");
 		return;
 	}
 	
-	trap_Argv( 1, buf, sizeof( buf ) );
+	trap_Argv( 1, filename, sizeof( filename ) );
 	
-	G_LoadMapfile(buf);
-	trap_Cvar_Set("mapfile",buf);
+	G_LoadMapfile(filename);
+	trap_Cvar_Set("mapfile",filename);
 	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 	trap_Cvar_Set("lastmap",mapname);
+	trap_SendServerCommand( -1, "print \"^2Map loaded!\n\"" );
 }
 
 void G_WriteMapfile_f( void ) {
 	int i;
 	fileHandle_t f;
 	char *string;
-	char buf[MAX_QPATH];
+	char filename[MAX_QPATH];
 	fieldCopy_t *field;
 	byte	*b;
 	
 	if ( trap_Argc() < 2 ) {
-                G_Printf("Usage: savemap <filename>\n");
+    	G_Printf("Usage: savemap <filename>\n");
 		return;
 	}
 	
-	trap_Argv( 1, buf, sizeof( buf ) );
+	trap_Argv( 1, filename, sizeof( filename ) );
 	
-	trap_FS_FOpenFile(va("%s", buf ),&f,FS_WRITE);
+	trap_FS_FOpenFile(va("%s", filename ),&f,FS_WRITE);
+
+	string = va("//OpenSandbox Map File\n");
+	trap_FS_Write(string, strlen(string), f);
 	
 	for( i = 0; i < MAX_GENTITIES; i++ ){
 	  
 		if( !g_entities[i].inuse )
 			continue;
 		
-		if( !G_ClassnameAllowed(g_entities[i].classname) )
+		if( !G_ClassnameAllowed(g_entities[i].classname, qtrue) )
 			continue;
+
+		if(g_gametype.integer == GT_MAPEDITOR){
+			if ( g_entities[i].sandboxObject && g_entities[i].s.eType == ET_ITEM ) {	//Remove sandbox flag from all items
+				g_entities[i].sandboxObject = OBJ_DEFAULT;
+			}
+			if ( g_entities[i].sandboxObject == OBJ_EDITOR ) {		//Remove sandbox flag from editor items
+				g_entities[i].sandboxObject = OBJ_DEFAULT;
+			}
+		}
 		b = (byte *) &g_entities[i];
 		
 		string = va("{\n");
@@ -539,4 +513,58 @@ void G_WriteMapfile_f( void ) {
 		trap_FS_Write(string, strlen(string), f);
 	}
 	trap_FS_FCloseFile(f);
+	trap_SendServerCommand( -1, "print \"^2Map saved!\n\"" );
+}
+
+void G_DeleteMapfile_f(void) {
+    fileHandle_t f;
+    char filename[MAX_QPATH];
+	char *string;
+
+    if (trap_Argc() < 2) {
+        G_Printf("Usage: deletemap <filename>\n");
+        return;
+    }
+
+    trap_Argv(1, filename, sizeof(filename));
+
+    trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
+
+	string = va("deleted");
+	trap_FS_Write(string, strlen(string), f);
+
+    trap_FS_FCloseFile(f);
+	trap_SendServerCommand( -1, "print \"^2Map deleted!\n\"" );
+}
+
+void G_ClearMap_f( void ){
+	int i;
+	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
+		if ( g_entities[i].singlebot >= 1 ) {
+			DropClientSilently( g_entities[i].client->ps.clientNum );
+		}
+	}
+	for( i = 0; i < MAX_GENTITIES; i++ ) {				//Items and Other
+		if( !G_ClassnameAllowed(g_entities[i].classname, qfalse) )
+			continue;
+		g_entities[i].nextthink = 0;
+		G_FreeEntity(&g_entities[i]);
+	}
+	trap_SendServerCommand( -1, "print \"^2Map cleaned!\n\"" );
+}
+
+void G_ClearSandboxMap_f( void ){
+	int i;
+	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
+		if ( g_entities[i].singlebot >= 1 ) {
+			DropClientSilently( g_entities[i].client->ps.clientNum );
+		}
+	}
+	for (i = 0; i < MAX_GENTITIES; i++ ) {				//Sandbox objects
+		if ( g_entities[i].sandboxObject ) {
+			g_entities[i].nextthink = 0;
+			G_FreeEntity(&g_entities[i]);
+		}
+	}
+	trap_SendServerCommand( -1, "print \"^2Map cleaned!\n\"" );
 }

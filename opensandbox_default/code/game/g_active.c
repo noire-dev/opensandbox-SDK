@@ -449,6 +449,7 @@ void MakeUnlimitedAmmo(gentity_t *ent) {
 	Set_Ammo(ent, WP_PROX_LAUNCHER, 9999);
 	Set_Ammo(ent, WP_CHAINGUN, 9999);
 }
+
 /*
 ==================
 ClientTimerActions
@@ -585,7 +586,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 		client->ps.stats[STAT_MONEY] = client->pers.oldmoney;
 
-		G_SendGameCvars( ent );		//send game setting to client for sync
+		G_SendGameCvars( ent );				//send game setting to client for sync
 		G_SendSwepWeapons( ent );			//send sweps list to client for sync
 
 		// count down armor when over max
@@ -644,6 +645,19 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	}
 }
 
+void SendEntityInfoToClient( gentity_t *ent, int msec ) {
+	gclient_t	*client;
+
+	client = ent->client;
+	client->timeEntityInfo += msec;
+
+	while ( client->timeEntityInfo >= 100 ) {
+		client->timeEntityInfo -= 100;
+
+		Weapon_Toolgun_Info( ent );			//send entity info to client for sync
+	}
+}
+
 /*
 ====================
 ClientIntermissionThink
@@ -655,8 +669,8 @@ void ClientIntermissionThink( gclient_t *client ) {
 
 	// the level will exit when everyone wants to or after timeouts
 
-        if( g_entities[client->ps.clientNum].r.svFlags & SVF_BOT )
-            return; //Bots cannot mark themself as ready
+    if( g_entities[client->ps.clientNum].r.svFlags & SVF_BOT )
+        return; //Bots cannot mark themself as ready
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
@@ -915,10 +929,8 @@ void PhysgunHold(gentity_t *player) {
 					return;
 				}	
 			}
-			if(!findent->client){
-			player->grabbedEntity = findent;
-			} else if (findent->singlebot) {
-			player->grabbedEntity = findent;
+			if(!findent->client || findent->singlebot || g_extendedsandbox.integer){
+				player->grabbedEntity = findent;
 			}
 			}
             if (player->grabbedEntity) {
@@ -971,6 +983,9 @@ void PhysgunHold(gentity_t *player) {
 			player->grabbedEntity->physicsObject = qfalse;			//phys 1 settings
 			player->grabbedEntity->sb_phys = 1;						//phys 1 settings
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
+			if(player->grabbedEntity->s.eType == ET_ITEM){
+			player->grabbedEntity->spawnflags = 1;					//for items
+			}
 			} else {
 			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear speed
 			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin, newvelocity);		//calc player speed with old frame
@@ -985,8 +1000,11 @@ void PhysgunHold(gentity_t *player) {
 			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
 			player->grabbedEntity->sb_phys = 2;						//phys 2 settings
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
+			if(player->grabbedEntity->s.eType == ET_ITEM){
+			player->grabbedEntity->spawnflags = 0;					//for items
+			}
 			} else {
-			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
+			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed
 			}
 			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin, newvelocity);		//calc speed with old frame
 			if(!player->grabbedEntity->client){
@@ -996,6 +1014,10 @@ void PhysgunHold(gentity_t *player) {
 			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens
 			VectorAdd(player->grabbedEntity->client->ps.velocity, newvelocity, player->grabbedEntity->client->ps.velocity);		//apply new player speed
 			}
+		}
+		if(g_awardpushing.integer && player->grabbedEntity->client){
+			player->grabbedEntity->client->lastSentFlying = player->s.number;	//award pushing
+			player->grabbedEntity->client->lastSentFlyingTime = level.time;		//award pushing
 		}
 		VectorClear( player->grabOffset );																				//clear offset
 		player->grabbedEntity = 0;																						//end
@@ -1025,10 +1047,8 @@ void GravitygunHold(gentity_t *player) {
 					return;
 				}	
 			}
-			if(!findent->client){
-			player->grabbedEntity = findent;
-			} else if (findent->singlebot) {
-			player->grabbedEntity = findent;
+			if(!findent->client || findent->singlebot || g_extendedsandbox.integer){
+				player->grabbedEntity = findent;
 			}
 			}
             if (player->grabbedEntity) {
@@ -1067,6 +1087,10 @@ void GravitygunHold(gentity_t *player) {
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
 			} else {
 			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
+			if(g_awardpushing.integer){
+				player->grabbedEntity->client->lastSentFlying = player->s.number;	//award pushing
+            	player->grabbedEntity->client->lastSentFlyingTime = level.time;		//award pushing
+			}
 			}
 			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->r.currentOrigin, newvelocity);		//calc speed with player pos and prop pos
 			if(!player->grabbedEntity->client){
@@ -1502,14 +1526,16 @@ if ( !ent->speed ){
 		return;
 	}
 
-        if ( pm.waterlevel <= 1 && pm.ps->groundEntityNum!=ENTITYNUM_NONE && client->lastSentFlyingTime+500>level.time) {
-			if ( ! (pm.ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
-                            client->lastSentFlying = -1;
-			}
+    if ( pm.waterlevel <= 1 && pm.ps->groundEntityNum!=ENTITYNUM_NONE && client->lastSentFlyingTime+500>level.time) {
+		if ( ! (pm.ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
+            client->lastSentFlying = -1;
+		}
 	}
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );
+
+	SendEntityInfoToClient( ent, msec );
 }
 
 /*

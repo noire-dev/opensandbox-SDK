@@ -26,13 +26,18 @@
 #include "ui_local.h"
 #include "ui_dynamicmenu.h"
 
-#define ID_ADDBOTS				10
-#define ID_REMOVEBOTS			11
-#define ID_LEAVEARENA			12
-#define ID_RESTART				13
-#define ID_QUIT					14
-#define ID_NEXTMAP				15
-#define ID_ENABLEDITEMS			16
+#define ID_ADDBOTS					10
+#define ID_REMOVEBOTS				11
+#define ID_LEAVEARENA				12
+#define ID_LEAVEARENA_SAVE			13	//mapeditor
+#define ID_SAVEMAPINPACK			14	//mapeditor
+#define ID_DELETEMAPINPACK			15	//mapeditor
+#define ID_CLEANMAPINPACK			16	//mapeditor
+#define ID_CLEANMAPINPACK_SANDBOX	17	//sandbox
+#define ID_RESTART					18
+#define ID_QUIT						19
+#define ID_NEXTMAP					20
+#define ID_ENABLEDITEMS				21
 
 /*
 =================
@@ -124,9 +129,49 @@ May be used by dynamic menu system also
 */
 static void InGame_EventHandler(int id)
 {
+	char stp_entitypack[64];
+	char stp_mapname[64];
 	switch( id ) {
 	case ID_LEAVEARENA:
 		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+		break;
+
+	case ID_LEAVEARENA_SAVE:
+		trap_Cvar_VariableStringBuffer( "g_entitypack", stp_entitypack, 64 );
+		trap_Cvar_VariableStringBuffer( "mapname", stp_mapname, 64 );
+		if(strlen(stp_entitypack)){
+			trap_Cmd_ExecuteText( EXEC_APPEND, va("savemap maps/%s/%s.add \n", stp_entitypack, stp_mapname) );
+		}
+		trap_Cmd_ExecuteText( EXEC_APPEND, "wait 25; disconnect\n" );
+		break;
+
+	case ID_SAVEMAPINPACK:
+		trap_Cvar_VariableStringBuffer( "g_entitypack", stp_entitypack, 64 );
+		trap_Cvar_VariableStringBuffer( "mapname", stp_mapname, 64 );
+		if(strlen(stp_entitypack)){
+			trap_Cmd_ExecuteText( EXEC_APPEND, va("savemap maps/%s/%s.add \n", stp_entitypack, stp_mapname) );
+			UI_ForceMenuOff();
+		}
+		break;
+
+	case ID_DELETEMAPINPACK:
+		trap_Cvar_VariableStringBuffer( "g_entitypack", stp_entitypack, 64 );
+		trap_Cvar_VariableStringBuffer( "mapname", stp_mapname, 64 );
+		if(strlen(stp_entitypack)){
+			trap_Cmd_ExecuteText( EXEC_APPEND, va("deletemap maps/%s/%s.add \n", stp_entitypack, stp_mapname) );
+			UI_ForceMenuOff();
+			trap_Cmd_ExecuteText( EXEC_APPEND, "wait 25; map_restart 0 \n" );
+		}
+		break;
+
+	case ID_CLEANMAPINPACK:
+		trap_Cmd_ExecuteText( EXEC_APPEND, "clearmap \n" );
+		UI_ForceMenuOff();
+		break;
+
+	case ID_CLEANMAPINPACK_SANDBOX:
+		trap_Cmd_ExecuteText( EXEC_APPEND, "clearmap_sandbox \n" );
+		UI_ForceMenuOff();
 		break;
 
 	case ID_RESTART:
@@ -176,9 +221,10 @@ typedef struct {
 } gametypeMenu;
 
 static gametypeMenu gametypeMenu_data[] = {
-	{ GT_SANDBOX, "SandBox"},
-	{ GT_FFA, "DeathMatch"},
+	{ GT_SANDBOX, "Sandbox"},
+	{ GT_MAPEDITOR, "Map Editor"},
 	{ GT_SINGLE, "Single"},
+	{ GT_FFA, "DeathMatch"},
 	{ GT_TOURNAMENT, "Tournament"},
 	{ GT_TEAM, "Team DM"},
 	{ GT_CTF, "CTF"},
@@ -194,17 +240,18 @@ static gametypeMenu gametypeMenu_data[] = {
 
 static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_SANDBOX, "Песочница"},
-	{ GT_FFA, "Все против всех"},
+	{ GT_MAPEDITOR, "Редактор Карт"},
 	{ GT_SINGLE, "Одиночная игра"},
+	{ GT_FFA, "Все Против Всех"},
 	{ GT_TOURNAMENT, "Турнир"},
-	{ GT_TEAM, "Командный бой"},
-	{ GT_CTF, "Захват флага"},
-	{ GT_1FCTF, "Один флаг"},
-	{ GT_OBELISK, "Атака базы"},
+	{ GT_TEAM, "Командный Бой"},
+	{ GT_CTF, "Захват Флага"},
+	{ GT_1FCTF, "Один Флаг"},
+	{ GT_OBELISK, "Атака Базы"},
 	{ GT_HARVESTER, "Жнец"},
 	{ GT_ELIMINATION, "Устранение"},
 	{ GT_CTF_ELIMINATION, "CTF Устранение"},
-	{ GT_LMS, "Последний оставшийся"},
+	{ GT_LMS, "Последний Оставшийся"},
 	{ GT_DOUBLE_D, "2 доминирование"},
 	{ GT_DOMINATION, "Доминирование"},
 };
@@ -367,20 +414,6 @@ static void IG_UseOldInGame_Event( int index )
 
 	id = DynamicMenu_IdAtIndex(index);
 
-	switch (id) {
-	case ID_ADDBOTS:
-	case ID_REMOVEBOTS:
-	case ID_RESTART:
-	case ID_LEAVEARENA:
-	case ID_QUIT:
-	case ID_ENABLEDITEMS:
-	case ID_NEXTMAP:
-		break;
-	default:
-		Com_Printf("IG_UseOldInGame_Event: unknown id (%i)", id);
-		return;
-	}
-
 	InGame_EventHandler(id);
 }
 
@@ -439,6 +472,8 @@ static void IG_Actions_Event( int index )
 {
 	int id;
 	char* s;
+	char stp_entitypack[64];
+	char stp_mapname[64];
 
 	id = DynamicMenu_IdAtIndex(index);
 
@@ -534,8 +569,9 @@ static void IG_CallVoteGameType_Event( int index )
 
 	switch (id) {
 	case GT_SANDBOX:
-	case GT_FFA:
+	case GT_MAPEDITOR:
 	case GT_SINGLE:
+	case GT_FFA:
 	case GT_TOURNAMENT:
 	case GT_TEAM:
 	case GT_CTF:
@@ -783,11 +819,27 @@ static void IG_Map_SubMenu( void )
 
 	DynamicMenu_SubMenuInit();
 	if(cl_language.integer == 0){
+	if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
+		DynamicMenu_AddItem("Save map...", ID_SAVEMAPINPACK, 0, IG_UseOldInGame_Event);
+		DynamicMenu_AddItem("Delete map...", ID_DELETEMAPINPACK, 0, IG_UseOldInGame_Event);
+		DynamicMenu_AddItem("Clean map...", ID_CLEANMAPINPACK, 0, IG_UseOldInGame_Event);
+	}
+	if(DynamicMenu_ServerGametype() == GT_SANDBOX){
+		DynamicMenu_AddItem("Clean map...", ID_CLEANMAPINPACK_SANDBOX, 0, IG_UseOldInGame_Event);
+	}
 	DynamicMenu_AddItem("Restart map...", ID_RESTART, 0, IG_UseOldInGame_Event);
 	DynamicMenu_AddItem("Disable items...", ID_ENABLEDITEMS, 0, IG_UseOldInGame_Event);
 	DynamicMenu_AddItem("Next map...", ID_NEXTMAP, 0, IG_UseOldInGame_Event);
 	}
 	if(cl_language.integer == 1){
+	if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
+		DynamicMenu_AddItem("Сохранить карту...", ID_SAVEMAPINPACK, 0, IG_UseOldInGame_Event);
+		DynamicMenu_AddItem("Удалить карту...", ID_DELETEMAPINPACK, 0, IG_UseOldInGame_Event);
+		DynamicMenu_AddItem("Очистить карту...", ID_CLEANMAPINPACK, 0, IG_UseOldInGame_Event);
+	}
+	if(DynamicMenu_ServerGametype() == GT_SANDBOX){
+		DynamicMenu_AddItem("Очистить карту...", ID_CLEANMAPINPACK_SANDBOX, 0, IG_UseOldInGame_Event);
+	}
 	DynamicMenu_AddItem("Рестарт карты...", ID_RESTART, 0, IG_UseOldInGame_Event);
 	DynamicMenu_AddItem("Отключение предметов...", ID_ENABLEDITEMS, 0, IG_UseOldInGame_Event);
 	DynamicMenu_AddItem("Следущая карта...", ID_NEXTMAP, 0, IG_UseOldInGame_Event);
@@ -1081,13 +1133,23 @@ static void IG_Exit_SubMenu( void )
 	DynamicMenu_SubMenuInit();
 
 	if(cl_language.integer == 0){
-	DynamicMenu_AddItem("Quit...", ID_QUIT, 0, IG_UseOldInGame_Event);
-	DynamicMenu_AddItem("Main Menu", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+		if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
+			DynamicMenu_AddItem("Exit", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+			DynamicMenu_AddItem("Exit and Save", ID_LEAVEARENA_SAVE, 0, IG_UseOldInGame_Event);
+		} else {
+			DynamicMenu_AddItem("Quit...", ID_QUIT, 0, IG_UseOldInGame_Event);
+			DynamicMenu_AddItem("Main Menu", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+		}
 	}
 
 	if(cl_language.integer == 1){
-	DynamicMenu_AddItem("Выход...", ID_QUIT, 0, IG_UseOldInGame_Event);
-	DynamicMenu_AddItem("Главное Меню", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+		if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
+			DynamicMenu_AddItem("Выйти", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+			DynamicMenu_AddItem("Выйти и Сохранить", ID_LEAVEARENA_SAVE, 0, IG_UseOldInGame_Event);
+		} else {
+			DynamicMenu_AddItem("Выход...", ID_QUIT, 0, IG_UseOldInGame_Event);
+			DynamicMenu_AddItem("Главное Меню", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
+		}
 	}
 
 	DynamicMenu_FinishSubMenuInit();
@@ -1596,7 +1658,7 @@ static void DM_TeamList_SubMenu( void )
 	DynamicMenu_SubMenuInit();
 
 	DynamicMenu_AddItem("me", 0, 0, DM_BotPlayerTarget_Event);
-	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX ){
+	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR ){
 	DynamicMenu_AddListOfPlayers(PT_ALL, 0, DM_BotPlayerTarget_Event);
 	} else {
 	DynamicMenu_AddListOfPlayers(PT_FRIENDLY|PT_EXCLUDEGRANDPARENT, 0, DM_BotPlayerTarget_Event);	
@@ -1671,7 +1733,7 @@ DM_EnemyList_SubMenu
 static void DM_EnemyList_SubMenu( void )
 {
 	DynamicMenu_SubMenuInit();
-	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX ){
+	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR ){
 	DynamicMenu_AddListOfPlayers(PT_ALL, 0, DM_BotPlayerTarget_Event);
 	} else {
 	DynamicMenu_AddListOfPlayers(PT_ENEMY, 0, DM_BotPlayerTarget_Event);	
@@ -1799,7 +1861,7 @@ static void BotCommand_InitPrimaryMenu( void )
 	if(cl_language.integer == 0){
 	DynamicMenu_AddItem("Close!", 0, 0, DM_Close_Event);
 	DynamicMenu_AddItem("Everyone", 0, DM_CommandList_SubMenu, 0);
-	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX ){
+	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR ){
 	DynamicMenu_AddListOfPlayers(PT_ALL, DM_CommandList_SubMenu, 0);
 	} else {
 	DynamicMenu_AddListOfPlayers(PT_FRIENDLY|PT_BOTONLY, DM_CommandList_SubMenu, 0);		
@@ -1810,7 +1872,7 @@ static void BotCommand_InitPrimaryMenu( void )
 	if(cl_language.integer == 1){
 	DynamicMenu_AddItem("Закрыть!", 0, 0, DM_Close_Event);
 	DynamicMenu_AddItem("Everyone", 0, DM_CommandList_SubMenu, 0);
-	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX ){
+	if ( DynamicMenu_ServerGametype() == GT_FFA || DynamicMenu_ServerGametype() == GT_LMS || DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR ){
 	DynamicMenu_AddListOfPlayers(PT_ALL, DM_CommandList_SubMenu, 0);
 	} else {
 	DynamicMenu_AddListOfPlayers(PT_FRIENDLY|PT_BOTONLY, DM_CommandList_SubMenu, 0);		

@@ -155,6 +155,19 @@ char* 			entity_items[] = {
 	"holdable_key_red",
 	"holdable_key_silver",
 	"holdable_key_yellow",
+	"team_CTF_redflag",
+	"team_CTF_blueflag",
+	"team_CTF_neutralflag",
+	//Editor things
+	"info_player_deathmatch",
+	"info_player_dd",
+	"info_player_dd_red",
+	"info_player_dd_blue",
+	"team_CTF_redplayer",
+	"team_CTF_blueplayer",
+	"team_CTF_redspawn",
+	"team_CTF_bluespawn",
+	"misc_teleporter_dest",
 	0
 };
 
@@ -273,13 +286,13 @@ SandboxMain_SaveChanges
 static void SandboxMain_SaveChanges( void ) {
 	//save cvars
 	trap_Cvar_Set( "sb_classnum_view", "none" );
-	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < 0){
+	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < TL_CREATE){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_spawnpreset.string, tool_spawnpreset_arg(1), tool_spawnpreset_arg(2), tool_spawnpreset_arg(3), tool_spawnpreset_arg(4), MODIF_LIST) );
 	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 	trap_Cvar_Set( "sb_classnum_view", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue] );
 	trap_Cvar_Set( "sb_texturename", s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue] );
 	}
-	if(trap_Cvar_VariableValue("toolgun_tool") >= 0){
+	if(trap_Cvar_VariableValue("toolgun_tool") >= TL_CREATE){
 	if(uis.sb_tab == STAB_ENTITIES){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(spawn_preset.string, s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.priv.curvalue, s_sandboxmain.grid.field.buffer, "0") );
 	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
@@ -316,18 +329,26 @@ static void SandboxMain_SaveChanges( void ) {
 	trap_Cvar_Set( "toolgun_mod16", s_sandboxmain.modif[15].field.buffer );
 	trap_Cvar_Set( "toolgun_mod17", s_sandboxmain.modif[16].field.buffer );
 	trap_Cvar_Set( "toolgun_mod18", s_sandboxmain.modif[17].field.buffer );
-	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < 0){
-	if(trap_Cvar_VariableValue("toolgun_tool") == 1){
+	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < TL_CREATE){
+	if(trap_Cvar_VariableValue("toolgun_tool") == TL_MATERIAL){
 	trap_Cvar_Set( "toolgun_mod1", s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue]);
 	Q_strncpyz( s_sandboxmain.modif[0].field.buffer, s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue], sizeof(s_sandboxmain.modif[0].field.buffer) );
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_modifypreset.string, MODIF_LIST) );
 	return;
 	}
-	if(trap_Cvar_VariableValue("toolgun_tool") == 3){
+	if(trap_Cvar_VariableValue("toolgun_tool") == TL_MODEL){
 	trap_Cvar_Set( "toolgun_mod1", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]));
 	Q_strncpyz( s_sandboxmain.modif[0].field.buffer, va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]), sizeof(s_sandboxmain.modif[0].field.buffer) );
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_modifypreset.string, MODIF_LIST) );
 	return;
+	}
+	}
+	if(uis.sb_tab == STAB_ENTITIES){
+	if(trap_Cvar_VariableValue("toolgun_tool") == TL_REPLACEITEM){
+		trap_Cvar_Set( "toolgun_mod1", va("%s", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue]));
+		Q_strncpyz( s_sandboxmain.modif[0].field.buffer, va("%s", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue]), sizeof(s_sandboxmain.modif[0].field.buffer) );
+		trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_modifypreset.string, MODIF_LIST) );
+		return;
 	}
 	}
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_modifypreset.string, MODIF_LIST) );
@@ -860,7 +881,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.classlist.generic.y		= 70;
 	s_sandboxmain.classlist.width			= 39/6;
 	s_sandboxmain.classlist.height			= 8;
-	s_sandboxmain.classlist.numitems		= 70;
+	s_sandboxmain.classlist.numitems		= 0;
 	s_sandboxmain.classlist.itemnames		= (const char **)s_sandboxmain.classeslist;
 	s_sandboxmain.classlist.color			= s_sandboxmain_color1;
 	//y += 20;
@@ -954,7 +975,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.generic.y		= 70;
 	s_sandboxmain.list.width			= 39/6;
 	s_sandboxmain.list.height			= 8;
-	s_sandboxmain.list.numitems			= 62;
+	s_sandboxmain.list.numitems			= 0;
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.item_itemslist;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
@@ -1389,13 +1410,15 @@ if(uis.sb_tab == STAB_ADDONS){
 }
 
 	if(uis.sb_tab == STAB_ITEMS){
-		for (i = 0; i < 62; i++) {
+		for (i = 0; item_items[i] != 0; i++) {
 			s_sandboxmain.list.itemnames[i] = item_items[i];
+			s_sandboxmain.list.numitems += 1;
 		}
 	}
 	if(uis.sb_tab == STAB_ENTITIES){
-		for (i = 0; i < 70; i++) {
+		for (i = 0; entity_items[i] != 0; i++) {
 			s_sandboxmain.classlist.itemnames[i] = entity_items[i];
+			s_sandboxmain.classlist.numitems += 1;
 		}
 	}
 	if(uis.sb_tab == STAB_NPC){
@@ -1503,7 +1526,7 @@ UI_SandboxMainMenu
 ===============
 */
 void UI_SandboxMainMenu( void ) {
-	if(DynamicMenu_ServerGametype() == GT_SANDBOX){
+	if(DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR){
 	if(!uis.sb_tab){ uis.sb_tab = 1;}
 	SandboxMain_MenuInit();
 	UI_PushMenu ( &s_sandboxmain.menu );

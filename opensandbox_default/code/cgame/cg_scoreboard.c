@@ -72,11 +72,11 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade 
 
 	// draw the handicap or bot skill marker (unless player has flag)
 	if ( ci->powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_FREE, qfalse );
+		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_FREE );
 	} else if ( ci->powerups & ( 1 << PW_REDFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_RED, qfalse );
+		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_RED );
 	} else if ( ci->powerups & ( 1 << PW_BLUEFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_BLUE, qfalse );
+		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_BLUE );
 	} else {
 		// draw the wins / losses
 		if ( cgs.gametype == GT_TOURNAMENT ) {

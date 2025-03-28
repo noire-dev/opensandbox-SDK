@@ -43,381 +43,381 @@
 // versions of the browser
 
 static const char* saveparam_list[] = {
-"gui_gametype", "gui_anticheatengine", "gui_inactivity", "gui_allowmaxrate",
-"gui_maxrate", "gui_allowpass","gui_password", "gui_allowvote",
-"gui_allowdownload", "gui_smoothclients", "gui_pmove_fixed",
-"gui_pmove_msec", "gui_syncclients", "gui_minPing", "gui_maxPing",
-"gui_allowMinPing", "gui_allowMaxPing", "gui_gravity", "gui_jumpheight", "gui_knockback",
-"gui_quadfactor", "gui_netport", "gui_svfps", "gui_allowprivateclients",
-"gui_privateclients", "gui_privatepassword", "gui_strictAuth",
-"gui_lanForceRate", 
-"gui_maxEntities",
-"gui_singleskill",
-"gui_extendedsandbox",
-"gui_damageModifier",
-"gui_elimination",
-"gui_obeliskHealth",
-"gui_obeliskRegenPeriod",
-"gui_obeliskRegenAmount",
-"gui_obeliskRespawnDelay",
-"gui_cubeTimeout",
-"gui_flagrespawn",
-"gui_weaponTeamRespawn",
-"gui_elimination_ctf_oneway",
-"gui_elimination_selfdamage",
-"gui_elimination_roundtime",
-"gui_elimination_warmup",
-"gui_elimination_activewarmup",
-"gui_lms_lives",
-"gui_lms_mode",
-"gui_accelerate",
-"gui_spectatorspeed",
-"gui_speed",
-"gui_gravity",
-"gui_gravityModifier",
-"gui_knockback",
-"gui_noplayerclip",
-"gui_jumpheight",
-"gui_regenarmor",
-"gui_ammolimit",
-"gui_quadfactor",
-"gui_respawntime",
-"gui_forcerespawn",
-"gui_vampire",
-"gui_vampire_max_health",
-"gui_regen",
-"gui_nextbot_speed",
-"gui_droppeditemtime",
-"gui_autoflagreturn",
-"gui_armorprotect",
-"gui_respawnwait",
-"gui_speedfactor",
-"gui_scoutspeedfactor",
-"gui_scoutfirespeed",
-"gui_scoutdamagefactor",
-"gui_scoutgravitymodifier",
-"gui_scout_infammo",
-"gui_scouthealthmodifier",
-"gui_doublerfirespeed",
-"gui_doublerdamagefactor",
-"gui_doublerspeedfactor",
-"gui_doublergravitymodifier",
-"gui_doubler_infammo",
-"gui_doublerhealthmodifier",
-"gui_guardhealthmodifier",
-"gui_guardfirespeed",
-"gui_guarddamagefactor",
-"gui_guardspeedfactor",
-"gui_guardgravitymodifier",
-"gui_guard_infammo",
-"gui_ammoregenfirespeed",
-"gui_ammoregen_infammo",
-"gui_ammoregendamagefactor",
-"gui_ammoregenspeedfactor",
-"gui_ammoregengravitymodifier",
-"gui_ammoregenhealthmodifier",
-"gui_teamred_speed",
-"gui_teamred_gravityModifier",
-"gui_teamred_firespeed",
-"gui_teamred_damage",
-"gui_teamred_infammo",
-"gui_teamred_respawnwait",
-"gui_teamred_pickupitems",
-"gui_teamblue_speed",
-"gui_teamblue_gravityModifier",
-"gui_teamblue_firespeed",
-"gui_teamblue_damage",
-"gui_teamblue_infammo",
-"gui_teamblue_respawnwait",
-"gui_teamblue_pickupitems",
-"gui_elimination_blue_respawn",
-"gui_elimination_red_respawn",
-"gui_bluespawn_health",
-"gui_bluespawn_armor",
-"gui_bluespawn_grapple",
-"gui_bluespawn_gauntlet",
-"gui_bluespawn_machinegun",
-"gui_bluespawn_shotgun",
-"gui_bluespawn_grenade",
-"gui_bluespawn_rocket",
-"gui_bluespawn_railgun",
-"gui_bluespawn_lightning",
-"gui_bluespawn_plasmagun",
-"gui_bluespawn_bfg",
-"gui_bluespawn_chain",
-"gui_bluespawn_mine",
-"gui_bluespawn_nail",
-"gui_bluespawn_flame",
-"gui_bluespawn_antimatter",
-"gui_bluespawn_quad",
-"gui_bluespawn_haste",
-"gui_bluespawn_bsuit",
-"gui_bluespawn_invis",
-"gui_bluespawn_regen",
-"gui_bluespawn_flight",
-"gui_bluespawn_items",
-"gui_bluespawn_holdable",
-"gui_redspawn_health",
-"gui_redspawn_armor",
-"gui_redspawn_grapple",
-"gui_redspawn_gauntlet",
-"gui_redspawn_machinegun",
-"gui_redspawn_shotgun",
-"gui_redspawn_grenade",
-"gui_redspawn_rocket",
-"gui_redspawn_railgun",
-"gui_redspawn_lightning",
-"gui_redspawn_plasmagun",
-"gui_redspawn_bfg",
-"gui_redspawn_chain",
-"gui_redspawn_mine",
-"gui_redspawn_nail",
-"gui_redspawn_flame",
-"gui_redspawn_antimatter",
-"gui_redspawn_quad",
-"gui_redspawn_haste",
-"gui_redspawn_bsuit",
-"gui_redspawn_invis",
-"gui_redspawn_regen",
-"gui_redspawn_flight",
-"gui_redspawn_holdable",
-"gui_elimination_items",
-"gui_overlay",
-"gui_randomItems",
-"gui_slickmove",
-"gui_spawnprotect",
-"gui_elimination_lockspectator",
-"gui_awardpushing",
-"gui_randomteleport",
-"gui_falldamagesmall",
-"gui_falldamagebig",
-"gui_waterdamage",
-"gui_lavadamage",
-"gui_slimedamage",
-"gui_drowndamage",
-"gui_invulinf",
-"gui_invulmove",
-"gui_invultime",
-"gui_kamikazeinf",
-"gui_portalinf",
-"gui_portaltimeout",
-"gui_portalhealth",
-"gui_teleporterinf",
-"gui_medkitinf",
-"gui_medkitlimit",
-"gui_medkitmodifier",
-"gui_fasthealthregen",
-"gui_slowhealthregen",
-"gui_hastefirespeed",
-"gui_quadtime",
-"gui_bsuittime",
-"gui_hastetime",
-"gui_invistime",
-"gui_regentime",
-"gui_flighttime",
-"gui_armorrespawn",
-"gui_healthrespawn",
-"gui_ammorespawn",
-"gui_holdablerespawn",
-"gui_megahealthrespawn",
-"gui_poweruprespawn",
-"gui_weaponrespawn",
-"gui_selectedmod",
-
-// Крюк
-"gui_ghspeed",
-"gui_ghtimeout",
-// Пила
-"gui_gdelay",
-"gui_gdamage",
-"gui_grange",
-"gui_gknockback",
-// Автомат
-"gui_mgammocount",
-"gui_mgweaponcount",
-"gui_mgdelay",
-"gui_mgdamage",
-"gui_mgspread",
-"gui_mgexplode",
-"gui_mgsdamage",
-"gui_mgsradius",
-"gui_mgvampire",
-"gui_mginf",
-"gui_mgknockback",
-// Дробовик
-"gui_sgammocount",
-"gui_sgweaponcount",
-"gui_sgdelay",
-"gui_sgdamage",
-"gui_sgspread",
-"gui_sgexplode",
-"gui_sgsdamage",
-"gui_sgsradius",
-"gui_sgcount",
-"gui_sgvampire",
-"gui_sginf",
-"gui_sgknockback",
-// Гранаты
-"gui_glammocount",
-"gui_glweaponcount",
-"gui_gldelay",
-"gui_glspeed",
-"gui_glbounce",
-"gui_glgravity",
-"gui_gltimeout",
-"gui_glsradius",
-"gui_glsdamage",
-"gui_gldamage",
-"gui_glvampire",
-"gui_glinf",
-"gui_glbouncemodifier",
-"gui_glknockback",
-"gui_glhoming",
-"gui_glguided",
-// Ракеты
-"gui_rlammocount",
-"gui_rlweaponcount",
-"gui_rldelay",
-"gui_rlspeed",
-"gui_rlbounce",
-"gui_rlgravity",
-"gui_rltimeout",
-"gui_rlsradius",
-"gui_rlsdamage",
-"gui_rldamage",
-"gui_rlvampire",
-"gui_rlinf",
-"gui_rlbouncemodifier",
-"gui_rlknockback",
-"gui_rlhoming",
-"gui_rlguided",
-// Молния
-"gui_lgammocount",
-"gui_lgweaponcount",
-"gui_lgrange",
-"gui_lgdelay",
-"gui_lgdamage",
-"gui_lgvampire",
-"gui_lgexplode",
-"gui_lgsdamage",
-"gui_lgsradius",
-"gui_lginf",
-"gui_lgknockback",
-// Рэйлган
-"gui_rgammocount",
-"gui_rgweaponcount",
-"gui_rgdelay",
-"gui_rgdamage",
-"gui_rgvampire",
-"gui_rginf",
-"gui_rgknockback",
-// Плазмаган
-"gui_pgammocount",
-"gui_pgweaponcount",
-"gui_pgdelay",
-"gui_pgspeed",
-"gui_pgbounce",
-"gui_pggravity",
-"gui_pgtimeout",
-"gui_pgsradius",
-"gui_pgsdamage",
-"gui_pgdamage",
-"gui_pgvampire",
-"gui_pginf",
-"gui_pgbouncemodifier",
-"gui_pgknockback",
-"gui_pghoming",
-"gui_pgguided",
-// Бфг
-"gui_bfgammocount",
-"gui_bfgweaponcount",
-"gui_bfgdelay",
-"gui_bfgspeed",
-"gui_bfgbounce",
-"gui_bfggravity",
-"gui_bfgtimeout",
-"gui_bfgsradius",
-"gui_bfgsdamage",
-"gui_bfgdamage",
-"gui_bfgvampire",
-"gui_bfginf",
-"gui_bfgbouncemodifier",
-"gui_bfgknockback",
-"gui_bfghoming",
-"gui_bfgguided",
-// Гвоздомёт
-"gui_ngammocount",
-"gui_ngweaponcount",
-"gui_ngdelay",
-"gui_ngspeed",
-"gui_ngbounce",
-"gui_nggravity",
-"gui_ngtimeout",
-"gui_ngcount",
-"gui_ngspread",
-"gui_ngdamage",
-"gui_ngrandom",
-"gui_ngvampire",
-"gui_nginf",
-"gui_ngbouncemodifier",
-"gui_ngknockback",
-"gui_nghoming",
-"gui_ngguided",
-// Мины
-"gui_plammocount",
-"gui_plweaponcount",
-"gui_pldelay",
-"gui_plspeed",
-"gui_plgravity",
-"gui_pltimeout",
-"gui_plsradius",
-"gui_plsdamage",
-"gui_pldamage",
-"gui_plvampire",
-"gui_plinf",
-"gui_plknockback",
-// Пулемёт
-"gui_cgammocount",
-"gui_cgweaponcount",
-"gui_cgdelay",
-"gui_cgspread",
-"gui_cgdamage",
-"gui_cgvampire",
-"gui_cginf",
-"gui_cgknockback",
-// Огнемёт
-"gui_ftammocount",
-"gui_ftweaponcount",
-"gui_ftdelay",
-"gui_ftspeed",
-"gui_ftbounce",
-"gui_ftgravity",
-"gui_fttimeout",
-"gui_ftsradius",
-"gui_ftsdamage",
-"gui_ftdamage",
-"gui_ftvampire",
-"gui_ftinf",
-"gui_ftbouncemodifier",
-"gui_ftknockback",
-"gui_fthoming",
-"gui_ftguided",
-// Антиматтер
-"gui_amweaponcount",
-"gui_amdelay",
-"gui_amspeed",
-"gui_ambounce",
-"gui_amgravity",
-"gui_amtimeout",
-"gui_amsradius",
-"gui_amsdamage",
-"gui_amdamage",
-"gui_amvampire",
-"gui_aminf",
-"gui_ambouncemodifier",
-"gui_amknockback",
-"gui_amhoming",
-"gui_amguided",
+	"gui_gametype", "gui_anticheatengine", "gui_inactivity", "gui_allowmaxrate",
+	"gui_maxrate", "gui_entitypack","gui_password", "gui_allowvote",
+	"gui_allowdownload", "gui_smoothclients", "gui_pmove_fixed",
+	"gui_pmove_msec", "gui_syncclients", "gui_minPing", "gui_maxPing",
+	"gui_allowMinPing", "gui_allowMaxPing", "gui_gravity", "gui_jumpheight", "gui_knockback",
+	"gui_quadfactor", "gui_netport", "gui_svfps", "gui_allowprivateclients",
+	"gui_privateclients", "gui_privatepassword", "gui_strictAuth",
+	"gui_lanForceRate", 
+	"gui_maxEntities",
+	"gui_singleskill",
+	"gui_extendedsandbox",
+	"gui_damageModifier",
+	"gui_elimination",
+	"gui_obeliskHealth",
+	"gui_obeliskRegenPeriod",
+	"gui_obeliskRegenAmount",
+	"gui_obeliskRespawnDelay",
+	"gui_cubeTimeout",
+	"gui_flagrespawn",
+	"gui_weaponTeamRespawn",
+	"gui_elimination_ctf_oneway",
+	"gui_elimination_selfdamage",
+	"gui_elimination_roundtime",
+	"gui_elimination_warmup",
+	"gui_elimination_activewarmup",
+	"gui_lms_lives",
+	"gui_lms_mode",
+	"gui_accelerate",
+	"gui_spectatorspeed",
+	"gui_speed",
+	"gui_gravity",
+	"gui_gravityModifier",
+	"gui_knockback",
+	"gui_noplayerclip",
+	"gui_jumpheight",
+	"gui_regenarmor",
+	"gui_ammolimit",
+	"gui_quadfactor",
+	"gui_respawntime",
+	"gui_forcerespawn",
+	"gui_vampire",
+	"gui_vampire_max_health",
+	"gui_regen",
+	"gui_nextbot_speed",
+	"gui_droppeditemtime",
+	"gui_autoflagreturn",
+	"gui_armorprotect",
+	"gui_respawnwait",
+	"gui_speedfactor",
+	"gui_scoutspeedfactor",
+	"gui_scoutfirespeed",
+	"gui_scoutdamagefactor",
+	"gui_scoutgravitymodifier",
+	"gui_scout_infammo",
+	"gui_scouthealthmodifier",
+	"gui_doublerfirespeed",
+	"gui_doublerdamagefactor",
+	"gui_doublerspeedfactor",
+	"gui_doublergravitymodifier",
+	"gui_doubler_infammo",
+	"gui_doublerhealthmodifier",
+	"gui_guardhealthmodifier",
+	"gui_guardfirespeed",
+	"gui_guarddamagefactor",
+	"gui_guardspeedfactor",
+	"gui_guardgravitymodifier",
+	"gui_guard_infammo",
+	"gui_ammoregenfirespeed",
+	"gui_ammoregen_infammo",
+	"gui_ammoregendamagefactor",
+	"gui_ammoregenspeedfactor",
+	"gui_ammoregengravitymodifier",
+	"gui_ammoregenhealthmodifier",
+	"gui_teamred_speed",
+	"gui_teamred_gravityModifier",
+	"gui_teamred_firespeed",
+	"gui_teamred_damage",
+	"gui_teamred_infammo",
+	"gui_teamred_respawnwait",
+	"gui_teamred_pickupitems",
+	"gui_teamblue_speed",
+	"gui_teamblue_gravityModifier",
+	"gui_teamblue_firespeed",
+	"gui_teamblue_damage",
+	"gui_teamblue_infammo",
+	"gui_teamblue_respawnwait",
+	"gui_teamblue_pickupitems",
+	"gui_elimination_blue_respawn",
+	"gui_elimination_red_respawn",
+	"gui_bluespawn_health",
+	"gui_bluespawn_armor",
+	"gui_bluespawn_grapple",
+	"gui_bluespawn_gauntlet",
+	"gui_bluespawn_machinegun",
+	"gui_bluespawn_shotgun",
+	"gui_bluespawn_grenade",
+	"gui_bluespawn_rocket",
+	"gui_bluespawn_railgun",
+	"gui_bluespawn_lightning",
+	"gui_bluespawn_plasmagun",
+	"gui_bluespawn_bfg",
+	"gui_bluespawn_chain",
+	"gui_bluespawn_mine",
+	"gui_bluespawn_nail",
+	"gui_bluespawn_flame",
+	"gui_bluespawn_antimatter",
+	"gui_bluespawn_quad",
+	"gui_bluespawn_haste",
+	"gui_bluespawn_bsuit",
+	"gui_bluespawn_invis",
+	"gui_bluespawn_regen",
+	"gui_bluespawn_flight",
+	"gui_bluespawn_items",
+	"gui_bluespawn_holdable",
+	"gui_redspawn_health",
+	"gui_redspawn_armor",
+	"gui_redspawn_grapple",
+	"gui_redspawn_gauntlet",
+	"gui_redspawn_machinegun",
+	"gui_redspawn_shotgun",
+	"gui_redspawn_grenade",
+	"gui_redspawn_rocket",
+	"gui_redspawn_railgun",
+	"gui_redspawn_lightning",
+	"gui_redspawn_plasmagun",
+	"gui_redspawn_bfg",
+	"gui_redspawn_chain",
+	"gui_redspawn_mine",
+	"gui_redspawn_nail",
+	"gui_redspawn_flame",
+	"gui_redspawn_antimatter",
+	"gui_redspawn_quad",
+	"gui_redspawn_haste",
+	"gui_redspawn_bsuit",
+	"gui_redspawn_invis",
+	"gui_redspawn_regen",
+	"gui_redspawn_flight",
+	"gui_redspawn_holdable",
+	"gui_elimination_items",
+	"gui_overlay",
+	"gui_randomItems",
+	"gui_slickmove",
+	"gui_spawnprotect",
+	"gui_elimination_lockspectator",
+	"gui_awardpushing",
+	"gui_randomteleport",
+	"gui_falldamagesmall",
+	"gui_falldamagebig",
+	"gui_waterdamage",
+	"gui_lavadamage",
+	"gui_slimedamage",
+	"gui_drowndamage",
+	"gui_invulinf",
+	"gui_invulmove",
+	"gui_invultime",
+	"gui_kamikazeinf",
+	"gui_portalinf",
+	"gui_portaltimeout",
+	"gui_portalhealth",
+	"gui_teleporterinf",
+	"gui_medkitinf",
+	"gui_medkitlimit",
+	"gui_medkitmodifier",
+	"gui_fasthealthregen",
+	"gui_slowhealthregen",
+	"gui_hastefirespeed",
+	"gui_quadtime",
+	"gui_bsuittime",
+	"gui_hastetime",
+	"gui_invistime",
+	"gui_regentime",
+	"gui_flighttime",
+	"gui_armorrespawn",
+	"gui_healthrespawn",
+	"gui_ammorespawn",
+	"gui_holdablerespawn",
+	"gui_megahealthrespawn",
+	"gui_poweruprespawn",
+	"gui_weaponrespawn",
+	"gui_selectedmod",
+	
+	// Крюк
+	"gui_ghspeed",
+	"gui_ghtimeout",
+	// Пила
+	"gui_gdelay",
+	"gui_gdamage",
+	"gui_grange",
+	"gui_gknockback",
+	// Автомат
+	"gui_mgammocount",
+	"gui_mgweaponcount",
+	"gui_mgdelay",
+	"gui_mgdamage",
+	"gui_mgspread",
+	"gui_mgexplode",
+	"gui_mgsdamage",
+	"gui_mgsradius",
+	"gui_mgvampire",
+	"gui_mginf",
+	"gui_mgknockback",
+	// Дробовик
+	"gui_sgammocount",
+	"gui_sgweaponcount",
+	"gui_sgdelay",
+	"gui_sgdamage",
+	"gui_sgspread",
+	"gui_sgexplode",
+	"gui_sgsdamage",
+	"gui_sgsradius",
+	"gui_sgcount",
+	"gui_sgvampire",
+	"gui_sginf",
+	"gui_sgknockback",
+	// Гранаты
+	"gui_glammocount",
+	"gui_glweaponcount",
+	"gui_gldelay",
+	"gui_glspeed",
+	"gui_glbounce",
+	"gui_glgravity",
+	"gui_gltimeout",
+	"gui_glsradius",
+	"gui_glsdamage",
+	"gui_gldamage",
+	"gui_glvampire",
+	"gui_glinf",
+	"gui_glbouncemodifier",
+	"gui_glknockback",
+	"gui_glhoming",
+	"gui_glguided",
+	// Ракеты
+	"gui_rlammocount",
+	"gui_rlweaponcount",
+	"gui_rldelay",
+	"gui_rlspeed",
+	"gui_rlbounce",
+	"gui_rlgravity",
+	"gui_rltimeout",
+	"gui_rlsradius",
+	"gui_rlsdamage",
+	"gui_rldamage",
+	"gui_rlvampire",
+	"gui_rlinf",
+	"gui_rlbouncemodifier",
+	"gui_rlknockback",
+	"gui_rlhoming",
+	"gui_rlguided",
+	// Молния
+	"gui_lgammocount",
+	"gui_lgweaponcount",
+	"gui_lgrange",
+	"gui_lgdelay",
+	"gui_lgdamage",
+	"gui_lgvampire",
+	"gui_lgexplode",
+	"gui_lgsdamage",
+	"gui_lgsradius",
+	"gui_lginf",
+	"gui_lgknockback",
+	// Рэйлган
+	"gui_rgammocount",
+	"gui_rgweaponcount",
+	"gui_rgdelay",
+	"gui_rgdamage",
+	"gui_rgvampire",
+	"gui_rginf",
+	"gui_rgknockback",
+	// Плазмаган
+	"gui_pgammocount",
+	"gui_pgweaponcount",
+	"gui_pgdelay",
+	"gui_pgspeed",
+	"gui_pgbounce",
+	"gui_pggravity",
+	"gui_pgtimeout",
+	"gui_pgsradius",
+	"gui_pgsdamage",
+	"gui_pgdamage",
+	"gui_pgvampire",
+	"gui_pginf",
+	"gui_pgbouncemodifier",
+	"gui_pgknockback",
+	"gui_pghoming",
+	"gui_pgguided",
+	// Бфг
+	"gui_bfgammocount",
+	"gui_bfgweaponcount",
+	"gui_bfgdelay",
+	"gui_bfgspeed",
+	"gui_bfgbounce",
+	"gui_bfggravity",
+	"gui_bfgtimeout",
+	"gui_bfgsradius",
+	"gui_bfgsdamage",
+	"gui_bfgdamage",
+	"gui_bfgvampire",
+	"gui_bfginf",
+	"gui_bfgbouncemodifier",
+	"gui_bfgknockback",
+	"gui_bfghoming",
+	"gui_bfgguided",
+	// Гвоздомёт
+	"gui_ngammocount",
+	"gui_ngweaponcount",
+	"gui_ngdelay",
+	"gui_ngspeed",
+	"gui_ngbounce",
+	"gui_nggravity",
+	"gui_ngtimeout",
+	"gui_ngcount",
+	"gui_ngspread",
+	"gui_ngdamage",
+	"gui_ngrandom",
+	"gui_ngvampire",
+	"gui_nginf",
+	"gui_ngbouncemodifier",
+	"gui_ngknockback",
+	"gui_nghoming",
+	"gui_ngguided",
+	// Мины
+	"gui_plammocount",
+	"gui_plweaponcount",
+	"gui_pldelay",
+	"gui_plspeed",
+	"gui_plgravity",
+	"gui_pltimeout",
+	"gui_plsradius",
+	"gui_plsdamage",
+	"gui_pldamage",
+	"gui_plvampire",
+	"gui_plinf",
+	"gui_plknockback",
+	// Пулемёт
+	"gui_cgammocount",
+	"gui_cgweaponcount",
+	"gui_cgdelay",
+	"gui_cgspread",
+	"gui_cgdamage",
+	"gui_cgvampire",
+	"gui_cginf",
+	"gui_cgknockback",
+	// Огнемёт
+	"gui_ftammocount",
+	"gui_ftweaponcount",
+	"gui_ftdelay",
+	"gui_ftspeed",
+	"gui_ftbounce",
+	"gui_ftgravity",
+	"gui_fttimeout",
+	"gui_ftsradius",
+	"gui_ftsdamage",
+	"gui_ftdamage",
+	"gui_ftvampire",
+	"gui_ftinf",
+	"gui_ftbouncemodifier",
+	"gui_ftknockback",
+	"gui_fthoming",
+	"gui_ftguided",
+	// Антиматтер
+	"gui_amweaponcount",
+	"gui_amdelay",
+	"gui_amspeed",
+	"gui_ambounce",
+	"gui_amgravity",
+	"gui_amtimeout",
+	"gui_amsradius",
+	"gui_amsdamage",
+	"gui_amdamage",
+	"gui_amvampire",
+	"gui_aminf",
+	"gui_ambouncemodifier",
+	"gui_amknockback",
+	"gui_amhoming",
+	"gui_amguided",
 
 	// gui_<gametype>_*
 	"*fragtype", "*timetype", "*customfraglimits", "*customcapturelimits",
@@ -449,10 +449,8 @@ static const int botChange_frequency[BOTCHANGE_COUNT + 1] = {
 // internal Q3 exe script buffer is limited to 16K in size
 // so there's no benefit in increasing our script buffer
 #define SCRIPT_BUFFER (1024 * 128 - 1)
-
 #define SERVER_ADDBOT "gui_ab"
 #define SERVER_KICKBOT "gui_kb"
-
 
 typedef struct serverexec_s {
 	char server_script[SCRIPT_BUFFER];
@@ -487,18 +485,10 @@ typedef struct serverexec_s {
 } serverexec_t;
 
 static serverexec_t s_serverexec;
-
-
 static int addbot_primes[] = { 7, 11, 17, 23 };
 static int num_addbot_primes = sizeof (addbot_primes)/sizeof(addbot_primes[0]);
-
 static char lasterror_text[MAX_STATUSBAR_TEXT] = {'\0'};
-
-
 static char* bot_teamname[] = { "blue", "red" };
-
-
-
 
 /*
 =============================================================================
@@ -507,9 +497,6 @@ WRITE SCRIPT *****
 
 =============================================================================
 */
-
-
-
 
 /*
 =================
@@ -525,7 +512,6 @@ static qboolean GUI_IsCaptureLimited(int type)
 
 	return qfalse;
 }
-
 
 /*
 =================
@@ -546,8 +532,6 @@ int Clamp_Random(int r)
 	return index;
 }
 
-
-
 /*
 =================
 AddScript
@@ -558,8 +542,6 @@ static void AddScript(const char* scriptLine)
 	Q_strcat(s_serverexec.server_script, SCRIPT_BUFFER, scriptLine);
 }
 
-
-
 /*
 =================
 StartServer_GetLastScriptError
@@ -569,8 +551,6 @@ const char* StartServer_GetLastScriptError( void )
 {
 	return lasterror_text;
 }
-
-
 
 /*
 =================
@@ -585,9 +565,6 @@ static void StartServer_PrintMessage( const char* error )
 	trap_Print( va(S_COLOR_RED"StartServer: %s", error));
 	Q_strncpyz(lasterror_text, error, MAX_STATUSBAR_TEXT);
 }
-
-
-
 
 /*
 =================
@@ -655,9 +632,6 @@ static qboolean StartServer_InitServerExec( void )
 	return qtrue;
 }
 
-
-
-
 /*
 =================
 StartServer_WriteServerParams
@@ -694,371 +668,371 @@ static qboolean StartServer_WriteServerParams( void )
 
 	AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forceRespawn));
 	//Noire.dev
-AddScript(va("set g_maxEntities %i\n", s_scriptdata.server.maxEntities));
-AddScript(va("set g_spSkill %i\n", s_scriptdata.server.singleskill));
-AddScript(va("set g_extendedsandbox %i\n", s_scriptdata.server.extendedsandbox));
-AddScript(va("set g_damageModifier  \"%s\"\n", s_scriptdata.server.damageModifier));
-AddScript(va("set cl_selectedmod  \"%s\"\n", s_scriptdata.server.selectedmod));
-AddScript(va("set g_elimination %i\n", s_scriptdata.server.elimination));
-AddScript(va("set g_obeliskHealth %i\n", s_scriptdata.server.obeliskHealth));
-AddScript(va("set g_obeliskRegenPeriod %i\n", s_scriptdata.server.obeliskRegenPeriod));
-AddScript(va("set g_obeliskRegenAmount %i\n", s_scriptdata.server.obeliskRegenAmount));
-AddScript(va("set g_obeliskRespawnDelay %i\n", s_scriptdata.server.obeliskRespawnDelay));
-AddScript(va("set g_cubeTimeout %i\n", s_scriptdata.server.cubeTimeout));
-AddScript(va("set g_flagrespawn %i\n", s_scriptdata.server.flagrespawn));
-AddScript(va("set g_weaponTeamRespawn %i\n", s_scriptdata.server.weaponTeamRespawn));
-AddScript(va("set elimination_ctf_oneway %i\n", s_scriptdata.server.elimination_ctf_oneway));
-AddScript(va("set elimination_selfdamage %i\n", s_scriptdata.server.elimination_selfdamage));
-AddScript(va("set elimination_roundtime %i\n", s_scriptdata.server.elimination_roundtime));
-AddScript(va("set elimination_warmup %i\n", s_scriptdata.server.elimination_warmup));
-AddScript(va("set elimination_activewarmup %i\n", s_scriptdata.server.elimination_activewarmup));
-AddScript(va("set g_lms_lives %i\n", s_scriptdata.server.lms_lives));
-AddScript(va("set g_lms_mode %i\n", s_scriptdata.server.lms_mode));
-AddScript(va("set g_accelerate %i\n", s_scriptdata.server.accelerate));
-AddScript(va("set g_spectatorspeed %i\n", s_scriptdata.server.spectatorspeed));
-AddScript(va("set g_speed %i\n", s_scriptdata.server.speed));
-AddScript(va("set g_gravity %i\n", s_scriptdata.server.gravity));
-AddScript(va("set g_gravityModifier  \"%s\"\n", s_scriptdata.server.gravityModifier));
-AddScript(va("set g_knockback %i\n", s_scriptdata.server.knockback));
-AddScript(va("set g_noplayerclip %i\n", s_scriptdata.server.noplayerclip));
-AddScript(va("set g_jumpheight %i\n", s_scriptdata.server.jumpheight));
-AddScript(va("set g_regenarmor %i\n", s_scriptdata.server.regenarmor));
-AddScript(va("set g_ammolimit %i\n", s_scriptdata.server.ammolimit));
-AddScript(va("set g_quadfactor  \"%s\"\n", s_scriptdata.server.quadfactor));
-AddScript(va("set g_respawntime %i\n", s_scriptdata.server.respawntime));
-AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forcerespawn));
-AddScript(va("set g_vampire  \"%s\"\n", s_scriptdata.server.vampire));
-AddScript(va("set g_vampire_max_health %i\n", s_scriptdata.server.vampire_max_health));
-AddScript(va("set g_regen %i\n", s_scriptdata.server.regen));
-AddScript(va("set g_nextbot_speed %s\n", s_scriptdata.server.nextbot_speed));
-AddScript(va("set g_droppeditemtime %i\n", s_scriptdata.server.droppeditemtime));
-AddScript(va("set g_autoflagreturn %i\n", s_scriptdata.server.autoflagreturn));
-AddScript(va("set g_armorprotect  \"%s\"\n", s_scriptdata.server.armorprotect));
-AddScript(va("set g_respawnwait %i\n", s_scriptdata.server.respawnwait));
-AddScript(va("set g_speedfactor  \"%s\"\n", s_scriptdata.server.speedfactor));
-AddScript(va("set g_scoutspeedfactor  \"%s\"\n", s_scriptdata.server.scoutspeedfactor));
-AddScript(va("set g_scoutfirespeed  \"%s\"\n", s_scriptdata.server.scoutfirespeed));
-AddScript(va("set g_scoutdamagefactor  \"%s\"\n", s_scriptdata.server.scoutdamagefactor));
-AddScript(va("set g_scoutgravitymodifier  \"%s\"\n", s_scriptdata.server.scoutgravitymodifier));
-AddScript(va("set g_scout_infammo %i\n", s_scriptdata.server.scout_infammo));
-AddScript(va("set g_scouthealthmodifier  \"%s\"\n", s_scriptdata.server.scouthealthmodifier));
-AddScript(va("set g_doublerfirespeed  \"%s\"\n", s_scriptdata.server.doublerfirespeed));
-AddScript(va("set g_doublerdamagefactor  \"%s\"\n", s_scriptdata.server.doublerdamagefactor));
-AddScript(va("set g_doublerspeedfactor  \"%s\"\n", s_scriptdata.server.doublerspeedfactor));
-AddScript(va("set g_doublergravitymodifier  \"%s\"\n", s_scriptdata.server.doublergravitymodifier));
-AddScript(va("set g_doubler_infammo %i\n", s_scriptdata.server.doubler_infammo));
-AddScript(va("set g_doublerhealthmodifier  \"%s\"\n", s_scriptdata.server.doublerhealthmodifier));
-AddScript(va("set g_guardhealthmodifier  \"%s\"\n", s_scriptdata.server.guardhealthmodifier));
-AddScript(va("set g_guardfirespeed  \"%s\"\n", s_scriptdata.server.guardfirespeed));
-AddScript(va("set g_guarddamagefactor  \"%s\"\n", s_scriptdata.server.guarddamagefactor));
-AddScript(va("set g_guardspeedfactor  \"%s\"\n", s_scriptdata.server.guardspeedfactor));
-AddScript(va("set g_guardgravitymodifier  \"%s\"\n", s_scriptdata.server.guardgravitymodifier));
-AddScript(va("set g_guard_infammo %i\n", s_scriptdata.server.guard_infammo));
-AddScript(va("set g_ammoregenfirespeed  \"%s\"\n", s_scriptdata.server.ammoregenfirespeed));
-AddScript(va("set g_ammoregen_infammo %i\n", s_scriptdata.server.ammoregen_infammo));
-AddScript(va("set g_ammoregendamagefactor  \"%s\"\n", s_scriptdata.server.ammoregendamagefactor));
-AddScript(va("set g_ammoregenspeedfactor  \"%s\"\n", s_scriptdata.server.ammoregenspeedfactor));
-AddScript(va("set g_ammoregengravitymodifier  \"%s\"\n", s_scriptdata.server.ammoregengravitymodifier));
-AddScript(va("set g_ammoregenhealthmodifier  \"%s\"\n", s_scriptdata.server.ammoregenhealthmodifier));
-AddScript(va("set g_teamred_speed %i\n", s_scriptdata.server.teamred_speed));
-AddScript(va("set g_teamred_gravityModifier  \"%s\"\n", s_scriptdata.server.teamred_gravityModifier));
-AddScript(va("set g_teamred_firespeed  \"%s\"\n", s_scriptdata.server.teamred_firespeed));
-AddScript(va("set g_teamred_damage  \"%s\"\n", s_scriptdata.server.teamred_damage));
-AddScript(va("set g_teamred_infammo %i\n", s_scriptdata.server.teamred_infammo));
-AddScript(va("set g_teamred_respawnwait %i\n", s_scriptdata.server.teamred_respawnwait));
-AddScript(va("set g_teamred_pickupitems %i\n", s_scriptdata.server.teamred_pickupitems));
-AddScript(va("set g_teamblue_speed %i\n", s_scriptdata.server.teamblue_speed));
-AddScript(va("set g_teamblue_gravityModifier  \"%s\"\n", s_scriptdata.server.teamblue_gravityModifier));
-AddScript(va("set g_teamblue_firespeed  \"%s\"\n", s_scriptdata.server.teamblue_firespeed));
-AddScript(va("set g_teamblue_damage  \"%s\"\n", s_scriptdata.server.teamblue_damage));
-AddScript(va("set g_teamblue_infammo %i\n", s_scriptdata.server.teamblue_infammo));
-AddScript(va("set g_teamblue_respawnwait %i\n", s_scriptdata.server.teamblue_respawnwait));
-AddScript(va("set g_teamblue_pickupitems %i\n", s_scriptdata.server.teamblue_pickupitems));
-AddScript(va("set g_elimination_blue_respawn %i\n", s_scriptdata.server.elimination_blue_respawn));
-AddScript(va("set g_elimination_red_respawn %i\n", s_scriptdata.server.elimination_red_respawn));
-AddScript(va("set g_bluespawn_health %i\n", s_scriptdata.server.bluespawn_health));
-AddScript(va("set g_bluespawn_armor %i\n", s_scriptdata.server.bluespawn_armor));
-AddScript(va("set g_bluespawn_grapple %i\n", s_scriptdata.server.bluespawn_grapple));
-AddScript(va("set g_bluespawn_gauntlet %i\n", s_scriptdata.server.bluespawn_gauntlet));
-AddScript(va("set g_bluespawn_machinegun %i\n", s_scriptdata.server.bluespawn_machinegun));
-AddScript(va("set g_bluespawn_shotgun %i\n", s_scriptdata.server.bluespawn_shotgun));
-AddScript(va("set g_bluespawn_grenade %i\n", s_scriptdata.server.bluespawn_grenade));
-AddScript(va("set g_bluespawn_rocket %i\n", s_scriptdata.server.bluespawn_rocket));
-AddScript(va("set g_bluespawn_railgun %i\n", s_scriptdata.server.bluespawn_railgun));
-AddScript(va("set g_bluespawn_lightning %i\n", s_scriptdata.server.bluespawn_lightning));
-AddScript(va("set g_bluespawn_plasmagun %i\n", s_scriptdata.server.bluespawn_plasmagun));
-AddScript(va("set g_bluespawn_bfg %i\n", s_scriptdata.server.bluespawn_bfg));
-AddScript(va("set g_bluespawn_chain %i\n", s_scriptdata.server.bluespawn_chain));
-AddScript(va("set g_bluespawn_mine %i\n", s_scriptdata.server.bluespawn_mine));
-AddScript(va("set g_bluespawn_nail %i\n", s_scriptdata.server.bluespawn_nail));
-AddScript(va("set g_bluespawn_flame %i\n", s_scriptdata.server.bluespawn_flame));
-AddScript(va("set g_bluespawn_antimatter %i\n", s_scriptdata.server.bluespawn_antimatter));
-AddScript(va("set g_bluespawn_quad %i\n", s_scriptdata.server.bluespawn_quad));
-AddScript(va("set g_bluespawn_haste %i\n", s_scriptdata.server.bluespawn_haste));
-AddScript(va("set g_bluespawn_bsuit %i\n", s_scriptdata.server.bluespawn_bsuit));
-AddScript(va("set g_bluespawn_invis %i\n", s_scriptdata.server.bluespawn_invis));
-AddScript(va("set g_bluespawn_regen %i\n", s_scriptdata.server.bluespawn_regen));
-AddScript(va("set g_bluespawn_flight %i\n", s_scriptdata.server.bluespawn_flight));
-AddScript(va("set g_bluespawn_holdable %i\n", s_scriptdata.server.bluespawn_holdable));
-AddScript(va("set g_redspawn_health %i\n", s_scriptdata.server.redspawn_health));
-AddScript(va("set g_redspawn_armor %i\n", s_scriptdata.server.redspawn_armor));
-AddScript(va("set g_redspawn_grapple %i\n", s_scriptdata.server.redspawn_grapple));
-AddScript(va("set g_redspawn_gauntlet %i\n", s_scriptdata.server.redspawn_gauntlet));
-AddScript(va("set g_redspawn_machinegun %i\n", s_scriptdata.server.redspawn_machinegun));
-AddScript(va("set g_redspawn_shotgun %i\n", s_scriptdata.server.redspawn_shotgun));
-AddScript(va("set g_redspawn_grenade %i\n", s_scriptdata.server.redspawn_grenade));
-AddScript(va("set g_redspawn_rocket %i\n", s_scriptdata.server.redspawn_rocket));
-AddScript(va("set g_redspawn_railgun %i\n", s_scriptdata.server.redspawn_railgun));
-AddScript(va("set g_redspawn_lightning %i\n", s_scriptdata.server.redspawn_lightning));
-AddScript(va("set g_redspawn_plasmagun %i\n", s_scriptdata.server.redspawn_plasmagun));
-AddScript(va("set g_redspawn_bfg %i\n", s_scriptdata.server.redspawn_bfg));
-AddScript(va("set g_redspawn_chain %i\n", s_scriptdata.server.redspawn_chain));
-AddScript(va("set g_redspawn_mine %i\n", s_scriptdata.server.redspawn_mine));
-AddScript(va("set g_redspawn_nail %i\n", s_scriptdata.server.redspawn_nail));
-AddScript(va("set g_redspawn_flame %i\n", s_scriptdata.server.redspawn_flame));
-AddScript(va("set g_redspawn_antimatter %i\n", s_scriptdata.server.redspawn_antimatter));
-AddScript(va("set g_redspawn_quad %i\n", s_scriptdata.server.redspawn_quad));
-AddScript(va("set g_redspawn_haste %i\n", s_scriptdata.server.redspawn_haste));
-AddScript(va("set g_redspawn_bsuit %i\n", s_scriptdata.server.redspawn_bsuit));
-AddScript(va("set g_redspawn_invis %i\n", s_scriptdata.server.redspawn_invis));
-AddScript(va("set g_redspawn_regen %i\n", s_scriptdata.server.redspawn_regen));
-AddScript(va("set g_redspawn_flight %i\n", s_scriptdata.server.redspawn_flight));
-AddScript(va("set g_redspawn_holdable %i\n", s_scriptdata.server.redspawn_holdable));
-AddScript(va("set elimination_items %i\n", s_scriptdata.server.elimination_items));
-AddScript(va("set g_overlay %i\n", s_scriptdata.server.overlay));
-AddScript(va("set g_randomItems %i\n", s_scriptdata.server.randomItems));
-AddScript(va("set g_slickmove %i\n", s_scriptdata.server.slickmove));
-AddScript(va("set g_spawnprotect %i\n", s_scriptdata.server.spawnprotect));
-AddScript(va("set elimination_lockspectator %i\n", s_scriptdata.server.elimination_lockspectator));
-AddScript(va("set g_awardpushing %i\n", s_scriptdata.server.awardpushing));
-AddScript(va("set g_randomteleport %i\n", s_scriptdata.server.randomteleport));
-AddScript(va("set g_falldamagesmall %i\n", s_scriptdata.server.falldamagesmall));
-AddScript(va("set g_falldamagebig %i\n", s_scriptdata.server.falldamagebig));
-AddScript(va("set g_waterdamage %i\n", s_scriptdata.server.waterdamage));
-AddScript(va("set g_lavadamage %i\n", s_scriptdata.server.lavadamage));
-AddScript(va("set g_slimedamage %i\n", s_scriptdata.server.slimedamage));
-AddScript(va("set g_drowndamage %i\n", s_scriptdata.server.drowndamage));
-AddScript(va("set g_invulinf %i\n", s_scriptdata.server.invulinf));
-AddScript(va("set g_invulmove %i\n", s_scriptdata.server.invulmove));
-AddScript(va("set g_invultime %i\n", s_scriptdata.server.invultime));
-AddScript(va("set g_kamikazeinf %i\n", s_scriptdata.server.kamikazeinf));
-AddScript(va("set g_portalinf %i\n", s_scriptdata.server.portalinf));
-AddScript(va("set g_portaltimeout %i\n", s_scriptdata.server.portaltimeout));
-AddScript(va("set g_portalhealth %i\n", s_scriptdata.server.portalhealth));
-AddScript(va("set g_teleporterinf %i\n", s_scriptdata.server.teleporterinf));
-AddScript(va("set g_medkitinf %i\n", s_scriptdata.server.medkitinf));
-AddScript(va("set g_medkitlimit %i\n", s_scriptdata.server.medkitlimit));
-AddScript(va("set g_medkitmodifier %i\n", s_scriptdata.server.medkitmodifier));
-AddScript(va("set g_fasthealthregen %i\n", s_scriptdata.server.fasthealthregen));
-AddScript(va("set g_slowhealthregen %i\n", s_scriptdata.server.slowhealthregen));
-AddScript(va("set g_hastefirespeed \"%s\"\n", s_scriptdata.server.hastefirespeed));
-AddScript(va("set g_quadtime %i\n", s_scriptdata.server.quadtime));
-AddScript(va("set g_bsuittime %i\n", s_scriptdata.server.bsuittime));
-AddScript(va("set g_hastetime %i\n", s_scriptdata.server.hastetime));
-AddScript(va("set g_invistime %i\n", s_scriptdata.server.invistime));
-AddScript(va("set g_regentime %i\n", s_scriptdata.server.regentime));
-AddScript(va("set g_flighttime %i\n", s_scriptdata.server.flighttime));
-AddScript(va("set g_armorrespawn %i\n", s_scriptdata.server.armorrespawn));
-AddScript(va("set g_healthrespawn %i\n", s_scriptdata.server.healthrespawn));
-AddScript(va("set g_ammorespawn %i\n", s_scriptdata.server.ammorespawn));
-AddScript(va("set g_holdablerespawn %i\n", s_scriptdata.server.holdablerespawn));
-AddScript(va("set g_megahealthrespawn %i\n", s_scriptdata.server.megahealthrespawn));
-AddScript(va("set g_poweruprespawn %i\n", s_scriptdata.server.poweruprespawn));
-AddScript(va("set g_weaponrespawn %i\n", s_scriptdata.server.weaponrespawn));
-// Крюк
-AddScript(va("set g_ghspeed %i\n", s_scriptdata.server.g_ghspeed));
-AddScript(va("set g_ghtimeout %i\n", s_scriptdata.server.g_ghtimeout));
-// Пила
-AddScript(va("set g_gdelay %i\n", s_scriptdata.server.g_gdelay));
-AddScript(va("set g_gdamage %i\n", s_scriptdata.server.g_gdamage));
-AddScript(va("set g_grange %i\n", s_scriptdata.server.g_grange));
-AddScript(va("set g_gknockback  \"%s\"\n", s_scriptdata.server.g_gknockback));
-// Автомат
-AddScript(va("set g_mgammocount %i\n", s_scriptdata.server.g_mgammocount));
-AddScript(va("set g_mgweaponcount %i\n", s_scriptdata.server.g_mgweaponcount));
-AddScript(va("set g_mgdelay %i\n", s_scriptdata.server.g_mgdelay));
-AddScript(va("set g_mgdamage %i\n", s_scriptdata.server.g_mgdamage));
-AddScript(va("set g_mgspread %i\n", s_scriptdata.server.g_mgspread));
-AddScript(va("set g_mgexplode %i\n", s_scriptdata.server.g_mgexplode));
-AddScript(va("set g_mgsdamage %i\n", s_scriptdata.server.g_mgsdamage));
-AddScript(va("set g_mgsradius %i\n", s_scriptdata.server.g_mgsradius));
-AddScript(va("set g_mgvampire %i\n", s_scriptdata.server.g_mgvampire));
-AddScript(va("set g_mginf %i\n", s_scriptdata.server.g_mginf));
-AddScript(va("set g_mgknockback  \"%s\"\n", s_scriptdata.server.g_mgknockback));
-// Дробовик
-AddScript(va("set g_sgammocount %i\n", s_scriptdata.server.g_sgammocount));
-AddScript(va("set g_sgweaponcount %i\n", s_scriptdata.server.g_sgweaponcount));
-AddScript(va("set g_sgdelay %i\n", s_scriptdata.server.g_sgdelay));
-AddScript(va("set g_sgdamage %i\n", s_scriptdata.server.g_sgdamage));
-AddScript(va("set g_sgspread %i\n", s_scriptdata.server.g_sgspread));
-AddScript(va("set g_sgexplode %i\n", s_scriptdata.server.g_sgexplode));
-AddScript(va("set g_sgsdamage %i\n", s_scriptdata.server.g_sgsdamage));
-AddScript(va("set g_sgsradius %i\n", s_scriptdata.server.g_sgsradius));
-AddScript(va("set g_sgcount %i\n", s_scriptdata.server.g_sgcount));
-AddScript(va("set g_sgvampire %i\n", s_scriptdata.server.g_sgvampire));
-AddScript(va("set g_sginf %i\n", s_scriptdata.server.g_sginf));
-AddScript(va("set g_sgknockback  \"%s\"\n", s_scriptdata.server.g_sgknockback));
-// Гранаты
-AddScript(va("set g_glammocount %i\n", s_scriptdata.server.g_glammocount));
-AddScript(va("set g_glweaponcount %i\n", s_scriptdata.server.g_glweaponcount));
-AddScript(va("set g_gldelay %i\n", s_scriptdata.server.g_gldelay));
-AddScript(va("set g_glspeed %i\n", s_scriptdata.server.g_glspeed));
-AddScript(va("set g_glbounce %i\n", s_scriptdata.server.g_glbounce));
-AddScript(va("set g_glgravity %i\n", s_scriptdata.server.g_glgravity));
-AddScript(va("set g_gltimeout %i\n", s_scriptdata.server.g_gltimeout));
-AddScript(va("set g_glsradius %i\n", s_scriptdata.server.g_glsradius));
-AddScript(va("set g_glsdamage %i\n", s_scriptdata.server.g_glsdamage));
-AddScript(va("set g_gldamage %i\n", s_scriptdata.server.g_gldamage));
-AddScript(va("set g_glvampire %i\n", s_scriptdata.server.g_glvampire));
-AddScript(va("set g_glinf %i\n", s_scriptdata.server.g_glinf));
-AddScript(va("set g_glbouncemodifier  \"%s\"\n", s_scriptdata.server.g_glbouncemodifier));
-AddScript(va("set g_glknockback  \"%s\"\n", s_scriptdata.server.g_glknockback));
-AddScript(va("set g_glhoming %i\n", s_scriptdata.server.g_glhoming));
-AddScript(va("set g_glguided %i\n", s_scriptdata.server.g_glguided));
-// Ракеты
-AddScript(va("set g_rlammocount %i\n", s_scriptdata.server.g_rlammocount));
-AddScript(va("set g_rlweaponcount %i\n", s_scriptdata.server.g_rlweaponcount));
-AddScript(va("set g_rldelay %i\n", s_scriptdata.server.g_rldelay));
-AddScript(va("set g_rlspeed %i\n", s_scriptdata.server.g_rlspeed));
-AddScript(va("set g_rlbounce %i\n", s_scriptdata.server.g_rlbounce));
-AddScript(va("set g_rlgravity %i\n", s_scriptdata.server.g_rlgravity));
-AddScript(va("set g_rltimeout %i\n", s_scriptdata.server.g_rltimeout));
-AddScript(va("set g_rlsradius %i\n", s_scriptdata.server.g_rlsradius));
-AddScript(va("set g_rlsdamage %i\n", s_scriptdata.server.g_rlsdamage));
-AddScript(va("set g_rldamage %i\n", s_scriptdata.server.g_rldamage));
-AddScript(va("set g_rlvampire %i\n", s_scriptdata.server.g_rlvampire));
-AddScript(va("set g_rlinf %i\n", s_scriptdata.server.g_rlinf));
-AddScript(va("set g_rlbouncemodifier  \"%s\"\n", s_scriptdata.server.g_rlbouncemodifier));
-AddScript(va("set g_rlknockback  \"%s\"\n", s_scriptdata.server.g_rlknockback));
-AddScript(va("set g_rlhoming %i\n", s_scriptdata.server.g_rlhoming));
-AddScript(va("set g_rlguided %i\n", s_scriptdata.server.g_rlguided));
-// Молния
-AddScript(va("set g_lgammocount %i\n", s_scriptdata.server.g_lgammocount));
-AddScript(va("set g_lgweaponcount %i\n", s_scriptdata.server.g_lgweaponcount));
-AddScript(va("set g_lgrange %i\n", s_scriptdata.server.g_lgrange));
-AddScript(va("set g_lgdelay %i\n", s_scriptdata.server.g_lgdelay));
-AddScript(va("set g_lgdamage %i\n", s_scriptdata.server.g_lgdamage));
-AddScript(va("set g_lgvampire %i\n", s_scriptdata.server.g_lgvampire));
-AddScript(va("set g_lgexplode %i\n", s_scriptdata.server.g_lgexplode));
-AddScript(va("set g_lgsdamage %i\n", s_scriptdata.server.g_lgsdamage));
-AddScript(va("set g_lgsradius %i\n", s_scriptdata.server.g_lgsradius));
-AddScript(va("set g_lginf %i\n", s_scriptdata.server.g_lginf));
-AddScript(va("set g_lgknockback  \"%s\"\n", s_scriptdata.server.g_lgknockback));
-// Рэйлган
-AddScript(va("set g_rgammocount %i\n", s_scriptdata.server.g_rgammocount));
-AddScript(va("set g_rgweaponcount %i\n", s_scriptdata.server.g_rgweaponcount));
-AddScript(va("set g_rgdelay %i\n", s_scriptdata.server.g_rgdelay));
-AddScript(va("set g_rgdamage %i\n", s_scriptdata.server.g_rgdamage));
-AddScript(va("set g_rgvampire %i\n", s_scriptdata.server.g_rgvampire));
-AddScript(va("set g_rginf %i\n", s_scriptdata.server.g_rginf));
-AddScript(va("set g_rgknockback  \"%s\"\n", s_scriptdata.server.g_rgknockback));
-// Плазмаган
-AddScript(va("set g_pgammocount %i\n", s_scriptdata.server.g_pgammocount));
-AddScript(va("set g_pgweaponcount %i\n", s_scriptdata.server.g_pgweaponcount));
-AddScript(va("set g_pgdelay %i\n", s_scriptdata.server.g_pgdelay));
-AddScript(va("set g_pgspeed %i\n", s_scriptdata.server.g_pgspeed));
-AddScript(va("set g_pgbounce %i\n", s_scriptdata.server.g_pgbounce));
-AddScript(va("set g_pggravity %i\n", s_scriptdata.server.g_pggravity));
-AddScript(va("set g_pgtimeout %i\n", s_scriptdata.server.g_pgtimeout));
-AddScript(va("set g_pgsradius %i\n", s_scriptdata.server.g_pgsradius));
-AddScript(va("set g_pgsdamage %i\n", s_scriptdata.server.g_pgsdamage));
-AddScript(va("set g_pgdamage %i\n", s_scriptdata.server.g_pgdamage));
-AddScript(va("set g_pgvampire %i\n", s_scriptdata.server.g_pgvampire));
-AddScript(va("set g_pginf %i\n", s_scriptdata.server.g_pginf));
-AddScript(va("set g_pgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_pgbouncemodifier));
-AddScript(va("set g_pgknockback  \"%s\"\n", s_scriptdata.server.g_pgknockback));
-AddScript(va("set g_pghoming %i\n", s_scriptdata.server.g_pghoming));
-AddScript(va("set g_pgguided %i\n", s_scriptdata.server.g_pgguided));
-// Бфг
-AddScript(va("set g_bfgammocount %i\n", s_scriptdata.server.g_bfgammocount));
-AddScript(va("set g_bfgweaponcount %i\n", s_scriptdata.server.g_bfgweaponcount));
-AddScript(va("set g_bfgdelay %i\n", s_scriptdata.server.g_bfgdelay));
-AddScript(va("set g_bfgspeed %i\n", s_scriptdata.server.g_bfgspeed));
-AddScript(va("set g_bfgbounce %i\n", s_scriptdata.server.g_bfgbounce));
-AddScript(va("set g_bfggravity %i\n", s_scriptdata.server.g_bfggravity));
-AddScript(va("set g_bfgtimeout %i\n", s_scriptdata.server.g_bfgtimeout));
-AddScript(va("set g_bfgsradius %i\n", s_scriptdata.server.g_bfgsradius));
-AddScript(va("set g_bfgsdamage %i\n", s_scriptdata.server.g_bfgsdamage));
-AddScript(va("set g_bfgdamage %i\n", s_scriptdata.server.g_bfgdamage));
-AddScript(va("set g_bfgvampire %i\n", s_scriptdata.server.g_bfgvampire));
-AddScript(va("set g_bfginf %i\n", s_scriptdata.server.g_bfginf));
-AddScript(va("set g_bfgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_bfgbouncemodifier));
-AddScript(va("set g_bfgknockback  \"%s\"\n", s_scriptdata.server.g_bfgknockback));
-AddScript(va("set g_bfghoming %i\n", s_scriptdata.server.g_bfghoming));
-AddScript(va("set g_bfgguided %i\n", s_scriptdata.server.g_bfgguided));
-// Гвоздомёт
-AddScript(va("set g_ngammocount %i\n", s_scriptdata.server.g_ngammocount));
-AddScript(va("set g_ngweaponcount %i\n", s_scriptdata.server.g_ngweaponcount));
-AddScript(va("set g_ngdelay %i\n", s_scriptdata.server.g_ngdelay));
-AddScript(va("set g_ngspeed %i\n", s_scriptdata.server.g_ngspeed));
-AddScript(va("set g_ngbounce %i\n", s_scriptdata.server.g_ngbounce));
-AddScript(va("set g_nggravity %i\n", s_scriptdata.server.g_nggravity));
-AddScript(va("set g_ngtimeout %i\n", s_scriptdata.server.g_ngtimeout));
-AddScript(va("set g_ngcount %i\n", s_scriptdata.server.g_ngcount));
-AddScript(va("set g_ngspread %i\n", s_scriptdata.server.g_ngspread));
-AddScript(va("set g_ngdamage %i\n", s_scriptdata.server.g_ngdamage));
-AddScript(va("set g_ngrandom %i\n", s_scriptdata.server.g_ngrandom));
-AddScript(va("set g_ngvampire %i\n", s_scriptdata.server.g_ngvampire));
-AddScript(va("set g_nginf %i\n", s_scriptdata.server.g_nginf));
-AddScript(va("set g_ngbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ngbouncemodifier));
-AddScript(va("set g_ngknockback  \"%s\"\n", s_scriptdata.server.g_ngknockback));
-AddScript(va("set g_nghoming %i\n", s_scriptdata.server.g_nghoming));
-AddScript(va("set g_ngguided %i\n", s_scriptdata.server.g_ngguided));
-// Мины
-AddScript(va("set g_plammocount %i\n", s_scriptdata.server.g_plammocount));
-AddScript(va("set g_plweaponcount %i\n", s_scriptdata.server.g_plweaponcount));
-AddScript(va("set g_pldelay %i\n", s_scriptdata.server.g_pldelay));
-AddScript(va("set g_plspeed %i\n", s_scriptdata.server.g_plspeed));
-AddScript(va("set g_plgravity %i\n", s_scriptdata.server.g_plgravity));
-AddScript(va("set g_pltimeout %i\n", s_scriptdata.server.g_pltimeout));
-AddScript(va("set g_plsradius %i\n", s_scriptdata.server.g_plsradius));
-AddScript(va("set g_plsdamage %i\n", s_scriptdata.server.g_plsdamage));
-AddScript(va("set g_pldamage %i\n", s_scriptdata.server.g_pldamage));
-AddScript(va("set g_plvampire %i\n", s_scriptdata.server.g_plvampire));
-AddScript(va("set g_plinf %i\n", s_scriptdata.server.g_plinf));
-AddScript(va("set g_plknockback  \"%s\"\n", s_scriptdata.server.g_plknockback));
-// Пулемёт
-AddScript(va("set g_cgammocount %i\n", s_scriptdata.server.g_cgammocount));
-AddScript(va("set g_cgweaponcount %i\n", s_scriptdata.server.g_cgweaponcount));
-AddScript(va("set g_cgdelay %i\n", s_scriptdata.server.g_cgdelay));
-AddScript(va("set g_cgspread %i\n", s_scriptdata.server.g_cgspread));
-AddScript(va("set g_cgdamage %i\n", s_scriptdata.server.g_cgdamage));
-AddScript(va("set g_cgvampire %i\n", s_scriptdata.server.g_cgvampire));
-AddScript(va("set g_cginf %i\n", s_scriptdata.server.g_cginf));
-AddScript(va("set g_cgknockback  \"%s\"\n", s_scriptdata.server.g_cgknockback));
-// Огнемёт
-AddScript(va("set g_ftammocount %i\n", s_scriptdata.server.g_ftammocount));
-AddScript(va("set g_ftweaponcount %i\n", s_scriptdata.server.g_ftweaponcount));
-AddScript(va("set g_ftdelay %i\n", s_scriptdata.server.g_ftdelay));
-AddScript(va("set g_ftspeed %i\n", s_scriptdata.server.g_ftspeed));
-AddScript(va("set g_ftbounce %i\n", s_scriptdata.server.g_ftbounce));
-AddScript(va("set g_ftgravity %i\n", s_scriptdata.server.g_ftgravity));
-AddScript(va("set g_fttimeout %i\n", s_scriptdata.server.g_fttimeout));
-AddScript(va("set g_ftsradius %i\n", s_scriptdata.server.g_ftsradius));
-AddScript(va("set g_ftsdamage %i\n", s_scriptdata.server.g_ftsdamage));
-AddScript(va("set g_ftdamage %i\n", s_scriptdata.server.g_ftdamage));
-AddScript(va("set g_ftvampire %i\n", s_scriptdata.server.g_ftvampire));
-AddScript(va("set g_ftinf %i\n", s_scriptdata.server.g_ftinf));
-AddScript(va("set g_ftbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ftbouncemodifier));
-AddScript(va("set g_ftknockback  \"%s\"\n", s_scriptdata.server.g_ftknockback));
-AddScript(va("set g_fthoming %i\n", s_scriptdata.server.g_fthoming));
-AddScript(va("set g_ftguided %i\n", s_scriptdata.server.g_ftguided));
-// Антиматтер
-AddScript(va("set g_amweaponcount %i\n", s_scriptdata.server.g_amweaponcount));
-AddScript(va("set g_amdelay %i\n", s_scriptdata.server.g_amdelay));
-AddScript(va("set g_amspeed %i\n", s_scriptdata.server.g_amspeed));
-AddScript(va("set g_ambounce %i\n", s_scriptdata.server.g_ambounce));
-AddScript(va("set g_amgravity %i\n", s_scriptdata.server.g_amgravity));
-AddScript(va("set g_amtimeout %i\n", s_scriptdata.server.g_amtimeout));
-AddScript(va("set g_amsradius %i\n", s_scriptdata.server.g_amsradius));
-AddScript(va("set g_amsdamage %i\n", s_scriptdata.server.g_amsdamage));
-AddScript(va("set g_amdamage %i\n", s_scriptdata.server.g_amdamage));
-AddScript(va("set g_amvampire %i\n", s_scriptdata.server.g_amvampire));
-AddScript(va("set g_aminf %i\n", s_scriptdata.server.g_aminf));
-AddScript(va("set g_ambouncemodifier  \"%s\"\n", s_scriptdata.server.g_ambouncemodifier));
-AddScript(va("set g_amknockback  \"%s\"\n", s_scriptdata.server.g_amknockback));
-AddScript(va("set g_amhoming %i\n", s_scriptdata.server.g_amhoming));
-AddScript(va("set g_amguided %i\n", s_scriptdata.server.g_amguided));
+	AddScript(va("set g_maxEntities %i\n", s_scriptdata.server.maxEntities));
+	AddScript(va("set g_spSkill %i\n", s_scriptdata.server.singleskill));
+	AddScript(va("set g_extendedsandbox %i\n", s_scriptdata.server.extendedsandbox));
+	AddScript(va("set g_damageModifier  \"%s\"\n", s_scriptdata.server.damageModifier));
+	AddScript(va("set cl_selectedmod  \"%s\"\n", s_scriptdata.server.selectedmod));
+	AddScript(va("set g_elimination %i\n", s_scriptdata.server.elimination));
+	AddScript(va("set g_obeliskHealth %i\n", s_scriptdata.server.obeliskHealth));
+	AddScript(va("set g_obeliskRegenPeriod %i\n", s_scriptdata.server.obeliskRegenPeriod));
+	AddScript(va("set g_obeliskRegenAmount %i\n", s_scriptdata.server.obeliskRegenAmount));
+	AddScript(va("set g_obeliskRespawnDelay %i\n", s_scriptdata.server.obeliskRespawnDelay));
+	AddScript(va("set g_cubeTimeout %i\n", s_scriptdata.server.cubeTimeout));
+	AddScript(va("set g_flagrespawn %i\n", s_scriptdata.server.flagrespawn));
+	AddScript(va("set g_weaponTeamRespawn %i\n", s_scriptdata.server.weaponTeamRespawn));
+	AddScript(va("set elimination_ctf_oneway %i\n", s_scriptdata.server.elimination_ctf_oneway));
+	AddScript(va("set elimination_selfdamage %i\n", s_scriptdata.server.elimination_selfdamage));
+	AddScript(va("set elimination_roundtime %i\n", s_scriptdata.server.elimination_roundtime));
+	AddScript(va("set elimination_warmup %i\n", s_scriptdata.server.elimination_warmup));
+	AddScript(va("set elimination_activewarmup %i\n", s_scriptdata.server.elimination_activewarmup));
+	AddScript(va("set g_lms_lives %i\n", s_scriptdata.server.lms_lives));
+	AddScript(va("set g_lms_mode %i\n", s_scriptdata.server.lms_mode));
+	AddScript(va("set g_accelerate %i\n", s_scriptdata.server.accelerate));
+	AddScript(va("set g_spectatorspeed %i\n", s_scriptdata.server.spectatorspeed));
+	AddScript(va("set g_speed %i\n", s_scriptdata.server.speed));
+	AddScript(va("set g_gravity %i\n", s_scriptdata.server.gravity));
+	AddScript(va("set g_gravityModifier  \"%s\"\n", s_scriptdata.server.gravityModifier));
+	AddScript(va("set g_knockback %i\n", s_scriptdata.server.knockback));
+	AddScript(va("set g_noplayerclip %i\n", s_scriptdata.server.noplayerclip));
+	AddScript(va("set g_jumpheight %i\n", s_scriptdata.server.jumpheight));
+	AddScript(va("set g_regenarmor %i\n", s_scriptdata.server.regenarmor));
+	AddScript(va("set g_ammolimit %i\n", s_scriptdata.server.ammolimit));
+	AddScript(va("set g_quadfactor  \"%s\"\n", s_scriptdata.server.quadfactor));
+	AddScript(va("set g_respawntime %i\n", s_scriptdata.server.respawntime));
+	AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forcerespawn));
+	AddScript(va("set g_vampire  \"%s\"\n", s_scriptdata.server.vampire));
+	AddScript(va("set g_vampire_max_health %i\n", s_scriptdata.server.vampire_max_health));
+	AddScript(va("set g_regen %i\n", s_scriptdata.server.regen));
+	AddScript(va("set g_nextbot_speed %s\n", s_scriptdata.server.nextbot_speed));
+	AddScript(va("set g_droppeditemtime %i\n", s_scriptdata.server.droppeditemtime));
+	AddScript(va("set g_autoflagreturn %i\n", s_scriptdata.server.autoflagreturn));
+	AddScript(va("set g_armorprotect  \"%s\"\n", s_scriptdata.server.armorprotect));
+	AddScript(va("set g_respawnwait %i\n", s_scriptdata.server.respawnwait));
+	AddScript(va("set g_speedfactor  \"%s\"\n", s_scriptdata.server.speedfactor));
+	AddScript(va("set g_scoutspeedfactor  \"%s\"\n", s_scriptdata.server.scoutspeedfactor));
+	AddScript(va("set g_scoutfirespeed  \"%s\"\n", s_scriptdata.server.scoutfirespeed));
+	AddScript(va("set g_scoutdamagefactor  \"%s\"\n", s_scriptdata.server.scoutdamagefactor));
+	AddScript(va("set g_scoutgravitymodifier  \"%s\"\n", s_scriptdata.server.scoutgravitymodifier));
+	AddScript(va("set g_scout_infammo %i\n", s_scriptdata.server.scout_infammo));
+	AddScript(va("set g_scouthealthmodifier  \"%s\"\n", s_scriptdata.server.scouthealthmodifier));
+	AddScript(va("set g_doublerfirespeed  \"%s\"\n", s_scriptdata.server.doublerfirespeed));
+	AddScript(va("set g_doublerdamagefactor  \"%s\"\n", s_scriptdata.server.doublerdamagefactor));
+	AddScript(va("set g_doublerspeedfactor  \"%s\"\n", s_scriptdata.server.doublerspeedfactor));
+	AddScript(va("set g_doublergravitymodifier  \"%s\"\n", s_scriptdata.server.doublergravitymodifier));
+	AddScript(va("set g_doubler_infammo %i\n", s_scriptdata.server.doubler_infammo));
+	AddScript(va("set g_doublerhealthmodifier  \"%s\"\n", s_scriptdata.server.doublerhealthmodifier));
+	AddScript(va("set g_guardhealthmodifier  \"%s\"\n", s_scriptdata.server.guardhealthmodifier));
+	AddScript(va("set g_guardfirespeed  \"%s\"\n", s_scriptdata.server.guardfirespeed));
+	AddScript(va("set g_guarddamagefactor  \"%s\"\n", s_scriptdata.server.guarddamagefactor));
+	AddScript(va("set g_guardspeedfactor  \"%s\"\n", s_scriptdata.server.guardspeedfactor));
+	AddScript(va("set g_guardgravitymodifier  \"%s\"\n", s_scriptdata.server.guardgravitymodifier));
+	AddScript(va("set g_guard_infammo %i\n", s_scriptdata.server.guard_infammo));
+	AddScript(va("set g_ammoregenfirespeed  \"%s\"\n", s_scriptdata.server.ammoregenfirespeed));
+	AddScript(va("set g_ammoregen_infammo %i\n", s_scriptdata.server.ammoregen_infammo));
+	AddScript(va("set g_ammoregendamagefactor  \"%s\"\n", s_scriptdata.server.ammoregendamagefactor));
+	AddScript(va("set g_ammoregenspeedfactor  \"%s\"\n", s_scriptdata.server.ammoregenspeedfactor));
+	AddScript(va("set g_ammoregengravitymodifier  \"%s\"\n", s_scriptdata.server.ammoregengravitymodifier));
+	AddScript(va("set g_ammoregenhealthmodifier  \"%s\"\n", s_scriptdata.server.ammoregenhealthmodifier));
+	AddScript(va("set g_teamred_speed %i\n", s_scriptdata.server.teamred_speed));
+	AddScript(va("set g_teamred_gravityModifier  \"%s\"\n", s_scriptdata.server.teamred_gravityModifier));
+	AddScript(va("set g_teamred_firespeed  \"%s\"\n", s_scriptdata.server.teamred_firespeed));
+	AddScript(va("set g_teamred_damage  \"%s\"\n", s_scriptdata.server.teamred_damage));
+	AddScript(va("set g_teamred_infammo %i\n", s_scriptdata.server.teamred_infammo));
+	AddScript(va("set g_teamred_respawnwait %i\n", s_scriptdata.server.teamred_respawnwait));
+	AddScript(va("set g_teamred_pickupitems %i\n", s_scriptdata.server.teamred_pickupitems));
+	AddScript(va("set g_teamblue_speed %i\n", s_scriptdata.server.teamblue_speed));
+	AddScript(va("set g_teamblue_gravityModifier  \"%s\"\n", s_scriptdata.server.teamblue_gravityModifier));
+	AddScript(va("set g_teamblue_firespeed  \"%s\"\n", s_scriptdata.server.teamblue_firespeed));
+	AddScript(va("set g_teamblue_damage  \"%s\"\n", s_scriptdata.server.teamblue_damage));
+	AddScript(va("set g_teamblue_infammo %i\n", s_scriptdata.server.teamblue_infammo));
+	AddScript(va("set g_teamblue_respawnwait %i\n", s_scriptdata.server.teamblue_respawnwait));
+	AddScript(va("set g_teamblue_pickupitems %i\n", s_scriptdata.server.teamblue_pickupitems));
+	AddScript(va("set g_elimination_blue_respawn %i\n", s_scriptdata.server.elimination_blue_respawn));
+	AddScript(va("set g_elimination_red_respawn %i\n", s_scriptdata.server.elimination_red_respawn));
+	AddScript(va("set g_bluespawn_health %i\n", s_scriptdata.server.bluespawn_health));
+	AddScript(va("set g_bluespawn_armor %i\n", s_scriptdata.server.bluespawn_armor));
+	AddScript(va("set g_bluespawn_grapple %i\n", s_scriptdata.server.bluespawn_grapple));
+	AddScript(va("set g_bluespawn_gauntlet %i\n", s_scriptdata.server.bluespawn_gauntlet));
+	AddScript(va("set g_bluespawn_machinegun %i\n", s_scriptdata.server.bluespawn_machinegun));
+	AddScript(va("set g_bluespawn_shotgun %i\n", s_scriptdata.server.bluespawn_shotgun));
+	AddScript(va("set g_bluespawn_grenade %i\n", s_scriptdata.server.bluespawn_grenade));
+	AddScript(va("set g_bluespawn_rocket %i\n", s_scriptdata.server.bluespawn_rocket));
+	AddScript(va("set g_bluespawn_railgun %i\n", s_scriptdata.server.bluespawn_railgun));
+	AddScript(va("set g_bluespawn_lightning %i\n", s_scriptdata.server.bluespawn_lightning));
+	AddScript(va("set g_bluespawn_plasmagun %i\n", s_scriptdata.server.bluespawn_plasmagun));
+	AddScript(va("set g_bluespawn_bfg %i\n", s_scriptdata.server.bluespawn_bfg));
+	AddScript(va("set g_bluespawn_chain %i\n", s_scriptdata.server.bluespawn_chain));
+	AddScript(va("set g_bluespawn_mine %i\n", s_scriptdata.server.bluespawn_mine));
+	AddScript(va("set g_bluespawn_nail %i\n", s_scriptdata.server.bluespawn_nail));
+	AddScript(va("set g_bluespawn_flame %i\n", s_scriptdata.server.bluespawn_flame));
+	AddScript(va("set g_bluespawn_antimatter %i\n", s_scriptdata.server.bluespawn_antimatter));
+	AddScript(va("set g_bluespawn_quad %i\n", s_scriptdata.server.bluespawn_quad));
+	AddScript(va("set g_bluespawn_haste %i\n", s_scriptdata.server.bluespawn_haste));
+	AddScript(va("set g_bluespawn_bsuit %i\n", s_scriptdata.server.bluespawn_bsuit));
+	AddScript(va("set g_bluespawn_invis %i\n", s_scriptdata.server.bluespawn_invis));
+	AddScript(va("set g_bluespawn_regen %i\n", s_scriptdata.server.bluespawn_regen));
+	AddScript(va("set g_bluespawn_flight %i\n", s_scriptdata.server.bluespawn_flight));
+	AddScript(va("set g_bluespawn_holdable %i\n", s_scriptdata.server.bluespawn_holdable));
+	AddScript(va("set g_redspawn_health %i\n", s_scriptdata.server.redspawn_health));
+	AddScript(va("set g_redspawn_armor %i\n", s_scriptdata.server.redspawn_armor));
+	AddScript(va("set g_redspawn_grapple %i\n", s_scriptdata.server.redspawn_grapple));
+	AddScript(va("set g_redspawn_gauntlet %i\n", s_scriptdata.server.redspawn_gauntlet));
+	AddScript(va("set g_redspawn_machinegun %i\n", s_scriptdata.server.redspawn_machinegun));
+	AddScript(va("set g_redspawn_shotgun %i\n", s_scriptdata.server.redspawn_shotgun));
+	AddScript(va("set g_redspawn_grenade %i\n", s_scriptdata.server.redspawn_grenade));
+	AddScript(va("set g_redspawn_rocket %i\n", s_scriptdata.server.redspawn_rocket));
+	AddScript(va("set g_redspawn_railgun %i\n", s_scriptdata.server.redspawn_railgun));
+	AddScript(va("set g_redspawn_lightning %i\n", s_scriptdata.server.redspawn_lightning));
+	AddScript(va("set g_redspawn_plasmagun %i\n", s_scriptdata.server.redspawn_plasmagun));
+	AddScript(va("set g_redspawn_bfg %i\n", s_scriptdata.server.redspawn_bfg));
+	AddScript(va("set g_redspawn_chain %i\n", s_scriptdata.server.redspawn_chain));
+	AddScript(va("set g_redspawn_mine %i\n", s_scriptdata.server.redspawn_mine));
+	AddScript(va("set g_redspawn_nail %i\n", s_scriptdata.server.redspawn_nail));
+	AddScript(va("set g_redspawn_flame %i\n", s_scriptdata.server.redspawn_flame));
+	AddScript(va("set g_redspawn_antimatter %i\n", s_scriptdata.server.redspawn_antimatter));
+	AddScript(va("set g_redspawn_quad %i\n", s_scriptdata.server.redspawn_quad));
+	AddScript(va("set g_redspawn_haste %i\n", s_scriptdata.server.redspawn_haste));
+	AddScript(va("set g_redspawn_bsuit %i\n", s_scriptdata.server.redspawn_bsuit));
+	AddScript(va("set g_redspawn_invis %i\n", s_scriptdata.server.redspawn_invis));
+	AddScript(va("set g_redspawn_regen %i\n", s_scriptdata.server.redspawn_regen));
+	AddScript(va("set g_redspawn_flight %i\n", s_scriptdata.server.redspawn_flight));
+	AddScript(va("set g_redspawn_holdable %i\n", s_scriptdata.server.redspawn_holdable));
+	AddScript(va("set elimination_items %i\n", s_scriptdata.server.elimination_items));
+	AddScript(va("set g_overlay %i\n", s_scriptdata.server.overlay));
+	AddScript(va("set g_randomItems %i\n", s_scriptdata.server.randomItems));
+	AddScript(va("set g_slickmove %i\n", s_scriptdata.server.slickmove));
+	AddScript(va("set g_spawnprotect %i\n", s_scriptdata.server.spawnprotect));
+	AddScript(va("set elimination_lockspectator %i\n", s_scriptdata.server.elimination_lockspectator));
+	AddScript(va("set g_awardpushing %i\n", s_scriptdata.server.awardpushing));
+	AddScript(va("set g_randomteleport %i\n", s_scriptdata.server.randomteleport));
+	AddScript(va("set g_falldamagesmall %i\n", s_scriptdata.server.falldamagesmall));
+	AddScript(va("set g_falldamagebig %i\n", s_scriptdata.server.falldamagebig));
+	AddScript(va("set g_waterdamage %i\n", s_scriptdata.server.waterdamage));
+	AddScript(va("set g_lavadamage %i\n", s_scriptdata.server.lavadamage));
+	AddScript(va("set g_slimedamage %i\n", s_scriptdata.server.slimedamage));
+	AddScript(va("set g_drowndamage %i\n", s_scriptdata.server.drowndamage));
+	AddScript(va("set g_invulinf %i\n", s_scriptdata.server.invulinf));
+	AddScript(va("set g_invulmove %i\n", s_scriptdata.server.invulmove));
+	AddScript(va("set g_invultime %i\n", s_scriptdata.server.invultime));
+	AddScript(va("set g_kamikazeinf %i\n", s_scriptdata.server.kamikazeinf));
+	AddScript(va("set g_portalinf %i\n", s_scriptdata.server.portalinf));
+	AddScript(va("set g_portaltimeout %i\n", s_scriptdata.server.portaltimeout));
+	AddScript(va("set g_portalhealth %i\n", s_scriptdata.server.portalhealth));
+	AddScript(va("set g_teleporterinf %i\n", s_scriptdata.server.teleporterinf));
+	AddScript(va("set g_medkitinf %i\n", s_scriptdata.server.medkitinf));
+	AddScript(va("set g_medkitlimit %i\n", s_scriptdata.server.medkitlimit));
+	AddScript(va("set g_medkitmodifier %i\n", s_scriptdata.server.medkitmodifier));
+	AddScript(va("set g_fasthealthregen %i\n", s_scriptdata.server.fasthealthregen));
+	AddScript(va("set g_slowhealthregen %i\n", s_scriptdata.server.slowhealthregen));
+	AddScript(va("set g_hastefirespeed \"%s\"\n", s_scriptdata.server.hastefirespeed));
+	AddScript(va("set g_quadtime %i\n", s_scriptdata.server.quadtime));
+	AddScript(va("set g_bsuittime %i\n", s_scriptdata.server.bsuittime));
+	AddScript(va("set g_hastetime %i\n", s_scriptdata.server.hastetime));
+	AddScript(va("set g_invistime %i\n", s_scriptdata.server.invistime));
+	AddScript(va("set g_regentime %i\n", s_scriptdata.server.regentime));
+	AddScript(va("set g_flighttime %i\n", s_scriptdata.server.flighttime));
+	AddScript(va("set g_armorrespawn %i\n", s_scriptdata.server.armorrespawn));
+	AddScript(va("set g_healthrespawn %i\n", s_scriptdata.server.healthrespawn));
+	AddScript(va("set g_ammorespawn %i\n", s_scriptdata.server.ammorespawn));
+	AddScript(va("set g_holdablerespawn %i\n", s_scriptdata.server.holdablerespawn));
+	AddScript(va("set g_megahealthrespawn %i\n", s_scriptdata.server.megahealthrespawn));
+	AddScript(va("set g_poweruprespawn %i\n", s_scriptdata.server.poweruprespawn));
+	AddScript(va("set g_weaponrespawn %i\n", s_scriptdata.server.weaponrespawn));
+	// Крюк
+	AddScript(va("set g_ghspeed %i\n", s_scriptdata.server.g_ghspeed));
+	AddScript(va("set g_ghtimeout %i\n", s_scriptdata.server.g_ghtimeout));
+	// Пила
+	AddScript(va("set g_gdelay %i\n", s_scriptdata.server.g_gdelay));
+	AddScript(va("set g_gdamage %i\n", s_scriptdata.server.g_gdamage));
+	AddScript(va("set g_grange %i\n", s_scriptdata.server.g_grange));
+	AddScript(va("set g_gknockback  \"%s\"\n", s_scriptdata.server.g_gknockback));
+	// Автомат
+	AddScript(va("set g_mgammocount %i\n", s_scriptdata.server.g_mgammocount));
+	AddScript(va("set g_mgweaponcount %i\n", s_scriptdata.server.g_mgweaponcount));
+	AddScript(va("set g_mgdelay %i\n", s_scriptdata.server.g_mgdelay));
+	AddScript(va("set g_mgdamage %i\n", s_scriptdata.server.g_mgdamage));
+	AddScript(va("set g_mgspread %i\n", s_scriptdata.server.g_mgspread));
+	AddScript(va("set g_mgexplode %i\n", s_scriptdata.server.g_mgexplode));
+	AddScript(va("set g_mgsdamage %i\n", s_scriptdata.server.g_mgsdamage));
+	AddScript(va("set g_mgsradius %i\n", s_scriptdata.server.g_mgsradius));
+	AddScript(va("set g_mgvampire %i\n", s_scriptdata.server.g_mgvampire));
+	AddScript(va("set g_mginf %i\n", s_scriptdata.server.g_mginf));
+	AddScript(va("set g_mgknockback  \"%s\"\n", s_scriptdata.server.g_mgknockback));
+	// Дробовик
+	AddScript(va("set g_sgammocount %i\n", s_scriptdata.server.g_sgammocount));
+	AddScript(va("set g_sgweaponcount %i\n", s_scriptdata.server.g_sgweaponcount));
+	AddScript(va("set g_sgdelay %i\n", s_scriptdata.server.g_sgdelay));
+	AddScript(va("set g_sgdamage %i\n", s_scriptdata.server.g_sgdamage));
+	AddScript(va("set g_sgspread %i\n", s_scriptdata.server.g_sgspread));
+	AddScript(va("set g_sgexplode %i\n", s_scriptdata.server.g_sgexplode));
+	AddScript(va("set g_sgsdamage %i\n", s_scriptdata.server.g_sgsdamage));
+	AddScript(va("set g_sgsradius %i\n", s_scriptdata.server.g_sgsradius));
+	AddScript(va("set g_sgcount %i\n", s_scriptdata.server.g_sgcount));
+	AddScript(va("set g_sgvampire %i\n", s_scriptdata.server.g_sgvampire));
+	AddScript(va("set g_sginf %i\n", s_scriptdata.server.g_sginf));
+	AddScript(va("set g_sgknockback  \"%s\"\n", s_scriptdata.server.g_sgknockback));
+	// Гранаты
+	AddScript(va("set g_glammocount %i\n", s_scriptdata.server.g_glammocount));
+	AddScript(va("set g_glweaponcount %i\n", s_scriptdata.server.g_glweaponcount));
+	AddScript(va("set g_gldelay %i\n", s_scriptdata.server.g_gldelay));
+	AddScript(va("set g_glspeed %i\n", s_scriptdata.server.g_glspeed));
+	AddScript(va("set g_glbounce %i\n", s_scriptdata.server.g_glbounce));
+	AddScript(va("set g_glgravity %i\n", s_scriptdata.server.g_glgravity));
+	AddScript(va("set g_gltimeout %i\n", s_scriptdata.server.g_gltimeout));
+	AddScript(va("set g_glsradius %i\n", s_scriptdata.server.g_glsradius));
+	AddScript(va("set g_glsdamage %i\n", s_scriptdata.server.g_glsdamage));
+	AddScript(va("set g_gldamage %i\n", s_scriptdata.server.g_gldamage));
+	AddScript(va("set g_glvampire %i\n", s_scriptdata.server.g_glvampire));
+	AddScript(va("set g_glinf %i\n", s_scriptdata.server.g_glinf));
+	AddScript(va("set g_glbouncemodifier  \"%s\"\n", s_scriptdata.server.g_glbouncemodifier));
+	AddScript(va("set g_glknockback  \"%s\"\n", s_scriptdata.server.g_glknockback));
+	AddScript(va("set g_glhoming %i\n", s_scriptdata.server.g_glhoming));
+	AddScript(va("set g_glguided %i\n", s_scriptdata.server.g_glguided));
+	// Ракеты
+	AddScript(va("set g_rlammocount %i\n", s_scriptdata.server.g_rlammocount));
+	AddScript(va("set g_rlweaponcount %i\n", s_scriptdata.server.g_rlweaponcount));
+	AddScript(va("set g_rldelay %i\n", s_scriptdata.server.g_rldelay));
+	AddScript(va("set g_rlspeed %i\n", s_scriptdata.server.g_rlspeed));
+	AddScript(va("set g_rlbounce %i\n", s_scriptdata.server.g_rlbounce));
+	AddScript(va("set g_rlgravity %i\n", s_scriptdata.server.g_rlgravity));
+	AddScript(va("set g_rltimeout %i\n", s_scriptdata.server.g_rltimeout));
+	AddScript(va("set g_rlsradius %i\n", s_scriptdata.server.g_rlsradius));
+	AddScript(va("set g_rlsdamage %i\n", s_scriptdata.server.g_rlsdamage));
+	AddScript(va("set g_rldamage %i\n", s_scriptdata.server.g_rldamage));
+	AddScript(va("set g_rlvampire %i\n", s_scriptdata.server.g_rlvampire));
+	AddScript(va("set g_rlinf %i\n", s_scriptdata.server.g_rlinf));
+	AddScript(va("set g_rlbouncemodifier  \"%s\"\n", s_scriptdata.server.g_rlbouncemodifier));
+	AddScript(va("set g_rlknockback  \"%s\"\n", s_scriptdata.server.g_rlknockback));
+	AddScript(va("set g_rlhoming %i\n", s_scriptdata.server.g_rlhoming));
+	AddScript(va("set g_rlguided %i\n", s_scriptdata.server.g_rlguided));
+	// Молния
+	AddScript(va("set g_lgammocount %i\n", s_scriptdata.server.g_lgammocount));
+	AddScript(va("set g_lgweaponcount %i\n", s_scriptdata.server.g_lgweaponcount));
+	AddScript(va("set g_lgrange %i\n", s_scriptdata.server.g_lgrange));
+	AddScript(va("set g_lgdelay %i\n", s_scriptdata.server.g_lgdelay));
+	AddScript(va("set g_lgdamage %i\n", s_scriptdata.server.g_lgdamage));
+	AddScript(va("set g_lgvampire %i\n", s_scriptdata.server.g_lgvampire));
+	AddScript(va("set g_lgexplode %i\n", s_scriptdata.server.g_lgexplode));
+	AddScript(va("set g_lgsdamage %i\n", s_scriptdata.server.g_lgsdamage));
+	AddScript(va("set g_lgsradius %i\n", s_scriptdata.server.g_lgsradius));
+	AddScript(va("set g_lginf %i\n", s_scriptdata.server.g_lginf));
+	AddScript(va("set g_lgknockback  \"%s\"\n", s_scriptdata.server.g_lgknockback));
+	// Рэйлган
+	AddScript(va("set g_rgammocount %i\n", s_scriptdata.server.g_rgammocount));
+	AddScript(va("set g_rgweaponcount %i\n", s_scriptdata.server.g_rgweaponcount));
+	AddScript(va("set g_rgdelay %i\n", s_scriptdata.server.g_rgdelay));
+	AddScript(va("set g_rgdamage %i\n", s_scriptdata.server.g_rgdamage));
+	AddScript(va("set g_rgvampire %i\n", s_scriptdata.server.g_rgvampire));
+	AddScript(va("set g_rginf %i\n", s_scriptdata.server.g_rginf));
+	AddScript(va("set g_rgknockback  \"%s\"\n", s_scriptdata.server.g_rgknockback));
+	// Плазмаган
+	AddScript(va("set g_pgammocount %i\n", s_scriptdata.server.g_pgammocount));
+	AddScript(va("set g_pgweaponcount %i\n", s_scriptdata.server.g_pgweaponcount));
+	AddScript(va("set g_pgdelay %i\n", s_scriptdata.server.g_pgdelay));
+	AddScript(va("set g_pgspeed %i\n", s_scriptdata.server.g_pgspeed));
+	AddScript(va("set g_pgbounce %i\n", s_scriptdata.server.g_pgbounce));
+	AddScript(va("set g_pggravity %i\n", s_scriptdata.server.g_pggravity));
+	AddScript(va("set g_pgtimeout %i\n", s_scriptdata.server.g_pgtimeout));
+	AddScript(va("set g_pgsradius %i\n", s_scriptdata.server.g_pgsradius));
+	AddScript(va("set g_pgsdamage %i\n", s_scriptdata.server.g_pgsdamage));
+	AddScript(va("set g_pgdamage %i\n", s_scriptdata.server.g_pgdamage));
+	AddScript(va("set g_pgvampire %i\n", s_scriptdata.server.g_pgvampire));
+	AddScript(va("set g_pginf %i\n", s_scriptdata.server.g_pginf));
+	AddScript(va("set g_pgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_pgbouncemodifier));
+	AddScript(va("set g_pgknockback  \"%s\"\n", s_scriptdata.server.g_pgknockback));
+	AddScript(va("set g_pghoming %i\n", s_scriptdata.server.g_pghoming));
+	AddScript(va("set g_pgguided %i\n", s_scriptdata.server.g_pgguided));
+	// Бфг
+	AddScript(va("set g_bfgammocount %i\n", s_scriptdata.server.g_bfgammocount));
+	AddScript(va("set g_bfgweaponcount %i\n", s_scriptdata.server.g_bfgweaponcount));
+	AddScript(va("set g_bfgdelay %i\n", s_scriptdata.server.g_bfgdelay));
+	AddScript(va("set g_bfgspeed %i\n", s_scriptdata.server.g_bfgspeed));
+	AddScript(va("set g_bfgbounce %i\n", s_scriptdata.server.g_bfgbounce));
+	AddScript(va("set g_bfggravity %i\n", s_scriptdata.server.g_bfggravity));
+	AddScript(va("set g_bfgtimeout %i\n", s_scriptdata.server.g_bfgtimeout));
+	AddScript(va("set g_bfgsradius %i\n", s_scriptdata.server.g_bfgsradius));
+	AddScript(va("set g_bfgsdamage %i\n", s_scriptdata.server.g_bfgsdamage));
+	AddScript(va("set g_bfgdamage %i\n", s_scriptdata.server.g_bfgdamage));
+	AddScript(va("set g_bfgvampire %i\n", s_scriptdata.server.g_bfgvampire));
+	AddScript(va("set g_bfginf %i\n", s_scriptdata.server.g_bfginf));
+	AddScript(va("set g_bfgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_bfgbouncemodifier));
+	AddScript(va("set g_bfgknockback  \"%s\"\n", s_scriptdata.server.g_bfgknockback));
+	AddScript(va("set g_bfghoming %i\n", s_scriptdata.server.g_bfghoming));
+	AddScript(va("set g_bfgguided %i\n", s_scriptdata.server.g_bfgguided));
+	// Гвоздомёт
+	AddScript(va("set g_ngammocount %i\n", s_scriptdata.server.g_ngammocount));
+	AddScript(va("set g_ngweaponcount %i\n", s_scriptdata.server.g_ngweaponcount));
+	AddScript(va("set g_ngdelay %i\n", s_scriptdata.server.g_ngdelay));
+	AddScript(va("set g_ngspeed %i\n", s_scriptdata.server.g_ngspeed));
+	AddScript(va("set g_ngbounce %i\n", s_scriptdata.server.g_ngbounce));
+	AddScript(va("set g_nggravity %i\n", s_scriptdata.server.g_nggravity));
+	AddScript(va("set g_ngtimeout %i\n", s_scriptdata.server.g_ngtimeout));
+	AddScript(va("set g_ngcount %i\n", s_scriptdata.server.g_ngcount));
+	AddScript(va("set g_ngspread %i\n", s_scriptdata.server.g_ngspread));
+	AddScript(va("set g_ngdamage %i\n", s_scriptdata.server.g_ngdamage));
+	AddScript(va("set g_ngrandom %i\n", s_scriptdata.server.g_ngrandom));
+	AddScript(va("set g_ngvampire %i\n", s_scriptdata.server.g_ngvampire));
+	AddScript(va("set g_nginf %i\n", s_scriptdata.server.g_nginf));
+	AddScript(va("set g_ngbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ngbouncemodifier));
+	AddScript(va("set g_ngknockback  \"%s\"\n", s_scriptdata.server.g_ngknockback));
+	AddScript(va("set g_nghoming %i\n", s_scriptdata.server.g_nghoming));
+	AddScript(va("set g_ngguided %i\n", s_scriptdata.server.g_ngguided));
+	// Мины
+	AddScript(va("set g_plammocount %i\n", s_scriptdata.server.g_plammocount));
+	AddScript(va("set g_plweaponcount %i\n", s_scriptdata.server.g_plweaponcount));
+	AddScript(va("set g_pldelay %i\n", s_scriptdata.server.g_pldelay));
+	AddScript(va("set g_plspeed %i\n", s_scriptdata.server.g_plspeed));
+	AddScript(va("set g_plgravity %i\n", s_scriptdata.server.g_plgravity));
+	AddScript(va("set g_pltimeout %i\n", s_scriptdata.server.g_pltimeout));
+	AddScript(va("set g_plsradius %i\n", s_scriptdata.server.g_plsradius));
+	AddScript(va("set g_plsdamage %i\n", s_scriptdata.server.g_plsdamage));
+	AddScript(va("set g_pldamage %i\n", s_scriptdata.server.g_pldamage));
+	AddScript(va("set g_plvampire %i\n", s_scriptdata.server.g_plvampire));
+	AddScript(va("set g_plinf %i\n", s_scriptdata.server.g_plinf));
+	AddScript(va("set g_plknockback  \"%s\"\n", s_scriptdata.server.g_plknockback));
+	// Пулемёт
+	AddScript(va("set g_cgammocount %i\n", s_scriptdata.server.g_cgammocount));
+	AddScript(va("set g_cgweaponcount %i\n", s_scriptdata.server.g_cgweaponcount));
+	AddScript(va("set g_cgdelay %i\n", s_scriptdata.server.g_cgdelay));
+	AddScript(va("set g_cgspread %i\n", s_scriptdata.server.g_cgspread));
+	AddScript(va("set g_cgdamage %i\n", s_scriptdata.server.g_cgdamage));
+	AddScript(va("set g_cgvampire %i\n", s_scriptdata.server.g_cgvampire));
+	AddScript(va("set g_cginf %i\n", s_scriptdata.server.g_cginf));
+	AddScript(va("set g_cgknockback  \"%s\"\n", s_scriptdata.server.g_cgknockback));
+	// Огнемёт
+	AddScript(va("set g_ftammocount %i\n", s_scriptdata.server.g_ftammocount));
+	AddScript(va("set g_ftweaponcount %i\n", s_scriptdata.server.g_ftweaponcount));
+	AddScript(va("set g_ftdelay %i\n", s_scriptdata.server.g_ftdelay));
+	AddScript(va("set g_ftspeed %i\n", s_scriptdata.server.g_ftspeed));
+	AddScript(va("set g_ftbounce %i\n", s_scriptdata.server.g_ftbounce));
+	AddScript(va("set g_ftgravity %i\n", s_scriptdata.server.g_ftgravity));
+	AddScript(va("set g_fttimeout %i\n", s_scriptdata.server.g_fttimeout));
+	AddScript(va("set g_ftsradius %i\n", s_scriptdata.server.g_ftsradius));
+	AddScript(va("set g_ftsdamage %i\n", s_scriptdata.server.g_ftsdamage));
+	AddScript(va("set g_ftdamage %i\n", s_scriptdata.server.g_ftdamage));
+	AddScript(va("set g_ftvampire %i\n", s_scriptdata.server.g_ftvampire));
+	AddScript(va("set g_ftinf %i\n", s_scriptdata.server.g_ftinf));
+	AddScript(va("set g_ftbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ftbouncemodifier));
+	AddScript(va("set g_ftknockback  \"%s\"\n", s_scriptdata.server.g_ftknockback));
+	AddScript(va("set g_fthoming %i\n", s_scriptdata.server.g_fthoming));
+	AddScript(va("set g_ftguided %i\n", s_scriptdata.server.g_ftguided));
+	// Антиматтер
+	AddScript(va("set g_amweaponcount %i\n", s_scriptdata.server.g_amweaponcount));
+	AddScript(va("set g_amdelay %i\n", s_scriptdata.server.g_amdelay));
+	AddScript(va("set g_amspeed %i\n", s_scriptdata.server.g_amspeed));
+	AddScript(va("set g_ambounce %i\n", s_scriptdata.server.g_ambounce));
+	AddScript(va("set g_amgravity %i\n", s_scriptdata.server.g_amgravity));
+	AddScript(va("set g_amtimeout %i\n", s_scriptdata.server.g_amtimeout));
+	AddScript(va("set g_amsradius %i\n", s_scriptdata.server.g_amsradius));
+	AddScript(va("set g_amsdamage %i\n", s_scriptdata.server.g_amsdamage));
+	AddScript(va("set g_amdamage %i\n", s_scriptdata.server.g_amdamage));
+	AddScript(va("set g_amvampire %i\n", s_scriptdata.server.g_amvampire));
+	AddScript(va("set g_aminf %i\n", s_scriptdata.server.g_aminf));
+	AddScript(va("set g_ambouncemodifier  \"%s\"\n", s_scriptdata.server.g_ambouncemodifier));
+	AddScript(va("set g_amknockback  \"%s\"\n", s_scriptdata.server.g_amknockback));
+	AddScript(va("set g_amhoming %i\n", s_scriptdata.server.g_amhoming));
+	AddScript(va("set g_amguided %i\n", s_scriptdata.server.g_amguided));
 
 	if (s_scriptdata.server.allowWarmup) {
 		value = s_scriptdata.server.warmupTime;
@@ -1083,13 +1057,11 @@ AddScript(va("set g_amguided %i\n", s_scriptdata.server.g_amguided));
 	else
 		value = 0;
 	AddScript(va("set sv_maxrate %i\n", value));
+	AddScript(va("set g_entitypack \"%s\"\n", s_scriptdata.server.entitypack));
 
 	password = "";
-	if (s_scriptdata.server.allowpass)
-		password = s_scriptdata.server.password;
-	if (!password[0]) {
-		//AddScript("set g_needpass 0\n");
-	} else {
+	password = s_scriptdata.server.password;
+	if (password[0]) {
 		AddScript(va("set g_password \"%s\"\n", password));
 		AddScript(va("set password \"%s\"\n", password));
 	}
@@ -2644,7 +2616,7 @@ qboolean StartServer_LoadFromConfig( const char* filename)
 				GUI_StartServer_LoadSkirmishCvars();
 				return qfalse;	// don't update
 			}
-			Q_strncpyz(cvar, va(gametype_cvar_base[gametype], token + 1), CVAR_BUFFER);
+			Q_strncpyz(cvar, va(var_cvar_base, token + 1), CVAR_BUFFER);
 		}
 		else
 			Q_strncpyz(cvar, token, CVAR_BUFFER);
@@ -2690,7 +2662,7 @@ static void StartServer_WriteScriptCvar( const char* cvarTemplate )
 
 	if (*cvarTemplate == '*') {
 		cvar = cvarTemplate + 1;
-		s = gametype_cvar_base[s_scriptdata.gametype];
+		s = var_cvar_base;
 	}
 	else {
 		cvar = cvarTemplate;

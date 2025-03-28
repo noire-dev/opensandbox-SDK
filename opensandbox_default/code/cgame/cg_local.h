@@ -665,6 +665,8 @@ typedef struct {
 	//notifications
 	notification_t notifications[MAX_NOTIFICATIONS];
 
+	char 		entityInfo[512];
+
 	// kill timers for carnage reward
 	int			lastKillTime;
 
@@ -785,8 +787,8 @@ typedef struct {
 	int				subtitlePrintLines;
 	float			subtitlePrintDuration;
 
-        int redObeliskHealth;
-        int blueObeliskHealth;
+    int redObeliskHealth;
+    int blueObeliskHealth;
 } cg_t;
 
 
@@ -1677,7 +1679,7 @@ qboolean CG_Cvar_ClampInt( const char *name, vmCvar_t *vmCvar, int min, int max 
 // cg_main.c
 //
 const char *CG_ConfigString( int index );
-const char *CG_Argv( int arg );
+char *CG_Argv( int arg );
 
 void QDECL CG_Printf( const char *msg, ... );
 void QDECL CG_Error( const char *msg, ... ) __attribute__((noreturn));
@@ -1763,7 +1765,7 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum );
 void CG_DrawActive( stereoFrame_t stereoView );
-void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D );
+void CG_DrawFlagModel( float x, float y, float w, float h, int team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
 void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style);
 int CG_Text_Width(const char *text, float scale, int limit);
@@ -1779,8 +1781,7 @@ void CG_InitTeamChat( void );
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText( void );
 const char *CG_GetKillerText( void );
-void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles);
-void CG_Draw3DModelToolgun(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles);
+void CG_Draw3DModelToolgun(float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material);
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending( void );
 const char *CG_GameTypeString( void );

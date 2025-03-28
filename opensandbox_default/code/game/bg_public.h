@@ -66,6 +66,13 @@
 #define MAX_DOMINATION_POINTS 8
 #define MAX_DOMINATION_POINTS_NAMES 20
 
+#define MAX_ENTITYINFO 	4
+
+//objects properties
+#define OBJ_DEFAULT					0
+#define OBJ_SANDBOX					1
+#define OBJ_EDITOR					2
+
 //npc properties
 #define NP_CHAT						1
 #define NP_CHATLISTEN				2
@@ -91,6 +98,21 @@
 #define NPC_GUARD					3
 #define NPC_PARTNER					4
 #define NPC_PARTNERENEMY			5
+
+//tools
+#define TL_CREATE					0
+#define TL_MATERIAL					1
+#define TL_DELETE					2
+#define TL_MODEL					3
+#define TL_PHYSICS					4
+#define TL_PRIVATE					5
+#define TL_COLLISION				6
+#define TL_HEALTH					7
+#define TL_COLOR					8
+#define TL_ANGLE					9
+#define TL_SCALE					10
+#define TL_REPLACEITEM				11
+#define TL_COUNT					12
 
 //
 // config strings are a general means of communicating variable length strings
@@ -149,8 +171,9 @@
 
 typedef enum {
 	GT_SANDBOX,			// sandbox
+	GT_MAPEDITOR,		// map editor
+	GT_SINGLE,			// single - SHOULD BE 3
 	GT_FFA,				// free for all
-	GT_SINGLE,			// single
 	GT_TOURNAMENT,		// one on one tournament
 
 	//-- team games go after this --
@@ -888,7 +911,7 @@ typedef enum {
 	ET_GRAPPLE,				// grapple hooked on wall
 	ET_LASER,				// lasersight entity type
 	ET_TEAM,
-    ET_WEATHER,                             // used to specify per area weather
+    ET_WEATHER,             // used to specify per area weather
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

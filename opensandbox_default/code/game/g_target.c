@@ -241,7 +241,7 @@ activator->client->pers.oldmoney = ent->count;
 
 void SP_target_stats( gentity_t *ent ) {
 	if ( !ent->type ) {
-G_Printf ("No type in target_stats\n");
+		G_Printf ("No type in target_stats\n");
 	}
 	ent->use = Use_Target_Stats;
 }

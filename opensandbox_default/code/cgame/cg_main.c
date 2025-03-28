@@ -758,7 +758,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 CG_Argv
 ================
 */
-const char *CG_Argv( int arg ) {
+char *CG_Argv( int arg ) {
 	static char	buffer[MAX_STRING_CHARS];
 
 	trap_Argv( arg, buffer, sizeof( buffer ) );
@@ -1404,7 +1404,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.invulnerabilityJuicedModel = trap_R_RegisterModel_SourceTech( "models/powerups/shield/juicer.md3" );
 	cgs.media.medkitUsageModel = trap_R_RegisterModel_SourceTech( "models/powerups/regen.md3" );
 	cgs.media.heartShader = trap_R_RegisterShaderNoMip( "ui/assets/statusbar/selectedhealth.tga" );
-
 
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel_SourceTech( "models/powerups/shield/shield.md3" );
 	cgs.media.medalImpressive = trap_R_RegisterShaderNoMip( "medal_impressive" );
