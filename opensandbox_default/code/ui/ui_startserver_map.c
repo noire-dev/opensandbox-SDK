@@ -65,8 +65,6 @@
 #define ACTIONTYPE_DELETERU "Удалить все"
 #define ACTIONTYPE_COPYRU " Скопировать из"
 
-
-
 //
 // controls 
 //
@@ -301,9 +299,6 @@ if(cl_language.integer == 1){
 	Q_strncpyz(s_mapcontrols.mappage_text, va(s, pagenum, pagecount), MAPPAGE_TEXT);
 }
 
-
-
-
 /*
 =================
 StartServer_MapPage_CopyCustomLimitsToControls
@@ -325,9 +320,6 @@ void StartServer_MapPage_CopyCustomLimitsToControls(void)
 			s_scriptdata.map.data[base + i].timeLimit, MAX_LIMIT_BUF);
 	}
 }
-
-
-
 
 /*
 =================
