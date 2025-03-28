@@ -929,7 +929,7 @@ void PhysgunHold(gentity_t *player) {
 					return;
 				}	
 			}
-			if(!findent->client || findent->singlebot || g_extendedsandbox.integer){
+			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}
@@ -1047,7 +1047,7 @@ void GravitygunHold(gentity_t *player) {
 					return;
 				}	
 			}
-			if(!findent->client || findent->singlebot || g_extendedsandbox.integer){
+			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}

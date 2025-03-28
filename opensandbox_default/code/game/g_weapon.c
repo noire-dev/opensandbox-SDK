@@ -1023,11 +1023,9 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 	trace_t		tr;
 	vec3_t		end;
 	gentity_t	*traceEnt;
+	int			i;
 
-	char info_Classname[64];
-	char info_Model[64];
-	char info_Material[64];
-	char info_Count[64];
+	char info_entity[MAX_ENTITYINFO][64];
 
 	// set aiming directions
 	AngleVectors (ent->client->ps.viewangles, forward, right, up);
@@ -1051,18 +1049,40 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 	}
 
 	if(ent->swep_id == WP_TOOLGUN){
-		strcpy(info_Classname, traceEnt->classname);
-		if(traceEnt->s.eType == ET_PLAYER){	
-			strcpy(info_Model, va("%i", traceEnt->s.clientNum));
-		} else if(traceEnt->s.eType == ET_ITEM){	
-			strcpy(info_Model, "<NULL>");
-		} else {
-			strcpy(info_Model, traceEnt->model);
-		}
-		strcpy(info_Material, va("%i", traceEnt->sb_material));
-		strcpy(info_Count, va("%i", traceEnt->count));
+		//Classname
+		strcpy(info_entity[0], traceEnt->classname);
 
-		trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s %s %s %s\"", info_Classname, info_Model, info_Material, info_Count) );
+		//Model
+		if(traceEnt->s.eType == ET_PLAYER){	
+			strcpy(info_entity[1], va("%i", traceEnt->s.clientNum));
+		} else if(traceEnt->s.eType == ET_ITEM){	
+			strcpy(info_entity[1], "<NULL>");
+		} else {
+			strcpy(info_entity[1], traceEnt->model);
+		}
+
+		//Material
+		if(traceEnt->sb_material){
+			strcpy(info_entity[2], va("%i", traceEnt->sb_material));
+		} else {
+			strcpy(info_entity[2], "<NULL>");
+		}
+		
+		//Count
+		if(traceEnt->s.eType == ET_ITEM){
+			strcpy(info_entity[3], va("%i", traceEnt->count));
+		} else {
+			strcpy(info_entity[3], "<NULL>");
+		}
+
+		for(i = 0; i < MAX_ENTITYINFO; i++){
+			if (!strcmp(info_entity[i], "")) {
+				strcpy(info_entity[i], "<NULL>");
+			}
+		}
+
+		//Send entityInfo
+		trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s %s %s %s\"", info_entity[0], info_entity[1], info_entity[2], info_entity[3]) );
 	}
 
 	return;

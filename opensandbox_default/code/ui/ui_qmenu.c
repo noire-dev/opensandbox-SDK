@@ -624,6 +624,7 @@ void UIObject_Draw( menuobject_s *b ){
 
 		if ( focus ) {
 			UI_DrawCharCustom( x, y, 13, UI_CENTER|UI_BLINK|style, color, b->fontsize);
+			b->generic.flags |= QMF_HASMOUSEFOCUS;
 		}
 		if ( b->generic.text ) {
 			UI_DrawStringCustom( x - w, y, b->generic.text, style|UI_RIGHT, color, b->fontsize, 512 );
@@ -2568,8 +2569,6 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	int				cursor_prev;
 	menuobject_s* b;
 	
-	
-
 	// menu system keys
 	switch ( key )
 	{
@@ -3236,6 +3235,7 @@ void MenuField_Draw( menufield_s *f )
 	{
 		// draw cursor
 		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color);
+		f->generic.flags |= QMF_HASMOUSEFOCUS;
 	}
 
 	if ( f->generic.name ) {

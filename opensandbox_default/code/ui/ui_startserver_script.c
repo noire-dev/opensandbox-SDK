@@ -1504,18 +1504,9 @@ static void StartServer_WriteBotList( int* botlist, int listnum, qboolean kick )
 		Q_strncpyz(botname, Info_ValueForKey(bot, "name"), MAX_NAME_LENGTH);
 
 		if (kick) {
-			// kicking is based on the funname, if available
-			funname = Info_ValueForKey(bot, "funname");
-			if (funname[0])
-			{
-				Q_strncpyz(botname, funname, MAX_NAME_LENGTH);
-				Q_CleanStr(botname);
-				Q_strncpyz(botname, va("\"%s\"", botname), MAX_NAME_LENGTH);
-			}
-
-			AddScript(va("kick %s; ", botname));
-		}
-		else {
+			AddScript("kick allbots; ");
+			i = listnum;	//escape
+		} else {
 			skill = StartServer_GetBotSkill(skillrange);
 			if (s_scriptdata.gametype >= GT_TEAM) {
 				team = (player_team + i + 1) % 2;	// start with opposite team

@@ -211,11 +211,17 @@ void SplitStringBySpace(const char *str, char result[MAX_ENTITYINFO][64]) {
 
 static void CG_DrawToolgun() {
 	char entityInfos[MAX_ENTITYINFO][64];
-	float y;
+	float x, y;
 	vec3_t		origin;
 	gitem_t	*it;
 	int		count = 0;
 	int		i = 0;
+	vec4_t  colorblk;
+
+	colorblk[0]=0.0f;
+	colorblk[1]=0.0f;
+	colorblk[2]=0.0f;
+	colorblk[3]=0.75f;
 	
 	if(toolgun_tool.integer == TL_CREATE){
 		trap_R_RemapShader( "models/weapons/toolgun/screen", "models/weapons/toolgun/screen", "0.005" );
@@ -246,49 +252,57 @@ static void CG_DrawToolgun() {
 	if(strlen(cg.entityInfo) > 0){
     	SplitStringBySpace(cg.entityInfo, entityInfos);
 
+		x = 340;
+		y = 260+48;
+		CG_DrawRoundedRect(x-5, y-48-5, 300, 48+15+(MAX_ENTITYINFO*10), 6, colorblk);
+
     	if (strcmp(entityInfos[0], "<NULL>")) {
 			if(!BG_CheckClassname(entityInfos[0])){
 				//nothing
 			} else {
 				for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
 					if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
-						CG_DrawPic( 330, 245-48, 48, 48, trap_R_RegisterShaderNoMip( it->icon ) );
+						CG_DrawPic( x, y-48, 48, 48, trap_R_RegisterShaderNoMip( it->icon ) );
 					}
 				}
 			}
-    	    CG_DrawSmallString(330, 248 + (count * 10), va("Class: %s", entityInfos[0]), 1.00F);
+    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Class: %s", entityInfos[0]), 1.00F);
 			count++;
     	}
+		
 		if (strcmp(entityInfos[1], "<NULL>")) {
 			if(!BG_CheckClassname(entityInfos[0])){
-				CG_Draw3DModelToolgun( 330, 245-48, 48, 48,
+				CG_Draw3DModelToolgun( x, y-48, 48, 48,
 				trap_R_RegisterModel_SourceTech( entityInfos[1] ), entityInfos[1], entityInfos[2] );
 			} else {
 				//nothing
 			}
 			if(!strcmp(entityInfos[0], "player")) {
-				CG_DrawHead( 330, 245-48, 48, 48, atoi(entityInfos[1]) );
+				CG_DrawHead( x, y-48, 48, 48, atoi(entityInfos[1]) );
 			} else {
-    	    CG_DrawSmallString(330, 248 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
+    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
 			}
-			count++;
-    	}
-		if (strcmp(entityInfos[2], "0")) {
-    	    CG_DrawSmallString(330, 248 + (count * 10), va("Material: %s", entityInfos[2]), 1.00F);
 			count++;
     	}
 
-		if (strcmp(entityInfos[3], "0")) {
-    	    CG_DrawSmallString(330, 248 + (count * 10), va("Count: %s", entityInfos[3]), 1.00F);
+		if (strcmp(entityInfos[2], "<NULL>")) {
+    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Material: %s", entityInfos[2]), 1.00F);
 			count++;
-    	} else {
-			for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
-				if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
-					CG_DrawSmallString(330, 248 + (count * 10), va("Count: %i", it->quantity), 1.00F);
-					count++;
+    	}
+
+		if (strcmp(entityInfos[3], "<NULL>")) {
+			if (strcmp(entityInfos[3], "0")) {
+    	    	CG_DrawSmallString(x, y+3 + (count * 10), va("Count: %s", entityInfos[3]), 1.00F);
+				count++;
+			} else {
+				for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+					if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
+						CG_DrawSmallString(x, y+3 + (count * 10), va("Count: %i", it->quantity), 1.00F);
+						count++;
+					}
 				}
 			}
-		}
+    	}
 	}
 }
 

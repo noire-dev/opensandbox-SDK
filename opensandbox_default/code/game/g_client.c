@@ -2578,9 +2578,9 @@ void SetupCustomBot( gentity_t *bot ) {
 		G_UseTargets( bot->botspawn, bot);
 	}
 	
-	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
-	CopyAlloc(bot->target, bot->botspawn->target);
-	}
+	//if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
+	CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
+	//}
 }
 
 void SetUnlimitedWeapons( gentity_t *ent ) {

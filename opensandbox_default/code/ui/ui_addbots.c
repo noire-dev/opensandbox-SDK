@@ -207,17 +207,6 @@ static void UI_AddBotsMenu_BackEvent( void* ptr, int event ) {
 	UI_PopMenu();
 }
 
-static void UI_AddBotsMenu_Createdbot( const char *info ) {
-	fileHandle_t f;
-	
-	trap_FS_FOpenFile(va("bots/%s.dbot", info ),&f,FS_WRITE);
-	
-	trap_FS_Write("null", 4, f);
-	
-	trap_FS_FCloseFile(f);
-}
-
-
 /*
 =================
 UI_AddBotsMenu_SetBotNames
@@ -230,7 +219,6 @@ static void UI_AddBotsMenu_SetBotNames( void ) {
 	for ( n = 0; n < 7; n++ ) {
 		info = UI_GetBotInfoByNumber( addBotsMenuInfo.sortedBotNums[addBotsMenuInfo.baseBotNum + n] );
 		Q_strncpyz( addBotsMenuInfo.botnames[n], Info_ValueForKey( info, "name" ), sizeof(addBotsMenuInfo.botnames[n]) );
-		//UI_AddBotsMenu_Createdbot(Info_ValueForKey( info, "name" ));
 	}
 
 }

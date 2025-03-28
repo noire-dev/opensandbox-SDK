@@ -818,7 +818,7 @@ void G_SpawnEntitiesFromString( void ) {
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
 	
 	if(strlen(g_entitypack.string)){
-		trap_SendConsoleCommand( EXEC_APPEND, va("loadmap maps/%s/%s.add \n", g_entitypack.string, mapname) );	//load map file
+		trap_SendConsoleCommand( EXEC_INSERT, va("wait 25; loadmap maps/%s/%s.add \n", g_entitypack.string, mapname) );	//load map file
 	}
 }
 
