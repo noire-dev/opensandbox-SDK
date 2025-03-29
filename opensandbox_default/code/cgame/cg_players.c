@@ -783,7 +783,7 @@ void CG_NewClientInfo( int clientNum ) {
 	v = Info_ValueForKey( configstring, "c1" );
 	CG_ColorFromString( v, newInfo.color1 );
 
-	// flashlight and cpma skin mode
+	// cpma skin mode
 	v = Info_ValueForKey( configstring, "hr" );
 	newInfo.helred = atoi( v );
 

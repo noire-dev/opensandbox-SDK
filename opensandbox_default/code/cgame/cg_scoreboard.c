@@ -178,7 +178,7 @@ Draw the normal in-game scoreboard
 =================
 */
 qboolean CG_DrawScoreboard( void ) {
-	int		x, y, w, i, n1, n2, n3;
+	int		x, y, w, i, n1, n2;
 	float	fade;
 	float	*fadeColor;
 	char	*s;
@@ -273,9 +273,6 @@ qboolean CG_DrawScoreboard( void ) {
 			n2 = CG_TeamScoreboard( y, TEAM_BLUE, fade, maxClients, lineHeight );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
-			n3 = CG_TeamScoreboard( y, TEAM_FREE, fade, maxClients, lineHeight );
-			y += (n3 * lineHeight) + BIGCHAR_HEIGHT;
-			maxClients -= n3;
 		} else {
 			n1 = CG_TeamScoreboard( y, TEAM_BLUE, fade, maxClients, lineHeight );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
@@ -283,9 +280,6 @@ qboolean CG_DrawScoreboard( void ) {
 			n2 = CG_TeamScoreboard( y, TEAM_RED, fade, maxClients, lineHeight );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
-			n3 = CG_TeamScoreboard( y, TEAM_RED, fade, maxClients, lineHeight );
-			y += (n3 * lineHeight) + BIGCHAR_HEIGHT;
-			maxClients -= n3;
 		}
 		n1 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight );
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
