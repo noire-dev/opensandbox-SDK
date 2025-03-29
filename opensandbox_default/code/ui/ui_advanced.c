@@ -149,7 +149,6 @@ char* 			advanced_items[] = {
 "cg_chatTime",
 "cg_consoleTime",
 "cg_teamChatTime",
-"cg_toolguninfo",
 "cg_teamChatY",
 "cg_chatY",
 "cg_newConsole",
@@ -198,7 +197,7 @@ UI_Advanced_ParseInfos
 	int advanced_i = 0;
 	int advanced_j = 0;
 void UI_Advanced_ParseInfos( void ) {
-	for (advanced_i = 0; advanced_i < 74; advanced_i++) {
+	for (advanced_i = 0; advanced_i < 73; advanced_i++) {
 	if(Q_stricmp (s_advanced.filter.field.buffer, "")){
 	if ( !Q_stristr( advanced_items[advanced_i], s_advanced.filter.field.buffer ) ) {
 		continue;

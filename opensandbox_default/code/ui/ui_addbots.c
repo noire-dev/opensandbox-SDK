@@ -151,7 +151,7 @@ static void UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
 	trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot %s %4.2f %s %i\n",
 		addBotsMenuInfo.botnames[addBotsMenuInfo.selectedBotNum], skill, team, addBotsMenuInfo.delay) );
 
-	addBotsMenuInfo.delay += 1500;
+	addBotsMenuInfo.delay += 50;	//decreased delay
 }
 
 
@@ -418,7 +418,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.menu.fullscreen = qfalse;
 	addBotsMenuInfo.menu.wrapAround = qtrue;
 	addBotsMenuInfo.menu.native = qfalse;
-	addBotsMenuInfo.delay = 1000;
+	addBotsMenuInfo.delay = 50;
 
 	addBotsMenuInfo.gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 

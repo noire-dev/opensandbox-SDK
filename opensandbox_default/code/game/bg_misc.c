@@ -2358,7 +2358,7 @@ char *BG_TeamName( team_t team )
   if( team == TEAM_BLUE )
     return "Blue";
   if( team == TEAM_FREE )
-    return "Free For All";
+    return "Free";
   return "<team>";
 }
 

@@ -546,12 +546,16 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 			}
 		}
 		else {
-			team = "red";
+			team = "free";
 		}
 	}
 	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
-	Info_SetValueForKey( userinfo, "team", team );
+	if(customspbot){
+		Info_SetValueForKey( userinfo, "team", "free" ); //FREE_TEAM
+	} else {
+		Info_SetValueForKey( userinfo, "team", team );
+	}
 
 	bot = &g_entities[ clientNum ];
 	bot->r.svFlags |= SVF_BOT;

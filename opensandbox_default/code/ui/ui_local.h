@@ -92,7 +92,6 @@ extern	vmCvar_t 	cl_giantcharheight;
 //OpenSandbox Sandbox
 extern vmCvar_t	sb_private;
 extern vmCvar_t	sb_texture;
-extern vmCvar_t	sb_texturename;
 extern vmCvar_t	sb_grid;
 extern vmCvar_t	sb_modelnum;
 extern vmCvar_t	sb_classnum;
@@ -1036,13 +1035,6 @@ enum {
 
 void UI_RemoveBots_Cache( void );
 void UI_RemoveBotsMenu( int menutype );
-
-//
-// ui_teamorders.c
-//
-extern void UI_TeamOrdersMenu( void );
-extern void UI_TeamOrdersMenu_f( void );
-extern void UI_TeamOrdersMenu_Cache( void );
 
 //
 // ui_loadconfig.c

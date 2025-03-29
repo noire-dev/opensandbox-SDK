@@ -138,16 +138,11 @@ vmCvar_t	toolgun_toolmode1;	//mode
 vmCvar_t	toolgun_toolmode2;	//mode
 vmCvar_t	toolgun_toolmode3;	//mode
 vmCvar_t	toolgun_toolmode4;	//mode
-vmCvar_t	toolgun_modelst;	//preview model
-vmCvar_t	sb_classnum_view;	//preview class
-vmCvar_t	sb_texture_view;	//preview material
-vmCvar_t	sb_texturename;		//preview texture
 vmCvar_t	cg_hide255;			//invisible model
 
 vmCvar_t	ns_haveerror;		//Noire.Script error
 
 vmCvar_t	cg_postprocess;
-vmCvar_t	cg_toolguninfo;
 vmCvar_t	cl_language;
 vmCvar_t	con_notifytime;
 vmCvar_t 	cg_leiChibi;
@@ -419,10 +414,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &toolgun_toolmode2, "toolgun_toolmode2", "", 0},
 	{ &toolgun_toolmode3, "toolgun_toolmode3", "", 0},
 	{ &toolgun_toolmode4, "toolgun_toolmode4", "", 0},
-	{ &toolgun_modelst, "toolgun_modelst", "0", 0},
-	{ &sb_classnum_view, "sb_classnum_view", "0", 0},
-	{ &sb_texture_view, "sb_texture_view", "0", 0},
-	{ &sb_texturename, "sb_texturename", "0", 0},
 	{ &cg_hide255, "cg_hide255", "0", 0},
 
 	{ &ns_haveerror, "ns_haveerror", "0", 0},
@@ -530,8 +521,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_chatTime ,    "cg_chatTime", "10000", CVAR_ARCHIVE},
 	{ &cg_consoleTime , "cg_consoleTime", "10000", CVAR_ARCHIVE},
 	{ &cg_teamChatTime, "cg_teamChatTime", "10000", CVAR_ARCHIVE  },
-	
-	{ &cg_toolguninfo, "cg_toolguninfo", "40", CVAR_ARCHIVE  },
 
 	{ &cg_teamChatY, "cg_teamChatY", "180", CVAR_ARCHIVE  },
 	{ &cg_chatY, "cg_chatY", "-230", CVAR_ARCHIVE  },

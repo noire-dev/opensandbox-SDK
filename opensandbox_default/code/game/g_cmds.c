@@ -804,6 +804,8 @@ void SetTeam( gentity_t *ent, char *s ) {
 			team = TEAM_RED;
 		} else if ( Q_strequal( s, "blue" ) || Q_strequal( s, "b" ) ) {
 			team = TEAM_BLUE;
+		} else if ( Q_strequal( s, "free" ) && ent->singlebot ) { //FREE_TEAM
+			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
 			team = PickTeam( clientNum );
@@ -1015,6 +1017,7 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
     int     count;
     char    args[11];
     int     dir;
+	gentity_t		*checkNPC;
 
     if( ent->client->sess.sessionTeam == TEAM_NONE ) {
         dir = 1;
@@ -1056,8 +1059,8 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 			clientnum = level.maxclients - 1;
 		}
 
-                if(count>level.maxclients) //We have looked at all clients at least once and found nothing
-                    return; //We might end up in an infinite loop here. Stop it!
+        if(count>level.maxclients) //We have looked at all clients at least once and found nothing
+            return; //We might end up in an infinite loop here. Stop it!
 
 		// can only follow connected clients
 		if ( level.clients[ clientnum ].pers.connected != CON_CONNECTED ) {
@@ -1069,12 +1072,18 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 			continue;
 		}
 
-                //Stop players from spectating players on the enemy team in elimination modes.
-                if ( (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) && g_elimination_lockspectator.integer
-                    &&  ((ent->client->sess.sessionTeam == TEAM_RED && level.clients[ clientnum ].sess.sessionTeam == TEAM_BLUE) ||
-                         (ent->client->sess.sessionTeam == TEAM_BLUE && level.clients[ clientnum ].sess.sessionTeam == TEAM_RED) ) ) {
-                    continue;
-                }
+		// can't follow npc
+		checkNPC = g_entities + clientnum;
+		if ( checkNPC->singlebot ) {
+			continue;
+		}
+
+        //Stop players from spectating players on the enemy team in elimination modes.
+        if ( (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) && g_elimination_lockspectator.integer
+            &&  ((ent->client->sess.sessionTeam == TEAM_RED && level.clients[ clientnum ].sess.sessionTeam == TEAM_BLUE) ||
+                 (ent->client->sess.sessionTeam == TEAM_BLUE && level.clients[ clientnum ].sess.sessionTeam == TEAM_RED) ) ) {
+            continue;
+        }
 
 		// this is good, we can use it
 		ent->client->sess.spectatorClient = clientnum;
@@ -1105,18 +1114,8 @@ static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, cons
 	if ( other->client->pers.connected != CON_CONNECTED ) {
 		return;
 	}
-	/*if ( mode == SAY_TEAM  && !OnSameTeam(ent, other) ) {
-		return;
-	}*/
 
-        if ((ent->r.svFlags & SVF_BOT) && trap_Cvar_VariableValue( "bot_nochat" )>1) return;
-
-	// no chatting to players in tournements
-	/*if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& other->client->sess.sessionTeam == TEAM_FREE
-		&& ent->client->sess.sessionTeam != TEAM_FREE ) {
-		return;
-	}*/
+    if ((ent->r.svFlags & SVF_BOT) && trap_Cvar_VariableValue( "bot_nochat" )>1) return;
 
 	trap_SendServerCommand( other-g_entities, va("%s \"%s%c%c%s\"",
 		mode == SAY_TEAM ? "tchat" : "chat",
@@ -1135,10 +1134,6 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		location[64];
 
     if ((ent->r.svFlags & SVF_BOT) && trap_Cvar_VariableValue( "bot_nochat" )>1) return;
-
-	/*if ( (g_gametype.integer < GT_TEAM || g_ffa_gt == 1) && mode == SAY_TEAM ) {
-		mode = SAY_ALL;
-	}*/
 
 	switch ( mode ) {
 	default:

@@ -223,7 +223,6 @@ cd windows\build\ui
 %cc%  ../../../code/ui/ui_startserver_script.c
 %cc%  ../../../code/ui/ui_startserver_server.c
 %cc%  ../../../code/ui/ui_startserver_weapon.c
-%cc%  ../../../code/ui/ui_teamorders.c
 %cc%  ../../../code/ui/ui_video.c
 %cc%  ../../../code/ui/ui_workshop.c
 

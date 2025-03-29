@@ -1145,26 +1145,6 @@ team_t PickTeam( int ignoreClientNum ) {
 
 /*
 ===========
-ForceClientSkin
-
-Forces a client's skin (for teamplay)
-===========
-*/
-/*
-static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) {
-	char *p;
-
-	if ((p = strrchr(model, '/')) != 0) {
-		*p = 0;
-	}
-
-	Q_strcat(model, MAX_QPATH, "/");
-	Q_strcat(model, MAX_QPATH, skin);
-}
-*/
-
-/*
-===========
 ClientCheckName
 ============
 */
@@ -1394,11 +1374,13 @@ void ClientUserinfoChanged( int clientNum ) {
 			team = TEAM_RED;
 		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
 			team = TEAM_BLUE;
+		} else if ( !Q_stricmp( s, "free" ) && ent->singlebot ) { //FREE_TEAM
+			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
 			team = PickTeam( clientNum );
 		}
-                client->sess.sessionTeam = team;
+        client->sess.sessionTeam = team;
 	}
 	else {
 		team = client->sess.sessionTeam;
@@ -2578,9 +2560,9 @@ void SetupCustomBot( gentity_t *bot ) {
 		G_UseTargets( bot->botspawn, bot);
 	}
 	
-	//if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
-	CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
-	//}
+	if(g_gametype.integer != GT_SINGLE){
+		CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
+	}
 }
 
 void SetUnlimitedWeapons( gentity_t *ent ) {
@@ -2714,9 +2696,6 @@ void SetCustomWeapons( gentity_t *ent ) {
 
 		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_bluespawn_armor.integer;
 		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_bluespawn_health.integer;
-		if(ent->botskill == 7){
-			ent->health = ent->client->ps.stats[STAT_HEALTH] = 65000;
-		}
 	}
 	if (ent->client->sess.sessionTeam == TEAM_RED) {
 		if (g_redspawn_gauntlet.integer) {
@@ -2820,9 +2799,6 @@ void SetCustomWeapons( gentity_t *ent ) {
 
 		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_redspawn_armor.integer;
 		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_redspawn_health.integer;
-		if(ent->botskill == 7){
-			ent->health = ent->client->ps.stats[STAT_HEALTH] = 65000;
-		}
 	}
 	//Set spawnweapon
 	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){

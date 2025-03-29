@@ -1870,6 +1870,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
 	if ( !(cent->currentState.eFlags & EF_DEAD) &&
 		cg.snap->ps.persistant[PERS_TEAM] == team &&
+		team != TEAM_FREE &&
 		cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
 		if (cg_drawFriend.integer) {
 			CG_PlayerFloatSprite( cent, cgs.media.friendShader );

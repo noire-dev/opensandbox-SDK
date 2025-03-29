@@ -113,7 +113,6 @@ vmCvar_t 	cl_giantcharheight;
 //OpenSandbox Sandbox
 vmCvar_t	sb_private;
 vmCvar_t	sb_texture;
-vmCvar_t	sb_texturename;
 vmCvar_t	sb_grid;
 vmCvar_t	sb_modelnum;
 vmCvar_t	sb_classnum;
@@ -275,7 +274,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &sb_private, "sb_private", "0", 0 },
 	{ &sb_grid, "sb_grid", "25", 0 },
 	{ &sb_texture, "sb_texture", "0", 0 },
-	{ &sb_texturename, "sb_texturename", "0", 0 },
 	{ &sb_modelnum, "sb_modelnum", "0", CVAR_ARCHIVE },
 	{ &sb_classnum, "sb_classnum", "0", CVAR_ARCHIVE },
 	{ &sb_texturenum, "sb_texturenum", "0", CVAR_ARCHIVE },

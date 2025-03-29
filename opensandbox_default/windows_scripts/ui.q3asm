@@ -44,7 +44,6 @@ ui_startserver_mapsel
 ui_startserver_script
 ui_startserver_server
 ui_startserver_weapon
-ui_teamorders
 ui_video
 ui_workshop
 bg_misc

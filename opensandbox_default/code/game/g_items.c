@@ -1305,26 +1305,6 @@ ClearRegisteredItems
 void ClearRegisteredItems( void ) {
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
-	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_GAUNTLET ) );
-	RegisterItem( BG_FindItemForWeapon( WP_MACHINEGUN ) );
-	if(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION
-                    || g_gametype.integer == GT_LMS || g_elimination.integer)
-	{
-		RegisterItem( BG_FindItemForWeapon( WP_SHOTGUN ) );
-		RegisterItem( BG_FindItemForWeapon( WP_GRENADE_LAUNCHER ) );
-		RegisterItem( BG_FindItemForWeapon( WP_ROCKET_LAUNCHER ) );
-		RegisterItem( BG_FindItemForWeapon( WP_LIGHTNING ) );
-		RegisterItem( BG_FindItemForWeapon( WP_RAILGUN ) );
-		RegisterItem( BG_FindItemForWeapon( WP_PLASMAGUN ) );
-		RegisterItem( BG_FindItemForWeapon( WP_BFG ) );
-		RegisterItem( BG_FindItemForWeapon( WP_GRAPPLING_HOOK ) );
-		RegisterItem( BG_FindItemForWeapon( WP_NAILGUN ) );
-		RegisterItem( BG_FindItemForWeapon( WP_PROX_LAUNCHER ) );
-		RegisterItem( BG_FindItemForWeapon( WP_CHAINGUN ) );
-		RegisterItem( BG_FindItemForWeapon( WP_FLAMETHROWER ) );
-		RegisterItem( BG_FindItemForWeapon( WP_ANTIMATTER ) );
-	}
 	if( g_gametype.integer == GT_HARVESTER ) {
 		RegisterItem( BG_FindItem( "Red Cube" ) );
 		RegisterItem( BG_FindItem( "Blue Cube" ) );
@@ -1344,9 +1324,6 @@ void ClearRegisteredItems( void ) {
 		RegisterItem( BG_FindItem( "Red domination point" ) );
 		RegisterItem( BG_FindItem( "Blue domination point" ) );
 	}
-
-	// precache backpack in entityplus
-	RegisterItem( BG_FindItemForBackpack() );
 }
 
 /*
@@ -1388,7 +1365,7 @@ void SaveRegisteredItems( void ) {
 	}
 	string[ bg_numItems ] = 0;
 
-        G_Printf( "%i items registered\n", count );
+    G_Printf( "%i items registered\n", count );
 	trap_SetConfigstring(CS_ITEMS, string);
 }
 
@@ -1424,16 +1401,10 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	
 	ent->s.generic1 = ent->spawnflags;	//we want to know spawnflags for muting predicted pickup sounds client-side.
 
-	if(item->giType == IT_TEAM)
-	{
-		//Don't load pickups in Elimination (or maybe... gives warnings)
-			RegisterItem( item );
-		//Registrer flags anyway in CTF Elimination:
-		if (g_gametype.integer == GT_CTF_ELIMINATION && item->giType == IT_TEAM)
-			RegisterItem( item );
-		if ( G_ItemDisabled(item) )
-			return;
-	}
+	if ( G_ItemDisabled(item) )
+		return;
+
+	RegisterItem( item );
 
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item

@@ -1172,22 +1172,24 @@ static void IG_Start_SubMenu( void )
 
 	if (gametype < GT_TEAM || gametype == GT_LMS) {
 		if(cl_language.integer == 0){
-		DynamicMenu_AddIconItem("Join Game", DM_START_GAME, "menu/medals/medal_gauntlet", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Join Game", DM_START_GAME, "icons/iconf_neutral1.", 0, IG_Start_Event);
 		}
 		if(cl_language.integer == 1){
-		DynamicMenu_AddIconItem("Присоединиться к Игре", DM_START_GAME, "menu/medals/medal_gauntlet", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Присоединиться к Игре", DM_START_GAME, "icons/iconf_neutral1.", 0, IG_Start_Event);
 		}
 	}
 	else {
 		if(cl_language.integer == 0){
 		DynamicMenu_AddIconItem("Auto Join", DM_START_AUTO, "menu/medals/medal_capture", 0, IG_Start_Event);
-		DynamicMenu_AddIconItem("Join Red", DM_START_RED, "ui_icons/iconf_red", 0, IG_Start_Event);
-		DynamicMenu_AddIconItem("Join Blue", DM_START_BLUE, "ui_icons/iconf_blu", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Join Red", DM_START_RED, "icons/iconf_red1", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Join Blue", DM_START_BLUE, "icons/iconf_blu1", 0, IG_Start_Event);
+		//DynamicMenu_AddIconItem("Not on the team", DM_START_GAME, "icons/iconf_neutral1.", 0, IG_Start_Event); //FREE_TEAM
 		}
 		if(cl_language.integer == 1){
 		DynamicMenu_AddIconItem("Авто Присоединение", DM_START_AUTO, "menu/medals/medal_capture", 0, IG_Start_Event);
-		DynamicMenu_AddIconItem("Красная команда", DM_START_RED, "ui_icons/iconf_red", 0, IG_Start_Event);
-		DynamicMenu_AddIconItem("Синяя команда", DM_START_BLUE, "ui_icons/iconf_blu", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Красная команда", DM_START_RED, "icons/iconf_red1", 0, IG_Start_Event);
+		DynamicMenu_AddIconItem("Синяя команда", DM_START_BLUE, "icons/iconf_blu1", 0, IG_Start_Event);
+		//DynamicMenu_AddIconItem("Не в команде", DM_START_GAME, "icons/iconf_neutral1.", 0, IG_Start_Event); //FREE_TEAM
 		}
 	}
 

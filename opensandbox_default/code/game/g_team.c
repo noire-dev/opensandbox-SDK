@@ -1520,6 +1520,8 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 			classname = "team_CTF_redplayer";
 		else if (team == TEAM_BLUE)
 			classname = "team_CTF_blueplayer";
+			else if (team == TEAM_FREE)
+			classname = (rq3_random(0, 1) == 0) ? "team_CTF_redspawn" : "team_CTF_bluespawn";
 		else
 			return NULL;
 	} else {
@@ -1527,6 +1529,8 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 			classname = "team_CTF_redspawn";
 		else if (team == TEAM_BLUE)
 			classname = "team_CTF_bluespawn";
+		else if (team == TEAM_FREE)
+			classname = (rq3_random(0, 1) == 0) ? "team_CTF_redspawn" : "team_CTF_bluespawn";
 		else
 			return NULL;
 	}

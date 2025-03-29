@@ -233,18 +233,18 @@ static void CG_DrawToolgun() {
 		}
 	}
 	
-	CG_DrawPic( -1 - cl_screenoffset.value, 0+cg_toolguninfo.integer, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
-	CG_DrawGiantString( 0 - cl_screenoffset.value, 2+cg_toolguninfo.integer, toolgun_tooltext.string, 1.0F);
+	CG_DrawPic( -1 - cl_screenoffset.value, 40, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+	CG_DrawGiantString( 0 - cl_screenoffset.value, 42, toolgun_tooltext.string, 1.0F);
 	if(toolgun_mod19.integer == 0){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode1.string, 1.0F);
+		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode1.string, 1.0F);
 	} else if(toolgun_mod19.integer == 1){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode2.string, 1.0F);
+		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode2.string, 1.0F);
 	} else if(toolgun_mod19.integer == 2){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode3.string, 1.0F);
+		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode3.string, 1.0F);
 	} else if(toolgun_mod19.integer == 3){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 32+cg_toolguninfo.integer, toolgun_toolmode4.string, 1.0F);
+		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode4.string, 1.0F);
 	}
-	y = 50+cg_toolguninfo.integer;  CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip1.string, 1.0F);
+	y = 90;  CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip1.string, 1.0F);
 	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip2.string, 1.0F);
 	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip3.string, 1.0F);
 	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip4.string, 1.0F);
@@ -966,7 +966,7 @@ static float CG_DrawScores( float y ) {
 		}
 
                 if ( cgs.gametype == GT_DOUBLE_D ) {
-			// Display Domination point status
+				// Display Domination point status
 
 				y1 = y - 32;//BIGCHAR_HEIGHT - 8;
 				if( cgs.redflag >= 0 && cgs.redflag <= 3 ) {

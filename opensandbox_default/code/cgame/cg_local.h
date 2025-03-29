@@ -1501,16 +1501,11 @@ extern	vmCvar_t	toolgun_toolmode1;
 extern	vmCvar_t	toolgun_toolmode2;
 extern	vmCvar_t	toolgun_toolmode3;
 extern	vmCvar_t	toolgun_toolmode4;
-extern	vmCvar_t	toolgun_modelst;
-extern	vmCvar_t	sb_classnum_view;
-extern	vmCvar_t	sb_texture_view;
-extern	vmCvar_t	sb_texturename;
 extern	vmCvar_t	cg_hide255;
 
 extern	vmCvar_t	ns_haveerror;		//Noire.Script error
 
 extern	vmCvar_t	cg_postprocess;
-extern	vmCvar_t	cg_toolguninfo;
 extern	vmCvar_t	cl_language;
 extern	vmCvar_t	con_notifytime;
 extern  vmCvar_t    cg_helightred;

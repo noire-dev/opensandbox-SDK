@@ -285,22 +285,15 @@ SandboxMain_SaveChanges
 */
 static void SandboxMain_SaveChanges( void ) {
 	//save cvars
-	trap_Cvar_Set( "sb_classnum_view", "none" );
 	if(uis.sb_tab == STAB_CREATE || trap_Cvar_VariableValue("toolgun_tool") < TL_CREATE){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(tool_spawnpreset.string, tool_spawnpreset_arg(1), tool_spawnpreset_arg(2), tool_spawnpreset_arg(3), tool_spawnpreset_arg(4), MODIF_LIST) );
-	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
-	trap_Cvar_Set( "sb_classnum_view", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue] );
-	trap_Cvar_Set( "sb_texturename", s_sandboxmain.texturelist.itemnames[s_sandboxmain.texturelist.curvalue] );
 	}
 	if(trap_Cvar_VariableValue("toolgun_tool") >= TL_CREATE){
 	if(uis.sb_tab == STAB_ENTITIES){
 	trap_Cmd_ExecuteText( EXEC_INSERT, va(spawn_preset.string, s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.priv.curvalue, s_sandboxmain.grid.field.buffer, "0") );
-	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
-	trap_Cvar_Set( "sb_classnum_view", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue] );
 	}
 	if(uis.sb_tab == STAB_NPC){
 	trap_Cvar_Set( "toolcmd_spawn", va("sl npc \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.modif[0].field.buffer, s_sandboxmain.modif[1].field.buffer, s_sandboxmain.modif[2].field.buffer, s_sandboxmain.modif[3].field.buffer, s_sandboxmain.modif[4].field.buffer) );
-	trap_Cvar_Set( "toolgun_modelst", va("props/%s", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 	}
 	if(uis.sb_tab == STAB_LISTS){
 	trap_Cvar_Set( "toolcmd_spawn", va("ns_openscript_ui spawnlists/%s/%s.ns\n", s_sandboxmain.classlist.itemnames[s_sandboxmain.classlist.curvalue], s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
@@ -1507,7 +1500,6 @@ if(uis.sb_tab == STAB_ADDONS){
 	Q_strncpyz( s_sandboxmain.modif[16].field.buffer, UI_Cvar_VariableString("toolgun_mod17"), sizeof(s_sandboxmain.modif[16].field.buffer) );
 	Q_strncpyz( s_sandboxmain.modif[17].field.buffer, UI_Cvar_VariableString("toolgun_mod18"), sizeof(s_sandboxmain.modif[17].field.buffer) );
 	trap_Cvar_Set( "sb_texture", va("ptex/%s", s_sandboxmain.list.itemnames[uis.texturelist_folder]) );
-	trap_Cvar_Set( "sb_texture_view", va("ptex/props/%s", s_sandboxmain.list.itemnames[uis.texturelist_folder]) );
 	
 	if(uis.sb_tab == STAB_LISTS){
 		SandboxMain_SpawnListUpdate();

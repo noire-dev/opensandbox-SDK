@@ -654,7 +654,9 @@ void SendEntityInfoToClient( gentity_t *ent, int msec ) {
 	while ( client->timeEntityInfo >= 100 ) {
 		client->timeEntityInfo -= 100;
 
-		Weapon_Toolgun_Info( ent );			//send entity info to client for sync
+		if(g_gametype.integer == GT_SANDBOX	|| g_gametype.integer == GT_MAPEDITOR){
+			Weapon_Toolgun_Info( ent );			//send entity info to client for sync
+		}
 	}
 }
 

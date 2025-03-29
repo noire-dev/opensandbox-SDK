@@ -1122,11 +1122,6 @@ void SP_target_effect (gentity_t *self) {
 		self->think = target_effect_think;
 	}
 
-	//preload explosion assets if necessary
-	if ( self->spawnflags & SF_EFFECT_EXPLOSION ) {
-		RegisterItem( BG_FindItemForWeapon( WP_ROCKET_LAUNCHER ) );	//uses RL gfx so we must register the RL
-	}
-
 	//fade info
 	if ( self->spawnflags & SF_EFFECT_FADE ) {
 		G_SpawnVector4( "startcolor", "0 0 0 0", self->rgba1 );

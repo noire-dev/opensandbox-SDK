@@ -142,7 +142,7 @@ static itemList_t dm_itemList[] = {
 	{ "Quad", "quad", "item_quad", qfalse, "ui_icons/quad", 0 },
 	{ "Regen", "regen", "item_regen", qfalse, "ui_icons/regen", 0 },
 	{ "Invis", "invis", "item_invis", qfalse, "ui_icons/invis", 0 },
-	{ "Btl Suit", "b suit", "item_enviro", qfalse, "ui_icons/envirosuit", 0 },
+	{ "Btl Suit", "bsuit", "item_enviro", qfalse, "ui_icons/envirosuit", 0 },
 	{ "Haste", "haste", "item_haste", qfalse, "ui_icons/haste", 0 }
 };
 
