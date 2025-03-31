@@ -1488,7 +1488,7 @@ void G_RunProp(gentity_t *ent) {
 	}
 
     // Trace a line from the current origin to the new position
-    trap_Trace_SourceTech(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, MASK_PLAYERSOLID, ent->r.currentOrigin, ent->r.currentAngles);
+    trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, MASK_PLAYERSOLID);
 
     // Save origin
     VectorCopy(tr.endpos, ent->s.origin);

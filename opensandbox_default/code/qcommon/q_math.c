@@ -979,6 +979,18 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	}
 }
 
+void VectorMin(const vec3_t a, const vec3_t b, vec3_t out) {
+    out[0] = (a[0] < b[0]) ? a[0] : b[0];
+    out[1] = (a[1] < b[1]) ? a[1] : b[1];
+    out[2] = (a[2] < b[2]) ? a[2] : b[2];
+}
+
+void VectorMax(const vec3_t a, const vec3_t b, vec3_t out) {
+    out[0] = (a[0] > b[0]) ? a[0] : b[0];
+    out[1] = (a[1] > b[1]) ? a[1] : b[1];
+    out[2] = (a[2] > b[2]) ? a[2] : b[2];
+}
+
 /*
 ** assumes "src" is normalized
 */
@@ -1055,4 +1067,3 @@ void RotateAroundAxis(vec3_t axis[3], const vec3_t rotationAxis, float angle) {
                      (cosAngle + (1 - cosAngle) * rotationAxis[2] * rotationAxis[2]) * temp[i][2];
     }
 }
-
