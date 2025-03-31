@@ -1065,7 +1065,7 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 		if(traceEnt->sb_material){
 			strcpy(info_entity[2], va("%i", traceEnt->sb_material));
 		} else {
-			strcpy(info_entity[2], "<NULL>");
+			strcpy(info_entity[2], "0");
 		}
 		
 		//Count

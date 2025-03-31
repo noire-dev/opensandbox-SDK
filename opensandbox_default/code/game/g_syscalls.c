@@ -158,8 +158,8 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 	syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask );
 }
 
-void trap_TraceCapsule( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask ) {
-	syscall( G_TRACECAPSULE, results, start, mins, maxs, end, passEntityNum, contentmask );
+void trap_Trace_SourceTech( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, const vec3_t origin, const vec3_t angles ) {
+	syscall( G_TRACESOURCETECH, results, start, mins, maxs, end, passEntityNum, contentmask, origin, angles );
 }
 
 int trap_PointContents( const vec3_t point, int passEntityNum ) {

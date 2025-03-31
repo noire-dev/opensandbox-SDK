@@ -562,7 +562,6 @@ void RespawnItem( gentity_t *ent ) {
 			"weapon_knocker",
 			"weapon_propgun",
 			"weapon_regenerator",
-			"weapon_nuke",
 			"weapon_gravitygun",
 			"ammo_bullets",
 			"ammo_shells",

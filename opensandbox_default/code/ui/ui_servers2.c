@@ -118,6 +118,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 static const char *master_items[] = {
 	"Local",
+	"Internet",
 	"Favorites",
 	0
 };
@@ -1382,13 +1383,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 
 	switch( id ) {
 	case ID_MASTER:
-	if(g_arenaservers.master.curvalue == 0){
-	value = 0;	
-	}
-	if(g_arenaservers.master.curvalue == 1){
-	value = 2;	
-	}
-		
+		value = g_arenaservers.master.curvalue;
 		if (value >= 1)
 		{
 			value++;

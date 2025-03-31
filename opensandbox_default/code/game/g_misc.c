@@ -1339,6 +1339,11 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(atoi(arg19) == 2){
 		targ->s.apos.trBase[2] += atof(arg01);
 	}
+	VectorCopy(targ->s.apos.trBase, targ->s.angles);
+	VectorCopy(targ->s.apos.trBase, targ->r.currentAngles);
+	if(targ->s.modelindex2){
+		targ->r.currentAngles[1] += 90;		//if brush model, rotate bsp model
+	}
 	}
 
 	if(attacker->tool_id == TL_SCALE){
@@ -1477,13 +1482,13 @@ void G_RunProp(gentity_t *ent) {
 	
 	// Get current position based on the entity's trajectory
 	if(ent->s.eType == ET_GENERAL){ 		//is prop
-    ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.generic3);
+    	ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.generic3);
 	} else {
-    BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);		
+    	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);		
 	}
 
     // Trace a line from the current origin to the new position
-    trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, MASK_PLAYERSOLID);
+    trap_Trace_SourceTech(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, MASK_PLAYERSOLID, ent->r.currentOrigin, ent->r.currentAngles);
 
     // Save origin
     VectorCopy(tr.endpos, ent->s.origin);
@@ -1600,9 +1605,6 @@ void G_RunProp(gentity_t *ent) {
 	if(ent->s.modelindex2){
 		ent->r.currentAngles[1] += 90;	//if brush model, rotate bsp model
 	}
-
-    // Link the entity back into the world
-    trap_LinkEntity(ent);
 
     // Check for solid start (possible embedded in another object)
     if (tr.startsolid) {
