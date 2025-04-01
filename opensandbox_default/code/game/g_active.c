@@ -968,9 +968,9 @@ void PhysgunHold(gentity_t *player) {
 			VectorAdd(player->grabbedEntity->s.pos.trDelta, newvelocity, player->grabbedEntity->s.pos.trDelta);				//apply new speed
 			if(player->client->pers.cmd.buttons & BUTTON_GESTURE){
 				if(!player->grabbedEntity->r.bmodel){
-					player->grabbedEntity->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
+					player->grabbedEntity->r.currentAngles[0] = player->client->pers.cmd.angles[0];
 				}
-				player->grabbedEntity->s.apos.trBase[1] = player->client->pers.cmd.angles[1];
+				player->grabbedEntity->r.currentAngles[1] = player->client->pers.cmd.angles[1];
 			}
 			} else {
 			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens

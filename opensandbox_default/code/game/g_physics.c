@@ -35,13 +35,11 @@ Disables physics
 ================
 */
 void Phys_Disable( gentity_t *ent, vec3_t origin ) {
-	VectorCopy( origin, ent->s.pos.trBase );
+	VectorCopy( origin, ent->r.currentOrigin );	//physics origin
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
 	VectorClear( ent->s.pos.trDelta );
-	
-	VectorCopy( origin, ent->r.currentOrigin );
 }
 
 /*
@@ -55,7 +53,7 @@ void Phys_Enable( gentity_t *ent ) {
 	if(ent->sb_phys != 2){	//if it's static object, not turn phys
 		return;	
 	}
-	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );		//restore client origin from physics origin
 	if(ent->s.pos.trType != TR_GRAVITY_WATER){
 	ent->s.pos.trType = TR_GRAVITY;
 	}
@@ -145,18 +143,15 @@ void Phys_Bounce( gentity_t *ent, trace_t *trace ) {
         randomOffset[i] = ((float)rand() / 32767 - 0.5f) * 20.0f;
     }
     VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
+
 	// check for stop
-	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed) {
-        //ent->s.apos.trBase[0] = 0;
-        //ent->s.apos.trBase[2] = 0;
-        //ent->r.currentAngles[0] = 0;
-        //ent->r.currentAngles[2] = 0;
+	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed) {        
         Phys_Disable(ent, trace->endpos);
 		return;
 	}
 
 	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
-	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );	//update client origin from physics origin
 	ent->s.pos.trTime = level.time;
 }
 
@@ -229,34 +224,27 @@ void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 	if (!ent->isGrabbed && !tr->startsolid){
 		if(ent->s.pos.trType != TR_GRAVITY_WATER){
 			if (ent->s.pos.trDelta[2] != 0) {
-				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
+				ent->r.currentAngles[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
+				ent->r.currentAngles[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
 			}
 			if (ent->s.pos.trDelta[1] != 0) {
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING;
+				ent->r.currentAngles[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING;
 			}
 			if (ent->s.pos.trDelta[0] != 0) {
-				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING;
+				ent->r.currentAngles[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING;
 			}
 		} else {
 			if (ent->s.pos.trDelta[2] != 0) {
-				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
+				ent->r.currentAngles[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
+				ent->r.currentAngles[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
 			}
 			if (ent->s.pos.trDelta[1] != 0) {
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING * 0.50;
+				ent->r.currentAngles[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING * 0.50;
 			}
 			if (ent->s.pos.trDelta[0] != 0) {
-				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING * 0.50;
+				ent->r.currentAngles[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING * 0.50;
 			}
 		}
-	}
-
-	// Save rotate
-	VectorCopy(ent->s.apos.trBase, ent->s.angles);
-	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
-	if(ent->s.modelindex2){
-		ent->r.currentAngles[1] += 90;	//if brush model, rotate bsp model
 	}
 
 }
@@ -378,6 +366,10 @@ void Phys_Frame(gentity_t *ent) {
         ent->s.pos.trTime = level.time;
     }
 
+	// Update rotate
+	VectorCopy(ent->r.currentAngles, ent->s.angles);		//update server angles from physics angles
+	VectorCopy(ent->r.currentAngles, ent->s.apos.trBase);	//update client angles from physics angles
+
     // If the entity is stationary, re-link it and run the think function
     if (ent->s.pos.trType == TR_STATIONARY && Phys_CheckGround(ent, 8.0f)) {
         trap_LinkEntity(ent);
@@ -401,8 +393,8 @@ void Phys_Frame(gentity_t *ent) {
     trap_Trace(&tr, ent->r.currentOrigin, adjustedMins, adjustedMaxs, origin, ent->s.number, MASK_PLAYERSOLID);
 
     // Save origin
-    VectorCopy(tr.endpos, ent->s.origin);
-	VectorCopy(tr.endpos, ent->r.currentOrigin);
+    VectorCopy(tr.endpos, ent->s.origin);			//update server origin from trace endpos
+	VectorCopy(tr.endpos, ent->r.currentOrigin);	//update physics origin from trace endpos
 	
     // Link the entity back into the world
     trap_LinkEntity(ent);

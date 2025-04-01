@@ -235,8 +235,8 @@ void SP_func_prop( gentity_t *ent ) {
 	CopyAlloc(ent->classname, ent->sb_class);
 
 	//Origin
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( ent->s.origin, ent->s.pos.trBase );		//Client
+	VectorCopy( ent->s.origin, ent->r.currentOrigin );	//Physics
 
 	//Type
 	ent->sandboxObject = OBJ_SANDBOX;
@@ -319,9 +319,8 @@ void SP_func_prop( gentity_t *ent ) {
 	}
 
 	//Angles
-	VectorCopy(ent->s.apos.trBase, ent->s.angles);
-	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );
+	VectorCopy( ent->s.angles, ent->s.apos.trBase );	//Client
+	VectorCopy( ent->s.angles, ent->r.currentAngles );	//Physics
 
 	//Load model
 	setModel(ent, ent->model);
