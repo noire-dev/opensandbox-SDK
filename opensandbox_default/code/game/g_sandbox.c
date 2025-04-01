@@ -284,16 +284,11 @@ void SP_func_prop( gentity_t *ent ) {
 	}
 
 	//Physics
-	if(ent->sb_phys == 1){ ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; }
-	if(ent->sb_phys == 2){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; }
+	if(ent->sb_phys == PHYS_STATIC){ ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; }
+	if(ent->sb_phys == PHYS_DYNAMIC){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; }
 
 	//Collision
-	if(ent->sb_coll == 0){
-		ent->r.contents = CONTENTS_SOLID;	
-	}
-	if(ent->sb_coll == 1){
-		ent->r.contents = CONTENTS_TRIGGER;	
-	}
+	ent->r.contents = ent->sb_coll;	
 
 	//Material
 	ent->s.generic2 = ent->sb_material;
@@ -409,21 +404,15 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 		//Physics
 		if(atoi(arg09) == 0){
-		ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; ent->sb_phys = 1;
+		ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; ent->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg09) == 1){
-		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; ent->physicsBounce = atof(arg22); ent->sb_phys = 2;
+		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_DYNAMIC;
 		}
 
 		//Collision
-		if(atoi(arg10) == 0){
-		ent->r.contents = CONTENTS_SOLID;
-		ent->sb_coll = 0;
-		}
-		if(atoi(arg10) == 1){
-		ent->r.contents = CONTENTS_TRIGGER;
-		ent->sb_coll = 1;
-		}
+		ent->r.contents = atoi(arg10);
+		ent->sb_coll = atoi(arg10);
 
 		//Sound
 		ent->s.loopSound = G_SoundIndex(arg11);
@@ -556,10 +545,10 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 	if(attacker->tool_id == TL_PHYSICS){
 		if(atoi(arg19) == 0){
-		targ->s.pos.trType = TR_STATIONARY; targ->physicsObject = qfalse; targ->sb_phys = 1;
+		targ->s.pos.trType = TR_STATIONARY; targ->physicsObject = qfalse; targ->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg19) == 1){
-		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->physicsObject = qtrue; targ->sb_phys = 2;
+		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->physicsObject = qtrue; targ->sb_phys = PHYS_DYNAMIC;
 		}
 	}
 
@@ -585,11 +574,11 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(attacker->tool_id == TL_COLLISION){
 		if(atoi(arg19) == 0){
 		targ->r.contents = CONTENTS_SOLID;
-		targ->sb_coll = 0;
+		targ->sb_coll = CONTENTS_SOLID;
 		}
 		if(atoi(arg19) == 1){
 		targ->r.contents = CONTENTS_TRIGGER;
-		targ->sb_coll = 1;
+		targ->sb_coll = CONTENTS_TRIGGER;
 		}
 	}
 
@@ -619,9 +608,6 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 	VectorCopy(targ->s.apos.trBase, targ->s.angles);
 	VectorCopy(targ->s.apos.trBase, targ->r.currentAngles);
-	if(targ->s.modelindex2){
-		targ->r.currentAngles[1] += 90;		//if brush model, rotate bsp model
-	}
 	}
 
 	if(attacker->tool_id == TL_SCALE){

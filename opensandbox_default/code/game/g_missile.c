@@ -1668,9 +1668,9 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->classname = "func_prop";
 	bolt->s.generic2 = random_mt;
 	bolt->sb_material = random_mt;
-	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = 2;
+	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
 	bolt->r.contents = CONTENTS_SOLID;
-	bolt->sb_coll = 0;
+	bolt->sb_coll = CONTENTS_SOLID;
 	bolt->health = -1;
 	bolt->s.scales[0] = 0.5;
 	bolt->s.scales[1] = 0.5;
@@ -1735,7 +1735,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->classname = "misc_hihihiha";
 	bolt->s.generic2 = 0;
 	bolt->sb_material = 0;
-	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = 2;
+	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
 	bolt->r.contents = 0;
 	bolt->sb_coll = 0;
 	bolt->health = 1;

@@ -66,7 +66,7 @@
 #define MAX_DOMINATION_POINTS 8
 #define MAX_DOMINATION_POINTS_NAMES 20
 
-#define MAX_ENTITYINFO 	4
+#define MAX_ENTITYINFO 	6
 
 //objects properties
 #define OBJ_DEFAULT					0
@@ -90,6 +90,10 @@
 #define OT_VEHICLE					2
 #define OT_TNT						3
 #define OT_NUKE						4
+
+//phys type
+#define PHYS_STATIC					1
+#define PHYS_DYNAMIC				2
 
 //factions
 #define NPC_PLAYER					0

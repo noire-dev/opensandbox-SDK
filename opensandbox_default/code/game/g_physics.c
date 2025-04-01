@@ -27,6 +27,9 @@
 
 #include "g_local.h"
 
+#define PHYS_COL		 	0.70
+#define PHYS_COL_CHECK	 	0.70
+
 /*
 ================
 Phys_Disable
@@ -50,7 +53,7 @@ Enables physics
 ================
 */
 void Phys_Enable( gentity_t *ent ) {
-	if(ent->sb_phys != 2){	//if it's static object, not turn phys
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, not turn phys
 		return;	
 	}
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );		//restore client origin from physics origin
@@ -124,7 +127,7 @@ Phys_Bounce
 Bounce for physic object
 ================
 */
-void Phys_Bounce( gentity_t *ent, trace_t *trace ) {
+void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 	vec3_t	velocity;
 	float	dot;
 	int		hitTime;
@@ -132,25 +135,29 @@ void Phys_Bounce( gentity_t *ent, trace_t *trace ) {
 	int		i;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	hitTime = level.previousTime + ( level.time - level.previousTime ) * tr->fraction;
 	ST_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity, ent->s.generic3 );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
+	dot = DotProduct( velocity, tr->plane.normal );
+	VectorMA( velocity, -2*dot, tr->plane.normal, ent->s.pos.trDelta );
 
 	VectorScale( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
 
-    for (i = 0; i < 3; i++) {
-        randomOffset[i] = ((float)rand() / 32767 - 0.5f) * 20.0f;
-    }
-    VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
-
 	// check for stop
-	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed) {        
-        Phys_Disable(ent, trace->endpos);
+	if ( tr->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed ) {  
+		ent->s.apos.trBase[0] = 0;
+		ent->s.apos.trBase[2] = 0;
+		ent->r.currentAngles[0] = 0;
+		ent->r.currentAngles[2] = 0;
+        Phys_Disable(ent, tr->endpos);
 		return;
 	}
 
-	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
+	for (i = 0; i < 3; i++) {
+        randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(ent->s.pos.trDelta)*1.75;
+    }
+    VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
+
+	VectorAdd( ent->r.currentOrigin, tr->plane.normal, ent->r.currentOrigin);
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );	//update client origin from physics origin
 	ent->s.pos.trTime = level.time;
 }
@@ -162,18 +169,18 @@ Phys_CalculateBounds
 Calculate bounds for physic object
 ================
 */
-void Phys_CalculateBounds(const vec3_t angles, const vec3_t mins, const vec3_t maxs, vec3_t outMins, vec3_t outMaxs) {
+void Phys_CalculateBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
     vec3_t forward, right, up;
     vec3_t corners[8];
 	vec3_t rotatedCorners[8];
 	int    i, j;
 
-    AngleVectors(angles, forward, right, up);
+    AngleVectors(ent->r.currentAngles, forward, right, up);
 
     for (i = 0; i < 8; i++) {
-        corners[i][0] = (i & 1) ? maxs[0] : mins[0];
-        corners[i][1] = (i & 2) ? maxs[1] : mins[1];
-        corners[i][2] = (i & 4) ? maxs[2] : mins[2];
+        corners[i][0] = (i & 1) ? ent->r.maxs[0] : ent->r.mins[0];
+        corners[i][1] = (i & 2) ? ent->r.maxs[1] : ent->r.mins[1];
+        corners[i][2] = (i & 4) ? ent->r.maxs[2] : ent->r.mins[2];
     }
 
     for (i = 0; i < 8; i++) {
@@ -194,22 +201,94 @@ void Phys_CalculateBounds(const vec3_t angles, const vec3_t mins, const vec3_t m
 
 /*
 ================
+Phys_CorrectBounds
+
+Correct bounds for physic object
+================
+*/
+void Phys_CorrectBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
+	float	collmodifier = PHYS_COL;
+
+	VectorCopy(ent->r.mins, outMins);
+    VectorCopy(ent->r.maxs, outMaxs);
+	if (ent->phys_onAir && ent->phys_inSolid){
+		outMins[0] *= collmodifier;
+		outMins[1] *= collmodifier;
+		outMins[2] *= 1.00;
+		outMaxs[0] *= collmodifier;
+		outMaxs[1] *= collmodifier;
+		outMaxs[2] *= collmodifier;
+	}
+}
+
+/*
+================
 Phys_CheckGround
 
 Check ground for physic object
 ================
 */
 qboolean Phys_CheckGround(gentity_t *ent, float distance) {
-    vec3_t start, end;
+    vec3_t 	start, end;
+    vec3_t 	checkMins, checkMaxs;
+	float	collmodifier = PHYS_COL_CHECK;
     trace_t tr;
+
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, not check
+		return qtrue;
+	}
 
     VectorCopy(ent->r.currentOrigin, start);
     VectorCopy(start, end);
 	end[2] -= distance;
 
-    trap_Trace(&tr, start, ent->r.mins, ent->r.maxs, end, ent->s.number, MASK_PLAYERSOLID);
+	VectorCopy(ent->r.mins, checkMins);
+	VectorCopy(ent->r.maxs, checkMaxs);
+	checkMins[0] *= collmodifier;
+	checkMins[1] *= collmodifier;
+	checkMins[2] *= 1.00;
+	checkMaxs[0] *= collmodifier;
+	checkMaxs[1] *= collmodifier;
+	checkMaxs[2] *= -1.00;
+	checkMaxs[2] += 1.00;
+
+    trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
 
     return (tr.fraction < 1.0f);
+}
+
+/*
+================
+Phys_CheckSolid
+
+Check solid for physic object
+================
+*/
+qboolean Phys_CheckSolid(gentity_t *ent) {
+    vec3_t start, end;
+    vec3_t 	checkMins, checkMaxs;
+	float	collmodifier = 1.00;
+    trace_t tr;
+
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, not check
+		return qtrue;
+	}
+
+    VectorCopy(ent->r.currentOrigin, start);
+    VectorCopy(start, end);
+
+	VectorCopy(ent->r.mins, checkMins);
+	VectorCopy(ent->r.maxs, checkMaxs);
+	checkMins[0] *= collmodifier;
+	checkMins[1] *= collmodifier;
+	checkMins[2] *= 1.00;
+	checkMaxs[0] *= collmodifier;
+	checkMaxs[1] *= collmodifier;
+	checkMaxs[2] *= collmodifier;
+
+    trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
+
+    return tr.startsolid;
 }
 
 /*
@@ -224,29 +303,28 @@ void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 	if (!ent->isGrabbed && !tr->startsolid){
 		if(ent->s.pos.trType != TR_GRAVITY_WATER){
 			if (ent->s.pos.trDelta[2] != 0) {
-				ent->r.currentAngles[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
-				ent->r.currentAngles[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
+				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
+				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
 			}
 			if (ent->s.pos.trDelta[1] != 0) {
-				ent->r.currentAngles[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING;
+				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING;
 			}
 			if (ent->s.pos.trDelta[0] != 0) {
-				ent->r.currentAngles[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING;
+				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING;
 			}
 		} else {
 			if (ent->s.pos.trDelta[2] != 0) {
-				ent->r.currentAngles[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
-				ent->r.currentAngles[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
+				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
+				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
 			}
 			if (ent->s.pos.trDelta[1] != 0) {
-				ent->r.currentAngles[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING * 0.50;
+				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING * 0.50;
 			}
 			if (ent->s.pos.trDelta[0] != 0) {
-				ent->r.currentAngles[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING * 0.50;
+				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING * 0.50;
 			}
 		}
 	}
-
 }
 
 /*
@@ -367,16 +445,23 @@ void Phys_Frame(gentity_t *ent) {
     }
 
 	// Update rotate
-	VectorCopy(ent->r.currentAngles, ent->s.angles);		//update server angles from physics angles
-	VectorCopy(ent->r.currentAngles, ent->s.apos.trBase);	//update client angles from physics angles
+	VectorCopy(ent->s.apos.trBase, ent->s.angles);			//update server angles from client angles
+	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
+
+	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
+		ent->phys_onAir = !Phys_CheckGround(ent, 4.0f);
+	} else {
+		ent->phys_onAir = !Phys_CheckGround(ent, 1.0f);
+	}
+	ent->phys_inSolid = Phys_CheckSolid(ent);
 
     // If the entity is stationary, re-link it and run the think function
-    if (ent->s.pos.trType == TR_STATIONARY && Phys_CheckGround(ent, 8.0f)) {
-        trap_LinkEntity(ent);
-        G_RunThink(ent);
-        return;
-    } else {
-		if(ent->s.pos.trType == TR_STATIONARY){
+    if (ent->s.pos.trType == TR_STATIONARY) {
+        if(!ent->phys_onAir){
+			trap_LinkEntity(ent);
+        	G_RunThink(ent);
+        	return;
+		} else {
 			Phys_Enable(ent);
 		}
 	}
@@ -389,7 +474,7 @@ void Phys_Frame(gentity_t *ent) {
 	}
 
     // Trace a line from the current origin to the new position
-	Phys_CalculateBounds(ent->r.currentAngles, ent->r.mins, ent->r.maxs, adjustedMins, adjustedMaxs);
+	Phys_CorrectBounds(ent, adjustedMins, adjustedMaxs);
     trap_Trace(&tr, ent->r.currentOrigin, adjustedMins, adjustedMaxs, origin, ent->s.number, MASK_PLAYERSOLID);
 
     // Save origin
@@ -400,7 +485,9 @@ void Phys_Frame(gentity_t *ent) {
     trap_LinkEntity(ent);
 
 	//Check impacts
-	Phys_Impact(ent, &tr);
+	if ( !ent->phys_inSolid ) {
+		Phys_Impact(ent, &tr);
+	}
 
 	//Change angles
 	Phys_Rotate(ent, &tr);

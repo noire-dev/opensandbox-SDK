@@ -941,7 +941,7 @@ void PhysgunHold(gentity_t *player) {
 				player->grabbedEntity->grabNewPhys = 2;
 				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
 				player->grabbedEntity->physicsObject = qtrue;
-				player->grabbedEntity->sb_phys = 2;
+				player->grabbedEntity->sb_phys = PHYS_DYNAMIC;
 				Phys_Enable(player->grabbedEntity);
 				}
             }
@@ -968,9 +968,9 @@ void PhysgunHold(gentity_t *player) {
 			VectorAdd(player->grabbedEntity->s.pos.trDelta, newvelocity, player->grabbedEntity->s.pos.trDelta);				//apply new speed
 			if(player->client->pers.cmd.buttons & BUTTON_GESTURE){
 				if(!player->grabbedEntity->r.bmodel){
-					player->grabbedEntity->r.currentAngles[0] = player->client->pers.cmd.angles[0];
+					player->grabbedEntity->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
 				}
-				player->grabbedEntity->r.currentAngles[1] = player->client->pers.cmd.angles[1];
+				player->grabbedEntity->s.apos.trBase[1] = player->client->pers.cmd.angles[1];
 			}
 			} else {
 			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens
@@ -983,7 +983,7 @@ void PhysgunHold(gentity_t *player) {
 			if(!player->grabbedEntity->client){
 			player->grabbedEntity->s.pos.trType = TR_STATIONARY;	//phys 1 settings
 			player->grabbedEntity->physicsObject = qfalse;			//phys 1 settings
-			player->grabbedEntity->sb_phys = 1;						//phys 1 settings
+			player->grabbedEntity->sb_phys = PHYS_STATIC;			//phys 1 settings
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
 			if(player->grabbedEntity->s.eType == ET_ITEM){
 			player->grabbedEntity->spawnflags = 1;					//for items
@@ -1000,7 +1000,7 @@ void PhysgunHold(gentity_t *player) {
 			player->grabbedEntity->s.pos.trType = TR_GRAVITY;		//phys 2 settings
 			player->grabbedEntity->s.pos.trTime = level.time;		//phys 2 settings
 			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
-			player->grabbedEntity->sb_phys = 2;						//phys 2 settings
+			player->grabbedEntity->sb_phys = PHYS_DYNAMIC;			//phys 2 settings
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
 			if(player->grabbedEntity->s.eType == ET_ITEM){
 			player->grabbedEntity->spawnflags = 0;					//for items
@@ -1058,7 +1058,7 @@ void GravitygunHold(gentity_t *player) {
 				if(!player->grabbedEntity->client){
 				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
 				player->grabbedEntity->physicsObject = qtrue;
-				player->grabbedEntity->sb_phys = 2;
+				player->grabbedEntity->sb_phys = PHYS_DYNAMIC;
 				Phys_Enable(player->grabbedEntity);
 				}
             }
@@ -1084,7 +1084,7 @@ void GravitygunHold(gentity_t *player) {
         player->grabbedEntity->isGrabbed = qfalse;				//start
 			if(!player->grabbedEntity->client){
 			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
-			player->grabbedEntity->sb_phys = 2;						//phys 2 settings
+			player->grabbedEntity->sb_phys = PHYS_DYNAMIC;			//phys 2 settings
 			Phys_Enable(player->grabbedEntity);				//turn phys
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
 			} else {

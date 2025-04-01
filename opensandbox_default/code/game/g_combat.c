@@ -990,7 +990,7 @@ void VehiclePhys( gentity_t *self ) {
 	self->think = 0;
 	self->nextthink = 0;
 	self->r.contents = CONTENTS_SOLID;
-	self->sb_coll = 0;
+	self->sb_coll = CONTENTS_SOLID;
 	self->s.pos.trType = TR_GRAVITY;
 	self->s.pos.trTime = level.time;
 	self->physicsObject = qtrue;
@@ -1007,10 +1007,10 @@ void VehiclePhys( gentity_t *self ) {
 	
 	self->s.pos.trType = TR_STATIONARY;
 	self->physicsObject = qfalse;
-	self->sb_phys = 1;
+	self->sb_phys = PHYS_STATIC;
 	
 	self->r.contents = CONTENTS_TRIGGER;
-	self->sb_coll = 1;
+	self->sb_coll = CONTENTS_TRIGGER;
 
 	trap_UnlinkEntity( self );
 	

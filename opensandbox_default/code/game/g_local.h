@@ -310,6 +310,8 @@ struct gentity_s {
 	gentity_t 	*lastPlayer;		//for damage and killfeed
 	int			backpackContentsList[WEAPONS_NUM];
 	int			backpackContentsAmmo[WEAPONS_NUM];
+	qboolean	phys_onAir;
+	qboolean	phys_inSolid;
 };
 
 

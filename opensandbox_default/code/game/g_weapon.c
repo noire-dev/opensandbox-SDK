@@ -1075,6 +1075,20 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 			strcpy(info_entity[3], "<NULL>");
 		}
 
+		//onAir
+		if(traceEnt->s.eType == ET_GENERAL){
+			strcpy(info_entity[4], va("%i", traceEnt->phys_onAir));
+		} else {
+			strcpy(info_entity[4], "<NULL>");
+		}
+
+		//inSolid
+		if(traceEnt->s.eType == ET_GENERAL){
+			strcpy(info_entity[5], va("%i", traceEnt->phys_inSolid));
+		} else {
+			strcpy(info_entity[5], "<NULL>");
+		}
+
 		for(i = 0; i < MAX_ENTITYINFO; i++){
 			if (!strcmp(info_entity[i], "")) {
 				strcpy(info_entity[i], "<NULL>");
@@ -1082,7 +1096,7 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 		}
 
 		//Send entityInfo
-		trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s %s %s %s\"", info_entity[0], info_entity[1], info_entity[2], info_entity[3]) );
+		trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s %s %s %s %s %s\"", info_entity[0], info_entity[1], info_entity[2], info_entity[3], info_entity[4], info_entity[5]) );
 	}
 
 	return;
