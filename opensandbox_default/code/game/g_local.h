@@ -645,6 +645,7 @@ extern int				SourceTechEntityList[MAX_GENTITIES];
 //
 // g_spawn.c
 //
+
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out );
 // spawn string returns a temporary reference, you must CopyString() if you want to keep it
 qboolean	G_SpawnFloat( const char *key, const char *defaultString, float *out );
@@ -781,6 +782,7 @@ extern spawn_t spawns_table[];
 //
 // g_cmds.c
 //
+
 void Cmd_Score_f (gentity_t *ent);
 void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
@@ -790,22 +792,14 @@ char *ConcatArgs( int start );  //KK-OAX This declaration moved from g_svccmds.c
 //KK-OAX Added this to make accessible from g_svcmds_ext.c
 void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText );
 
-// KK-OAX Added this for common file stuff between Admin and Sprees.
-// g_fileops.c
-//
-void readFile_int( char **cnf, int *v );
-void readFile_string( char **cnf, char *s, int size );
-void writeFile_int( int v, fileHandle_t f );
-void writeFile_string( char *s, fileHandle_t f );
-
 //
 // g_items.c
 //
+
 void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
 void RespawnItemCtf( gentity_t *ent );
-
 void UseHoldableItem( gentity_t *ent );
 void PrecacheItem (gitem_t *it);
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle );
@@ -833,6 +827,7 @@ gentity_t *Throw_Item( gentity_t *ent, gitem_t *item, float angle );
 //
 // g_utils.c
 //
+
 int G_ModelIndex( char *name );
 int		G_SoundIndex( char *name );
 void	G_TeamCommand( team_t team, char *cmd );
@@ -853,6 +848,8 @@ gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
 gentity_t *FindEntityForGravitygun( gentity_t *ent, int range );
 void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint);
 void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
+gentity_t *G_FindEntityForEntityNum(int entityn);
+gentity_t *G_FindEntityForClientNum(int entityn);
 
 void	G_InitGentity( gentity_t *e );
 gentity_t *findradius (gentity_t *ent, vec3_t org, float rad);
@@ -887,10 +884,9 @@ void target_finish_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 //
 // g_combat.c
 //
+
 qboolean CanDamage (gentity_t *targ, vec3_t origin);
 void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
-void G_PropDamage (gentity_t *targ, gentity_t *attacker, int damage);
-void G_CarDamage (gentity_t *targ, gentity_t *attacker, int damage);
 void G_ExitVehicle (int num);
 qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
 int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir );
@@ -909,6 +905,7 @@ void TossClientCubes( gentity_t *self );
 //
 // g_missile.c
 //
+
 void G_RunMissile( gentity_t *ent );
 void ProximityMine_RemoveAll( void );
 
@@ -934,6 +931,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 //
 // g_mover.c
 //
+
 void G_RunMover( gentity_t *ent );
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
 void Break_Breakable(gentity_t *ent, gentity_t *other);
@@ -941,6 +939,7 @@ void Break_Breakable(gentity_t *ent, gentity_t *other);
 //
 // g_trigger.c
 //
+
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace );
 void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 
@@ -948,20 +947,16 @@ void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 //
 // g_misc.c
 //
+
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
 void DropPortalSource( gentity_t *ent );
 void DropPortalDestination( gentity_t *ent );
-void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 );
-void G_RunProp( gentity_t *ent );
-void G_BounceProp( gentity_t *ent, trace_t *trace );
-gentity_t *G_FindEntityForEntityNum(int entityn);
-gentity_t *G_FindEntityForClientNum(int entityn);
-void BlockDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 
 
 //
 // g_weapon.c
 //
+
 qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 //unlagged - attack prediction #3
@@ -990,6 +985,7 @@ void G_PredictPlayerMove( gentity_t *ent, float frametime );
 //
 // g_client.c
 //
+
 team_t TeamCount( int ignoreClientNum, int team );
 team_t TeamLivingCount( int ignoreClientNum, int team ); //Elimination
 team_t TeamHealthCount( int ignoreClientNum, int team ); //Elimination
@@ -1020,14 +1016,14 @@ qboolean SpawnPointIsActive( gentity_t *spot );
 //
 // g_svcmds.c
 //
-qboolean	ConsoleCommand( void );
 
-//KK-OAX Added this to make accessible from g_svcmds_ext.c
+qboolean	ConsoleCommand( void );
 gclient_t	*ClientForString( const char *s );
 
 //
 // g_weapon.c
 //
+
 void FireWeapon( gentity_t *ent );
 void KamikazeDamage( gentity_t *self );
 void CarExplodeDamage( gentity_t *self );
@@ -1040,13 +1036,14 @@ void G_StartNukeExplode( gentity_t *ent );
 //
 // p_hud.c
 //
+
 void MoveClientToIntermission (gentity_t *client);
 void G_SetStats (gentity_t *ent);
 void DeathmatchScoreboardMessage (gentity_t *client);
 
 //
 // g_cmds.c
-// Also another place /Sago
+//
 
 void DoubleDominationScoreTimeMessage( gentity_t *ent );
 void AttackingTeamMessage( gentity_t *ent );
@@ -1058,13 +1055,9 @@ void DominationPointNamesMessage (gentity_t *client);
 void DominationPointStatusMessage( gentity_t *ent );
 
 //
-// g_pweapon.c
-//
-
-
-//
 // g_main.c
 //
+
 void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
@@ -1087,6 +1080,7 @@ qboolean G_NpcFactionProp(int prop, gentity_t* ent);
 //
 // g_client.c
 //
+
 char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
 void ClientUserinfoChanged( int clientNum );
 void ClientDisconnect( int clientNum );
@@ -1103,6 +1097,7 @@ void PrecacheBotAssets();
 //
 // g_active.c
 //
+
 void ClientThink( int clientNum );
 void ClientEndFrame( gentity_t *ent );
 void G_RunClient( gentity_t *ent );
@@ -1113,6 +1108,7 @@ void G_DefaultSwep( int clientNum, int wp );
 //
 // g_team.c
 //
+
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void Team_CheckDroppedItem( gentity_t *dropped );
 qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker );
@@ -1123,11 +1119,13 @@ team_t G_TeamFromString( char *str );
 //
 // bg_alloc.c
 //
+
 void Svcmd_GameMem_f( void );
 
 //
 // g_session.c
 //
+
 void G_ReadSessionData( gclient_t *client );
 void G_InitSessionData( gclient_t *client, char *userinfo );
 void G_InitWorldSession( void );
@@ -1136,6 +1134,7 @@ void G_WriteSessionData( void );
 //
 // g_bot.c
 //
+
 void G_InitBots( qboolean restart );
 char *G_GetBotInfoByNumber( int num );
 char *G_GetBotInfoByName( const char *name );
@@ -1146,6 +1145,15 @@ void Svcmd_AddBot_f( void );
 void BotInterbreedEndMatch( void );
 
 //
+// g_physics.c
+//
+
+void Phys_Frame( gentity_t *ent );
+void Phys_Smoke( gentity_t *ent, float impact );
+void Phys_CarDamage (gentity_t *targ, gentity_t *attacker, int damage);
+
+
+//
 // g_playerstore.c
 //
 
@@ -1154,8 +1162,17 @@ void PlayerStore_store(char* guid, playerState_t ps);
 void PlayerStore_restore(char* guid, playerState_t *ps);
 
 //
+// g_sandbox.c
+//
+
+void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22, char *arg23);
+void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 );
+void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+
+//
 // g_mapfiles.c
 //
+
 qboolean G_ClassnameAllowed( char *input, qboolean danger );
 void G_WriteMapfile_f( void );
 void G_DeleteMapfile_f( void );
@@ -1960,7 +1977,8 @@ typedef struct
 
 //
 // g_svcmds_ext.c
-// These were added to a seperate file to keep g_svcmds.c navigable.
+//
+
 void Svcmd_Status_f( void );
 void Svcmd_TeamMessage_f( void );
 void Svcmd_CenterPrint_f( void );

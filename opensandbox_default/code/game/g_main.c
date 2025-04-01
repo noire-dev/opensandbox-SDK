@@ -3351,7 +3351,7 @@ void G_RunFrame( int levelTime ) {
 		}
 		
 		if ( ent->s.eType == ET_ITEM && ent->sandboxObject || ent->physicsObject && ent->sandboxObject ) {
-			G_RunProp( ent );
+			Phys_Frame( ent );
 			continue;
 		}
 

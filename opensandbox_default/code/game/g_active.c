@@ -942,7 +942,7 @@ void PhysgunHold(gentity_t *player) {
 				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
 				player->grabbedEntity->physicsObject = qtrue;
 				player->grabbedEntity->sb_phys = 2;
-				G_EnablePropPhysics(player->grabbedEntity);
+				Phys_Enable(player->grabbedEntity);
 				}
             }
         } else {
@@ -956,7 +956,7 @@ void PhysgunHold(gentity_t *player) {
 			VectorCopy(end, player->grabbedEntity->s.origin);
 			VectorCopy(end, player->grabbedEntity->s.pos.trBase);
 			VectorCopy(end, player->grabbedEntity->r.currentOrigin);
-			G_EnablePropPhysics(player->grabbedEntity);
+			Phys_Enable(player->grabbedEntity);
 			} else {
 			VectorCopy ( end, player->grabbedEntity->client->ps.origin );
 			player->grabbedEntity->client->ps.origin[2] += 1;				//player not stuck
@@ -1059,7 +1059,7 @@ void GravitygunHold(gentity_t *player) {
 				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
 				player->grabbedEntity->physicsObject = qtrue;
 				player->grabbedEntity->sb_phys = 2;
-				G_EnablePropPhysics(player->grabbedEntity);
+				Phys_Enable(player->grabbedEntity);
 				}
             }
         } else {
@@ -1073,7 +1073,7 @@ void GravitygunHold(gentity_t *player) {
 			VectorCopy(end, player->grabbedEntity->s.pos.trBase);
 			VectorCopy(end, player->grabbedEntity->r.currentOrigin);
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
-			G_EnablePropPhysics(player->grabbedEntity);
+			Phys_Enable(player->grabbedEntity);
 			} else {
 			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
 			VectorCopy ( end, player->grabbedEntity->client->ps.origin );
@@ -1085,7 +1085,7 @@ void GravitygunHold(gentity_t *player) {
 			if(!player->grabbedEntity->client){
 			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
 			player->grabbedEntity->sb_phys = 2;						//phys 2 settings
-			G_EnablePropPhysics(player->grabbedEntity);				//turn phys
+			Phys_Enable(player->grabbedEntity);				//turn phys
 			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
 			} else {
 			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
@@ -1143,7 +1143,7 @@ void CheckCarCollisions(gentity_t *ent) {
             // Optionally apply a force or velocity to the hit entity to simulate the push
 			if (impactForce > VEHICLE_SENS) {
 			if (!hit->client){
-			G_EnablePropPhysics(hit);
+			Phys_Enable(hit);
 			}
 			VectorCopy(ent->client->ps.velocity, impactVector);
 			VectorScale(impactVector, VEHICLE_PROP_IMPACT, impactVector);
@@ -1158,13 +1158,13 @@ void CheckCarCollisions(gentity_t *ent) {
 			if(impactForce > VEHICLE_DAMAGESENS){
 			if(hit->grabbedEntity != ent){
 			if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->botskill == 9 && hit->botskill != 9)){
-				G_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
+				Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
 			}
 			}
 			}
 			if(impactForce > VEHICLE_DAMAGESENS*6){
 				if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR){
-					G_PropSmoke( ent, impactForce*0.20);
+					Phys_Smoke( ent, impactForce*0.20);
 				}
 			}
         }

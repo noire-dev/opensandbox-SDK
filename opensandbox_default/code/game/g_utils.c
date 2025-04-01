@@ -1669,38 +1669,29 @@ void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint) {
     VectorCopy(tr.endpos, outPoint);
 }
 
-/*
-================
-G_DisablePropPhysics
+gentity_t *G_FindEntityForEntityNum(int entityn) {
+    int i;
+    gentity_t *ent;
 
-Disables prop physics
-================
-*/
-void G_DisablePropPhysics( gentity_t *ent, vec3_t origin ) {
-	VectorCopy( origin, ent->s.pos.trBase );
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->s.pos.trTime = 0;
-	ent->s.pos.trDuration = 0;
-	VectorClear( ent->s.pos.trDelta );
-	
-	VectorCopy( origin, ent->r.currentOrigin );
+    // go through all allocated objects
+    for (i = 0, ent = g_entities; i < level.num_entities; i++, ent++) {
+        if (ent->s.number == entityn) {
+            return ent;
+        }
+    }
+    
+    return NULL;
 }
 
-/*
-================
-G_EnablePropPhysics
+gentity_t *G_FindEntityForClientNum(int entityn) {
+    int i;
+    gentity_t *ent;
 
-Enables prop physics
-================
-*/
-void G_EnablePropPhysics( gentity_t *ent ) {
-	if(ent->sb_phys != 2){	//if it's static object, not turn phys
-		return;	
-	}
-	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
-	if(ent->s.pos.trType != TR_GRAVITY_WATER){
-	ent->s.pos.trType = TR_GRAVITY;
-	}
-	ent->s.pos.trTime = level.time;
-	ent->s.pos.trDuration = level.time;
+    for (i = 0, ent = g_entities; i < level.num_entities; i++, ent++) {
+        if (ent->client || ent->client->ps.clientNum == entityn) {
+            return ent;
+        }
+    }
+    
+    return NULL;
 }

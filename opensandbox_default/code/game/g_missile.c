@@ -1747,7 +1747,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->s.generic3 = 800;
 	bolt->sb_coltype = 25;
 	bolt->lastPlayer = self;
-	bolt->die = BlockDie;
+	bolt->die = G_DieProp;
 	bolt->takedamage = bolt->sb_takedamage;
 	bolt->takedamage2 = bolt->sb_takedamage2;
 	VectorMA(start, 64, forward, start);

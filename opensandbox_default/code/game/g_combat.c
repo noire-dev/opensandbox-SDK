@@ -1258,7 +1258,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		}
 		if(targ->sandboxObject){
-		G_EnablePropPhysics( targ );
+		Phys_Enable( targ );
 		targ->lastPlayer = attacker;
 		VectorAdd (targ->s.pos.trDelta, kvel, targ->s.pos.trDelta);
 		}
@@ -1586,14 +1586,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			targ->pain (targ, attacker, take);
 		}
 	}
-}
-
-void G_PropDamage (gentity_t *targ, gentity_t *attacker, int damage){
-	G_Damage( targ, attacker, attacker, NULL, NULL, damage, 0, MOD_PROP );
-}
-
-void G_CarDamage (gentity_t *targ, gentity_t *attacker, int damage){
-	G_Damage( targ, attacker, attacker, NULL, NULL, damage, 0, MOD_CAR );
 }
 
 void G_ExitVehicle (int num){
