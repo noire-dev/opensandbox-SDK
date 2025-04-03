@@ -993,7 +993,6 @@ void VehiclePhys( gentity_t *self ) {
 	self->sb_coll = CONTENTS_SOLID;
 	self->s.pos.trType = TR_GRAVITY;
 	self->s.pos.trTime = level.time;
-	self->physicsObject = qtrue;
 	ClientUserinfoChanged( self->parent->s.clientNum );
 	VectorSet( self->parent->r.mins, -15, -15, -24 );
 	VectorSet( self->parent->r.maxs, 15, 15, 32 );
@@ -1006,7 +1005,6 @@ void VehiclePhys( gentity_t *self ) {
 	}
 	
 	self->s.pos.trType = TR_STATIONARY;
-	self->physicsObject = qfalse;
 	self->sb_phys = PHYS_STATIC;
 	
 	self->r.contents = CONTENTS_TRIGGER;

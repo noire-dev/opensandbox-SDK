@@ -27,8 +27,8 @@
 
 #include "g_local.h"
 
-#define PHYS_COL		 	0.70
-#define PHYS_COL_CHECK	 	0.70
+#define PHYS_COL		 	0.80
+#define PHYS_COL_CHECK	 	0.80
 
 /*
 ================
@@ -133,10 +133,13 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 	int		hitTime;
     float 	randomOffset[3];
 	int		i;
+	gentity_t *hit;
+
+	hit = &g_entities[tr->entityNum];
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * tr->fraction;
-	ST_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity, ent->s.generic3 );
+	ST_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity, ent->s.origin2[O2_MASS] );
 	dot = DotProduct( velocity, tr->plane.normal );
 	VectorMA( velocity, -2*dot, tr->plane.normal, ent->s.pos.trDelta );
 
@@ -146,57 +149,25 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 	if ( tr->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed ) {  
 		ent->s.apos.trBase[0] = 0;
 		ent->s.apos.trBase[2] = 0;
-		ent->r.currentAngles[0] = 0;
-		ent->r.currentAngles[2] = 0;
         Phys_Disable(ent, tr->endpos);
 		return;
 	}
 
 	for (i = 0; i < 3; i++) {
-        randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(ent->s.pos.trDelta)*1.75;
-    }
-    VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
+		randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(ent->s.pos.trDelta)*0.50;
+	}
+	VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
+
+	if (hit->s.number != ent->s.number && hit->sandboxObject) {
+		for (i = 0; i < 3; i++) {
+    	    randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(hit->s.pos.trDelta)*1.50;
+    	}
+    	VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
+	}
 
 	VectorAdd( ent->r.currentOrigin, tr->plane.normal, ent->r.currentOrigin);
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );	//update client origin from physics origin
 	ent->s.pos.trTime = level.time;
-}
-
-/*
-================
-Phys_CalculateBounds
-
-Calculate bounds for physic object
-================
-*/
-void Phys_CalculateBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
-    vec3_t forward, right, up;
-    vec3_t corners[8];
-	vec3_t rotatedCorners[8];
-	int    i, j;
-
-    AngleVectors(ent->r.currentAngles, forward, right, up);
-
-    for (i = 0; i < 8; i++) {
-        corners[i][0] = (i & 1) ? ent->r.maxs[0] : ent->r.mins[0];
-        corners[i][1] = (i & 2) ? ent->r.maxs[1] : ent->r.mins[1];
-        corners[i][2] = (i & 4) ? ent->r.maxs[2] : ent->r.mins[2];
-    }
-
-    for (i = 0; i < 8; i++) {
-        rotatedCorners[i][0] = corners[i][0] * forward[0] + corners[i][1] * right[0] + corners[i][2] * up[0];
-        rotatedCorners[i][1] = corners[i][0] * forward[1] + corners[i][1] * right[1] + corners[i][2] * up[1];
-        rotatedCorners[i][2] = corners[i][0] * forward[2] + corners[i][1] * right[2] + corners[i][2] * up[2];
-    }
-
-    VectorCopy(rotatedCorners[0], outMins);
-    VectorCopy(rotatedCorners[0], outMaxs);
-    for (i = 1; i < 8; i++) {
-        for (j = 0; j < 3; j++) {
-            if (rotatedCorners[i][j] < outMins[j]) outMins[j] = rotatedCorners[i][j];
-            if (rotatedCorners[i][j] > outMaxs[j]) outMaxs[j] = rotatedCorners[i][j];
-        }
-    }
 }
 
 /*
@@ -223,72 +194,55 @@ void Phys_CorrectBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
 
 /*
 ================
-Phys_CheckGround
+Phys_Check
 
-Check ground for physic object
+Check ground or solid for physic object
 ================
 */
-qboolean Phys_CheckGround(gentity_t *ent, float distance) {
-    vec3_t 	start, end;
-    vec3_t 	checkMins, checkMaxs;
-	float	collmodifier = PHYS_COL_CHECK;
-    trace_t tr;
-
-	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, not check
-		return qtrue;
-	}
-
-    VectorCopy(ent->r.currentOrigin, start);
-    VectorCopy(start, end);
-	end[2] -= distance;
-
-	VectorCopy(ent->r.mins, checkMins);
-	VectorCopy(ent->r.maxs, checkMaxs);
-	checkMins[0] *= collmodifier;
-	checkMins[1] *= collmodifier;
-	checkMins[2] *= 1.00;
-	checkMaxs[0] *= collmodifier;
-	checkMaxs[1] *= collmodifier;
-	checkMaxs[2] *= -1.00;
-	checkMaxs[2] += 1.00;
-
-    trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
-
-    return (tr.fraction < 1.0f);
-}
-
-/*
-================
-Phys_CheckSolid
-
-Check solid for physic object
-================
-*/
-qboolean Phys_CheckSolid(gentity_t *ent) {
+qboolean Phys_Check(gentity_t *ent, float distance, qboolean checkGround) {
     vec3_t start, end;
-    vec3_t 	checkMins, checkMaxs;
-	float	collmodifier = 1.00;
+    vec3_t checkMins, checkMaxs;
+    float collmodifier = 1.00;
     trace_t tr;
 
-	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, not check
-		return qtrue;
-	}
+    if (ent->sb_phys == PHYS_STATIC || ent->phys_parent) {    //if it's static object, not check
+		if (checkGround) {
+        	return qtrue;
+		} else {
+			return qfalse;
+		}
+    }
 
     VectorCopy(ent->r.currentOrigin, start);
     VectorCopy(start, end);
 
-	VectorCopy(ent->r.mins, checkMins);
-	VectorCopy(ent->r.maxs, checkMaxs);
-	checkMins[0] *= collmodifier;
-	checkMins[1] *= collmodifier;
-	checkMins[2] *= 1.00;
-	checkMaxs[0] *= collmodifier;
-	checkMaxs[1] *= collmodifier;
-	checkMaxs[2] *= collmodifier;
+    // Для проверки земли изменим значение по оси Z
+    if (checkGround) {
+        end[2] -= distance;
+		collmodifier = PHYS_COL_CHECK;
+    }
+
+    VectorCopy(ent->r.mins, checkMins);
+    VectorCopy(ent->r.maxs, checkMaxs);
+    checkMins[0] *= collmodifier;
+    checkMins[1] *= collmodifier;
+    checkMins[2] *= 1.00;
+    checkMaxs[0] *= collmodifier;
+    checkMaxs[1] *= collmodifier;
+	if (checkGround) {
+		checkMaxs[2] *= -1.00;
+		checkMaxs[2] += 1.00;
+	} else {
+		checkMaxs[2] *= collmodifier;
+	}
 
     trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
 
-    return tr.startsolid;
+    if (checkGround) {
+        return (tr.fraction < 1.0f); // Для проверки земли возвращаем результат на основе fraction
+    } else {
+        return tr.startsolid; // Для проверки столкновения возвращаем startsolid
+    }
 }
 
 /*
@@ -346,9 +300,9 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	impactForceAll = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + ent->s.pos.trDelta[2] * ent->s.pos.trDelta[2]);
 	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer*g_gravityModifier.value * g_gravity.integer*g_gravityModifier.value);
 	
-	impactForce *= (ent->s.generic3/800);
-	impactForceAll *= (ent->s.generic3/800);
-	impactForceFixed *= (ent->s.generic3/800);
+	impactForce *= ent->s.origin2[O2_MASS];
+	impactForceAll *= ent->s.origin2[O2_MASS];
+	impactForceFixed *= ent->s.origin2[O2_MASS];
 
 	if(ent->s.pos.trType == TR_GRAVITY || ent->s.pos.trType == TR_GRAVITY_WATER){
 		if(trap_PointContents(tr->endpos, ent->s.number) & MASK_WATER){
@@ -420,6 +374,67 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 
 /*
 ================
+Phys_CheckWeldedEntities
+
+Check and calculate welded objects to this object
+================
+*/
+void Phys_CheckWeldedEntities(gentity_t *ent) {
+	gentity_t *object;
+	int i = 0;
+	int j = 0;
+
+    for (i = 0; i < MAX_GENTITIES; i++) {
+        object = &g_entities[i];
+		if (ent->s.number == object->phys_parent->s.number) {
+			VectorCopy(ent->r.currentOrigin, object->s.origin);
+			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
+			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.origin);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->r.currentOrigin);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.pos.trBase);
+			if (object->s.pos.trType != TR_STATIONARY) {
+				Phys_Disable(object, object->r.currentOrigin);
+			}
+			trap_UnlinkEntity(object);
+			j++;
+		}
+    }
+	if (!j){
+		ent->phys_hasWeldedObjects = qfalse;
+	}
+}
+
+/*
+================
+Phys_RestoreWeldedEntities
+
+Restores welded objects to this object
+================
+*/
+void Phys_RestoreWeldedEntities(gentity_t *ent) {
+	gentity_t *object;
+	int i = 0;
+
+    for (i = 0; i < MAX_GENTITIES; i++) {
+        object = &g_entities[i];
+		if (ent->s.number == object->phys_parent->s.number) {
+			VectorCopy(ent->r.currentOrigin, object->s.origin);
+			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
+			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.origin);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->r.currentOrigin);
+			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.pos.trBase);
+			if (object->s.pos.trType != TR_STATIONARY) {
+				Phys_Disable(object, object->r.currentOrigin);
+			}
+			trap_LinkEntity(object);
+		}
+    }
+}
+
+/*
+================
 Phys_Frame
 
 Physics frame for object
@@ -437,6 +452,7 @@ void Phys_Frame(gentity_t *ent) {
 
     // Unlink the entity so that it won't interact with other entities during the calculation
     trap_UnlinkEntity(ent);
+	Phys_CheckWeldedEntities(ent);
 	
     // If ground entity has been set to -1, apply gravity if necessary
     if (ent->s.groundEntityNum == -1 && ent->s.pos.trType != TR_GRAVITY) {
@@ -446,14 +462,16 @@ void Phys_Frame(gentity_t *ent) {
 
 	// Update rotate
 	VectorCopy(ent->s.apos.trBase, ent->s.angles);			//update server angles from client angles
-	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
+	if (ent->s.pos.trType == TR_STATIONARY) {
+		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
+	}
 
 	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
-		ent->phys_onAir = !Phys_CheckGround(ent, 4.0f);
+		ent->phys_onAir = !Phys_Check(ent, -(ent->r.mins[2]), qtrue);
 	} else {
-		ent->phys_onAir = !Phys_CheckGround(ent, 1.0f);
+		ent->phys_onAir = !Phys_Check(ent, 1.0f, qtrue);
 	}
-	ent->phys_inSolid = Phys_CheckSolid(ent);
+	ent->phys_inSolid = Phys_Check(ent, 0.0f, qfalse);
 
     // If the entity is stationary, re-link it and run the think function
     if (ent->s.pos.trType == TR_STATIONARY) {
@@ -468,7 +486,7 @@ void Phys_Frame(gentity_t *ent) {
 	
 	// Get current position based on the entity's trajectory
 	if(ent->s.eType == ET_GENERAL){ 		//is prop
-    	ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.generic3);
+    	ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.origin2[O2_MASS]);
 	} else {
     	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);		
 	}
@@ -483,6 +501,7 @@ void Phys_Frame(gentity_t *ent) {
 	
     // Link the entity back into the world
     trap_LinkEntity(ent);
+	Phys_RestoreWeldedEntities(ent);
 
 	//Check impacts
 	if ( !ent->phys_inSolid ) {

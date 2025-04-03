@@ -27,7 +27,7 @@ float   spawn_scalez = 0
 int     spawn_type = 0
 int     spawn_vehicle = 0
 float   spawn_bounce = 0
-int   spawn_mass = 0
+float   spawn_mass = 0
 
 //NPCs
 //      spawn_model

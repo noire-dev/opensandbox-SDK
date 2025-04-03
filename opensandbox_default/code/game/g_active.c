@@ -908,16 +908,89 @@ void SendPendingPredictableEvents( playerState_t *ps ) {
 	}
 }
 
-void PhysgunHold(gentity_t *player) {
-	gentity_t *findent;
-	vec3_t		end;
-	vec3_t		newvelocity;
-	
-	if(!g_allowphysgun.integer){
-		return; 
-	}
+void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity){
+	gentity_t 	*ent = player->grabbedEntity;
 
-	if (player->client->ps.generic2 == WP_GRAVITYGUN){
+	if(!ent->client){
+		ent->s.pos.trType = TR_STATIONARY;	//PHYS_STATIC settings
+		ent->sb_phys = PHYS_STATIC;			//PHYS_STATIC settings
+		VectorClear( ent->s.pos.trDelta );	//clear speed
+		if(ent->s.eType == ET_ITEM){
+			ent->spawnflags = 1;			//for items
+		}
+	} else {
+		VectorClear( ent->client->ps.velocity );	//clear speed
+		VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);			//calc player speed with old frame
+		VectorScale(velocity, 5, velocity);											//vector player sens
+		VectorAdd(ent->client->ps.velocity, velocity, ent->client->ps.velocity);	//apply new player speed	
+	}
+}
+
+void Phys_HoldDropDynanic(gentity_t *player, vec3_t velocity){
+	gentity_t 	*ent = player->grabbedEntity;
+
+	if(!ent->client){
+		ent->s.pos.trType = TR_GRAVITY;		//PHYS_DYNAMIC settings
+		ent->s.pos.trTime = level.time;		//PHYS_DYNAMIC settings
+		ent->sb_phys = PHYS_DYNAMIC;		//PHYS_DYNAMIC settings
+		VectorClear( ent->s.pos.trDelta );	//clear speed
+		if(ent->s.eType == ET_ITEM){
+			ent->spawnflags = 0;			//for items
+		}
+		VectorScale(velocity, 15, velocity);	//vector sens
+		VectorAdd(ent->s.pos.trDelta, velocity, ent->s.pos.trDelta);		//apply new speed
+	} else {
+		VectorClear( ent->client->ps.velocity );	//clear player speed
+		VectorScale(velocity, 5, velocity);			//vector player sens
+		VectorAdd(ent->client->ps.velocity, velocity, ent->client->ps.velocity);	//apply new player speed
+		if(g_awardpushing.integer){
+			ent->client->lastSentFlying = player->s.number;		//award pushing
+			ent->client->lastSentFlyingTime = level.time;		//award pushing
+		}
+	}
+	VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);				//calc speed with old frame
+}
+
+void Phys_HoldFrame(gentity_t *player, vec3_t velocity){
+	gentity_t 	*ent = player->grabbedEntity;
+	vec3_t		end;
+
+	trap_UnlinkEntity( ent );								//Unlink entity for check coll for other props
+	CrosshairPointPhys(player, player->grabDist, end);		//player->grabDist set in FindEntityForPhysgun()
+	trap_LinkEntity( ent );									//Link entity for work prop-flight
+	VectorAdd(end, player->grabOffset, end);				//physgun offset
+	VectorCopy(ent->r.currentOrigin, ent->grabOldOrigin);	//save old frame for speed apply
+	ent->lastPlayer = player;								//for save attacker
+	if(!ent->client){
+	VectorCopy(end, ent->s.origin);
+	VectorCopy(end, ent->s.pos.trBase);
+	VectorCopy(end, ent->r.currentOrigin);
+	Phys_Enable(ent);
+	VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);		//calc speed with old frame
+	VectorScale(velocity, 45, velocity);																		//vector sens
+	VectorAdd(ent->s.pos.trDelta, velocity, ent->s.pos.trDelta);	//apply new speed
+	if(player->client->pers.cmd.buttons & BUTTON_GESTURE){		//rotate
+		if(!ent->r.bmodel){
+			ent->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
+		}
+		ent->s.apos.trBase[1] = player->client->pers.cmd.angles[1];
+	}
+	} else {
+	VectorCopy ( end, ent->client->ps.origin );
+	ent->client->ps.origin[2] += 1;												//player not stuck
+	VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
+	VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);			//calc speed with old frame
+	VectorScale(velocity, 5, velocity);											//vector player sens
+	VectorAdd(ent->client->ps.velocity, velocity, ent->client->ps.velocity);	//apply new player speed	
+	}
+}
+
+void PhysgunHold(gentity_t *player) {
+	gentity_t 	*ent = player->grabbedEntity;
+	gentity_t 	*findent;
+	vec3_t		velocity;
+	
+	if (!g_allowphysgun.integer || player->client->ps.generic2 == WP_GRAVITYGUN){
 		return; 
 	}
 	
@@ -925,101 +998,30 @@ void PhysgunHold(gentity_t *player) {
         if (!player->grabbedEntity) {
             findent = FindEntityForPhysgun(player, PHYSGUN_RANGE);
 			if(findent && findent->isGrabbed == qfalse ){
-			if(findent->owner != player->s.clientNum + 1){
-				if(findent->owner != 0){
-					trap_SendServerCommand( player->s.clientNum, va( "cp \"Owned by %s\n\"", findent->ownername ));
-					return;
-				}	
-			}
+			if(!G_PlayerIsOwner(player, findent)) return;
 			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}
             if (player->grabbedEntity) {
-                player->grabbedEntity->isGrabbed = qtrue;
-				if(!player->grabbedEntity->client){
-				player->grabbedEntity->grabNewPhys = 2;
-				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
-				player->grabbedEntity->physicsObject = qtrue;
-				player->grabbedEntity->sb_phys = PHYS_DYNAMIC;
-				Phys_Enable(player->grabbedEntity);
+                ent->isGrabbed = qtrue;
+				if(!ent->client){
+				ent->grabNewPhys = PHYS_DYNAMIC;
+				ent->s.pos.trType = TR_GRAVITY;
+				ent->sb_phys = PHYS_DYNAMIC;
+				Phys_Enable(ent);
 				}
             }
         } else {
-			trap_UnlinkEntity( player->grabbedEntity );			//Unlink entity for check coll for other props
-			CrosshairPointPhys(player, player->grabDist, end);	//player->grabDist set in FindEntityForPhysgun()
-			trap_LinkEntity( player->grabbedEntity );			//Link entity for work prop-flight
-			VectorAdd(end, player->grabOffset, end);			//physgun offset
-			VectorCopy(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin);	//save old frame for speed apply
-			player->grabbedEntity->lastPlayer = player;		//for save attacker
-			if(!player->grabbedEntity->client){
-			VectorCopy(end, player->grabbedEntity->s.origin);
-			VectorCopy(end, player->grabbedEntity->s.pos.trBase);
-			VectorCopy(end, player->grabbedEntity->r.currentOrigin);
-			Phys_Enable(player->grabbedEntity);
-			} else {
-			VectorCopy ( end, player->grabbedEntity->client->ps.origin );
-			player->grabbedEntity->client->ps.origin[2] += 1;				//player not stuck
-			VectorCopy( player->grabbedEntity->client->ps.origin, player->grabbedEntity->r.currentOrigin );
-			}
-			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin, newvelocity);		//calc speed with old frame
-			if(!player->grabbedEntity->client){
-			VectorScale(newvelocity, 45, newvelocity);																		//vector sens
-			VectorAdd(player->grabbedEntity->s.pos.trDelta, newvelocity, player->grabbedEntity->s.pos.trDelta);				//apply new speed
-			if(player->client->pers.cmd.buttons & BUTTON_GESTURE){
-				if(!player->grabbedEntity->r.bmodel){
-					player->grabbedEntity->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
-				}
-				player->grabbedEntity->s.apos.trBase[1] = player->client->pers.cmd.angles[1];
-			}
-			} else {
-			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens
-			VectorAdd(player->grabbedEntity->client->ps.velocity, newvelocity, player->grabbedEntity->client->ps.velocity);		//apply new player speed	
-			}
+			Phys_HoldFrame(player, velocity);
         }
     } else if (player->grabbedEntity) {
-        player->grabbedEntity->isGrabbed = qfalse;				//start
-		if(player->grabbedEntity->grabNewPhys == 1){
-			if(!player->grabbedEntity->client){
-			player->grabbedEntity->s.pos.trType = TR_STATIONARY;	//phys 1 settings
-			player->grabbedEntity->physicsObject = qfalse;			//phys 1 settings
-			player->grabbedEntity->sb_phys = PHYS_STATIC;			//phys 1 settings
-			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
-			if(player->grabbedEntity->s.eType == ET_ITEM){
-			player->grabbedEntity->spawnflags = 1;					//for items
-			}
-			} else {
-			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear speed
-			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin, newvelocity);		//calc player speed with old frame
-			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens
-			VectorAdd(player->grabbedEntity->client->ps.velocity, newvelocity, player->grabbedEntity->client->ps.velocity);		//apply new player speed	
-			}
+        ent->isGrabbed = qfalse;
+		if(ent->grabNewPhys == PHYS_STATIC){
+			Phys_HoldDropStatic(player, velocity);
 		}
-		if(player->grabbedEntity->grabNewPhys == 2){
-			if(!player->grabbedEntity->client){
-			player->grabbedEntity->s.pos.trType = TR_GRAVITY;		//phys 2 settings
-			player->grabbedEntity->s.pos.trTime = level.time;		//phys 2 settings
-			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
-			player->grabbedEntity->sb_phys = PHYS_DYNAMIC;			//phys 2 settings
-			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
-			if(player->grabbedEntity->s.eType == ET_ITEM){
-			player->grabbedEntity->spawnflags = 0;					//for items
-			}
-			} else {
-			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed
-			}
-			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin, newvelocity);		//calc speed with old frame
-			if(!player->grabbedEntity->client){
-			VectorScale(newvelocity, 15, newvelocity);																		//vector sens
-			VectorAdd(player->grabbedEntity->s.pos.trDelta, newvelocity, player->grabbedEntity->s.pos.trDelta);				//apply new speed
-			} else {
-			VectorScale(newvelocity, 5, newvelocity);																		//vector player sens
-			VectorAdd(player->grabbedEntity->client->ps.velocity, newvelocity, player->grabbedEntity->client->ps.velocity);		//apply new player speed
-			}
-		}
-		if(g_awardpushing.integer && player->grabbedEntity->client){
-			player->grabbedEntity->client->lastSentFlying = player->s.number;	//award pushing
-			player->grabbedEntity->client->lastSentFlyingTime = level.time;		//award pushing
+		if(ent->grabNewPhys == PHYS_DYNAMIC){
+			Phys_HoldDropDynanic(player, velocity);
 		}
 		VectorClear( player->grabOffset );																				//clear offset
 		player->grabbedEntity = 0;																						//end
@@ -1027,15 +1029,12 @@ void PhysgunHold(gentity_t *player) {
 }
 
 void GravitygunHold(gentity_t *player) {
+	gentity_t 	*ent = player->grabbedEntity;
 	gentity_t *findent;
 	vec3_t		end;
-	vec3_t		newvelocity;
-	
-	if(!g_allowgravitygun.integer){
-		return; 
-	}
+	vec3_t		velocity;
 
-	if (player->client->ps.generic2 == WP_PHYSGUN){
+	if (!g_allowgravitygun.integer || player->client->ps.generic2 == WP_PHYSGUN){
 		return; 
 	}
 	
@@ -1043,65 +1042,40 @@ void GravitygunHold(gentity_t *player) {
         if (!player->grabbedEntity) {
             findent = FindEntityForGravitygun(player, GRAVITYGUN_RANGE);
 			if(findent && findent->isGrabbed == qfalse ){
-			if(findent->owner != player->s.clientNum + 1){
-				if(findent->owner != 0){
-					trap_SendServerCommand( player->s.clientNum, va( "cp \"Owned by %s\n\"", findent->ownername ));
-					return;
-				}	
-			}
+			if(!G_PlayerIsOwner(player, findent)) return;
 			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}
             if (player->grabbedEntity) {
-                player->grabbedEntity->isGrabbed = qtrue;
-				if(!player->grabbedEntity->client){
-				player->grabbedEntity->s.pos.trType = TR_GRAVITY;
-				player->grabbedEntity->physicsObject = qtrue;
-				player->grabbedEntity->sb_phys = PHYS_DYNAMIC;
-				Phys_Enable(player->grabbedEntity);
+                ent->isGrabbed = qtrue;
+				if(!ent->client){
+				ent->s.pos.trType = TR_GRAVITY;
+				ent->sb_phys = PHYS_DYNAMIC;
+				Phys_Enable(ent);
 				}
             }
         } else {
-			trap_UnlinkEntity( player->grabbedEntity );			//Unlink entity for check coll for other props
+			trap_UnlinkEntity( ent );			//Unlink entity for check coll for other props
 			CrosshairPointGravity(player, GRAVITYGUN_DIST, end);			//player->grabDist set in FindEntityForPhysgun()
-			trap_LinkEntity( player->grabbedEntity );			//Link entity for work prop-flight
-			VectorCopy(player->grabbedEntity->r.currentOrigin, player->grabbedEntity->grabOldOrigin);	//save old frame for speed apply
-			player->grabbedEntity->lastPlayer = player;		//for save attacker
-			if(!player->grabbedEntity->client){
-			VectorCopy(end, player->grabbedEntity->s.origin);
-			VectorCopy(end, player->grabbedEntity->s.pos.trBase);
-			VectorCopy(end, player->grabbedEntity->r.currentOrigin);
-			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
-			Phys_Enable(player->grabbedEntity);
+			trap_LinkEntity( ent );			//Link entity for work prop-flight
+			VectorCopy(ent->r.currentOrigin, ent->grabOldOrigin);	//save old frame for speed apply
+			ent->lastPlayer = player;		//for save attacker
+			if(!ent->client){
+			VectorCopy(end, ent->s.origin);
+			VectorCopy(end, ent->s.pos.trBase);
+			VectorCopy(end, ent->r.currentOrigin);
+			VectorClear( ent->s.pos.trDelta );	//clear speed
+			Phys_Enable(ent);
 			} else {
-			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
-			VectorCopy ( end, player->grabbedEntity->client->ps.origin );
-			VectorCopy( player->grabbedEntity->client->ps.origin, player->grabbedEntity->r.currentOrigin );
+			VectorClear( ent->client->ps.velocity );	//clear player speed	
+			VectorCopy ( end, ent->client->ps.origin );
+			VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 			}
         }
     } else if (player->grabbedEntity) {
-        player->grabbedEntity->isGrabbed = qfalse;				//start
-			if(!player->grabbedEntity->client){
-			player->grabbedEntity->physicsObject = qtrue;			//phys 2 settings
-			player->grabbedEntity->sb_phys = PHYS_DYNAMIC;			//phys 2 settings
-			Phys_Enable(player->grabbedEntity);				//turn phys
-			VectorClear( player->grabbedEntity->s.pos.trDelta );	//clear speed
-			} else {
-			VectorClear( player->grabbedEntity->client->ps.velocity );	//clear player speed	
-			if(g_awardpushing.integer){
-				player->grabbedEntity->client->lastSentFlying = player->s.number;	//award pushing
-            	player->grabbedEntity->client->lastSentFlyingTime = level.time;		//award pushing
-			}
-			}
-			VectorSubtract(player->grabbedEntity->r.currentOrigin, player->r.currentOrigin, newvelocity);		//calc speed with player pos and prop pos
-			if(!player->grabbedEntity->client){
-			VectorScale(newvelocity, 10, newvelocity);																		//vector sens
-			VectorAdd(player->grabbedEntity->s.pos.trDelta, newvelocity, player->grabbedEntity->s.pos.trDelta);				//apply new speed
-			} else {
-			VectorScale(newvelocity, 10, newvelocity);																			//vector player sens
-			VectorAdd(player->grabbedEntity->client->ps.velocity, newvelocity, player->grabbedEntity->client->ps.velocity);		//apply new player speed
-			}
+        ent->isGrabbed = qfalse;				//start
+		Phys_HoldDropDynanic(player, velocity);
 		VectorClear( player->grabOffset );																				//clear offset
 		player->grabbedEntity = 0;																						//end
 		G_AddEvent( player, EV_GRAVITYSOUND, 0 );

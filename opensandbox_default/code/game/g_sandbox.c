@@ -284,8 +284,8 @@ void SP_func_prop( gentity_t *ent ) {
 	}
 
 	//Physics
-	if(ent->sb_phys == PHYS_STATIC){ ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; }
-	if(ent->sb_phys == PHYS_DYNAMIC){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; }
+	if(ent->sb_phys == PHYS_STATIC){ ent->s.pos.trType = TR_STATIONARY; }
+	if(ent->sb_phys == PHYS_DYNAMIC){ ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; }
 
 	//Collision
 	ent->r.contents = ent->sb_coll;	
@@ -294,7 +294,7 @@ void SP_func_prop( gentity_t *ent ) {
 	ent->s.generic2 = ent->sb_material;
 
 	//Mass
-	ent->s.generic3 = ent->sb_gravity;
+	ent->s.origin2[O2_MASS] = ent->sb_gravity;
 
 	//Type
 	ent->s.torsoAnim = ent->objectType;
@@ -314,8 +314,7 @@ void SP_func_prop( gentity_t *ent ) {
 	}
 
 	//Angles
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );	//Client
-	VectorCopy( ent->s.angles, ent->r.currentAngles );	//Physics
+	VectorCopy( ent->s.angles, ent->s.apos.trBase );
 
 	//Load model
 	setModel(ent, ent->model);
@@ -365,7 +364,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 	if(!allow_spawn){
 		G_FreeEntity(ent);
-		trap_SendServerCommand( player->s.clientNum, "cp \"Spawning of this class is not allowed\n\"" );
+		trap_SendServerCommand( player->s.clientNum, "clp \"Spawning of this class is not allowed\n\"" );
 		return;
 	}
 
@@ -404,10 +403,10 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 		//Physics
 		if(atoi(arg09) == 0){
-		ent->s.pos.trType = TR_STATIONARY; ent->physicsObject = qfalse; ent->sb_phys = PHYS_STATIC;
+		ent->s.pos.trType = TR_STATIONARY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg09) == 1){
-		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsObject = qtrue; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_DYNAMIC;
+		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_DYNAMIC;
 		}
 
 		//Collision
@@ -439,8 +438,8 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		ent->vehicle = atoi(arg21);
 
 		//Mass
-		ent->sb_gravity = atoi(arg23);
-		ent->s.generic3 = atoi(arg23);
+		ent->sb_gravity = atof(arg23);
+		ent->s.origin2[O2_MASS] = atof(arg23);
 	}
 
 	// Item spawn
@@ -517,7 +516,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 	if(targ->owner != attacker->s.clientNum + 1){
 		if(targ->owner != 0){
-			trap_SendServerCommand( attacker->s.clientNum, va( "cp \"Owned by %s\n\"", targ->ownername ));
+			trap_SendServerCommand( attacker->s.clientNum, va( "clp \"Owned by %s\n\"", targ->ownername ));
 			return;
 		}	
 	}
@@ -545,10 +544,10 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 	if(attacker->tool_id == TL_PHYSICS){
 		if(atoi(arg19) == 0){
-		targ->s.pos.trType = TR_STATIONARY; targ->physicsObject = qfalse; targ->sb_phys = PHYS_STATIC;
+		targ->s.pos.trType = TR_STATIONARY; targ->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg19) == 1){
-		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->physicsObject = qtrue; targ->sb_phys = PHYS_DYNAMIC;
+		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->sb_phys = PHYS_DYNAMIC;
 		}
 	}
 
@@ -563,10 +562,10 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		}
 		if(atoi(arg19) == 2){
 		if(targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, va( "cp \"Owned by %s\n\"", targ->ownername ));
+		trap_SendServerCommand( attacker->s.clientNum, va( "clp \"Owned by %s\n\"", targ->ownername ));
 		} 
 		if(!targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, "cp \"Not owned\n\"" );
+		trap_SendServerCommand( attacker->s.clientNum, "clp \"Not owned\n\"" );
 		} 
 		}
 	}
@@ -607,7 +606,6 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		targ->s.apos.trBase[2] += atof(arg01);
 	}
 	VectorCopy(targ->s.apos.trBase, targ->s.angles);
-	VectorCopy(targ->s.apos.trBase, targ->r.currentAngles);
 	}
 
 	if(attacker->tool_id == TL_SCALE){
@@ -628,7 +626,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		gitem_t	*item;
 		int i = 1;
 		if(targ->s.eType != ET_ITEM){
-			trap_SendServerCommand( attacker->s.clientNum, "cp \"This must be the item\n\"" );
+			trap_SendServerCommand( attacker->s.clientNum, "clp \"This must be the item\n\"" );
 			return;
 		}
 		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
@@ -643,6 +641,18 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 	if(attacker->tool_id == TL_COUNT){
 		targ->count = atoi(arg01);
+	}
+
+	if(attacker->tool_id == TL_WELD){
+		if(!attacker->tool_entity){
+			attacker->tool_entity = targ;
+			trap_SendServerCommand( attacker->s.clientNum, "clp \"Сlick on the second object\n\"" );
+		} else {
+			attacker->tool_entity->phys_parent = targ;
+			VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
+			targ->phys_hasWeldedObjects = qtrue;
+			attacker->tool_entity = NULL;
+		}
 	}
 
 }

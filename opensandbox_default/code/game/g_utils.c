@@ -934,18 +934,28 @@ Marks the entity as free
 =================
 */
 void G_FreeEntity( gentity_t *ed ) {
+	gentity_t *object;
+	int i = 0;
+
 	trap_UnlinkEntity (ed);		// unlink from world
 
 	if ( ed->neverFree ) {
 		return;
 	}
-	if ( ed->vehicle && ed->parent && ed->parent->client->vehiclenum == ed->s.number){
+	if ( ed->vehicle && ed->parent && ed->parent->client->vehiclenum == ed->s.number){	//Reset vehicle
 		ed->parent->client->vehiclenum = 0;
 		ClientUserinfoChanged( ed->parent->s.clientNum );
 		VectorSet( ed->parent->r.mins, -15, -15, -24 );
 		VectorSet( ed->parent->r.maxs, 15, 15, 32 );
 		ed->parent->client->ps.gravity = (g_gravity.value*g_gravityModifier.value);
 	}
+
+    for (i = 0; i < MAX_GENTITIES; i++) {	//Reset weld ent
+        object = &g_entities[i];
+		if (ed->s.number == object->phys_parent->s.number) {
+			object->phys_parent = NULL;
+		}
+    }
 
 	memset (ed, 0, sizeof(*ed));
 	ed->classname = "freed";
@@ -1694,4 +1704,17 @@ gentity_t *G_FindEntityForClientNum(int entityn) {
     }
     
     return NULL;
+}
+
+qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
+	if(ent->owner != 0){
+    	if(ent->owner != player->s.clientNum + 1){	//offset +1 for clientNum
+			trap_SendServerCommand( player->s.clientNum, va( "clp \"Owned by %s\n\"", ent->ownername ));
+			return qfalse;	//ent owned by another player
+		} else {
+			return qtrue;	//ent owned by this player
+		}
+	} else {
+		return qtrue;	//ent not owned
+	}
 }

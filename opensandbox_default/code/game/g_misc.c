@@ -332,7 +332,7 @@ void SP_misc_teleporter_dest( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	

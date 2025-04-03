@@ -236,7 +236,7 @@ struct gentity_s {
 	int			lastThinkTime;
 	
 	int			sb_coltype;
-	int			sb_gravity;
+	float		sb_gravity;
 	char		*sb_class;
 	char		*sb_sound;
 	int			sb_material;
@@ -257,7 +257,7 @@ struct gentity_s {
 	int			wait_to_pickup;
 	int			singlebot;
 	int			tool_id;
-	char		text;
+	gentity_t	*tool_entity;
 	int			botskill;
 	
 	float		distance;
@@ -312,6 +312,9 @@ struct gentity_s {
 	int			backpackContentsAmmo[WEAPONS_NUM];
 	qboolean	phys_onAir;
 	qboolean	phys_inSolid;
+	qboolean	phys_hasWeldedObjects;
+	gentity_t	*phys_parent;
+	vec3_t		phys_relativeOrigin;
 };
 
 

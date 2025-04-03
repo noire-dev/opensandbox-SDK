@@ -95,6 +95,16 @@
 #define PHYS_STATIC					1
 #define PHYS_DYNAMIC				2
 
+//origin2 storage
+#define O2_MASS						0
+//#define O2_UNUSED					1
+//#define O2_UNUSED					2
+
+//angles2 storage
+//#define A2_UNUSED					0
+//#define A2_UNUSED					1
+//#define A2_UNUSED					2
+
 //factions
 #define NPC_PLAYER					0
 #define NPC_ENEMY					1
@@ -117,6 +127,7 @@
 #define TL_SCALE					10
 #define TL_REPLACEITEM				11
 #define TL_COUNT					12
+#define TL_WELD						13
 
 //
 // config strings are a general means of communicating variable length strings
@@ -935,8 +946,8 @@ void    BG_DefragmentMemory( void );
 void	BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
 void	BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
-void	ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, int mass );
-void	ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, int mass );
+void	ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, float mass );
+void	ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, float mass );
 
 void	BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 

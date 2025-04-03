@@ -79,7 +79,7 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -104,7 +104,7 @@ void SP_info_player_start(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 
@@ -127,7 +127,7 @@ void SP_info_player_dd(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -148,7 +148,7 @@ void SP_info_player_dd_red(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -169,7 +169,7 @@ void SP_info_player_dd_blue(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.generic3 = 900;	//mass for correct physics
+		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -1313,6 +1313,7 @@ void ClientUserinfoChanged( int clientNum ) {
     }
 
 	ent->tool_id = atoi( Info_ValueForKey( userinfo, "toolgun_tool" ) );
+	ent->tool_entity = NULL;
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 	botskill = atoi( Info_ValueForKey( userinfo, "skill" ) );

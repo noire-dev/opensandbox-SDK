@@ -1668,7 +1668,7 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->classname = "func_prop";
 	bolt->s.generic2 = random_mt;
 	bolt->sb_material = random_mt;
-	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
+	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
 	bolt->r.contents = CONTENTS_SOLID;
 	bolt->sb_coll = CONTENTS_SOLID;
 	bolt->health = -1;
@@ -1676,8 +1676,8 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->s.scales[1] = 0.5;
 	bolt->s.scales[2] = 0.5;
 	bolt->vehicle = 0;
-	bolt->sb_gravity = 800;
-	bolt->s.generic3 = 800;
+	bolt->sb_gravity = 1.00;
+	bolt->s.origin2[O2_MASS] = 1.00;
 	bolt->sb_coltype = 25;
 	bolt->lastPlayer = self;
 	bolt->takedamage = bolt->sb_takedamage;
@@ -1735,7 +1735,7 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->classname = "misc_hihihiha";
 	bolt->s.generic2 = 0;
 	bolt->sb_material = 0;
-	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsObject = qtrue; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
+	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;
 	bolt->r.contents = 0;
 	bolt->sb_coll = 0;
 	bolt->health = 1;
@@ -1743,8 +1743,8 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->s.scales[1] = 4.0;
 	bolt->s.scales[2] = 4.0;
 	bolt->vehicle = 0;
-	bolt->sb_gravity = 800;
-	bolt->s.generic3 = 800;
+	bolt->sb_gravity = 1.00;
+	bolt->s.origin2[O2_MASS] = 1.00;
 	bolt->sb_coltype = 25;
 	bolt->lastPlayer = self;
 	bolt->die = G_DieProp;

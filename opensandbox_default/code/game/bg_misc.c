@@ -1888,7 +1888,7 @@ ST_EvaluateTrajectory
 
 ================
 */
-void ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, int mass ) {
+void ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, float mass ) {
 	float		deltaTime;
 	float		phase;
 
@@ -1919,12 +1919,12 @@ void ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, i
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * (mod_gravity * (mass/800)) * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;		// FIXME: local gravity...
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * (mod_gravity * ((mass*0.50)/800)) * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * (mod_gravity * (mass*0.50)) * deltaTime * deltaTime;		// FIXME: local gravity...
 		break;
 	case TR_ROTATING:
 		if ( tr->trTime > 0 )
@@ -1948,7 +1948,7 @@ ST_EvaluateTrajectoryDelta
 For determining velocity at a given time
 ================
 */
-void ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, int mass ) {
+void ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, float mass ) {
 	float	deltaTime;
 	float	phase;
 
@@ -1977,12 +1977,12 @@ void ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= (mod_gravity * (mass/800)) * deltaTime;		// FIXME: local gravity...
+		result[2] -= (mod_gravity * mass) * deltaTime;		// FIXME: local gravity...
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= (mod_gravity * (mass*0.50)/800) * deltaTime;		// FIXME: local gravity...
+		result[2] -= (mod_gravity * (mass*0.50)) * deltaTime;		// FIXME: local gravity...
 		break;
 	default:
 		//Com_Error( ERR_DROP, "ST_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );

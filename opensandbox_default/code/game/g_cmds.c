@@ -1458,7 +1458,7 @@ static void Cmd_Altfire_Physgun_f( gentity_t *ent ){
 	if ( ent->client->ps.generic2 == WP_PHYSGUN ){
 	    if (ent->client->buttons & BUTTON_ATTACK) {
 			if (ent->grabbedEntity) {
-				ent->grabbedEntity->grabNewPhys = 1;	//say physgun about freeze option
+				ent->grabbedEntity->grabNewPhys = PHYS_STATIC;	//say physgun about freeze option
 			}
 		}
 	}

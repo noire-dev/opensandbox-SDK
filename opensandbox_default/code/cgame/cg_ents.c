@@ -948,15 +948,15 @@ static void ST_InterpolateEntityPosition( centity_t *cent ) {
 
 	// this will linearize a sine or parabolic curve, but it is important
 	// to not extrapolate player positions if more recent data is available
-	ST_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current, cent->currentState.generic3 );
-	ST_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next, cent->currentState.generic3 );
+	ST_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next, cent->currentState.origin2[O2_MASS] );
 
 	cent->lerpOrigin[0] = current[0] + f * ( next[0] - current[0] );
 	cent->lerpOrigin[1] = current[1] + f * ( next[1] - current[1] );
 	cent->lerpOrigin[2] = current[2] + f * ( next[2] - current[2] );
 
-	ST_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current, cent->currentState.generic3 );
-	ST_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next, cent->currentState.generic3 );
+	ST_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next, cent->currentState.origin2[O2_MASS] );
 
 	cent->lerpAngles[0] = LerpAngle( current[0], next[0], f );
 	cent->lerpAngles[1] = LerpAngle( current[1], next[1], f );
@@ -1152,15 +1152,15 @@ static void ST_CalcEntityLerpPositions( centity_t *cent ) {
 	}
 
 	// just use the current frame and evaluate as best we can
-	ST_EvaluateTrajectory( &cent->currentState.pos, cg.time + timeshift, cent->lerpOrigin, cent->currentState.generic3 );
-	ST_EvaluateTrajectory( &cent->currentState.apos, cg.time + timeshift, cent->lerpAngles, cent->currentState.generic3 );
+	ST_EvaluateTrajectory( &cent->currentState.pos, cg.time + timeshift, cent->lerpOrigin, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->currentState.apos, cg.time + timeshift, cent->lerpAngles, cent->currentState.origin2[O2_MASS] );
 
 	// if there's a time shift
 	if ( timeshift != 0 ) {
 		trace_t tr;
 		vec3_t lastOrigin;
 
-		ST_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin, cent->currentState.generic3 );
+		ST_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin, cent->currentState.origin2[O2_MASS] );
 
 		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT );
 
