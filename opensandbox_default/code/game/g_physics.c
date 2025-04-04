@@ -27,8 +27,9 @@
 
 #include "g_local.h"
 
-#define PHYS_COL		 	0.80
-#define PHYS_COL_CHECK	 	0.80
+#define PHYS_COL		 	0.75
+#define PHYS_COL_CHECK	 	0.75
+#define PHYS_UNBALANCED_CHECK	0.01
 
 /*
 ================
@@ -164,6 +165,31 @@ void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun){
 }
 
 /*
+=============
+Phys_RunPhysThink
+
+Runs thinking code for phys frame
+=============
+*/
+void Phys_RunPhysThink (gentity_t *ent) {
+	float	thinktime;
+
+	thinktime = ent->phys_nextthink;
+	if (thinktime <= 0) {
+		return;
+	}
+	if (thinktime > level.time) {
+		return;
+	}
+
+	ent->phys_nextthink = 0;
+	if (!ent->phys_think) {
+		G_Error ( "NULL ent->phys_think");
+	}
+	ent->phys_think (ent);
+}
+
+/*
 ================
 Phys_Disable
 
@@ -191,11 +217,72 @@ void Phys_Enable( gentity_t *ent ) {
 		return;	
 	}
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );		//restore client origin from physics origin
-	if(ent->s.pos.trType != TR_GRAVITY_WATER){
-	ent->s.pos.trType = TR_GRAVITY;
+	if(ent->phys_inWater){
+		ent->s.pos.trType = TR_GRAVITY_WATER;
+	} else {
+		ent->s.pos.trType = TR_GRAVITY;
 	}
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trDuration = level.time;
+	ent->phys_nextthink = 0;
+	ent->phys_think = NULL;
+}
+
+/*
+================
+Phys_SnapToNearestAngle
+
+Snaps physic object to nearest rotate angle
+================
+*/
+float Phys_SnapToNearestAngle(float angle) {
+	float angles[4] = {0.0f, 90.0f, 180.0f, 270.0f};
+	float closest = angles[0];
+	float minDist = fabs(angle - closest);
+	int   i;
+
+	for (i = 1; i < 4; i++) {
+		float dist = fabs(angle - angles[i]);
+		if (dist < minDist) {
+			minDist = dist;
+			closest = angles[i];
+		}
+	}
+	return closest;
+}
+
+/*
+================
+Phys_SmoothReturnToNearestAngle
+
+Return physic object to correct rotates
+================
+*/
+void Phys_SmoothReturnToNearestAngle( gentity_t *ent ) {
+    float speed = 0.50f;
+
+    float velocity = VectorLength(ent->s.pos.trDelta);
+    float mass = ent->s.origin2[O2_MASS];
+
+    speed += (velocity * 1.00f) / mass;
+
+    if (speed > 25.00) {
+        speed = 25.00;
+    }
+
+    // Плавное движение для X и Z
+    ent->s.apos.trBase[0] += (Phys_SnapToNearestAngle(ent->s.apos.trBase[0]) - ent->s.apos.trBase[0]) * speed;
+    ent->s.apos.trBase[2] += (Phys_SnapToNearestAngle(ent->s.apos.trBase[2]) - ent->s.apos.trBase[2]) * speed;
+
+    // Проверка, если значения достаточно близки к целям, чтобы остановиться
+    if (fabs(ent->s.apos.trBase[0] - Phys_SnapToNearestAngle(ent->s.apos.trBase[0])) < 0.01f) ent->s.apos.trBase[0] = Phys_SnapToNearestAngle(ent->s.apos.trBase[0]);
+    if (fabs(ent->s.apos.trBase[2] - Phys_SnapToNearestAngle(ent->s.apos.trBase[2])) < 0.01f) ent->s.apos.trBase[2] = Phys_SnapToNearestAngle(ent->s.apos.trBase[2]);
+
+    // Если объект еще не достиг угла, продолжаем его двигать
+    if (ent->s.apos.trBase[0] != Phys_SnapToNearestAngle(ent->s.apos.trBase[0]) || ent->s.apos.trBase[2] != Phys_SnapToNearestAngle(ent->s.apos.trBase[2])) {
+        ent->phys_nextthink = level.time + 1;
+        ent->phys_think = Phys_SmoothReturnToNearestAngle;
+    }
 }
 
 /*
@@ -280,10 +367,10 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 	VectorScale( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
 
 	// check for stop
-	if ( tr->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 && !ent->isGrabbed ) {  
-		ent->s.apos.trBase[0] = 0;
-		ent->s.apos.trBase[2] = 0;
-        Phys_Disable(ent, tr->endpos);
+    if (tr->plane.normal[2] > 0.2 && VectorLength(ent->s.pos.trDelta) < 40 && !ent->isGrabbed) {  
+		ent->phys_think = Phys_SmoothReturnToNearestAngle;
+		ent->phys_nextthink = level.time + 2;
+		Phys_Disable(ent, tr->endpos);
 		return;
 	}
 
@@ -316,7 +403,7 @@ void Phys_CorrectBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
 
 	VectorCopy(ent->r.mins, outMins);
     VectorCopy(ent->r.maxs, outMaxs);
-	if (ent->phys_onAir && ent->phys_inSolid){
+	if (ent->phys_inAir && ent->phys_inSolid){
 		outMins[0] *= collmodifier;
 		outMins[1] *= collmodifier;
 		outMins[2] *= 1.00;
@@ -324,6 +411,38 @@ void Phys_CorrectBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
 		outMaxs[1] *= collmodifier;
 		outMaxs[2] *= collmodifier;
 	}
+}
+
+/*
+================
+Phys_SelectPhysModel
+
+Phys model for physic object
+================
+*/
+void Phys_SelectPhysModel(gentity_t *ent) {
+
+	float impactForceFixed;
+
+	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer*g_gravityModifier.value * g_gravity.integer*g_gravityModifier.value);
+
+	impactForceFixed *= ent->s.origin2[O2_MASS];
+
+	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
+		if(!ent->phys_inWater){
+			ent->s.pos.trType = TR_GRAVITY_WATER;
+			Phys_WaterSplash( ent, impactForceFixed);
+			Phys_Enable(ent);
+			ent->s.pos.trDelta[0] *= 0.50;
+			ent->s.pos.trDelta[1] *= 0.50;
+			if(ent->s.pos.trDelta[2]){
+				ent->s.pos.trDelta[2] = 0;
+			}
+		}
+		return;
+	}
+
+	ent->s.pos.trType = TR_GRAVITY;		//default phys
 }
 
 /*
@@ -337,17 +456,13 @@ qboolean Phys_UpdateState( gentity_t *ent ) {
 
 	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta and other properties
 		VectorClear(ent->s.pos.trDelta);
-		ent->phys_onAir = qfalse;
+		ent->phys_inAir = qfalse;
 		ent->phys_inSolid = qfalse;
-		ent->phys_inHalfSolid = qfalse;
+		ent->phys_isUnbalanced = qfalse;
 	} else {
-		if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
-			ent->phys_onAir = Phys_Check(ent, -(ent->r.mins[2]), PHYSCHECK_INAIR);
-		} else {
-			ent->phys_onAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
-		}
+		ent->phys_inAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
 		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
-		ent->phys_inHalfSolid = Phys_Check(ent, 0.0f, PHYSCHECK_HALFSOLID);
+		ent->phys_isUnbalanced = Phys_Check(ent, 1.0f, PHYSCHECK_UNBALANCED);
 	}
 
 	if(ent->phys_parent){ //don't return false when welded
@@ -357,10 +472,11 @@ qboolean Phys_UpdateState( gentity_t *ent ) {
 
     // If the entity is stationary and not on air - disable physics
     if (ent->s.pos.trType == TR_STATIONARY) {
-        if(!ent->phys_onAir){
+        if(!ent->phys_inAir){
 			trap_LinkEntity(ent);
 			Phys_RestoreWeldedEntities(ent);
         	G_RunThink(ent);
+			Phys_RunPhysThink(ent);
         	return qfalse;
 		} else {
 			Phys_Enable(ent);
@@ -386,7 +502,7 @@ qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
 		if (checkNum == PHYSCHECK_SOLID) {
         	return qfalse;
 		}
-		if (checkNum == PHYSCHECK_HALFSOLID) {
+		if (checkNum == PHYSCHECK_UNBALANCED) {
         	return qfalse;
 		}
 		if (checkNum == PHYSCHECK_INAIR) {
@@ -397,8 +513,9 @@ qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
     VectorCopy(ent->r.currentOrigin, start);
     VectorCopy(start, end);
 
-	if (checkNum == PHYSCHECK_HALFSOLID) {
-		collmodifier = PHYS_COL_CHECK;
+	if (checkNum == PHYSCHECK_UNBALANCED) {
+		end[2] -= distance;
+		collmodifier = PHYS_UNBALANCED_CHECK;
 	}
 
     if (checkNum == PHYSCHECK_INAIR) {
@@ -422,11 +539,38 @@ qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
 
     trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
 
-    if (checkNum == PHYSCHECK_INAIR) {
+    if (checkNum != PHYSCHECK_SOLID) {
         return !(tr.fraction < 1.0f); // Для проверки земли возвращаем результат на основе fraction
     } else {
         return tr.startsolid; // Для проверки столкновения возвращаем startsolid
     }
+}
+
+/*
+================
+Phys_PointCheck
+
+Check point for physic object
+================
+*/
+void Phys_PointCheck(gentity_t *ent) {
+
+	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
+		ent->phys_inWater = qtrue;
+	} else {
+		ent->phys_inWater = qfalse;
+	}
+
+}
+
+float Phys_NormalizeAngle(float angle) {
+    while (angle > 360.0f) {
+        angle -= 360.0f;
+    }
+    while (angle < 0.0f) {
+        angle += 360.0f;
+    }
+    return angle;
 }
 
 /*
@@ -438,7 +582,10 @@ Rotate for physic object
 */
 void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 
-	if(ent->phys_hasWeldedObjects){
+	if(ent->phys_hasWeldedObjects || ent->phys_think){
+		ent->s.apos.trBase[0] = Phys_NormalizeAngle (ent->s.apos.trBase[0]);
+		ent->s.apos.trBase[1] = Phys_NormalizeAngle (ent->s.apos.trBase[1]);
+		ent->s.apos.trBase[2] = Phys_NormalizeAngle (ent->s.apos.trBase[2]);
 		return;
 	}
 
@@ -467,6 +614,9 @@ void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 			}
 		}
 	}
+	ent->s.apos.trBase[0] = Phys_NormalizeAngle (ent->s.apos.trBase[0]);
+	ent->s.apos.trBase[1] = Phys_NormalizeAngle (ent->s.apos.trBase[1]);
+	ent->s.apos.trBase[2] = Phys_NormalizeAngle (ent->s.apos.trBase[2]);
 }
 
 /*
@@ -481,7 +631,6 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	vec3_t impactVector;
 	float impactForce;
 	float impactForceAll;
-	float impactForceFixed;
 
 	if ( ent->phys_inSolid ) {
 		return;
@@ -490,31 +639,9 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	// Calculate the impact force
 	impactForce = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1]);
 	impactForceAll = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + ent->s.pos.trDelta[2] * ent->s.pos.trDelta[2]);
-	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer*g_gravityModifier.value * g_gravity.integer*g_gravityModifier.value);
 	
 	impactForce *= ent->s.origin2[O2_MASS];
 	impactForceAll *= ent->s.origin2[O2_MASS];
-	impactForceFixed *= ent->s.origin2[O2_MASS];
-
-	if(ent->s.pos.trType == TR_GRAVITY || ent->s.pos.trType == TR_GRAVITY_WATER){
-		if(trap_PointContents(tr->endpos, ent->s.number) & MASK_WATER){
-			if(ent->s.pos.trType != TR_GRAVITY_WATER){
-				ent->s.pos.trType = TR_GRAVITY_WATER;
-				Phys_WaterSplash( ent, impactForceFixed);
-				Phys_Enable(ent);
-				ent->s.pos.trDelta[0] *= 0.50;
-				ent->s.pos.trDelta[1] *= 0.50;
-				if(ent->s.pos.trDelta[2]){
-				ent->s.pos.trDelta[2] = 0;
-				}
-			}
-		} else {
-			if(ent->s.pos.trType != TR_GRAVITY){
-				ent->s.pos.trType = TR_GRAVITY;
-				Phys_Enable(ent);
-			}
-		}
-	}
 
     // If there's a collision, handle it
     if (tr->fraction < 1.0f && tr->entityNum != ENTITYNUM_NONE) {
@@ -663,6 +790,12 @@ void Phys_Frame(gentity_t *ent) {
 	if(!Phys_UpdateState(ent)){		//disable physics and update state
 		return;
 	}
+
+	//Check phys models
+	Phys_SelectPhysModel(ent);
+
+	//Check point state
+	Phys_PointCheck(ent);
 	
 	// Get current position based on the entity's trajectory
 	if(ent->s.eType == ET_GENERAL){ 		//is prop
@@ -698,8 +831,9 @@ void Phys_Frame(gentity_t *ent) {
         tr.fraction = 0;
     }
 
-    // Run think function after updating entity
+    // Run think functions after updating entity
     G_RunThink(ent);
+	Phys_RunPhysThink(ent);
 	
 	if ( tr.fraction == 1 ) {
 		return;

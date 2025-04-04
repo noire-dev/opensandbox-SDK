@@ -310,7 +310,7 @@ static void CG_DrawToolgun() {
     	}
 
 		if (strcmp(entityInfos[5], "<NULL>")) {
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("inSolid: %s", entityInfos[5]), 1.00F);
+    	    CG_DrawSmallString(x, y+3 + (count * 10), va("isUnbalanced: %s", entityInfos[5]), 1.00F);
 			count++;
     	}
 	}

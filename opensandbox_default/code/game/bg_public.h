@@ -96,7 +96,7 @@
 
 //phys check type
 #define PHYSCHECK_SOLID				0
-#define PHYSCHECK_HALFSOLID			1
+#define PHYSCHECK_UNBALANCED		1
 #define PHYSCHECK_INAIR				2
 
 //origin2 storage

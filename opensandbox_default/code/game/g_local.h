@@ -301,21 +301,38 @@ struct gentity_s {
 	int			swep_ammo[WEAPONS_NUM];
 	int			swep_id;
 	
+	int			backpackContentsList[WEAPONS_NUM];
+	int			backpackContentsAmmo[WEAPONS_NUM];
+
+	//Physgun and Gravitygun
 	gentity_t 	*grabbedEntity;		//physgun object for player
 	qboolean	isGrabbed;			//object is grabbed by player for prop
 	float		grabDist;			//physgun distance for player
 	vec3_t		grabOffset;			//physgun offset for player
 	vec3_t		grabOldOrigin;		//physgun old origin for prop
 	int			grabNewPhys;		//for freeze prop for prop
+
+	//Props
 	gentity_t 	*lastPlayer;		//for damage and killfeed
-	int			backpackContentsList[WEAPONS_NUM];
-	int			backpackContentsAmmo[WEAPONS_NUM];
-	qboolean	phys_onAir;
-	qboolean	phys_inHalfSolid;
+
+	//Phys state (Trace)
+	qboolean	phys_inAir;
+	qboolean	phys_isUnbalanced;
 	qboolean	phys_inSolid;
+
+	//Phys state (Point)
+	qboolean	phys_inWater;
+
+	//Phys settings
 	qboolean	phys_hasWeldedObjects;
 	gentity_t	*phys_parent;
+
+	//Saved info
 	vec3_t		phys_relativeOrigin;
+
+	//Phys think
+	int			phys_nextthink;
+	void		(*phys_think)(gentity_t *self);
 };
 
 

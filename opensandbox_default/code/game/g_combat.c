@@ -1248,7 +1248,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		mass = 200;
 
 		if(targ->sandboxObject){
-			VectorScale (dir, g_knockback.value*2 * (float)knockback / mass, kvel);
+			VectorScale (dir, g_knockback.value*3 * (float)knockback / mass, kvel);
 		} else {
 			VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
 		}

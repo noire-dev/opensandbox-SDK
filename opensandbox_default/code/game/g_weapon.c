@@ -1077,14 +1077,14 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 
 		//onAir
 		if(traceEnt->s.eType == ET_GENERAL){
-			strcpy(info_entity[4], va("%i", traceEnt->phys_onAir));
+			strcpy(info_entity[4], va("%i", traceEnt->phys_inAir));
 		} else {
 			strcpy(info_entity[4], "<NULL>");
 		}
 
-		//inSolid
+		//isUnbalanced
 		if(traceEnt->s.eType == ET_GENERAL){
-			strcpy(info_entity[5], va("%i", traceEnt->phys_inSolid));
+			strcpy(info_entity[5], va("%i", traceEnt->phys_isUnbalanced));
 		} else {
 			strcpy(info_entity[5], "<NULL>");
 		}
