@@ -397,7 +397,7 @@ void Svcmd_NS_ThreadList_f( void )
 /*
 ============
 Svcmd_NS_SendVariable_f
-Opens Noire.Script file
+Sends variable to Noire.Script vm
 ============
 */
 void Svcmd_NS_SendVariable_f( void )

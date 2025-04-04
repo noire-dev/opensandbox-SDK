@@ -175,7 +175,7 @@ void CG_NS_ThreadList_f( void )
 /*
 ============
 CG_NS_SendVariable_f
-Opens Noire.Script file
+Sends variable to Noire.Script vm
 ============
 */
 void CG_NS_SendVariable_f( void )
