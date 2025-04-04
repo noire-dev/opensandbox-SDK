@@ -47,10 +47,9 @@
 
 #define	ITEM_RADIUS			15		// item sizes are needed for client side pickup detection
 
-#define	LIGHTNING_RANGE		768
-#define	TOOLGUN_RANGE		2048
-#define	PHYSGUN_RANGE		4096
-#define	GRAVITYGUN_RANGE	512
+#define	TOOLGUN_RANGE		4096
+#define	PHYSGUN_RANGE		8192
+#define	GRAVITYGUN_RANGE	1024
 #define	GRAVITYGUN_DIST		128
 
 #define	SCORE_NOT_PRESENT	-9999	// for the CS_SCORES[12] when only one player is present
@@ -94,6 +93,11 @@
 //phys type
 #define PHYS_STATIC					1
 #define PHYS_DYNAMIC				2
+
+//phys check type
+#define PHYSCHECK_SOLID				0
+#define PHYSCHECK_HALFSOLID			1
+#define PHYSCHECK_INAIR				2
 
 //origin2 storage
 #define O2_MASS						0

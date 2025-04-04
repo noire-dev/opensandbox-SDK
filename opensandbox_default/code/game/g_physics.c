@@ -32,6 +32,139 @@
 
 /*
 ================
+Phys_HoldDropStatic
+
+Throw entity with physgun or gravitygun with PHYS_STATIC
+================
+*/
+void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity){
+	gentity_t 	*ent = player->grabbedEntity;
+
+	if(!ent->client){
+		ent->s.pos.trType = TR_STATIONARY;
+		ent->sb_phys = PHYS_STATIC;
+		if(ent->s.eType == ET_ITEM){
+			ent->spawnflags = 1;			//for items phys
+		}
+		VectorClear( ent->s.pos.trDelta );
+	} else {
+		VectorClear( ent->client->ps.velocity );
+	}
+}
+
+/*
+================
+Phys_HoldDropDynamic
+
+Throw entity with physgun or gravitygun with PHYS_DYNAMIC
+================
+*/
+void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun){
+	gentity_t 	*ent = player->grabbedEntity;
+
+	if(!ent->client){
+		ent->s.pos.trType = TR_GRAVITY;
+		ent->s.pos.trTime = level.time;
+		ent->sb_phys = PHYS_DYNAMIC;
+		if(ent->s.eType == ET_ITEM){
+			ent->spawnflags = 0;			//for items phys
+		}
+		if(isPhysgun){
+			VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);
+			VectorScale(velocity, 15, velocity);
+		} else {
+			VectorSubtract(ent->r.currentOrigin, player->r.currentOrigin, velocity);
+			VectorScale(velocity, 10, velocity);
+		}
+		VectorCopy(velocity, ent->s.pos.trDelta);
+	} else {
+		if(!isPhysgun){
+			VectorSubtract(ent->r.currentOrigin, player->r.currentOrigin, velocity);
+			VectorScale(velocity, 10, velocity);
+			VectorCopy(velocity, ent->client->ps.velocity);
+		}
+		if(g_awardpushing.integer){
+			ent->client->lastSentFlying = player->s.number;
+			ent->client->lastSentFlyingTime = level.time;
+		}
+	}
+}
+
+/*
+================
+Phys_HoldSetup
+
+Setup hold physics for entity with physgun or gravitygun
+================
+*/
+void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun){
+	gentity_t 	*ent = player->grabbedEntity;
+
+	ent->isGrabbed = qtrue;
+	if(!ent->client){
+	if(isPhysgun){
+		ent->grabNewPhys = PHYS_DYNAMIC;
+	}
+	ent->s.pos.trType = TR_GRAVITY;
+	ent->sb_phys = PHYS_DYNAMIC;
+	Phys_Enable(ent);
+	}
+}
+
+/*
+================
+Phys_HoldFrame
+
+Physics frame for hold entity with physgun or gravitygun
+================
+*/
+void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun){
+	gentity_t 	*ent = player->grabbedEntity;
+	vec3_t		end;
+
+	trap_UnlinkEntity( ent );
+	Phys_CheckWeldedEntities(ent);
+	if(isPhysgun){
+		CrosshairPointPhys(player, player->grabDist, end);
+	} else {
+		CrosshairPointGravity(player, GRAVITYGUN_DIST, end);
+	}
+	trap_LinkEntity( ent );
+	Phys_RestoreWeldedEntities(ent);
+	if(isPhysgun){
+		VectorAdd(end, player->grabOffset, end);				//physgun offset
+		VectorCopy(ent->r.currentOrigin, ent->grabOldOrigin);	//save old frame for speed apply
+	}
+	ent->lastPlayer = player; //save attacker
+	if(!ent->client){
+	VectorClear( ent->s.pos.trDelta );
+	VectorCopy(end, ent->s.origin);
+	VectorCopy(end, ent->s.pos.trBase);
+	VectorCopy(end, ent->r.currentOrigin);
+	Phys_Enable(ent);
+	if(player->client->pers.cmd.buttons & BUTTON_GESTURE && isPhysgun){ //rotate
+		if(!ent->r.bmodel){
+			ent->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
+		}
+		ent->s.apos.trBase[1] = player->client->pers.cmd.angles[1];
+	}
+	} else {
+	VectorClear( ent->client->ps.velocity );
+	VectorCopy( end, ent->client->ps.origin );
+	if(isPhysgun){
+		end[2] += 1;	//player not stuck
+	}
+	VectorCopy( end, ent->r.currentOrigin );
+	if(isPhysgun){
+		VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);
+		VectorScale(velocity, 15, velocity);
+		VectorCopy(velocity, ent->client->ps.velocity);
+	}
+	}
+}
+
+/*
+================
 Phys_Disable
 
 Disables physics
@@ -39,6 +172,7 @@ Disables physics
 */
 void Phys_Disable( gentity_t *ent, vec3_t origin ) {
 	VectorCopy( origin, ent->r.currentOrigin );	//physics origin
+	VectorCopy( origin, ent->s.pos.trBase );	//client origin
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
@@ -154,13 +288,13 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 	}
 
 	for (i = 0; i < 3; i++) {
-		randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(ent->s.pos.trDelta)*0.50;
+		randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(ent->s.pos.trDelta)*0.60;
 	}
 	VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
 
 	if (hit->s.number != ent->s.number && hit->sandboxObject) {
 		for (i = 0; i < 3; i++) {
-    	    randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(hit->s.pos.trDelta)*1.50;
+    	    randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(hit->s.pos.trDelta)*1.60;
     	}
     	VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
 	}
@@ -194,30 +328,80 @@ void Phys_CorrectBounds( gentity_t *ent, vec3_t outMins, vec3_t outMaxs ) {
 
 /*
 ================
+Phys_UpdateState
+
+Updates state for physic object and turn off physics
+================
+*/
+qboolean Phys_UpdateState( gentity_t *ent ) {
+
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta and other properties
+		VectorClear(ent->s.pos.trDelta);
+		ent->phys_onAir = qfalse;
+		ent->phys_inSolid = qfalse;
+		ent->phys_inHalfSolid = qfalse;
+	} else {
+		if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
+			ent->phys_onAir = Phys_Check(ent, -(ent->r.mins[2]), PHYSCHECK_INAIR);
+		} else {
+			ent->phys_onAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
+		}
+		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
+		ent->phys_inHalfSolid = Phys_Check(ent, 0.0f, PHYSCHECK_HALFSOLID);
+	}
+
+	if(ent->phys_parent){ //don't return false when welded
+		Phys_Disable(ent, ent->r.currentOrigin);
+		return qtrue;
+	}
+
+    // If the entity is stationary and not on air - disable physics
+    if (ent->s.pos.trType == TR_STATIONARY) {
+        if(!ent->phys_onAir){
+			trap_LinkEntity(ent);
+			Phys_RestoreWeldedEntities(ent);
+        	G_RunThink(ent);
+        	return qfalse;
+		} else {
+			Phys_Enable(ent);
+		}
+	}
+	return qtrue;
+}
+
+/*
+================
 Phys_Check
 
 Check ground or solid for physic object
 ================
 */
-qboolean Phys_Check(gentity_t *ent, float distance, qboolean checkGround) {
+qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
     vec3_t start, end;
     vec3_t checkMins, checkMaxs;
     float collmodifier = 1.00;
     trace_t tr;
 
     if (ent->sb_phys == PHYS_STATIC || ent->phys_parent) {    //if it's static object, not check
-		if (checkGround) {
+		if (checkNum == PHYSCHECK_SOLID) {
+        	return qfalse;
+		}
+		if (checkNum == PHYSCHECK_HALFSOLID) {
+        	return qfalse;
+		}
+		if (checkNum == PHYSCHECK_INAIR) {
         	return qtrue;
-		} else {
-			return qfalse;
 		}
     }
 
     VectorCopy(ent->r.currentOrigin, start);
     VectorCopy(start, end);
 
-    // Для проверки земли изменим значение по оси Z
-    if (checkGround) {
+	if (checkNum == PHYSCHECK_HALFSOLID) {
+		collmodifier = PHYS_COL_CHECK;
+	}
+
+    if (checkNum == PHYSCHECK_INAIR) {
         end[2] -= distance;
 		collmodifier = PHYS_COL_CHECK;
     }
@@ -229,7 +413,7 @@ qboolean Phys_Check(gentity_t *ent, float distance, qboolean checkGround) {
     checkMins[2] *= 1.00;
     checkMaxs[0] *= collmodifier;
     checkMaxs[1] *= collmodifier;
-	if (checkGround) {
+	if (checkNum == PHYSCHECK_INAIR) {
 		checkMaxs[2] *= -1.00;
 		checkMaxs[2] += 1.00;
 	} else {
@@ -238,8 +422,8 @@ qboolean Phys_Check(gentity_t *ent, float distance, qboolean checkGround) {
 
     trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
 
-    if (checkGround) {
-        return (tr.fraction < 1.0f); // Для проверки земли возвращаем результат на основе fraction
+    if (checkNum == PHYSCHECK_INAIR) {
+        return !(tr.fraction < 1.0f); // Для проверки земли возвращаем результат на основе fraction
     } else {
         return tr.startsolid; // Для проверки столкновения возвращаем startsolid
     }
@@ -253,6 +437,10 @@ Rotate for physic object
 ================
 */
 void Phys_Rotate(gentity_t *ent, trace_t *tr) {
+
+	if(ent->phys_hasWeldedObjects){
+		return;
+	}
 
 	if (!ent->isGrabbed && !tr->startsolid){
 		if(ent->s.pos.trType != TR_GRAVITY_WATER){
@@ -294,6 +482,10 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	float impactForce;
 	float impactForceAll;
 	float impactForceFixed;
+
+	if ( ent->phys_inSolid ) {
+		return;
+	}
 
 	// Calculate the impact force
 	impactForce = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1]);
@@ -383,10 +575,14 @@ void Phys_CheckWeldedEntities(gentity_t *ent) {
 	gentity_t *object;
 	int i = 0;
 	int j = 0;
+	
+	if(!ent->phys_hasWeldedObjects){
+		return;
+	}
 
     for (i = 0; i < MAX_GENTITIES; i++) {
         object = &g_entities[i];
-		if (ent->s.number == object->phys_parent->s.number) {
+		if (ent == object->phys_parent) {
 			VectorCopy(ent->r.currentOrigin, object->s.origin);
 			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
 			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
@@ -416,9 +612,13 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 	gentity_t *object;
 	int i = 0;
 
+	if(!ent->phys_hasWeldedObjects){
+		return;
+	}
+
     for (i = 0; i < MAX_GENTITIES; i++) {
         object = &g_entities[i];
-		if (ent->s.number == object->phys_parent->s.number) {
+		if (ent == object->phys_parent) {
 			VectorCopy(ent->r.currentOrigin, object->s.origin);
 			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
 			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
@@ -453,12 +653,6 @@ void Phys_Frame(gentity_t *ent) {
     // Unlink the entity so that it won't interact with other entities during the calculation
     trap_UnlinkEntity(ent);
 	Phys_CheckWeldedEntities(ent);
-	
-    // If ground entity has been set to -1, apply gravity if necessary
-    if (ent->s.groundEntityNum == -1 && ent->s.pos.trType != TR_GRAVITY) {
-        ent->s.pos.trType = TR_GRAVITY;
-        ent->s.pos.trTime = level.time;
-    }
 
 	// Update rotate
 	VectorCopy(ent->s.apos.trBase, ent->s.angles);			//update server angles from client angles
@@ -466,22 +660,8 @@ void Phys_Frame(gentity_t *ent) {
 		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
 	}
 
-	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
-		ent->phys_onAir = !Phys_Check(ent, -(ent->r.mins[2]), qtrue);
-	} else {
-		ent->phys_onAir = !Phys_Check(ent, 1.0f, qtrue);
-	}
-	ent->phys_inSolid = Phys_Check(ent, 0.0f, qfalse);
-
-    // If the entity is stationary, re-link it and run the think function
-    if (ent->s.pos.trType == TR_STATIONARY) {
-        if(!ent->phys_onAir){
-			trap_LinkEntity(ent);
-        	G_RunThink(ent);
-        	return;
-		} else {
-			Phys_Enable(ent);
-		}
+	if(!Phys_UpdateState(ent)){		//disable physics and update state
+		return;
 	}
 	
 	// Get current position based on the entity's trajectory
@@ -503,10 +683,12 @@ void Phys_Frame(gentity_t *ent) {
     trap_LinkEntity(ent);
 	Phys_RestoreWeldedEntities(ent);
 
-	//Check impacts
-	if ( !ent->phys_inSolid ) {
-		Phys_Impact(ent, &tr);
+	if(ent->phys_parent){
+		return;
 	}
+
+	//Check impacts
+	Phys_Impact(ent, &tr);
 
 	//Change angles
 	Phys_Rotate(ent, &tr);

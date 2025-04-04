@@ -311,6 +311,7 @@ struct gentity_s {
 	int			backpackContentsList[WEAPONS_NUM];
 	int			backpackContentsAmmo[WEAPONS_NUM];
 	qboolean	phys_onAir;
+	qboolean	phys_inHalfSolid;
 	qboolean	phys_inSolid;
 	qboolean	phys_hasWeldedObjects;
 	gentity_t	*phys_parent;
@@ -1152,6 +1153,11 @@ void BotInterbreedEndMatch( void );
 //
 // g_physics.c
 //
+
+void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity);
+void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
+void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun);
+void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
 
 void Phys_Frame( gentity_t *ent );
 void Phys_Smoke( gentity_t *ent, float impact );
