@@ -155,63 +155,6 @@ localEntity_t *CG_SmokePuff(const vec3_t p, const vec3_t vel,
 	return le;
 }
 
-// LEILEI same as above, but slows down.......
-localEntity_t *CG_SlowPuff( const vec3_t p, const vec3_t vel, 
-				   float radius,
-				   float r, float g, float b, float a,
-				   float duration,
-				   int startTime,
-				   int fadeInTime,
-				   int leFlags,
-				   qhandle_t hShader ) {
-	static int	seed = 0x92;
-	localEntity_t	*le;
-	refEntity_t		*re;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = leFlags;
-	le->radius = radius;
-
-	re = &le->refEntity;
-	re->rotation = Q_random( &seed ) * 360;
-	re->radius = radius;
-	re->shaderTime = startTime / 1000.0f;
-
-	le->leType = LE_MOVE_SCALE_FADE;
-	le->startTime = startTime;
-	le->fadeInTime = fadeInTime;
-	le->endTime = startTime + duration;
-	if ( fadeInTime > startTime ) {
-		le->lifeRate = 1.0 / ( le->endTime - le->fadeInTime );
-	}
-	else {
-		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
-	}
-	le->color[0] = r;
-	le->color[1] = g; 
-	le->color[2] = b;
-	le->color[3] = a;
-
-
-	le->pos.trType = TR_LINEAR;
-	le->pos.trTime = startTime;
-	VectorCopy( vel, le->pos.trDelta );
-	VectorCopy( p, le->pos.trBase );
-
-	VectorCopy( p, re->origin );
-	re->customShader = hShader;
-
-	re->shaderRGBA[0] = le->color[0] * 0xff;
-	re->shaderRGBA[1] = le->color[1] * 0xff;
-	re->shaderRGBA[2] = le->color[2] * 0xff;
-	re->shaderRGBA[3] = 0xff;
-
-	re->reType = RT_SPRITE;
-	re->radius = le->radius;
-
-	return le;
-}
-
 /*
 ==================
 CG_SpawnEffect
@@ -422,7 +365,7 @@ void CG_InvulnerabilityJuiced( vec3_t org ) {
 CG_ScorePlum
 ==================
 */
-void CG_ScorePlum( int client, vec3_t org, int score, int dmgfl) {
+void CG_ScorePlum( int client, vec3_t org, int score ) {
 	localEntity_t	*le;
 	refEntity_t		*re;
 	vec3_t			angles;
@@ -454,7 +397,6 @@ void CG_ScorePlum( int client, vec3_t org, int score, int dmgfl) {
 
 	//CG_Printf( "Plum origin %i %i %i -- %i\n", (int)org[0], (int)org[1], (int)org[2], (int)Distance(org, lastPos));
 	VectorCopy(org, lastPos);
-
 
 	re = &le->refEntity;
 
@@ -561,42 +503,6 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 	}
 }
 
-
-
-/*
-==================
-CG_SpurtBlood (LEILEI)
-==================
-*/
-void CG_SpurtBlood( vec3_t origin, vec3_t velocity, int hard ) {
-	localEntity_t	*blood;
-		if ( !cg_blood.integer ) {	return;	}
-
-	
-	velocity[0] = velocity[0] * hard * crandom()*460;
-	velocity[1] = velocity[1] * hard * crandom()*460;
-	velocity[2] = velocity[2] * hard * crandom()*566 + 65;
-		blood = CG_SmokePuff( origin, velocity, 
-					21,		// radius
-					  1, 1, 1, 1,	// color
-					 2450,		// trailTime
-					 cg.time,		// startTime
-					  0,		// fadeInTime
-					  0,		// flags
-					  cgs.media.lbldShader1 );
-		// use the optimized version
-		blood->leType = LE_FALL_SCALE_FADE;
-		blood->leType = LE_GORE;
-		blood->pos.trType = TR_GRAVITY;
-		VectorCopy( velocity, blood->pos.trDelta );
-		blood->pos.trDelta[2] = 55;
-		if (crandom() < 0.5){
-		blood->leMarkType = LEMT_BURN;
-		blood->leBounceSoundType = LEBS_BLOOD;
-		}
-	//	VectorCopy( velocity, blood->pos.trDelta );
-
-}
 /*
 ==================
 CG_LaunchGib
@@ -626,10 +532,6 @@ void CG_LaunchGib( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 	le->leBounceSoundType = LEBS_BLOOD;
 	le->leMarkType = LEMT_BLOOD;
 }
-
-
-
-
 
 /*
 ===================
@@ -720,83 +622,8 @@ for(j = 1; j <= cg_gibmodifier.integer; j++){
 }
 }
 
-/*
-==================
-CG_LaunchGib
-==================
-*/
-void CG_LaunchExplode( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
-	localEntity_t	*le;
-	refEntity_t		*re;
-
-	le = CG_AllocLocalEntity();
-	re = &le->refEntity;
-
-	le->leType = LE_FRAGMENT;
-	le->startTime = cg.time;
-	le->endTime = le->startTime + cg_gibtime.integer * 1000;
-
-	VectorCopy( origin, re->origin );
-	AxisCopy( axisDefault, re->axis );
-	re->hModel = hModel;
-
-	le->pos.trType = TR_GRAVITY;
-	VectorCopy( origin, le->pos.trBase );
-	VectorCopy( velocity, le->pos.trDelta );
-	le->pos.trTime = cg.time;
-
-	le->bounceFactor = 0.1f;
-
-	le->leBounceSoundType = LEBS_BRASS;
-	le->leMarkType = LEMT_NONE;
-}
-
 #define	EXP_VELOCITY	100
 #define	EXP_JUMP		150
-/*
-===================
-CG_GibPlayer
-
-Generated a bunch of gibs launching out from the bodies location
-===================
-*/
-void CG_BigExplosion( vec3_t playerOrigin ) {
-	vec3_t	origin, velocity;
-
-	if ( !cg_blood.integer ) {
-		return;
-	}
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY;
-	velocity[1] = crandom()*EXP_VELOCITY;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY;
-	velocity[1] = crandom()*EXP_VELOCITY;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*1.5;
-	velocity[1] = crandom()*EXP_VELOCITY*1.5;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*2.0;
-	velocity[1] = crandom()*EXP_VELOCITY*2.0;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*2.5;
-	velocity[1] = crandom()*EXP_VELOCITY*2.5;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-}
 
 /*
 ==================
@@ -1058,7 +885,6 @@ void CG_Particles( vec3_t origin, int count, int speed, int lifetime, int radius
 	vec3_t randVec, tempVec;
 	qboolean moveUp;
 
-	//jump = 70;
 	jump = speed;
 	shader = cgs.media.sparkShader;
 

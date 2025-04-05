@@ -175,8 +175,6 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
 	}
 }
 
-
-
 /*
 ==========================
 CG_NailgunEjectBrass
@@ -220,10 +218,6 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
  
 	localEntity_t *le;
 	refEntity_t   *re;
- 
-#define RADIUS   4
-#define ROTATION 1
-#define SPACING  5
  
 	start[2] -= 4;
  
@@ -299,14 +293,7 @@ void CG_PhysgunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 
 	AxisClear( re->axis );
 
-	VectorCopy (start, move);
-	VectorSubtract (end, start, vec);
-	len = VectorNormalize (vec);
-	PerpendicularVector(temp, vec);
-
-	VectorMA(move, 20, vec, move);
-	VectorCopy(move, next_move);
-	VectorScale (vec, SPACING, vec);
+	return;
 }
 
 /*
@@ -348,23 +335,16 @@ void CG_GravitygunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 
 	AxisClear( re->axis );
 
-	VectorCopy (start, move);
-	VectorSubtract (end, start, vec);
-	len = VectorNormalize (vec);
-	PerpendicularVector(temp, vec);
-
-	VectorMA(move, 20, vec, move);
-	VectorCopy(move, next_move);
-	VectorScale (vec, SPACING, vec);
+	return;
 }
 
 /*
 ==========================
-CG_LeiSmokeTrail 
+CG_RocketTrail 
 ==========================
 */
 
-static void CG_LeiSmokeTrail( centity_t *ent, const weaponInfo_t *wi ) {
+static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	int		step;
 	vec3_t	origin, lastPos;
 	int		t;
@@ -427,8 +407,7 @@ static void CG_LeiSmokeTrail( centity_t *ent, const weaponInfo_t *wi ) {
 
 }
 
-
-static void CG_LeiPlasmaTrail( centity_t *ent, const weaponInfo_t *wi ) {
+static void CG_PlasmaTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	int		step;
 	vec3_t	origin, lastPos;
 	int		t;
@@ -584,25 +563,6 @@ void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	beam.shaderRGBA[2] = 0xff;
 	beam.shaderRGBA[3] = 0xff;
 	trap_R_AddRefEntityToScene( &beam );
-}
-
-/*
-==========================
-CG_GrenadeTrail
-==========================
-*/
-// LEILEI enhancment
-static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
-	CG_LeiSmokeTrail( ent, wi );
-}
-
-static void CG_PlasmaTrail( centity_t *ent, const weaponInfo_t *wi ) {
-	CG_LeiPlasmaTrail( ent, wi );
-}
-
-
-static void CG_GrenadeTrail( centity_t *ent, const weaponInfo_t *wi ) {
-	CG_RocketTrail( ent, wi );
 }
 
 /*
@@ -770,7 +730,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	case WP_PROX_LAUNCHER:
 		weaponInfo->missileModel = trap_R_RegisterModel_SourceTech( "models/weaphits/proxmine.md3" );
-		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
+		weaponInfo->missileTrailFunc = CG_RocketTrail;
 		weaponInfo->wiTrailTime = 700;
 		weaponInfo->trailRadius = 32;
 		MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
@@ -780,7 +740,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	case WP_GRENADE_LAUNCHER:
 		weaponInfo->missileModel = trap_R_RegisterModel_SourceTech( "models/ammo/grenade1.md3" );
-		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
+		weaponInfo->missileTrailFunc = CG_RocketTrail;
 		weaponInfo->wiTrailTime = 700;
 		weaponInfo->trailRadius = 32;
 		MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
@@ -1566,11 +1526,6 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		return;
 	}
 
-	// don't draw if testing a gun model
-	if ( cg.testGun ) {
-		return;
-	}
-
 	// drop gun lower at higher fov
 	if ( cg_fov.integer > 90 ) {
 		fovOffset = -0.2 * ( cg_fov.integer - 90 );
@@ -2023,78 +1978,21 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-		// LEILEI START enhancement
-		if (cg_leiEnhancement.integer) {
-		// some more fireball, fireball, fireball, fire fire!
-		VectorMA( origin, 24, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		lightColor[0] = 0.7;	// subtler explosion colors
-		lightColor[1] = 0.6;
-		lightColor[2] = 0.4;
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 2, sprVel );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 42, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 700, 10, 108 );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 82, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 400, 11, 158 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 182, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 600, 47, 88 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 110, 72, 28 );
-		mod = 0; // turns off the sprite (unfortunately, disables dlight)
-		}
-		// LEILEI END enhancement
-
 		break;
 
 	case WP_GRENADE_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.grenadeExplosionShader;
-		if ( !cg_paintballMode.integer )
 		sfx = cgs.media.sfx_rockexp;
-		else
-			sfx = cgs.media.gibSound;
 		mark = cgs.media.burnMarkShader;
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-		// LEILEI START enhancement
-		if (cg_leiEnhancement.integer) {
-		// some more fireball, fireball, fireball, fire fire!
-		VectorMA( origin, 24, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		lightColor[0] = 0.7;	// subtler explosion colors
-		lightColor[1] = 0.6;
-		lightColor[2] = 0.4;
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 2, sprVel );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 42, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 700, 10, 108 );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 82, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 400, 11, 158 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 182, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 600, 47, 88 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 110, 72, 28 );
-		mod = 0; // turns off the sprite (unfortunately, disables dlight)
-		}
-		// LEILEI END enhancement
 		break;
 	case WP_ROCKET_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.rocketExplosionShader;
-		if ( !cg_paintballMode.integer )
 		sfx = cgs.media.sfx_rockexp;
-		else
-			sfx = cgs.media.gibSound;
 		mark = cgs.media.burnMarkShader;
 		radius = 64;
 		light = 300;
@@ -2103,35 +2001,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		lightColor[0] = 1;
 		lightColor[1] = 0.75;
 		lightColor[2] = 0.0;
-		// explosion sprite animation
-		VectorMA( origin, 24, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );		
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 1400, 20, 30 );
-		// LEILEI START enhancement
-		if (cg_leiEnhancement.integer) {
-		// some more fireball, fireball, fireball, fire fire!
-		VectorMA( origin, 24, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		lightColor[0] = 0.7;	// subtler explosion colors
-		lightColor[1] = 0.6;
-		lightColor[2] = 0.4;
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 2, sprVel );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 42, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 700, 10, 108 );
-		VectorMA( origin, 4, dir, sprOrg );
-		VectorScale( dir, 82, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 400, 11, 158 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 182, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 600, 47, 88 );
-		VectorMA( origin, -5, dir, sprOrg );
-		VectorScale( dir, 64, sprVel );
-		CG_ParticleExplosion( "explode1", sprOrg, sprVel, 110, 72, 28 );
-		mod = 0; // turns off the sprite (unfortunately, disables dlight)
-		}
-		// LEILEI END enhancement
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
@@ -2299,22 +2168,12 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	}
 }
 
-
 /*
 =================
 CG_MissileHitPlayer
 =================
 */
 void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum ) {
-// LEILEI ENHANCEMENT
-	if (cg_leiEnhancement.integer) {
-		CG_SmokePuff( origin, dir, 22, 1, 1, 1, 1.0f, 900, cg.time, 0, 0,  cgs.media.lbldShader1 );
-		CG_SpurtBlood( origin, dir, 1);
-//		CG_SpurtBlood( origin, dir, 4);
-//		CG_SpurtBlood( origin, dir, -12);
-		}
-
-	else
 	CG_Bleed( origin, entityNum );
 
 	// some weapons will make an explosion with the blood, while
@@ -2322,19 +2181,15 @@ void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum )
 	switch ( weapon ) {
 	case WP_GRENADE_LAUNCHER:
 	case WP_ROCKET_LAUNCHER:
-
 	case WP_NAILGUN:
 	case WP_CHAINGUN:
 	case WP_PROX_LAUNCHER:
-
 		CG_MissileHitWall( weapon, 0, origin, dir, IMPACTSOUND_FLESH );
 		break;
 	default:
 		break;
 	}
 }
-
-
 
 /*
 ============================================================================
@@ -2353,14 +2208,10 @@ static void CG_ShotgunPellet( vec3_t start, vec3_t end, int skipNum ) {
 	trace_t		tr;
 	int sourceContentType, destContentType;
 
-// LEILEI ENHACNEMENT
-	localEntity_t	*smoke;
-	vec3_t  kapow;
-
 	CG_Trace( &tr, start, NULL, NULL, end, skipNum, MASK_SHOT );
 
-	sourceContentType = CG_PointContents( start, 0 );
-	destContentType = CG_PointContents( tr.endpos, 0 );
+	sourceContentType = trap_CM_PointContents( start, 0 );
+	destContentType = trap_CM_PointContents( tr.endpos, 0 );
 
 	// FIXME: should probably move this cruft into CG_BubbleTrail
 	if ( sourceContentType == destContentType ) {
@@ -2372,40 +2223,11 @@ static void CG_ShotgunPellet( vec3_t start, vec3_t end, int skipNum ) {
 
 		trap_CM_BoxTrace( &trace, end, start, NULL, NULL, 0, CONTENTS_WATER );
 		CG_BubbleTrail( start, trace.endpos, 32 );
-
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-				// Water Splash
-					VectorCopy( trace.plane.normal, kapow );
-					
-					kapow[0] = kapow[0] * (crandom() * 22);
-					kapow[1] = kapow[1] * (crandom() * 22);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					smoke = CG_SmokePuff( trace.endpos, kapow, 14, 1, 1, 1, 1.0f, 400, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 6, 1, 1, 1, 1.0f, 200, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 10, 1, 1, 1, 1.0f, 300, cg.time, 0, 0,  cgs.media.lsplShader );
-						
-				}
-// END LEIHANCMENET
 	} else if ( destContentType & CONTENTS_WATER ) {
 		trace_t trace;
 
 		trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0, CONTENTS_WATER );
 		CG_BubbleTrail( tr.endpos, trace.endpos, 32 );
-
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-				// Water Splash
-					VectorCopy( trace.plane.normal, kapow );
-					
-					kapow[0] = kapow[0] * (crandom() * 22);
-					kapow[1] = kapow[1] * (crandom() * 22);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					smoke = CG_SmokePuff( trace.endpos, kapow, 14, 1, 1, 1, 1.0f, 400, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 6, 1, 1, 1, 1.0f, 200, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 10, 1, 1, 1, 1.0f, 300, cg.time, 0, 0,  cgs.media.lsplShader );
-				}
-// END LEIHANCMENET
 	}
 
 	if (  tr.surfaceFlags & SURF_NOIMPACT ) {
@@ -2421,45 +2243,8 @@ static void CG_ShotgunPellet( vec3_t start, vec3_t end, int skipNum ) {
 		}
 		if ( tr.surfaceFlags & SURF_METALSTEPS ) {
 			CG_MissileHitWall( WP_SHOTGUN, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_METAL );
-// LEILEI ENHANCEMENT
-			if (cg_leiEnhancement.integer) {
-					VectorCopy( tr.plane.normal, kapow );
-
-					kapow[0] = kapow[0] * (crandom() * 65 + 37);
-					kapow[1] = kapow[1] * (crandom() * 65 + 37);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					CG_LeiSparks(tr.endpos, tr.plane.normal, 800, 0, 0, 7);
-					CG_LeiSparks(tr.endpos, tr.plane.normal, 800, 0, 0, 3);
-					CG_LeiSparks(tr.endpos, tr.plane.normal, 800, 0, 0, 1);
-				
-				}
-// END LEIHANCMENET
 		} else {
 			CG_MissileHitWall( WP_SHOTGUN, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_DEFAULT );
-	
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-					VectorCopy( tr.plane.normal, kapow );
-
-					kapow[0] = kapow[0] * (crandom() * 65 + 37);
-					kapow[1] = kapow[1] * (crandom() * 65 + 37);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					CG_LeiSparks(tr.endpos, tr.plane.normal, 800, 0, 0, 7);
-					CG_LeiSparks(tr.endpos, tr.plane.normal, 800, 0, 0, 2);
-					
-					smoke = CG_SmokePuff( tr.endpos, kapow, 21, 1, 1, 1, 0.9f, 1200, cg.time, 0, 0,  cgs.media.lsmkShader2 );
-					//smoke = CG_SmokePuff( tr.endpos, kapow, 21, 1, 1, 1, 0.9f, 1200, cg.time, 0, 0,  cgs.media.lbumShader1 );
-#if 0
-					CG_LeiPuff(tr.endpos, kapow, 500, 0, 0, 177, 6);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 127, 12);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 77, 16);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 127, 12);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 77, 16);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 127, 12);
-					CG_LeiPuff(tr.endpos, tr.plane.normal, 500, 0, 0, 77, 16);
-#endif
-				}
-// END LEIHANCMENET
 		}
 	}
 }
@@ -2505,28 +2290,21 @@ CG_ShotgunFire
 */
 void CG_ShotgunFire( entityState_t *es ) {
 	vec3_t	v;
-	vec3_t			up;
-	vec3_t			forward;
 	int		contents;
 
 	VectorSubtract( es->origin2, es->pos.trBase, v );
 	VectorNormalize( v );
 	VectorScale( v, 32, v );
 	VectorAdd( es->pos.trBase, v, v );
+	if ( cgs.glconfig.hardwareType != GLHW_RAGEPRO ) {
+		// ragepro can't alpha fade, so don't even bother with smoke
+		vec3_t			up;
 
-	contents = CG_PointContents( es->pos.trBase, 0 );
-	if ( !( contents & CONTENTS_WATER ) ) {
-		VectorSet( up, 0, 0, 8 );
-			if (cg_leiEnhancement.integer) {
-				// Shotgun puffy
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_LeiSparks(v, forward, 1500, 0, 0, 7);
-				CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
-			}
+		contents = trap_CM_PointContents( es->pos.trBase, 0 );
+		if ( !( contents & CONTENTS_WATER ) ) {
+			VectorSet( up, 0, 0, 8 );
+			CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
+		}
 	}
 	CG_ShotgunPattern( es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum );
 }
@@ -2721,17 +2499,13 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 	trace_t trace;
 	int sourceContentType, destContentType;
 	vec3_t		start;
-// LEILEI ENHACNEMENT
-	localEntity_t	*smoke;
-	vec3_t	kapew;	
-	vec3_t  kapow;
 
 	// if the shooter is currently valid, calc a source point and possibly
 	// do trail effects
 	if ( sourceEntityNum >= 0 && cg_tracerChance.value > 0 ) {
 		if ( CG_CalcMuzzlePoint( sourceEntityNum, start ) ) {
-			sourceContentType = CG_PointContents( start, 0 );
-			destContentType = CG_PointContents( end, 0 );
+			sourceContentType = trap_CM_PointContents( start, 0 );
+			destContentType = trap_CM_PointContents( end, 0 );
 
 			// do a complete bubble trail if necessary
 			if ( ( sourceContentType == destContentType ) && ( sourceContentType & CONTENTS_WATER ) ) {
@@ -2741,44 +2515,11 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 			else if ( ( sourceContentType & CONTENTS_WATER ) ) {
 				trap_CM_BoxTrace( &trace, end, start, NULL, NULL, 0, CONTENTS_WATER );
 				CG_BubbleTrail( start, trace.endpos, 32 );
-
-
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-				// Water Splash
-					VectorCopy( trace.plane.normal, kapow );
-					kapow[0] = kapow[0] * (crandom() * 22);
-					kapow[1] = kapow[1] * (crandom() * 22);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					smoke = CG_SmokePuff( trace.endpos, kapow, 14, 1, 1, 1, 1.0f, 400, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 6, 1, 1, 1, 1.0f, 200, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 10, 1, 1, 1, 1.0f, 300, cg.time, 0, 0,  cgs.media.lsplShader );
-				//	CG_LeiSplash2(trace.endpos, kapow, 900, 0, 0, 444);
-						
-				}
-// END LEIHANCMENET
-
-
 			}
 			// bubble trail from air into water
 			else if ( ( destContentType & CONTENTS_WATER ) ) {
 				trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0, CONTENTS_WATER );
 				CG_BubbleTrail( trace.endpos, end, 32 );
-
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-				// Water Splash
-					VectorCopy( trace.plane.normal, kapow );
-					
-					kapow[0] = kapow[0] * (crandom() * 22);
-					kapow[1] = kapow[1] * (crandom() * 22);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					smoke = CG_SmokePuff( trace.endpos, kapow, 14, 1, 1, 1, 1.0f, 400, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 6, 1, 1, 1, 1.0f, 200, cg.time, 0, 0,  cgs.media.lsplShader );
-					smoke = CG_SmokePuff( trace.endpos, kapow, 10, 1, 1, 1, 1.0f, 300, cg.time, 0, 0,  cgs.media.lsplShader );
-			//CG_LeiSplash2(trace.endpos, kapow, 500, 0, 0, 1);
-				}
-// END LEIHANCMENET
 			}
 
 			// draw a tracer
@@ -2790,64 +2531,9 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 
 	// impact splash and mark
 	if ( flesh ) {
-// LEILEI ENHANCEMENT
-	if (cg_leiEnhancement.integer) {
-if ( cg_blood.integer ) {
-
-		
-						// Blood Hack
-				VectorCopy( normal, kapow );
-					
-				kapow[0] = kapow[0] * (crandom() * 65 + 37);
-				kapow[1] = kapow[1] * (crandom() * 65 + 37);
-				kapow[2] = kapow[2] * (crandom() * 65 + 37);
-				VectorCopy( kapow, kapew );
-
-				kapew[0] = kapew[0] * (crandom() * 2 + 37);
-				kapew[1] = kapew[1] * (crandom() * 2 + 37);
-				kapew[2] = kapew[2] * (crandom() * 2 + 37);
-
-		CG_SmokePuff( end, kapow, 6, 1, 1, 1, 1.0f, 600, cg.time, 0, 0,  cgs.media.lbldShader1 );
-//		CG_SpurtBlood( end, kapow, 2);
-		CG_SpurtBlood( end, kapew, 1);
-		//CG_Particle_Bleed(cgs.media.lbldShader1,kapew,'0 0 0', 0, 100);
-//		CG_Particle_Bleed(cgs.media.lbldShader1,kapew,kapow, 0, 100);
-//		CG_Particle_BloodCloud(self,end,'0 0 0');
-
-}
-		}
-
-	else
 		CG_Bleed( end, fleshEntityNum );
 	} else {
 		CG_MissileHitWall( WP_MACHINEGUN, 0, end, normal, IMPACTSOUND_DEFAULT );
-
-// LEILEI ENHANCEMENT
-				if (cg_leiEnhancement.integer) {
-
-				// Smoke puff
-					VectorCopy( normal, kapow );
-					
-					kapow[0] = kapow[0] * (crandom() * 65 + 37);
-					kapow[1] = kapow[1] * (crandom() * 65 + 37);
-					kapow[2] = kapow[2] * (crandom() * 65 + 37);
-					VectorCopy( kapow, kapew );
-
-					kapew[0] = kapew[0] * (crandom() * 65 + 37);
-					kapew[1] = kapew[1] * (crandom() * 65 + 37);
-					kapew[2] = kapew[2] * (crandom() * 65 + 37);
-
-
-					smoke = CG_SmokePuff( end, kapow, 14, 1, 1, 1, 1.0f, 600, cg.time, 0, 0,  cgs.media.lsmkShader1 );
-			//		CG_LeiSparks(end, normal, 600, 0, 0, 177);
-			//		CG_LeiSparks(end, normal, 600, 0, 0, 155);
-			//		CG_LeiSparks(end, normal, 600, 0, 0, 444);
-			//		CG_LeiSparks(trace.endpos, trace.plane.normal, 800, 0, 0, 7);
-			//		CG_LeiSparks(trace.endpos, trace.plane.normal, 800, 0, 0, 3);
-			//		CG_LeiSparks(trace.endpos, trace.plane.normal, 800, 0, 0, 1);
-
-				}
-// END LEIHANCMENET
 	}
 
 }

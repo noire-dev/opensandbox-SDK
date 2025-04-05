@@ -47,8 +47,6 @@ char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 vec3_t headpos;
 vec3_t headang;
 
-int enableQ;
-
 /*
 ================
 CG_CustomSound
@@ -77,8 +75,6 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName ) {
 	CG_Error( "Unknown custom sound: %s", soundName );
 	return 0;
 }
-
-
 
 /*
 =============================================================================
@@ -166,15 +162,6 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 					break;
 				}
 				ci->headOffset[i] = atof( token );
-			}
-			continue;
-		} else if ( !Q_stricmp( token, "eyes" ) ) {	// leilei - EYES
-			for ( i = 0 ; i < 3 ; i++ ) {
-				token = COM_Parse( &text_p );
-				if ( !token ) {
-					break;
-				}
-				ci->eyepos[i] = atof( token );
 			}
 			continue;
 		} else if ( !Q_stricmp( token, "sex" ) ) {
@@ -309,67 +296,6 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 }
 
 /*
-======================
-CG_ParseEyesFile
-
-Read eyes definitions.  Maybe this should be done engine-side for mod compatiblity? :S
-======================
-*/
-static qboolean	CG_ParseEyesFile( const char *filename, clientInfo_t *ci ) {
-	char		*text_p, *prev;
-	int			len;
-	int			i;
-	char		*token;
-	float		fps;
-	int			skip;
-	char		text[20000];
-	fileHandle_t	f;
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( len <= 0 ) {
-		return qfalse;
-	}
-	if ( len >= sizeof( text ) - 1 ) {
-		CG_Printf( "File %s too long\n", filename );
-		trap_FS_FCloseFile( f );
-		return qfalse;
-	}
-	trap_FS_Read( text, len, f );
-	text[len] = 0;
-	trap_FS_FCloseFile( f );
-
-	// parse the text
-	text_p = text;
-	skip = 0;	// quite the compiler warning
-
-
-	// read optional parameters
-	while ( 1 ) {
-		prev = text_p;	// so we can unget
-		token = COM_Parse( &text_p );
-		if ( !token ) {
-			break;
-		}
-
-
-		if ( !Q_stricmp( token, "eyes" ) ) {	// leilei - EYES
-			for ( i = 0 ; i < 3 ; i++ ) {
-				token = COM_Parse( &text_p );
-				if ( !token ) {
-					break;
-				}
-				ci->eyepos[i] = atof( token );
-			}
-			continue;
-		}
-		break;
-	}
-
-	return qtrue;
-}
-
-
-/*
 ==========================
 CG_FileExists
 ==========================
@@ -472,12 +398,6 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			Com_Printf( "Failed to load animation file %s\n", filename );
 			return qfalse;
 		}
-	}
-
-	// leilei - load eyes
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/eyes.cfg", modelName );
-	if ( !CG_ParseEyesFile( filename, ci ) ) {
-		//	Com_Printf( "No eyes for %s\n", filename );
 	}
 	
 	if(!ci->modelIcon){
@@ -692,7 +612,6 @@ CG_CopyClientInfoModel
 */
 static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 	VectorCopy( from->headOffset, to->headOffset );
-	VectorCopy( from->eyepos, to->eyepos );
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
@@ -1244,18 +1163,6 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		camereyes = 1; // it's me!
 	}
 
-	// leilei -- new third person camera prep
-	cent->newcamrunning = 0;
-	if (cg_cameramode.integer == 1)
-	{
-	if ((cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_ATTACK)
-	cent->newcamrunning = 1;
-	else
-	cent->newcamrunning = 0;
-
-
-	}
-
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
@@ -1269,21 +1176,6 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		cent->pe.torso.yawing = qtrue;	// center
 		cent->pe.torso.pitching = qtrue;	// center
 		cent->pe.legs.yawing = qtrue;	// center
-	}
-
-	// etc
-	if(cent->newcamrunning){
-	// lean towards the direction of travel
-		VectorCopy( cent->currentState.pos.trDelta, velocity );
-		speed = VectorNormalize( velocity );
-		if ( speed ) {
-			vec3_t	axis[3];
-			vec3_t	veel;
-			vec3_t fwad, rait;
-			float	side, frt, rrt;
-			AngleVectors(veel, velocity, fwad, rait);
-			speed *= 0.05f;
-		}
 	}
 
 	// adjust legs for movement dir
@@ -1327,11 +1219,11 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		}
 
 	if(cg.renderingThirdPerson){
-			torsoAngles[PITCH] = 0.0f;
+		torsoAngles[PITCH] = 0.0f;
 	}
 
 	if(cg.renderingEyesPerson){
-			torsoAngles[PITCH] = 0.0f;
+		torsoAngles[PITCH] = 0.0f;
 	}
 	}
 
@@ -1354,7 +1246,6 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		legsAngles[PITCH] += side;
 	}
 
-	//
 	clientNum = cent->currentState.clientNum;
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS ) {
 		ci = &cgs.clientinfo[ clientNum ];
@@ -1372,9 +1263,9 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	// leilei - eyes hack
 
 	if (camereyes){
-	cent->eyesAngles[YAW] = headAngles[YAW];
-	cent->eyesAngles[PITCH] = headAngles[PITCH];
-	cent->eyesAngles[ROLL] = headAngles[ROLL];
+		cent->eyesAngles[YAW] = headAngles[YAW];
+		cent->eyesAngles[PITCH] = headAngles[PITCH];
+		cent->eyesAngles[ROLL] = headAngles[ROLL];
 	}
 
 	// pull the angles back out of the hierarchial chain
@@ -1382,27 +1273,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
 	AnglesToAxis( legsAngles, legs );
 	AnglesToAxis( torsoAngles, torso );
-
-	if(!cg.renderingThirdPerson){
-	AnglesToAxis( headAngles, head );
-	}
-	if(cg.renderingThirdPerson || cg.snap->ps.stats[STAT_VEHICLE]){
 	AnglesToAxis( torsoAngles, head );
-	}
-
-	// eyes crap
-	{
-	vec3_t	eyelookat;
-	vec3_t	eyelookfrom;
-	vec3_t	forwaad;
-	trace_t		traced;
-
-	// offset from the model we have.
-	VectorClear(eyelookfrom);
-
-	VectorCopy(ci->eyepos, cent->pe.eyepos);
-	}
-
 }
 
 /*
@@ -2092,55 +1963,6 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 	}
 }
 
-
-
-/*
-=================
-CG_LightVerts
-=================
-*/
-int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
-{
-	int				i, j;
-	float			incoming;
-	vec3_t			ambientLight;
-	vec3_t			lightDir;
-	vec3_t			directedLight;
-
-	trap_R_LightForPoint( verts[0].xyz, ambientLight, directedLight, lightDir );
-
-	for (i = 0; i < numVerts; i++) {
-		incoming = DotProduct (normal, lightDir);
-		if ( incoming <= 0 ) {
-			verts[i].modulate[0] = ambientLight[0];
-			verts[i].modulate[1] = ambientLight[1];
-			verts[i].modulate[2] = ambientLight[2];
-			verts[i].modulate[3] = 255;
-			continue;
-		}
-		j = ( ambientLight[0] + incoming * directedLight[0] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		verts[i].modulate[0] = j;
-
-		j = ( ambientLight[1] + incoming * directedLight[1] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		verts[i].modulate[1] = j;
-
-		j = ( ambientLight[2] + incoming * directedLight[2] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		verts[i].modulate[2] = j;
-
-		verts[i].modulate[3] = 255;
-	}
-	return qtrue;
-}
-
 /*
 ===============
 CG_Player
@@ -2219,10 +2041,6 @@ void CG_Player( centity_t *cent ) {
 		camereyes = 1;	// it's me!
 		if (!cg.renderingThirdPerson) {
 			renderfx = RF_THIRD_PERSON;			// only draw in mirrors
-		} else {
-			if (cg_cameraMode.integer) {
-				return;
-			}
 		}
 	}
 
@@ -2589,8 +2407,8 @@ void CG_Player( centity_t *cent ) {
 	VectorMA(cent->lerpOrigin, 1024, forwaad, v );
 	VectorCopy(head.origin, orrg);
 	CG_Trace (&trace, orrg, NULL, NULL, v, -1, CONTENTS_SOLID);
-			if (trace.fraction < 1)
-				VectorCopy(trace.endpos, v);				// look closer
+	if (trace.fraction < 1)
+		VectorCopy(trace.endpos, v);				// look closer
 	VectorCopy(v, head.eyelook);				// Copy it to our refdef for the renderer
 	}
 

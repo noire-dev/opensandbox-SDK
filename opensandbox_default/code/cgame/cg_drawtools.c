@@ -34,17 +34,7 @@ Adjusted for resolution and screen aspect ratio
 ================
 */
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h ) {
-#if 0
-	// adjust for wide screens
-	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
-		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
-	}
-#endif
-
-
-	// scale for screen sizes
-	//*x *= cgs.screenXScale;
-	*x = *x * cgs.screenXScale + cgs.screenXBias;	// leilei - widescreen adjust
+	*x = *x * cgs.screenXScale + cgs.screenXBias;
 	*y *= cgs.screenYScale;
 	*w *= cgs.screenXScale;
 	*h *= cgs.screenYScale;
@@ -124,27 +114,6 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
         trap_R_DrawStretchPic(segmentX+xy_offset, y+xy_offset, segmentWidth - w_offset, height-h_offset, 0, 0, 1, 1, cgs.media.whiteShader);
     }
     trap_R_SetColor(NULL);
-}
-
-/*
-================
-CG_DrawSides
-
-Coords are virtual 640x480
-================
-*/
-void CG_DrawSides(float x, float y, float w, float h, float size) {
-	CG_AdjustFrom640( &x, &y, &w, &h );
-	size *= cgs.screenXScale;
-	trap_R_DrawStretchPic( x, y, size, h, 0, 0, 0, 0, cgs.media.whiteShader );
-	trap_R_DrawStretchPic( x + w - size, y, size, h, 0, 0, 0, 0, cgs.media.whiteShader );
-}
-
-void CG_DrawTopBottom(float x, float y, float w, float h, float size) {
-	CG_AdjustFrom640( &x, &y, &w, &h );
-	size *= cgs.screenYScale;
-	trap_R_DrawStretchPic( x, y, w, size, 0, 0, 0, 0, cgs.media.whiteShader );
-	trap_R_DrawStretchPic( x, y + h - size, w, size, 0, 0, 0, 0, cgs.media.whiteShader );
 }
 
 /*
@@ -461,32 +430,6 @@ float *CG_FadeColor( int startMsec, int totalMsec ) {
 	return color;
 }
 
-
-/*
-================
-CG_TeamColor
-================
-*/
-float *CG_TeamColor( int team ) {
-	static vec4_t	red = {1, 0.2f, 0.2f, 1};
-	static vec4_t	blue = {0.2f, 0.2f, 1, 1};
-	static vec4_t	other = {1, 1, 1, 1};
-	static vec4_t	spectator = {0.7f, 0.7f, 0.7f, 1};
-
-	switch ( team ) {
-	case TEAM_RED:
-		return red;
-	case TEAM_BLUE:
-		return blue;
-	case TEAM_SPECTATOR:
-		return spectator;
-	default:
-		return other;
-	}
-}
-
-
-
 /*
 =================
 CG_GetColorForHealth
@@ -528,17 +471,6 @@ void CG_GetColorForHealth( int health, int armor, vec4_t hcolor ) {
 	} else {
 		hcolor[1] = ( health - 30 ) / 30.0;
 	}
-}
-
-/*
-=================
-CG_ColorForHealth
-=================
-*/
-void CG_ColorForHealth( vec4_t hcolor ) {
-
-	CG_GetColorForHealth( cg.snap->ps.stats[STAT_HEALTH], 
-		cg.snap->ps.stats[STAT_ARMOR], hcolor );
 }
 
 qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos ){

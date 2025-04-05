@@ -227,21 +227,6 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps ) {
 		}
 	}
 }
-
-/*
-==================
-pushReward
-==================
-*/
-static void pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount) {
-	if (cg.rewardStack < (MAX_REWARDSTACK-1)) {
-		cg.rewardStack++;
-		cg.rewardSound[cg.rewardStack] = sfx;
-		cg.rewardShader[cg.rewardStack] = shader;
-		cg.rewardCount[cg.rewardStack] = rewardCount;
-	}
-}
-
         
 /*
 ==================
@@ -279,7 +264,7 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 		if ( ps->stats[STAT_HEALTH] > 0 ) {
 			CG_PainEvent( &cg.predictedPlayerEntity, ps->stats[STAT_HEALTH] );
 		}
-        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_HEALTH] - ps->stats[STAT_HEALTH], 0 );
+        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_HEALTH] - ps->stats[STAT_HEALTH] );
 	}
 
 
@@ -320,7 +305,7 @@ void CG_CheckLocalSoundsVeh( playerState_t *ps, playerState_t *ops ) {
 		if ( ps->stats[STAT_VEHICLEHP] > 0 ) {
 			CG_PainVehicleEvent( &cg.predictedPlayerEntity, ps->stats[STAT_VEHICLEHP] );
 		}
-        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_VEHICLEHP] - ps->stats[STAT_VEHICLEHP], 0 );
+        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_VEHICLEHP] - ps->stats[STAT_VEHICLEHP] );
 	}
 
 

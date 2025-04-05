@@ -53,9 +53,6 @@
 #define	ITEM_BLOB_TIME		200
 #define	MUZZLE_FLASH_TIME	75
 #define	SINK_TIME			3000		// time for fragments to sink into ground before going away
-#define	ATTACKER_HEAD_TIME	10000
-#define	REWARD_TIME			2000
-#define OBJECTIVES_TIME		2500		//time for objectives updated notification to remain on screen
 #define BLACKOUT_TIME		100.000		//time for the screen to remain black at start of game
 #define	FADEIN_TIME			1500.000		//amount of time it takes for screen to fade in at start of game
 #define TITLE_TIME			5000		//amount of time the level title stays on screen
@@ -77,17 +74,9 @@
 
 #define STAT_MINUS			10	// num frame for '-' stats digit
 
-/*
-#define	ICON_SIZE			48
-#define	CHAR_WIDTH			32
-#define	CHAR_HEIGHT			48
-#define	TEXT_ICON_SPACE		4*/
-
-
 #define	ICON_SIZE			28
 #define	CHAR_WIDTH			19
 #define	CHAR_HEIGHT			28
-#define	TEXT_ICON_SPACE		2
 
 #define	TEAMCHAT_WIDTH		80
 #define TEAMCHAT_HEIGHT		8
@@ -101,9 +90,9 @@
 #define TEAM_OVERLAY_MAXNAME_WIDTH	12
 #define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
 
-#define	DEFAULT_MODEL			"sarge"
-#define	DEFAULT_TEAM_MODEL		"sarge"
-#define	DEFAULT_TEAM_HEAD		"sarge"
+#define	DEFAULT_MODEL			"beret"
+#define	DEFAULT_TEAM_MODEL		"beret"
+#define	DEFAULT_TEAM_HEAD		"beret"
 
 #define DEFAULT_REDTEAM_NAME		"Vim supporters"
 #define DEFAULT_BLUETEAM_NAME		"Emacs supporters"
@@ -190,7 +179,6 @@ typedef struct {
 	// eye stuff...
 
 	vec3_t			eyepos;		// where our eyes at
-	vec3_t			eyelookat;	// what we seein'
 	lerpFrame_t		head;
 } playerEntity_t;
 
@@ -232,16 +220,8 @@ typedef struct centity_s {
 	vec3_t			lerpOrigin;
 	vec3_t			lerpAngles;
 
-	int				newcamrunning;	// leilei - determines if we should look in a direction for running
 	vec3_t			eyesOrigin;
 	vec3_t			eyesAngles;
-
-	vec3_t			eyepos;		// where our eyes at
-	vec3_t			eyepos2;	// where our other eyes at
-	vec3_t			eyelookat;	// what we seein'
-
-	vec3_t			weapOrigin;	// leilei - for lazy bob
-	vec3_t			weapAngles;
 } centity_t;
 
 // local entities are created as a result of events or predicted actions,
@@ -272,8 +252,7 @@ typedef enum {
 	LE_KAMIKAZE,
 	LE_INVULIMPACT,
 	LE_INVULJUICED,
-	LE_SHOWREFENTITY,
-	LE_GORE
+	LE_SHOWREFENTITY
 } leType_t;
 
 typedef enum {
@@ -459,9 +438,7 @@ typedef struct {
 
 	sfxHandle_t		sounds[MAX_CUSTOM_SOUNDS];
 
-	int		isDead;
-	vec3_t			eyepos;		// leilei - eye positions loaded from anim cfg
-	int		onepiece;		// leilei - g_enableFS meshes
+	int				isDead;
 } clientInfo_t;
 
 
@@ -530,7 +507,6 @@ typedef struct {
 } skulltrail_t;
 
 
-#define MAX_REWARDSTACK		10
 #define MAX_SOUNDBUFFER		20
 
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
@@ -605,8 +581,8 @@ typedef struct {
 	// input state sent to server
 	int			weaponSelect;
 	
-	int			swep_listcl[WEAPONS_NUM];
-	int			swep_spawncl[WEAPONS_NUM];		//stores spawn weapons
+	int			swep_listcl[WEAPONS_NUM+1];
+	int			swep_spawncl[WEAPONS_NUM+1];		//stores spawn weapons
 
 	float		savedSens;						//physgun
 
@@ -680,14 +656,6 @@ typedef struct {
 
 	// attacking player
 	int			attackerTime;
-	int			voiceTime;
-
-	// reward medals
-	int			rewardStack;
-	int			rewardTime;
-	int			rewardCount[MAX_REWARDSTACK];
-	qhandle_t	rewardShader[MAX_REWARDSTACK];
-	qhandle_t	rewardSound[MAX_REWARDSTACK];
 
 	// sound buffer mainly for announcer sounds
 	int			soundBufferIn;
@@ -738,14 +706,6 @@ typedef struct {
 	
 	refEntity_t		viewfog[16];
 	refEntity_t		viewsky;
-
-	//qboolean cameraMode;		// if rendering from a loaded camera
-
-
-	// development tool
-	refEntity_t		testModelEntity;
-	char			testModelName[MAX_QPATH];
-	qboolean		testGun;
 
 //unlagged - optimized prediction
 	int			lastPredictedCommand;
@@ -944,35 +904,16 @@ typedef struct {
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
 
-
-
 	// LEILEI shaders
-
 	qhandle_t	lsmkShader1;
 	qhandle_t	lsmkShader2;
 	qhandle_t	lsmkShader3;
 	qhandle_t	lsmkShader4;
-	qhandle_t	lbumShader1;
-	qhandle_t	lfblShader1;
 	qhandle_t	lsplShader;
-	qhandle_t	lspkShader1;
-	qhandle_t	lspkShader2;
-	qhandle_t	lbldShader1;
-	qhandle_t	lbldShader2;
 	qhandle_t	grappleShader;	// leilei - grapple hook
-	qhandle_t	lmarkmetal1;
-	qhandle_t	lmarkmetal2;
-	qhandle_t	lmarkmetal3;
-	qhandle_t	lmarkmetal4;
-	qhandle_t	lmarkbullet1;
-	qhandle_t	lmarkbullet2;
-	qhandle_t	lmarkbullet3;
-	qhandle_t	lmarkbullet4;
-
 
 	qhandle_t	nailPuffShader;
 	qhandle_t	blueProxMine;
-
 
 	qhandle_t	numberShaders[11];
 
@@ -1158,7 +1099,6 @@ typedef struct {
 	sfxHandle_t	lshl1Sound;
 	sfxHandle_t	lshl2Sound; // Shell Drop Noises
 	sfxHandle_t	lshl3Sound;
-
 // LEILEI END
 
 	sfxHandle_t oneMinuteSound;
@@ -1522,7 +1462,6 @@ extern  vmCvar_t    cg_plightgreen;
 extern  vmCvar_t    cg_plightblue;
 extern  vmCvar_t    cg_plightradius;
 extern  vmCvar_t 	cg_leiChibi;
-extern  vmCvar_t    cg_cameraeyes;
 extern  vmCvar_t    cl_screenoffset;
 extern  vmCvar_t    ui_backcolors;
 extern	vmCvar_t	legsskin;
@@ -1624,13 +1563,8 @@ extern	vmCvar_t		pmove_float;
 extern	vmCvar_t		cg_timescaleFadeEnd;
 extern	vmCvar_t		cg_timescaleFadeSpeed;
 extern	vmCvar_t		cg_timescale;
-extern	vmCvar_t		cg_cameraMode;
 extern	vmCvar_t		cg_noProjectileTrail;
 
-extern	vmCvar_t		cg_leiEnhancement;			// LEILEI'S LINE!
-extern	vmCvar_t		cg_leiGoreNoise;			// LEILEI'S LINE!
-extern	vmCvar_t		cg_leiBrassNoise;			// LEILEI'S LINE!
-extern	vmCvar_t		cg_cameramode;
 extern	vmCvar_t		cg_cameraEyes;
 extern	vmCvar_t		cg_cameraEyes_Fwd;
 extern	vmCvar_t		cg_cameraEyes_Up;
@@ -1666,7 +1600,6 @@ extern vmCvar_t			cg_teamChatBeep;
 
 //unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );
-//void CG_AddBoundingBox( centity_t *cent );
 qboolean CG_Cvar_ClampInt( const char *name, vmCvar_t *vmCvar, int min, int max );
 //unlagged - cg_unlagged.c
 
@@ -1691,7 +1624,6 @@ void CG_EventHandling(int type);
 void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString( void );
-qboolean CG_IsTeamGame();
 void CG_RegisterOverlay( void );
 
 //unlagged, sagos modfication
@@ -1700,13 +1632,6 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 //
 // cg_view.c
 //
-void CG_CloadMap_f (void);
-void CG_TestModel_f (void);
-void CG_TestGun_f (void);
-void CG_TestModelNextFrame_f (void);
-void CG_TestModelPrevFrame_f (void);
-void CG_TestModelNextSkin_f (void);
-void CG_TestModelPrevSkin_f (void);
 void CG_ZoomDown_f( void );
 void CG_ZoomUp_f( void );
 void CG_AddBufferedSound( sfxHandle_t sfx);
@@ -1733,25 +1658,17 @@ void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color );
 int CG_DrawStrlen( const char *str );
 
 float	*CG_FadeColor( int startMsec, int totalMsec );
-float *CG_TeamColor( int team );
 void CG_TileClear( void );
-void CG_ColorForHealth( vec4_t hcolor );
 void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
 
-void CG_DrawSides(float x, float y, float w, float h, float size);
-void CG_DrawTopBottom(float x, float y, float w, float h, float size);
 qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos );
 
 
 //
-// cg_draw.c, cg_newDraw.c
+// cg_draw.c
 //
 extern	int sortedTeamPlayers[TEAM_MAXOVERLAY];
 extern	int	numSortedTeamPlayers;
-extern	int drawTeamOverlayModificationCount;
-extern  char systemChat[256];
-extern  char teamChat1[256];
-extern  char teamChat2[256];
 
 void CG_Fade( float duration, vec4_t startColor, vec4_t endColor );
 void CG_DrawFade( void );
@@ -1868,9 +1785,6 @@ void	CG_ImpactMark( qhandle_t markShader,
 				    float r, float g, float b, float a,
 					qboolean alphaFade,
 					float radius, qboolean temporary );
-void    CG_LeiSparks (vec3_t org, vec3_t vel, int duration, float x, float y, float speed);
-void    CG_LeiSparks2 (vec3_t org, vec3_t vel, int duration, float x, float y, float speed);
-void    CG_LeiPuff (vec3_t org, vec3_t vel, int duration, float x, float y, float speed, float size);
 
 
 //
@@ -1901,7 +1815,7 @@ void CG_ObeliskPain( vec3_t org );
 void CG_InvulnerabilityImpact( vec3_t org, vec3_t angles );
 void CG_InvulnerabilityJuiced( vec3_t org );
 void CG_LightningBoltBeam( vec3_t start, vec3_t end );
-void CG_ScorePlum( int client, vec3_t org, int score, int dmgf );
+void CG_ScorePlum( int client, vec3_t org, int score );
 
 void CG_GibPlayer( vec3_t playerOrigin );
 void CG_BigExplode( vec3_t playerOrigin );
@@ -2157,21 +2071,4 @@ qboolean	trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
 
 qboolean	trap_GetEntityToken( char *buffer, int bufferSize );
 
-void	CG_ClearParticles (void);
-void	CG_AddParticles (void);
-void	CG_ParticleSnow (qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, float range, int snum);
-void	CG_ParticleSmoke (qhandle_t pshader, centity_t *cent);
-void	CG_AddParticleShrapnel (localEntity_t *le);
-void	CG_ParticleSnowFlurry (qhandle_t pshader, centity_t *cent);
-void	CG_ParticleBulletDebris (vec3_t	org, vec3_t vel, int duration);
-void	CG_ParticleSparks (vec3_t org, vec3_t vel, int duration, float x, float y, float speed);
-void	CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir);
-void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
-void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 void	CG_LaunchFragment( vec3_t origin, vec3_t velocity, leTrailType_t trailType, qhandle_t hModel );
-extern qboolean		initparticles;
-int CG_NewParticleArea ( int num );
-extern int wideAdjustX;
-
-
-// LEILEI ENHANCEMENT

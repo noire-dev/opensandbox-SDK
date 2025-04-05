@@ -850,7 +850,6 @@ if(cl_language.integer == 1){
 		break;
 
 	}
-
 }
 
 /*
@@ -1446,7 +1445,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_SCOREPLUM:
 		if(cgs.gametype == GT_SINGLE){ break; }
 		DEBUGNAME("EV_SCOREPLUM");
-		CG_ScorePlum( cent->currentState.otherEntityNum, cent->lerpOrigin, cent->currentState.time, cent->currentState.weapon );
+		CG_ScorePlum( cent->currentState.otherEntityNum, cent->lerpOrigin, cent->currentState.time );
 		break;
 
 	//
@@ -1822,12 +1821,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_EXPLOSION:
 		DEBUGNAME("EV_EXPLOSION");
-		
-		dir[0] = 0;
-		dir[1] = 0;
-		dir[2] = 25;
-		CG_ParticleExplosion( "explode1", cent->lerpOrigin, dir, 1400, 20, 30 );
-		
 		// show explosion
 		dir[0] = 0;
 		dir[1] = 0;

@@ -120,7 +120,6 @@ cd windows\build\cgame
 %cc%  ../../../code/cgame/cg_localents.c
 %cc%  ../../../code/cgame/cg_main.c
 %cc%  ../../../code/cgame/cg_marks.c
-%cc%  ../../../code/cgame/cg_particles.c
 %cc%  ../../../code/cgame/cg_players.c
 %cc%  ../../../code/cgame/cg_playerstate.c
 %cc%  ../../../code/cgame/cg_predict.c

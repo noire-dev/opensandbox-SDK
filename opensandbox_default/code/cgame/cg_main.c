@@ -146,7 +146,6 @@ vmCvar_t	cg_postprocess;
 vmCvar_t	cl_language;
 vmCvar_t	con_notifytime;
 vmCvar_t 	cg_leiChibi;
-vmCvar_t    cg_cameraeyes;
 vmCvar_t    cg_helightred;
 vmCvar_t    cg_helightgreen;
 vmCvar_t    cg_helightblue;
@@ -254,21 +253,15 @@ vmCvar_t	pmove_fixed;
 vmCvar_t	pmove_msec;
 vmCvar_t    pmove_float;
 vmCvar_t	cg_pmove_msec;
-vmCvar_t	cg_cameraMode;
+vmCvar_t    cg_cameraEyes;
 vmCvar_t	cg_cameraEyes_Fwd;
 vmCvar_t	cg_cameraEyes_Up;
 vmCvar_t	cg_timescaleFadeEnd;
 vmCvar_t	cg_timescaleFadeSpeed;
 vmCvar_t	cg_timescale;
 vmCvar_t	cg_noProjectileTrail;
-vmCvar_t	cg_leiEnhancement;
-vmCvar_t	cg_leiBrassNoise;
-vmCvar_t	cg_leiGoreNoise;
 vmCvar_t	cg_trueLightning;
 vmCvar_t    cg_music;
-
-vmCvar_t    cg_cameramode;
-vmCvar_t    cg_cameraEyes;
 
 vmCvar_t	cg_obeliskRespawnDelay;
 vmCvar_t	cg_enableDust;
@@ -423,7 +416,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &con_notifytime, "con_notifytime", "3", CVAR_ARCHIVE },
     { &ui_backcolors, "ui_backcolors", "1", CVAR_ARCHIVE },
 	{ &cg_leiChibi, "cg_leiChibi", "0", CVAR_ARCHIVE}, // LEILEI
-    { &cg_cameraeyes, "cg_cameraeyes", "0", CVAR_ARCHIVE },
     { &cg_helightred, "cg_helightred", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &cg_helightgreen, "cg_helightgreen", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &cg_helightblue, "cg_helightblue", "100", CVAR_USERINFO | CVAR_ARCHIVE },
@@ -543,17 +535,12 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_fontScale , "cg_fontScale", "1.5", CVAR_ARCHIVE},
 	{ &cg_fontShadow , "cg_fontShadow", "1", CVAR_ARCHIVE},
-	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
 
 	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO},
 	{ &pmove_msec, "pmove_msec", "11", CVAR_SYSTEMINFO},
         { &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO},
 	{ &cg_noProjectileTrail, "cg_noProjectileTrail", "0", CVAR_ARCHIVE},
-	{ &cg_leiEnhancement, "cg_leiEnhancement", "1", CVAR_ARCHIVE},				// LEILEI default off (in case of whiner)
-	{ &cg_leiGoreNoise, "cg_leiGoreNoise", "1", CVAR_ARCHIVE},					// LEILEI
-	{ &cg_leiBrassNoise, "cg_leiBrassNoise", "1", CVAR_ARCHIVE},				// LEILEI
-	{ &cg_cameramode, "cg_cameramode", "0", CVAR_ARCHIVE},				// LEILEI
-	{ &cg_cameraEyes, "cg_cameraEyes", "0", CVAR_ARCHIVE},				// LEILEI
+	{ &cg_cameraEyes, "cg_cameraEyes", "0", CVAR_ARCHIVE},						// LEILEI
 	{ &cg_cameraEyes_Fwd, "cg_cameraEyes_Fwd", "0", CVAR_ARCHIVE},				// LEILEI
 	{ &cg_cameraEyes_Up, "cg_cameraEyes_Up", "7", CVAR_ARCHIVE},				// LEILEI
 	//unlagged - client options
@@ -602,25 +589,6 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
-}
-
-/*
-===================
-CG_ForceModelChange
-===================
-*/
-static void CG_ForceModelChange( void ) {
-	int		i;
-
-	for (i=0 ; i<MAX_CLIENTS ; i++) {
-		const char		*clientInfo;
-
-		clientInfo = CG_ConfigString( CS_PLAYERS+i );
-		if ( !clientInfo[0] ) {
-			continue;
-		}
-		CG_NewClientInfo( i );
-	}
 }
 
 /*
@@ -1409,23 +1377,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.lsmkShader4 = trap_R_RegisterShader("leismoke4" );
 
 	cgs.media.lsplShader = trap_R_RegisterShader("leisplash" );
-	cgs.media.lspkShader1 = trap_R_RegisterShader("leispark" );
-	cgs.media.lspkShader2 = trap_R_RegisterShader("leispark2" );
-	cgs.media.lbumShader1 = trap_R_RegisterShader("leiboom1" );
-	cgs.media.lfblShader1 = trap_R_RegisterShader("leifball" );
-
-	cgs.media.lbldShader1 = trap_R_RegisterShader("leiblood1" );
-	cgs.media.lbldShader2 = trap_R_RegisterShader("leiblood2" );	// this is a mark, by the way
-
-	// New Bullet Marks
-	cgs.media.lmarkmetal1 = trap_R_RegisterShader("leimetalmark1" );
-	cgs.media.lmarkmetal2 = trap_R_RegisterShader("leimetalmark2" );
-	cgs.media.lmarkmetal3 = trap_R_RegisterShader("leimetalmark3" );
-	cgs.media.lmarkmetal4 = trap_R_RegisterShader("leimetalmark4" );
-	cgs.media.lmarkbullet1 = trap_R_RegisterShader("leibulletmark1" );
-	cgs.media.lmarkbullet2 = trap_R_RegisterShader("leibulletmark2" );
-	cgs.media.lmarkbullet3 = trap_R_RegisterShader("leibulletmark3" );
-	cgs.media.lmarkbullet4 = trap_R_RegisterShader("leibulletmark4" );
 
 
 	memset( cg_items, 0, sizeof( cg_items ) );
@@ -1486,8 +1437,6 @@ static void CG_RegisterGraphics( void ) {
 	}
 
 	cgs.media.railCoreShader = trap_R_RegisterShader("railCore");
-
-	CG_ClearParticles ();
 }
 
 /*																																			
@@ -1616,8 +1565,6 @@ void CG_StopDeathMusic( void ) {
 	CG_StartMusic();
 }
 
-int wideAdjustX; // leilei - dirty widescreen hack
-
 /*
 =================
 CG_Init
@@ -1696,9 +1643,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 		resbias  = 0.5 * ( newresx -  ( newresy * (640.0/480.0) ) );
 		resbiasy = 0.5 * ( newresy -  ( newresx * (640.0/480.0) ) );
-
-
-		wideAdjustX = resbias;
 	}
 	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
 		// wide screen
@@ -1812,16 +1756,6 @@ Called before every level change or subsystem restart
 void CG_Shutdown( void ) {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
-}
-
-/*
-==================
-CG_IsTeamGame
-returns true if we're currently in a team gametype
-==================
-*/
-qboolean CG_IsTeamGame() {
-	return qfalse;
 }
 
 /*

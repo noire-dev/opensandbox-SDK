@@ -535,7 +535,7 @@ struct gclient_s {
 	// unlagged - smooth clients #1
 	// the last frame number we got an update from this client
 	int			lastUpdateFrame;
-	qboolean        spawnprotected;
+	qboolean    spawnprotected;
 
 	int			accuracy[MAX_WEAPONS][2];
 };
@@ -592,8 +592,8 @@ typedef struct {
 	int			voteYes;
 	int			voteNo;
 	int			numVotingClients;		// set by CountVotes
-        int             voteKickClient;                         // if non-negative the current vote is about this client.
-        int             voteKickType;                           // if 1 = ban (execute ban)
+    int         voteKickClient;                         // if non-negative the current vote is about this client.
+    int         voteKickType;                           // if 1 = ban (execute ban)
 
 	// team voting state
 	char		teamVoteString[2][MAX_STRING_CHARS];

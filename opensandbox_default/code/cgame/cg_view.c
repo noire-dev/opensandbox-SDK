@@ -27,161 +27,6 @@
 // for a 3D rendering
 #include "cg_local.h"
 
-
-/*
-=============================================================================
-
-  MODEL TESTING
-
-The viewthing and gun positioning tools from Q2 have been integrated and
-enhanced into a single model testing facility.
-
-Model viewing can begin with either "testmodel <modelname>" or "testgun <modelname>".
-
-The names must be the full pathname after the basedir, like 
-"models/weapons/v_launch/tris.md3" or "players/male/tris.md3"
-
-Testmodel will create a fake entity 100 units in front of the current view
-position, directly facing the viewer.  It will remain immobile, so you can
-move around it to view it from different angles.
-
-Testgun will cause the model to follow the player around and supress the real
-view weapon model.  The default frame 0 of most guns is completely off screen,
-so you will probably have to cycle a couple frames to see it.
-
-"nextframe", "prevframe", "nextskin", and "prevskin" commands will change the
-frame or skin of the testmodel.  These are bound to F5, F6, F7, and F8 in
-q3default.cfg.
-
-If a gun is being tested, the "gun_x", "gun_y", and "gun_z" variables will let
-you adjust the positioning.
-
-Note that none of the model testing features update while the game is paused, so
-it may be convenient to test with deathmatch set to 1 so that bringing down the
-console doesn't pause the game.
-
-=============================================================================
-*/
-
-/*
-=================
-CG_TestModel_f
-
-Creates an entity in front of the current position, which
-can then be moved around
-=================
-*/
-void CG_TestModel_f (void) {
-	vec3_t		angles;
-
-	memset( &cg.testModelEntity, 0, sizeof(cg.testModelEntity) );
-	if ( trap_Argc() < 2 ) {
-		return;
-	}
-
-	Q_strncpyz (cg.testModelName, CG_Argv( 1 ), MAX_QPATH );
-	cg.testModelEntity.hModel = trap_R_RegisterModel_SourceTech( cg.testModelName );
-
-	if ( trap_Argc() == 3 ) {
-		cg.testModelEntity.backlerp = atof( CG_Argv( 2 ) );
-		cg.testModelEntity.frame = 1;
-		cg.testModelEntity.oldframe = 0;
-	}
-	if (! cg.testModelEntity.hModel ) {
-		CG_Printf( "Can't register model\n" );
-		return;
-	}
-
-	VectorMA( cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testModelEntity.origin );
-
-	angles[PITCH] = 0;
-	angles[YAW] = 180 + cg.refdefViewAngles[1];
-	angles[ROLL] = 0;
-
-	AnglesToAxis( angles, cg.testModelEntity.axis );
-	cg.testGun = qfalse;
-}
-
-/*
-=================
-CG_CloadMap_f
-
-Creates an entity in front of the current position, which
-can then be moved around
-=================
-*/
-void CG_CloadMap_f (void) {
-	
-}
-
-/*
-=================
-CG_TestGun_f
-
-Replaces the current view weapon with the given model
-=================
-*/
-void CG_TestGun_f (void) {
-	CG_TestModel_f();
-	cg.testGun = qtrue;
-	cg.testModelEntity.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
-}
-
-
-void CG_TestModelNextFrame_f (void) {
-	cg.testModelEntity.frame++;
-	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
-}
-
-void CG_TestModelPrevFrame_f (void) {
-	cg.testModelEntity.frame--;
-	if ( cg.testModelEntity.frame < 0 ) {
-		cg.testModelEntity.frame = 0;
-	}
-	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
-}
-
-void CG_TestModelNextSkin_f (void) {
-	cg.testModelEntity.skinNum++;
-	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
-}
-
-void CG_TestModelPrevSkin_f (void) {
-	cg.testModelEntity.skinNum--;
-	if ( cg.testModelEntity.skinNum < 0 ) {
-		cg.testModelEntity.skinNum = 0;
-	}
-	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
-}
-
-static void CG_AddTestModel (void) {
-	int		i;
-
-	// re-register the model, because the level may have changed
-	cg.testModelEntity.hModel = trap_R_RegisterModel_SourceTech( cg.testModelName );
-	if (! cg.testModelEntity.hModel ) {
-		CG_Printf ("Can't register model\n");
-		return;
-	}
-
-	// if testing a gun, set the origin reletive to the view origin
-	if ( cg.testGun ) {
-		VectorCopy( cg.refdef.vieworg, cg.testModelEntity.origin );
-		VectorCopy( cg.refdef.viewaxis[0], cg.testModelEntity.axis[0] );
-		VectorCopy( cg.refdef.viewaxis[1], cg.testModelEntity.axis[1] );
-		VectorCopy( cg.refdef.viewaxis[2], cg.testModelEntity.axis[2] );
-
-		// allow the position to be adjusted
-		for (i=0 ; i<3 ; i++) {
-			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
-			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
-			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
-		}
-	}
-
-	trap_R_AddRefEntityToScene( &cg.testModelEntity );
-}
-
 /*
 =================
 CG_CalcVrect
@@ -356,20 +201,15 @@ static void CG_OffsetThirdPersonView( void ) {
 	// trace a ray from the origin to the viewpoint to make sure the view isn't
 	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
 
-	if (!cg_cameraMode.integer) {
+	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
+	if ( trace.fraction != 1.0 ) {
+		VectorCopy( trace.endpos, view );
+		view[2] += (1.0 - trace.fraction) * 32;
+		// try another trace to this position, because a tunnel may have the ceiling
+		// close enogh that this is poking out
 		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-
-		if ( trace.fraction != 1.0 ) {
-			VectorCopy( trace.endpos, view );
-			view[2] += (1.0 - trace.fraction) * 32;
-			// try another trace to this position, because a tunnel may have the ceiling
-			// close enogh that this is poking out
-
-			CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-			VectorCopy( trace.endpos, view );
-		}
+		VectorCopy( trace.endpos, view );
 	}
-
 
 	VectorCopy( view, cg.refdef.vieworg );
 
@@ -1017,9 +857,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	if ( !cg.hyperspace ) {
 		CG_AddPacketEntities();			// adter calcViewValues, so predicted player state is correct
 		CG_AddMarks();
-		CG_AddParticles ();
 		CG_AddLocalEntities();
-		// used for q3f atmospheric effects
 		CG_AddAtmosphericEffects();
 		CG_ViewFog();
 		CG_ViewSky();
@@ -1029,10 +867,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// add buffered sounds
 	CG_PlayBufferedSounds();
 
-	// finish up the rest of the refdef
-	if ( cg.testModelEntity.hModel ) {
-		CG_AddTestModel();
-	}
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 

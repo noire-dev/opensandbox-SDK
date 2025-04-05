@@ -1719,7 +1719,6 @@ void CalculateRanks( void ) {
 	int		rank;
 	int		score;
 	int		newScore;
-        int             humanplayers;
 	gclient_t	*cl;
 
 	level.follow1 = -1;
@@ -1727,7 +1726,7 @@ void CalculateRanks( void ) {
 	level.numConnectedClients = 0;
 	level.numNonSpectatorClients = 0;
 	level.numPlayingClients = 0;
-        humanplayers = 0; // don't count bots
+	level.numVotingClients = 0;		// don't count bots
 	for ( i = 0; i < TEAM_NUM_TEAMS; i++ ) {
 		level.numteamVotingClients[i] = 0;
 	}
@@ -1736,17 +1735,14 @@ void CalculateRanks( void ) {
 			level.sortedClients[level.numConnectedClients] = i;
 			level.numConnectedClients++;
 
-                        //We just set humanplayers to 0 during intermission
-                        if ( !level.intermissiontime && level.clients[i].pers.connected == CON_CONNECTED && !(g_entities[i].r.svFlags & SVF_BOT) ) {
-                            humanplayers++;
-                        }
-
 			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
-                                level.numNonSpectatorClients++;
+				level.numNonSpectatorClients++;
+			
 				// decide if this should be auto-followed
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
 					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
+						level.numVotingClients++;
 						if ( level.clients[i].sess.sessionTeam == TEAM_RED )
 							level.numteamVotingClients[0]++;
 						else if ( level.clients[i].sess.sessionTeam == TEAM_BLUE )
@@ -1762,11 +1758,11 @@ void CalculateRanks( void ) {
 		}
 	}
 
-	qsort( level.sortedClients, level.numConnectedClients,
+	qsort( level.sortedClients, level.numConnectedClients, 
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1 ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -1778,7 +1774,7 @@ void CalculateRanks( void ) {
 				cl->ps.persistant[PERS_RANK] = 1;
 			}
 		}
-	} else {
+	} else {	
 		rank = -1;
 		score = 0;
 		for ( i = 0;  i < level.numPlayingClients; i++ ) {
@@ -1794,11 +1790,14 @@ void CalculateRanks( void ) {
 				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
 			}
 			score = newScore;
+			if ( g_gametype.integer == GT_SINGLE && level.numPlayingClients == 1 ) {
+				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
+			}
 		}
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1 ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -1822,7 +1821,6 @@ void CalculateRanks( void ) {
 		SendScoreboardMessageToAllClients();
 	}
 }
-
 
 /*
 ========================================================================

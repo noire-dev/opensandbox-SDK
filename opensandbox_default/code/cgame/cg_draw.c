@@ -28,14 +28,8 @@
 
 #include "../qcommon/ns_local.h"
 
-int drawTeamOverlayModificationCount = -1;
-
 int sortedTeamPlayers[TEAM_MAXOVERLAY];
 int	numSortedTeamPlayers;
-
-char systemChat[256];
-char teamChat1[256];
-char teamChat2[256];
 
 static void CG_DrawField (int x, int y, int width, int value, float size) {
 	char	num[16], *ptr;
@@ -1575,7 +1569,6 @@ LAGOMETER
 
 #define	LAG_SAMPLES		128
 
-
 typedef struct {
 	int		frameSamples[LAG_SAMPLES];
 	int		frameCount;
@@ -1636,46 +1629,9 @@ static void CG_DrawDisconnect( void ) {
 	float		x, y;
 	int			cmdNum;
 	usercmd_t	cmd;
-	const char		*s;
+	const char	*s;
 	int			w;  // bk010215 - FIXME char message[1024];
 	int currentViewDistance;
-
-	//AUTO FIX NETWORK
-
-	/*if (cg.restart_net == qfalse){
-		cg.restart_value = -1;
-	}
-
-	if (cg.restart_net == qtrue && cg.restart_value == -1) { 	// Network not working
-	    cg.restart_value = get_cvar_int("sv_viewdistance"); 	// Save current value
-	    NS_setCvar("sv_viewdistance", "1");              		// Reset network
-		cg.restart_time = cg.time + 500;						// Restart time
-	}
-
-	if(cg.time > cg.restart_time){
-		cg.restart_time = cg.time + 500;
-	} else {
-		return;
-	}
-
-	currentViewDistance = get_cvar_int("sv_viewdistance");
-
-	if (cg.restart_value > 0) {
-	    if (currentViewDistance < cg.restart_value) {
-	        NS_setCvar("sv_viewdistance", va("%i", currentViewDistance + 1));
-	    } else {
-			cg.restart_net = qfalse;	// Network repaired
-	    }
-	} else if (cg.restart_value == 0) {
-	    if (currentViewDistance < 90) {
-	        NS_setCvar("sv_viewdistance", va("%i", currentViewDistance + 1));
-	    } else {
-	        NS_setCvar("sv_viewdistance", "0");
-			cg.restart_net = qfalse;	// Network repaired
-	    }
-	}*/
-
-	//AUTO FIX NETWORK END
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
@@ -2098,9 +2054,9 @@ static void CG_DrawCrosshair(void)
 		}
 	}
 	if(cl_screenoffset.value > 0){
-	x = cg_crosshairX.integer - wideAdjustX; // leilei - widescreen adjust
+	x = cg_crosshairX.integer;
 	} else {
-	x = cg_crosshairX.integer; // leilei - widescreen adjust
+	x = cg_crosshairX.integer;
 	}
 	y = cg_crosshairY.integer;
 	CG_AdjustFrom640( &x, &y, &w, &h );
@@ -2344,6 +2300,7 @@ if(cgs.gametype != GT_SINGLE){
 	cg.scoreBoardShowing = CG_DrawScoreboard();
 } else {
 	cg.scoreBoardShowing = CG_DrawScoreboardObj();
+	CG_StartScoreboardMusic();
 }
 }
 

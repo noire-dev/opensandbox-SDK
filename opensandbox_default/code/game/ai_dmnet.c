@@ -75,6 +75,10 @@ void BotResetNodeSwitches(void) {
 	numnodeswitches = 0;
 }
 
+void Shitttest(void) {
+	numnodeswitches = 0;
+}
+
 /*
 ==================
 BotDumpNodeSwitches
