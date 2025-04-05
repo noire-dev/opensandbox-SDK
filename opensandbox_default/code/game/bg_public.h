@@ -65,7 +65,7 @@
 #define MAX_DOMINATION_POINTS 8
 #define MAX_DOMINATION_POINTS_NAMES 20
 
-#define MAX_ENTITYINFO 	6
+#define MAX_ENTITYINFO 	4
 
 //objects properties
 #define OBJ_DEFAULT					0
@@ -96,8 +96,7 @@
 
 //phys check type
 #define PHYSCHECK_SOLID				0
-#define PHYSCHECK_UNBALANCED		1
-#define PHYSCHECK_INAIR				2
+#define PHYSCHECK_INAIR				1
 
 //origin2 storage
 #define O2_MASS						0

@@ -100,12 +100,7 @@ void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	
 ucmd = &activator->client->pers.cmd;
 		
-if(ent->owner != activator->s.clientNum + 1){
-if(ent->owner != 0){
-trap_SendServerCommand( activator->s.clientNum, va( "cp \"Owned by %s\n\"", ent->ownername ));
-return;
-}	
-}
+if(!G_PlayerIsOwner(activator, ent)) return;
 
 if(ent->price > 0){
 	
@@ -155,12 +150,7 @@ ucmd = &other->client->pers.cmd;
 	if( !other->client ) {
 		return;
 	}
-if(self->owner != other->s.clientNum + 1){
-if(self->owner != 0){
-trap_SendServerCommand( other->s.clientNum, va( "cp \"Owned by %s\n\"", self->ownername ));
-return;
-}	
-}
+	if(!G_PlayerIsOwner(other, self)) return;
 
 if(self->price > 0){
 	
@@ -224,7 +214,7 @@ void SP_trigger_multiple( gentity_t *ent ) {
 
 	if ( ent->random >= ent->wait && ent->wait >= 0 ) {
 		ent->random = ent->wait - FRAMETIME;
-                G_Printf( "trigger_multiple has random >= wait\n" );
+        G_Printf( "trigger_multiple has random >= wait\n" );
 	}
 
 	ent->touch = Touch_Multi;
@@ -414,12 +404,6 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 	if ( other->client->ps.pm_type == PM_DEAD ) {
 		return;
 	}
-	// Spectators only?
-	/*if ( ( self->spawnflags & 1 ) && 
-		(other->client->sess.sessionTeam != TEAM_SPECTATOR && other->client->ps.pm_type != PM_SPECTATOR) ) {
-		return;
-	}*/
-
 
 	dest = 	G_PickTarget( self->target );
 	if (!dest) {
@@ -446,12 +430,6 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		}
 		VectorSubtract(dest->s.origin, originDiff, destRelOrigin);
 
-		/*
-		G_Printf("self->s.origin: %s\n", vtos(self->s.origin));
-		G_Printf("dest->s.origin: %s\n", vtos(dest->s.origin));
-		G_Printf("originDiff: %s\n", vtos(originDiff));
-		G_Printf("destRelOrigin: %s\n", vtos(destRelOrigin));
-		*/
 		if (self->spawnflags & 2) {
 		VectorCopy(other->client->ps.viewangles, anglesto);
 		anglesto[1] += self->playerangle;
@@ -950,8 +928,6 @@ void SP_trigger_lock(gentity_t *self) {
 	}
 
 	self->touch = lock_touch;
-	//self->touch = Touch_Multi;
-
 	
 	trap_LinkEntity(self);
 }

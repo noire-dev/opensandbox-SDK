@@ -38,6 +38,76 @@ Phys_HoldDropStatic
 Throw entity with physgun or gravitygun with PHYS_STATIC
 ================
 */
+void Phys_CheckCarCollisions(gentity_t *ent) {
+	vec3_t newMins, newMaxs;
+    trace_t tr;
+	gentity_t *hit;
+	float impactForce;
+	vec3_t impactVector;
+	vec3_t end, start, forward, up, right;
+	
+	if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && ent->botskill != 9){
+	return;
+	}
+	
+	//Set Aiming Directions
+	AngleVectors(ent->client->ps.viewangles, forward, right, up);
+	CalcMuzzlePoint(ent, forward, right, up, start);
+	VectorMA (start, 1, forward, end);
+	
+	VectorCopy(ent->r.mins, newMins);
+	VectorCopy(ent->r.maxs, newMaxs);
+	VectorScale(newMins, 1.15, newMins);
+	VectorScale(newMaxs, 1.15, newMaxs);
+	newMins[2] *= 0.20;
+	newMaxs[2] *= 0.20;
+	trap_Trace(&tr, ent->r.currentOrigin, newMins, newMaxs, end, ent->s.number, MASK_PLAYERSOLID);
+	
+	if (tr.fraction < 1.0f && tr.entityNum != ENTITYNUM_NONE) {
+        hit = &g_entities[tr.entityNum];
+
+        if (hit->s.number != ent->s.number) {  // Ignore self
+            // Calculate the impact force
+            impactForce = sqrt(ent->client->ps.velocity[0] * ent->client->ps.velocity[0] + ent->client->ps.velocity[1] * ent->client->ps.velocity[1]);
+
+            // Optionally apply a force or velocity to the hit entity to simulate the push
+			if (impactForce > VEHICLE_SENS) {
+			if (!hit->client){
+			Phys_Enable(hit);
+			}
+			VectorCopy(ent->client->ps.velocity, impactVector);
+			VectorScale(impactVector, VEHICLE_PROP_IMPACT, impactVector);
+			impactVector[2] = impactForce*0.15;
+			if (!hit->client){
+			hit->lastPlayer = ent;		//for save attacker
+            VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
+			} else {
+			VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
+			}
+			}
+			if(impactForce > VEHICLE_DAMAGESENS){
+			if(hit->grabbedEntity != ent){
+			if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->botskill == 9 && hit->botskill != 9)){
+				Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
+			}
+			}
+			}
+			if(impactForce > VEHICLE_DAMAGESENS*6){
+				if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR){
+					Phys_Smoke( ent, impactForce*0.20);
+				}
+			}
+        }
+    }
+}
+
+/*
+================
+Phys_HoldDropStatic
+
+Throw entity with physgun or gravitygun with PHYS_STATIC
+================
+*/
 void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity){
 	gentity_t 	*ent = player->grabbedEntity;
 
@@ -441,8 +511,10 @@ void Phys_SelectPhysModel(gentity_t *ent) {
 		}
 		return;
 	}
-
-	ent->s.pos.trType = TR_GRAVITY;		//default phys
+	
+	if(ent->s.pos.trType != TR_STATIONARY){
+		ent->s.pos.trType = TR_GRAVITY;		//default phys
+	}
 }
 
 /*
@@ -454,15 +526,13 @@ Updates state for physic object and turn off physics
 */
 qboolean Phys_UpdateState( gentity_t *ent ) {
 
-	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta and other properties
+	if(ent->sb_phys == PHYS_STATIC || ent->phys_parent){	//if it's static object, reset delta and other properties
 		VectorClear(ent->s.pos.trDelta);
 		ent->phys_inAir = qfalse;
 		ent->phys_inSolid = qfalse;
-		ent->phys_isUnbalanced = qfalse;
 	} else {
 		ent->phys_inAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
 		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
-		ent->phys_isUnbalanced = Phys_Check(ent, 1.0f, PHYSCHECK_UNBALANCED);
 	}
 
 	if(ent->phys_parent){ //don't return false when welded
@@ -498,25 +568,8 @@ qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
     float collmodifier = 1.00;
     trace_t tr;
 
-    if (ent->sb_phys == PHYS_STATIC || ent->phys_parent) {    //if it's static object, not check
-		if (checkNum == PHYSCHECK_SOLID) {
-        	return qfalse;
-		}
-		if (checkNum == PHYSCHECK_UNBALANCED) {
-        	return qfalse;
-		}
-		if (checkNum == PHYSCHECK_INAIR) {
-        	return qtrue;
-		}
-    }
-
     VectorCopy(ent->r.currentOrigin, start);
     VectorCopy(start, end);
-
-	if (checkNum == PHYSCHECK_UNBALANCED) {
-		end[2] -= distance;
-		collmodifier = PHYS_UNBALANCED_CHECK;
-	}
 
     if (checkNum == PHYSCHECK_INAIR) {
         end[2] -= distance;

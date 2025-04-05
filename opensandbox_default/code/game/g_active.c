@@ -978,69 +978,6 @@ void GravitygunHold(gentity_t *player) {
     }
 }
 
-void CheckCarCollisions(gentity_t *ent) {
-	vec3_t newMins, newMaxs;
-    trace_t tr;
-	gentity_t *hit;
-	float impactForce;
-	vec3_t impactVector;
-	vec3_t end, start, forward, up, right;
-	
-	if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && ent->botskill != 9){
-	return;
-	}
-	
-	//Set Aiming Directions
-	AngleVectors(ent->client->ps.viewangles, forward, right, up);
-	CalcMuzzlePoint(ent, forward, right, up, start);
-	VectorMA (start, 1, forward, end);
-	
-	VectorCopy(ent->r.mins, newMins);
-	VectorCopy(ent->r.maxs, newMaxs);
-	VectorScale(newMins, 1.15, newMins);
-	VectorScale(newMaxs, 1.15, newMaxs);
-	newMins[2] *= 0.20;
-	newMaxs[2] *= 0.20;
-	trap_Trace(&tr, ent->r.currentOrigin, newMins, newMaxs, end, ent->s.number, MASK_PLAYERSOLID);
-	
-	if (tr.fraction < 1.0f && tr.entityNum != ENTITYNUM_NONE) {
-        hit = &g_entities[tr.entityNum];
-
-        if (hit->s.number != ent->s.number) {  // Ignore self
-            // Calculate the impact force
-            impactForce = sqrt(ent->client->ps.velocity[0] * ent->client->ps.velocity[0] + ent->client->ps.velocity[1] * ent->client->ps.velocity[1]);
-
-            // Optionally apply a force or velocity to the hit entity to simulate the push
-			if (impactForce > VEHICLE_SENS) {
-			if (!hit->client){
-			Phys_Enable(hit);
-			}
-			VectorCopy(ent->client->ps.velocity, impactVector);
-			VectorScale(impactVector, VEHICLE_PROP_IMPACT, impactVector);
-			impactVector[2] = impactForce*0.15;
-			if (!hit->client){
-			hit->lastPlayer = ent;		//for save attacker
-            VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
-			} else {
-			VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
-			}
-			}
-			if(impactForce > VEHICLE_DAMAGESENS){
-			if(hit->grabbedEntity != ent){
-			if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->botskill == 9 && hit->botskill != 9)){
-				Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
-			}
-			}
-			}
-			if(impactForce > VEHICLE_DAMAGESENS*6){
-				if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR){
-					Phys_Smoke( ent, impactForce*0.20);
-				}
-			}
-        }
-    }
-}
-
 /*
 ==============
 ClientThink
@@ -1375,7 +1312,7 @@ if ( !ent->speed ){
 	PhysgunHold( ent );
 	GravitygunHold( ent );
 	
-	CheckCarCollisions( ent );
+	Phys_CheckCarCollisions( ent );
 
 	// check for respawning
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {

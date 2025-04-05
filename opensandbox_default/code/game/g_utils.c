@@ -1594,13 +1594,18 @@ gentity_t *FindEntityForPhysgun( gentity_t *ent, int range ){
 			return NULL;
 		}
 	}
-	
-	VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
+
+	if(traceEnt->phys_parent){ //WELD-TOOL
+		VectorSubtract(traceEnt->phys_parent->r.currentOrigin, tr.endpos, ent->grabOffset);
+		return traceEnt->phys_parent;
+	} else {
+		VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
+	}
 	
 	if(traceEnt && tr.entityNum != ENTITYNUM_NONE && tr.entityNum != ENTITYNUM_WORLD){
-	return traceEnt;
+		return traceEnt;
 	} else {
-	return NULL;	
+		return NULL;	
 	}
 }
 
@@ -1630,13 +1635,17 @@ gentity_t *FindEntityForGravitygun( gentity_t *ent, int range ){
 			return NULL;
 		}
 	}
+
+	if(traceEnt->phys_hasWeldedObjects || traceEnt->phys_parent){ //WELD-TOOL
+		return NULL;
+	}
 	
 	VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
 	
 	if(traceEnt && tr.entityNum != ENTITYNUM_NONE && tr.entityNum != ENTITYNUM_WORLD){
-	return traceEnt;
+		return traceEnt;
 	} else {
-	return NULL;	
+		return NULL;	
 	}
 }
 
@@ -1709,7 +1718,7 @@ gentity_t *G_FindEntityForClientNum(int entityn) {
 qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
 	if(ent->owner != 0){
     	if(ent->owner != player->s.clientNum + 1){	//offset +1 for clientNum
-			trap_SendServerCommand( player->s.clientNum, va( "clp \"Owned by %s\n\"", ent->ownername ));
+			trap_SendServerCommand( player->s.clientNum, va( "cllp \"Owned by %s\n\"", ent->ownername ));
 			return qfalse;	//ent owned by another player
 		} else {
 			return qtrue;	//ent owned by this player

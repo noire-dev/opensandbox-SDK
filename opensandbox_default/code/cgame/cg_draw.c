@@ -297,16 +297,6 @@ static void CG_DrawToolgun() {
 				}
 			}
     	}
-
-		if (strcmp(entityInfos[4], "<NULL>")) {
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("onAir: %s", entityInfos[4]), 1.00F);
-			count++;
-    	}
-
-		if (strcmp(entityInfos[5], "<NULL>")) {
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("isUnbalanced: %s", entityInfos[5]), 1.00F);
-			count++;
-    	}
 	}
 }
 

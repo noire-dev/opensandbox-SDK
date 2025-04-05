@@ -364,7 +364,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 	if(!allow_spawn){
 		G_FreeEntity(ent);
-		trap_SendServerCommand( player->s.clientNum, "clp \"Spawning of this class is not allowed\n\"" );
+		trap_SendServerCommand( player->s.clientNum, "cllp \"Spawning of this class is not allowed\n\"" );
 		return;
 	}
 
@@ -514,12 +514,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(!attacker->client){
 		return;
 	}
-	if(targ->owner != attacker->s.clientNum + 1){
-		if(targ->owner != 0){
-			trap_SendServerCommand( attacker->s.clientNum, va( "clp \"Owned by %s\n\"", targ->ownername ));
-			return;
-		}	
-	}
+	if(!G_PlayerIsOwner(attacker, targ)) return;
 
 	if(attacker->tool_id == TL_CREATE){
 		// client-side command for spawn prop
@@ -562,10 +557,10 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		}
 		if(atoi(arg19) == 2){
 		if(targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, va( "clp \"Owned by %s\n\"", targ->ownername ));
+		trap_SendServerCommand( attacker->s.clientNum, va( "cllp \"Owned by %s\n\"", targ->ownername ));
 		} 
 		if(!targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, "clp \"Not owned\n\"" );
+		trap_SendServerCommand( attacker->s.clientNum, "cllp \"Not owned\n\"" );
 		} 
 		}
 	}
@@ -626,7 +621,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		gitem_t	*item;
 		int i = 1;
 		if(targ->s.eType != ET_ITEM){
-			trap_SendServerCommand( attacker->s.clientNum, "clp \"This must be the item\n\"" );
+			trap_SendServerCommand( attacker->s.clientNum, "cllp \"This must be the item\n\"" );
 			return;
 		}
 		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
@@ -645,11 +640,21 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 	if(attacker->tool_id == TL_WELD){
 		if(!attacker->tool_entity){
-			attacker->tool_entity = targ;
-			trap_SendServerCommand( attacker->s.clientNum, "clp \"Сlick on the second object\n\"" );
+			if(!targ->phys_hasWeldedObjects){
+				attacker->tool_entity = targ;
+				trap_SendServerCommand( attacker->s.clientNum, "cllp \"Сlick on the second object\n\"" );
+			} else {
+				trap_SendServerCommand( attacker->s.clientNum, "cllp \"This is root object\n\"" );
+				return;
+			}
 		} else {
-			attacker->tool_entity->phys_parent = targ;
-			VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
+			if(!targ->phys_parent){
+				attacker->tool_entity->phys_parent = targ;
+				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
+			} else {
+				attacker->tool_entity->phys_parent = targ->phys_parent;
+				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->phys_parent->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
+			}
 			targ->phys_hasWeldedObjects = qtrue;
 			attacker->tool_entity = NULL;
 		}

@@ -697,6 +697,11 @@ static void CG_ServerCommand( void ) {
 		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.75, SMALLCHAR_WIDTH );
 		return;
 	}
+
+	if ( !strcmp( cmd, "cllp" ) ) {
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.90, SMALLCHAR_WIDTH );
+		return;
+	}
 	
 	if ( !strcmp( cmd, "clcmd" ) ) {
 		trap_SendConsoleCommand( va("%s\n", CG_Argv(1)) );

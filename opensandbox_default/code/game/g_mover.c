@@ -733,12 +733,7 @@ ucmd = &activator->client->pers.cmd;
 	
 	ent->activator = activator;
 	
-if(ent->owner != activator->s.clientNum + 1){
-if(ent->owner != 0){
-trap_SendServerCommand( activator->s.clientNum, va( "cp \"Owned by %s\"\n", ent->ownername ));
-return;
-}	
-}
+if(!G_PlayerIsOwner(activator, ent)) return;
 
 if(ent->price > 0){
 if ( ent->moverState == MOVER_POS1 ) {
@@ -1123,12 +1118,7 @@ Touch_DoorTrigger
 ================
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
-if(ent->owner != other->s.clientNum + 1){
-if(ent->owner != 0){
-trap_SendServerCommand( other->s.clientNum, va( "cp \"Owned by %s\n\"", ent->ownername ));
-return;
-}	
-}
+if(!G_PlayerIsOwner(other, ent)) return;
 
 if(ent->price > 0){
 //trap_SendServerCommand( other->s.clientNum, va( "cp %s_%i\n", ent->message, ent->price ));

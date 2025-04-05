@@ -317,7 +317,6 @@ struct gentity_s {
 
 	//Phys state (Trace)
 	qboolean	phys_inAir;
-	qboolean	phys_isUnbalanced;
 	qboolean	phys_inSolid;
 
 	//Phys state (Point)
@@ -1170,6 +1169,8 @@ void BotInterbreedEndMatch( void );
 //
 // g_physics.c
 //
+
+void Phys_CheckCarCollisions(gentity_t *ent);
 
 void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity);
 void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun);

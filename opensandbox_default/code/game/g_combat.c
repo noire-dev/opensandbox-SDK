@@ -626,12 +626,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
-        //Sago: Hmmm... generic? Can I transmit anything I like? Like if it is a team kill? Let's try
-        ent->s.generic1 = OnSameTeam (self, attacker);
-        if( !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime) )
-            ent->r.svFlags = SVF_BROADCAST;	// send to everyone (if not an elimination gametype during active warmup)
-        else
-            ent->r.svFlags = SVF_NOCLIENT;
+    //Sago: Hmmm... generic? Can I transmit anything I like? Like if it is a team kill? Let's try
+    ent->s.generic1 = OnSameTeam (self, attacker);
+    if( !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime) )
+        ent->r.svFlags = SVF_BROADCAST;	// send to everyone (if not an elimination gametype during active warmup)
+    else
+        ent->r.svFlags = SVF_NOCLIENT;
 
 	self->enemy = attacker;
 
@@ -642,14 +642,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 		if ( attacker == self || OnSameTeam (self, attacker ) ) {
 			if(g_gametype.integer!=GT_LMS && !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime))
-                            if( (g_gametype.integer <GT_TEAM && g_ffa_gt!=1 && self->client->ps.persistant[PERS_SCORE]>0) || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
-                                AddScore( attacker, self->r.currentOrigin, -1 );
-								G_LogPrintf( "Score: Non LMS Elim 1!\n" );
+            	if( (g_gametype.integer <GT_TEAM && g_ffa_gt!=1 && self->client->ps.persistant[PERS_SCORE]>0) || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
+            	    AddScore( attacker, self->r.currentOrigin, -1 );
 		} else {
 			if(g_gametype.integer != GT_LMS){
 				AddScore( attacker, self->r.currentOrigin, 1 );
 				attacker->client->pers.oldmoney += 1;
-				G_LogPrintf( "Score: Non LMS 1!\n" );
 			}
 
 			if( meansOfDeath == MOD_GAUNTLET ) {
@@ -1098,6 +1096,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 	
+	//damage car
 	if (targ->client && targ->client->vehiclenum){ //VEHICLE-SYSTEM: damage vehicle instead player
  		targ = G_FindEntityForEntityNum(targ->client->vehiclenum);
 	}
@@ -1253,12 +1252,18 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
 		}
 		if(targ->client){
-		VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
+			VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		}
-		if(targ->sandboxObject){
-		Phys_Enable( targ );
-		targ->lastPlayer = attacker;
-		VectorAdd (targ->s.pos.trDelta, kvel, targ->s.pos.trDelta);
+		if(targ->sandboxObject){ //WELD-TOOL
+			if(!targ->phys_parent){
+				Phys_Enable( targ );
+				targ->lastPlayer = attacker;
+				VectorAdd (targ->s.pos.trDelta, kvel, targ->s.pos.trDelta);
+			} else {
+				Phys_Enable( targ->phys_parent );
+				targ->phys_parent->lastPlayer = attacker;
+				VectorAdd (targ->phys_parent->s.pos.trDelta, kvel, targ->phys_parent->s.pos.trDelta);
+			}
 		}
 
 		// set the timer so that the other client can't cancel
@@ -1321,13 +1326,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			return;
 		}
 
-                if(targ->client && targ->client->spawnprotected) {
-                   if(level.time>targ->client->respawnTime+g_spawnprotect.integer)
-                       targ->client->spawnprotected = qfalse;
-                   else
-                       if( (mod > MOD_UNKNOWN && mod < MOD_WATER) || mod == MOD_TELEFRAG || mod>MOD_TRIGGER_HURT)
-                       return;
-                }
+    	if(targ->client && targ->client->spawnprotected) {
+    	   if(level.time>targ->client->respawnTime+g_spawnprotect.integer)
+    	       targ->client->spawnprotected = qfalse;
+    	   else
+    	       if( (mod > MOD_UNKNOWN && mod < MOD_WATER) || mod == MOD_TELEFRAG || mod>MOD_TRIGGER_HURT)
+    	       return;
+    	}
 	}
 
 	// battlesuit protects from all radius damage (but takes knockback)

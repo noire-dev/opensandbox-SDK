@@ -136,10 +136,7 @@ char* ui_footstepName[] = {
 	"splash"
 };
 
-
 static int PlayerInfo_WeaponCycleTime( playerInfo_t* m);
-
-
 
 /*
 =================
@@ -204,9 +201,6 @@ static void PlayerInfo_FireWeaponSound(playerInfo_t* pi)
 	}
 	trap_S_StartLocalSound( sfxWeapon.flash[weapon][index], CHAN_WEAPON );
 }
-
-
-
 
 /*
 ===============
