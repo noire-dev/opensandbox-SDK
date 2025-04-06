@@ -315,6 +315,9 @@ vmCvar_t	g_skyColorG;
 vmCvar_t	g_skyColorB;
 vmCvar_t	g_skyColorA;
 
+vmCvar_t	g_shitAngleTest0;
+vmCvar_t	g_shitAngleTest1;
+vmCvar_t	g_shitAngleTest2;
 vmCvar_t	g_entitypack;
 vmCvar_t	g_extendedsandbox;
 vmCvar_t	g_allowprops;
@@ -850,6 +853,9 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_teamblue_respawnwait, "g_teamblue_respawnwait", "3000", 0, 0, qtrue  },
 	{ &g_teamblue_pickupitems, "g_teamblue_pickupitems", "1", 0, 0, qtrue  },
 	// change anytime vars
+	{ &g_shitAngleTest0, "g_shitAngleTest0", "0", 0, 0, qtrue  },
+	{ &g_shitAngleTest1, "g_shitAngleTest1", "0", 0, 0, qtrue  },
+	{ &g_shitAngleTest2, "g_shitAngleTest2", "0", 0, 0, qtrue  },
 	{ &g_entitypack, "g_entitypack", "default", 0, 0, qtrue  },
 	{ &g_extendedsandbox, "g_extendedsandbox", "0", 0, 0, qtrue  },
 	{ &g_fogModel, "g_fogModel", "1", 0, 0, qtrue  },

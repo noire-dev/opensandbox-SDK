@@ -526,6 +526,10 @@ Updates state for physic object and turn off physics
 */
 qboolean Phys_UpdateState( gentity_t *ent ) {
 
+	ent->s.apos.trBase[0] = AngleNormalize360(ent->s.apos.trBase[0]);
+	ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
+	ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
+
 	if(ent->sb_phys == PHYS_STATIC || ent->phys_parent){	//if it's static object, reset delta and other properties
 		VectorClear(ent->s.pos.trDelta);
 		ent->phys_inAir = qfalse;
@@ -616,16 +620,6 @@ void Phys_PointCheck(gentity_t *ent) {
 
 }
 
-float Phys_NormalizeAngle(float angle) {
-    while (angle > 360.0f) {
-        angle -= 360.0f;
-    }
-    while (angle < 0.0f) {
-        angle += 360.0f;
-    }
-    return angle;
-}
-
 /*
 ================
 Phys_Rotate
@@ -635,41 +629,32 @@ Rotate for physic object
 */
 void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 
-	if(ent->phys_think){
-		ent->s.apos.trBase[0] = Phys_NormalizeAngle (ent->s.apos.trBase[0]);
-		ent->s.apos.trBase[1] = Phys_NormalizeAngle (ent->s.apos.trBase[1]);
-		ent->s.apos.trBase[2] = Phys_NormalizeAngle (ent->s.apos.trBase[2]);
-		return;
-	}
+    if (ent->phys_think) {
+        return;
+    }
 
-	if (!ent->isGrabbed && !tr->startsolid){
-		if(ent->s.pos.trType != TR_GRAVITY_WATER){
-			if (ent->s.pos.trDelta[2] != 0) {
-				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.20;
-			}
-			if (ent->s.pos.trDelta[1] != 0) {
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING;
-			}
-			if (ent->s.pos.trDelta[0] != 0) {
-				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING;
-			}
-		} else {
-			if (ent->s.pos.trDelta[2] != 0) {
-				ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * PHYS_ROTATING * 0.10;
-			}
-			if (ent->s.pos.trDelta[1] != 0) {
-				ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * PHYS_ROTATING * 0.50;
-			}
-			if (ent->s.pos.trDelta[0] != 0) {
-				ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * PHYS_ROTATING * 0.50;
-			}
-		}
-	}
-	ent->s.apos.trBase[0] = Phys_NormalizeAngle (ent->s.apos.trBase[0]);
-	ent->s.apos.trBase[1] = Phys_NormalizeAngle (ent->s.apos.trBase[1]);
-	ent->s.apos.trBase[2] = Phys_NormalizeAngle (ent->s.apos.trBase[2]);
+    if (!ent->isGrabbed && !tr->startsolid) {
+
+        // Определяем множитель вращения в зависимости от типа движения
+        float rotationMultiplier = (ent->s.pos.trType != TR_GRAVITY_WATER) ? PHYS_ROTATING : PHYS_ROTATING * 0.5;
+
+        // Обработка изменения координат по осям
+        if (ent->s.pos.trDelta[2] != 0) {
+            ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * rotationMultiplier * 0.20;
+            ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * rotationMultiplier * 0.20;
+        }
+        if (ent->s.pos.trDelta[1] != 0) {
+            ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * rotationMultiplier;
+        }
+        if (ent->s.pos.trDelta[0] != 0) {
+            ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * rotationMultiplier;
+        }
+    }
+
+    // Нормализуем углы, чтобы они всегда оставались в правильном диапазоне
+    ent->s.apos.trBase[0] = AngleNormalize360(ent->s.apos.trBase[0]);
+    ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
+    ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
 }
 
 /*
@@ -815,7 +800,7 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
         object = &g_entities[i];
 		if (ent == object->phys_parent) {
             vec3_t forward, right, up;
-            vec3_t rotatedOffset, finalPos;
+            vec3_t rotatedOffset, finalPos, finalAngles;
 
             AngleVectors(ent->s.apos.trBase, forward, right, up);
             rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
@@ -828,10 +813,12 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
             VectorCopy(finalPos, object->r.currentOrigin);
             VectorCopy(finalPos, object->s.pos.trBase);
 
-			VectorCopy(ent->s.apos.trBase, object->s.angles);
-			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
-			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.angles);
-			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
+			VectorCopy(ent->s.apos.trBase, finalAngles);
+
+			VectorAdd(finalAngles, object->phys_relativeAngles, finalAngles);
+
+			VectorCopy(finalAngles, object->s.angles);
+			VectorCopy(finalAngles, object->s.apos.trBase);
 
 			if (object->s.pos.trType != TR_STATIONARY) {
 				Phys_Disable(object, object->r.currentOrigin);

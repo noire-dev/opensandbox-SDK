@@ -1562,6 +1562,9 @@ extern	vmCvar_t	g_teamred_infammo;
 extern	vmCvar_t	g_teamred_respawnwait;
 extern	vmCvar_t	g_teamred_pickupitems;
 //cvars
+extern	vmCvar_t	g_shitAngleTest0;
+extern	vmCvar_t	g_shitAngleTest1;
+extern	vmCvar_t	g_shitAngleTest2;
 extern	vmCvar_t	g_entitypack;
 extern	vmCvar_t	g_extendedsandbox;
 extern	vmCvar_t	g_fogModel;
