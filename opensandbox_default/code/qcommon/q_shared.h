@@ -323,6 +323,10 @@ typedef	int	fixed4_t;
 typedef	int	fixed8_t;
 typedef	int	fixed16_t;
 
+typedef float mat3_t[3][3];
+
+#define copysign(x, y) ((y) < 0 ? -(x) : (x))
+
 #ifndef M_PI
 #define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h
 #endif
@@ -653,6 +657,7 @@ float	Q_crandom( int *seed );
 
 void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
+void AxisToAngles( vec3_t axis[3], vec3_t angles );
 void VelocityToAxis( const vec3_t velocity, vec3_t axis[3], float lerpFactor );
 float Lerp(float a, float b, float f);
 
@@ -673,6 +678,10 @@ float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
 float	AngleSubtract( float a1, float a2 );
 void	AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
+float 	AngleAdd(float a1, float a2);
+void 	AngleMA(vec3_t aa, float scale, vec3_t ab, vec3_t ac);
+void 	AnglesAdd(vec3_t a1, vec3_t a2, vec3_t dest);
+void 	LerpAngles(vec3_t from, vec3_t to, vec3_t dest, float frac);
 
 float AngleNormalize360 ( float angle );
 float AngleNormalize180 ( float angle );
@@ -1405,10 +1414,6 @@ typedef struct highscores_s {
 #define SCORE_SKILL		0.10	//skill based multiplier. Multiplier is increased with this value for each difficulty level above skill 1.
 
 #define FADEOUT_TIME	500.000	//amount of time it takes for screen to fade out at map change. Needed by both server and client
-
-//mutators
-#define MT_MACHINEGUNONLY				1	//all weapons are MG and all ammo boxes are bullets.
-#define MT_INSTAGIB						2	//no ammo pickups. All weapons are RG's, player has unlimited ammo.
 
 //score info keys (these should NEVER change because it will break compatibility with older score files)
 #define SIK_CARNAGESCORE	"a"

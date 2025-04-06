@@ -652,12 +652,12 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 				attacker->tool_entity->phys_parent = targ;
 				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
 				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				VectorSubtract(attacker->tool_entity->s.apos.trBase, targ->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
+				AnglesSubtract(attacker->tool_entity->s.apos.trBase, targ->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
 			} else {
 				attacker->tool_entity->phys_parent = targ->phys_parent;
 				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->phys_parent->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
 				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				VectorSubtract(attacker->tool_entity->s.apos.trBase, targ->phys_parent->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
+				AnglesSubtract(attacker->tool_entity->s.apos.trBase, targ->phys_parent->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
 			}
 			targ->phys_hasWeldedObjects = qtrue;
 			attacker->tool_entity = NULL;

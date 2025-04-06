@@ -614,6 +614,61 @@ float	AngleMod(float a) {
 
 /*
 =================
+AngleAdd
+=================
+*/
+float AngleAdd(float a1, float a2)
+{
+	float a;
+
+	a = a1 + a2;
+	while (a > 180.0) {
+		a -= 360.0;
+	}
+	while (a < -180.0) {
+		a += 360.0;
+	}
+	return a;
+}
+
+/*
+=================
+AngleMA
+=================
+*/
+void AngleMA(vec3_t aa, float scale, vec3_t ab, vec3_t ac)
+{
+	ac[0] = AngleAdd(aa[0], scale * ab[0]);
+	ac[1] = AngleAdd(aa[1], scale * ab[1]);
+	ac[2] = AngleAdd(aa[2], scale * ab[2]);
+}
+
+/*
+=================
+AnglesAdd
+=================
+*/
+void AnglesAdd(vec3_t a1, vec3_t a2, vec3_t dest)
+{
+	dest[0] = AngleAdd(a1[0], a2[0]);
+	dest[1] = AngleAdd(a1[1], a2[1]);
+	dest[2] = AngleAdd(a1[2], a2[2]);
+}
+
+/*
+=================
+LerpAngles
+=================
+*/
+void LerpAngles(vec3_t from, vec3_t to, vec3_t dest, float frac)
+{
+	dest[0] = LerpAngle(from[0], to[0], frac);
+	dest[1] = LerpAngle(from[1], to[1], frac);
+	dest[2] = LerpAngle(from[2], to[2], frac);
+}
+
+/*
+=================
 AngleNormalize360
 
 returns angle normalized to the range [0 <= angle < 360]
