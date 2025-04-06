@@ -635,7 +635,7 @@ Rotate for physic object
 */
 void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 
-	if(ent->phys_hasWeldedObjects || ent->phys_think){
+	if(ent->phys_think){
 		ent->s.apos.trBase[0] = Phys_NormalizeAngle (ent->s.apos.trBase[0]);
 		ent->s.apos.trBase[1] = Phys_NormalizeAngle (ent->s.apos.trBase[1]);
 		ent->s.apos.trBase[2] = Phys_NormalizeAngle (ent->s.apos.trBase[2]);
@@ -752,33 +752,48 @@ Check and calculate welded objects to this object
 ================
 */
 void Phys_CheckWeldedEntities(gentity_t *ent) {
-	gentity_t *object;
-	int i = 0;
-	int j = 0;
-	
-	if(!ent->phys_hasWeldedObjects){
-		return;
-	}
+    gentity_t *object;
+    int i = 0;
+    int j = 0;
+    
+    if (!ent->phys_hasWeldedObjects) {
+        return;
+    }
 
     for (i = 0; i < MAX_GENTITIES; i++) {
         object = &g_entities[i];
-		if (ent == object->phys_parent) {
-			VectorCopy(ent->r.currentOrigin, object->s.origin);
-			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
-			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.origin);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->r.currentOrigin);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.pos.trBase);
-			if (object->s.pos.trType != TR_STATIONARY) {
-				Phys_Disable(object, object->r.currentOrigin);
-			}
-			trap_UnlinkEntity(object);
-			j++;
-		}
+        if (ent == object->phys_parent) {
+            vec3_t forward, right, up;
+            vec3_t rotatedOffset, finalPos;
+
+            AngleVectors(ent->s.apos.trBase, forward, right, up);
+            rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
+            rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
+            rotatedOffset[2] = forward[2] * object->phys_relativeOrigin[0] + right[2] * object->phys_relativeOrigin[1] + up[2] * object->phys_relativeOrigin[2];
+
+            VectorAdd(ent->r.currentOrigin, rotatedOffset, finalPos);
+			
+            VectorCopy(finalPos, object->s.origin);
+            VectorCopy(finalPos, object->r.currentOrigin);
+            VectorCopy(finalPos, object->s.pos.trBase);
+
+			VectorCopy(ent->s.apos.trBase, object->s.angles);
+			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
+			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.angles);
+			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
+
+            if (object->s.pos.trType != TR_STATIONARY) {
+                Phys_Disable(object, object->r.currentOrigin);
+            }
+
+            trap_UnlinkEntity(object);
+            j++;
+        }
     }
-	if (!j){
-		ent->phys_hasWeldedObjects = qfalse;
-	}
+
+    if (!j) {
+        ent->phys_hasWeldedObjects = qfalse;
+    }
 }
 
 /*
@@ -799,12 +814,25 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
     for (i = 0; i < MAX_GENTITIES; i++) {
         object = &g_entities[i];
 		if (ent == object->phys_parent) {
-			VectorCopy(ent->r.currentOrigin, object->s.origin);
-			VectorCopy(ent->r.currentOrigin, object->r.currentOrigin);
-			VectorCopy(ent->r.currentOrigin, object->s.pos.trBase);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.origin);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->r.currentOrigin);
-			VectorAdd(ent->r.currentOrigin, object->phys_relativeOrigin, object->s.pos.trBase);
+            vec3_t forward, right, up;
+            vec3_t rotatedOffset, finalPos;
+
+            AngleVectors(ent->s.apos.trBase, forward, right, up);
+            rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
+            rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
+            rotatedOffset[2] = forward[2] * object->phys_relativeOrigin[0] + right[2] * object->phys_relativeOrigin[1] + up[2] * object->phys_relativeOrigin[2];
+
+            VectorAdd(ent->r.currentOrigin, rotatedOffset, finalPos);
+			
+            VectorCopy(finalPos, object->s.origin);
+            VectorCopy(finalPos, object->r.currentOrigin);
+            VectorCopy(finalPos, object->s.pos.trBase);
+
+			VectorCopy(ent->s.apos.trBase, object->s.angles);
+			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
+			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.angles);
+			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
+
 			if (object->s.pos.trType != TR_STATIONARY) {
 				Phys_Disable(object, object->r.currentOrigin);
 			}

@@ -1067,3 +1067,61 @@ void RotateAroundAxis(vec3_t axis[3], const vec3_t rotationAxis, float angle) {
                      (cosAngle + (1 - cosAngle) * rotationAxis[2] * rotationAxis[2]) * temp[i][2];
     }
 }
+
+void RotatePointAroundAxis(vec3_t point, vec3_t angles, vec3_t rotatedPoint) {
+    float pitch = DEG2RAD(angles[0]);  // угол по оси X (pitch)
+    float yaw = DEG2RAD(angles[1]);    // угол по оси Y (yaw)
+    float roll = DEG2RAD(angles[2]);   // угол по оси Z (roll)
+	int	  i, j, k;
+    // Итоговая матрица поворота (сначала поворот вокруг X, затем Y, затем Z)
+    float result[3][3] = {0};
+	float finalResult[3][3] = {0};
+
+    // Матрицы поворота вокруг оси X (pitch), Y (yaw), Z (roll)
+    float m[3][3];
+    float mYaw[3][3];
+    float mRoll[3][3];
+
+    // Матрица поворота вокруг оси X (pitch)
+    m[0][0] = 1; m[0][1] = 0; m[0][2] = 0;
+    m[1][0] = 0; m[1][1] = cos(pitch); m[1][2] = -sin(pitch);
+    m[2][0] = 0; m[2][1] = sin(pitch); m[2][2] = cos(pitch);
+
+    // Матрица поворота вокруг оси Y (yaw)
+    mYaw[0][0] = cos(yaw); mYaw[0][1] = 0; mYaw[0][2] = sin(yaw);
+    mYaw[1][0] = 0; mYaw[1][1] = 1; mYaw[1][2] = 0;
+    mYaw[2][0] = -sin(yaw); mYaw[2][1] = 0; mYaw[2][2] = cos(yaw);
+
+    // Матрица поворота вокруг оси Z (roll)
+    mRoll[0][0] = cos(roll); mRoll[0][1] = -sin(roll); mRoll[0][2] = 0;
+    mRoll[1][0] = sin(roll); mRoll[1][1] = cos(roll); mRoll[1][2] = 0;
+    mRoll[2][0] = 0; mRoll[2][1] = 0; mRoll[2][2] = 1;
+
+    // Умножаем матрицы m, mYaw и mRoll, чтобы получить итоговую матрицу
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            result[i][j] = 0;
+            for (k = 0; k < 3; k++) {
+                result[i][j] += m[i][k] * mYaw[k][j];
+            }
+        }
+    }
+
+    // Умножаем итоговую матрицу на матрицу поворота по оси Z
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            finalResult[i][j] = 0;
+            for (k = 0; k < 3; k++) {
+                finalResult[i][j] += result[i][k] * mRoll[k][j];
+            }
+        }
+    }
+
+    // Применяем итоговую матрицу поворота к точке
+    for (i = 0; i < 3; i++) {
+        rotatedPoint[i] = 0;
+        for (j = 0; j < 3; j++) {
+            rotatedPoint[i] += finalResult[i][j] * point[j];
+        }
+    }
+}

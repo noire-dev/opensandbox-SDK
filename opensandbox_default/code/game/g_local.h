@@ -328,6 +328,7 @@ struct gentity_s {
 
 	//Saved info
 	vec3_t		phys_relativeOrigin;
+	vec3_t		phys_relativeAngles;
 
 	//Phys think
 	int			phys_nextthink;

@@ -1432,3 +1432,4 @@ float VectorDot(const vec3_t v1, const vec3_t v2);
 float VectorDistance(const vec3_t v1, const vec3_t v2);
 
 void RotateAroundAxis(vec3_t axis[3], const vec3_t rotationAxis, float angle);
+void RotatePointAroundAxis(vec3_t point, vec3_t angles, vec3_t rotatedPoint);
