@@ -762,11 +762,6 @@ void Phys_CheckWeldedEntities(gentity_t *ent) {
             VectorCopy(finalPos, object->r.currentOrigin);
             VectorCopy(finalPos, object->s.pos.trBase);
 
-			VectorCopy(ent->s.apos.trBase, object->s.angles);
-			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
-			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.angles);
-			VectorAdd(ent->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
-
             if (object->s.pos.trType != TR_STATIONARY) {
                 Phys_Disable(object, object->r.currentOrigin);
             }
@@ -788,6 +783,12 @@ Phys_RestoreWeldedEntities
 Restores welded objects to this object
 ================
 */
+float cos_deg(float degrees) {
+    return cos(DEG2RAD(degrees));  // Переводит градусы в радианы и вычисляет косинус
+}
+float sin_deg(float degrees) {
+    return sin(DEG2RAD(degrees));  // Переводит градусы в радианы и вычисляет косинус
+}
 void Phys_RestoreWeldedEntities(gentity_t *ent) {
 	gentity_t *object;
 	int i = 0;
@@ -800,7 +801,9 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
         object = &g_entities[i];
 		if (ent == object->phys_parent) {
             vec3_t forward, right, up;
-            vec3_t rotatedOffset, finalPos, finalAngles;
+            vec3_t rotatedOffset, finalPos;
+			float  yaw, cosYaw, sinYaw;
+			float  origX, origZ;
 
             AngleVectors(ent->s.apos.trBase, forward, right, up);
             rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
@@ -813,12 +816,20 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
             VectorCopy(finalPos, object->r.currentOrigin);
             VectorCopy(finalPos, object->s.pos.trBase);
 
-			VectorCopy(ent->s.apos.trBase, finalAngles);
+			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
 
-			VectorAdd(finalAngles, object->phys_relativeAngles, finalAngles);
+			VectorAdd(object->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
 
-			VectorCopy(finalAngles, object->s.angles);
-			VectorCopy(finalAngles, object->s.apos.trBase);
+			yaw = object->phys_relativeAngles[1];
+			cosYaw = cos_deg(yaw);
+			sinYaw = sin_deg(yaw);
+			origX = object->s.apos.trBase[0];
+			origZ = object->s.apos.trBase[2];
+
+			object->s.apos.trBase[0] = origX * cosYaw + origZ * sinYaw;
+			object->s.apos.trBase[2] = -origX * -sinYaw + origZ * cosYaw;
+
+			Com_Printf("cosYaw(y) = %f | sinYaw(y) = %f\n", cosYaw, sinYaw);
 
 			if (object->s.pos.trType != TR_STATIONARY) {
 				Phys_Disable(object, object->r.currentOrigin);

@@ -998,7 +998,6 @@ void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]) {
 				in1[2][2] * in2[2][2];
 }
 
-
 void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) {
 	float		angle;
 	static float		sr, sp, sy, cr, cp, cy;
