@@ -827,9 +827,7 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 			origZ = object->s.apos.trBase[2];
 
 			object->s.apos.trBase[0] = origX * cosYaw + origZ * sinYaw;
-			object->s.apos.trBase[2] = -origX * -sinYaw + origZ * cosYaw;
-
-			Com_Printf("cosYaw(y) = %f | sinYaw(y) = %f\n", cosYaw, sinYaw);
+			object->s.apos.trBase[2] = origX * sinYaw + origZ * cosYaw;
 
 			if (object->s.pos.trType != TR_STATIONARY) {
 				Phys_Disable(object, object->r.currentOrigin);
