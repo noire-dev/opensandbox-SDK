@@ -639,6 +639,11 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 
 	if(attacker->tool_id == TL_WELD){
+		vec3_t forward, right, up;
+		vec3_t parentForward, parentRight, parentUp;
+		vec3_t weldForward, weldRight, weldUp;
+		vec3_t relForward, relRight, relUp;
+
 		if(!attacker->tool_entity){
 			if(!targ->phys_hasWeldedObjects){
 				attacker->tool_entity = targ;
@@ -650,14 +655,64 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		} else {
 			if(!targ->phys_parent){
 				attacker->tool_entity->phys_parent = targ;
+
+				// Save origin
 				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
 				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				AnglesSubtract(attacker->tool_entity->s.apos.trBase, targ->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
+				
+				// Vector from parent
+				AngleVectors(targ->s.apos.trBase, parentForward, parentRight, parentUp);
+				AngleVectors(attacker->tool_entity->s.apos.trBase, weldForward, weldRight, weldUp);
+
+        		// Diff vectors
+				relForward[0] = DotProduct(weldForward, parentForward);
+				relForward[1] = DotProduct(weldForward, parentRight);
+				relForward[2] = DotProduct(weldForward, parentUp);
+
+				relRight[0] = DotProduct(weldRight, parentForward);
+				relRight[1] = DotProduct(weldRight, parentRight);
+				relRight[2] = DotProduct(weldRight, parentUp);
+
+				relUp[0] = DotProduct(weldUp, parentForward);
+				relUp[1] = DotProduct(weldUp, parentRight);
+				relUp[2] = DotProduct(weldUp, parentUp);
+
+				OrthogonalizeMatrix(relForward, relRight, relUp);
+
+        		// Save result
+				VectorCopy(relForward, attacker->tool_entity->phys_rv_0);
+				VectorCopy(relRight, attacker->tool_entity->phys_rv_1);
+				VectorCopy(relUp, attacker->tool_entity->phys_rv_2);
 			} else {
 				attacker->tool_entity->phys_parent = targ->phys_parent;
+
+				// Save origin
 				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->phys_parent->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
 				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				AnglesSubtract(attacker->tool_entity->s.apos.trBase, targ->phys_parent->s.apos.trBase, attacker->tool_entity->phys_relativeAngles);
+				
+				// Vector from parent
+        		AngleVectors(targ->phys_parent->s.apos.trBase, parentForward, parentRight, parentUp);
+        		AngleVectors(attacker->tool_entity->s.apos.trBase, weldForward, weldRight, weldUp);
+
+        		// Diff vectors
+				relForward[0] = DotProduct(weldForward, parentForward);
+				relForward[1] = DotProduct(weldForward, parentRight);
+				relForward[2] = DotProduct(weldForward, parentUp);
+
+				relRight[0] = DotProduct(weldRight, parentForward);
+				relRight[1] = DotProduct(weldRight, parentRight);
+				relRight[2] = DotProduct(weldRight, parentUp);
+
+				relUp[0] = DotProduct(weldUp, parentForward);
+				relUp[1] = DotProduct(weldUp, parentRight);
+				relUp[2] = DotProduct(weldUp, parentUp);
+
+				OrthogonalizeMatrix(relForward, relRight, relUp);
+
+        		// Save result
+				VectorCopy(relForward, attacker->tool_entity->phys_rv_0);
+				VectorCopy(relRight, attacker->tool_entity->phys_rv_1);
+				VectorCopy(relUp, attacker->tool_entity->phys_rv_2);
 			}
 			targ->phys_hasWeldedObjects = qtrue;
 			attacker->tool_entity = NULL;

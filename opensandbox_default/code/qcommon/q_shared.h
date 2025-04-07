@@ -658,6 +658,7 @@ float	Q_crandom( int *seed );
 void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
 void AxisToAngles( vec3_t axis[3], vec3_t angles );
+void OrthogonalizeMatrix(vec3_t forward, vec3_t right, vec3_t up);
 void VelocityToAxis( const vec3_t velocity, vec3_t axis[3], float lerpFactor );
 float Lerp(float a, float b, float f);
 

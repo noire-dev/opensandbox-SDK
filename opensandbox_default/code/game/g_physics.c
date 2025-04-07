@@ -783,12 +783,6 @@ Phys_RestoreWeldedEntities
 Restores welded objects to this object
 ================
 */
-float cos_deg(float degrees) {
-    return cos(DEG2RAD(degrees));  // Переводит градусы в радианы и вычисляет косинус
-}
-float sin_deg(float degrees) {
-    return sin(DEG2RAD(degrees));  // Переводит градусы в радианы и вычисляет косинус
-}
 void Phys_RestoreWeldedEntities(gentity_t *ent) {
 	gentity_t *object;
 	int i = 0;
@@ -802,8 +796,14 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 		if (ent == object->phys_parent) {
             vec3_t forward, right, up;
             vec3_t rotatedOffset, finalPos;
-			float  yaw, cosYaw, sinYaw;
-			float  origX, origZ;
+			vec3_t entForward, entRight, entUp;
+			vec3_t relForward, relRight, relUp;
+			vec3_t newForward, newRight, newUp;
+			float matrix[3][3];
+			vec3_t newAngles;
+			float dotForward;
+    		float dotRight;
+    		float dotUp;
 
             AngleVectors(ent->s.apos.trBase, forward, right, up);
             rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
@@ -816,18 +816,43 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
             VectorCopy(finalPos, object->r.currentOrigin);
             VectorCopy(finalPos, object->s.pos.trBase);
 
-			VectorCopy(ent->s.apos.trBase, object->s.apos.trBase);
+			AngleVectors(ent->s.apos.trBase, entForward, entRight, entUp);
 
-			VectorAdd(object->s.apos.trBase, object->phys_relativeAngles, object->s.apos.trBase);
+			VectorCopy(object->phys_rv_0, relForward);
+			VectorCopy(object->phys_rv_1, relRight);
+			VectorCopy(object->phys_rv_2, relUp);
 
-			yaw = object->phys_relativeAngles[1];
-			cosYaw = cos_deg(yaw);
-			sinYaw = sin_deg(yaw);
-			origX = object->s.apos.trBase[0];
-			origZ = object->s.apos.trBase[2];
+			newForward[0] = entForward[0]*relForward[0] + entRight[0]*relForward[1] + entUp[0]*relForward[2];
+			newForward[1] = entForward[1]*relForward[0] + entRight[1]*relForward[1] + entUp[1]*relForward[2];
+			newForward[2] = entForward[2]*relForward[0] + entRight[2]*relForward[1] + entUp[2]*relForward[2];
+			
+			newRight[0] = entForward[0]*relRight[0] + entRight[0]*relRight[1] + entUp[0]*relRight[2];
+			newRight[1] = entForward[1]*relRight[0] + entRight[1]*relRight[1] + entUp[1]*relRight[2];
+			newRight[2] = entForward[2]*relRight[0] + entRight[2]*relRight[1] + entUp[2]*relRight[2];
+			
+			newUp[0] = entForward[0]*relUp[0] + entRight[0]*relUp[1] + entUp[0]*relUp[2];
+			newUp[1] = entForward[1]*relUp[0] + entRight[1]*relUp[1] + entUp[1]*relUp[2];
+			newUp[2] = entForward[2]*relUp[0] + entRight[2]*relUp[1] + entUp[2]*relUp[2];
 
-			object->s.apos.trBase[0] = origX * cosYaw + origZ * sinYaw;
-			object->s.apos.trBase[2] = origX * sinYaw + origZ * cosYaw;
+			OrthogonalizeMatrix(newForward, newRight, newUp);
+
+			matrix[0][0] = newForward[0]; // X forward
+			matrix[0][1] = newRight[0];   // X right
+			matrix[0][2] = newUp[0];      // X up
+
+			matrix[1][0] = newForward[1]; // Y forward
+			matrix[1][1] = newRight[1];   // Y right
+			matrix[1][2] = newUp[1];      // Y up
+
+			matrix[2][0] = newForward[2]; // Z forward
+			matrix[2][1] = newRight[2];   // Z right
+			matrix[2][2] = newUp[2];      // Z up
+
+			AxisToAngles(matrix, newAngles);
+
+			newAngles[2] -= 180;	//it's work well
+
+    		VectorCopy(newAngles, object->s.apos.trBase);
 
 			if (object->s.pos.trType != TR_STATIONARY) {
 				Phys_Disable(object, object->r.currentOrigin);

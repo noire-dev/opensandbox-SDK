@@ -330,6 +330,11 @@ struct gentity_s {
 	vec3_t		phys_relativeOrigin;
 	vec3_t		phys_relativeAngles;
 
+	//Rotate vectors
+	vec3_t		phys_rv_0;
+	vec3_t		phys_rv_1;
+	vec3_t		phys_rv_2;
+
 	//Phys think
 	int			phys_nextthink;
 	void		(*phys_think)(gentity_t *self);

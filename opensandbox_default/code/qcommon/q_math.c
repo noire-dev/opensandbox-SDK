@@ -418,36 +418,79 @@ void AnglesToAxis( const vec3_t angles, vec3_t axis[3] ) {
 	VectorSubtract( vec3_origin, right, axis[1] );
 }
 
+/*
+=================
+AxisToAngles
+
+Converts a 3x3 rotation matrix back to Euler angles (in degrees)
+=================
+*/
+void AxisToAngles( vec3_t axis[3], vec3_t angles ) {
+    float   yaw, pitch, roll;
+    
+    // Extract yaw (around Z axis)
+    yaw = atan2(axis[1][0], axis[0][0]) * (180 / M_PI);
+    
+    // Extract pitch (around Y axis)
+    pitch = atan2(-axis[2][0], sqrt(axis[2][1] * axis[2][1] + axis[2][2] * axis[2][2])) * (180 / M_PI);
+    
+    // Extract roll (around X axis)
+    roll = atan2(axis[2][1], axis[2][2]) * (180 / M_PI);
+
+    angles[0] = pitch;
+    angles[1] = yaw;
+    angles[2] = roll;
+}
+
+/*
+=================
+OrthogonalizeMatrix
+
+Makes sure the axis vectors are perpendicular to each other
+and normalized. Uses Gram-Schmidt process.
+=================
+*/
+void OrthogonalizeMatrix(vec3_t forward, vec3_t right, vec3_t up) {
+	vec3_t testUp;
+	float dot;
+    VectorNormalize(forward);
+    
+    dot = DotProduct(right, forward);
+    VectorMA(right, -dot, forward, right);
+    VectorNormalize(right);
+    
+    CrossProduct(forward, right, up);
+    
+    CrossProduct(forward, right, testUp);
+    if (DotProduct(testUp, up) < 0.0f) {
+        VectorNegate(up, up);
+    }
+}
+
 void VelocityToAxis( const vec3_t velocity, vec3_t axis[3], float lerpFactor ) {
     vec3_t forward, right, up, targetForward, targetRight, targetUp;
 	int i;
 
-    // Если скорость равна нулю, оставляем текущие оси без изменений
     if (VectorLength(velocity) == 0) {
         return;
     }
 
-    // Нормализуем вектор скорости, чтобы получить направление "вперед"
     VectorNormalize2(velocity, targetForward);
 
-    // Определяем ось "вверх" как (0, 0, 1)
     VectorSet(up, 0, 0, 1);
 
-    // Вычисляем ось "вправо" как крестовое произведение "вверх" и "вперед"
     CrossProduct(up, targetForward, targetRight);
     VectorNormalize(targetRight);
 
-    // Пересчитываем "вверх" как крестовое произведение "вперед" и "вправо"
     CrossProduct(targetForward, targetRight, targetUp);
 
-    // Линейная интерполяция между текущими осями и новыми целевыми осями
+
     for (i = 0; i < 3; i++) {
-        axis[0][i] = Lerp(axis[0][i], targetForward[i], lerpFactor);  // вперед
-        axis[1][i] = Lerp(axis[1][i], targetRight[i], lerpFactor);    // вправо
-        axis[2][i] = Lerp(axis[2][i], targetUp[i], lerpFactor);       // вверх
+        axis[0][i] = Lerp(axis[0][i], targetForward[i], lerpFactor);  // forward
+        axis[1][i] = Lerp(axis[1][i], targetRight[i], lerpFactor);    // right
+        axis[2][i] = Lerp(axis[2][i], targetUp[i], lerpFactor);       // up
     }
 
-    // Нормализуем оси после интерполяции, чтобы убедиться, что они остались ортогональными
     VectorNormalize(axis[0]);
     CrossProduct(axis[2], axis[0], axis[1]);
     VectorNormalize(axis[1]);
