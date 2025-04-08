@@ -323,12 +323,11 @@ struct gentity_s {
 	qboolean	phys_inWater;
 
 	//Phys settings
-	qboolean	phys_hasWeldedObjects;
+	int			phys_weldedObjectsNum;
 	gentity_t	*phys_parent;
 
 	//Saved info
 	vec3_t		phys_relativeOrigin;
-	vec3_t		phys_relativeAngles;
 
 	//Rotate vectors
 	vec3_t		phys_rv_0;
@@ -879,6 +878,9 @@ void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
 gentity_t *G_FindEntityForEntityNum(int entityn);
 gentity_t *G_FindEntityForClientNum(int entityn);
 
+qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
+gentity_t *G_FindWeldEntity(gentity_t *ent);
+
 void	G_InitGentity( gentity_t *e );
 gentity_t *findradius (gentity_t *ent, vec3_t org, float rad);
 gentity_t	*G_Spawn (void);
@@ -1182,6 +1184,8 @@ void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity);
 void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
 void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun);
 void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
+
+void Phys_Unweld( gentity_t *ent );
 
 void Phys_Frame( gentity_t *ent );
 void Phys_Smoke( gentity_t *ent, float impact );

@@ -2044,7 +2044,7 @@ static void CG_DrawCrosshair(void)
 		}
 	}
 	if(cl_screenoffset.value > 0){
-	x = cg_crosshairX.integer;
+	x = cg_crosshairX.integer - cl_screenoffset.value;
 	} else {
 	x = cg_crosshairX.integer;
 	}

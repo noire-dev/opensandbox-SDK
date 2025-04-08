@@ -549,14 +549,17 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		if(uis.sb_tab == STAB_CREATE){
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_ENTITIES){
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_NPC){
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_ITEMS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("give %s\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
@@ -564,12 +567,14 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		if(uis.sb_tab == STAB_LISTS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, "ns_openscript_ui tools/create.ns\n" );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_SCRIPTS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("ns_openscript_ui dscripts/%s.ns\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 		}
 		if(uis.sb_tab == STAB_TOOLS){
 		trap_Cmd_ExecuteText( EXEC_INSERT, "menuback\n" );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_ADDONS){
 		UI_PopMenu();
@@ -599,6 +604,7 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		Q_strncpyz( s_sandboxmain.modif[4].field.buffer, "0", sizeof(s_sandboxmain.modif[4].field.buffer) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("ns_openscript_ui tools/%s.ns\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 		trap_Cmd_ExecuteText( EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN) );
+		NS_setCvar("toolgun_mod19", "0");
 		}
 		if(uis.sb_tab == STAB_ADDONS){
 		UI_PopMenu();

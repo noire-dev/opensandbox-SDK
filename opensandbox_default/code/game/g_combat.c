@@ -1032,6 +1032,41 @@ void VehiclePhys( gentity_t *self ) {
 	
 }
 
+qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
+    // Validate conditions
+    if (!player->client || !vehicle->vehicle) {
+        return qtrue;
+    }
+
+    // Player is already in another vehicle
+    if (player->client->vehiclenum) {
+        return qtrue;
+    }
+
+    // Assign vehicle to player
+    player->client->vehiclenum = vehicle->s.number;
+    vehicle->parent = player;
+
+    // Update player properties
+    ClientUserinfoChanged(player->s.clientNum);
+    
+    // Position synchronization
+    VectorCopy(vehicle->s.origin, player->s.origin);
+    VectorCopy(vehicle->s.pos.trBase, player->s.pos.trBase);
+    player->s.apos.trBase[1] = vehicle->s.apos.trBase[1]; // Only copy yaw
+    VectorCopy(vehicle->r.currentOrigin, player->r.currentOrigin);
+    
+    // Adjust player collision bounds
+    VectorSet(player->r.mins, -25, -25, -15);
+    VectorSet(player->r.maxs, 25, 25, 15);
+
+    // Activate vehicle physics
+    vehicle->think = VehiclePhys;
+    vehicle->nextthink = level.time + 1;
+
+    return qtrue;
+}
+
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
@@ -1053,29 +1088,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			return;
 		}
 	}
-	
-	if(mod == MOD_GAUNTLET){
-		if(targ->vehicle && !attacker->client->vehiclenum){
-		attacker->client->vehiclenum = targ->s.number;
-		targ->parent = attacker;
-		ClientUserinfoChanged( attacker->s.clientNum );
-		VectorCopy(targ->s.origin, attacker->s.origin);
-		VectorCopy(targ->s.pos.trBase, attacker->s.pos.trBase);
-		attacker->s.apos.trBase[1] = targ->s.apos.trBase[1];
-		VectorCopy(targ->r.currentOrigin, attacker->r.currentOrigin);
-		VectorSet( attacker->r.mins, -25, -25, -15 );
-		VectorSet( attacker->r.maxs, 25, 25, 15 );
-		targ->think = VehiclePhys;
-		targ->nextthink = level.time + 1;
-		return;
-		}
-		if(attacker->client->vehiclenum){
-		return;	
-		}
-	}
 
 	if(mod == MOD_GAUNTLET && attacker->health <= 0){
 		return;
+	}
+	
+	if (mod == MOD_GAUNTLET) {
+		if (targ->vehicle) {
+			if(G_EnterInCar(attacker, targ)){
+				return;
+			}
+		}
 	}
 
 	if(mod == MOD_REGENERATOR && targ->client){
@@ -1121,7 +1144,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
     //Sago: See if the client was sent flying
     //Check if damage is by somebody who is not a player!
     if( (!attacker || attacker->s.eType != ET_PLAYER) && client && client->lastSentFlying>-1 && ( mod==MOD_FALLING || mod==MOD_LAVA || mod==MOD_SLIME || mod==MOD_TRIGGER_HURT || mod==MOD_SUICIDE ) )  {
-        if( client->lastSentFlyingTime+5000<level.time) {
+        if( client->lastSentFlyingTime+10000<level.time) {
             client->lastSentFlying = -1; //More than 5 seconds, not a kill!
         } else {
             //G_Printf("LastSentFlying %i\n",client->lastSentFlying);
@@ -1262,6 +1285,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			} else {
 				Phys_Enable( targ->phys_parent );
 				targ->phys_parent->lastPlayer = attacker;
+				if (targ->phys_parent->phys_weldedObjectsNum > 0) {		//mass
+					VectorScale(kvel, 1.0f / targ->phys_parent->phys_weldedObjectsNum, kvel);
+				}
 				VectorAdd (targ->phys_parent->s.pos.trDelta, kvel, targ->phys_parent->s.pos.trDelta);
 			}
 		}

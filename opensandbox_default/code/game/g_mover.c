@@ -719,7 +719,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		partial;
 	usercmd_t	*ucmd;
 	
-ucmd = &activator->client->pers.cmd;
+	ucmd = &activator->client->pers.cmd;
 
 	if ( (ent->flags & FL_NO_HUMANS) && !IsBot( activator ) ) {
 		return;
@@ -733,39 +733,29 @@ ucmd = &activator->client->pers.cmd;
 	
 	ent->activator = activator;
 	
-if(!G_PlayerIsOwner(activator, ent)) return;
+	if(!G_PlayerIsOwner(activator, ent)) return;
 
-if(ent->price > 0){
-if ( ent->moverState == MOVER_POS1 ) {
-if(activator->client->pers.oldmoney < ent->price){
-	
-	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"%i is not enough\"\n", ent->price - activator->client->pers.oldmoney ));
-return;	
-} else {
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"^1%s %i$\"\n", ent->message, ent->price ));
-return;		
-}
-
-
-}
-if(activator->client->pers.oldmoney >= ent->price){
-	
-	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"%s purchased\"\n", ent->message, ent->price ));
-} else {
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"^2%s %i$\"\n", ent->message, ent->price ));
-return;		
-}
-
-
-}
-}
-}
-
-
+	if(ent->price > 0){
+		if ( ent->moverState == MOVER_POS1 ) {
+			if(activator->client->pers.oldmoney < ent->price){
+				if(ucmd->buttons & BUTTON_GESTURE){
+					trap_SendServerCommand( activator->s.clientNum, va( "lp \"%i is not enough\"\n", ent->price - activator->client->pers.oldmoney ));
+					return;	
+				} else {
+					trap_SendServerCommand( activator->s.clientNum, va( "lp \"^1%s %i$\"\n", ent->message, ent->price ));
+					return;		
+				}
+			}
+			if(activator->client->pers.oldmoney >= ent->price){	
+				if(ucmd->buttons & BUTTON_GESTURE){
+					trap_SendServerCommand( activator->s.clientNum, va( "lp \"%s purchased\"\n", ent->message, ent->price ));
+				} else {
+					trap_SendServerCommand( activator->s.clientNum, va( "lp \"^2%s %i$\"\n", ent->message, ent->price ));
+					return;		
+				}
+			}
+		}
+	}
 
 	if ( ent->moverState == MOVER_POS1 ) {
 		// start moving 50 msec later, becase if this was player
@@ -1118,17 +1108,11 @@ Touch_DoorTrigger
 ================
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
-if(!G_PlayerIsOwner(other, ent)) return;
+	if(!G_PlayerIsOwner(other, ent)) return;
 
-if(ent->price > 0){
-//trap_SendServerCommand( other->s.clientNum, va( "cp %s_%i\n", ent->message, ent->price ));
-return;
-}	
-
-if(ent->armor > 0){
-return;
-}	
-
+	if(ent->armor > 0){
+		return;
+	}
 
 	if ( other->client && (other->client->sess.sessionTeam == TEAM_SPECTATOR || other->client->ps.pm_type == PM_SPECTATOR)) {
 		// if the door is not open and not opening

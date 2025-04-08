@@ -501,141 +501,155 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 }
 
 void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 ) { //tool_id
+	gentity_t *entity;
 
+	entity = targ;
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){
 		return; 
 	}
 	if(!g_allowtoolgun.integer){
 		return; 
 	}
-	if(targ->client && !targ->singlebot){
+	if(entity->client && !entity->singlebot){
 		return;
 	}
 	if(!attacker->client){
 		return;
 	}
-	if(!G_PlayerIsOwner(attacker, targ)) return;
+	if(!G_PlayerIsOwner(attacker, entity)) return;
 
 	if(attacker->tool_id == TL_CREATE){
 		// client-side command for spawn prop
 	}
 
 	if(attacker->tool_id == TL_MATERIAL){
-		targ->s.generic2 = atoi(arg01);
-		targ->sb_material = atoi(arg01);
+		entity->s.generic2 = atoi(arg01);
+		entity->sb_material = atoi(arg01);
 	}
 
 	if(attacker->tool_id == TL_DELETE){
-		if(!targ->singlebot){
-			G_FreeEntity(targ);
+		if(!entity->singlebot){
+			G_FreeEntity(entity);
 		} else {
-			DropClientSilently( targ->client->ps.clientNum );	
+			DropClientSilently( entity->client->ps.clientNum );	
 		}
 	}
 
 	if(attacker->tool_id == TL_MODEL){
-		setModel(targ, arg01);
+		setModel(entity, arg01);
 	}
 
 	if(attacker->tool_id == TL_PHYSICS){
 		if(atoi(arg19) == 0){
-		targ->s.pos.trType = TR_STATIONARY; targ->sb_phys = PHYS_STATIC;
+			entity->s.pos.trType = TR_STATIONARY; entity->sb_phys = PHYS_STATIC;
+			Phys_Disable(entity);
 		}
 		if(atoi(arg19) == 1){
-		targ->s.pos.trType = TR_GRAVITY; targ->s.pos.trTime = level.time; targ->sb_phys = PHYS_DYNAMIC;
+			entity->s.pos.trType = TR_GRAVITY; entity->s.pos.trTime = level.time; entity->sb_phys = PHYS_DYNAMIC;
+			Phys_Enable(entity);
 		}
 	}
 
 	if(attacker->tool_id == TL_PRIVATE){
 		if(atoi(arg19) == 0){
-		targ->owner = 0;
-		targ->ownername = 0;
+			entity->owner = 0;
+			entity->ownername = 0;
 		}
 		if(atoi(arg19) == 1){
-		targ->owner = attacker->s.clientNum + 1;
-		targ->ownername = attacker->client->pers.netname;
+			entity->owner = attacker->s.clientNum + 1;
+			entity->ownername = attacker->client->pers.netname;
 		}
 		if(atoi(arg19) == 2){
-		if(targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, va( "cllp \"Owned by %s\n\"", targ->ownername ));
-		} 
-		if(!targ->ownername){
-		trap_SendServerCommand( attacker->s.clientNum, "cllp \"Not owned\n\"" );
-		} 
+			if(entity->ownername){
+				trap_SendServerCommand( attacker->s.clientNum, va( "cllp \"Owned by %s\n\"", entity->ownername ));
+			} 
+			if(!entity->ownername){
+				trap_SendServerCommand( attacker->s.clientNum, "cllp \"Not owned\n\"" );
+			} 
 		}
 	}
 
 	if(attacker->tool_id == TL_COLLISION){
 		if(atoi(arg19) == 0){
-		targ->r.contents = CONTENTS_SOLID;
-		targ->sb_coll = CONTENTS_SOLID;
+			entity->r.contents = CONTENTS_SOLID;
+			entity->sb_coll = CONTENTS_SOLID;
 		}
 		if(atoi(arg19) == 1){
-		targ->r.contents = CONTENTS_TRIGGER;
-		targ->sb_coll = CONTENTS_TRIGGER;
+			entity->r.contents = CONTENTS_TRIGGER;
+			entity->sb_coll = CONTENTS_TRIGGER;
 		}
 	}
 
 	if(attacker->tool_id == TL_HEALTH){
-		targ->health = atoi(arg01);
+		entity->health = atoi(arg01);
 	}
 
 	if(attacker->tool_id == TL_COLOR){
-		targ->s.constantLight = atoi(arg01) | ( atoi(arg02) << 8 ) | ( atoi(arg03) << 16 ) | ( atoi(arg04) << 24 );
-		targ->sb_red = atoi(arg01);
-		targ->sb_green = atoi(arg02);
-		targ->sb_blue = atoi(arg03);
-		targ->sb_radius = atoi(arg04);
-		trap_UnlinkEntity( targ );
-		trap_LinkEntity( targ );
+		entity->s.constantLight = atoi(arg01) | ( atoi(arg02) << 8 ) | ( atoi(arg03) << 16 ) | ( atoi(arg04) << 24 );
+		entity->sb_red = atoi(arg01);
+		entity->sb_green = atoi(arg02);
+		entity->sb_blue = atoi(arg03);
+		entity->sb_radius = atoi(arg04);
 	}
 
 	if(attacker->tool_id == TL_ANGLE){
+	entity = G_FindWeldEntity(entity);	//find weld root or return ent
 	if(atoi(arg19) == 0){
-		targ->s.apos.trBase[0] += atof(arg01);
+		entity->s.apos.trBase[0] += atof(arg01);
 	}
 	if(atoi(arg19) == 1){
-		targ->s.apos.trBase[1] += atof(arg01);
+		entity->s.apos.trBase[1] += atof(arg01);
 	}
 	if(atoi(arg19) == 2){
-		targ->s.apos.trBase[2] += atof(arg01);
+		entity->s.apos.trBase[2] += atof(arg01);
 	}
-	VectorCopy(targ->s.apos.trBase, targ->s.angles);
+	if(atoi(arg19) == 3){
+		entity->s.apos.trBase[0] = 0.0;
+		entity->s.apos.trBase[1] = 0.0;
+		entity->s.apos.trBase[2] = 0.0;
+	}
+	VectorCopy(entity->s.apos.trBase, targ->s.angles);
+	VectorCopy(entity->s.apos.trBase, targ->r.currentAngles);
 	}
 
 	if(attacker->tool_id == TL_SCALE){
 	if(atoi(arg19) == 0){
-		targ->s.scales[0] = atof(arg01);
+		entity->s.scales[0] = atof(arg01);
 	}
 	if(atoi(arg19) == 1){
-		targ->s.scales[1] = atof(arg01);
+		entity->s.scales[1] = atof(arg01);
 	}
 	if(atoi(arg19) == 2){
-		targ->s.scales[2] = atof(arg01);
+		entity->s.scales[2] = atof(arg01);
 	}
-		VectorSet( targ->r.mins, -targ->sb_coltype*targ->s.scales[0], -targ->sb_coltype*targ->s.scales[1], -targ->sb_coltype*targ->s.scales[2]);
-		VectorSet( targ->r.maxs, targ->sb_coltype*targ->s.scales[0], targ->sb_coltype*targ->s.scales[1], targ->sb_coltype*targ->s.scales[2] );
+	if(atoi(arg19) == 3){
+		entity->s.scales[0] = 1.0;
+		entity->s.scales[1] = 1.0;
+		entity->s.scales[2] = 1.0;
+	}
+		VectorSet( entity->r.mins, -entity->sb_coltype*entity->s.scales[0], -entity->sb_coltype*entity->s.scales[1], -entity->sb_coltype*entity->s.scales[2]);
+		VectorSet( entity->r.maxs, entity->sb_coltype*entity->s.scales[0], entity->sb_coltype*entity->s.scales[1], entity->sb_coltype*entity->s.scales[2] );
 	}
 
 	if(attacker->tool_id == TL_REPLACEITEM){
 		gitem_t	*item;
-		int i = 1;
-		if(targ->s.eType != ET_ITEM){
+		int i;
+		if(entity->s.eType != ET_ITEM){
 			trap_SendServerCommand( attacker->s.clientNum, "cllp \"This must be the item\n\"" );
 			return;
 		}
 		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
 			if ( !strcmp(item->classname, arg01) ) {
-				targ->item = &bg_itemlist[i];
-				targ->item->classname = bg_itemlist[i].classname;
-				targ->classname = bg_itemlist[i].classname;
-				targ->s.modelindex = i;
+				entity->item = &bg_itemlist[i];
+				entity->item->classname = bg_itemlist[i].classname;
+				entity->classname = bg_itemlist[i].classname;
+				entity->s.modelindex = i;
 			}
 		}
 	}
 
 	if(attacker->tool_id == TL_COUNT){
-		targ->count = atoi(arg01);
+		entity->count = atoi(arg01);
 	}
 
 	if(attacker->tool_id == TL_WELD){
@@ -643,28 +657,36 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		vec3_t parentForward, parentRight, parentUp;
 		vec3_t weldForward, weldRight, weldUp;
 		vec3_t relForward, relRight, relUp;
+		int i;
+		gentity_t *object;
 
-		if(!attacker->tool_entity){
-			if(!targ->phys_hasWeldedObjects){
-				attacker->tool_entity = targ;
-				trap_SendServerCommand( attacker->s.clientNum, "cllp \"Сlick on the second object\n\"" );
+		if(entity->client){
+			trap_SendServerCommand( attacker->s.clientNum, "cllp \"This is not prop\n\"" );
+			return;
+		}
+
+		if(atoi(arg19) == 0){	//Weld
+			if(!attacker->tool_entity){
+				if(!entity->phys_weldedObjectsNum){
+					attacker->tool_entity = entity;
+					trap_SendServerCommand( attacker->s.clientNum, "cllp \"Сlick on the second object\n\"" );
+				} else {
+					trap_SendServerCommand( attacker->s.clientNum, "cllp \"This is root object\n\"" );
+					return;
+				}
 			} else {
-				trap_SendServerCommand( attacker->s.clientNum, "cllp \"This is root object\n\"" );
-				return;
-			}
-		} else {
-			if(!targ->phys_parent){
-				attacker->tool_entity->phys_parent = targ;
+				entity = G_FindWeldEntity(entity);	//find weld root or return ent
+				attacker->tool_entity->phys_parent = entity;
 
 				// Save origin
-				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
+				VectorSubtract(attacker->tool_entity->r.currentOrigin, entity->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
 				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				
+
 				// Vector from parent
-				AngleVectors(targ->s.apos.trBase, parentForward, parentRight, parentUp);
+				AngleVectors(entity->s.apos.trBase, parentForward, parentRight, parentUp);
 				AngleVectors(attacker->tool_entity->s.apos.trBase, weldForward, weldRight, weldUp);
 
-        		// Diff vectors
+    	    	// Diff vectors
 				relForward[0] = DotProduct(weldForward, parentForward);
 				relForward[1] = DotProduct(weldForward, parentRight);
 				relForward[2] = DotProduct(weldForward, parentUp);
@@ -679,43 +701,23 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 				OrthogonalizeMatrix(relForward, relRight, relUp);
 
-        		// Save result
+    	    	// Save result
 				VectorCopy(relForward, attacker->tool_entity->phys_rv_0);
 				VectorCopy(relRight, attacker->tool_entity->phys_rv_1);
 				VectorCopy(relUp, attacker->tool_entity->phys_rv_2);
-			} else {
-				attacker->tool_entity->phys_parent = targ->phys_parent;
-
-				// Save origin
-				VectorSubtract(attacker->tool_entity->r.currentOrigin, targ->phys_parent->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);
-				attacker->tool_entity->phys_relativeOrigin[1] = -attacker->tool_entity->phys_relativeOrigin[1];
-				
-				// Vector from parent
-        		AngleVectors(targ->phys_parent->s.apos.trBase, parentForward, parentRight, parentUp);
-        		AngleVectors(attacker->tool_entity->s.apos.trBase, weldForward, weldRight, weldUp);
-
-        		// Diff vectors
-				relForward[0] = DotProduct(weldForward, parentForward);
-				relForward[1] = DotProduct(weldForward, parentRight);
-				relForward[2] = DotProduct(weldForward, parentUp);
-
-				relRight[0] = DotProduct(weldRight, parentForward);
-				relRight[1] = DotProduct(weldRight, parentRight);
-				relRight[2] = DotProduct(weldRight, parentUp);
-
-				relUp[0] = DotProduct(weldUp, parentForward);
-				relUp[1] = DotProduct(weldUp, parentRight);
-				relUp[2] = DotProduct(weldUp, parentUp);
-
-				OrthogonalizeMatrix(relForward, relRight, relUp);
-
-        		// Save result
-				VectorCopy(relForward, attacker->tool_entity->phys_rv_0);
-				VectorCopy(relRight, attacker->tool_entity->phys_rv_1);
-				VectorCopy(relUp, attacker->tool_entity->phys_rv_2);
+				entity->phys_weldedObjectsNum += 1;
+				attacker->tool_entity = NULL;
 			}
-			targ->phys_hasWeldedObjects = qtrue;
+		}
+		if(atoi(arg19) == 1){	//Unweld
 			attacker->tool_entity = NULL;
+
+			if(!entity->phys_weldedObjectsNum && !entity->phys_parent){
+				trap_SendServerCommand( attacker->s.clientNum, "cllp \"This prop not welded\n\"" );
+				return;
+			}
+
+			Phys_Unweld(entity);
 		}
 	}
 

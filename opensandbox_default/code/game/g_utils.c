@@ -950,12 +950,7 @@ void G_FreeEntity( gentity_t *ed ) {
 		ed->parent->client->ps.gravity = (g_gravity.value*g_gravityModifier.value);
 	}
 
-    for (i = 0; i < MAX_GENTITIES; i++) {	//Reset weld ent
-        object = &g_entities[i];
-		if (ed->s.number == object->phys_parent->s.number) {
-			object->phys_parent = NULL;
-		}
-    }
+    Phys_Unweld(ed);
 
 	memset (ed, 0, sizeof(*ed));
 	ed->classname = "freed";
@@ -1636,7 +1631,7 @@ gentity_t *FindEntityForGravitygun( gentity_t *ent, int range ){
 		}
 	}
 
-	if(traceEnt->phys_hasWeldedObjects || traceEnt->phys_parent){ //WELD-TOOL
+	if(traceEnt->phys_weldedObjectsNum || traceEnt->phys_parent){ //WELD-TOOL
 		return NULL;
 	}
 	
@@ -1726,4 +1721,14 @@ qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
 	} else {
 		return qtrue;	//ent not owned
 	}
+}
+
+gentity_t *G_FindWeldEntity(gentity_t *ent) {
+	if(ent->phys_parent){
+		return ent->phys_parent;
+	} else {
+		return ent;
+	}
+    
+    return NULL;
 }

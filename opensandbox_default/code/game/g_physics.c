@@ -29,13 +29,12 @@
 
 #define PHYS_COL		 	0.75
 #define PHYS_COL_CHECK	 	0.75
-#define PHYS_UNBALANCED_CHECK	0.01
 
 /*
 ================
-Phys_HoldDropStatic
+Phys_CheckCarCollisions
 
-Throw entity with physgun or gravitygun with PHYS_STATIC
+Checks car collisions
 ================
 */
 void Phys_CheckCarCollisions(gentity_t *ent) {
@@ -300,6 +299,47 @@ void Phys_Enable( gentity_t *ent ) {
 
 /*
 ================
+Phys_Unweld
+
+Remove weld from physic object
+================
+*/
+void Phys_Unweld( gentity_t *ent ) {
+	gentity_t *object;
+	int i;
+	if(ent->phys_weldedObjectsNum){
+		for (i = 0; i < MAX_GENTITIES; i++) {
+			object = &g_entities[i];
+			if (ent->s.number == object->phys_parent->s.number) {
+				ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->sb_phys = PHYS_DYNAMIC;
+				Phys_Enable(ent);
+				object->s.pos.trType = TR_GRAVITY; object->s.pos.trTime = level.time; object->sb_phys = PHYS_DYNAMIC;
+				Phys_Enable(object);
+				object->phys_parent = NULL;
+				VectorClear(object->phys_relativeOrigin);
+				VectorClear(object->phys_rv_0);
+				VectorClear(object->phys_rv_1);
+				VectorClear(object->phys_rv_2);
+			}
+		}
+		return;
+	}
+
+	if(ent->phys_parent){
+		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->sb_phys = PHYS_DYNAMIC;
+		Phys_Enable(ent);
+		ent->phys_parent = NULL;
+		VectorClear(ent->phys_relativeOrigin);
+		VectorClear(ent->phys_rv_0);
+		VectorClear(ent->phys_rv_1);
+		VectorClear(ent->phys_rv_2);
+		return;
+	}
+}
+
+
+/*
+================
 Phys_SnapToNearestAngle
 
 Snaps physic object to nearest rotate angle
@@ -451,7 +491,7 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 
 	if (hit->s.number != ent->s.number && hit->sandboxObject) {
 		for (i = 0; i < 3; i++) {
-    	    randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(hit->s.pos.trDelta)*1.60;
+    	    randomOffset[i] = ((float)rand() / 32767 - 0.5f) * VectorLength(hit->s.pos.trDelta)*1.20;
     	}
     	VectorAdd(ent->s.pos.trDelta, randomOffset, ent->s.pos.trDelta);
 	}
@@ -530,18 +570,13 @@ qboolean Phys_UpdateState( gentity_t *ent ) {
 	ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
 	ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
 
-	if(ent->sb_phys == PHYS_STATIC || ent->phys_parent){	//if it's static object, reset delta and other properties
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta and other properties
 		VectorClear(ent->s.pos.trDelta);
 		ent->phys_inAir = qfalse;
 		ent->phys_inSolid = qfalse;
 	} else {
 		ent->phys_inAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
 		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
-	}
-
-	if(ent->phys_parent){ //don't return false when welded
-		Phys_Disable(ent, ent->r.currentOrigin);
-		return qtrue;
 	}
 
     // If the entity is stationary and not on air - disable physics
@@ -741,39 +776,19 @@ void Phys_CheckWeldedEntities(gentity_t *ent) {
     int i = 0;
     int j = 0;
     
-    if (!ent->phys_hasWeldedObjects) {
+    if (!ent->phys_weldedObjectsNum) {
         return;
     }
 
     for (i = 0; i < MAX_GENTITIES; i++) {
         object = &g_entities[i];
         if (ent == object->phys_parent) {
-            vec3_t forward, right, up;
-            vec3_t rotatedOffset, finalPos;
-
-            AngleVectors(ent->s.apos.trBase, forward, right, up);
-            rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
-            rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
-            rotatedOffset[2] = forward[2] * object->phys_relativeOrigin[0] + right[2] * object->phys_relativeOrigin[1] + up[2] * object->phys_relativeOrigin[2];
-
-            VectorAdd(ent->r.currentOrigin, rotatedOffset, finalPos);
-			
-            VectorCopy(finalPos, object->s.origin);
-            VectorCopy(finalPos, object->r.currentOrigin);
-            VectorCopy(finalPos, object->s.pos.trBase);
-
-            if (object->s.pos.trType != TR_STATIONARY) {
-                Phys_Disable(object, object->r.currentOrigin);
-            }
-
             trap_UnlinkEntity(object);
             j++;
         }
     }
 
-    if (!j) {
-        ent->phys_hasWeldedObjects = qfalse;
-    }
+    ent->phys_weldedObjectsNum = j;
 }
 
 /*
@@ -787,7 +802,7 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 	gentity_t *object;
 	int i = 0;
 
-	if(!ent->phys_hasWeldedObjects){
+	if(!ent->phys_weldedObjectsNum){
 		return;
 	}
 
@@ -801,9 +816,10 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 			vec3_t newForward, newRight, newUp;
 			float matrix[3][3];
 			vec3_t newAngles;
-			float dotForward;
-    		float dotRight;
-    		float dotUp;
+
+			//
+			// Origin
+			//
 
             AngleVectors(ent->s.apos.trBase, forward, right, up);
             rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
@@ -815,6 +831,10 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
             VectorCopy(finalPos, object->s.origin);
             VectorCopy(finalPos, object->r.currentOrigin);
             VectorCopy(finalPos, object->s.pos.trBase);
+
+			//
+			// Angles
+			//
 
 			AngleVectors(ent->s.apos.trBase, entForward, entRight, entUp);
 
@@ -852,11 +872,16 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 
 			newAngles[2] -= 180;	//it's work well
 
+			VectorCopy(newAngles, object->s.angles);
     		VectorCopy(newAngles, object->s.apos.trBase);
 
-			if (object->s.pos.trType != TR_STATIONARY) {
-				Phys_Disable(object, object->r.currentOrigin);
-			}
+			//
+			// Disable phys
+			//
+
+			object->s.pos.trType = TR_STATIONARY; object->sb_phys = PHYS_STATIC;
+			Phys_Disable(object, object->r.currentOrigin);
+
 			trap_LinkEntity(object);
 		}
     }
@@ -876,6 +901,10 @@ void Phys_Frame(gentity_t *ent) {
 	
 	if(ent->r.currentOrigin[2] <= -520000){
 		G_FreeEntity(ent);
+		return;
+	}
+
+	if(ent->phys_parent){
 		return;
 	}
 
@@ -918,12 +947,10 @@ void Phys_Frame(gentity_t *ent) {
     trap_LinkEntity(ent);
 	Phys_RestoreWeldedEntities(ent);
 
-	if(ent->phys_parent){
-		return;
-	}
-
 	//Check impacts
 	Phys_Impact(ent, &tr);
+
+	G_RunThink(ent);
 
 	//Change angles
 	Phys_Rotate(ent, &tr);
@@ -933,8 +960,6 @@ void Phys_Frame(gentity_t *ent) {
         tr.fraction = 0;
     }
 
-    // Run think functions after updating entity
-    G_RunThink(ent);
 	Phys_RunPhysThink(ent);
 	
 	if ( tr.fraction == 1 ) {
