@@ -191,17 +191,8 @@ void TeleportPlayerNoKnockback( gentity_t *player, vec3_t origin, vec3_t angles,
 	vec3_t orgAngles;
 	vec3_t changedvel;
 
-	// unlink to make sure it can't possibly interfere with G_KillBox
-	//trap_UnlinkEntity (player);
-
 	VectorCopy ( origin, player->client->ps.origin );
 	//player->client->ps.origin[2] += 1;
-
-	// spit the player out
-	//AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-	//VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-	//player->client->ps.pm_time = 160;		// hold time
-	//player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -225,24 +216,8 @@ void TeleportPlayerNoKnockback( gentity_t *player, vec3_t origin, vec3_t angles,
 	
 	SetClientViewAngle( player, angles );
 
-	player->s.angles[0] = atof(va("%.4f", player->s.angles[0]));
-	player->s.angles[1] = atof(va("%.4f", player->s.angles[1]));
-	player->s.angles[2] = atof(va("%.4f", player->s.angles[2]));
-
-	// kill anything at the destination
-	/*if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		G_KillBox (player);
-	}*/
-
 	// save results of pmove
 	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
-
-	// use the precise origin for linking
-	//VectorCopy( player->client->ps.origin, player->r.currentOrigin );
-
-	/*if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		trap_LinkEntity (player);
-	}*/
 }
 
 void TeleportPlayerForLayer( gentity_t *player, float level, float curlevel) {
