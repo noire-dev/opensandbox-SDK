@@ -80,10 +80,14 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 cg_t				cg;
 cgs_t				cgs;
 centity_t			cg_entities[MAX_GENTITIES];
-weaponInfo_t		cg_weapons[WEAPONS_NUM+1];
+weaponInfo_t		cg_weapons[WEAPONS_NUM];
 itemInfo_t			cg_items[MAX_ITEMS];
 
 vmCvar_t	g_gametype;
+
+vmCvar_t	cg_effectsTime;
+vmCvar_t	cg_effectsLimit;
+vmCvar_t	cg_effectsGibs;
 
 vmCvar_t	cl_propsmallsizescale;
 vmCvar_t 	cl_propheight;
@@ -98,7 +102,6 @@ vmCvar_t 	cl_giantcharheight;
 
 vmCvar_t	cg_gibjump;
 vmCvar_t	cg_gibvelocity;
-vmCvar_t	cg_gibmodifier;
 
 vmCvar_t	cg_zoomtime;
 vmCvar_t	cg_itemscaletime;
@@ -156,11 +159,9 @@ vmCvar_t    cg_plightred;
 vmCvar_t    cg_plightgreen;
 vmCvar_t    cg_plightblue;
 vmCvar_t    cl_screenoffset;
-vmCvar_t    ui_backcolors;
 vmCvar_t	legsskin;
 vmCvar_t	team_legsskin;
 vmCvar_t	cg_itemstyle;
-vmCvar_t	cg_gibtime;
 vmCvar_t	cg_paintballMode;
 vmCvar_t	cg_railTrailTime;
 vmCvar_t	cg_centertime;
@@ -358,6 +359,10 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &g_gametype, "g_gametype", "0", 0},
 
+	{ &cg_effectsTime, "cg_effectsTime", "10", CVAR_ARCHIVE },
+	{ &cg_effectsLimit, "cg_effectsLimit", "4096", CVAR_ARCHIVE },
+	{ &cg_effectsGibs, "cg_effectsGibs", "1", CVAR_ARCHIVE },
+
 	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", CVAR_ARCHIVE},
 	{ &cl_propheight, "cl_propheight", "21", CVAR_ARCHIVE  },
 	{ &cl_propspacewidth, "cl_propspacewidth", "8", CVAR_ARCHIVE  },
@@ -414,7 +419,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_postprocess, "cg_postprocess", "", 0 },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
 	{ &con_notifytime, "con_notifytime", "3", CVAR_ARCHIVE },
-    { &ui_backcolors, "ui_backcolors", "1", CVAR_ARCHIVE },
 	{ &cg_leiChibi, "cg_leiChibi", "0", CVAR_ARCHIVE}, // LEILEI
     { &cg_helightred, "cg_helightred", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &cg_helightgreen, "cg_helightgreen", "100", CVAR_USERINFO | CVAR_ARCHIVE },
@@ -429,10 +433,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_itemstyle, "cg_itemstyle", "2", CVAR_ARCHIVE },
 	{ &legsskin, "legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &team_legsskin, "team_legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
-	{ &cg_gibtime, "cg_gibtime", "30", CVAR_ARCHIVE },
 	{ &cg_gibjump, "cg_gibjump", "350", CVAR_ARCHIVE },
-	{ &cg_gibvelocity, "cg_gibvelocity", "350", CVAR_ARCHIVE },
-	{ &cg_gibmodifier, "cg_gibmodifier", "1", CVAR_ARCHIVE },
+	{ &cg_gibvelocity, "cg_gibvelocity", "500", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
@@ -485,7 +487,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE},
-	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "2", CVAR_ARCHIVE },
+	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "1", CVAR_ARCHIVE },
 	{ &cg_teamChatHeight, "cg_teamChatHeight", "8", CVAR_ARCHIVE  },
 	{ &cg_teamChatScaleX, "cg_teamChatScaleX", "0.7", CVAR_ARCHIVE  },
 	{ &cg_teamChatScaleY, "cg_teamChatScaleY", "1", CVAR_ARCHIVE  },
@@ -890,6 +892,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.landSound = trap_S_RegisterSound_SourceTech( "sound/player/land1.wav", qfalse);
 
 	cgs.media.notifySound = trap_S_RegisterSound_SourceTech( "sound/notify.wav", qfalse );
+	cgs.media.undoSound = trap_S_RegisterSound_SourceTech( "sound/undo.wav", qfalse );
 
     cgs.media.hitSound = trap_S_RegisterSound_SourceTech( "sound/feedback/hitde.wav", qfalse );
 	cgs.media.hitSoundHighArmor = trap_S_RegisterSound_SourceTech( "sound/feedback/hithi.wav", qfalse );

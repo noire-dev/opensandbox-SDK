@@ -1446,7 +1446,7 @@ gitem_t	*BG_FindItemForWeapon( weapon_t weapon ) {
 		}
 	}
 
-	Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon);
+	//Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon);
 	return NULL;
 }
 
@@ -1811,7 +1811,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) 
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * mod_gravity * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * mod_gravity * deltaTime * deltaTime;
 		break;
 	case TR_ROTATING:
 		if ( tr->trTime > 0 )
@@ -1825,7 +1825,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) 
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * (mod_gravity*0.50) * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * (mod_gravity*0.50) * deltaTime * deltaTime;
 		break;
 	default:
 		//Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
@@ -1869,12 +1869,12 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= mod_gravity * deltaTime;		// FIXME: local gravity...
+		result[2] -= mod_gravity * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= (mod_gravity*0.50) * deltaTime;		// FIXME: local gravity...
+		result[2] -= (mod_gravity*0.50) * deltaTime;
 		break;
 	default:
 		//Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
@@ -1919,12 +1919,12 @@ void ST_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, f
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * (mod_gravity * (mass*0.50)) * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * (mod_gravity * (mass*0.50)) * deltaTime * deltaTime;
 		break;
 	case TR_ROTATING:
 		if ( tr->trTime > 0 )
@@ -1977,12 +1977,12 @@ void ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	case TR_GRAVITY:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= (mod_gravity * mass) * deltaTime;		// FIXME: local gravity...
+		result[2] -= (mod_gravity * mass) * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= (mod_gravity * (mass*0.50)) * deltaTime;		// FIXME: local gravity...
+		result[2] -= (mod_gravity * (mass*0.50)) * deltaTime;
 		break;
 	default:
 		//Com_Error( ERR_DROP, "ST_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
@@ -2134,7 +2134,7 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 		char buf[256];
 		trap_Cvar_VariableStringBuffer("showevents", buf, sizeof(buf));
 		if ( atof(buf) != 0 ) {
-#ifdef QAGAME
+#ifdef GAME
 			Com_Printf(" game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);
 #else
 			Com_Printf("Cgame event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);

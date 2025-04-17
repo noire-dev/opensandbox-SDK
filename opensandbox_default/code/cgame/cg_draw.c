@@ -273,8 +273,9 @@ static void CG_DrawToolgun() {
 			}
 			if(!strcmp(entityInfos[0], "player")) {
 				CG_DrawHead( x, y-48, 48, 48, atoi(entityInfos[1]) );
+				count--;
 			} else {
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
+    	    	CG_DrawSmallString(x, y+3 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
 			}
 			count++;
     	}
@@ -536,20 +537,20 @@ static float CG_DrawCounters( float y ) {
 	if(cgs.gametype == GT_SANDBOX || cgs.gametype == GT_MAPEDITOR){
 		if(seconds == 3 && !n_tip1){
 			if(cl_language.integer == 0){
-				CG_AddNotify ("Welcome to OpenSandbox", 1);
+				CG_AddNotify ("Welcome to OpenSandbox", NOTIFY_INFO);
 			}
 			if(cl_language.integer == 1){
-				CG_AddNotify ("Добро пожаловать в OpenSandbox", 1);
+				CG_AddNotify ("Добро пожаловать в OpenSandbox", NOTIFY_INFO);
 			}
 			n_tip1 = qtrue;
 		}
 
 		if(seconds == 6 && !n_tip2){
 			if(cl_language.integer == 0){
-				CG_AddNotify ("Press [Q] to open the spawn menu", 1);
+				CG_AddNotify ("Press [Q] to open the spawn menu", NOTIFY_INFO);
 			}
 			if(cl_language.integer == 1){
-				CG_AddNotify ("Нажмите [Q], чтобы открыть меню спавна", 1);
+				CG_AddNotify ("Нажмите [Q], чтобы открыть меню спавна", NOTIFY_INFO);
 			}
 			n_tip2 = qtrue;
 		}
@@ -2408,7 +2409,12 @@ void CG_AddNotify(const char *text, int type) {
     cg.notifications[0].startTime = cg.time;
     cg.notifications[0].active = qtrue;
 
-	trap_S_StartLocalSound( cgs.media.notifySound, CHAN_LOCAL_SOUND );
+	if(type == NOTIFY_INFO){
+		trap_S_StartLocalSound( cgs.media.notifySound, CHAN_LOCAL_SOUND );
+	}
+	if(type == NOTIFY_UNDO){
+		trap_S_StartLocalSound( cgs.media.undoSound, CHAN_LOCAL_SOUND );
+	}
 }
 
 void CG_Notify(void) {
@@ -2425,9 +2431,13 @@ void CG_Notify(void) {
     float offsetX;
     float yOffset;
     float boxWidth;
+	int	  typeTime;
 
     if (!cgs.media.notifyIcon) {
         cgs.media.notifyIcon = trap_R_RegisterShaderNoMip("menu/notifyicon");
+    }
+	if (!cgs.media.undoIcon) {
+        cgs.media.undoIcon = trap_R_RegisterShaderNoMip("menu/undoicon");
     }
 
     for (i = 0; i < MAX_NOTIFICATIONS; i++) {
@@ -2435,8 +2445,15 @@ void CG_Notify(void) {
             continue;
         }
 
+		if(cg.notifications[i].type == NOTIFY_INFO){
+			typeTime = NOTIFICATION_DURATION;
+		}
+		if(cg.notifications[i].type == NOTIFY_UNDO){
+			typeTime = NOTIFICATION_DURATION*0.20;
+		}
+
         timeElapsed = cg.time - cg.notifications[i].startTime;
-        if (timeElapsed > NOTIFICATION_DURATION) {
+        if (timeElapsed > typeTime) {
             cg.notifications[i].active = qfalse;
             continue;
         }
@@ -2447,8 +2464,8 @@ void CG_Notify(void) {
         if (timeElapsed < NOTIFICATION_FADE_TIME) {
             alpha = (float)timeElapsed / NOTIFICATION_FADE_TIME;
             offsetX = Lerp(300.0f, 0.0f, alpha);
-        } else if (timeElapsed > NOTIFICATION_DURATION - NOTIFICATION_FADE_TIME) {
-            alpha = (float)(NOTIFICATION_DURATION - timeElapsed) / NOTIFICATION_FADE_TIME;
+        } else if (timeElapsed > typeTime - NOTIFICATION_FADE_TIME) {
+            alpha = (float)(typeTime - timeElapsed) / NOTIFICATION_FADE_TIME;
         }
 
         backgroundColor[3] = alpha * 0.30f;
@@ -2462,6 +2479,10 @@ void CG_Notify(void) {
 
         if (cg.notifications[i].type == 1 && cgs.media.notifyIcon) {
             CG_DrawPic(startX-boxWidth + offsetX + 5, yOffset + 2.5, 16, 16, cgs.media.notifyIcon);
+        }
+
+        if (cg.notifications[i].type == 2 && cgs.media.undoIcon) {
+            CG_DrawPic(startX-boxWidth + offsetX + 5, yOffset + 2.5, 16, 16, cgs.media.undoIcon);
         }
 
         CG_DrawStringExt(startX-boxWidth + offsetX + (cg.notifications[i].type > 0 ? 25 : 10), yOffset + 5, cg.notifications[i].text, textColor, qfalse, qfalse, 9, 12, 0, -2);
@@ -2828,10 +2849,6 @@ CG_Draw2D
 */
 static void CG_Draw2D(stereoFrame_t stereoFrame)
 {
-	// if we are taking a levelshot for the menu, don't draw anything
-	if ( cg.levelShot ) {
-		return;
-	}
 
 	if ( cg.snap->ps.pm_type == PM_CUTSCENE )
 		return;

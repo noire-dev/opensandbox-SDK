@@ -249,9 +249,9 @@ void UI_NSGUI( void ) {
 	
 	s_nsgui.menu.draw = NSGUI_MenuDraw;
 	if(!uis.onmap){
-	s_nsgui.menu.fullscreen = qtrue;
+		s_nsgui.menu.fullscreen = qtrue;
 	} else {
-	s_nsgui.menu.fullscreen = qfalse;	
+		s_nsgui.menu.fullscreen = qfalse;	
 	}
 	s_nsgui.menu.wrapAround = qtrue;
 	s_nsgui.menu.native = qfalse;

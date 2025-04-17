@@ -166,9 +166,15 @@ field_t fields[] = {
 	{"sb_blue", FOFS(sb_blue), F_INT},
 	{"sb_radius", FOFS(sb_radius), F_INT},
 	{"sb_isnpc", FOFS(sb_isnpc), F_INT},
-	{"sb_takedamage", FOFS(sb_takedamage), F_INT},
-	{"sb_takedamage2", FOFS(sb_takedamage2), F_INT},
 	{"objectType", FOFS(objectType), F_INT},
+
+	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), F_VECTOR},
+	{"phys_rv_0", FOFS(phys_rv_0), F_VECTOR},
+	{"phys_rv_1", FOFS(phys_rv_1), F_VECTOR},
+	{"phys_rv_2", FOFS(phys_rv_2), F_VECTOR},
+
+	{"sb_phys_welded", FOFS(sb_phys_welded), F_INT},
+	{"sb_phys_parent", FOFS(sb_phys_parent), F_INT},
 	
 	{"distance", FOFS(distance), F_FLOAT},
 	{"type", FOFS(type), F_INT},

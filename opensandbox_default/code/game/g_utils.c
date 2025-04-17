@@ -219,6 +219,33 @@ gentity_t *G_PickTarget (char *targetname)
 	return choice[rand() % num_choices];
 }
 
+/*
+=============
+G_PickAllTargets
+
+Selects all entities
+=============
+*/
+
+void G_PickAllTargets ( gentity_t *ent, gentity_t *activator )
+{
+	gentity_t		*t;
+
+	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
+		if ( t == ent ) {
+			G_Printf ("WARNING: Entity used itself.\n");
+		} else {
+			if ( t->use ) {
+				t->use (t, ent, activator);
+			}
+		}
+		if ( !ent->inuse ) {
+			G_Printf("entity was removed while using targets\n");
+			return;
+		}
+	}
+}
+
 
 /*
 ==============================
@@ -263,7 +290,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 
 	// use ent->target
 	if ( ent->target ) {
-
 		//find all entities with matching targetname
 		t = NULL;
 		while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
@@ -942,6 +968,7 @@ void G_FreeEntity( gentity_t *ed ) {
 	if ( ed->neverFree ) {
 		return;
 	}
+
 	if ( ed->vehicle && ed->parent && ed->parent->client->vehiclenum == ed->s.number){	//Reset vehicle
 		ed->parent->client->vehiclenum = 0;
 		ClientUserinfoChanged( ed->parent->s.clientNum );
@@ -951,6 +978,7 @@ void G_FreeEntity( gentity_t *ed ) {
 	}
 
     Phys_Unweld(ed);
+	Undo_RemoveElementFromAll(ed->s.number);
 
 	memset (ed, 0, sizeof(*ed));
 	ed->classname = "freed";

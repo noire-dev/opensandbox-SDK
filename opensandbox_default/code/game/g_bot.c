@@ -437,8 +437,7 @@ qboolean G_BotConnect( int clientNum, qboolean restart ) {
 	Q_strncpyz( settings.waypoint, Info_ValueForKey( userinfo, "waypoint" ), sizeof( settings.waypoint ) );
 
 	if (!trap_AAS_Initialized() || !BotAISetupClient( clientNum, &settings, restart )) {
-		//trap_DropClient( clientNum, "BotAISetupClient failed" );
-		//return qfalse;
+		//Don't remove this because it's functions calls
 	}
 
 	return qtrue;

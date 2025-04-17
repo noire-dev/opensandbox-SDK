@@ -78,8 +78,6 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	case UI_DRAW_CONNECT_SCREEN:
 		UI_DrawConnectScreen( arg0 );
 		return 0;
-	case UI_HASUNIQUECDKEY:				// mod authors need to observe this
-		return qfalse;  // bk010117 - change this to qfalse for mods!
 	}
 
 	return -1;
@@ -182,6 +180,8 @@ vmCvar_t	sbt_wallpaper;
 
 vmCvar_t	ui_3dmap;
 
+vmCvar_t	ui_effectslevel;
+
 vmCvar_t	ui_singlemode;
 vmCvar_t	legsskin;
 vmCvar_t	team_legsskin;
@@ -189,7 +189,6 @@ vmCvar_t	cl_selectedmod;
 vmCvar_t	cl_language;
 vmCvar_t	cl_screenoffset;
 vmCvar_t	ui_loaded;
-vmCvar_t	ui_backcolors;
 vmCvar_t	sensitivitymenu;
 
 vmCvar_t	ui_spScores1;
@@ -342,6 +341,8 @@ static cvarTable_t		cvarTable[] = {
 
 	{ &ui_3dmap, "ui_3dmap", "", CVAR_ARCHIVE },
 
+	{ &ui_effectslevel, "ui_effectslevel", "0", CVAR_ARCHIVE },
+
 	{ &ui_singlemode, "ui_singlemode", "0", CVAR_ARCHIVE },
 	{ &ui_loaded, "ui_loaded", "0", 0 },
 	{ &legsskin, "legsskin", "beret/default", CVAR_ARCHIVE },
@@ -349,7 +350,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
 	{ &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
-	{ &ui_backcolors, "ui_backcolors", "1", CVAR_ARCHIVE },
 	{ &sensitivitymenu, "sensitivitymenu", "1", CVAR_ARCHIVE },
 
 	{ &ui_spScores1, "g_spScores1", "", CVAR_ARCHIVE | CVAR_ROM },

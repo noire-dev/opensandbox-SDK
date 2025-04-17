@@ -164,7 +164,6 @@ void Svcmd_PropNpc_AS_f( void ){
 	char		arg20[64];
 	char		arg21[64];
 	char		arg22[64];
-	char		arg23[64];
 	
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 		
@@ -194,7 +193,6 @@ void Svcmd_PropNpc_AS_f( void ){
 	trap_Argv( 23, arg20, sizeof( arg20 ) );
 	trap_Argv( 24, arg21, sizeof( arg21 ) );
 	trap_Argv( 25, arg22, sizeof( arg22 ) );
-	trap_Argv( 26, arg23, sizeof( arg23 ) );
 	
 	end[0] = atof(cord_x);
 	end[1] = atof(cord_y);
@@ -203,7 +201,7 @@ void Svcmd_PropNpc_AS_f( void ){
 	if(!Q_stricmp (arg01, "prop")){
 	if(!g_allowprops.integer){ return; }
 
-	G_BuildPropSL( arg02, arg03, end, level.player, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
+	G_BuildPropSL( arg02, arg03, end, level.player, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 	
 	return;
 	}

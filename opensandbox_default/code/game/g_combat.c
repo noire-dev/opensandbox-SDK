@@ -1115,7 +1115,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 	}
 
-	if (!targ->takedamage) {
+	if (!targ->takedamage && !targ->sandboxObject) {
 		return;
 	}
 	
@@ -1318,10 +1318,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 	
-	if (targ->sandboxObject) {
-	if (!targ->takedamage2) {
+	if (targ->sandboxObject && targ->health == -1) {
 		return;
-	}
 	}
 
 	if(targ->botskill == 7){
@@ -1453,137 +1451,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			attacker->health += (int)(((float)targ->health)*g_vampire.value);
 		if(attacker->health>g_vampireMaxHealth.integer)
 			attacker->health = g_vampireMaxHealth.integer;
-	}
-
-	if(mod==MOD_MACHINEGUN){
-		if(g_mgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_SHOTGUN){
-		if(g_sgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_RAILGUN){
-		if(g_rgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_LIGHTNING){
-		if(g_lgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_NAIL){
-		if(g_ngvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_CHAINGUN){
-		if(g_cgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if(mod==MOD_PROXIMITY_MINE){
-		if(g_plvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_GRENADE)||(mod==MOD_GRENADE_SPLASH)){
-		if(g_glvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_ROCKET)||(mod==MOD_ROCKET_SPLASH)){
-		if(g_rlvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_PLASMA)||(mod==MOD_PLASMA_SPLASH)){
-		if(g_pgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_BFG)||(mod==MOD_BFG_SPLASH)){
-		if(g_bfgvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_FLAME)||(mod==MOD_FLAME_SPLASH)){
-		if(g_ftvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
-	}
-	if((mod==MOD_ANTIMATTER)||(mod==MOD_ANTIMATTER_SPLASH)){
-		if(g_amvampire.integer==1){
-			if(attacker->health<mod_vampire_max_health){
-				attacker->health += take;
-				if(attacker->health>mod_vampire_max_health){
-					attacker->health = mod_vampire_max_health;
-				}
-			}
-		}
 	}
 	
 	// do the damage

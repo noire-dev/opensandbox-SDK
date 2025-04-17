@@ -98,20 +98,28 @@ void UI_ScreenOffset( void ) {
 	scry = uis.glconfig.vidHeight;
 	
 	if((scrx / (scry / 480)-640)/2 >= 0){
-	trap_Cvar_SetValue("cl_screenoffset", (scrx / (scry / 480)-640)/2);
-	uis.wideoffset = (scrx / (scry / 480)-640)/2;
+		trap_Cvar_SetValue("cl_screenoffset", (scrx / (scry / 480)-640)/2);
+		uis.wideoffset = (scrx / (scry / 480)-640)/2;
 	} else {
-	trap_Cvar_SetValue("cl_screenoffset", 0);	
-	uis.wideoffset = 0;
+		trap_Cvar_SetValue("cl_screenoffset", 0);	
+		uis.wideoffset = 0;
 	}
+
 	trap_GetConfigString( CS_SERVERINFO, svinfo, MAX_INFO_STRING );
 	if(strlen(svinfo) <= 0){
-	uis.onmap = qfalse;
+		uis.onmap = qfalse;
 	} else {
-	uis.onmap = qtrue;	
+		uis.onmap = qtrue;	
 	}
+
+	if(trap_Cvar_VariableValue( "r_postfx" )){
+		uis.postfx_status = qtrue;
+	} else {
+		uis.postfx_status = qfalse;
+	}
+
 	if(uis.glconfig.vidHeight/480.0f > 0){
-	trap_Cvar_SetValue("con_scale", 1.85);
+		trap_Cvar_SetValue("con_scale", 1.85);
 	}
 	trap_Cvar_Set("cl_conColor", "8 8 8 192");
 }
@@ -124,12 +132,8 @@ UI_PushMenu
 void UI_PushMenu( menuframework_s *menu )
 {
 	int				i;
-	int				number;
 	menucommon_s*	item;
 	
-	number = rand() % 4 + 1;
-	
-	trap_Cvar_SetValue( "ui_backcolors", number );
 	if(uis.onmap){
 	trap_Cvar_Set( "r_fx_blur", "1" );			//blur UI postFX
 	} else {
@@ -636,13 +640,9 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		trap_Cmd_ExecuteText( EXEC_APPEND, va("set sv_maxclients 1; map %s\n", ui_3dmap.string) );
 		}
 		return;
-	case UIMENU_NEED_CD:
-		return;
-	case UIMENU_BAD_CD_KEY:
-		return;
 	case UIMENU_INGAME:
 		trap_Cvar_Set( "cl_paused", "1" );
-		UI_InGameMenu();
+		UI_MainMenu();
 		return;
 
 	// bk001204
@@ -1402,10 +1402,13 @@ void UI_Refresh( int realtime )
 		if (uis.activemenu->fullscreen)
 		{
 			if(!uis.onmap){
-			// draw the background
-			trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers );
+				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers );
 			}
-			trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+			if(!uis.onmap || !uis.postfx_status){
+				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+			} else {
+				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans2" ) );
+			}
 		}
 
 		if (uis.activemenu->draw)

@@ -36,200 +36,187 @@
 
 
 // server page tabs
-#define ID_SERVERTAB_HOOK 350
-#define ID_SERVERTAB_GAUNTLET 351
-#define ID_SERVERTAB_MACHINEGUN 352
-#define ID_SERVERTAB_SHOTGUN 353
-#define ID_SERVERTAB_GRENADE 354
-#define ID_SERVERTAB_ROCKET 355
-#define ID_SERVERTAB_PLASMA 356
-#define ID_SERVERTAB_LIGHTNING 357
-#define ID_SERVERTAB_RAILGUN 358
-#define ID_SERVERTAB_BFG 359
-#define ID_SERVERTAB_NAILGUN 360
-#define ID_SERVERTAB_PROX 361
-#define ID_SERVERTAB_CHAINGUN 362
-#define ID_SERVERTAB_FLAMETHROWER 363
-#define ID_SERVERTAB_DARKFLARE 364
-#define ID_SERVER_g_ghspeed 							364
-#define ID_SERVER_g_ghtimeout						365
-#define ID_SERVER_g_gdelay             				366
-#define ID_SERVER_g_gdamage							367
-#define ID_SERVER_g_grange             				368
-#define ID_SERVER_g_gknockback   					369
-#define ID_SERVER_g_mgammocount    				370
-#define ID_SERVER_g_mgweaponcount      			371
-#define ID_SERVER_g_mgdelay							372
-#define ID_SERVER_g_mgdamage 						373
-#define ID_SERVER_g_mgspread 						374
-#define ID_SERVER_g_mgexplode  						375
-#define ID_SERVER_g_mgsdamage  					376
-#define ID_SERVER_g_mgsradius  						377
-#define ID_SERVER_g_mgvampire  						378
-#define ID_SERVER_g_mginf            					379
-#define ID_SERVER_g_mgknockback    				380
-#define ID_SERVER_g_sgammocount    				381
-#define ID_SERVER_g_sgweaponcount      			382
+#define ID_SERVERTAB_HOOK 							350
+#define ID_SERVERTAB_GAUNTLET 						351
+#define ID_SERVERTAB_MACHINEGUN 					352
+#define ID_SERVERTAB_SHOTGUN 						353
+#define ID_SERVERTAB_GRENADE 						354
+#define ID_SERVERTAB_ROCKET 						355
+#define ID_SERVERTAB_PLASMA 						356
+#define ID_SERVERTAB_LIGHTNING 						357
+#define ID_SERVERTAB_RAILGUN 						358
+#define ID_SERVERTAB_BFG 							359
+#define ID_SERVERTAB_NAILGUN 						360
+#define ID_SERVERTAB_PROX 							361
+#define ID_SERVERTAB_CHAINGUN 						362
+#define ID_SERVERTAB_FLAMETHROWER 					363
+#define ID_SERVERTAB_DARKFLARE 						364
+#define ID_SERVER_g_ghspeed 						365
+#define ID_SERVER_g_ghtimeout						366
+#define ID_SERVER_g_gdelay             				367
+#define ID_SERVER_g_gdamage							368
+#define ID_SERVER_g_grange             				369
+#define ID_SERVER_g_gknockback   					370
+#define ID_SERVER_g_mgammocount    					371
+#define ID_SERVER_g_mgweaponcount      				372
+#define ID_SERVER_g_mgdelay							373
+#define ID_SERVER_g_mgdamage 						374
+#define ID_SERVER_g_mgspread 						375
+#define ID_SERVER_g_mgexplode  						376
+#define ID_SERVER_g_mgsdamage  						377
+#define ID_SERVER_g_mgsradius  						378
+#define ID_SERVER_g_mginf            				379
+#define ID_SERVER_g_mgknockback    					380
+#define ID_SERVER_g_sgammocount    					381
+#define ID_SERVER_g_sgweaponcount      				382
 #define ID_SERVER_g_sgdelay							383
 #define ID_SERVER_g_sgdamage 						384
-#define ID_SERVER_g_sgspread 							385
+#define ID_SERVER_g_sgspread 						385
 #define ID_SERVER_g_sgexplode  						386
 #define ID_SERVER_g_sgsdamage  						387
 #define ID_SERVER_g_sgsradius  						388
 #define ID_SERVER_g_sgcount							389
-#define ID_SERVER_g_sgvampire  						390
-#define ID_SERVER_g_sginf            					391
-#define ID_SERVER_g_sgknockback    				392
-#define ID_SERVER_g_glammocount    				393
-#define ID_SERVER_g_glweaponcount      			394
-#define ID_SERVER_g_gldelay							395
-#define ID_SERVER_g_glspeed							396
-#define ID_SERVER_g_glbounce 							397
-#define ID_SERVER_g_glgravity  						398
-#define ID_SERVER_g_gltimeout  						399
-#define ID_SERVER_g_glsradius  						400
-#define ID_SERVER_g_glsdamage  						401
-#define ID_SERVER_g_gldamage 						402
-#define ID_SERVER_g_glvampire  						403
-#define ID_SERVER_g_glinf            					404
-#define ID_SERVER_g_glbouncemodifier        		405
-#define ID_SERVER_g_glknockback    				406
-#define ID_SERVER_g_glhoming 							407
-#define ID_SERVER_g_glguided 							408
-#define ID_SERVER_g_rlammocount    				409
-#define ID_SERVER_g_rlweaponcount      			410
-#define ID_SERVER_g_rldelay								411
-#define ID_SERVER_g_rlspeed							412
-#define ID_SERVER_g_rlbounce 							413
-#define ID_SERVER_g_rlgravity  							414
-#define ID_SERVER_g_rltimeout  						415
-#define ID_SERVER_g_rlsradius  						416
-#define ID_SERVER_g_rlsdamage  						417
-#define ID_SERVER_g_rldamage 						418
-#define ID_SERVER_g_rlvampire  						419
-#define ID_SERVER_g_rlinf            						420
-#define ID_SERVER_g_rlbouncemodifier         		421
-#define ID_SERVER_g_rlknockback    					422
-#define ID_SERVER_g_rlhoming 							423
-#define ID_SERVER_g_rlguided 							424
-#define ID_SERVER_g_lgammocount    				425
-#define ID_SERVER_g_lgweaponcount      			426
-#define ID_SERVER_g_lgrange							427
-#define ID_SERVER_g_lgdelay							428
-#define ID_SERVER_g_lgdamage 						429
-#define ID_SERVER_g_lgvampire  						430
-#define ID_SERVER_g_lgexplode  						431
-#define ID_SERVER_g_lgsdamage  						432
-#define ID_SERVER_g_lgsradius  						433
-#define ID_SERVER_g_lginf            					434
-#define ID_SERVER_g_lgknockback    				435
-#define ID_SERVER_g_rgammocount    				436
-#define ID_SERVER_g_rgweaponcount      			437
-#define ID_SERVER_g_rgdelay							438
-#define ID_SERVER_g_rgdamage 						439
-#define ID_SERVER_g_rgvampire  						440
-#define ID_SERVER_g_rginf            					441
-#define ID_SERVER_g_rgknockback    				442
-#define ID_SERVER_g_pgammocount    				443
-#define ID_SERVER_g_pgweaponcount      			444
-#define ID_SERVER_g_pgdelay							445
-#define ID_SERVER_g_pgspeed							446
-#define ID_SERVER_g_pgbounce 						447
-#define ID_SERVER_g_pggravity  						448
-#define ID_SERVER_g_pgtimeout  						449
-#define ID_SERVER_g_pgsradius  						450
-#define ID_SERVER_g_pgsdamage  						451
-#define ID_SERVER_g_pgdamage 						452
-#define ID_SERVER_g_pgvampire  						453
-#define ID_SERVER_g_pginf            					454
-#define ID_SERVER_g_pgbouncemodifier         	455
-#define ID_SERVER_g_pgknockback    				456
-#define ID_SERVER_g_pghoming 						457
-#define ID_SERVER_g_pgguided 							458
-#define ID_SERVER_g_bfgammocount     			459
-#define ID_SERVER_g_bfgweaponcount       		460
-#define ID_SERVER_g_bfgdelay 							461
-#define ID_SERVER_g_bfgspeed 							462
-#define ID_SERVER_g_bfgbounce  						463
-#define ID_SERVER_g_bfggravity   						464
-#define ID_SERVER_g_bfgtimeout   					465
-#define ID_SERVER_g_bfgsradius   						466
-#define ID_SERVER_g_bfgsdamage   					467
-#define ID_SERVER_g_bfgdamage  						468
-#define ID_SERVER_g_bfgvampire   					469
-#define ID_SERVER_g_bfginf             					470
-#define ID_SERVER_g_bfgbouncemodifier          	471
-#define ID_SERVER_g_bfgknockback     				472
-#define ID_SERVER_g_bfghoming  						473
-#define ID_SERVER_g_bfgguided  						474
-#define ID_SERVER_g_ngammocount    				475
-#define ID_SERVER_g_ngweaponcount      			476
-#define ID_SERVER_g_ngdelay							477
-#define ID_SERVER_g_ngspeed							478
-#define ID_SERVER_g_ngbounce 						479
-#define ID_SERVER_g_nggravity  						480
-#define ID_SERVER_g_ngtimeout  						481
-#define ID_SERVER_g_ngcount							482
-#define ID_SERVER_g_ngspread 							483
-#define ID_SERVER_g_ngdamage 						484
-#define ID_SERVER_g_ngrandom 						485
-#define ID_SERVER_g_ngvampire  						486
-#define ID_SERVER_g_nginf            					487
-#define ID_SERVER_g_ngbouncemodifier         	488
-#define ID_SERVER_g_ngknockback    				489
-#define ID_SERVER_g_nghoming 						490
-#define ID_SERVER_g_ngguided 							491
-#define ID_SERVER_g_plammocount    				492
-#define ID_SERVER_g_plweaponcount      			493
-#define ID_SERVER_g_pldelay							494
-#define ID_SERVER_g_plspeed							495
-#define ID_SERVER_g_plgravity  						496
-#define ID_SERVER_g_pltimeout  						497
-#define ID_SERVER_g_plsradius  						498
-#define ID_SERVER_g_plsdamage  						499
-#define ID_SERVER_g_pldamage 						500
-#define ID_SERVER_g_plvampire  						501
-#define ID_SERVER_g_plinf            					502
-#define ID_SERVER_g_plknockback    				503
-#define ID_SERVER_g_cgammocount    				504
-#define ID_SERVER_g_cgweaponcount      			505
-#define ID_SERVER_g_cgdelay							506
-#define ID_SERVER_g_cgspread 							507
-#define ID_SERVER_g_cgdamage 						508
-#define ID_SERVER_g_cgvampire  						509
-#define ID_SERVER_g_cginf            					510
-#define ID_SERVER_g_cgknockback    				511
-#define ID_SERVER_g_ftammocount    				512
-#define ID_SERVER_g_ftweaponcount      			513
-#define ID_SERVER_g_ftdelay								514
-#define ID_SERVER_g_ftspeed							515
-#define ID_SERVER_g_ftbounce 							516
-#define ID_SERVER_g_ftgravity  						517
-#define ID_SERVER_g_fttimeout  						518
-#define ID_SERVER_g_ftsradius  						519
-#define ID_SERVER_g_ftsdamage  						520
-#define ID_SERVER_g_ftdamage 						521
-#define ID_SERVER_g_ftvampire  						522
-#define ID_SERVER_g_ftinf            					523
-#define ID_SERVER_g_ftbouncemodifier         		524
-#define ID_SERVER_g_ftknockback    					525
-#define ID_SERVER_g_fthoming 							526
-#define ID_SERVER_g_ftguided 							527
-#define ID_SERVER_g_amweaponcount      			528
-#define ID_SERVER_g_amdelay							529
-#define ID_SERVER_g_amspeed							530
-#define ID_SERVER_g_ambounce 						531
-#define ID_SERVER_g_amgravity  						532
-#define ID_SERVER_g_amtimeout  						533
-#define ID_SERVER_g_amsradius  						534
-#define ID_SERVER_g_amsdamage  					535
-#define ID_SERVER_g_amdamage 						536
-#define ID_SERVER_g_amvampire  						537
-#define ID_SERVER_g_aminf            					538
-#define ID_SERVER_g_ambouncemodifier         	539
-#define ID_SERVER_g_amknockback    				540
-#define ID_SERVER_g_amhoming 						541
-#define ID_SERVER_g_amguided 						542
+#define ID_SERVER_g_sginf            				390
+#define ID_SERVER_g_sgknockback    					391
+#define ID_SERVER_g_glammocount    					392
+#define ID_SERVER_g_glweaponcount      				393
+#define ID_SERVER_g_gldelay							394
+#define ID_SERVER_g_glspeed							395
+#define ID_SERVER_g_glbounce 						396
+#define ID_SERVER_g_glgravity  						397
+#define ID_SERVER_g_gltimeout  						398
+#define ID_SERVER_g_glsradius  						399
+#define ID_SERVER_g_glsdamage  						400
+#define ID_SERVER_g_gldamage 						401
+#define ID_SERVER_g_glinf            				402
+#define ID_SERVER_g_glbouncemodifier        		403
+#define ID_SERVER_g_glknockback    					404
+#define ID_SERVER_g_glhoming 						405
+#define ID_SERVER_g_glguided 						406
+#define ID_SERVER_g_rlammocount    					407
+#define ID_SERVER_g_rlweaponcount      				408
+#define ID_SERVER_g_rldelay							409
+#define ID_SERVER_g_rlspeed							410
+#define ID_SERVER_g_rlbounce 						411
+#define ID_SERVER_g_rlgravity  						412
+#define ID_SERVER_g_rltimeout  						413
+#define ID_SERVER_g_rlsradius  						414
+#define ID_SERVER_g_rlsdamage  						415
+#define ID_SERVER_g_rldamage 						416
+#define ID_SERVER_g_rlinf            				417
+#define ID_SERVER_g_rlbouncemodifier         		418
+#define ID_SERVER_g_rlknockback    					419
+#define ID_SERVER_g_rlhoming 						420
+#define ID_SERVER_g_rlguided 						421
+#define ID_SERVER_g_lgammocount    					422
+#define ID_SERVER_g_lgweaponcount      				423
+#define ID_SERVER_g_lgrange							424
+#define ID_SERVER_g_lgdelay							425
+#define ID_SERVER_g_lgdamage 						426
+#define ID_SERVER_g_lgexplode  						427
+#define ID_SERVER_g_lgsdamage  						428
+#define ID_SERVER_g_lgsradius  						429
+#define ID_SERVER_g_lginf            				430
+#define ID_SERVER_g_lgknockback    					431
+#define ID_SERVER_g_rgammocount    					432
+#define ID_SERVER_g_rgweaponcount      				433
+#define ID_SERVER_g_rgdelay							434
+#define ID_SERVER_g_rgdamage 						435
+#define ID_SERVER_g_rginf            				436
+#define ID_SERVER_g_rgknockback    					437
+#define ID_SERVER_g_pgammocount    					438
+#define ID_SERVER_g_pgweaponcount      				439
+#define ID_SERVER_g_pgdelay							440
+#define ID_SERVER_g_pgspeed							441
+#define ID_SERVER_g_pgbounce 						442
+#define ID_SERVER_g_pggravity  						443
+#define ID_SERVER_g_pgtimeout  						444
+#define ID_SERVER_g_pgsradius  						445
+#define ID_SERVER_g_pgsdamage  						446
+#define ID_SERVER_g_pgdamage 						447
+#define ID_SERVER_g_pginf            				448
+#define ID_SERVER_g_pgbouncemodifier         		449
+#define ID_SERVER_g_pgknockback    					450
+#define ID_SERVER_g_pghoming 						451
+#define ID_SERVER_g_pgguided 						452
+#define ID_SERVER_g_bfgammocount     				453
+#define ID_SERVER_g_bfgweaponcount       			454
+#define ID_SERVER_g_bfgdelay 						455
+#define ID_SERVER_g_bfgspeed 						456
+#define ID_SERVER_g_bfgbounce  						457
+#define ID_SERVER_g_bfggravity   					458
+#define ID_SERVER_g_bfgtimeout   					459
+#define ID_SERVER_g_bfgsradius   					460
+#define ID_SERVER_g_bfgsdamage   					461
+#define ID_SERVER_g_bfgdamage  						462
+#define ID_SERVER_g_bfginf             				463
+#define ID_SERVER_g_bfgbouncemodifier          		464
+#define ID_SERVER_g_bfgknockback     				465
+#define ID_SERVER_g_bfghoming  						466
+#define ID_SERVER_g_bfgguided  						467
+#define ID_SERVER_g_ngammocount    					468
+#define ID_SERVER_g_ngweaponcount      				469
+#define ID_SERVER_g_ngdelay							470
+#define ID_SERVER_g_ngspeed							471
+#define ID_SERVER_g_ngbounce 						472
+#define ID_SERVER_g_nggravity  						473
+#define ID_SERVER_g_ngtimeout  						474
+#define ID_SERVER_g_ngcount							475
+#define ID_SERVER_g_ngspread 						476
+#define ID_SERVER_g_ngdamage 						477
+#define ID_SERVER_g_ngrandom 						478
+#define ID_SERVER_g_nginf            				479
+#define ID_SERVER_g_ngbouncemodifier         		480
+#define ID_SERVER_g_ngknockback    					481
+#define ID_SERVER_g_nghoming 						482
+#define ID_SERVER_g_ngguided 						483
+#define ID_SERVER_g_plammocount    					484
+#define ID_SERVER_g_plweaponcount      				485
+#define ID_SERVER_g_pldelay							486
+#define ID_SERVER_g_plspeed							487
+#define ID_SERVER_g_plgravity  						488
+#define ID_SERVER_g_pltimeout  						489
+#define ID_SERVER_g_plsradius               		490
+#define ID_SERVER_g_plsdamage               		491
+#define ID_SERVER_g_pldamage                		492
+#define ID_SERVER_g_plinf                   		493
+#define ID_SERVER_g_plknockback             		494
+#define ID_SERVER_g_cgammocount             		495
+#define ID_SERVER_g_cgweaponcount           		496
+#define ID_SERVER_g_cgdelay                 		497
+#define ID_SERVER_g_cgspread                		498
+#define ID_SERVER_g_cgdamage                		499
+#define ID_SERVER_g_cginf                   		500
+#define ID_SERVER_g_cgknockback             		501
+#define ID_SERVER_g_ftammocount             		502
+#define ID_SERVER_g_ftweaponcount           		503
+#define ID_SERVER_g_ftdelay                 		504
+#define ID_SERVER_g_ftspeed                 		505
+#define ID_SERVER_g_ftbounce                		506
+#define ID_SERVER_g_ftgravity               		507
+#define ID_SERVER_g_fttimeout               		508
+#define ID_SERVER_g_ftsradius               		509
+#define ID_SERVER_g_ftsdamage               		510
+#define ID_SERVER_g_ftdamage                		511
+#define ID_SERVER_g_ftinf                   		512
+#define ID_SERVER_g_ftbouncemodifier        		513
+#define ID_SERVER_g_ftknockback             		514
+#define ID_SERVER_g_fthoming                		515
+#define ID_SERVER_g_ftguided                		516
+#define ID_SERVER_g_amweaponcount           		517
+#define ID_SERVER_g_amdelay                 		518
+#define ID_SERVER_g_amspeed                 		519
+#define ID_SERVER_g_ambounce                		520
+#define ID_SERVER_g_amgravity               		521
+#define ID_SERVER_g_amtimeout               		522
+#define ID_SERVER_g_amsradius               		523
+#define ID_SERVER_g_amsdamage               		524
+#define ID_SERVER_g_amdamage                		525
+#define ID_SERVER_g_aminf                   		526
+#define ID_SERVER_g_ambouncemodifier        		527
+#define ID_SERVER_g_amknockback             		528
+#define ID_SERVER_g_amhoming                		529
+#define ID_SERVER_g_amguided                		530
 
 
 #define SERVER_SAVE0 "menu/assets/save_0"
@@ -472,7 +459,6 @@ static controlinit_t weapv_machinegun[] = {
 { SRVCTRL_RADIO, 0, ID_SERVER_g_mgexplode, ITEM_ALWAYSON, "Machine gun explode:", &s_scriptdata.server.g_mgexplode, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_mgsdamage, ITEM_ALWAYSON, "Machine gun sdamage:", &s_scriptdata.server.g_mgsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_mgsradius, ITEM_ALWAYSON, "Machine gun sradius:", &s_scriptdata.server.g_mgsradius, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_mgvampire, ITEM_ALWAYSON, "Machine gun vampire:", &s_scriptdata.server.g_mgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_mginf, ITEM_ALWAYSON, "Machine gun inf:", &s_scriptdata.server.g_mginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_mgknockback, ITEM_ALWAYSON, "Machine gun knockback:", NULL, 0, 0, s_scriptdata.server.g_mgknockback, 9, 9, NULL }
 
@@ -491,7 +477,6 @@ static controlinit_t weapv_shotgun[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_sgsdamage, ITEM_ALWAYSON, "Shotgun sdamage:", &s_scriptdata.server.g_sgsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_sgsradius, ITEM_ALWAYSON, "Shotgun sradius:", &s_scriptdata.server.g_sgsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_sgcount, ITEM_ALWAYSON, "Shotgun count:", &s_scriptdata.server.g_sgcount, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_sgvampire, ITEM_ALWAYSON, "Shotgun vampire:", &s_scriptdata.server.g_sgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_sginf, ITEM_ALWAYSON, "Shotgun inf:", &s_scriptdata.server.g_sginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_sgknockback, ITEM_ALWAYSON, "Shotgun knockback:", NULL, 0, 0, s_scriptdata.server.g_sgknockback, 9, 9, NULL }
 
@@ -512,7 +497,6 @@ static controlinit_t weapv_grenade[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_glsradius, ITEM_ALWAYSON, "Grenade launcher sradius:", &s_scriptdata.server.g_glsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_glsdamage, ITEM_ALWAYSON, "Grenade launcher sdamage:", &s_scriptdata.server.g_glsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_gldamage, ITEM_ALWAYSON, "Grenade launcher damage:", &s_scriptdata.server.g_gldamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_glvampire, ITEM_ALWAYSON, "Grenade launcher vampire:", &s_scriptdata.server.g_glvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_glinf, ITEM_ALWAYSON, "Grenade launcher inf:", &s_scriptdata.server.g_glinf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_glbouncemodifier, ITEM_ALWAYSON, "Grenade launcher bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_glbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_glknockback, ITEM_ALWAYSON, "Grenade launcher knockback:", NULL, 0, 0, s_scriptdata.server.g_glknockback, 9, 9, NULL },
@@ -535,7 +519,6 @@ static controlinit_t weapv_rocket[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rlsradius, ITEM_ALWAYSON, "Rocket launcher sradius:", &s_scriptdata.server.g_rlsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rlsdamage, ITEM_ALWAYSON, "Rocket launcher sdamage:", &s_scriptdata.server.g_rlsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rldamage, ITEM_ALWAYSON, "Rocket launcher damage:", &s_scriptdata.server.g_rldamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_rlvampire, ITEM_ALWAYSON, "Rocket launcher vampire:", &s_scriptdata.server.g_rlvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_rlinf, ITEM_ALWAYSON, "Rocket launcher inf:", &s_scriptdata.server.g_rlinf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_rlbouncemodifier, ITEM_ALWAYSON, "Rocket launcher bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_rlbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_rlknockback, ITEM_ALWAYSON, "Rocket launcher knockback:", NULL, 0, 0, s_scriptdata.server.g_rlknockback, 9, 9, NULL },
@@ -558,7 +541,6 @@ static controlinit_t weapv_plasma[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_pgsradius, ITEM_ALWAYSON, "Plasmagun sradius:", &s_scriptdata.server.g_pgsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_pgsdamage, ITEM_ALWAYSON, "Plasmagun sdamage:", &s_scriptdata.server.g_pgsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_pgdamage, ITEM_ALWAYSON, "Plasmagun damage:", &s_scriptdata.server.g_pgdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_pgvampire, ITEM_ALWAYSON, "Plasmagun vampire:", &s_scriptdata.server.g_pgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_pginf, ITEM_ALWAYSON, "Plasmagun inf:", &s_scriptdata.server.g_pginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_pgbouncemodifier, ITEM_ALWAYSON, "Plasmagun bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_pgbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_pgknockback, ITEM_ALWAYSON, "Plasmagun knockback:", NULL, 0, 0, s_scriptdata.server.g_pgknockback, 9, 9, NULL },
@@ -575,7 +557,6 @@ static controlinit_t weapv_lightning[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_lgrange, ITEM_ALWAYSON, "Lightning gun range:", &s_scriptdata.server.g_lgrange, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_lgdelay, ITEM_ALWAYSON, "Lightning gun delay:", &s_scriptdata.server.g_lgdelay, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_lgdamage, ITEM_ALWAYSON, "Lightning gun damage:", &s_scriptdata.server.g_lgdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_lgvampire, ITEM_ALWAYSON, "Lightning gun vampire:", &s_scriptdata.server.g_lgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_lgexplode, ITEM_ALWAYSON, "Lightning gun explode:", &s_scriptdata.server.g_lgexplode, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_lgsdamage, ITEM_ALWAYSON, "Lightning gun sdamage:", &s_scriptdata.server.g_lgsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_lgsradius, ITEM_ALWAYSON, "Lightning gun sradius:", &s_scriptdata.server.g_lgsradius, -999999999, 999999999, NULL, 9, 9, NULL },
@@ -590,7 +571,6 @@ static controlinit_t weapv_railgun[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rgweaponcount, ITEM_ALWAYSON, "Railgun weaponcount:", &s_scriptdata.server.g_rgweaponcount, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rgdelay, ITEM_ALWAYSON, "Railgun delay:", &s_scriptdata.server.g_rgdelay, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_rgdamage, ITEM_ALWAYSON, "Railgun damage:", &s_scriptdata.server.g_rgdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_rgvampire, ITEM_ALWAYSON, "Railgun vampire:", &s_scriptdata.server.g_rgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_rginf, ITEM_ALWAYSON, "Railgun inf:", &s_scriptdata.server.g_rginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_rgknockback, ITEM_ALWAYSON, "Railgun knockback:", NULL, 0, 0, s_scriptdata.server.g_rgknockback, 9, 9, NULL }
 
@@ -608,7 +588,6 @@ static controlinit_t weapv_bfg[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_bfgsradius, ITEM_ALWAYSON, "BFG sradius:", &s_scriptdata.server.g_bfgsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_bfgsdamage, ITEM_ALWAYSON, "BFG sdamage:", &s_scriptdata.server.g_bfgsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_bfgdamage, ITEM_ALWAYSON, "BFG damage:", &s_scriptdata.server.g_bfgdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_bfgvampire, ITEM_ALWAYSON, "BFG vampire:", &s_scriptdata.server.g_bfgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_bfginf, ITEM_ALWAYSON, "BFG inf:", &s_scriptdata.server.g_bfginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_bfgbouncemodifier, ITEM_ALWAYSON, "BFG bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_bfgbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_bfgknockback, ITEM_ALWAYSON, "BFG knockback:", NULL, 0, 0, s_scriptdata.server.g_bfgknockback, 9, 9, NULL },
@@ -630,7 +609,6 @@ static controlinit_t weapv_nailgun[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ngspread, ITEM_ALWAYSON, "Nailgun spread:", &s_scriptdata.server.g_ngspread, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ngdamage, ITEM_ALWAYSON, "Nailgun damage:", &s_scriptdata.server.g_ngdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ngrandom, ITEM_ALWAYSON, "Nailgun random:", &s_scriptdata.server.g_ngrandom, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_ngvampire, ITEM_ALWAYSON, "Nailgun vampire:", &s_scriptdata.server.g_ngvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_nginf, ITEM_ALWAYSON, "Nailgun inf:", &s_scriptdata.server.g_nginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_ngbouncemodifier, ITEM_ALWAYSON, "Nailgun bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_ngbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_ngknockback, ITEM_ALWAYSON, "Nailgun knockback:", NULL, 0, 0, s_scriptdata.server.g_ngknockback, 9, 9, NULL },
@@ -650,7 +628,6 @@ static controlinit_t weapv_prox[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_plsradius, ITEM_ALWAYSON, "Prox launcher sradius:", &s_scriptdata.server.g_plsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_plsdamage, ITEM_ALWAYSON, "Prox launcher sdamage:", &s_scriptdata.server.g_plsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_pldamage, ITEM_ALWAYSON, "Prox launcher damage:", &s_scriptdata.server.g_pldamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_plvampire, ITEM_ALWAYSON, "Prox launcher vampire:", &s_scriptdata.server.g_plvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_plinf, ITEM_ALWAYSON, "Prox launcher inf:", &s_scriptdata.server.g_plinf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_plknockback, ITEM_ALWAYSON, "Prox launcher knockback:", NULL, 0, 0, s_scriptdata.server.g_plknockback, 9, 9, NULL }
 
@@ -663,7 +640,6 @@ static controlinit_t weapv_chaingun[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_cgdelay, ITEM_ALWAYSON, "Chaingun delay:", &s_scriptdata.server.g_cgdelay, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_cgspread, ITEM_ALWAYSON, "Chaingun spread:", &s_scriptdata.server.g_cgspread, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_cgdamage, ITEM_ALWAYSON, "Chaingun damage:", &s_scriptdata.server.g_cgdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_cgvampire, ITEM_ALWAYSON, "Chaingun vampire:", &s_scriptdata.server.g_cgvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_cginf, ITEM_ALWAYSON, "Chaingun inf:", &s_scriptdata.server.g_cginf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_cgknockback, ITEM_ALWAYSON, "Chaingun knockback:", NULL, 0, 0, s_scriptdata.server.g_cgknockback, 9, 9, NULL }
 
@@ -681,7 +657,6 @@ static controlinit_t weapv_flamethrower[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ftsradius, ITEM_ALWAYSON, "Flamethrower sradius:", &s_scriptdata.server.g_ftsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ftsdamage, ITEM_ALWAYSON, "Flamethrower sdamage:", &s_scriptdata.server.g_ftsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_ftdamage, ITEM_ALWAYSON, "Flamethrower damage:", &s_scriptdata.server.g_ftdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_ftvampire, ITEM_ALWAYSON, "Flamethrower vampire:", &s_scriptdata.server.g_ftvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_ftinf, ITEM_ALWAYSON, "Flamethrower inf:", &s_scriptdata.server.g_ftinf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_ftbouncemodifier, ITEM_ALWAYSON, "Flamethrower bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_ftbouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_ftknockback, ITEM_ALWAYSON, "Flamethrower knockback:", NULL, 0, 0, s_scriptdata.server.g_ftknockback, 9, 9, NULL },
@@ -701,7 +676,6 @@ static controlinit_t weapv_darkflare[] = {
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_amsradius, ITEM_ALWAYSON, "Dark flare sradius:", &s_scriptdata.server.g_amsradius, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_amsdamage, ITEM_ALWAYSON, "Dark flare sdamage:", &s_scriptdata.server.g_amsdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_NUMFIELD, 0, ID_SERVER_g_amdamage, ITEM_ALWAYSON, "Dark flare damage:", &s_scriptdata.server.g_amdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-{ SRVCTRL_RADIO, 0, ID_SERVER_g_amvampire, ITEM_ALWAYSON, "Dark flare vampire:", &s_scriptdata.server.g_amvampire, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_RADIO, 0, ID_SERVER_g_aminf, ITEM_ALWAYSON, "Dark flare inf:", &s_scriptdata.server.g_aminf, -999999999, 999999999, NULL, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_ambouncemodifier, ITEM_ALWAYSON, "Dark flare bouncemodifier:", NULL, 0, 0, s_scriptdata.server.g_ambouncemodifier, 9, 9, NULL },
 { SRVCTRL_TEXTFIELD, 0, ID_SERVER_g_amknockback, ITEM_ALWAYSON, "Dark flare knockback:", NULL, 0, 0, s_scriptdata.server.g_amknockback, 9, 9, NULL },

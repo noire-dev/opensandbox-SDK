@@ -79,7 +79,7 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -104,7 +104,7 @@ void SP_info_player_start(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 
@@ -127,7 +127,7 @@ void SP_info_player_dd(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -148,7 +148,7 @@ void SP_info_player_dd_red(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -169,7 +169,7 @@ void SP_info_player_dd_blue(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -2521,10 +2521,8 @@ See http://www.quake3world.com/forum/viewtopic.php?f=16&t=45625
 ============
 */
 void DropClientSilently( int clientNum ) {
-	if ( 0 )
-		trap_DropClient( clientNum, " : removing dead bot" );
-	else
-		trap_DropClient( clientNum, "DR_SILENT_DROP" );
+	Undo_RemoveElementFromAll(clientNum);
+	trap_DropClient( clientNum, "DR_SILENT_DROP" );
 }
 
 /*

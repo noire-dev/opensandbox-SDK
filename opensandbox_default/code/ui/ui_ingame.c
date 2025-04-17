@@ -35,9 +35,8 @@
 #define ID_CLEANMAPINPACK			16	//mapeditor
 #define ID_CLEANMAPINPACK_SANDBOX	17	//sandbox
 #define ID_RESTART					18
-#define ID_QUIT						19
-#define ID_NEXTMAP					20
-#define ID_ENABLEDITEMS				21
+#define ID_NEXTMAP					19
+#define ID_ENABLEDITEMS				20
 
 /*
 =================
@@ -180,15 +179,6 @@ static void InGame_EventHandler(int id)
 		}
 		if(cl_language.integer == 1){
 		UI_ConfirmMenu( "РЕСТАРТ АРЕНЫ?", 0, InGame_RestartAction );
-		}
-		break;
-
-	case ID_QUIT:
-		if(cl_language.integer == 0){
-		UI_ConfirmMenu( "EXIT GAME?", 0, InGame_QuitAction );
-		}
-		if(cl_language.integer == 1){
-		UI_ConfirmMenu( "ВЫЙТИ ИЗ ИГРЫ?", 0, InGame_QuitAction );
 		}
 		break;
 
@@ -1001,41 +991,6 @@ static void IG_Vote_SubMenu( void )
 
 /*
 =================
-IG_Setup_SubMenu
-=================
-*/
-static void IG_Setup_SubMenu( void )
-{
-	DynamicMenu_SubMenuInit();
-
-	if(cl_language.integer == 0){
-	DynamicMenu_AddItem("Player...", IGS_PLAYER, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Model...", IGS_MODEL, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Controls...", IGS_CONTROLS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Preferences...", IGS_OPTIONS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Graphics...", IGS_GRAPHICS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Display...", IGS_DISPLAY, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Sound...", IGS_SOUND, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Network...", IGS_NETWORK, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Advanced...", IGS_ADVANCED, 0, IG_Setup_Event);
-	}
-	if(cl_language.integer == 1){
-	DynamicMenu_AddItem("Игрок...", IGS_PLAYER, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Модель...", IGS_MODEL, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Управление...", IGS_CONTROLS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Параметры...", IGS_OPTIONS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Графика...", IGS_GRAPHICS, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Экран...", IGS_DISPLAY, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Звук...", IGS_SOUND, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Сеть...", IGS_NETWORK, 0, IG_Setup_Event);
-	DynamicMenu_AddItem("Расширеные...", IGS_ADVANCED, 0, IG_Setup_Event);
-	}
-
-	DynamicMenu_FinishSubMenuInit();
-}
-
-/*
-=================
 IG_Actions_SubMenu
 =================
 */
@@ -1118,38 +1073,6 @@ static void IG_AddBot_SubMenu( void )
 	if(cl_language.integer == 1){
 	DynamicMenu_AddItem("Добавить бота...", ID_ADDBOTS, 0, IG_UseOldInGame_Event);
 	DynamicMenu_AddItem("Удалить бота...", ID_REMOVEBOTS, 0, IG_UseOldInGame_Event);
-	}
-
-	DynamicMenu_FinishSubMenuInit();
-}
-
-/*
-=================
-IG_Exit_SubMenu
-=================
-*/
-static void IG_Exit_SubMenu( void )
-{
-	DynamicMenu_SubMenuInit();
-
-	if(cl_language.integer == 0){
-		if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
-			DynamicMenu_AddItem("Exit", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
-			DynamicMenu_AddItem("Exit and Save", ID_LEAVEARENA_SAVE, 0, IG_UseOldInGame_Event);
-		} else {
-			DynamicMenu_AddItem("Quit...", ID_QUIT, 0, IG_UseOldInGame_Event);
-			DynamicMenu_AddItem("Main Menu", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
-		}
-	}
-
-	if(cl_language.integer == 1){
-		if(DynamicMenu_ServerGametype() == GT_MAPEDITOR){
-			DynamicMenu_AddItem("Выйти", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
-			DynamicMenu_AddItem("Выйти и Сохранить", ID_LEAVEARENA_SAVE, 0, IG_UseOldInGame_Event);
-		} else {
-			DynamicMenu_AddItem("Выход...", ID_QUIT, 0, IG_UseOldInGame_Event);
-			DynamicMenu_AddItem("Главное Меню", ID_LEAVEARENA, 0, IG_UseOldInGame_Event);
-		}
 	}
 
 	DynamicMenu_FinishSubMenuInit();
@@ -1251,11 +1174,9 @@ static void InGameDynamic_InitPrimaryMenu( void )
 	DynamicMenu_AddItem("Start", IGM_START, IG_Start_SubMenu, 0);
 	DynamicMenu_AddItem("Bots", IGM_BOTS, IG_AddBot_SubMenu, 0);
 	DynamicMenu_AddItem("Team Orders...", IGM_TEAMORDERS, 0, IG_TeamOrders_Event);
-	DynamicMenu_AddItem("Setup", IGM_SETUP, IG_Setup_SubMenu, 0);
 	DynamicMenu_AddItem("Map", IGM_MAP, IG_Map_SubMenu, 0);
 	DynamicMenu_AddItem("Vote", IGM_VOTE, IG_Vote_SubMenu, 0);
 	DynamicMenu_AddItem("Call Vote", IGM_CALLVOTE, IG_CallVote_SubMenu, 0);
-	DynamicMenu_AddItem("Exit!", IGM_EXIT, IG_Exit_SubMenu, 0);
 	}
 	if(cl_language.integer == 1){
 	DynamicMenu_AddItem("Закрыть!", IGM_CLOSE, 0, IG_Close_Event);
@@ -1268,11 +1189,9 @@ static void InGameDynamic_InitPrimaryMenu( void )
 	DynamicMenu_AddItem("Старт", IGM_START, IG_Start_SubMenu, 0);
 	DynamicMenu_AddItem("Боты", IGM_BOTS, IG_AddBot_SubMenu, 0);
 	DynamicMenu_AddItem("Командные Приказы...", IGM_TEAMORDERS, 0, IG_TeamOrders_Event);
-	DynamicMenu_AddItem("Настройки", IGM_SETUP, IG_Setup_SubMenu, 0);
 	DynamicMenu_AddItem("Карта", IGM_MAP, IG_Map_SubMenu, 0);
 	DynamicMenu_AddItem("Голосование", IGM_VOTE, IG_Vote_SubMenu, 0);
 	DynamicMenu_AddItem("Создать Голосование", IGM_CALLVOTE, IG_CallVote_SubMenu, 0);
-	DynamicMenu_AddItem("Выйти!", IGM_EXIT, IG_Exit_SubMenu, 0);
 	}
 
 	depth = DynamicMenu_Depth();

@@ -81,18 +81,6 @@
 #define SF_EFFECT_SMOKEPUFF				128
 #define SF_EFFECT_ACTIVATOR				256
 
-// physics engine
-#define		PHYS_ROTATING 0.020
-#define		PHYS_PROP_IMPACT g_physimpact.value
-#define		PHYS_SENS g_physimpulse.integer
-#define		PHYS_DAMAGE g_physdamage.value
-#define		PHYS_DAMAGESENS 30
-
-#define		VEHICLE_PROP_IMPACT g_physimpact.value
-#define		VEHICLE_SENS 30
-#define		VEHICLE_DAMAGE 0.05
-#define		VEHICLE_DAMAGESENS 30
-
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
@@ -106,10 +94,10 @@ typedef enum {
 	ROTATOR_2TO1
 } moverState_t;
 
-#define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
-
-#define MAX_LOGIC_ENTITIES		256 //maximum number of entities that can target a target_logic
+#define MAX_LOGIC_ENTITIES	256 //maximum number of entities that can target a target_logic
 #define MAX_NETNAME			36
+
+#define MAX_UNDO_STACK		1024
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
@@ -230,7 +218,6 @@ struct gentity_s {
 	int			owner;	// clientNum player owner
 	char		*ownername;	// clientNum player owner
 	int			sandboxObject;
-	qboolean	takedamage2;
 	char		*botname;
 
 	int			lastThinkTime;
@@ -247,8 +234,6 @@ struct gentity_s {
 	int			sb_green;
 	int			sb_blue;
 	int			sb_radius;
-	int			sb_takedamage;
-	int			sb_takedamage2;
 
 	float		lip;
 	float		height;
@@ -326,10 +311,10 @@ struct gentity_s {
 	int			phys_weldedObjectsNum;
 	gentity_t	*phys_parent;
 
-	//Saved info
+	//Saved info (save)
 	vec3_t		phys_relativeOrigin;
 
-	//Rotate vectors
+	//Rotate vectors (save)
 	vec3_t		phys_rv_0;
 	vec3_t		phys_rv_1;
 	vec3_t		phys_rv_2;
@@ -337,6 +322,11 @@ struct gentity_s {
 	//Phys think
 	int			phys_nextthink;
 	void		(*phys_think)(gentity_t *self);
+
+	//Save weld (sync)
+	int			sb_phys_welded; //welded
+	int			sb_phys_parent;	//master
+
 };
 
 
@@ -428,6 +418,11 @@ typedef struct {
 	
     int         oldmoney;
 } clientPersistant_t;
+
+typedef struct {
+    int id;
+    int type;
+} undo_stack_t;
 
 //unlagged - backward reconciliation #1
 // the size of history we'll keep
@@ -542,6 +537,8 @@ struct gclient_s {
 	qboolean    spawnprotected;
 
 	int			accuracy[MAX_WEAPONS][2];
+
+	undo_stack_t undoStack[MAX_UNDO_STACK];
 };
 
 //
@@ -861,6 +858,7 @@ void	G_TeamCommand( team_t team, char *cmd );
 void	G_KillBox (gentity_t *ent);
 gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match);
 gentity_t *G_PickTarget (char *targetname);
+void G_PickAllTargets ( gentity_t *ent, gentity_t *activator );
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_UseDeathTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
@@ -939,7 +937,6 @@ void TossClientCubes( gentity_t *self );
 void G_RunMissile( gentity_t *ent );
 void ProximityMine_RemoveAll( void );
 
-gentity_t *fire_blaster (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_custom (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
@@ -1185,6 +1182,8 @@ void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun
 void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun);
 void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
 
+void Phys_Disable( gentity_t *ent, vec3_t origin );
+void Phys_Enable( gentity_t *ent );
 void Phys_Unweld( gentity_t *ent );
 
 void Phys_Frame( gentity_t *ent );
@@ -1204,9 +1203,15 @@ void PlayerStore_restore(char* guid, playerState_t *ps);
 // g_sandbox.c
 //
 
-void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22, char *arg23);
+void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
 void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 );
 void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+
+void Undo_ShiftStack(gentity_t *ent);
+void Undo_PushElement(gentity_t *ent, int id, int type);
+qboolean Undo_PopElement(gentity_t *ent, int *id, int *type);
+void Undo_RemoveElement(gentity_t *ent, int target_id);
+void Undo_RemoveElementFromAll(int target_id);
 
 //
 // g_mapfiles.c
@@ -1344,7 +1349,6 @@ extern	vmCvar_t	g_mgspread;
 extern	vmCvar_t	g_mgexplode;
 extern	vmCvar_t	g_mgsdamage;
 extern	vmCvar_t	g_mgsradius;
-extern	vmCvar_t	g_mgvampire;
 extern	vmCvar_t	g_mginf;
 extern	vmCvar_t	g_mgknockback;
 //sg set
@@ -1355,7 +1359,6 @@ extern	vmCvar_t	g_sgexplode;
 extern	vmCvar_t	g_sgsdamage;
 extern	vmCvar_t	g_sgsradius;
 extern	vmCvar_t	g_sgcount;
-extern	vmCvar_t	g_sgvampire;
 extern	vmCvar_t	g_sginf;
 extern	vmCvar_t	g_sgknockback;
 //gl set
@@ -1367,7 +1370,6 @@ extern	vmCvar_t	g_glsdamage;
 extern	vmCvar_t	g_gldamage;
 extern	vmCvar_t	g_glbounce;
 extern	vmCvar_t	g_glgravity;
-extern	vmCvar_t	g_glvampire;
 extern	vmCvar_t	g_glinf;
 extern	vmCvar_t	g_glbouncemodifier;
 extern	vmCvar_t	g_glknockback;
@@ -1380,7 +1382,6 @@ extern	vmCvar_t	g_rlsdamage;
 extern	vmCvar_t	g_rldamage;
 extern	vmCvar_t	g_rlbounce;
 extern	vmCvar_t	g_rlgravity;
-extern	vmCvar_t	g_rlvampire;
 extern	vmCvar_t	g_rlinf;
 extern	vmCvar_t	g_rlbouncemodifier;
 extern	vmCvar_t	g_rlknockback;
@@ -1391,13 +1392,11 @@ extern	vmCvar_t	g_lgrange;
 extern	vmCvar_t	g_lgexplode;
 extern	vmCvar_t	g_lgsdamage;
 extern	vmCvar_t	g_lgsradius;
-extern	vmCvar_t	g_lgvampire;
 extern	vmCvar_t	g_lginf;
 extern	vmCvar_t	g_lgknockback;
 //rg set
 extern	vmCvar_t	g_rgdelay;
 extern	vmCvar_t	g_rgdamage;
-extern	vmCvar_t	g_rgvampire;
 extern	vmCvar_t	g_rginf;
 extern	vmCvar_t	g_rgknockback;
 //pg set
@@ -1409,7 +1408,6 @@ extern	vmCvar_t	g_pgdamage;
 extern	vmCvar_t	g_pgtimeout;
 extern	vmCvar_t	g_pgbounce;
 extern	vmCvar_t	g_pggravity;
-extern	vmCvar_t	g_pgvampire;
 extern	vmCvar_t	g_pginf;
 extern	vmCvar_t	g_pgbouncemodifier;
 extern	vmCvar_t	g_pgknockback;
@@ -1422,7 +1420,6 @@ extern	vmCvar_t	g_bfgsdamage;
 extern	vmCvar_t	g_bfgdamage;
 extern	vmCvar_t	g_bfgbounce;
 extern	vmCvar_t	g_bfggravity;
-extern	vmCvar_t	g_bfgvampire;
 extern	vmCvar_t	g_bfginf;
 extern	vmCvar_t	g_bfgbouncemodifier;
 extern	vmCvar_t	g_bfgknockback;
@@ -1436,7 +1433,6 @@ extern	vmCvar_t	g_ngcount;
 extern	vmCvar_t	g_ngbounce;
 extern	vmCvar_t	g_nggravity;
 extern	vmCvar_t	g_ngrandom;
-extern	vmCvar_t	g_ngvampire;
 extern	vmCvar_t	g_nginf;
 extern	vmCvar_t	g_ngbouncemodifier;
 extern	vmCvar_t	g_ngknockback;
@@ -1448,14 +1444,12 @@ extern	vmCvar_t	g_plsradius;
 extern	vmCvar_t	g_plsdamage;
 extern	vmCvar_t	g_pldamage;
 extern	vmCvar_t	g_plgravity;
-extern	vmCvar_t	g_plvampire;
 extern	vmCvar_t	g_plinf;
 extern	vmCvar_t	g_plknockback;
 //cg set
 extern	vmCvar_t	g_cgdelay;
 extern	vmCvar_t	g_cgdamage;
 extern	vmCvar_t	g_cgspread;
-extern	vmCvar_t	g_cgvampire;
 extern	vmCvar_t	g_cginf;
 extern	vmCvar_t	g_cgknockback;
 //ft set
@@ -1467,7 +1461,6 @@ extern	vmCvar_t	g_ftdamage;
 extern	vmCvar_t	g_fttimeout;
 extern	vmCvar_t	g_ftbounce;
 extern	vmCvar_t	g_ftgravity;
-extern	vmCvar_t	g_ftvampire;
 extern	vmCvar_t	g_ftinf;
 extern	vmCvar_t	g_ftbouncemodifier;
 extern	vmCvar_t	g_ftknockback;
@@ -1480,7 +1473,6 @@ extern	vmCvar_t	g_amdamage;
 extern	vmCvar_t	g_amtimeout;
 extern	vmCvar_t	g_ambounce;
 extern	vmCvar_t	g_amgravity;
-extern	vmCvar_t	g_amvampire;
 extern	vmCvar_t	g_aminf;
 extern	vmCvar_t	g_ambouncemodifier;
 extern	vmCvar_t	g_amknockback;

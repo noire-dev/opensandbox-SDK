@@ -166,16 +166,15 @@ CG_General
 */
 static void CG_General( centity_t *cent ) {
 	refEntity_t			ent;
+	centity_t 			*weldroot;
 	refEntity_t			wheelfr;
 	refEntity_t			wheelfl;
 	refEntity_t			wheelrr;
 	refEntity_t			wheelrl;
 	char 				str[MAX_QPATH];
 	entityState_t		*s1;
-	int					i;
-	centity_t 			*player;
-	int		cl;
-	int		r, g, b;
+	int					cl;
+	int					r, g, b;
 
 	s1 = &cent->currentState;
 
@@ -199,29 +198,29 @@ static void CG_General( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 
 	if(!s1->modelindex2){
-	ent.hModel = cgs.gameModels[s1->modelindex];
+		ent.hModel = cgs.gameModels[s1->modelindex];
 	} else {
-	ent.hModel = cgs.gameModels[s1->modelindex2];	
+		ent.hModel = cgs.gameModels[s1->modelindex2];	
 	}
 	ent.reType = RT_MODEL;
 	if(!s1->modelindex2){
-	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString( CS_MODELS+s1->modelindex ), s1->generic2));
+		ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString( CS_MODELS+s1->modelindex ), s1->generic2));
 	} else {
-	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString( CS_MODELS+s1->modelindex2 ), s1->generic2));	
+		ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString( CS_MODELS+s1->modelindex2 ), s1->generic2));	
 	}
 	if(s1->generic2 > 0){
-	if(!s1->modelindex2){
-	ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString( CS_MODELS+s1->modelindex ), s1->generic2));
-	} else {
-	ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString( CS_MODELS+s1->modelindex2 ), s1->generic2));	
-	}
+		if(!s1->modelindex2){
+			ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString( CS_MODELS+s1->modelindex ), s1->generic2));
+		} else {
+			ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString( CS_MODELS+s1->modelindex2 ), s1->generic2));	
+		}
 	}					
 	if(s1->generic2 == 255){	
-	if(cg_hide255.integer){		
-	ent.customShader = cgs.media.ptexShader[0];
-	} else {
-	ent.customShader = cgs.media.ptexShader[1];
-	}
+		if(cg_hide255.integer){		
+			ent.customShader = cgs.media.ptexShader[0];
+		} else {
+			ent.customShader = cgs.media.ptexShader[1];
+		}
 	}
 
 	cl = cent->currentState.constantLight;
@@ -234,9 +233,9 @@ static void CG_General( centity_t *cent ) {
 	ent.shaderRGBA[3] = 255;
 	
 	if(!s1->modelindex2){
-	Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex));
+		Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex));
 	} else {
-	Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex2));
+		Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex2));
 	}
 
 	// player model
@@ -244,132 +243,184 @@ static void CG_General( centity_t *cent ) {
 		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 	}
 
+	//Weld sync
+	if(s1->otherEntityNum){
+		vec3_t forward, right, up;
+        vec3_t rotatedOffset, finalPos;
+		vec3_t start_origin;
+
+		weldroot = &cg_entities[s1->otherEntityNum];
+		if(weldroot->currentState.torsoAnim == OT_VEHICLE && weldroot->currentState.generic1 && weldroot->currentState.generic1-1 == cg.predictedPlayerState.clientNum) {  
+			VectorCopy(cg.predictedPlayerState.origin, start_origin);
+		} else {
+			VectorCopy(weldroot->lerpOrigin, start_origin);
+		}
+
+		//
+		// Origin
+		//
+
+		AngleVectors(weldroot->currentState.apos.trBase, forward, right, up);
+		rotatedOffset[0] = forward[0] * s1->origin2[0] + right[0] * s1->origin2[1] + up[0] * s1->origin2[2];
+		rotatedOffset[1] = forward[1] * s1->origin2[0] + right[1] * s1->origin2[1] + up[1] * s1->origin2[2];
+		rotatedOffset[2] = forward[2] * s1->origin2[0] + right[2] * s1->origin2[1] + up[2] * s1->origin2[2];
+
+		VectorAdd(start_origin, rotatedOffset, finalPos);
+		
+		VectorCopy( finalPos, ent.origin);
+		VectorCopy( finalPos, ent.oldorigin);
+	}
+
+	//Client-side rotating
+	if(s1->apos.trDelta[0] || s1->apos.trDelta[1] || s1->apos.trDelta[2]){
+		// Type
+		float rotationMultiplier = (s1->pos.trType != TR_GRAVITY_WATER) ? PHYS_ROTATING : PHYS_ROTATING * 0.5;
+		
+		// Rotate
+		cent->lerpAngles[0] -= s1->apos.trDelta[0] * rotationMultiplier;
+		cent->lerpAngles[1] -= s1->apos.trDelta[1] * rotationMultiplier;
+		cent->lerpAngles[0] -= s1->apos.trDelta[2] * rotationMultiplier * 0.20;
+		cent->lerpAngles[1] -= s1->apos.trDelta[2] * rotationMultiplier * 0.20;
+	}
+
 	// convert angles to axis
 	AnglesToAxis( cent->lerpAngles, ent.axis );
 
 	if(s1->scales[0] != 0.0){
-	VectorScale( ent.axis[0], s1->scales[0], ent.axis[0] );}
+		VectorScale( ent.axis[0], s1->scales[0], ent.axis[0] );
+	}
 	if(s1->scales[1] != 0.0){
-	VectorScale( ent.axis[1], s1->scales[1], ent.axis[1] );}
+		VectorScale( ent.axis[1], s1->scales[1], ent.axis[1] );
+	}
 	if(s1->scales[2] != 0.0){
-	VectorScale( ent.axis[2], s1->scales[2], ent.axis[2] );}
+		VectorScale( ent.axis[2], s1->scales[2], ent.axis[2] );
+	}
 
-	if(s1->torsoAnim == OT_VEHICLE){
-    if (s1->generic1 && s1->generic1-1 == cg.predictedPlayerState.clientNum) {  
+    if(s1->torsoAnim == OT_VEHICLE && s1->generic1 && s1->generic1-1 == cg.predictedPlayerState.clientNum) {  
 		if(VectorLength(cg.predictedPlayerState.velocity) > 5){
         VectorCopy(cg.predictedPlayerState.origin, ent.origin);
         VectorCopy(cg.predictedPlayerState.origin, ent.oldorigin);
         VelocityToAxis(cg.predictedPlayerState.velocity, ent.axis, 1.00f);
 		}
     }
-	}
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene (&ent);
 	
 	if(s1->torsoAnim == OT_VEHICLE){
-	
-	trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.carengine[s1->legsAnim] );
+		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.carengine[s1->legsAnim] );
+
+		wheelfr.frame = s1->frame;
+		wheelfr.oldframe = wheelfr.frame;
+		wheelfr.backlerp = 0;
+
+		VectorCopy( cent->lerpOrigin, wheelfr.origin);
+		VectorCopy( cent->lerpOrigin, wheelfr.oldorigin);
 		
-	wheelfr.frame = s1->frame;
-	wheelfr.oldframe = wheelfr.frame;
-	wheelfr.backlerp = 0;
-
-	VectorCopy( cent->lerpOrigin, wheelfr.origin);
-	VectorCopy( cent->lerpOrigin, wheelfr.oldorigin);
-	
-	wheelfr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
-	wheelfr.customSkin = ent.customSkin;
-	wheelfr.customShader = ent.customShader;
-	wheelfr.reType = RT_MODEL;
-	
-	AnglesToAxis( cent->lerpAngles, wheelfr.axis );
-	
-	if(s1->scales[0] != 0.0){
-	VectorScale( wheelfr.axis[0], s1->scales[0], wheelfr.axis[0] );}
-	if(s1->scales[1] != 0.0){
-	VectorScale( wheelfr.axis[1], s1->scales[1], wheelfr.axis[1] );}
-	if(s1->scales[2] != 0.0){
-	VectorScale( wheelfr.axis[2], s1->scales[2], wheelfr.axis[2] );}
-	
-	CG_PositionEntityOnTag( &wheelfr, &ent, ent.hModel, "tag_wheelfr");
+		wheelfr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
+		wheelfr.customSkin = ent.customSkin;
+		wheelfr.customShader = ent.customShader;
+		wheelfr.reType = RT_MODEL;
+		
+		AnglesToAxis( cent->lerpAngles, wheelfr.axis );
+		
+		if(s1->scales[0] != 0.0){
+			VectorScale( wheelfr.axis[0], s1->scales[0], wheelfr.axis[0] );
+		}
+		if(s1->scales[1] != 0.0){
+			VectorScale( wheelfr.axis[1], s1->scales[1], wheelfr.axis[1] );
+		}
+		if(s1->scales[2] != 0.0){
+			VectorScale( wheelfr.axis[2], s1->scales[2], wheelfr.axis[2] );
+		}
+		
+		CG_PositionEntityOnTag( &wheelfr, &ent, ent.hModel, "tag_wheelfr");
 
 
-	wheelfl.frame = s1->frame;
-	wheelfl.oldframe = wheelfl.frame;
-	wheelfl.backlerp = 0;
+		wheelfl.frame = s1->frame;
+		wheelfl.oldframe = wheelfl.frame;
+		wheelfl.backlerp = 0;
 
-	VectorCopy( cent->lerpOrigin, wheelfl.origin);
-	VectorCopy( cent->lerpOrigin, wheelfl.oldorigin);
-	
-	wheelfl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
-	wheelfl.customSkin = ent.customSkin;
-	wheelfl.customShader = ent.customShader;
-	wheelfl.reType = RT_MODEL;
-	
-	AnglesToAxis( cent->lerpAngles, wheelfl.axis );
-	
-	if(s1->scales[0] != 0.0){
-	VectorScale( wheelfl.axis[0], s1->scales[0], wheelfl.axis[0] );}
-	if(s1->scales[1] != 0.0){
-	VectorScale( wheelfl.axis[1], s1->scales[1], wheelfl.axis[1] );}
-	if(s1->scales[2] != 0.0){
-	VectorScale( wheelfl.axis[2], s1->scales[2], wheelfl.axis[2] );}
-	
-	CG_PositionEntityOnTag( &wheelfl, &ent, ent.hModel, "tag_wheelfl");
-	
+		VectorCopy( cent->lerpOrigin, wheelfl.origin);
+		VectorCopy( cent->lerpOrigin, wheelfl.oldorigin);
+		
+		wheelfl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
+		wheelfl.customSkin = ent.customSkin;
+		wheelfl.customShader = ent.customShader;
+		wheelfl.reType = RT_MODEL;
+		
+		AnglesToAxis( cent->lerpAngles, wheelfl.axis );
+		
+		if(s1->scales[0] != 0.0){
+			VectorScale( wheelfl.axis[0], s1->scales[0], wheelfl.axis[0] );
+		}
+		if(s1->scales[1] != 0.0){
+			VectorScale( wheelfl.axis[1], s1->scales[1], wheelfl.axis[1] );
+		}
+		if(s1->scales[2] != 0.0){
+			VectorScale( wheelfl.axis[2], s1->scales[2], wheelfl.axis[2] );
+		}
+		
+		CG_PositionEntityOnTag( &wheelfl, &ent, ent.hModel, "tag_wheelfl");
+		
 
-	wheelrr.frame = s1->frame;
-	wheelrr.oldframe = wheelrr.frame;
-	wheelrr.backlerp = 0;
+		wheelrr.frame = s1->frame;
+		wheelrr.oldframe = wheelrr.frame;
+		wheelrr.backlerp = 0;
 
-	VectorCopy( cent->lerpOrigin, wheelrr.origin);
-	VectorCopy( cent->lerpOrigin, wheelrr.oldorigin);
-	
-	wheelrr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
-	wheelrr.customSkin = ent.customSkin;
-	wheelrr.customShader = ent.customShader;
-	wheelrr.reType = RT_MODEL;
-	
-	AnglesToAxis( cent->lerpAngles, wheelrr.axis );
-	
-	if(s1->scales[0] != 0.0){
-	VectorScale( wheelrr.axis[0], s1->scales[0], wheelrr.axis[0] );}
-	if(s1->scales[1] != 0.0){
-	VectorScale( wheelrr.axis[1], s1->scales[1], wheelrr.axis[1] );}
-	if(s1->scales[2] != 0.0){
-	VectorScale( wheelrr.axis[2], s1->scales[2], wheelrr.axis[2] );}
-	
-	CG_PositionEntityOnTag( &wheelrr, &ent, ent.hModel, "tag_wheelrr");
+		VectorCopy( cent->lerpOrigin, wheelrr.origin);
+		VectorCopy( cent->lerpOrigin, wheelrr.oldorigin);
+		
+		wheelrr.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
+		wheelrr.customSkin = ent.customSkin;
+		wheelrr.customShader = ent.customShader;
+		wheelrr.reType = RT_MODEL;
+		
+		AnglesToAxis( cent->lerpAngles, wheelrr.axis );
+		
+		if(s1->scales[0] != 0.0){
+			VectorScale( wheelrr.axis[0], s1->scales[0], wheelrr.axis[0] );
+		}
+		if(s1->scales[1] != 0.0){
+			VectorScale( wheelrr.axis[1], s1->scales[1], wheelrr.axis[1] );
+		}
+		if(s1->scales[2] != 0.0){
+			VectorScale( wheelrr.axis[2], s1->scales[2], wheelrr.axis[2] );
+		}
+		
+		CG_PositionEntityOnTag( &wheelrr, &ent, ent.hModel, "tag_wheelrr");
 
 
-	wheelrl.frame = s1->frame;
-	wheelrl.oldframe = wheelrl.frame;
-	wheelrl.backlerp = 0;
+		wheelrl.frame = s1->frame;
+		wheelrl.oldframe = wheelrl.frame;
+		wheelrl.backlerp = 0;
 
-	VectorCopy( cent->lerpOrigin, wheelrl.origin);
-	VectorCopy( cent->lerpOrigin, wheelrl.oldorigin);
-	
-	wheelrl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
-	wheelrl.customSkin = ent.customSkin;
-	wheelrl.customShader = ent.customShader;
-	wheelrl.reType = RT_MODEL;
-	
-	AnglesToAxis( cent->lerpAngles, wheelrl.axis );
-	
-	if(s1->scales[0] != 0.0){
-	VectorScale( wheelrl.axis[0], s1->scales[0], wheelrl.axis[0] );}
-	if(s1->scales[1] != 0.0){
-	VectorScale( wheelrl.axis[1], s1->scales[1], wheelrl.axis[1] );}
-	if(s1->scales[2] != 0.0){
-	VectorScale( wheelrl.axis[2], s1->scales[2], wheelrl.axis[2] );}
-	
-	CG_PositionEntityOnTag( &wheelrl, &ent, ent.hModel, "tag_wheelrl");
-	
-	trap_R_AddRefEntityToScene (&wheelfr);
-	trap_R_AddRefEntityToScene (&wheelfl);
-	trap_R_AddRefEntityToScene (&wheelrr);
-	trap_R_AddRefEntityToScene (&wheelrl);
+		VectorCopy( cent->lerpOrigin, wheelrl.origin);
+		VectorCopy( cent->lerpOrigin, wheelrl.oldorigin);
+		
+		wheelrl.hModel = trap_R_RegisterModel_SourceTech( "models/v_wheel" );
+		wheelrl.customSkin = ent.customSkin;
+		wheelrl.customShader = ent.customShader;
+		wheelrl.reType = RT_MODEL;
+		
+		AnglesToAxis( cent->lerpAngles, wheelrl.axis );
+		
+		if(s1->scales[0] != 0.0){
+			VectorScale( wheelrl.axis[0], s1->scales[0], wheelrl.axis[0] );
+		}
+		if(s1->scales[1] != 0.0){
+			VectorScale( wheelrl.axis[1], s1->scales[1], wheelrl.axis[1] );
+		}
+		if(s1->scales[2] != 0.0){
+			VectorScale( wheelrl.axis[2], s1->scales[2], wheelrl.axis[2] );
+		}
+		
+		CG_PositionEntityOnTag( &wheelrl, &ent, ent.hModel, "tag_wheelrl");
+		
+		trap_R_AddRefEntityToScene (&wheelfr);
+		trap_R_AddRefEntityToScene (&wheelfl);
+		trap_R_AddRefEntityToScene (&wheelrr);
+		trap_R_AddRefEntityToScene (&wheelrl);
 	}
 }
 
@@ -579,7 +630,6 @@ static void CG_Missile( centity_t *cent ) {
 	refEntity_t			ent;
 	entityState_t		*s1;
 	const weaponInfo_t		*weapon;
-//	int	col;
 
 	s1 = &cent->currentState;
 	if ( s1->generic3 > WEAPONS_NUM ) {
@@ -647,13 +697,11 @@ static void CG_Missile( centity_t *cent ) {
 	ent.hModel = weapon->missileModel;
 	ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
 
-
 	if ( cent->currentState.generic3 == WP_PROX_LAUNCHER ) {
 		if (s1->generic1 == TEAM_BLUE) {
 			ent.hModel = cgs.media.blueProxMine;
 		}
 	}
-
 
 	// convert direction of travel into axis
 	if ( VectorNormalize2( s1->pos.trDelta, ent.axis[0] ) == 0 ) {
@@ -664,13 +712,9 @@ static void CG_Missile( centity_t *cent ) {
 	if ( s1->pos.trType != TR_STATIONARY ) {
 		RotateAroundDirection( ent.axis, cg.time / 4 );
 	} else {
-
 		if ( s1->generic3 == WP_PROX_LAUNCHER ) {
 			AnglesToAxis( cent->lerpAngles, ent.axis );
-		}
-		else
-
-		{
+		} else {
 			RotateAroundDirection( ent.axis, s1->time );
 		}
 	}
@@ -700,12 +744,10 @@ static void CG_Grapple( centity_t *cent ) {
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);
 
- // FIXME add grapple pull sound here..?
 	// add missile sound
 	if ( weapon->missileSound ) {
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, weapon->missileSound );
 	}
-
 
 	// Will draw cable if needed
 	CG_GrappleTrail ( cent, weapon );
@@ -947,15 +989,15 @@ static void ST_InterpolateEntityPosition( centity_t *cent ) {
 
 	// this will linearize a sine or parabolic curve, but it is important
 	// to not extrapolate player positions if more recent data is available
-	ST_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current, cent->currentState.origin2[O2_MASS] );
-	ST_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current, cent->currentState.angles2[A2_MASS] );
+	ST_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next, cent->currentState.angles2[A2_MASS] );
 
 	cent->lerpOrigin[0] = current[0] + f * ( next[0] - current[0] );
 	cent->lerpOrigin[1] = current[1] + f * ( next[1] - current[1] );
 	cent->lerpOrigin[2] = current[2] + f * ( next[2] - current[2] );
 
-	ST_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current, cent->currentState.origin2[O2_MASS] );
-	ST_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current, cent->currentState.angles2[A2_MASS] );
+	ST_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next, cent->currentState.angles2[A2_MASS] );
 
 	cent->lerpAngles[0] = LerpAngle( current[0], next[0], f );
 	cent->lerpAngles[1] = LerpAngle( current[1], next[1], f );
@@ -1151,15 +1193,15 @@ static void ST_CalcEntityLerpPositions( centity_t *cent ) {
 	}
 
 	// just use the current frame and evaluate as best we can
-	ST_EvaluateTrajectory( &cent->currentState.pos, cg.time + timeshift, cent->lerpOrigin, cent->currentState.origin2[O2_MASS] );
-	ST_EvaluateTrajectory( &cent->currentState.apos, cg.time + timeshift, cent->lerpAngles, cent->currentState.origin2[O2_MASS] );
+	ST_EvaluateTrajectory( &cent->currentState.pos, cg.time + timeshift, cent->lerpOrigin, cent->currentState.angles2[A2_MASS] );
+	ST_EvaluateTrajectory( &cent->currentState.apos, cg.time + timeshift, cent->lerpAngles, cent->currentState.angles2[A2_MASS] );
 
 	// if there's a time shift
 	if ( timeshift != 0 ) {
 		trace_t tr;
 		vec3_t lastOrigin;
 
-		ST_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin, cent->currentState.origin2[O2_MASS] );
+		ST_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin, cent->currentState.angles2[A2_MASS] );
 
 		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT );
 

@@ -158,6 +158,10 @@ char* 			entity_items[] = {
 	"team_CTF_redflag",
 	"team_CTF_blueflag",
 	"team_CTF_neutralflag",
+
+	//Sandbox things
+//	"sb.shooter",
+
 	//Editor things
 	"info_player_deathmatch",
 	"info_player_dd",
@@ -539,7 +543,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 	for (i = 0; i < 10; i++) {
 	    if (((menucommon_s*)ptr)->id == ID_CTAB + i) {
 	        UI_PopMenu();
-	        trap_Cmd_ExecuteText(EXEC_INSERT, va("nsgui %s.ns; set lastui nsgui %s.ns\n", get_cvar_char(va("sb_ctab_%i", i + 1)), get_cvar_char(va("sb_ctab_%i", i + 1))));
 	        break;
 	    }
 	}
@@ -578,7 +581,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		}
 		if(uis.sb_tab == STAB_ADDONS){
 		UI_PopMenu();
-		trap_Cmd_ExecuteText( EXEC_INSERT, va("nsgui %s.ns; set lastui nsgui %s.ns\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 		}
 		break;
 	
@@ -608,7 +610,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 		}
 		if(uis.sb_tab == STAB_ADDONS){
 		UI_PopMenu();
-		trap_Cmd_ExecuteText( EXEC_INSERT, va("nsgui %s.ns; set lastui nsgui %s.ns\n", s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue], s_sandboxmain.list.itemnames[s_sandboxmain.list.curvalue]) );
 		}
 		break;
 
@@ -870,7 +871,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.classlist.type				= 5;
 	s_sandboxmain.classlist.styles			= 2;
 	s_sandboxmain.classlist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
-	s_sandboxmain.classlist.string			= "";
+	s_sandboxmain.classlist.string			= "icons/classes";
 	s_sandboxmain.classlist.fontsize		= 1;
 	s_sandboxmain.classlist.corner			= 40;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;

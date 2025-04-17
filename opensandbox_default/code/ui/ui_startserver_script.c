@@ -241,7 +241,6 @@ static const char* saveparam_list[] = {
 	"gui_mgexplode",
 	"gui_mgsdamage",
 	"gui_mgsradius",
-	"gui_mgvampire",
 	"gui_mginf",
 	"gui_mgknockback",
 	// Дробовик
@@ -254,7 +253,6 @@ static const char* saveparam_list[] = {
 	"gui_sgsdamage",
 	"gui_sgsradius",
 	"gui_sgcount",
-	"gui_sgvampire",
 	"gui_sginf",
 	"gui_sgknockback",
 	// Гранаты
@@ -268,7 +266,6 @@ static const char* saveparam_list[] = {
 	"gui_glsradius",
 	"gui_glsdamage",
 	"gui_gldamage",
-	"gui_glvampire",
 	"gui_glinf",
 	"gui_glbouncemodifier",
 	"gui_glknockback",
@@ -285,7 +282,6 @@ static const char* saveparam_list[] = {
 	"gui_rlsradius",
 	"gui_rlsdamage",
 	"gui_rldamage",
-	"gui_rlvampire",
 	"gui_rlinf",
 	"gui_rlbouncemodifier",
 	"gui_rlknockback",
@@ -297,7 +293,6 @@ static const char* saveparam_list[] = {
 	"gui_lgrange",
 	"gui_lgdelay",
 	"gui_lgdamage",
-	"gui_lgvampire",
 	"gui_lgexplode",
 	"gui_lgsdamage",
 	"gui_lgsradius",
@@ -308,7 +303,6 @@ static const char* saveparam_list[] = {
 	"gui_rgweaponcount",
 	"gui_rgdelay",
 	"gui_rgdamage",
-	"gui_rgvampire",
 	"gui_rginf",
 	"gui_rgknockback",
 	// Плазмаган
@@ -322,7 +316,6 @@ static const char* saveparam_list[] = {
 	"gui_pgsradius",
 	"gui_pgsdamage",
 	"gui_pgdamage",
-	"gui_pgvampire",
 	"gui_pginf",
 	"gui_pgbouncemodifier",
 	"gui_pgknockback",
@@ -339,7 +332,6 @@ static const char* saveparam_list[] = {
 	"gui_bfgsradius",
 	"gui_bfgsdamage",
 	"gui_bfgdamage",
-	"gui_bfgvampire",
 	"gui_bfginf",
 	"gui_bfgbouncemodifier",
 	"gui_bfgknockback",
@@ -357,7 +349,6 @@ static const char* saveparam_list[] = {
 	"gui_ngspread",
 	"gui_ngdamage",
 	"gui_ngrandom",
-	"gui_ngvampire",
 	"gui_nginf",
 	"gui_ngbouncemodifier",
 	"gui_ngknockback",
@@ -373,7 +364,6 @@ static const char* saveparam_list[] = {
 	"gui_plsradius",
 	"gui_plsdamage",
 	"gui_pldamage",
-	"gui_plvampire",
 	"gui_plinf",
 	"gui_plknockback",
 	// Пулемёт
@@ -382,7 +372,6 @@ static const char* saveparam_list[] = {
 	"gui_cgdelay",
 	"gui_cgspread",
 	"gui_cgdamage",
-	"gui_cgvampire",
 	"gui_cginf",
 	"gui_cgknockback",
 	// Огнемёт
@@ -396,7 +385,6 @@ static const char* saveparam_list[] = {
 	"gui_ftsradius",
 	"gui_ftsdamage",
 	"gui_ftdamage",
-	"gui_ftvampire",
 	"gui_ftinf",
 	"gui_ftbouncemodifier",
 	"gui_ftknockback",
@@ -412,7 +400,6 @@ static const char* saveparam_list[] = {
 	"gui_amsradius",
 	"gui_amsdamage",
 	"gui_amdamage",
-	"gui_amvampire",
 	"gui_aminf",
 	"gui_ambouncemodifier",
 	"gui_amknockback",
@@ -856,7 +843,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_mgexplode %i\n", s_scriptdata.server.g_mgexplode));
 	AddScript(va("set g_mgsdamage %i\n", s_scriptdata.server.g_mgsdamage));
 	AddScript(va("set g_mgsradius %i\n", s_scriptdata.server.g_mgsradius));
-	AddScript(va("set g_mgvampire %i\n", s_scriptdata.server.g_mgvampire));
 	AddScript(va("set g_mginf %i\n", s_scriptdata.server.g_mginf));
 	AddScript(va("set g_mgknockback  \"%s\"\n", s_scriptdata.server.g_mgknockback));
 	// Дробовик
@@ -869,7 +855,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_sgsdamage %i\n", s_scriptdata.server.g_sgsdamage));
 	AddScript(va("set g_sgsradius %i\n", s_scriptdata.server.g_sgsradius));
 	AddScript(va("set g_sgcount %i\n", s_scriptdata.server.g_sgcount));
-	AddScript(va("set g_sgvampire %i\n", s_scriptdata.server.g_sgvampire));
 	AddScript(va("set g_sginf %i\n", s_scriptdata.server.g_sginf));
 	AddScript(va("set g_sgknockback  \"%s\"\n", s_scriptdata.server.g_sgknockback));
 	// Гранаты
@@ -883,7 +868,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_glsradius %i\n", s_scriptdata.server.g_glsradius));
 	AddScript(va("set g_glsdamage %i\n", s_scriptdata.server.g_glsdamage));
 	AddScript(va("set g_gldamage %i\n", s_scriptdata.server.g_gldamage));
-	AddScript(va("set g_glvampire %i\n", s_scriptdata.server.g_glvampire));
 	AddScript(va("set g_glinf %i\n", s_scriptdata.server.g_glinf));
 	AddScript(va("set g_glbouncemodifier  \"%s\"\n", s_scriptdata.server.g_glbouncemodifier));
 	AddScript(va("set g_glknockback  \"%s\"\n", s_scriptdata.server.g_glknockback));
@@ -900,7 +884,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_rlsradius %i\n", s_scriptdata.server.g_rlsradius));
 	AddScript(va("set g_rlsdamage %i\n", s_scriptdata.server.g_rlsdamage));
 	AddScript(va("set g_rldamage %i\n", s_scriptdata.server.g_rldamage));
-	AddScript(va("set g_rlvampire %i\n", s_scriptdata.server.g_rlvampire));
 	AddScript(va("set g_rlinf %i\n", s_scriptdata.server.g_rlinf));
 	AddScript(va("set g_rlbouncemodifier  \"%s\"\n", s_scriptdata.server.g_rlbouncemodifier));
 	AddScript(va("set g_rlknockback  \"%s\"\n", s_scriptdata.server.g_rlknockback));
@@ -912,7 +895,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_lgrange %i\n", s_scriptdata.server.g_lgrange));
 	AddScript(va("set g_lgdelay %i\n", s_scriptdata.server.g_lgdelay));
 	AddScript(va("set g_lgdamage %i\n", s_scriptdata.server.g_lgdamage));
-	AddScript(va("set g_lgvampire %i\n", s_scriptdata.server.g_lgvampire));
 	AddScript(va("set g_lgexplode %i\n", s_scriptdata.server.g_lgexplode));
 	AddScript(va("set g_lgsdamage %i\n", s_scriptdata.server.g_lgsdamage));
 	AddScript(va("set g_lgsradius %i\n", s_scriptdata.server.g_lgsradius));
@@ -923,7 +905,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_rgweaponcount %i\n", s_scriptdata.server.g_rgweaponcount));
 	AddScript(va("set g_rgdelay %i\n", s_scriptdata.server.g_rgdelay));
 	AddScript(va("set g_rgdamage %i\n", s_scriptdata.server.g_rgdamage));
-	AddScript(va("set g_rgvampire %i\n", s_scriptdata.server.g_rgvampire));
 	AddScript(va("set g_rginf %i\n", s_scriptdata.server.g_rginf));
 	AddScript(va("set g_rgknockback  \"%s\"\n", s_scriptdata.server.g_rgknockback));
 	// Плазмаган
@@ -937,7 +918,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_pgsradius %i\n", s_scriptdata.server.g_pgsradius));
 	AddScript(va("set g_pgsdamage %i\n", s_scriptdata.server.g_pgsdamage));
 	AddScript(va("set g_pgdamage %i\n", s_scriptdata.server.g_pgdamage));
-	AddScript(va("set g_pgvampire %i\n", s_scriptdata.server.g_pgvampire));
 	AddScript(va("set g_pginf %i\n", s_scriptdata.server.g_pginf));
 	AddScript(va("set g_pgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_pgbouncemodifier));
 	AddScript(va("set g_pgknockback  \"%s\"\n", s_scriptdata.server.g_pgknockback));
@@ -954,7 +934,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_bfgsradius %i\n", s_scriptdata.server.g_bfgsradius));
 	AddScript(va("set g_bfgsdamage %i\n", s_scriptdata.server.g_bfgsdamage));
 	AddScript(va("set g_bfgdamage %i\n", s_scriptdata.server.g_bfgdamage));
-	AddScript(va("set g_bfgvampire %i\n", s_scriptdata.server.g_bfgvampire));
 	AddScript(va("set g_bfginf %i\n", s_scriptdata.server.g_bfginf));
 	AddScript(va("set g_bfgbouncemodifier  \"%s\"\n", s_scriptdata.server.g_bfgbouncemodifier));
 	AddScript(va("set g_bfgknockback  \"%s\"\n", s_scriptdata.server.g_bfgknockback));
@@ -972,7 +951,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_ngspread %i\n", s_scriptdata.server.g_ngspread));
 	AddScript(va("set g_ngdamage %i\n", s_scriptdata.server.g_ngdamage));
 	AddScript(va("set g_ngrandom %i\n", s_scriptdata.server.g_ngrandom));
-	AddScript(va("set g_ngvampire %i\n", s_scriptdata.server.g_ngvampire));
 	AddScript(va("set g_nginf %i\n", s_scriptdata.server.g_nginf));
 	AddScript(va("set g_ngbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ngbouncemodifier));
 	AddScript(va("set g_ngknockback  \"%s\"\n", s_scriptdata.server.g_ngknockback));
@@ -988,7 +966,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_plsradius %i\n", s_scriptdata.server.g_plsradius));
 	AddScript(va("set g_plsdamage %i\n", s_scriptdata.server.g_plsdamage));
 	AddScript(va("set g_pldamage %i\n", s_scriptdata.server.g_pldamage));
-	AddScript(va("set g_plvampire %i\n", s_scriptdata.server.g_plvampire));
 	AddScript(va("set g_plinf %i\n", s_scriptdata.server.g_plinf));
 	AddScript(va("set g_plknockback  \"%s\"\n", s_scriptdata.server.g_plknockback));
 	// Пулемёт
@@ -997,7 +974,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_cgdelay %i\n", s_scriptdata.server.g_cgdelay));
 	AddScript(va("set g_cgspread %i\n", s_scriptdata.server.g_cgspread));
 	AddScript(va("set g_cgdamage %i\n", s_scriptdata.server.g_cgdamage));
-	AddScript(va("set g_cgvampire %i\n", s_scriptdata.server.g_cgvampire));
 	AddScript(va("set g_cginf %i\n", s_scriptdata.server.g_cginf));
 	AddScript(va("set g_cgknockback  \"%s\"\n", s_scriptdata.server.g_cgknockback));
 	// Огнемёт
@@ -1011,7 +987,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_ftsradius %i\n", s_scriptdata.server.g_ftsradius));
 	AddScript(va("set g_ftsdamage %i\n", s_scriptdata.server.g_ftsdamage));
 	AddScript(va("set g_ftdamage %i\n", s_scriptdata.server.g_ftdamage));
-	AddScript(va("set g_ftvampire %i\n", s_scriptdata.server.g_ftvampire));
 	AddScript(va("set g_ftinf %i\n", s_scriptdata.server.g_ftinf));
 	AddScript(va("set g_ftbouncemodifier  \"%s\"\n", s_scriptdata.server.g_ftbouncemodifier));
 	AddScript(va("set g_ftknockback  \"%s\"\n", s_scriptdata.server.g_ftknockback));
@@ -1027,7 +1002,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_amsradius %i\n", s_scriptdata.server.g_amsradius));
 	AddScript(va("set g_amsdamage %i\n", s_scriptdata.server.g_amsdamage));
 	AddScript(va("set g_amdamage %i\n", s_scriptdata.server.g_amdamage));
-	AddScript(va("set g_amvampire %i\n", s_scriptdata.server.g_amvampire));
 	AddScript(va("set g_aminf %i\n", s_scriptdata.server.g_aminf));
 	AddScript(va("set g_ambouncemodifier  \"%s\"\n", s_scriptdata.server.g_ambouncemodifier));
 	AddScript(va("set g_amknockback  \"%s\"\n", s_scriptdata.server.g_amknockback));

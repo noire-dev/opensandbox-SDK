@@ -585,47 +585,7 @@ void Cmd_Noclip_f( gentity_t *ent ) {
 
 /*
 ==================
-Cmd_LevelShot_f
-
-This is just to help generate the level pictures
-for the menus.  It goes to the intermission immediately
-and sends over a command to the client to resize the view,
-hide the scoreboard, and take a special screenshot
-==================
-*/
-void Cmd_LevelShot_f( gentity_t *ent ) {
-	if ( !CheatsOk( ent ) ) {
-		return;
-	}
-
-	// doesn't work in single player
-	if ( g_gametype.integer != 0 ) {
-		trap_SendServerCommand( ent-g_entities,
-			"print \"Must be in g_gametype 0 for levelshot\n\"" );
-		return;
-	}
-
-    if(!ent->client->pers.localClient)
-	{
-		trap_SendServerCommand(ent-g_entities,
-		"print \"The levelshot command must be executed by a local client\n\"");
-		return;
-	}
-
-
-	BeginIntermission();
-	trap_SendServerCommand( ent-g_entities, "clientLevelShot" );
-}
-
-
-/*
-==================
-Cmd_LevelShot_f
-
-This is just to help generate the level pictures
-for the menus.  It goes to the intermission immediately
-and sends over a command to the client to resize the view,
-hide the scoreboard, and take a special screenshot
+Cmd_TeamTask_f
 ==================
 */
 void Cmd_TeamTask_f( gentity_t *ent ) {
@@ -1264,7 +1224,6 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	char		arg20[64];
 	char		arg21[64];
 	char		arg22[64];
-	char		arg23[64];
 	
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 
@@ -1295,7 +1254,6 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	trap_Argv( 20, arg20, sizeof( arg20 ) );
 	trap_Argv( 21, arg21, sizeof( arg21 ) );
 	trap_Argv( 22, arg22, sizeof( arg22 ) );
-	trap_Argv( 23, arg23, sizeof( arg23 ) );
 	
 	//Set Aiming Directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
@@ -1313,7 +1271,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	tent->s.eventParm = 24; //eventParm is used to determine the number of particles
 	tent->s.generic1 = 500; //generic1 is used to determine the speed of the particles
 	tent->s.generic2 = 16; //generic2 is used to determine the size of the particles
-	G_BuildPropSL( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
+	G_BuildPropSL( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 	
 	return;
 	}
@@ -1362,6 +1320,8 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	}
 	G_AddBot(tent->clientname, tent->skill, "Blue", 0, tent->message, tent->s.number, tent->target, tent->type, tent );
 	
+	Undo_PushElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
+
 	trap_Cvar_Set("g_spSkill", arg04);
 	return;
 	}
@@ -1556,6 +1516,39 @@ if(ent->flashon == 1){
 	return;
 }
 	
+}
+
+/*
+==================
+Cmd_Undo_f
+Added for OpenSandbox.
+==================
+*/
+static void Cmd_Undo_f( gentity_t *ent ){
+	int id, type;
+
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){
+		return;
+	}
+
+	if (Undo_PopElement(ent, &id, &type)) {
+		if(!G_FindEntityForEntityNum(id) || id <= 0 || id >= MAX_GENTITIES){
+			Undo_RemoveElement(ent, id);
+			return;
+		}
+
+		if(type == UNDO_PROPSPAWN){
+			G_FreeEntity(G_FindEntityForEntityNum(id));
+			trap_SendServerCommand( ent-g_entities, "undoProp \n" );
+			return;
+		}
+
+		if(type == UNDO_NPCSPAWN){
+			DropClientSilently( id );	
+			trap_SendServerCommand( ent-g_entities, "undoNPC \n" );
+			return;
+		}
+	}
 }
 
 /*
@@ -1970,6 +1963,27 @@ void Cmd_UseTarget_f( gentity_t *ent ) {
 	}
 }
 
+/*
+=================
+Cmd_ActivateTarget_f
+=================
+*/
+void Cmd_ActivateTarget_f( gentity_t *ent ) {
+	char		*p;
+	char        arg[MAX_TOKEN_CHARS];
+
+    trap_Argv( 0, arg, sizeof( arg ) );
+
+    if( trap_Argc( ) < 2 )
+        return;
+
+    p = ConcatArgs( 1 );
+	
+	ent->target = va("activate_%i_%s", ent->s.clientNum, p);
+
+	G_PickAllTargets( ent, ent );
+}
+
 //KK-OAX This is the table that ClientCommands runs the console entry against.
 commands_t cmds[ ] =
 {
@@ -1990,7 +2004,6 @@ commands_t cmds[ ] =
   { "give", CMD_LIVING, Cmd_Give_f },
   { "god", CMD_CHEAT|CMD_LIVING, Cmd_God_f },
   { "notarget", CMD_CHEAT|CMD_LIVING, Cmd_Notarget_f },
-  { "levelshot", CMD_CHEAT, Cmd_LevelShot_f },
   { "setviewpos", CMD_CHEAT, Cmd_SetViewpos_f },
   { "noclip", CMD_LIVING, Cmd_Noclip_f },
 
@@ -2002,9 +2015,11 @@ commands_t cmds[ ] =
   { "altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f },		//hidden
   { "physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f },	//hidden
   { "flashlight", CMD_LIVING, Cmd_Flashlight_f },
+  { "undo", CMD_LIVING, Cmd_Undo_f },
   { "dropweapon", CMD_TEAM|CMD_LIVING, Cmd_DropWeapon_f },
   { "dropholdable", CMD_TEAM|CMD_LIVING, Cmd_DropHoldable_f },
   { "usetarget", CMD_LIVING, Cmd_UseTarget_f },
+  { "activate", CMD_LIVING, Cmd_ActivateTarget_f }, 
   { "where", 0, Cmd_Where_f },
 
   // game commands

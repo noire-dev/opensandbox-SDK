@@ -484,7 +484,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_mgexplode", "0" },
 { "gui_mgsdamage", "50" },
 { "gui_mgsradius", "70" },
-{ "gui_mgvampire", "0" },
 { "gui_mginf", "0" },
 { "gui_mgknockback", "1" },
 // Дробовик
@@ -497,7 +496,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_sgsdamage", "45" },
 { "gui_sgsradius", "35" },
 { "gui_sgcount", "11" },
-{ "gui_sgvampire", "0" },
 { "gui_sginf", "0" },
 { "gui_sgknockback", "1" },
 // Гранаты
@@ -511,7 +509,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_glsradius", "120" },
 { "gui_glsdamage", "100" },
 { "gui_gldamage", "100" },
-{ "gui_glvampire", "0" },
 { "gui_glinf", "0" },
 { "gui_glbouncemodifier", "0.65" },
 { "gui_glknockback", "1" },
@@ -528,7 +525,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_rlsradius", "120" },
 { "gui_rlsdamage", "100" },
 { "gui_rldamage", "100" },
-{ "gui_rlvampire", "0" },
 { "gui_rlinf", "0" },
 { "gui_rlbouncemodifier", "0.65" },
 { "gui_rlknockback", "1" },
@@ -540,7 +536,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_lgrange", "768" },
 { "gui_lgdelay", "50" },
 { "gui_lgdamage", "8" },
-{ "gui_lgvampire", "0" },
 { "gui_lgexplode", "0" },
 { "gui_lgsdamage", "70" },
 { "gui_lgsradius", "75" },
@@ -551,7 +546,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_rgweaponcount", "-1" },
 { "gui_rgdelay", "1500" },
 { "gui_rgdamage", "100" },
-{ "gui_rgvampire", "0" },
 { "gui_rginf", "0" },
 { "gui_rgknockback", "1" },
 // Плазмаган
@@ -565,7 +559,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_pgsradius", "20" },
 { "gui_pgsdamage", "15" },
 { "gui_pgdamage", "20" },
-{ "gui_pgvampire", "0" },
 { "gui_pginf", "0" },
 { "gui_pgbouncemodifier", "0.65" },
 { "gui_pgknockback", "1" },
@@ -582,7 +575,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_bfgsradius", "120" },
 { "gui_bfgsdamage", "100" },
 { "gui_bfgdamage", "100" },
-{ "gui_bfgvampire", "0" },
 { "gui_bfginf", "0" },
 { "gui_bfgbouncemodifier", "0.65" },
 { "gui_bfgknockback", "1" },
@@ -600,7 +592,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_ngspread", "500" },
 { "gui_ngdamage", "20" },
 { "gui_ngrandom", "1800" },
-{ "gui_ngvampire", "0" },
 { "gui_nginf", "0" },
 { "gui_ngbouncemodifier", "0.65" },
 { "gui_ngknockback", "1" },
@@ -616,7 +607,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_plsradius", "150" },
 { "gui_plsdamage", "100" },
 { "gui_pldamage", "0" },
-{ "gui_plvampire", "0" },
 { "gui_plinf", "0" },
 { "gui_plknockback", "1" },
 // Пулемёт
@@ -625,7 +615,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_cgdelay", "30" },
 { "gui_cgspread", "600" },
 { "gui_cgdamage", "7" },
-{ "gui_cgvampire", "0" },
 { "gui_cginf", "0" },
 { "gui_cgknockback", "1" },
 // Огнемёт
@@ -639,7 +628,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_ftsradius", "20" },
 { "gui_ftsdamage", "15" },
 { "gui_ftdamage", "20" },
-{ "gui_ftvampire", "0" },
 { "gui_ftinf", "0" },
 { "gui_ftbouncemodifier", "0.65" },
 { "gui_ftknockback", "1" },
@@ -655,7 +643,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_amsradius", "0" },
 { "gui_amsdamage", "0" },
 { "gui_amdamage", "6" },
-{ "gui_amvampire", "0" },
 { "gui_aminf", "0" },
 { "gui_ambouncemodifier", "0.65" },
 { "gui_amknockback", "1" },
@@ -3092,7 +3079,6 @@ s_scriptdata.server.g_mgspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, 
 s_scriptdata.server.g_mgexplode = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgexplode" );
 s_scriptdata.server.g_mgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgsdamage" );
 s_scriptdata.server.g_mgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgsradius" );
-s_scriptdata.server.g_mgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgvampire" );
 s_scriptdata.server.g_mginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mginf" );
 // Дробовик
 s_scriptdata.server.g_sgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgammocount" );
@@ -3104,7 +3090,6 @@ s_scriptdata.server.g_sgexplode = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_sgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgsdamage" );
 s_scriptdata.server.g_sgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgsradius" );
 s_scriptdata.server.g_sgcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgcount" );
-s_scriptdata.server.g_sgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgvampire" );
 s_scriptdata.server.g_sginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sginf" );
 
 // Гранаты
@@ -3118,7 +3103,6 @@ s_scriptdata.server.g_gltimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_glsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glsradius" );
 s_scriptdata.server.g_glsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glsdamage" );
 s_scriptdata.server.g_gldamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_gldamage" );
-s_scriptdata.server.g_glvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glvampire" );
 s_scriptdata.server.g_glinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glinf" );
 s_scriptdata.server.g_glhoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glhoming" );
 s_scriptdata.server.g_glguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glguided" );
@@ -3133,7 +3117,6 @@ s_scriptdata.server.g_rltimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_rlsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlsradius" );
 s_scriptdata.server.g_rlsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlsdamage" );
 s_scriptdata.server.g_rldamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rldamage" );
-s_scriptdata.server.g_rlvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlvampire" );
 s_scriptdata.server.g_rlinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlinf" );
 s_scriptdata.server.g_rlhoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlhoming" );
 s_scriptdata.server.g_rlguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlguided" );
@@ -3143,7 +3126,6 @@ s_scriptdata.server.g_lgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999
 s_scriptdata.server.g_lgrange = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgrange" );
 s_scriptdata.server.g_lgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgdelay" );
 s_scriptdata.server.g_lgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgdamage" );
-s_scriptdata.server.g_lgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgvampire" );
 s_scriptdata.server.g_lgexplode = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgexplode" );
 s_scriptdata.server.g_lgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgsdamage" );
 s_scriptdata.server.g_lgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgsradius" );
@@ -3153,7 +3135,6 @@ s_scriptdata.server.g_rgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 999999
 s_scriptdata.server.g_rgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgweaponcount" );
 s_scriptdata.server.g_rgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgdelay" );
 s_scriptdata.server.g_rgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgdamage" );
-s_scriptdata.server.g_rgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgvampire" );
 s_scriptdata.server.g_rginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rginf" );
 // Плазмаган
 s_scriptdata.server.g_pgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgammocount" );
@@ -3166,7 +3147,6 @@ s_scriptdata.server.g_pgtimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_pgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgsradius" );
 s_scriptdata.server.g_pgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgsdamage" );
 s_scriptdata.server.g_pgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgdamage" );
-s_scriptdata.server.g_pgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgvampire" );
 s_scriptdata.server.g_pginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pginf" );
 s_scriptdata.server.g_pghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pghoming" );
 s_scriptdata.server.g_pgguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgguided" );
@@ -3181,7 +3161,6 @@ s_scriptdata.server.g_bfgtimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999
 s_scriptdata.server.g_bfgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgsradius" );
 s_scriptdata.server.g_bfgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgsdamage" );
 s_scriptdata.server.g_bfgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgdamage" );
-s_scriptdata.server.g_bfgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgvampire" );
 s_scriptdata.server.g_bfginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfginf" );
 s_scriptdata.server.g_bfghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfghoming" );
 s_scriptdata.server.g_bfgguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgguided" );
@@ -3197,7 +3176,6 @@ s_scriptdata.server.g_ngcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, N
 s_scriptdata.server.g_ngspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngspread" );
 s_scriptdata.server.g_ngdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngdamage" );
 s_scriptdata.server.g_ngrandom = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngrandom" );
-s_scriptdata.server.g_ngvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngvampire" );
 s_scriptdata.server.g_nginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_nginf" );
 s_scriptdata.server.g_nghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_nghoming" );
 s_scriptdata.server.g_ngguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngguided" );
@@ -3211,7 +3189,6 @@ s_scriptdata.server.g_pltimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_plsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plsradius" );
 s_scriptdata.server.g_plsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plsdamage" );
 s_scriptdata.server.g_pldamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pldamage" );
-s_scriptdata.server.g_plvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plvampire" );
 s_scriptdata.server.g_plinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plinf" );
 // Пулемёт
 s_scriptdata.server.g_cgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgammocount" );
@@ -3219,7 +3196,6 @@ s_scriptdata.server.g_cgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999
 s_scriptdata.server.g_cgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgdelay" );
 s_scriptdata.server.g_cgspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgspread" );
 s_scriptdata.server.g_cgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgdamage" );
-s_scriptdata.server.g_cgvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgvampire" );
 s_scriptdata.server.g_cginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cginf" );
 // Огнемёт
 s_scriptdata.server.g_ftammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftammocount" );
@@ -3232,7 +3208,6 @@ s_scriptdata.server.g_fttimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_ftsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftsradius" );
 s_scriptdata.server.g_ftsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftsdamage" );
 s_scriptdata.server.g_ftdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftdamage" );
-s_scriptdata.server.g_ftvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftvampire" );
 s_scriptdata.server.g_ftinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftinf" );
 s_scriptdata.server.g_fthoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_fthoming" );
 s_scriptdata.server.g_ftguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftguided" );
@@ -3246,7 +3221,6 @@ s_scriptdata.server.g_amtimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_amsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amsradius" );
 s_scriptdata.server.g_amsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amsdamage" );
 s_scriptdata.server.g_amdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amdamage" );
-s_scriptdata.server.g_amvampire = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amvampire" );
 s_scriptdata.server.g_aminf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_aminf" );
 s_scriptdata.server.g_amhoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amhoming" );
 s_scriptdata.server.g_amguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amguided" );
@@ -3553,7 +3527,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_mgspread", s_scriptdata.server.g_mgspread);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgexplode", s_scriptdata.server.g_mgexplode);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgsdamage", s_scriptdata.server.g_mgsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgsradius", s_scriptdata.server.g_mgsradius);
-GUI_SetSkirmishCvarInt( NULL, "gui_mgvampire", s_scriptdata.server.g_mgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_mginf", s_scriptdata.server.g_mginf);
 GUI_SetSkirmishCvar( NULL, "gui_mgknockback", s_scriptdata.server.g_mgknockback);
 // Дробовик
@@ -3566,7 +3539,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_sgexplode", s_scriptdata.server.g_sgexplode);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgsdamage", s_scriptdata.server.g_sgsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgsradius", s_scriptdata.server.g_sgsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgcount", s_scriptdata.server.g_sgcount);
-GUI_SetSkirmishCvarInt( NULL, "gui_sgvampire", s_scriptdata.server.g_sgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_sginf", s_scriptdata.server.g_sginf);
 GUI_SetSkirmishCvar( NULL, "gui_sgknockback", s_scriptdata.server.g_sgknockback);
 // Гранаты
@@ -3580,7 +3552,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_gltimeout", s_scriptdata.server.g_gltimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_glsradius", s_scriptdata.server.g_glsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_glsdamage", s_scriptdata.server.g_glsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_gldamage", s_scriptdata.server.g_gldamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_glvampire", s_scriptdata.server.g_glvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_glinf", s_scriptdata.server.g_glinf);
 GUI_SetSkirmishCvar( NULL, "gui_glbouncemodifier", s_scriptdata.server.g_glbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_glknockback", s_scriptdata.server.g_glknockback);
@@ -3597,7 +3568,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_rltimeout", s_scriptdata.server.g_rltimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlsradius", s_scriptdata.server.g_rlsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlsdamage", s_scriptdata.server.g_rlsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_rldamage", s_scriptdata.server.g_rldamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_rlvampire", s_scriptdata.server.g_rlvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlinf", s_scriptdata.server.g_rlinf);
 GUI_SetSkirmishCvar( NULL, "gui_rlbouncemodifier", s_scriptdata.server.g_rlbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_rlknockback", s_scriptdata.server.g_rlknockback);
@@ -3609,7 +3579,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_lgweaponcount", s_scriptdata.server.g_lgweapo
 GUI_SetSkirmishCvarInt( NULL, "gui_lgrange", s_scriptdata.server.g_lgrange);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgdelay", s_scriptdata.server.g_lgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgdamage", s_scriptdata.server.g_lgdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_lgvampire", s_scriptdata.server.g_lgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgexplode", s_scriptdata.server.g_lgexplode);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgsdamage", s_scriptdata.server.g_lgsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgsradius", s_scriptdata.server.g_lgsradius);
@@ -3620,7 +3589,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_rgammocount", s_scriptdata.server.g_rgammocou
 GUI_SetSkirmishCvarInt( NULL, "gui_rgweaponcount", s_scriptdata.server.g_rgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_rgdelay", s_scriptdata.server.g_rgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_rgdamage", s_scriptdata.server.g_rgdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_rgvampire", s_scriptdata.server.g_rgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_rginf", s_scriptdata.server.g_rginf);
 GUI_SetSkirmishCvar( NULL, "gui_rgknockback", s_scriptdata.server.g_rgknockback);
 // Плазмаган
@@ -3634,7 +3602,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_pgtimeout", s_scriptdata.server.g_pgtimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgsradius", s_scriptdata.server.g_pgsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgsdamage", s_scriptdata.server.g_pgsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgdamage", s_scriptdata.server.g_pgdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_pgvampire", s_scriptdata.server.g_pgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_pginf", s_scriptdata.server.g_pginf);
 GUI_SetSkirmishCvar( NULL, "gui_pgbouncemodifier", s_scriptdata.server.g_pgbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_pgknockback", s_scriptdata.server.g_pgknockback);
@@ -3651,7 +3618,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_bfgtimeout", s_scriptdata.server.g_bfgtimeout
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgsradius", s_scriptdata.server.g_bfgsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgsdamage", s_scriptdata.server.g_bfgsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgdamage", s_scriptdata.server.g_bfgdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_bfgvampire", s_scriptdata.server.g_bfgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfginf", s_scriptdata.server.g_bfginf);
 GUI_SetSkirmishCvar( NULL, "gui_bfgbouncemodifier", s_scriptdata.server.g_bfgbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_bfgknockback", s_scriptdata.server.g_bfgknockback);
@@ -3669,7 +3635,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_ngcount", s_scriptdata.server.g_ngcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngspread", s_scriptdata.server.g_ngspread);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngdamage", s_scriptdata.server.g_ngdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngrandom", s_scriptdata.server.g_ngrandom);
-GUI_SetSkirmishCvarInt( NULL, "gui_ngvampire", s_scriptdata.server.g_ngvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_nginf", s_scriptdata.server.g_nginf);
 GUI_SetSkirmishCvar( NULL, "gui_ngbouncemodifier", s_scriptdata.server.g_ngbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_ngknockback", s_scriptdata.server.g_ngknockback);
@@ -3685,7 +3650,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_pltimeout", s_scriptdata.server.g_pltimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_plsradius", s_scriptdata.server.g_plsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_plsdamage", s_scriptdata.server.g_plsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_pldamage", s_scriptdata.server.g_pldamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_plvampire", s_scriptdata.server.g_plvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_plinf", s_scriptdata.server.g_plinf);
 GUI_SetSkirmishCvar( NULL, "gui_plknockback", s_scriptdata.server.g_plknockback);
 // Пулемёт
@@ -3694,7 +3658,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_cgweaponcount", s_scriptdata.server.g_cgweapo
 GUI_SetSkirmishCvarInt( NULL, "gui_cgdelay", s_scriptdata.server.g_cgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_cgspread", s_scriptdata.server.g_cgspread);
 GUI_SetSkirmishCvarInt( NULL, "gui_cgdamage", s_scriptdata.server.g_cgdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_cgvampire", s_scriptdata.server.g_cgvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_cginf", s_scriptdata.server.g_cginf);
 GUI_SetSkirmishCvar( NULL, "gui_cgknockback", s_scriptdata.server.g_cgknockback);
 // Огнемёт
@@ -3708,7 +3671,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_fttimeout", s_scriptdata.server.g_fttimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftsradius", s_scriptdata.server.g_ftsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftsdamage", s_scriptdata.server.g_ftsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftdamage", s_scriptdata.server.g_ftdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_ftvampire", s_scriptdata.server.g_ftvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftinf", s_scriptdata.server.g_ftinf);
 GUI_SetSkirmishCvar( NULL, "gui_ftbouncemodifier", s_scriptdata.server.g_ftbouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_ftknockback", s_scriptdata.server.g_ftknockback);
@@ -3724,7 +3686,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_amtimeout", s_scriptdata.server.g_amtimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_amsradius", s_scriptdata.server.g_amsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_amsdamage", s_scriptdata.server.g_amsdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_amdamage", s_scriptdata.server.g_amdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_amvampire", s_scriptdata.server.g_amvampire);
 GUI_SetSkirmishCvarInt( NULL, "gui_aminf", s_scriptdata.server.g_aminf);
 GUI_SetSkirmishCvar( NULL, "gui_ambouncemodifier", s_scriptdata.server.g_ambouncemodifier);
 GUI_SetSkirmishCvar( NULL, "gui_amknockback", s_scriptdata.server.g_amknockback);

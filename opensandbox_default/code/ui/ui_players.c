@@ -102,8 +102,8 @@ typedef struct {
 
 
 typedef struct {
-	sfxHandle_t	flash[WEAPONS_NUM+1][4];
-	sfxHandle_t	firing[WEAPONS_NUM+1];
+	sfxHandle_t	flash[WEAPONS_NUM][4];
+	sfxHandle_t	firing[WEAPONS_NUM];
 } sfxWeapon_t;
 
 

@@ -56,7 +56,7 @@ void	CG_InitMarkPolys( void ) {
 	cg_activeMarkPolys.nextMark = &cg_activeMarkPolys;
 	cg_activeMarkPolys.prevMark = &cg_activeMarkPolys;
 	cg_freeMarkPolys = cg_markPolys;
-	for ( i = 0 ; i < MAX_MARK_POLYS - 1 ; i++ ) {
+	for ( i = 0 ; i < cg_effectsLimit.integer*0.25 - 1 ; i++ ) {
 		cg_markPolys[i].nextMark = &cg_markPolys[i+1];
 	}
 }
@@ -127,8 +127,11 @@ temporary marks will not be stored or randomly oriented, but immediately
 passed to the renderer.
 =================
 */
-#define	MAX_MARK_FRAGMENTS	512
-#define	MAX_MARK_POINTS		2048
+#define	MAX_MARK_FRAGMENTS	MAX_VERTS_ON_POLY
+#define	MAX_MARK_POINTS		MAX_MARK_POLYS
+markFragment_t	ST_markFragments[MAX_MARK_FRAGMENTS], *mf;
+vec3_t			ST_markPoints[MAX_MARK_POINTS];
+polyVert_t		ST_verts[MAX_VERTS_ON_POLY];
 
 void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 				   float orientation, float red, float green, float blue, float alpha,
@@ -139,8 +142,6 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	byte			colors[4];
 	int				i, j;
 	int				numFragments;
-	markFragment_t	markFragments[MAX_MARK_FRAGMENTS], *mf;
-	vec3_t			markPoints[MAX_MARK_POINTS];
 	vec3_t			projection;
 
 	if ( !cg_addMarks.integer ) {
@@ -170,17 +171,16 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	// get the fragments
 	VectorScale( dir, -20, projection );
 	numFragments = trap_CM_MarkFragments( 4, (void *)originalPoints,
-					projection, MAX_MARK_POINTS, markPoints[0],
-					MAX_MARK_FRAGMENTS, markFragments );
+					projection, MAX_MARK_POINTS, ST_markPoints[0],
+					MAX_MARK_FRAGMENTS, ST_markFragments );
 
 	colors[0] = red * 255;
 	colors[1] = green * 255;
 	colors[2] = blue * 255;
 	colors[3] = alpha * 255;
 
-	for ( i = 0, mf = markFragments ; i < numFragments ; i++, mf++ ) {
+	for ( i = 0, mf = ST_markFragments ; i < numFragments ; i++, mf++ ) {
 		polyVert_t	*v;
-		polyVert_t	verts[MAX_VERTS_ON_POLY];
 		markPoly_t	*mark;
 
 		// we have an upper limit on the complexity of polygons
@@ -188,10 +188,10 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		if ( mf->numPoints > MAX_VERTS_ON_POLY ) {
 			mf->numPoints = MAX_VERTS_ON_POLY;
 		}
-		for ( j = 0, v = verts ; j < mf->numPoints ; j++, v++ ) {
+		for ( j = 0, v = ST_verts ; j < mf->numPoints ; j++, v++ ) {
 			vec3_t		delta;
 
-			VectorCopy( markPoints[mf->firstPoint + j], v->xyz );
+			VectorCopy( ST_markPoints[mf->firstPoint + j], v->xyz );
 
 			VectorSubtract( v->xyz, origin, delta );
 			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * texCoordScale;
@@ -201,7 +201,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 
 		// if it is a temporary (shadow) mark, add it immediately and forget about it
 		if ( temporary ) {
-			trap_R_AddPolyToScene( markShader, mf->numPoints, verts );
+			trap_R_AddPolyToScene( markShader, mf->numPoints, ST_verts );
 			continue;
 		}
 
@@ -215,7 +215,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		mark->color[1] = green;
 		mark->color[2] = blue;
 		mark->color[3] = alpha;
-		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[0] ) );
+		memcpy( mark->verts, ST_verts, mf->numPoints * sizeof( ST_verts[0] ) );
 		markTotal++;
 	}
 }
@@ -226,7 +226,6 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 CG_AddMarks
 ===============
 */
-#define	MARK_TOTAL_TIME		20000
 #define	MARK_FADE_TIME		1000
 
 void CG_AddMarks( void ) {
@@ -247,7 +246,7 @@ void CG_AddMarks( void ) {
 		next = mp->nextMark;
 
 		// see if it is time to completely remove it
-		if ( cg.time > mp->time + MARK_TOTAL_TIME ) {
+		if ( cg.time > mp->time + cg_effectsTime.integer * 1000 ) {
 			CG_FreeMarkPoly( mp );
 			continue;
 		}
@@ -271,7 +270,7 @@ void CG_AddMarks( void ) {
 		}
 
 		// fade all marks out with time
-		t = mp->time + MARK_TOTAL_TIME - cg.time;
+		t = mp->time + cg_effectsTime.integer * 1000 - cg.time;
 		if ( t < MARK_FADE_TIME ) {
 			fade = 255 * t / MARK_FADE_TIME;
 			if ( mp->alphaFade ) {

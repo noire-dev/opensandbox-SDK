@@ -836,13 +836,13 @@ int splitArgs(const char* args, char result[MAX_ARGS][MAX_ARG_LENGTH]) {
 
 ArgValue ns_args[MAX_ARGS]; // Массив аргументов типа VarValue
 
-#ifdef QAGAME
+#ifdef GAME
 #include "ns_main_game.c"   //Подстановка сюда кода для qagame.qvm API
 #endif
 #ifdef CGAME
 #include "ns_main_cgame.c"   //Подстановка сюда кода для cgame.qvm API
 #endif
-#ifdef Q3_UI
+#ifdef UI
 #include "ns_main_ui.c"   //Подстановка сюда кода для ui.qvm API
 #endif
 

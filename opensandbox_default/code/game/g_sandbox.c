@@ -25,6 +25,12 @@
 //
 // g_sandbox.c
 
+#include "g_local.h"
+
+//
+// Lists
+//
+
 char* 		sandbox_class_allowed[] = {		//classes allowed in Sandbox
 	"",
 	"none",
@@ -100,6 +106,8 @@ char* 		sandbox_class_allowed[] = {		//classes allowed in Sandbox
 	"team_CTF_redflag",
 	"team_CTF_blueflag",
 	"team_CTF_neutralflag",
+
+	"sb.shooter",
 	0
 };
 
@@ -129,7 +137,84 @@ char* 		standard_class_spawn[] = {		//classes spawned without sandbox settings
 	0
 };
 
-#include "g_local.h"
+//
+// Sandbox Entities
+//
+
+void SB_Shooter_Use( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
+	vec3_t		dir;
+	float		deg;
+	vec3_t		up, right;
+	gentity_t	*bolt;
+
+	if ( !ent->r.linked )
+		return;
+
+	G_SetMovedir( ent->s.angles, ent->movedir );
+	VectorCopy( ent->movedir, dir );
+
+	switch ( ent->s.weapon ) {
+	case WP_GRENADE_LAUNCHER:
+		fire_grenade( ent, ent->s.origin, dir );
+		break;
+	case WP_ROCKET_LAUNCHER:
+		fire_rocket( ent, ent->s.origin, dir );
+		break;
+	case WP_PLASMAGUN:
+		fire_plasma( ent, ent->s.origin, dir );
+		break;
+	case WP_BFG:
+		fire_bfg( ent, ent->s.origin, dir );
+		break;
+	case WP_NAILGUN:
+		fire_nail( ent, ent->s.origin, dir, right, up );
+		break;
+	case WP_PROX_LAUNCHER:
+		fire_prox( ent, ent->s.origin, dir );
+		break;
+	case WP_FLAMETHROWER:
+		fire_flame( ent, ent->s.origin, dir );
+		break;
+	case WP_ANTIMATTER:
+		fire_antimatter( ent, ent->s.origin, dir );
+		break;
+	case WP_KNOCKER:
+		fire_knocker( ent, ent->s.origin, dir, right, up );
+		break;
+	case WP_PROPGUN:
+		fire_propgun( ent, ent->s.origin, dir, right, up );
+		break;
+	case WP_NUKE:
+		fire_nuke( ent, ent->s.origin, dir, right, up );
+		break;
+	}
+
+	G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
+}
+
+void SB_Shooter( gentity_t *ent ) {
+	ent->use = SB_Shooter_Use;
+	ent->s.weapon = ent->spawnflags;
+
+	if(!ent->spawnflags){
+		G_FreeEntity(ent);
+		return;
+	}
+
+	RegisterItem( BG_FindItemForWeapon( ent->spawnflags ) );
+
+	trap_LinkEntity( ent );
+}
+
+spawn_t	sandbox_spawns_table[] = {
+	{"sb.shooter", SB_Shooter},
+
+	{NULL, 0}
+};
+
+//
+// Props
+//
 
 void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
 	if(self->vehicle || self->objectType == OT_TNT){ //VEHICLE-SYSTEM: vehicle's explode for all
@@ -219,13 +304,6 @@ void setModel(gentity_t *ent, char *modelName) {
 	}
 }
 
-/*QUAKED func_prop (0 .5 .8) ?
-A bmodel that just sits there, doing nothing.  Can be used for conditional walls and models.
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-*/
-
 void SP_func_prop( gentity_t *ent ) {
 	spawn_t	*s;
 	gitem_t	*item;
@@ -241,15 +319,24 @@ void SP_func_prop( gentity_t *ent ) {
 	//Type
 	ent->sandboxObject = OBJ_SANDBOX;
 
-	// Entity spawn
+	// Classic entity spawn
 	for ( s=spawns_table ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
-			CopyAlloc(ent->sb_class, ent->classname);
 			s->spawn(ent);
 
 			spawn_entity = qtrue;
 		}
 	}
+
+	// Sandbox entity spawn
+	for ( s=sandbox_spawns_table ; s->name ; s++ ) {
+		if ( !strcmp(s->name, ent->classname) ) {
+			s->spawn(ent);
+
+			spawn_entity = qtrue;
+		}
+	}
+
 	//Light
 	ent->s.constantLight = ent->sb_red | ( ent->sb_green << 8 ) | ( ent->sb_blue << 16 ) | ( ent->sb_radius << 24 );
 
@@ -260,7 +347,7 @@ void SP_func_prop( gentity_t *ent ) {
 	if(ent->vehicle <= 0 || spawn_entity){
 		VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
 		VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
-		} else {
+	} else {
 		VectorSet( ent->r.mins, -25, -25, -15);
 		VectorSet( ent->r.maxs, 25, 25, 15 );
 	}
@@ -270,18 +357,6 @@ void SP_func_prop( gentity_t *ent ) {
 
 	//Damage
 	ent->takedamage = qtrue;
-	if(ent->sb_takedamage == 0){
-		ent->takedamage = qfalse;
-	}
-	if(ent->sb_takedamage == 1){
-		ent->takedamage = qtrue;
-	}
-	if(ent->sb_takedamage2 == 0){
-		ent->takedamage2 = qfalse;
-	}
-	if(ent->sb_takedamage2 == 1){
-		ent->takedamage2 = qtrue;
-	}
 
 	//Physics
 	if(ent->sb_phys == PHYS_STATIC){ ent->s.pos.trType = TR_STATIONARY; }
@@ -294,7 +369,7 @@ void SP_func_prop( gentity_t *ent ) {
 	ent->s.generic2 = ent->sb_material;
 
 	//Mass
-	ent->s.origin2[O2_MASS] = ent->sb_gravity;
+	ent->s.angles2[A2_MASS] = ent->sb_gravity;
 
 	//Type
 	ent->s.torsoAnim = ent->objectType;
@@ -323,7 +398,7 @@ void SP_func_prop( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22, char *arg23) {
+void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22) {
 	gentity_t	*ent;
 	vec3_t		position;
 	spawn_t		*s;
@@ -344,6 +419,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	// Create entity
 	ent = G_Spawn();
 	CopyAlloc(ent->classname, arg03);
+	CopyAlloc(ent->sb_class, arg03);
 	for ( i = 0; standard_class_spawn[i] != 0; i++ ) {		//Classlist for standard spawn
 		if ( !strcmp(ent->classname, standard_class_spawn[i]) ) {
 			extended_spawn = qfalse;
@@ -368,6 +444,8 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		return;
 	}
 
+	Undo_PushElement(player, ent->s.number, UNDO_PROPSPAWN);
+
 	//Origin
 	VectorCopy( position, ent->s.origin );
 	VectorCopy( position, ent->s.pos.trBase );
@@ -378,23 +456,13 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	ent->spawnflags = atoi(arg07);
 
 	if(extended_spawn){
-		//Type
-		ent->objectType = OT_BASIC;
-		ent->s.torsoAnim = OT_BASIC;
-
 		//Damage
-		ent->sb_takedamage = 1;
-		ent->sb_takedamage2 = 1;
-		if(atoi(arg12) == -1){
-			ent->sb_takedamage2 = 0;
-		}
-		ent->takedamage = ent->sb_takedamage;
-		ent->takedamage2 = ent->sb_takedamage2;
+		ent->takedamage = qtrue;
 
 		//Owner
 		if(atoi(arg04) == 1){
-		ent->owner = player->s.clientNum + 1;
-		ent->ownername = player->client->pers.netname;
+			ent->owner = player->s.clientNum + 1;
+			ent->ownername = player->client->pers.netname;
 		}
 
 		//Material
@@ -403,10 +471,10 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 		//Physics
 		if(atoi(arg09) == 0){
-		ent->s.pos.trType = TR_STATIONARY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_STATIC;
+			ent->s.pos.trType = TR_STATIONARY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg21); ent->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg09) == 1){
-		ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg22); ent->sb_phys = PHYS_DYNAMIC;
+			ent->s.pos.trType = TR_GRAVITY; ent->s.pos.trTime = level.time; ent->physicsBounce = atof(arg21); ent->sb_phys = PHYS_DYNAMIC;
 		}
 
 		//Collision
@@ -435,11 +503,15 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		//Type
 		ent->objectType = atoi(arg20);
 		ent->s.torsoAnim = atoi(arg20);
-		ent->vehicle = atoi(arg21);
-
+		if(atoi(arg20) == OT_VEHICLE){
+			ent->vehicle = 1;
+		} else {
+			ent->vehicle = 0;
+		}
+		
 		//Mass
-		ent->sb_gravity = atof(arg23);
-		ent->s.origin2[O2_MASS] = atof(arg23);
+		ent->sb_gravity = atof(arg22);
+		ent->s.angles2[A2_MASS] = atof(arg22);
 	}
 
 	// Item spawn
@@ -454,10 +526,22 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		}
 	}
 
-	// Entity spawn
+	// Classic entity spawn
 	for ( s=spawns_table ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
-			CopyAlloc(ent->sb_class, ent->classname);
+			s->spawn(ent);
+
+			spawn_entity = qtrue;
+
+			if(!extended_spawn){		//Standard spawn
+				return;
+			}
+		}
+	}
+
+	// Sandbox entity spawn
+	for ( s=sandbox_spawns_table ; s->name ; s++ ) {
+		if ( !strcmp(s->name, ent->classname) ) {
 			s->spawn(ent);
 
 			spawn_entity = qtrue;
@@ -484,13 +568,13 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 	//Setting collsion
 	if(atoi(arg21) <= 0 || spawn_entity){
-	ent->sb_coltype = atoi(arg05);
-	VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
-	VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
+		ent->sb_coltype = atoi(arg05);
+		VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
+		VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
 	} else {
-	ent->sb_coltype = atoi(arg05);
-	VectorSet( ent->r.mins, -25, -25, -15);
-	VectorSet( ent->r.maxs, 25, 25, 15 );
+		ent->sb_coltype = atoi(arg05);
+		VectorSet( ent->r.mins, -25, -25, -15);
+		VectorSet( ent->r.maxs, 25, 25, 15 );
 	}
 
 	//Load model
@@ -507,15 +591,15 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){
 		return; 
 	}
+
 	if(!g_allowtoolgun.integer){
 		return; 
 	}
+
 	if(entity->client && !entity->singlebot){
 		return;
 	}
-	if(!attacker->client){
-		return;
-	}
+
 	if(!G_PlayerIsOwner(attacker, entity)) return;
 
 	if(attacker->tool_id == TL_CREATE){
@@ -542,7 +626,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(attacker->tool_id == TL_PHYSICS){
 		if(atoi(arg19) == 0){
 			entity->s.pos.trType = TR_STATIONARY; entity->sb_phys = PHYS_STATIC;
-			Phys_Disable(entity);
+			Phys_Disable(entity, entity->s.pos.trBase);
 		}
 		if(atoi(arg19) == 1){
 			entity->s.pos.trType = TR_GRAVITY; entity->s.pos.trTime = level.time; entity->sb_phys = PHYS_DYNAMIC;
@@ -721,4 +805,83 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		}
 	}
 
+	if(attacker->tool_id == TL_BIND){
+		if(atoi(arg19) == 0){
+			CopyAlloc(entity->targetname, va("activate_%i_%s", attacker->s.clientNum, arg01));
+		}
+		if(atoi(arg19) == 1){
+			entity->targetname = NULL;
+		}
+	}
+
+}
+
+void Undo_ShiftStack(gentity_t *ent) {
+	int i;
+    if (!ent || !ent->client) return;
+
+    for (i = MAX_UNDO_STACK - 1; i > 0; i--) {
+        ent->client->undoStack[i] = ent->client->undoStack[i - 1];
+    }
+}
+
+void Undo_PushElement(gentity_t *ent, int id, int type) {
+    if (!ent || !ent->client) return;
+
+    Undo_ShiftStack(ent);
+
+    ent->client->undoStack[0].id = id;
+    ent->client->undoStack[0].type = type;
+}
+
+qboolean Undo_PopElement(gentity_t *ent, int *id, int *type) {
+	int i;
+    if (!ent || !ent->client) return qfalse;
+
+    if (ent->client->undoStack[0].id == 0 && ent->client->undoStack[0].type == 0) {
+        return qfalse;
+    }
+
+    *id = ent->client->undoStack[0].id;
+    *type = ent->client->undoStack[0].type;
+
+    for (i = 0; i < MAX_UNDO_STACK - 1; i++) {
+        ent->client->undoStack[i] = ent->client->undoStack[i + 1];
+    }
+
+    ent->client->undoStack[MAX_UNDO_STACK - 1].id = 0;
+    ent->client->undoStack[MAX_UNDO_STACK - 1].type = 0;
+
+    return qtrue;
+}
+
+void Undo_RemoveElement(gentity_t *ent, int target_id) {
+	int i, j;
+    if (!ent || !ent->client) return;
+
+
+    for (i = 0; i < MAX_UNDO_STACK; i++) {
+        if (ent->client->undoStack[i].id == target_id) {
+
+            for (j = i; j < MAX_UNDO_STACK - 1; j++) {
+                ent->client->undoStack[j] = ent->client->undoStack[j + 1];
+            }
+
+            ent->client->undoStack[MAX_UNDO_STACK - 1].id = 0;
+            ent->client->undoStack[MAX_UNDO_STACK - 1].type = 0;
+            break;
+        }
+    }
+}
+
+void Undo_RemoveElementFromAll(int target_id) {
+    int k;
+    
+    for (k = 0; k < MAX_CLIENTS; k++) {
+        gentity_t *client_ent = &g_entities[k];
+
+        if (client_ent && client_ent->client) {
+            Undo_RemoveElement(client_ent, target_id);
+        }
+    }
 }

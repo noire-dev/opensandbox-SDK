@@ -20,7 +20,7 @@ cp linux_scripts/game.q3asm linux/build/
 LIBRARY=""
 INCLUDE=""
 
-cc="./lcc -w -DQAGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I../../../code/game -I../../../code/qcommon $1"
+cc="./lcc -w -DGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I../../../code/game -I../../../code/qcommon $1"
 
 cd linux/build/game
 
@@ -166,7 +166,7 @@ cp linux_scripts/ui.q3asm linux/build/
 LIBRARY=""
 INCLUDE=""
 
-cc="./lcc -w -DQ3_UI -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
+cc="./lcc -w -DUI -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/ui
 

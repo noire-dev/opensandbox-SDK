@@ -1050,7 +1050,11 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 
 	if(ent->swep_id == WP_TOOLGUN){
 		//Classname
-		strcpy(info_entity[0], traceEnt->classname);
+		if (!strcmp(traceEnt->sb_class, "none") || !strcmp(traceEnt->sb_class, "")) {
+			strcpy(info_entity[0], traceEnt->classname);
+		} else {
+			strcpy(info_entity[0], traceEnt->sb_class);
+		}
 
 		//Model
 		if(traceEnt->s.eType == ET_PLAYER){	
@@ -1259,8 +1263,6 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }
-
-
 
 /*
 ===============

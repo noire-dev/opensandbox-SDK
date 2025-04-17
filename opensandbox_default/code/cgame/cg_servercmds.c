@@ -713,8 +713,28 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	if ( !strcmp( cmd, "notify_n" ) ) {
-		CG_AddNotify(CG_Argv(1), 1);
+	if ( !strcmp( cmd, "notify" ) ) {
+		CG_AddNotify(CG_Argv(1), NOTIFY_INFO);
+		return;
+	}
+
+	if ( !strcmp( cmd, "undoProp" ) ) {
+		if(cl_language.integer == 0){
+			CG_AddNotify ("Undone \"Prop\"", NOTIFY_UNDO);
+		}
+		if(cl_language.integer == 1){
+			CG_AddNotify ("Отменён элемент \"Prop\"", NOTIFY_UNDO);
+		}
+		return;
+	}
+
+	if ( !strcmp( cmd, "undoNPC" ) ) {
+		if(cl_language.integer == 0){
+			CG_AddNotify ("Undone \"NPC\"", NOTIFY_UNDO);
+		}
+		if(cl_language.integer == 1){
+			CG_AddNotify ("Отменён элемент \"NPC\"", NOTIFY_UNDO);
+		}
 		return;
 	}
 
@@ -847,13 +867,6 @@ static void CG_ServerCommand( void ) {
 			trap_R_RemapShader(shader1, shader2, shader3);
 		}
 
-		return;
-	}
-
-	// clientLevelShot is sent before taking a special screenshot for
-	// the menu system during development
-	if ( !strcmp( cmd, "clientLevelShot" ) ) {
-		cg.levelShot = qtrue;
 		return;
 	}
 

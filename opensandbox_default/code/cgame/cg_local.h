@@ -63,14 +63,14 @@
 
 #define MAX_NOTIFICATIONS 8
 #define NOTIFICATION_DURATION 10000
-#define NOTIFICATION_FADE_TIME 750
+#define NOTIFICATION_FADE_TIME 500
 
 #define	PULSE_SCALE			1.15			// amount to scale up the icons when activating
 
 #define	MAX_STEP_CHANGE		32
 
-#define	MAX_VERTS_ON_POLY	128
-#define	MAX_MARK_POLYS		4096
+#define	MAX_VERTS_ON_POLY	128*1
+#define	MAX_MARK_POLYS		1024*16
 
 #define STAT_MINUS			10	// num frame for '-' stats digit
 
@@ -96,6 +96,9 @@
 
 #define DEFAULT_REDTEAM_NAME		"Vim supporters"
 #define DEFAULT_BLUETEAM_NAME		"Emacs supporters"
+
+#define NOTIFY_INFO		1
+#define NOTIFY_UNDO		2
 
 typedef enum {
 	FOOTSTEP_NORMAL,
@@ -524,7 +527,6 @@ typedef struct {
 	int			clientNum;
 
 	qboolean	demoPlayback;
-	qboolean	levelShot;			// taking a level menu screenshot
 	int			deferredPlayerLoading;
 	qboolean	loading;			// don't defer players at initial startup
 	qboolean	intermissionStarted;	// don't play voice rewards, because game will end shortly
@@ -581,8 +583,8 @@ typedef struct {
 	// input state sent to server
 	int			weaponSelect;
 	
-	int			swep_listcl[WEAPONS_NUM+1];
-	int			swep_spawncl[WEAPONS_NUM+1];		//stores spawn weapons
+	int			swep_listcl[WEAPONS_NUM];
+	int			swep_spawncl[WEAPONS_NUM];		//stores spawn weapons
 
 	float		savedSens;						//physgun
 
@@ -1015,6 +1017,7 @@ typedef struct {
 	// Icons OpenSandbox
 	qhandle_t	errIcon;
 	qhandle_t	notifyIcon;
+	qhandle_t	undoIcon;
 
 	// sp intermission scoreboard
 	sfxHandle_t	scoreShow;
@@ -1086,6 +1089,7 @@ typedef struct {
 	sfxHandle_t jumpPadSound;
 
 	sfxHandle_t notifySound;
+	sfxHandle_t undoSound;
 
 // LEILEI
 	sfxHandle_t	lspl1Sound;
@@ -1328,7 +1332,7 @@ typedef struct {
 extern	cgs_t			cgs;
 extern	cg_t			cg;
 extern	centity_t		cg_entities[MAX_GENTITIES];
-extern	weaponInfo_t	cg_weapons[WEAPONS_NUM+1];
+extern	weaponInfo_t	cg_weapons[WEAPONS_NUM];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
 
@@ -1388,6 +1392,10 @@ extern	int 	mod_skyColorA;
 
 extern	vmCvar_t 	g_gametype;
 
+extern	vmCvar_t	cg_effectsTime;
+extern	vmCvar_t	cg_effectsLimit;
+extern	vmCvar_t	cg_effectsGibs;
+
 extern	vmCvar_t 	cl_propsmallsizescale;
 extern	vmCvar_t 	cl_propheight;
 extern	vmCvar_t 	cl_propspacewidth;
@@ -1401,7 +1409,6 @@ extern	vmCvar_t 	cl_giantcharheight;
 
 extern	vmCvar_t	cg_gibjump;
 extern	vmCvar_t	cg_gibvelocity;
-extern	vmCvar_t	cg_gibmodifier;
 
 extern	vmCvar_t	cg_zoomtime;
 extern	vmCvar_t	cg_itemscaletime;
@@ -1463,11 +1470,9 @@ extern  vmCvar_t    cg_plightblue;
 extern  vmCvar_t    cg_plightradius;
 extern  vmCvar_t 	cg_leiChibi;
 extern  vmCvar_t    cl_screenoffset;
-extern  vmCvar_t    ui_backcolors;
 extern	vmCvar_t	legsskin;
 extern	vmCvar_t	team_legsskin;
 extern	vmCvar_t	cg_itemstyle;
-extern	vmCvar_t	cg_gibtime;
 extern	vmCvar_t		cg_centertime;
 extern	vmCvar_t		cg_drawsubtitles;
 extern	vmCvar_t		cg_drawSyncMessage;

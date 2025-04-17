@@ -1663,8 +1663,6 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->sandboxObject = OBJ_SANDBOX;
 	bolt->objectType = OT_BASIC;
 	bolt->s.torsoAnim = OT_BASIC;
-	bolt->sb_takedamage = 1;
-	bolt->sb_takedamage2 = 0;
 	bolt->classname = "func_prop";
 	bolt->s.generic2 = random_mt;
 	bolt->sb_material = random_mt;
@@ -1677,11 +1675,10 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->s.scales[2] = 0.5;
 	bolt->vehicle = 0;
 	bolt->sb_gravity = 1.00;
-	bolt->s.origin2[O2_MASS] = 1.00;
+	bolt->s.angles2[A2_MASS] = 1.00;
 	bolt->sb_coltype = 25;
 	bolt->lastPlayer = self;
-	bolt->takedamage = bolt->sb_takedamage;
-	bolt->takedamage2 = bolt->sb_takedamage2;
+	bolt->takedamage = qtrue;
 	VectorMA(start, 64, forward, start);
 	VectorSet( bolt->r.mins, -12.5, -12.5, -12.5);
 	VectorSet( bolt->r.maxs, 12.5, 12.5, 12.5 );	
@@ -1730,8 +1727,6 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->sandboxObject = OBJ_SANDBOX;
 	bolt->objectType = OT_NUKE;
 	bolt->s.torsoAnim = OT_NUKE;
-	bolt->sb_takedamage = 1;
-	bolt->sb_takedamage2 = 1;
 	bolt->classname = "misc_hihihiha";
 	bolt->s.generic2 = 0;
 	bolt->sb_material = 0;
@@ -1744,12 +1739,11 @@ gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->s.scales[2] = 4.0;
 	bolt->vehicle = 0;
 	bolt->sb_gravity = 1.00;
-	bolt->s.origin2[O2_MASS] = 1.00;
+	bolt->s.angles2[A2_MASS] = 1.00;
 	bolt->sb_coltype = 25;
 	bolt->lastPlayer = self;
 	bolt->die = G_DieProp;
-	bolt->takedamage = bolt->sb_takedamage;
-	bolt->takedamage2 = bolt->sb_takedamage2;
+	bolt->takedamage = qtrue;
 	VectorMA(start, 64, forward, start);
 	VectorSet( bolt->r.mins, -12.5, -12.5, -12.5);
 	VectorSet( bolt->r.maxs, 12.5, 12.5, 12.5 );	

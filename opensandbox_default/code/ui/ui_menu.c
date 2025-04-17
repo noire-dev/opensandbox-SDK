@@ -34,22 +34,24 @@ MAIN MENU
 
 #define MODLOADER				"menu/gamemode_default"
 
-#define ID_SINGLEPLAYER			10
-#define ID_MULTIPLAYER			11
-#define ID_SETUP				12
-#define ID_DEMOS				13
-#define ID_MODS					14
-#define ID_EXIT					15
-#define ID_SKIRMISH             16
-#define ID_PLAYERNAME			17
-#define ID_GAMEMODEP			18
-#define ID_LINK					19
-#define ID_MODLOADER			20
-#define ID_TOGGLEADDONS			21
-#define ID_MODLIST				22
+#define ID_RESUME				10
+#define ID_SINGLEPLAYER			11
+#define ID_MULTIPLAYER			12
+#define ID_SETUP				13
+#define ID_DEMOS				14
+#define ID_MODS					15
+#define ID_EXIT					16
+#define ID_DISCONNECT			17
+#define ID_SKIRMISH             18
+#define ID_PLAYERNAME			19
+#define ID_GAMEMODEP			20
+#define ID_LINK					21
+#define ID_MODLOADER			22
+#define ID_TOGGLEADDONS			23
+#define ID_MODLIST				24
 
-#define LINK				"menu/officialsite"
-#define M_ADDONSTOGGLE		"menu/addonstoggle"
+#define LINK					"menu/officialsite"
+#define M_ADDONSTOGGLE			"menu/addonstoggle"
 #define MAIN_MENU_VERTICAL_SPACING		34
 
 #define MAIN_MENU_CENTER 200
@@ -59,16 +61,18 @@ vec4_t color_translucent	= {1.0f, 1.0f, 1.0f, 0.2f};
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		gamemodep;
+	menutext_s		workshop;
     menubitmap_s	modloader;
 	menubitmap_s	link;
 	menubitmap_s	addonstoggle;
+	menutext_s		resume;
 	menutext_s		singleplayer;
 	menutext_s      skirmish;
 	menutext_s		multiplayer;
 	menutext_s		setup;
 	menutext_s		demos;
 	menutext_s		mods;
+	menutext_s		disconnect;
 	menutext_s		exit;
 	menutext_s		name;
 	menuobject_s	modlist;
@@ -149,6 +153,10 @@ void Main_MenuEvent (void* ptr, int event) {
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) {
+	case ID_RESUME:
+		UI_ForceMenuOff();
+		break;
+
 	case ID_SINGLEPLAYER:
         if(ui_singlemode.integer){
             trap_Cmd_ExecuteText( EXEC_APPEND, "ns_openscript_ui new_game.ns \n" );
@@ -202,6 +210,10 @@ void Main_MenuEvent (void* ptr, int event) {
 	if(trap_Cvar_VariableValue("os_macos")){
 		trap_System("open https://opensandbox.neocities.org/");
 	}
+		break;
+
+	case ID_DISCONNECT:
+		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		break;
 
 	case ID_EXIT:
@@ -259,11 +271,11 @@ static void Main_MenuDraw( void ) {
 	else
 	{
 	   if(uis.addonsdraw){
-	   UI_DrawRoundedRect(317+uis.wideoffset, 30, 1000000, 20*SMALLCHAR_HEIGHT*1.25, 10, modlistcolor);
+	   UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*SMALLCHAR_HEIGHT*1.25)+4, 10, modlistcolor);
 	   }
 	   // standard menu drawing
 	   Menu_Draw( &s_main.menu );
-	   UI_DrawString( 610 + uis.wideoffset, 2, "2025.03.29", UI_RIGHT|UI_SMALLFONT, color );
+	   UI_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color );
    }
 }
 
@@ -346,7 +358,19 @@ void UI_MainMenu( void ) {
 	s_main.addonstoggle.width				= 24;
 	s_main.addonstoggle.height				= 12;
 
-	y = 152;
+	y = 145;
+	s_main.resume.generic.type				= MTYPE_PTEXT;
+	s_main.resume.generic.flags				= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
+	s_main.resume.generic.id				= ID_RESUME;
+	s_main.resume.generic.callback			= Main_MenuEvent;
+	s_main.resume.generic.x					= 64 - uis.wideoffset;
+	s_main.resume.generic.y					= y;
+	s_main.resume.color						= color_white;
+	s_main.resume.style		    			= UI_LEFT|UI_SMALLFONT;
+
+	if(uis.onmap){
+		y += 35;
+	}
 	s_main.singleplayer.generic.type		= MTYPE_PTEXT;
 	s_main.singleplayer.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
 	s_main.singleplayer.generic.id			= ID_SINGLEPLAYER;
@@ -367,14 +391,14 @@ void UI_MainMenu( void ) {
 	s_main.multiplayer.style		    	= UI_LEFT|UI_SMALLFONT;
 	
 	y += 35;
-	s_main.gamemodep.generic.type		= MTYPE_PTEXT;
-	s_main.gamemodep.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.gamemodep.generic.id			= ID_GAMEMODEP;
-	s_main.gamemodep.generic.callback	= Main_MenuEvent;
-	s_main.gamemodep.generic.x			= 64 - uis.wideoffset;
-	s_main.gamemodep.generic.y			= y;
-	s_main.gamemodep.color				= color_white;
-	s_main.gamemodep.style		    	= UI_LEFT|UI_SMALLFONT;
+	s_main.workshop.generic.type		= MTYPE_PTEXT;
+	s_main.workshop.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
+	s_main.workshop.generic.id			= ID_GAMEMODEP;
+	s_main.workshop.generic.callback	= Main_MenuEvent;
+	s_main.workshop.generic.x			= 64 - uis.wideoffset;
+	s_main.workshop.generic.y			= y;
+	s_main.workshop.color				= color_white;
+	s_main.workshop.style		    	= UI_LEFT|UI_SMALLFONT;
 
 	y += 19;
 	s_main.name.generic.type			= MTYPE_PTEXT;
@@ -417,6 +441,18 @@ void UI_MainMenu( void ) {
 	s_main.setup.style		    	= UI_LEFT|UI_SMALLFONT;
 	
 	y += 36;
+	s_main.disconnect.generic.type		= MTYPE_PTEXT;
+	s_main.disconnect.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
+	s_main.disconnect.generic.id		= ID_DISCONNECT;
+	s_main.disconnect.generic.callback	= Main_MenuEvent;
+	s_main.disconnect.generic.x			= 64 - uis.wideoffset;
+	s_main.disconnect.generic.y			= y;
+	s_main.disconnect.color				= color_white;
+	s_main.disconnect.style		    	= UI_LEFT|UI_SMALLFONT;
+
+	if(uis.onmap){
+		y += 19;
+	}
 	s_main.exit.generic.type		= MTYPE_PTEXT;
 	s_main.exit.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
 	s_main.exit.generic.id			= ID_EXIT;
@@ -429,31 +465,35 @@ void UI_MainMenu( void ) {
 	y += MAIN_MENU_VERTICAL_SPACING;
 	
 	if(cl_language.integer == 0){
+	s_main.resume.string				= "Resume game";
     s_main.singleplayer.string			= "Start New Game";
 	if(!ui_singlemode.integer){
     s_main.multiplayer.string			= "Find Multiplayer Game";
 	} else {
 	s_main.multiplayer.string			= "Load Singleplayer Game";
 	}
-    s_main.gamemodep.string			    = "Workshop";
+    s_main.workshop.string			    = "Workshop";
 	s_main.name.string					= "Profile";
     s_main.mods.string			   	 	= "Mods";
     s_main.demos.string			    	= "Demos";
     s_main.setup.string			    	= "Options";
+    s_main.disconnect.string			= "Disconnect";
     s_main.exit.string			    	= "Quit";
 	}
 	if(cl_language.integer == 1){
+	s_main.resume.string				= "Продолжить игру";
     s_main.singleplayer.string			= "Начать новую игру";
 	if(!ui_singlemode.integer){
     s_main.multiplayer.string			= "Найти сетевую игру";
 	} else {
 	s_main.multiplayer.string			= "Загрузить сохр игру";
 	}
-    s_main.gamemodep.string			    = "Дополнения";
+    s_main.workshop.string			    = "Дополнения";
 	s_main.name.string					= "Профиль";
     s_main.mods.string			    	= "Моды";
     s_main.demos.string			    	= "Повторы";
     s_main.setup.string			    	= "Настройки";
+    s_main.disconnect.string			= "Отключиться";
     s_main.exit.string			    	= "Выйти";
 	}
 
@@ -471,10 +511,10 @@ void UI_MainMenu( void ) {
 
 	s_main.modloader.generic.name		= MODLOADER;
 	s_main.modloader.focuspic			= MODLOADER;
-	s_main.link.generic.name		= LINK;
-	s_main.link.focuspic			= LINK;	
-	s_main.addonstoggle.generic.name		= M_ADDONSTOGGLE;
-	s_main.addonstoggle.focuspic			= M_ADDONSTOGGLE;
+	s_main.link.generic.name			= LINK;
+	s_main.link.focuspic				= LINK;	
+	s_main.addonstoggle.generic.name	= M_ADDONSTOGGLE;
+	s_main.addonstoggle.focuspic		= M_ADDONSTOGGLE;
 
 	s_main.modlist.generic.type			= MTYPE_UIOBJECT;
 	s_main.modlist.type					= 5;
@@ -512,19 +552,25 @@ void UI_MainMenu( void ) {
 		configname += len + 1;
 	}
 
-	Menu_AddItem( &s_main.menu,	&s_main.gamemodep );
-	Menu_AddItem( &s_main.menu,	&s_main.modloader );
-	Menu_AddItem( &s_main.menu,	&s_main.link );
+	if(!uis.onmap){
+		Menu_AddItem( &s_main.menu,	&s_main.modloader );
+		Menu_AddItem( &s_main.menu,	&s_main.link );
+	}
 	Menu_AddItem( &s_main.menu,	&s_main.addonstoggle );
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
+	Menu_AddItem( &s_main.menu,	&s_main.workshop );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
 	Menu_AddItem( &s_main.menu,	&s_main.demos );
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
 	Menu_AddItem( &s_main.menu,	&s_main.name );
 	if(uis.addonsdraw){
-	Menu_AddItem( &s_main.menu, &s_main.modlist );
+		Menu_AddItem( &s_main.menu, &s_main.modlist );
+	}
+	if(uis.onmap){
+		Menu_AddItem( &s_main.menu,	&s_main.resume );
+		Menu_AddItem( &s_main.menu,	&s_main.disconnect );
 	}
 
 	trap_Key_SetCatcher( KEYCATCH_UI );

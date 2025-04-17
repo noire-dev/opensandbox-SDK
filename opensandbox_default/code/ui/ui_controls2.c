@@ -117,7 +117,7 @@ typedef struct
 #define ID_CHAT2		37
 #define ID_CHAT3		38
 #define ID_CHAT4		39
-#define ID_BOTMENU		40
+#define ID_ACTIONMENU	40
 #define ID_FLASHLIGHT	41
 #define ID_THIRDPERSON	42
 #define ID_DWEAPON		43
@@ -125,19 +125,18 @@ typedef struct
 #define ID_CLRUN		45
 #define ID_SANDBOX		46
 #define ID_SANDBOXMODE	47
-#define ID_NEWSANDBOX	48
-#define ID_EXITVEHICLE	49
+#define ID_EXITVEHICLE	48
 
 
 // all others
-#define ID_FREELOOK		50
-#define ID_INVERTMOUSE	51
-#define ID_ALWAYSRUN	52
-#define ID_MOUSESPEED	53
-#define ID_JOYENABLE	54
-#define ID_JOYTHRESHOLD	55
-#define ID_SMOOTHMOUSE	56
-#define ID_MOUSESTYLE	57
+#define ID_FREELOOK		49
+#define ID_INVERTMOUSE	50
+#define ID_ALWAYSRUN	51
+#define ID_MOUSESPEED	52
+#define ID_JOYENABLE	53
+#define ID_JOYTHRESHOLD	54
+#define ID_SMOOTHMOUSE	55
+#define ID_MOUSESTYLE	56
 
 
 typedef struct
@@ -201,7 +200,7 @@ typedef struct
 	menuaction_s		chat2;
 	menuaction_s		chat3;
 	menuaction_s		chat4;
-	menuaction_s		botmenu;
+	menuaction_s		actionmenu;
 	menuaction_s		flashlight;
 	menuaction_s		thirdperson;
 	menuaction_s		dweapon;
@@ -209,7 +208,6 @@ typedef struct
 	menuaction_s		clrun;
 	menuaction_s		sandbox;
 	menuaction_s		sandboxmode;
-	menuaction_s		newsandbox;
 	menuaction_s		exitvehicle;
 	menuradiobutton_s	joyenable;
 	menuslider_s		joythreshold;
@@ -268,7 +266,7 @@ static bind_t g_bindings[] =
 	{"messagemode2", 	"chat - team",		ID_CHAT2,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode3", 	"chat - target",	ID_CHAT3,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode4", 	"chat - attacker",	ID_CHAT4,		ANIM_CHAT,		-1,				-1,		-1, -1},
-	{"ui_teamorders", 	"bot command menu",	ID_BOTMENU,		ANIM_CHAT,		-1,				-1,		-1, -1},
+	{"ui_ingame", 	"action menu",	ID_ACTIONMENU,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"flashlight", 	"flashlight",	ID_FLASHLIGHT,		ANIM_CHAT,		'f',				-1,		-1, -1},
 	{"toggle cg_thirdperson", 	"third person toggle",	ID_THIRDPERSON,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"dropweapon", 	"drop weapon",	ID_DWEAPON,		ANIM_CHAT,		-1,				-1,		-1, -1},
@@ -276,7 +274,6 @@ static bind_t g_bindings[] =
 	{"toggle cl_run", 	"run/walk toggle",	ID_CLRUN,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"ui_sandbox", 	"sandbox menu",	ID_SANDBOX,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"vstr uitoolmode", 	"sandbox tool mode",	ID_SANDBOXMODE,		ANIM_CHAT,		-1,				-1,		-1, -1},
-	{"vstr lastui", 	"addon menu",	ID_NEWSANDBOX,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"exitvehicle", 	"exit vehicle",	ID_EXITVEHICLE,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
@@ -323,7 +320,7 @@ static bind_t g_bindingsrus[] =
 	{"messagemode2", 	"чат - команда",		ID_CHAT2,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode3", 	"чат - цель",	ID_CHAT3,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode4", 	"чат - аттакующий",	ID_CHAT4,		ANIM_CHAT,		-1,				-1,		-1, -1},
-	{"ui_teamorders", 	"меню командных приказов",	ID_BOTMENU,		ANIM_CHAT,		-1,				-1,		-1, -1},
+	{"ui_ingame", 	"меню действий",	ID_ACTIONMENU,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"flashlight", 	"фонарик / фары",	ID_FLASHLIGHT,		ANIM_CHAT,		'f',				-1,		-1, -1},
 	{"toggle cg_thirdperson", 	"переключение третьего лица",	ID_THIRDPERSON,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"dropweapon", 	"выбросить оружие",	ID_DWEAPON,		ANIM_CHAT,		-1,				-1,		-1, -1},
@@ -331,7 +328,6 @@ static bind_t g_bindingsrus[] =
 	{"toggle cl_run", 	"бег/ходьба переключение",	ID_CLRUN,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"ui_sandbox", 	"спавн меню",	ID_SANDBOX,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"vstr uitoolmode", 	"песочница режим инструмента",	ID_SANDBOXMODE,		ANIM_CHAT,		-1,				-1,		-1, -1},
-	{"vstr lastui", 	"меню аддонов",	ID_NEWSANDBOX,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"exitvehicle", 	"выйти из транспорта",	ID_EXITVEHICLE,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
@@ -413,7 +409,7 @@ static menucommon_s *g_misc_controls[] = {
 	(menucommon_s *)&s_controls.chat2,
 	(menucommon_s *)&s_controls.chat3,
 	(menucommon_s *)&s_controls.chat4,
-	(menucommon_s *)&s_controls.botmenu,
+	(menucommon_s *)&s_controls.actionmenu,
 	(menucommon_s *)&s_controls.flashlight,
 	(menucommon_s *)&s_controls.thirdperson,
 	(menucommon_s *)&s_controls.dweapon,
@@ -421,7 +417,6 @@ static menucommon_s *g_misc_controls[] = {
 	(menucommon_s *)&s_controls.clrun,
 	(menucommon_s *)&s_controls.sandbox,
 	(menucommon_s *)&s_controls.sandboxmode,
-	(menucommon_s *)&s_controls.newsandbox,
 	(menucommon_s *)&s_controls.exitvehicle,
 	NULL,
 };
@@ -1647,11 +1642,11 @@ static void Controls_MenuInit( void )
 	s_controls.chat4.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.chat4.generic.id        = ID_CHAT4;
 
-	s_controls.botmenu.generic.type	   = MTYPE_ACTION;
-	s_controls.botmenu.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
-	s_controls.botmenu.generic.callback  = Controls_ActionEvent;
-	s_controls.botmenu.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_controls.botmenu.generic.id        = ID_BOTMENU;
+	s_controls.actionmenu.generic.type	   = MTYPE_ACTION;
+	s_controls.actionmenu.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
+	s_controls.actionmenu.generic.callback  = Controls_ActionEvent;
+	s_controls.actionmenu.generic.ownerdraw = Controls_DrawKeyBinding;
+	s_controls.actionmenu.generic.id        = ID_ACTIONMENU;
 	
 	s_controls.flashlight.generic.type	   = MTYPE_ACTION;
 	s_controls.flashlight.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1694,12 +1689,6 @@ static void Controls_MenuInit( void )
 	s_controls.sandboxmode.generic.callback  = Controls_ActionEvent;
 	s_controls.sandboxmode.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.sandboxmode.generic.id        = ID_SANDBOXMODE;
-	
-	s_controls.newsandbox.generic.type	   = MTYPE_ACTION;
-	s_controls.newsandbox.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
-	s_controls.newsandbox.generic.callback  = Controls_ActionEvent;
-	s_controls.newsandbox.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_controls.newsandbox.generic.id        = ID_NEWSANDBOX;
 	
 	s_controls.exitvehicle.generic.type	   = MTYPE_ACTION;
 	s_controls.exitvehicle.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1806,7 +1795,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.chat2 );
 	Menu_AddItem( &s_controls.menu, &s_controls.chat3 );
 	Menu_AddItem( &s_controls.menu, &s_controls.chat4 );
-	Menu_AddItem( &s_controls.menu, &s_controls.botmenu );
+	Menu_AddItem( &s_controls.menu, &s_controls.actionmenu );
 	Menu_AddItem( &s_controls.menu, &s_controls.flashlight );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.dweapon );
@@ -1814,7 +1803,6 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.clrun );
 	Menu_AddItem( &s_controls.menu, &s_controls.sandbox );
 	Menu_AddItem( &s_controls.menu, &s_controls.sandboxmode );
-	Menu_AddItem( &s_controls.menu, &s_controls.newsandbox );
 	Menu_AddItem( &s_controls.menu, &s_controls.exitvehicle );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.back );

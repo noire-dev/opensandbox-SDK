@@ -74,7 +74,6 @@ vmCvar_t	g_mgspread;
 vmCvar_t	g_mgexplode;
 vmCvar_t	g_mgsdamage;
 vmCvar_t	g_mgsradius;
-vmCvar_t	g_mgvampire;
 vmCvar_t	g_mginf;
 vmCvar_t	g_mgknockback;
 //sg set
@@ -85,7 +84,6 @@ vmCvar_t	g_sgexplode;
 vmCvar_t	g_sgsdamage;
 vmCvar_t	g_sgsradius;
 vmCvar_t	g_sgcount;
-vmCvar_t	g_sgvampire;
 vmCvar_t	g_sginf;
 vmCvar_t	g_sgknockback;
 //gl set
@@ -97,7 +95,6 @@ vmCvar_t	g_glsdamage;
 vmCvar_t	g_gldamage;
 vmCvar_t	g_glbounce;
 vmCvar_t	g_glgravity;
-vmCvar_t	g_glvampire;
 vmCvar_t	g_glinf;
 vmCvar_t	g_glbouncemodifier;
 vmCvar_t	g_glknockback;
@@ -110,7 +107,6 @@ vmCvar_t	g_rlsdamage;
 vmCvar_t	g_rldamage;
 vmCvar_t	g_rlbounce;
 vmCvar_t	g_rlgravity;
-vmCvar_t	g_rlvampire;
 vmCvar_t	g_rlinf;
 vmCvar_t	g_rlbouncemodifier;
 vmCvar_t	g_rlknockback;
@@ -121,13 +117,11 @@ vmCvar_t	g_lgrange;
 vmCvar_t	g_lgexplode;
 vmCvar_t	g_lgsdamage;
 vmCvar_t	g_lgsradius;
-vmCvar_t	g_lgvampire;
 vmCvar_t	g_lginf;
 vmCvar_t	g_lgknockback;
 //rg set
 vmCvar_t	g_rgdelay;
 vmCvar_t	g_rgdamage;
-vmCvar_t	g_rgvampire;
 vmCvar_t	g_rginf;
 vmCvar_t	g_rgknockback;
 //pg set
@@ -139,7 +133,6 @@ vmCvar_t	g_pgdamage;
 vmCvar_t	g_pgtimeout;
 vmCvar_t	g_pgbounce;
 vmCvar_t	g_pggravity;
-vmCvar_t	g_pgvampire;
 vmCvar_t	g_pginf;
 vmCvar_t	g_pgbouncemodifier;
 vmCvar_t	g_pgknockback;
@@ -152,7 +145,6 @@ vmCvar_t	g_bfgsdamage;
 vmCvar_t	g_bfgdamage;
 vmCvar_t	g_bfgbounce;
 vmCvar_t	g_bfggravity;
-vmCvar_t	g_bfgvampire;
 vmCvar_t	g_bfginf;
 vmCvar_t	g_bfgbouncemodifier;
 vmCvar_t	g_bfgknockback;
@@ -166,7 +158,6 @@ vmCvar_t	g_ngcount;
 vmCvar_t	g_ngbounce;
 vmCvar_t	g_nggravity;
 vmCvar_t	g_ngrandom;
-vmCvar_t	g_ngvampire;
 vmCvar_t	g_nginf;
 vmCvar_t	g_ngbouncemodifier;
 vmCvar_t	g_ngknockback;
@@ -178,14 +169,12 @@ vmCvar_t	g_plsradius;
 vmCvar_t	g_plsdamage;
 vmCvar_t	g_plgravity;
 vmCvar_t	g_pldamage;
-vmCvar_t	g_plvampire;
 vmCvar_t	g_plinf;
 vmCvar_t	g_plknockback;
 //cg set
 vmCvar_t	g_cgdelay;
 vmCvar_t	g_cgdamage;
 vmCvar_t	g_cgspread;
-vmCvar_t	g_cgvampire;
 vmCvar_t	g_cginf;
 vmCvar_t	g_cgknockback;
 //ft set
@@ -197,7 +186,6 @@ vmCvar_t	g_ftdamage;
 vmCvar_t	g_fttimeout;
 vmCvar_t	g_ftbounce;
 vmCvar_t	g_ftgravity;
-vmCvar_t	g_ftvampire;
 vmCvar_t	g_ftinf;
 vmCvar_t	g_ftbouncemodifier;
 vmCvar_t	g_ftknockback;
@@ -210,7 +198,6 @@ vmCvar_t	g_amdamage;
 vmCvar_t	g_amtimeout;
 vmCvar_t	g_ambounce;
 vmCvar_t	g_amgravity;
-vmCvar_t	g_amvampire;
 vmCvar_t	g_aminf;
 vmCvar_t	g_ambouncemodifier;
 vmCvar_t	g_amknockback;
@@ -626,7 +613,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_mgexplode, "g_mgexplode", "0", 0, 0, qtrue  },
 	{ &g_mgsradius, "g_mgsradius", "70", 0, 0, qtrue  },
 	{ &g_mgsdamage, "g_mgsdamage", "50", 0, 0, qtrue  },
-	{ &g_mgvampire, "g_mgvampire", "0", 0, 0, qtrue  },
 	{ &g_mginf, "g_mginf", "0", 0, 0, qtrue  },
 	{ &g_mgknockback, "g_mgknockback", "1", 0, 0, qtrue  },
 	//sg set
@@ -637,7 +623,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_sgsradius, "g_sgsradius", "35", 0, 0, qtrue  },
 	{ &g_sgsdamage, "g_sgsdamage", "45", 0, 0, qtrue  },
 	{ &g_sgcount, "g_sgcount", "11", 0, 0, qtrue  },
-	{ &g_sgvampire, "g_sgvampire", "0", 0, 0, qtrue  },
 	{ &g_sginf, "g_sginf", "0", 0, 0, qtrue  },
 	{ &g_sgknockback, "g_sgknockback", "1", 0, 0, qtrue  },
 	//gl set
@@ -649,7 +634,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_gldamage, "g_gldamage", "100", 0, 0, qtrue  },
 	{ &g_glbounce, "g_glbounce", "1", 0, 0, qtrue  },
 	{ &g_glgravity, "g_glgravity", "1", 0, 0, qtrue  },
-	{ &g_glvampire, "g_glvampire", "0", 0, 0, qtrue  },
 	{ &g_glinf, "g_glinf", "0", 0, 0, qtrue  },
 	{ &g_glbouncemodifier, "g_glbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_glknockback, "g_glknockback", "1", 0, 0, qtrue  },
@@ -662,7 +646,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_rldamage, "g_rldamage", "100", 0, 0, qtrue  },
 	{ &g_rlbounce, "g_rlbounce", "0", 0, 0, qtrue  },
 	{ &g_rlgravity, "g_rlgravity", "0", 0, 0, qtrue  },
-	{ &g_rlvampire, "g_rlvampire", "0", 0, 0, qtrue  },
 	{ &g_rlinf, "g_rlinf", "0", 0, 0, qtrue  },
 	{ &g_rlbouncemodifier, "g_rlbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_rlknockback, "g_rlknockback", "1", 0, 0, qtrue  },
@@ -673,13 +656,11 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_lgexplode, "g_lgexplode", "0", 0, 0, qtrue  },
 	{ &g_lgsradius, "g_lgsradius", "75", 0, 0, qtrue  },
 	{ &g_lgsdamage, "g_lgsdamage", "70", 0, 0, qtrue  },
-	{ &g_lgvampire, "g_lgvampire", "0", 0, 0, qtrue  },
 	{ &g_lginf, "g_lginf", "0", 0, 0, qtrue  },
 	{ &g_lgknockback, "g_lgknockback", "1", 0, 0, qtrue  },
 	//rg set
 	{ &g_rgdelay, "g_rgdelay", "1500", 0, 0, qtrue  },
 	{ &g_rgdamage, "g_rgdamage", "100", 0, 0, qtrue  },
-	{ &g_rgvampire, "g_rgvampire", "0", 0, 0, qtrue  },
 	{ &g_rginf, "g_rginf", "0", 0, 0, qtrue  },
 	{ &g_rgknockback, "g_rgknockback", "1", 0, 0, qtrue  },
 	//pg set
@@ -691,7 +672,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_pgdelay, "g_pgdelay", "100", 0, 0, qtrue  },
 	{ &g_pgbounce, "g_pgbounce", "0", 0, 0, qtrue  },
 	{ &g_pggravity, "g_pggravity", "0", 0, 0, qtrue  },
-	{ &g_pgvampire, "g_pgvampire", "0", 0, 0, qtrue  },
 	{ &g_pginf, "g_pginf", "0", 0, 0, qtrue  },
 	{ &g_pgbouncemodifier, "g_pgbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_pgknockback, "g_pgknockback", "1", 0, 0, qtrue  },
@@ -704,7 +684,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_bfgdelay, "g_bfgdelay", "200", 0, 0, qtrue  },
 	{ &g_bfgbounce, "g_bfgbounce", "0", 0, 0, qtrue  },
 	{ &g_bfggravity, "g_bfggravity", "0", 0, 0, qtrue  },
-	{ &g_bfgvampire, "g_bfgvampire", "0", 0, 0, qtrue  },
 	{ &g_bfginf, "g_bfginf", "0", 0, 0, qtrue  },
 	{ &g_bfgbouncemodifier, "g_bfgbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_bfgknockback, "g_bfgknockback", "1", 0, 0, qtrue  },
@@ -718,7 +697,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_ngbounce, "g_ngbounce", "0", 0, 0, qtrue  },
 	{ &g_nggravity, "g_nggravity", "0", 0, 0, qtrue  },
 	{ &g_ngrandom, "g_ngrandom", "1800", 0, 0, qtrue  },
-	{ &g_ngvampire, "g_ngvampire", "0", 0, 0, qtrue  },
 	{ &g_nginf, "g_nginf", "0", 0, 0, qtrue  },
 	{ &g_ngbouncemodifier, "g_ngbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_ngknockback, "g_ngknockback", "1", 0, 0, qtrue  },
@@ -730,14 +708,12 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_plsdamage, "g_plsdamage", "100", 0, 0, qtrue  },
 	{ &g_plgravity, "g_plgravity", "1", 0, 0, qtrue  },
 	{ &g_pldamage, "g_pldamage", "0", 0, 0, qtrue  },
-	{ &g_plvampire, "g_plvampire", "0", 0, 0, qtrue  },
 	{ &g_plinf, "g_plinf", "0", 0, 0, qtrue  },
 	{ &g_plknockback, "g_plknockback", "1", 0, 0, qtrue  },
 	//cg set
 	{ &g_cgdelay, "g_cgdelay", "30", 0, 0, qtrue  },
 	{ &g_cgdamage, "g_cgdamage", "7", 0, 0, qtrue  },
 	{ &g_cgspread, "g_cgspread", "600", 0, 0, qtrue  },
-	{ &g_cgvampire, "g_cgvampire", "0", 0, 0, qtrue  },
 	{ &g_cginf, "g_cginf", "0", 0, 0, qtrue  },
 	{ &g_cgknockback, "g_cgknockback", "1", 0, 0, qtrue  },
 	//ft set
@@ -749,7 +725,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_ftdelay, "g_ftdelay", "40", 0, 0, qtrue  },
 	{ &g_ftbounce, "g_ftbounce", "1", 0, 0, qtrue  },
 	{ &g_ftgravity, "g_ftgravity", "0", 0, 0, qtrue  },
-	{ &g_ftvampire, "g_ftvampire", "0", 0, 0, qtrue  },
 	{ &g_ftinf, "g_ftinf", "0", 0, 0, qtrue  },
 	{ &g_ftbouncemodifier, "g_ftbouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_ftknockback, "g_ftknockback", "1", 0, 0, qtrue  },
@@ -762,7 +737,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_amdelay, "g_amdelay", "40", 0, 0, qtrue  },
 	{ &g_ambounce, "g_ambounce", "1", 0, 0, qtrue  },
 	{ &g_amgravity, "g_amgravity", "1", 0, 0, qtrue  },
-	{ &g_amvampire, "g_amvampire", "0", 0, 0, qtrue  },
 	{ &g_aminf, "g_aminf", "0", 0, 0, qtrue  },
 	{ &g_ambouncemodifier, "g_ambouncemodifier", "0.65", 0, 0, qtrue  },
 	{ &g_amknockback, "g_amknockback", "1", 0, 0, qtrue  },
@@ -3324,9 +3298,6 @@ void G_RunFrame( int levelTime ) {
 				ent->s.event = 0;	// &= EV_EVENT_BITS;
 				if ( ent->client ) {
 					ent->client->ps.externalEvent = 0;
-					// predicted events should never be set to zero
-					//ent->client->ps.events[0] = 0;
-					//ent->client->ps.events[1] = 0;
 				}
 			}
 			if ( ent->freeAfterEvent ) {

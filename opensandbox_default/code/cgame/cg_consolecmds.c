@@ -282,7 +282,6 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
 	trap_AddCommand ("notarget");
-	trap_AddCommand ("levelshot");
 	trap_AddCommand ("setviewpos");
 	trap_AddCommand ("noclip");
 
@@ -293,6 +292,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("dropweapon");
 	trap_AddCommand ("dropholdable");
 	trap_AddCommand ("usetarget");
+	trap_AddCommand ("activate");
 	trap_AddCommand ("where");
 
   	// game commands

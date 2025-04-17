@@ -484,7 +484,6 @@ void VelocityToAxis( const vec3_t velocity, vec3_t axis[3], float lerpFactor ) {
 
     CrossProduct(targetForward, targetRight, targetUp);
 
-
     for (i = 0; i < 3; i++) {
         axis[0][i] = Lerp(axis[0][i], targetForward[i], lerpFactor);  // forward
         axis[1][i] = Lerp(axis[1][i], targetRight[i], lerpFactor);    // right

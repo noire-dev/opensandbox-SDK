@@ -103,50 +103,9 @@
 
  **********************************************************************/
 
-#ifdef Q3_VM
-
 #include "../game/bg_lib.h"
 
 typedef int intptr_t;
-
-#else
-
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <ctype.h>
-#include <limits.h>
-
-// vsnprintf is ISO/IEC 9899:1999
-// abstracting this to make it portable
-#ifdef _WIN32
-  #define Q_vsnprintf _vsnprintf
-  #define Q_snprintf _snprintf
-#else
-  #define Q_vsnprintf vsnprintf
-  #define Q_snprintf snprintf
-#endif
-
-#ifdef _MSC_VER
-  #include <io.h>
-
-  typedef __int64 int64_t;
-  typedef __int32 int32_t;
-  typedef __int16 int16_t;
-  typedef __int8 int8_t;
-  typedef unsigned __int64 uint64_t;
-  typedef unsigned __int32 uint32_t;
-  typedef unsigned __int16 uint16_t;
-  typedef unsigned __int8 uint8_t;
-#else
-  #include <stdint.h>
-#endif
-
-#endif
 
 
 #include "q_platform.h"
@@ -168,11 +127,7 @@ typedef int		clipHandle_t;
 
 #define PAD(x,y) (((x)+(y)-1) & ~((y)-1))
 
-#ifdef __GNUC__
-#define ALIGN(x) __attribute__((aligned(x)))
-#else
 #define ALIGN(x)
-#endif
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -497,7 +452,7 @@ typedef struct {
 
 #define Byte4Copy(a,b)			((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
 
-#ifdef QAGAME
+#ifdef GAME
 #define CopyAlloc(dest, src) do {\
     dest = BG_Alloc(sizeof(src)); \
     if (dest != NULL) { \
@@ -505,7 +460,7 @@ typedef struct {
     } \
 } while(0)
 #endif
-#ifdef Q3_UI
+#ifdef UI
 #define CopyAlloc(dest, src) do {\
     dest = UI_Alloc(sizeof(src)); \
     if (dest != NULL) { \
@@ -514,7 +469,7 @@ typedef struct {
 } while(0)
 #endif
 
-#ifdef QAGAME
+#ifdef GAME
 #define CopyAllocLen(dest, src) do {\
     dest = (char*)BG_Alloc(strlen(src) + 1); \
     if (dest != NULL) { \
@@ -522,7 +477,7 @@ typedef struct {
     } \
 } while(0)
 #endif
-#ifdef Q3_UI
+#ifdef UI
 #define CopyAllocLen(dest, src) do {\
     dest = (char*)UI_Alloc(strlen(src) + 1); \
     if (dest != NULL) { \
@@ -531,19 +486,19 @@ typedef struct {
 } while(0)
 #endif
 
-#ifdef QAGAME
+#ifdef GAME
 #define Q_malloc(size) BG_Alloc(size)
 #endif
 
-#ifdef Q3_UI
+#ifdef UI
 #define Q_malloc(size) UI_Alloc(size)
 #endif
 
-#ifdef QAGAME
+#ifdef GAME
 #define Q_free(ptr) BG_Free(ptr)
 #endif
 
-#ifdef Q3_UI
+#ifdef UI
 #define Q_free(ptr) UI_Free(ptr)
 #endif
 
@@ -888,7 +843,6 @@ void Info_NextPair( const char **s, char *key, char *value );
 void	QDECL Com_Error( int level, const char *error, ... ) __attribute__ ((format (printf, 2, 3))) __attribute__((noreturn));
 void	QDECL Com_Printf( const char *msg, ... ) __attribute__ ((format (printf, 1, 2)));
 
-
 /*
 ==========================================================
 
@@ -968,7 +922,6 @@ COLLISION DETECTION
 #define	PLANE_Z			2
 #define	PLANE_NON_AXIAL	3
 
-
 /*
 =================
 PlaneTypeForNormal
@@ -1009,8 +962,6 @@ typedef struct {
 	int		firstPoint;
 	int		numPoints;
 } markFragment_t;
-
-
 
 typedef struct {
 	vec3_t		origin;
@@ -1071,10 +1022,8 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-3)
 
-
 #define	MAX_MODELS			4096		// these are sent over the net as 16 bits
 #define	MAX_SOUNDS			4096		// so they cannot be blindly increased
-
 
 #define	MAX_CONFIGSTRINGS	1024*16
 
@@ -1287,7 +1236,7 @@ typedef struct entityState_s {
 	int		powerups;		// bit flags
 	int		weapon;			// determines weapon and flash model, etc
 	int		legsAnim;		// mask off ANIM_TOGGLEBIT
-	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int		torsoAnim;		// mask off ANIM_TOGGLEBIT, object type for props
 
 
 	int		generic1;
@@ -1398,10 +1347,10 @@ typedef struct highscores_s {
 	playerscore_t	highscores[SCOREBOARD_LENGTH];
 } highscores_t;
 
-#define	MAX_GLOBAL_SERVERS				4096
+#define	MAX_GLOBAL_SERVERS					4096
 #define	MAX_OTHER_SERVERS					128
 #define MAX_PINGREQUESTS					32
-#define MAX_SERVERSTATUSREQUESTS	16
+#define MAX_SERVERSTATUSREQUESTS			16
 
 #define SAY_ALL		0
 #define SAY_TEAM	1

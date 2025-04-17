@@ -1807,46 +1807,36 @@ Caused by an EV_FIRE_WEAPON event
 ================
 */
 void CG_FireWeapon( centity_t *cent ) {
-	clientInfo_t	*ci;
 	entityState_t *ent;
 	int				c;
 	weaponInfo_t	*weap;
-	int				weaphack;
 
 	if((cgs.gametype == GT_ELIMINATION || cgs.gametype == GT_CTF_ELIMINATION) && cgs.roundStartTime>=cg.time)
 		return; //if we havn't started in ELIMINATION then do not fire
 
 	ent = &cent->currentState;
 	
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	
-	if(ci->swepid >= 1){
-	weaphack = ci->swepid;
-	} else {
-	weaphack = ent->weapon;
-	}
-	
-	if ( weaphack == WP_NONE ) {
+	if ( ent->weapon == WP_NONE ) {
 		return;
 	}
-	if ( weaphack > WEAPONS_NUM ) {
-		CG_Error( "CG_FireWeapon: weaphack > WEAPONS_NUM" );
+	if ( ent->weapon > WEAPONS_NUM ) {
+		CG_Error( "CG_FireWeapon: ent->weapon > WEAPONS_NUM" );
 		return;
 	}
-	weap = &cg_weapons[ weaphack ];
+	weap = &cg_weapons[ ent->weapon ];
 
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
 	cent->muzzleFlashTime = cg.time;
 
 	// lightning gun only does this this on initial press
-	if ( weaphack == WP_LIGHTNING ) {
+	if ( ent->weapon == WP_LIGHTNING ) {
 		if ( cent->pe.lightningFiring ) {
 			return;
 		}
 	}
 	
-	if ( weaphack == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR ){
+	if ( ent->weapon == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR ){
 		if(toolgun_mod19.integer == 0){
 		trap_SendConsoleCommand("vstr toolgun_toolcmd1\n");
 		} else

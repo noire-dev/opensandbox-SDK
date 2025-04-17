@@ -1600,7 +1600,7 @@ static void PM_FinishWeaponChange( void ) {
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
 	item = BG_FindSwep(weapon);
-	#ifdef QAGAME
+	#ifdef GAME
 	if(G_CheckSwep(pm->ps->clientNum, weapon, 1)){
 	pm->ps->generic2 = item->giTag;
 	pm->ps->weaponstate = WEAPON_RAISING;
@@ -1815,7 +1815,7 @@ static void PM_Weapon( void ) {
 
 	pm->ps->weaponstate = WEAPON_FIRING;
 
-#ifdef QAGAME
+#ifdef GAME
 	if(!G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2)){
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 500;
@@ -1832,7 +1832,7 @@ static void PM_Weapon( void ) {
 if( !(pm->ps->stats[STAT_SWEPAMMO] == -1 || pm->ps->stats[STAT_SWEPAMMO] >= 9999) ){ 
 if(pm->s->generic3 > 0 ){ pm->s->generic3 -= 1; }
 if(pm->ps->stats[STAT_SWEPAMMO] >= 1 ){ pm->ps->stats[STAT_SWEPAMMO] -= 1; }
-#ifdef 	QAGAME
+#ifdef 	GAME
 if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2) > 0 ){ 
 PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1); 
 }

@@ -517,7 +517,7 @@ void CG_LaunchGib( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 
 	le->leType = LE_FRAGMENT2;
 	le->startTime = cg.time;
-	le->endTime = le->startTime  + cg_gibtime.integer * 1000;
+	le->endTime = le->startTime + cg_effectsTime.integer * 1000;
 	VectorCopy( origin, re->origin );
 	AxisCopy( axisDefault, re->axis );
 	re->hModel = hModel;
@@ -540,8 +540,8 @@ CG_GibPlayer
 Generated a bunch of gibs launching out from the bodies location
 ===================
 */
-#define	GIB_VELOCITY	atof(cg_gibvelocity.string)
-#define	GIB_JUMP		atof(cg_gibjump.string)
+#define	GIB_VELOCITY	cg_gibvelocity.value
+#define	GIB_JUMP		cg_gibjump.value
 void CG_GibPlayer( vec3_t playerOrigin ) {
 	vec3_t	origin, velocity;
 	int	j;
@@ -565,7 +565,6 @@ void CG_GibPlayer( vec3_t playerOrigin ) {
 		return;
 	}
 
-for(j = 1; j <= cg_gibmodifier.integer; j++){
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
@@ -619,7 +618,14 @@ for(j = 1; j <= cg_gibmodifier.integer; j++){
 	velocity[1] = crandom()*GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
 	CG_LaunchGib( origin, velocity, cgs.media.gibLeg );
-}
+
+	for(j = 1; j <= cg_effectsGibs.integer; j++){
+		VectorCopy( playerOrigin, origin );
+		velocity[0] = crandom()*GIB_VELOCITY;
+		velocity[1] = crandom()*GIB_VELOCITY;
+		velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
+		CG_LaunchGib( origin, velocity, cgs.media.gibChest );
+	}
 }
 
 #define	EXP_VELOCITY	100
@@ -639,7 +645,7 @@ void CG_LaunchFragment( vec3_t origin, vec3_t velocity, leTrailType_t trailType,
 
 	le->leType = LE_FRAGMENT;
 	le->startTime = cg.time;
-	le->endTime = le->startTime + 80000 + random() * 3000;
+	le->endTime = le->startTime + cg_effectsTime.integer * 1000;
 
 	VectorCopy( origin, re->origin );
 	AxisCopy( axisDefault, re->axis );

@@ -1165,8 +1165,6 @@ int BotAI(int client, float thinktime) {
 		}
 		else if (!Q_stricmp(buf, "scores"))
 			{ /*FIXME: parse scores?*/ }
-		else if (!Q_stricmp(buf, "clientLevelShot"))
-			{ /*ignore*/ }
 	}
 	//add the delta angles to the bot's current view angles
 	for (j = 0; j < 3; j++) {

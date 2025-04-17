@@ -29,7 +29,7 @@
 
 #include "cg_local.h"
 
-#define	MAX_LOCAL_ENTITIES	4096 
+#define	MAX_LOCAL_ENTITIES	65535 
 localEntity_t	cg_localEntities[MAX_LOCAL_ENTITIES];
 localEntity_t	cg_activeLocalEntities;		// double linked list
 localEntity_t	*cg_freeLocalEntities;		// single linked list
@@ -48,7 +48,7 @@ void	CG_InitLocalEntities( void ) {
 	cg_activeLocalEntities.next = &cg_activeLocalEntities;
 	cg_activeLocalEntities.prev = &cg_activeLocalEntities;
 	cg_freeLocalEntities = cg_localEntities;
-	for ( i = 0 ; i < MAX_LOCAL_ENTITIES - 1 ; i++ ) {
+	for ( i = 0 ; i < cg_effectsLimit.integer - 1 ; i++ ) {
 		cg_localEntities[i].next = &cg_localEntities[i+1];
 	}
 }
@@ -195,7 +195,7 @@ void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
 	int			radius;
 
 	if ( le->leMarkType == LEMT_BLOOD ) {
-		radius = 16 + (rand()&31);
+		radius = 32 + (rand()&31);
 		CG_ImpactMark( cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random()*360,
 			1,1,1,1, qtrue, radius, qfalse );
 	} else if ( le->leMarkType == LEMT_BURN ) {

@@ -531,13 +531,46 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 	}
 
 	if(s_graphicsoptions.envlevel.curvalue == 0){
-	trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
+		trap_Cvar_SetValue( "ui_effectslevel", 0 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 1 );
+		trap_Cvar_SetValue( "cg_effectsTime", 10 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 4096 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 1 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 1){
-	trap_Cvar_SetValue( "cg_atmosphericLevel", 1 );
+		trap_Cvar_SetValue( "ui_effectslevel", 1 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 1 );
+		trap_Cvar_SetValue( "cg_effectsTime", 30 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 4096 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 3 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 2){
-	trap_Cvar_SetValue( "cg_atmosphericLevel", 0 );
+		trap_Cvar_SetValue( "ui_effectslevel", 2 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
+		trap_Cvar_SetValue( "cg_effectsTime", 60 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 6 );
+	}
+	if(s_graphicsoptions.envlevel.curvalue == 3){
+		trap_Cvar_SetValue( "ui_effectslevel", 3 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
+		trap_Cvar_SetValue( "cg_effectsTime", 90 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 16384 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 3 );
+	}
+	if(s_graphicsoptions.envlevel.curvalue == 4){
+		trap_Cvar_SetValue( "ui_effectslevel", 4 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
+		trap_Cvar_SetValue( "cg_effectsTime", 300 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 32768 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 9 );
+	}
+	if(s_graphicsoptions.envlevel.curvalue == 5){
+		trap_Cvar_SetValue( "ui_effectslevel", 5 );
+		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
+		trap_Cvar_SetValue( "cg_effectsTime", 600 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 65536 );
+		trap_Cvar_SetValue( "cg_effectsGibs", 16 );
 	}
 	trap_Cvar_SetValue( "r_postfx", s_graphicsoptions.postfx.curvalue );
 	trap_Cvar_SetValue( "r_hdr", s_graphicsoptions.hdr.curvalue );
@@ -556,15 +589,15 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 
 	if ( s_graphicsoptions.bloomlevel.curvalue == 2 )
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.10 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.15 );
 	}
 	else if ( s_graphicsoptions.bloomlevel.curvalue == 1 )
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.05 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.10 );
 	}
 	else
 	{
-		trap_Cvar_SetValue( "r_bloom_intensity", 0.00 );
+		trap_Cvar_SetValue( "r_bloom_intensity", 0.05 );
 	}
 
 	if ( s_graphicsoptions.filter.curvalue )
@@ -693,15 +726,8 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.tq.curvalue = 3;
 	}
 
-	if(trap_Cvar_VariableValue( "cg_atmosphericLevel" )  == 2){
-	s_graphicsoptions.envlevel.curvalue = 0;
-	}
-	if(trap_Cvar_VariableValue( "cg_atmosphericLevel" )  == 1){
-	s_graphicsoptions.envlevel.curvalue = 1;
-	}
-	if(trap_Cvar_VariableValue( "cg_atmosphericLevel" )  == 0){
-	s_graphicsoptions.envlevel.curvalue = 2;
-	}
+	s_graphicsoptions.envlevel.curvalue = ( int ) trap_Cvar_VariableValue( "ui_effectslevel" );
+
 	switch ( ( int ) trap_Cvar_VariableValue( "r_texturebits" ) )
 	{
 	default:
@@ -745,11 +771,11 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.filter.curvalue = 1;
 	}
 	
-	if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.10 )
+	if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.15 )
 	{
 		s_graphicsoptions.bloomlevel.curvalue = 2;
 	}
-	else if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.05 )
+	else if ( trap_Cvar_VariableValue( "r_bloom_intensity" ) == 0.10 )
 	{
 		s_graphicsoptions.bloomlevel.curvalue = 1;
 	}
@@ -816,16 +842,22 @@ void GraphicsOptions_MenuInit( void )
 
 	static const char *envlevel_names[] =
 	{
-		"High",
-		"Medium",
+		"Very low",
 		"Low",
+		"Medium",
+		"High",
+		"Very High",
+		"Ultra",
 		NULL
 	};
 	static const char *envlevel_namesru[] =
 	{
-		"Высокие",
-		"Средние",
-		"Низкие",
+		"Очень низкий",
+		"Низкий",
+		"Средний",
+		"Высокий",
+		"Очень высокий",
+		"Ультра",
 		NULL
 	};
 
@@ -994,7 +1026,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.fs.generic.y	      = y;
 	y += BIGCHAR_HEIGHT+2;
 
-	// references/modifies "r_atmosphericEffects
+	// references/modifies "ui_effectslevel
 	s_graphicsoptions.envlevel.generic.type  = MTYPE_SPINCONTROL;
 	s_graphicsoptions.envlevel.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_graphicsoptions.envlevel.generic.x	 = 400;
@@ -1105,7 +1137,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.mode.generic.name     = "Window resolution:";
 	s_graphicsoptions.fs.generic.name	  = "Fullscreen:";
 	s_graphicsoptions.fs.itemnames	      = enabled_names;
-	s_graphicsoptions.envlevel.generic.name	 = "Environment effects:";
+	s_graphicsoptions.envlevel.generic.name	 = "Effects level:";
 	s_graphicsoptions.envlevel.itemnames     = envlevel_names;
 	s_graphicsoptions.postfx.generic.name	  = "Post-processing:";
 	s_graphicsoptions.postfx.itemnames	      = enabled_names;
@@ -1141,7 +1173,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.mode.generic.name     = "Разрешение окна:";
 	s_graphicsoptions.fs.generic.name	  = "Полный экран:";
 	s_graphicsoptions.fs.itemnames	      = enabled_namesru;
-	s_graphicsoptions.envlevel.generic.name	 = "Эффекты окружения:";
+	s_graphicsoptions.envlevel.generic.name	 = "Уровень эффектов:";
 	s_graphicsoptions.envlevel.itemnames     = envlevel_namesru;
 	s_graphicsoptions.postfx.generic.name	  = "Пост-обработка:";
 	s_graphicsoptions.postfx.itemnames	      = enabled_namesru;

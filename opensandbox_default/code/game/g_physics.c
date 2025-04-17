@@ -372,7 +372,7 @@ void Phys_SmoothReturnToNearestAngle( gentity_t *ent ) {
     float speed = 0.50f;
 
     float velocity = VectorLength(ent->s.pos.trDelta);
-    float mass = ent->s.origin2[O2_MASS];
+    float mass = ent->s.angles2[A2_MASS];
 
     speed += (velocity * 1.00f) / mass;
 
@@ -470,7 +470,7 @@ void Phys_Bounce( gentity_t *ent, trace_t *tr ) {
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * tr->fraction;
-	ST_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity, ent->s.origin2[O2_MASS] );
+	ST_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity, ent->s.angles2[A2_MASS] );
 	dot = DotProduct( velocity, tr->plane.normal );
 	VectorMA( velocity, -2*dot, tr->plane.normal, ent->s.pos.trDelta );
 
@@ -536,7 +536,7 @@ void Phys_SelectPhysModel(gentity_t *ent) {
 
 	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer*g_gravityModifier.value * g_gravity.integer*g_gravityModifier.value);
 
-	impactForceFixed *= ent->s.origin2[O2_MASS];
+	impactForceFixed *= ent->s.angles2[A2_MASS];
 
 	if(trap_PointContents(ent->r.currentOrigin, ent->s.number) & MASK_WATER){
 		if(!ent->phys_inWater){
@@ -570,14 +570,26 @@ qboolean Phys_UpdateState( gentity_t *ent ) {
 	ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
 	ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
 
-	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta and other properties
-		VectorClear(ent->s.pos.trDelta);
+	if(ent->sb_phys == PHYS_STATIC || ent->s.eType == ET_ITEM){	//if it's static object, reset properties
 		ent->phys_inAir = qfalse;
 		ent->phys_inSolid = qfalse;
 	} else {
 		ent->phys_inAir = Phys_Check(ent, 1.0f, PHYSCHECK_INAIR);
 		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
 	}
+
+	if(ent->sb_phys == PHYS_STATIC){	//if it's static object, reset delta
+		VectorClear(ent->s.pos.trDelta);
+	}
+
+	// Update server and phys rotate
+	VectorCopy(ent->s.apos.trBase, ent->s.angles);			//update server angles from client angles
+	if (ent->s.pos.trType == TR_STATIONARY) {
+		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
+	}
+
+	// Update server origin
+	VectorCopy(ent->r.currentOrigin, ent->s.origin);	//update origin for save
 
     // If the entity is stationary and not on air - disable physics
     if (ent->s.pos.trType == TR_STATIONARY) {
@@ -632,9 +644,9 @@ qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
     trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
 
     if (checkNum != PHYSCHECK_SOLID) {
-        return !(tr.fraction < 1.0f); // Для проверки земли возвращаем результат на основе fraction
+        return !(tr.fraction < 1.0f);
     } else {
-        return tr.startsolid; // Для проверки столкновения возвращаем startsolid
+        return tr.startsolid;
     }
 }
 
@@ -663,30 +675,23 @@ Rotate for physic object
 ================
 */
 void Phys_Rotate(gentity_t *ent, trace_t *tr) {
+    float rotationMultiplier = (ent->s.pos.trType != TR_GRAVITY_WATER) ? PHYS_ROTATING : PHYS_ROTATING * 0.5;
 
-    if (ent->phys_think) {
+    if (ent->phys_think && !ent->isGrabbed && !tr->startsolid) {
+		VectorClear(ent->s.apos.trDelta);	//reset rotate for client
         return;
     }
 
-    if (!ent->isGrabbed && !tr->startsolid) {
+    // Type
+	VectorCopy(ent->s.pos.trDelta, ent->s.apos.trDelta);	//copy rotate for client
+	
+    // Rotate
+	ent->s.apos.trBase[0] -= ent->s.apos.trDelta[0] * rotationMultiplier;
+    ent->s.apos.trBase[1] -= ent->s.apos.trDelta[1] * rotationMultiplier;
+	ent->s.apos.trBase[0] -= ent->s.apos.trDelta[2] * rotationMultiplier * 0.20;
+    ent->s.apos.trBase[1] -= ent->s.apos.trDelta[2] * rotationMultiplier * 0.20;
 
-        // Определяем множитель вращения в зависимости от типа движения
-        float rotationMultiplier = (ent->s.pos.trType != TR_GRAVITY_WATER) ? PHYS_ROTATING : PHYS_ROTATING * 0.5;
-
-        // Обработка изменения координат по осям
-        if (ent->s.pos.trDelta[2] != 0) {
-            ent->s.apos.trBase[0] -= ent->s.pos.trDelta[2] * rotationMultiplier * 0.20;
-            ent->s.apos.trBase[1] -= ent->s.pos.trDelta[2] * rotationMultiplier * 0.20;
-        }
-        if (ent->s.pos.trDelta[1] != 0) {
-            ent->s.apos.trBase[1] -= ent->s.pos.trDelta[1] * rotationMultiplier;
-        }
-        if (ent->s.pos.trDelta[0] != 0) {
-            ent->s.apos.trBase[0] += ent->s.pos.trDelta[0] * rotationMultiplier;
-        }
-    }
-
-    // Нормализуем углы, чтобы они всегда оставались в правильном диапазоне
+    // Normalize
     ent->s.apos.trBase[0] = AngleNormalize360(ent->s.apos.trBase[0]);
     ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
     ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
@@ -713,8 +718,8 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	impactForce = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1]);
 	impactForceAll = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + ent->s.pos.trDelta[2] * ent->s.pos.trDelta[2]);
 	
-	impactForce *= ent->s.origin2[O2_MASS];
-	impactForceAll *= ent->s.origin2[O2_MASS];
+	impactForce *= ent->s.angles2[A2_MASS];
+	impactForceAll *= ent->s.angles2[A2_MASS];
 
     // If there's a collision, handle it
     if (tr->fraction < 1.0f && tr->entityNum != ENTITYNUM_NONE) {
@@ -874,13 +879,17 @@ void Phys_RestoreWeldedEntities(gentity_t *ent) {
 
 			VectorCopy(newAngles, object->s.angles);
     		VectorCopy(newAngles, object->s.apos.trBase);
+			VectorCopy(newAngles, object->r.currentAngles);
 
 			//
 			// Disable phys
 			//
 
-			object->s.pos.trType = TR_STATIONARY; object->sb_phys = PHYS_STATIC;
-			Phys_Disable(object, object->r.currentOrigin);
+			object->s.pos.trType = TR_STATIONARY;
+			object->sb_phys = PHYS_STATIC;
+			object->s.otherEntityNum = ent->s.number;
+			VectorCopy(object->phys_relativeOrigin, object->s.origin2);
+			Phys_Disable(object, object->s.pos.trBase);
 
 			trap_LinkEntity(object);
 		}
@@ -905,18 +914,23 @@ void Phys_Frame(gentity_t *ent) {
 	}
 
 	if(ent->phys_parent){
+		ent->sb_phys_welded = ent->phys_parent->s.number;
 		return;
+	} else {
+		ent->sb_phys_welded = 0;
+		ent->s.otherEntityNum = 0;
+		VectorClear(ent->s.origin2);
+	}
+
+	if(ent->phys_weldedObjectsNum){
+		ent->sb_phys_parent = ent->s.number;
+	} else {
+		ent->sb_phys_parent = 0;
 	}
 
     // Unlink the entity so that it won't interact with other entities during the calculation
     trap_UnlinkEntity(ent);
 	Phys_CheckWeldedEntities(ent);
-
-	// Update rotate
-	VectorCopy(ent->s.apos.trBase, ent->s.angles);			//update server angles from client angles
-	if (ent->s.pos.trType == TR_STATIONARY) {
-		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);	//update physics angles from client angles
-	}
 
 	if(!Phys_UpdateState(ent)){		//disable physics and update state
 		return;
@@ -929,8 +943,8 @@ void Phys_Frame(gentity_t *ent) {
 	Phys_PointCheck(ent);
 	
 	// Get current position based on the entity's trajectory
-	if(ent->s.eType == ET_GENERAL){ 		//is prop
-    	ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.origin2[O2_MASS]);
+	if(ent->s.eType == ET_GENERAL){ 		//it's prop
+    	ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.angles2[A2_MASS]);
 	} else {
     	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);		
 	}
@@ -939,8 +953,7 @@ void Phys_Frame(gentity_t *ent) {
 	Phys_CorrectBounds(ent, adjustedMins, adjustedMaxs);
     trap_Trace(&tr, ent->r.currentOrigin, adjustedMins, adjustedMaxs, origin, ent->s.number, MASK_PLAYERSOLID);
 
-    // Save origin
-    VectorCopy(tr.endpos, ent->s.origin);			//update server origin from trace endpos
+    // Update phys origin
 	VectorCopy(tr.endpos, ent->r.currentOrigin);	//update physics origin from trace endpos
 	
     // Link the entity back into the world

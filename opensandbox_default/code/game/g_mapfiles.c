@@ -49,6 +49,24 @@ typedef struct {
 
 token_t tokens2[MAX_TOKENNUM];
 
+void G_RelinkEntities( void ) {
+	int i, j, k;
+	int entNum, newEntNum;
+
+	for( i = 0; i < MAX_GENTITIES; i++ ) {
+		if(g_entities[i].sb_phys_parent){
+			entNum = g_entities[i].sb_phys_parent;
+			newEntNum = g_entities[i].s.number;
+			for( j = 0; j < MAX_GENTITIES; j++ ) {
+				if(g_entities[j].sb_phys_welded == entNum){
+					g_entities[j].phys_parent = G_FindEntityForEntityNum(newEntNum);
+					g_entities[i].phys_weldedObjectsNum += 1;
+				}
+			}
+		}
+	}
+}
+
 /*
 =================
 SkippedChar
@@ -252,9 +270,15 @@ fieldCopy_t fieldsCopy[] = {
 	{"sb_blue", FOFS(sb_blue), F_INT},
 	{"sb_radius", FOFS(sb_radius), F_INT},
 	{"sb_isnpc", FOFS(sb_isnpc), F_INT},
-	{"sb_takedamage", FOFS(sb_takedamage), F_INT},
-	{"sb_takedamage2", FOFS(sb_takedamage2), F_INT},
 	{"objectType", FOFS(objectType), F_INT},
+
+	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), F_VECTOR},
+	{"phys_rv_0", FOFS(phys_rv_0), F_VECTOR},
+	{"phys_rv_1", FOFS(phys_rv_1), F_VECTOR},
+	{"phys_rv_2", FOFS(phys_rv_2), F_VECTOR},
+
+	{"sb_phys_welded", FOFS(sb_phys_welded), F_INT},
+	{"sb_phys_parent", FOFS(sb_phys_parent), F_INT},
 
 	{"distance", FOFS(distance), F_FLOAT},
 	{"type", FOFS(type), F_INT},
@@ -434,6 +458,9 @@ void G_LoadMapfile_f( void ) {
 	trap_Cvar_Set("mapfile",filename);
 	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 	trap_Cvar_Set("lastmap",mapname);
+
+	G_RelinkEntities();
+
 	trap_SendServerCommand( -1, "print \"^2Map loaded!\n\"" );
 }
 

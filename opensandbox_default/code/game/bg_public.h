@@ -65,6 +65,22 @@
 #define MAX_DOMINATION_POINTS 8
 #define MAX_DOMINATION_POINTS_NAMES 20
 
+// physics engine
+#define		PHYS_ROTATING 0.020
+#define		PHYS_DAMAGESENS 30
+
+#define		VEHICLE_SENS 30
+#define		VEHICLE_DAMAGE 0.05
+#define		VEHICLE_DAMAGESENS 30
+
+#ifdef GAME
+#define		PHYS_PROP_IMPACT g_physimpact.value
+#define		PHYS_SENS g_physimpulse.integer
+#define		PHYS_DAMAGE g_physdamage.value
+#define		VEHICLE_PROP_IMPACT g_physimpact.value
+#endif
+
+//entity info
 #define MAX_ENTITYINFO 	4
 
 //objects properties
@@ -98,13 +114,8 @@
 #define PHYSCHECK_SOLID				0
 #define PHYSCHECK_INAIR				1
 
-//origin2 storage
-#define O2_MASS						0
-//#define O2_UNUSED					1
-//#define O2_UNUSED					2
-
 //angles2 storage
-//#define A2_UNUSED					0
+#define A2_MASS						0
 //#define A2_UNUSED					1
 //#define A2_UNUSED					2
 
@@ -131,6 +142,11 @@
 #define TL_REPLACEITEM				11
 #define TL_COUNT					12
 #define TL_WELD						13
+#define TL_BIND						14
+
+//undo
+#define UNDO_PROPSPAWN				1
+#define UNDO_NPCSPAWN				2
 
 //
 // config strings are a general means of communicating variable length strings
@@ -163,7 +179,7 @@
 
 #define	CS_ITEMS				27		// string of 0's and 1's that tell which items are present
 
-#define CS_ATMOSEFFECT  	28  	// Atmospheric effect, if any.
+#define CS_ATMOSEFFECT  		28  	// Atmospheric effect, if any.
 
 #define	CS_MODELS				32
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)

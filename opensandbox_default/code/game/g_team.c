@@ -1816,7 +1816,7 @@ void SP_team_CTF_redplayer( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -1842,7 +1842,7 @@ void SP_team_CTF_blueplayer( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -1869,7 +1869,7 @@ void SP_team_CTF_redspawn(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -1895,7 +1895,7 @@ void SP_team_CTF_bluespawn(gentity_t *ent) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	

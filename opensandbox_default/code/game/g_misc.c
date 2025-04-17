@@ -332,7 +332,7 @@ void SP_misc_teleporter_dest( gentity_t *ent ) {
 		ent->s.scales[2] = 1.00;
 		ent->s.modelindex = G_ModelIndex( "props/cube" );
 		ent->s.generic2 = 255;
-		ent->s.origin2[O2_MASS] = 1.00;	//mass for correct physics
+		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
 		ent->sandboxObject = OBJ_EDITOR;
 	}
 	
@@ -486,7 +486,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 		fire_bfg( ent, ent->s.origin, dir );
 		break;
 	case WP_NAILGUN:
-		fire_custom( ent, ent->s.origin, dir );
+		fire_nail( ent, ent->s.origin, dir, right, up );
 		break;
 	case WP_PROX_LAUNCHER:
 		fire_prox( ent, ent->s.origin, dir );

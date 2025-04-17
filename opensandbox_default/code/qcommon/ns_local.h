@@ -23,13 +23,13 @@
 // Contact: opensandboxteam@gmail.com
 // 
 
-#ifdef QAGAME
+#ifdef GAME
 #include "../game/g_local.h"
 #endif
 #ifdef CGAME
 #include "../cgame/cg_local.h"
 #endif
-#ifdef Q3_UI
+#ifdef UI
 #include "../ui/ui_local.h"
 #endif
 

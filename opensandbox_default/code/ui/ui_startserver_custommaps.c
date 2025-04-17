@@ -652,9 +652,6 @@ static void StartServer_AddMapType(mappic_t* mappic, int type)
 	mappic->type[ mappic->num_types++ ] = type;
 }
 
-
-
-
 /*
 =================
 StartServer_InitMapPictureFromIndex

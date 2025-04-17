@@ -292,8 +292,8 @@ typedef struct bot_state_s
 	bot_waypoint_t *patrolpoints;					//patrol points
 	bot_waypoint_t *curpatrolpoint;					//current patrol point the bot is going for
 	int patrolflags;								//patrol flags
-	int	swep_list[WEAPONS_NUM+1];					//OpenSandbox weapon system
-	int	swep_ammo[WEAPONS_NUM+1];					//OpenSandbox ammo system
+	int	swep_list[WEAPONS_NUM];					//OpenSandbox weapon system
+	int	swep_ammo[WEAPONS_NUM];					//OpenSandbox ammo system
 } bot_state_t;
 
 //resets the whole bot state
