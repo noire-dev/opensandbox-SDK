@@ -1320,7 +1320,9 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	}
 	G_AddBot(tent->clientname, tent->skill, "Blue", 0, tent->message, tent->s.number, tent->target, tent->type, tent );
 	
-	Undo_PushElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
+	if(tent->parent){
+		Undo_AddElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
+	}
 
 	trap_Cvar_Set("g_spSkill", arg04);
 	return;
@@ -1438,25 +1440,24 @@ static void Cmd_PhysgunDist_f( gentity_t *ent ){
 	if ( ent->client->ps.generic2 == WP_PHYSGUN ){
 	    if (ent->client->buttons & BUTTON_ATTACK) {
 			if (ent->grabbedEntity) {
-					if(atoi(mode) == 0){
+				if(atoi(mode) == 0){
 					ent->grabDist -= 20;
 					if(ent->grabbedEntity->sb_coltype){
-					if(ent->grabDist < ent->grabbedEntity->sb_coltype+1){
-					ent->grabDist = ent->grabbedEntity->sb_coltype+1;
-					}
+						if(ent->grabDist < ent->grabbedEntity->sb_coltype+1){
+							ent->grabDist = ent->grabbedEntity->sb_coltype+1;
+						}
 					} else {
-					if(ent->grabDist < 100){
-					ent->grabDist = 100;
-					}	
+						if(ent->grabDist < 100){
+							ent->grabDist = 100;
+						}	
 					}
-					}
-					if(atoi(mode) == 1){
+				}
+				if(atoi(mode) == 1){
 					ent->grabDist += 20;
-					}
+				}
 			}
 		}
 	}
-	
 }
 
 static void Cmd_FlashlightOn_f( gentity_t *ent ){
@@ -1504,13 +1505,11 @@ if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isElimina
 }
 
 if(ent->flashon != 1){
-	//Cmd_FlashlightOn_f( ent );
 	ent->flashon = 1;
 	ClientUserinfoChanged( ent->s.clientNum );
 	return;
 }
 if(ent->flashon == 1){
-	//Cmd_FlashlightOff_f( ent );
 	ent->flashon = 0;
 	ClientUserinfoChanged( ent->s.clientNum );
 	return;
@@ -1524,31 +1523,39 @@ Cmd_Undo_f
 Added for OpenSandbox.
 ==================
 */
-static void Cmd_Undo_f( gentity_t *ent ){
-	int id, type;
+static void Cmd_Undo_f(gentity_t *ent) {
+    int id, type;
+	qboolean isRemoved;
 
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){
-		return;
-	}
+    if (g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) {
+        return;
+    }
 
-	if (Undo_PopElement(ent, &id, &type)) {
-		if(!G_FindEntityForEntityNum(id) || id <= 0 || id >= MAX_GENTITIES){
-			Undo_RemoveElement(ent, id);
-			return;
-		}
+    while (Undo_LastElement(ent, &id, &type, &isRemoved)) {
+        if (isRemoved) {
+            Undo_RemoveElement(ent);
+            continue;
+        }
 
-		if(type == UNDO_PROPSPAWN){
-			G_FreeEntity(G_FindEntityForEntityNum(id));
-			trap_SendServerCommand( ent-g_entities, "undoProp \n" );
-			return;
-		}
+        switch (type) {
+            case UNDO_PROPSPAWN: {
+                gentity_t *prop = G_FindEntityForEntityNum(id);
+                if (prop) {
+                    G_FreeEntity(prop);
+                    trap_SendServerCommand(ent - g_entities, "undoProp \n");
+                }
+                return;
+            }
 
-		if(type == UNDO_NPCSPAWN){
-			DropClientSilently( id );	
-			trap_SendServerCommand( ent-g_entities, "undoNPC \n" );
-			return;
-		}
-	}
+            case UNDO_NPCSPAWN:
+                DropClientSilently(id);
+                trap_SendServerCommand(ent - g_entities, "undoNPC \n");
+                return;
+
+            default:
+                return;
+        }
+    }
 }
 
 /*

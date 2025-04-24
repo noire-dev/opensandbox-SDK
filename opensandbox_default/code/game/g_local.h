@@ -29,9 +29,6 @@
 #include "bg_public.h"
 #include "g_public.h"
 
-// the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	BASEGAME
-
 #define BODY_QUEUE_SIZE		8
 
 #define INFINITE			1000000
@@ -422,6 +419,7 @@ typedef struct {
 typedef struct {
     int id;
     int type;
+    qboolean isRemoved;
 } undo_stack_t;
 
 //unlagged - backward reconciliation #1
@@ -617,7 +615,6 @@ typedef struct {
 										// frag can be watched.  Disable future
 										// kills during this delay
 	int			intermissiontime;		// time the intermission was started
-	char		*changemap;
 	qboolean	readyToExit;			// at least one client wants to exit
 	int			exitTime;
 	vec3_t		intermission_origin;	// also used for spectator spawns
@@ -1162,14 +1159,12 @@ void G_WriteSessionData( void );
 // g_bot.c
 //
 
-void G_InitBots( qboolean restart );
 char *G_GetBotInfoByNumber( int num );
 char *G_GetBotInfoByName( const char *name );
 void G_CheckBotSpawn( void );
 void G_RemoveQueuedBotBegin( int clientNum );
 qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
-void BotInterbreedEndMatch( void );
 
 //
 // g_physics.c
@@ -1208,10 +1203,9 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 
 void Undo_ShiftStack(gentity_t *ent);
-void Undo_PushElement(gentity_t *ent, int id, int type);
-qboolean Undo_PopElement(gentity_t *ent, int *id, int *type);
-void Undo_RemoveElement(gentity_t *ent, int target_id);
-void Undo_RemoveElementFromAll(int target_id);
+void Undo_AddElement(gentity_t *ent, int id, int type);
+qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved);
+void Undo_RemoveElement(gentity_t *ent);
 
 //
 // g_mapfiles.c
@@ -1641,8 +1635,7 @@ extern	vmCvar_t	g_poweruprespawn;
 extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;
-extern	vmCvar_t	g_maxclients;			// allow this many total, including spectators
-extern	vmCvar_t	g_maxGameClients;		// allow this many active
+extern	vmCvar_t	g_maxClients;			// dynamic now
 extern	vmCvar_t	g_restarted;
 
 extern	vmCvar_t	g_dmflags;
@@ -1963,7 +1956,6 @@ void	trap_BotInitLevelItems(void);
 void	trap_BotUpdateEntityItems(void);
 int		trap_BotLoadItemWeights(int goalstate, char *filename);
 void	trap_BotFreeItemWeights(int goalstate);
-void	trap_BotInterbreedGoalFuzzyLogic(int parent1, int parent2, int child);
 void	trap_BotSaveGoalFuzzyLogic(int goalstate, char *filename);
 void	trap_BotMutateGoalFuzzyLogic(int goalstate, float range);
 int		trap_BotAllocGoalState(int state);

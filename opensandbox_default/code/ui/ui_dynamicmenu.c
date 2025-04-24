@@ -250,7 +250,7 @@ void DynamicMenu_AddListOfPlayers( int type, createHandler crh, eventHandler evh
 	int 	depth;
 
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
-	numPlayers = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	numPlayers = atoi( Info_ValueForKey( info, "g_maxClients" ) );
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
@@ -835,7 +835,7 @@ static void DynamicMenu_MenuDraw( void )
             UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
 			y += TINYCHAR_HEIGHT;
 		}
-		if (strcmp(key, "sv_maxclients") == 0) {
+		if (strcmp(key, "g_maxClients") == 0) {
 			strcpy(key, "Max players");
             UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
 			y += TINYCHAR_HEIGHT;

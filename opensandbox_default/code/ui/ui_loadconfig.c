@@ -333,10 +333,10 @@ static void LoadConfig_MenuEvent( void *ptr, int event ) {
 	case ID_GO:
 		// confirm overwrite if save
 		if (s_configs.load) {
-			COM_StripExtensionOld(s_configs.configlist[s_configs.list.curvalue], s_configs.configname);
+			COM_StripExtension(s_configs.configlist[s_configs.list.curvalue], s_configs.configname, sizeof(s_configs.configname));
 		}
 		else {
-			COM_StripExtensionOld(s_configs.savename.field.buffer, s_configs.configname);
+			COM_StripExtension(s_configs.savename.field.buffer, s_configs.configname, sizeof(s_configs.configname));
 		}
 		if (s_configs.configname[0])
 			strcat(s_configs.configname, ".cfg");

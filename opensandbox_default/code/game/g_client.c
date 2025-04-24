@@ -1478,8 +1478,9 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
 
-	/*if ( !isBot && level.player )
-		return "Server is running a single player gametype.";*/
+	if(clientNum >= g_maxClients.integer){
+		return "Server is full, increase g_maxClients.";
+	}
 
     //KK-OAX I moved these up so userinfo could be assigned/used.
 	ent = &g_entities[ clientNum ];
@@ -2430,8 +2431,9 @@ server system housekeeping.
 */
 void ClientDisconnect( int clientNum ) {
 	gentity_t	*ent;
+	gentity_t	*tent;
 	int			i;
-        char	userinfo[MAX_INFO_STRING];
+	char		userinfo[MAX_INFO_STRING];
 
 	// cleanup if we are kicking a bot that
 	// hasn't spawned yet
@@ -2442,38 +2444,34 @@ void ClientDisconnect( int clientNum ) {
 		return;
 	}
 
-    trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
-
 	// stop any following clients
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( (level.clients[i].sess.sessionTeam == TEAM_SPECTATOR || level.clients[i].ps.pm_type == PM_SPECTATOR)
+		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR
 			&& level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
 			&& level.clients[i].sess.spectatorClient == clientNum ) {
 			StopFollowing( &g_entities[i] );
 		}
 	}
 
-        //Is the player alive?
-        i = (ent->client->ps.stats[STAT_HEALTH]>0);
-        //Commit suicide!
-        if ( ent->client->pers.connected == CON_CONNECTED
-		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR && i ) {
-                //Prevent a team from loosing point because of player leaving
-                int teamscore = 0;
-                if(g_gametype.integer == GT_TEAM)
-                    teamscore = level.teamScores[ ent->client->sess.sessionTeam ];
-		// Kill him (makes sure he loses flags, etc)
-		ent->flags &= ~FL_GODMODE;
-		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
-		player_die (ent, ent, g_entities + ENTITYNUM_WORLD, 100000, MOD_SUICIDE);
-                if(g_gametype.integer == GT_TEAM)
-                    level.teamScores[ ent->client->sess.sessionTeam ] = teamscore;
+	// send effect if they were completely connected
+	if ( ent->client->pers.connected == CON_CONNECTED 
+		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
+		tent->s.clientNum = ent->s.clientNum;
+
+		// They don't get to take powerups with them!
+		// Especially important for stuff like CTF flags
+		TossClientItems( ent );
+		TossClientPersistantPowerups( ent );
+		if( g_gametype.integer == GT_HARVESTER ) {
+			TossClientCubes( ent );
+		}
+
 	}
 
-
-
-        if ( ent->client->pers.connected == CON_CONNECTED && ent->client->sess.sessionTeam != TEAM_SPECTATOR)
-            PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"),ent->client->ps);
+	if ( ent->client->pers.connected == CON_CONNECTED && ent->client->sess.sessionTeam != TEAM_SPECTATOR){
+		PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"),ent->client->ps);
+	}
 
 	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
 
@@ -2483,16 +2481,6 @@ void ClientDisconnect( int clientNum ) {
 		&& !level.warmupTime && level.sortedClients[1] == clientNum ) {
 		level.clients[ level.sortedClients[0] ].sess.wins++;
 		ClientUserinfoChanged( level.sortedClients[0] );
-	}
-
-	if( g_gametype.integer == GT_TOURNAMENT &&
-		ent->client->sess.sessionTeam == TEAM_FREE &&
-		level.intermissiontime ) {
-
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-		level.restarted = qtrue;
-		level.changemap = NULL;
-		level.intermissiontime = 0;
 	}
 
 	trap_UnlinkEntity (ent);
@@ -2521,7 +2509,6 @@ See http://www.quake3world.com/forum/viewtopic.php?f=16&t=45625
 ============
 */
 void DropClientSilently( int clientNum ) {
-	Undo_RemoveElementFromAll(clientNum);
 	trap_DropClient( clientNum, "DR_SILENT_DROP" );
 }
 

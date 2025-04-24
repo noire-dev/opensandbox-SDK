@@ -1167,14 +1167,9 @@ void target_finish_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 		secretFound = (level.player->client->ps.persistant[PERS_SECRETS] & 0x7F);
 		secretCount = ((level.player->client->ps.persistant[PERS_SECRETS] >> 7) & 0x7F) + level.secretCount;
 		level.player->client->ps.persistant[PERS_SECRETS] = secretFound + (secretCount << 7);
-		///
-
 
 		// calculate player's score
 		scores = G_CalculatePlayerScore(level.player);
-
-		// write high score file
-		COM_WriteLevelScores(G_GetScoringMapName(), scores);
 
 		BeginIntermission();
 	}

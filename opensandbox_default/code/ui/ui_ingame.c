@@ -103,7 +103,7 @@ static void InGame_NextMap( qboolean result )
 		trap_Cmd_ExecuteText( EXEC_INSERT, "set activeAction \"");
 
 		trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
-		numPlayers = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+		numPlayers = atoi( Info_ValueForKey( info, "g_maxClients" ) );
 
 		// try and move all bots to spectator mode
 		for( i = 0; i < numPlayers; i++ ) {

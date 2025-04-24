@@ -160,7 +160,7 @@ static qboolean CG_RainParticleCheckVisible( int type, cg_atmosphericParticle_t 
 	VectorSubtract( particle->pos, cg.refdef.vieworg, distance );
 
 	viewyaw = cg.refdefViewAngles[YAW];
-	yaw = vectoyaw(distance);
+	yaw = VectorToYaw(distance);
 
 	if( sqrt( distance[0] * distance[0] + distance[1] * distance[1] ) > MAX_ATMOSPHERIC_DISTANCE
 		|| fabs(AngleDifference(viewyaw, yaw)) > (cg.refdef.fov_x / 2.0f + 5)

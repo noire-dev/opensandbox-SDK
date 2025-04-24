@@ -426,7 +426,6 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 	} else if ( !client->pers.localClient ) {
 		if ( level.time > client->inactivityTime ) {
 			trap_DropClient( client - level.clients, "Dropped due to inactivity" );
-			Undo_RemoveElementFromAll(client - level.clients);
 			return qfalse;
 		}
 		if ( level.time > client->inactivityTime - 10000 && !client->inactivityWarning ) {

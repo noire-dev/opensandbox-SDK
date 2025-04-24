@@ -444,7 +444,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		return;
 	}
 
-	Undo_PushElement(player, ent->s.number, UNDO_PROPSPAWN);
+	Undo_AddElement(player, ent->s.number, UNDO_PROPSPAWN);
 
 	//Origin
 	VectorCopy( position, ent->s.origin );
@@ -818,32 +818,52 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 
 void Undo_ShiftStack(gentity_t *ent) {
 	int i;
-    if (!ent || !ent->client) return;
 
-    for (i = MAX_UNDO_STACK - 1; i > 0; i--) {
-        ent->client->undoStack[i] = ent->client->undoStack[i - 1];
-    }
+	for (i = MAX_UNDO_STACK - 1; i > 0; i--) {
+		ent->client->undoStack[i] = ent->client->undoStack[i - 1];
+	}
 }
 
-void Undo_PushElement(gentity_t *ent, int id, int type) {
-    if (!ent || !ent->client) return;
+void Undo_AddElement(gentity_t *ent, int id, int type) {
 
-    Undo_ShiftStack(ent);
+	Undo_ShiftStack(ent);
 
-    ent->client->undoStack[0].id = id;
-    ent->client->undoStack[0].type = type;
+	ent->client->undoStack[0].id = id;
+	ent->client->undoStack[0].type = type;
+	ent->client->undoStack[0].isRemoved = qfalse;
 }
 
-qboolean Undo_PopElement(gentity_t *ent, int *id, int *type) {
+qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved) {
 	int i;
-    if (!ent || !ent->client) return qfalse;
+	gentity_t *pent;
 
-    if (ent->client->undoStack[0].id == 0 && ent->client->undoStack[0].type == 0) {
-        return qfalse;
+	for (i = 0; i < MAX_UNDO_STACK - 1; i++) {
+		if(ent->client->undoStack[i].type == UNDO_PROPSPAWN){
+			pent = G_FindEntityForEntityNum(ent->client->undoStack[i].id);
+		}
+		if(ent->client->undoStack[i].type == UNDO_NPCSPAWN){
+			pent = G_FindEntityForClientNum(ent->client->undoStack[i].id);
+		}
+		if(pent){
+			ent->client->undoStack[i].isRemoved = qfalse;
+		} else {
+			ent->client->undoStack[i].isRemoved = qtrue;
+		}
     }
 
-    *id = ent->client->undoStack[0].id;
-    *type = ent->client->undoStack[0].type;
+	if (ent->client->undoStack[0].id == 0 && ent->client->undoStack[0].type == 0 && ent->client->undoStack[0].isRemoved == qfalse) {
+		return qfalse;
+	}
+
+	*id = ent->client->undoStack[0].id;
+	*type = ent->client->undoStack[0].type;
+	*isRemoved = ent->client->undoStack[0].isRemoved;
+
+	return qtrue;
+}
+
+void Undo_RemoveElement(gentity_t *ent) {
+    int i;
 
     for (i = 0; i < MAX_UNDO_STACK - 1; i++) {
         ent->client->undoStack[i] = ent->client->undoStack[i + 1];
@@ -851,37 +871,5 @@ qboolean Undo_PopElement(gentity_t *ent, int *id, int *type) {
 
     ent->client->undoStack[MAX_UNDO_STACK - 1].id = 0;
     ent->client->undoStack[MAX_UNDO_STACK - 1].type = 0;
-
-    return qtrue;
-}
-
-void Undo_RemoveElement(gentity_t *ent, int target_id) {
-	int i, j;
-    if (!ent || !ent->client) return;
-
-
-    for (i = 0; i < MAX_UNDO_STACK; i++) {
-        if (ent->client->undoStack[i].id == target_id) {
-
-            for (j = i; j < MAX_UNDO_STACK - 1; j++) {
-                ent->client->undoStack[j] = ent->client->undoStack[j + 1];
-            }
-
-            ent->client->undoStack[MAX_UNDO_STACK - 1].id = 0;
-            ent->client->undoStack[MAX_UNDO_STACK - 1].type = 0;
-            break;
-        }
-    }
-}
-
-void Undo_RemoveElementFromAll(int target_id) {
-    int k;
-    
-    for (k = 0; k < MAX_CLIENTS; k++) {
-        gentity_t *client_ent = &g_entities[k];
-
-        if (client_ent && client_ent->client) {
-            Undo_RemoveElement(client_ent, target_id);
-        }
-    }
+	ent->client->undoStack[MAX_UNDO_STACK - 1].isRemoved = qfalse;
 }

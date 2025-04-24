@@ -236,7 +236,7 @@ static void UI_LoadUnscriptedMaps( void )
 
 		dirlen = strlen(dirptr);
 
-		COM_StripExtensionOld(dirptr, dirptr);
+		COM_StripExtension(dirptr, dirptr, sizeof(dirptr));
 
 		if (UI_GetArenaInfoByMap( dirptr ))
 			continue;

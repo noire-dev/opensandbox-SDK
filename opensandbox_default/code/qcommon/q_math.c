@@ -37,7 +37,6 @@
 vec3_t	vec3_origin = {0,0,0};
 vec3_t	axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
-
 vec4_t		colorBlack	= {0, 0, 0, 1};
 vec4_t		colorRed	= {1, 0, 0, 1};
 vec4_t		colorGreen	= {0, 1, 0, 1};
@@ -51,18 +50,17 @@ vec4_t		colorMdGrey	= {0.5, 0.5, 0.5, 1};
 vec4_t		colorDkGrey	= {0.25, 0.25, 0.25, 1};
 
 vec4_t	g_color_table[9] =
-	{
-	{0.0, 0.0, 0.0, 1.0},
-	{1.0, 0.0, 0.0, 1.0},
-	{0.0, 1.0, 0.0, 1.0},
-	{1.0, 1.0, 0.0, 1.0},
-	{0.0, 0.0, 1.0, 1.0},
-	{0.0, 1.0, 1.0, 1.0},
-	{1.0, 0.0, 1.0, 1.0},
-	{1.0, 1.0, 1.0, 1.0},
-        {1.00f, 0.43f, 0.00f, 1.00f},
-	};
-
+{
+{0.0, 0.0, 0.0, 1.0},
+{1.0, 0.0, 0.0, 1.0},
+{0.0, 1.0, 0.0, 1.0},
+{1.0, 1.0, 0.0, 1.0},
+{0.0, 0.0, 1.0, 1.0},
+{0.0, 1.0, 1.0, 1.0},
+{1.0, 0.0, 1.0, 1.0},
+{1.0, 1.0, 1.0, 1.0},
+{1.00f, 0.43f, 0.00f, 1.00f},
+};
 
 vec3_t	bytedirs[NUMVERTEXNORMALS] =
 {
@@ -162,27 +160,6 @@ float	Q_crandom( int *seed ) {
 	return 2.0 * ( Q_random( seed ) - 0.5 );
 }
 
-signed char ClampChar( int i ) {
-	if ( i < -128 ) {
-		return -128;
-	}
-	if ( i > 127 ) {
-		return 127;
-	}
-	return i;
-}
-
-signed short ClampShort( int i ) {
-	if ( i < -32768 ) {
-		return -32768;
-	}
-	if ( i > 0x7fff ) {
-		return 0x7fff;
-	}
-	return i;
-}
-
-
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir ) {
 	int		i, best;
@@ -215,28 +192,6 @@ void ByteToDir( int b, vec3_t dir ) {
 	VectorCopy (bytedirs[b], dir);
 }
 
-
-unsigned ColorBytes3 (float r, float g, float b) {
-	unsigned	i;
-
-	( (byte *)&i )[0] = r * 255;
-	( (byte *)&i )[1] = g * 255;
-	( (byte *)&i )[2] = b * 255;
-
-	return i;
-}
-
-unsigned ColorBytes4 (float r, float g, float b, float a) {
-	unsigned	i;
-
-	( (byte *)&i )[0] = r * 255;
-	( (byte *)&i )[1] = g * 255;
-	( (byte *)&i )[2] = b * 255;
-	( (byte *)&i )[3] = a * 255;
-
-	return i;
-}
-
 float NormalizeColor( const vec3_t in, vec3_t out ) {
 	float	max;
 	
@@ -257,7 +212,6 @@ float NormalizeColor( const vec3_t in, vec3_t out ) {
 	}
 	return max;
 }
-
 
 /*
 =====================
@@ -543,38 +497,6 @@ void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal )
 }
 
 /*
-================
-MakeNormalVectors
-
-Given a normalized forward vector, create two
-other perpendicular vectors
-================
-*/
-void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up) {
-	float		d;
-
-	// this rotate and negate guarantees a vector
-	// not colinear with the original
-	right[1] = -forward[0];
-	right[2] = forward[1];
-	right[0] = forward[2];
-
-	d = DotProduct (right, forward);
-	VectorMA (right, -d, forward, right);
-	VectorNormalize (right);
-	CrossProduct (right, forward, up);
-}
-
-
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out )
-{
-	out[0] = DotProduct( in, matrix[0] );
-	out[1] = DotProduct( in, matrix[1] );
-	out[2] = DotProduct( in, matrix[2] );
-}
-
-#if !idppc
-/*
 ** float q_rsqrt( float number )
 */
 float Q_rsqrt( float number )
@@ -601,7 +523,6 @@ float Q_fabs( float f ) {
 	tmp &= 0x7FFFFFFF;
 	return * ( float * ) &tmp;
 }
-#endif
 
 /*
 ===============
@@ -687,18 +608,6 @@ void AngleMA(vec3_t aa, float scale, vec3_t ab, vec3_t ac)
 
 /*
 =================
-AnglesAdd
-=================
-*/
-void AnglesAdd(vec3_t a1, vec3_t a2, vec3_t dest)
-{
-	dest[0] = AngleAdd(a1[0], a2[0]);
-	dest[1] = AngleAdd(a1[1], a2[1]);
-	dest[2] = AngleAdd(a1[2], a2[2]);
-}
-
-/*
-=================
 LerpAngles
 =================
 */
@@ -748,88 +657,6 @@ float AngleDelta ( float angle1, float angle2 ) {
 
 /*
 =================
-SetPlaneSignbits
-=================
-*/
-void SetPlaneSignbits (cplane_t *out) {
-	int	bits, j;
-
-	// for fast box on planeside test
-	bits = 0;
-	for (j=0 ; j<3 ; j++) {
-		if (out->normal[j] < 0) {
-			bits |= 1<<j;
-		}
-	}
-	out->signbits = bits;
-}
-
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
-{
-	float	dist1, dist2;
-	int		sides;
-
-// fast axial cases
-	if (p->type < 3)
-	{
-		if (p->dist <= emins[p->type])
-			return 1;
-		if (p->dist >= emaxs[p->type])
-			return 2;
-		return 3;
-	}
-
-// general case
-	switch (p->signbits)
-	{
-	case 0:
-		dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-		dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-		break;
-	case 1:
-		dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-		dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-		break;
-	case 2:
-		dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-		dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-		break;
-	case 3:
-		dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-		dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-		break;
-	case 4:
-		dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-		dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-		break;
-	case 5:
-		dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-		dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-		break;
-	case 6:
-		dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-		dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-		break;
-	case 7:
-		dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-		dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-		break;
-	default:
-		dist1 = dist2 = 0;		// shut up compiler
-		break;
-	}
-
-	sides = 0;
-	if (dist1 >= p->dist)
-		sides = 1;
-	if (dist2 < p->dist)
-		sides |= 2;
-
-	return sides;
-}
-
-/*
-=================
 RadiusFromBounds
 =================
 */
@@ -845,12 +672,6 @@ float RadiusFromBounds( const vec3_t mins, const vec3_t maxs ) {
 	}
 
 	return VectorLength (corner);
-}
-
-
-void ClearBounds( vec3_t mins, vec3_t maxs ) {
-	mins[0] = mins[1] = mins[2] = 99999;
-	maxs[0] = maxs[1] = maxs[2] = -99999;
 }
 
 void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs ) {
@@ -874,54 +695,6 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs ) {
 	if ( v[2] > maxs[2]) {
 		maxs[2] = v[2];
 	}
-}
-
-qboolean BoundsIntersect(const vec3_t mins, const vec3_t maxs,
-		const vec3_t mins2, const vec3_t maxs2)
-{
-	if ( maxs[0] < mins2[0] ||
-		maxs[1] < mins2[1] ||
-		maxs[2] < mins2[2] ||
-		mins[0] > maxs2[0] ||
-		mins[1] > maxs2[1] ||
-		mins[2] > maxs2[2])
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-qboolean BoundsIntersectSphere(const vec3_t mins, const vec3_t maxs,
-		const vec3_t origin, vec_t radius)
-{
-	if ( origin[0] - radius > maxs[0] ||
-		origin[0] + radius < mins[0] ||
-		origin[1] - radius > maxs[1] ||
-		origin[1] + radius < mins[1] ||
-		origin[2] - radius > maxs[2] ||
-		origin[2] + radius < mins[2])
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-qboolean BoundsIntersectPoint(const vec3_t mins, const vec3_t maxs,
-		const vec3_t origin)
-{
-	if ( origin[0] > maxs[0] ||
-		origin[0] < mins[0] ||
-		origin[1] > maxs[1] ||
-		origin[1] < mins[1] ||
-		origin[2] > maxs[2] ||
-		origin[2] < mins[2])
-	{
-		return qfalse;
-	}
-
-	return qtrue;
 }
 
 vec_t VectorNormalize( vec3_t v ) {
@@ -1003,17 +776,6 @@ void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out ) {
 	out[3] = in[3]*scale;
 }
 
-
-int Q_log2( int val ) {
-	int answer;
-
-	answer = 0;
-	while ( ( val>>=1 ) != 0 ) {
-		answer++;
-	}
-	return answer;
-}
-
 /*
 ================
 MatrixMultiply
@@ -1075,18 +837,6 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	}
 }
 
-void VectorMin(const vec3_t a, const vec3_t b, vec3_t out) {
-    out[0] = (a[0] < b[0]) ? a[0] : b[0];
-    out[1] = (a[1] < b[1]) ? a[1] : b[1];
-    out[2] = (a[2] < b[2]) ? a[2] : b[2];
-}
-
-void VectorMax(const vec3_t a, const vec3_t b, vec3_t out) {
-    out[0] = (a[0] > b[0]) ? a[0] : b[0];
-    out[1] = (a[1] > b[1]) ? a[1] : b[1];
-    out[2] = (a[2] > b[2]) ? a[2] : b[2];
-}
-
 /*
 ** assumes "src" is normalized
 */
@@ -1114,26 +864,4 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 	ProjectPointOnPlane( dst, tempvec, src );
 
 	VectorNormalize( dst );
-}
-
-/*
-================
-Q_isnan
-
-Don't pass doubles to this
-================
-*/
-int Q_isnan( float x )
-{
-	union
-	{
-		float f;
-		unsigned int i;
-	} t;
-
-	t.f = x;
-	t.i &= 0x7FFFFFFF;
-	t.i = 0x7F800000 - t.i;
-
-	return (int)( (unsigned int)t.i >> 31 );
 }

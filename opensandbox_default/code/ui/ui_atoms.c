@@ -637,7 +637,7 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		UI_CreditMenu(1);
 		}
 		if(strlen(ui_3dmap.string)){
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("set sv_maxclients 1; map %s\n", ui_3dmap.string) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va("set g_maxClients 1; map %s\n", ui_3dmap.string) );
 		}
 		return;
 	case UIMENU_INGAME:

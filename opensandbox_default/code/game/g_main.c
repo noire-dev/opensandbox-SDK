@@ -375,8 +375,7 @@ vmCvar_t	g_timelimit;
 vmCvar_t	g_capturelimit;
 vmCvar_t	g_friendlyFire;
 vmCvar_t	g_password;
-vmCvar_t	g_maxclients;
-vmCvar_t	g_maxGameClients;
+vmCvar_t	g_maxClients;
 vmCvar_t	g_dedicated;
 vmCvar_t	g_speed;
 vmCvar_t	g_gravity;
@@ -571,15 +570,14 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
 	// noset vars
-	{ NULL, "gamename", GAMEVERSION , CVAR_ROM, 0, qfalse  },
+	{ NULL, "gamename", GAME_VERSION , CVAR_ROM, 0, qfalse  },
 	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
-	{ &g_maxclients, "sv_maxclients", "128", CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse  },
-	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_LATCH, 0, qfalse  },
+	{ &g_maxClients, "g_maxClients", "128", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse  },
 	
 	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", 0, 0, qtrue  },
 	{ &cl_propheight, "cl_propheight", "21", 0, 0, qtrue  },
@@ -965,8 +963,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
 	{ &pmove_fixed, "pmove_fixed", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse},
 	{ &pmove_msec, "pmove_msec", "11", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse},
-
-        { &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qtrue},
+	{ &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qtrue},
 
 //unlagged - server options
 	{ &g_delagHitscan, "g_delagHitscan", "0", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },
@@ -1261,7 +1258,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_Fade(0, rgba, rgba, -1);
 
     G_Printf ("------- Game Initialization -------\n");
-    G_Printf ("gamename: %s\n", GAMEVERSION);
+    G_Printf ("gamename: %s\n", GAME_VERSION);
     G_Printf ("gamedate: %s\n", __DATE__);
 
 	srand( randomSeed );
@@ -1307,7 +1304,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.gentities = g_entities;
 
 	// initialize all clients for this game
-	level.maxclients = g_maxclients.integer;
+	level.maxclients = MAX_CLIENTS;
 	memset( g_clients, 0, MAX_CLIENTS * sizeof(g_clients[0]) );
 	level.clients = g_clients;
 
@@ -1322,7 +1319,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.num_entities = MAX_CLIENTS;
 
     for ( i=0 ; i<MAX_CLIENTS ; i++ ) {
-            g_entities[i].classname = "clientslot";
+        g_entities[i].classname = "clientslot";
     }
 
 	// let the server system know where the entites are
@@ -1352,7 +1349,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
 		BotAISetup( restart );
 		BotAILoadMap( restart );
-		G_InitBots( restart );
+		G_LoadBots();
 	}
 
 	NS_OpenScript("nscript/game/init.ns", NULL, 0);		//Noire.Script Init in qagame.qvm
@@ -2006,14 +2003,8 @@ or moved to a new level based on the "nextmap" cvar
 =============
 */
 void ExitLevel (void) {
-	int		i;
-	gclient_t *cl;
-	char nextmap[MAX_STRING_CHARS];
-	char d1[MAX_STRING_CHARS];
-        char	serverinfo[MAX_INFO_STRING];
-
-	//bot interbreeding
-	BotInterbreedEndMatch();
+	int		 	i;
+	gclient_t 	*cl;
 
 	// if we are running a tournement map, kick the loser to spectator status,
 	// which will automatically grab the next spectator and restart
@@ -2022,31 +2013,18 @@ void ExitLevel (void) {
 			RemoveTournamentLoser();
 			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 			level.restarted = qtrue;
-			level.changemap = NULL;
 			level.intermissiontime = 0;
 		}
 		return;
 	}
 
-	trap_Cvar_VariableStringBuffer( "nextmap", nextmap, sizeof(nextmap) );
-	trap_Cvar_VariableStringBuffer( "d1", d1, sizeof(d1) );
-
-    trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
-
-	if( !Q_stricmp( nextmap, "map_restart 0" ) && Q_stricmp( d1, "" ) ) {
-		trap_Cvar_Set( "nextmap", "vstr d2" );
-		trap_SendConsoleCommand( EXEC_APPEND, "vstr d1\n" );
-	} else {
-		trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
-	}
-
-	level.changemap = NULL;
+	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
 	level.teamScores[TEAM_RED] = 0;
 	level.teamScores[TEAM_BLUE] = 0;
-	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+	for ( i=0 ; i< MAX_CLIENTS; i++ ) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -2059,7 +2037,7 @@ void ExitLevel (void) {
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< MAX_CLIENTS; i++) {
 		if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 			level.clients[i].pers.connected = CON_CONNECTING;
 		}
@@ -2153,7 +2131,6 @@ void LogExit( const char *string ) {
 
 }
 
-
 /*
 =================
 CheckIntermissionExit
@@ -2175,7 +2152,7 @@ void CheckIntermissionExit( void ) {
 	notReady = 0;
 	readyMask = 0;
         playerCount = 0;
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< MAX_CLIENTS; i++) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -2197,7 +2174,7 @@ void CheckIntermissionExit( void ) {
 
 	// copy the readyMask to each player's stats so
 	// it can be displayed on the scoreboard
-	for (i=0 ; i< g_maxclients.integer ; i++) {
+	for (i=0 ; i< MAX_CLIENTS; i++) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -2287,7 +2264,7 @@ void CheckExitRules( void ) {
 		return;
 	} else {
             //sago: Find the reason for this to be neccesary.
-            for (i=0 ; i< g_maxclients.integer ; i++) {
+            for (i=0 ; i< MAX_CLIENTS; i++) {
 		cl = level.clients + i;
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
@@ -2335,7 +2312,7 @@ void CheckExitRules( void ) {
 			return;
 		}
 
-		for ( i=0 ; i< g_maxclients.integer ; i++ ) {
+		for ( i=0 ; i< MAX_CLIENTS; i++ ) {
 			cl = level.clients + i;
 			if ( cl->pers.connected != CON_CONNECTED ) {
 				continue;

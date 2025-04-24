@@ -573,7 +573,7 @@ static void PlayerModel_BuildList( void )
 		{
 			filelen = strlen(fileptr);
 
-			COM_StripExtensionOld(fileptr,skinname);
+			COM_StripExtension(fileptr,skinname, sizeof(skinname));
 
 			// look for icon_????
 			if (!Q_stricmpn(skinname,"icon_",5))
@@ -591,7 +591,7 @@ static void PlayerModel_BuildList( void )
 
 		// save the default model/skin combo
 		if (defaultskin) {
-			COM_StripExtensionOld(defaultskin,skinname);
+			COM_StripExtension(defaultskin, skinname, sizeof(skinname));
 			Com_sprintf( s_playermodel.modelnames[s_playermodel.nummodels++],
 				sizeof( s_playermodel.modelnames[s_playermodel.nummodels] ),
 				MODELDIR"/%s/%s", dirptr, skinname);
@@ -642,7 +642,7 @@ static void PlayerModel_LoadSkins( int modelnum )
 	{
 		filelen = strlen(fileptr);
 
-		COM_StripExtensionOld(fileptr,skinname);
+		COM_StripExtension(fileptr, skinname, sizeof(skinname));
 
 		// look for icon_????
 		if (!Q_stricmpn(skinname,"icon_",5))

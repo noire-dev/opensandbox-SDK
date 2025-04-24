@@ -1084,7 +1084,7 @@ static qboolean StartServer_WriteServerParams( void )
 
 	s_serverexec.player_client = botcount;
 
-	AddScript(va("set sv_maxclients %i\n",value));
+	AddScript(va("set g_maxClients %i\n",value));
 
 	// pmove
 	value = s_scriptdata.server.pmove_fixed;

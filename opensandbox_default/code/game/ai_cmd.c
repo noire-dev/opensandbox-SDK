@@ -248,7 +248,7 @@ int FindClientByName(char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		ClientName(i, buf, sizeof(buf));
 		if (!Q_stricmp(buf, name)) return i;
@@ -271,7 +271,7 @@ int FindEnemyByName(bot_state_t *bs, char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR && gametype != GT_SINGLE){if (BotSameTeam(bs, i)) continue;}
 		ClientName(i, buf, sizeof(buf));
@@ -296,7 +296,7 @@ int NumPlayersOnSameTeam(bot_state_t *bs) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 
 	num = 0;
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {

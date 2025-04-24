@@ -1562,7 +1562,7 @@ int ClientFromName(char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		trap_GetConfigstring(CS_PLAYERS+i, buf, sizeof(buf));
 		//Q_CleanStr( buf );
@@ -1586,7 +1586,7 @@ int ClientOnSameTeamFromName(bot_state_t *bs, char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if (!BotSameTeam(bs, i))
 			continue;
@@ -5486,7 +5486,7 @@ void BotSetupDeathmatchAI(void) {
 	char model[128];
 
 	gametype = trap_Cvar_VariableIntegerValue("g_gametype");
-	maxclients = trap_Cvar_VariableIntegerValue("sv_maxclients");
+	maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 
 	trap_Cvar_Register(&bot_rocketjump, "bot_rocketjump", "1", 0);
 	trap_Cvar_Register(&bot_grapple, "bot_grapple", "1", 0);

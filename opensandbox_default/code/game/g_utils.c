@@ -978,7 +978,6 @@ void G_FreeEntity( gentity_t *ed ) {
 	}
 
     Phys_Unweld(ed);
-	Undo_RemoveElementFromAll(ed->s.number);
 
 	memset (ed, 0, sizeof(*ed));
 	ed->classname = "freed";
@@ -1715,9 +1714,8 @@ gentity_t *G_FindEntityForEntityNum(int entityn) {
     int i;
     gentity_t *ent;
 
-    // go through all allocated objects
     for (i = 0, ent = g_entities; i < level.num_entities; i++, ent++) {
-        if (ent->s.number == entityn) {
+        if (ent && ent->s.number == entityn && ent->inuse) {
             return ent;
         }
     }
@@ -1729,10 +1727,9 @@ gentity_t *G_FindEntityForClientNum(int entityn) {
     int i;
     gentity_t *ent;
 
-    for (i = 0, ent = g_entities; i < level.num_entities; i++, ent++) {
-        if (ent->client || ent->client->ps.clientNum == entityn) {
-            return ent;
-        }
+	ent = &g_entities[entityn];
+    if (ent && ent->client && ent->inuse) {
+        return ent;
     }
     
     return NULL;
@@ -1757,6 +1754,4 @@ gentity_t *G_FindWeldEntity(gentity_t *ent) {
 	} else {
 		return ent;
 	}
-    
-    return NULL;
 }

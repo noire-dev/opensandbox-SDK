@@ -71,9 +71,6 @@ float floattime;
 //time to do a regular update
 float regularupdate_time;
 //
-int bot_interbreed;
-int bot_interbreedmatchcount;
-//
 vmCvar_t bot_thinktime;
 vmCvar_t bot_memorydump;
 vmCvar_t bot_saveroutingcache;
@@ -82,10 +79,6 @@ vmCvar_t bot_report;
 vmCvar_t bot_testsolid;
 vmCvar_t bot_testclusters;
 vmCvar_t bot_developer;
-vmCvar_t bot_interbreedchar;
-vmCvar_t bot_interbreedbots;
-vmCvar_t bot_interbreedcycle;
-vmCvar_t bot_interbreedwrite;
 
 
 void ExitLevel( void );
@@ -702,126 +695,6 @@ void BotUpdateInfoConfigStrings(void) {
 			continue;
 		BotSetInfoConfigString(botstates[i]);
 	}
-}
-
-/*
-==============
-BotInterbreedBots
-==============
-*/
-void BotInterbreedBots(void) {
-	float ranks[MAX_CLIENTS];
-	int parent1, parent2, child;
-	int i;
-
-	// get rankings for all the bots
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		if ( botstates[i] && botstates[i]->inuse ) {
-			ranks[i] = botstates[i]->num_kills * 2 - botstates[i]->num_deaths;
-		}
-		else {
-			ranks[i] = -1;
-		}
-	}
-
-	if (trap_GeneticParentsAndChildSelection(MAX_CLIENTS, ranks, &parent1, &parent2, &child)) {
-		trap_BotInterbreedGoalFuzzyLogic(botstates[parent1]->gs, botstates[parent2]->gs, botstates[child]->gs);
-		trap_BotMutateGoalFuzzyLogic(botstates[child]->gs, 1);
-	}
-	// reset the kills and deaths
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		if (botstates[i] && botstates[i]->inuse) {
-			botstates[i]->num_kills = 0;
-			botstates[i]->num_deaths = 0;
-		}
-	}
-}
-
-/*
-==============
-BotWriteInterbreeded
-==============
-*/
-void BotWriteInterbreeded(char *filename) {
-	float rank, bestrank;
-	int i, bestbot;
-
-	bestrank = 0;
-	bestbot = -1;
-	// get the best bot
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		if ( botstates[i] && botstates[i]->inuse ) {
-			rank = botstates[i]->num_kills * 2 - botstates[i]->num_deaths;
-		}
-		else {
-			rank = -1;
-		}
-		if (rank > bestrank) {
-			bestrank = rank;
-			bestbot = i;
-		}
-	}
-	if (bestbot >= 0) {
-		//write out the new goal fuzzy logic
-		trap_BotSaveGoalFuzzyLogic(botstates[bestbot]->gs, filename);
-	}
-}
-
-/*
-==============
-BotInterbreedEndMatch
-
-add link back into ExitLevel?
-==============
-*/
-void BotInterbreedEndMatch(void) {
-
-	if (!bot_interbreed) return;
-	bot_interbreedmatchcount++;
-	if (bot_interbreedmatchcount >= bot_interbreedcycle.integer) {
-		bot_interbreedmatchcount = 0;
-		//
-		trap_Cvar_Update(&bot_interbreedwrite);
-		if (strlen(bot_interbreedwrite.string)) {
-			BotWriteInterbreeded(bot_interbreedwrite.string);
-			trap_Cvar_Set("bot_interbreedwrite", "");
-		}
-		BotInterbreedBots();
-	}
-}
-
-/*
-==============
-BotInterbreeding
-==============
-*/
-void BotInterbreeding(void) {
-	int i;
-
-	trap_Cvar_Update(&bot_interbreedchar);
-	if (!strlen(bot_interbreedchar.string)) return;
-	//make sure we are in tournament mode
-	if (gametype != GT_TOURNAMENT) {
-		trap_Cvar_Set("g_gametype", va("%d", GT_TOURNAMENT));
-		ExitLevel();
-		return;
-	}
-	//shutdown all the bots
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		if (botstates[i] && botstates[i]->inuse) {
-			BotAIShutdownClient(botstates[i]->client, qfalse);
-		}
-	}
-	//make sure all item weight configs are reloaded and Not shared
-	trap_BotLibVarSet("bot_reloadcharacters", "1");
-	//add a number of bots using the desired bot character
-	for (i = 0; i < bot_interbreedbots.integer; i++) {
-		trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s 4 free %i %s%d\n",
-						bot_interbreedchar.string, i * 50, bot_interbreedchar.string, i) );
-	}
-	//
-	trap_Cvar_Set("bot_interbreedchar", "");
-	bot_interbreed = qtrue;
 }
 
 /*
@@ -1476,10 +1349,6 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 	}
 	//NOTE: reschedule the bot thinking
 	BotScheduleBotThink();
-	//if interbreeding start with a mutation
-	if (bot_interbreed) {
-		trap_BotMutateGoalFuzzyLogic(bs->gs, 1);
-	}
 	// if we kept the bot client
 	if (restart) {
 		BotReadSessionData(bs);
@@ -1676,8 +1545,7 @@ int BotAIStartFrame(int time) {
 		trap_BotLibVarSet("saveroutingcache", "1");
 		trap_Cvar_Set("bot_saveroutingcache", "0");
 	}
-	//check if bot interbreeding is activated
-	BotInterbreeding();
+
 	//cap the bot think time
 	if (bot_thinktime.integer != 1) {
 		trap_Cvar_Set("bot_thinktime", "1");
@@ -1818,7 +1686,7 @@ int BotInitLibrary(void) {
 	char buf[144];
 
 	//set the maxclients and maxentities library variables before calling BotSetupLibrary
-	trap_Cvar_VariableStringBuffer("sv_maxclients", buf, sizeof(buf));
+	trap_Cvar_VariableStringBuffer("g_maxClients", buf, sizeof(buf));
 	if (!strlen(buf)) strcpy(buf, "8");
 	trap_BotLibVarSet("maxclients", buf);
 	Com_sprintf(buf, sizeof(buf), "%d", MAX_GENTITIES);
@@ -1896,10 +1764,6 @@ int BotAISetup( int restart ) {
 	trap_Cvar_Register(&bot_testsolid, "bot_testsolid", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_testclusters, "bot_testclusters", "0", CVAR_CHEAT);
 	trap_Cvar_Register(&bot_developer, "bot_developer", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_interbreedchar, "bot_interbreedchar", "", 0);
-	trap_Cvar_Register(&bot_interbreedbots, "bot_interbreedbots", "10", 0);
-	trap_Cvar_Register(&bot_interbreedcycle, "bot_interbreedcycle", "20", 0);
-	trap_Cvar_Register(&bot_interbreedwrite, "bot_interbreedwrite", "", 0);
 
 	//if the game is restarted for a tournament
 	if (restart) {

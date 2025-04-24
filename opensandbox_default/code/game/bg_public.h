@@ -32,7 +32,7 @@
 #else
 #define BG_PUBLIC_H 1
 
-#define	GAME_VERSION		BASEGAME "-1"
+#define	GAME_VERSION		"game"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-66

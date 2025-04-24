@@ -787,7 +787,7 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	Q_strupr( servernodeptr->addonname );
 
 	servernodeptr->numclients = atoi( Info_ValueForKey( info, "clients") );
-	servernodeptr->maxclients = atoi( Info_ValueForKey( info, "sv_maxclients") );
+	servernodeptr->maxclients = atoi( Info_ValueForKey( info, "g_maxClients") );
 	servernodeptr->pingtime   = pingtime;
 	servernodeptr->minPing    = atoi( Info_ValueForKey( info, "minPing") );
 	servernodeptr->maxPing    = atoi( Info_ValueForKey( info, "maxPing") );

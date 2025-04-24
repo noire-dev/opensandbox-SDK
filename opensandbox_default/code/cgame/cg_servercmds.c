@@ -343,7 +343,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
-	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	cgs.maxclients = atoi( Info_ValueForKey( info, "g_maxClients" ) );
 	cgs.roundtime = atoi( Info_ValueForKey( info, "elimination_roundtime" ) );
 	cgs.nopickup = atoi( Info_ValueForKey( info, "g_elimination" ) );
 	cgs.lms_mode = atoi( Info_ValueForKey( info, "g_lms_mode" ) );

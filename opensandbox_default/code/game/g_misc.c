@@ -123,12 +123,8 @@ void Use_Camera (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	} else {
 		Info_SetValueForKey(variableInfo, "m", "0");	//0 means no camera motion
 	}
-	//G_Printf("%s\n", variableInfo);
 	trap_SetConfigstring( CS_CUTSCENE, variableInfo );
 
-	/*if(activator->client->ps.pm_type != PM_CUTSCENE){
-	VectorCopy(activator->client->ps.origin, activator->orgOrigin);
-	}*/
 	activator->client->ps.pm_type = PM_CUTSCENE;
 	self->activator = activator;
 	self->nextthink = level.time + (self->wait * 1000);
@@ -192,7 +188,6 @@ void TeleportPlayerNoKnockback( gentity_t *player, vec3_t origin, vec3_t angles,
 	vec3_t changedvel;
 
 	VectorCopy ( origin, player->client->ps.origin );
-	//player->client->ps.origin[2] += 1;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -685,8 +680,6 @@ void DropPortalSource( gentity_t *player ) {
 
 	ent->count = player->client->portalID;
 	player->client->portalID = 0;
-
-//	ent->spawnflags = player->client->ps.persistant[PERS_TEAM];
 
 	ent->nextthink = level.time + 1000;
 	ent->think = PortalEnable;

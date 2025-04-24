@@ -29,62 +29,13 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#define PRODUCT_NAME			"quakesandbox"
-#define BASEGAME				"game"
-#define CLIENT_WINDOW_TITLE     	"SourceTech: Engine"
-#define CLIENT_WINDOW_MIN_TITLE 	"SourceTech: Engine"
-
-
-#ifdef _MSC_VER
-  #define PRODUCT_VERSION "1.35"
-#endif
-
-#define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION
-
 #define MAX_TEAMNAME 32
 
-#ifdef _MSC_VER
-
-#pragma warning(disable : 4018)     // signed/unsigned mismatch
-#pragma warning(disable : 4032)
-#pragma warning(disable : 4051)
-#pragma warning(disable : 4057)		// slightly different base types
-#pragma warning(disable : 4100)		// unreferenced formal parameter
-#pragma warning(disable : 4115)
-#pragma warning(disable : 4125)		// decimal digit terminates octal escape sequence
-#pragma warning(disable : 4127)		// conditional expression is constant
-#pragma warning(disable : 4136)
-#pragma warning(disable : 4152)		// nonstandard extension, function/data pointer conversion in expression
-//#pragma warning(disable : 4201)
-//#pragma warning(disable : 4214)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4142)		// benign redefinition
-//#pragma warning(disable : 4305)		// truncation from const double to float
-//#pragma warning(disable : 4310)		// cast truncates constant value
-//#pragma warning(disable:  4505) 	// unreferenced local function has been removed
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4702)		// unreachable code
-#pragma warning(disable : 4711)		// selected for automatic inline expansion
-#pragma warning(disable : 4220)		// varargs matches remaining parameters
-//#pragma intrinsic( memset, memcpy )
-#endif
-
-//Ignore __attribute__ on non-gcc platforms
-#ifndef __GNUC__
 #ifndef __attribute__
 #define __attribute__(x)
 #endif
-#endif
 
-#if (defined _MSC_VER)
-#define Q_EXPORT __declspec(dllexport)
-#elif (defined __SUNPRO_C)
-#define Q_EXPORT __global
-#elif ((__GNUC__ >= 3) && (!__EMX__) && (!sun))
-#define Q_EXPORT __attribute__((visibility("default")))
-#else
 #define Q_EXPORT
-#endif
 
 
 /**********************************************************************
@@ -107,7 +58,6 @@
 
 typedef int intptr_t;
 
-
 #include "q_platform.h"
 
 typedef unsigned char 		byte;
@@ -129,10 +79,6 @@ typedef int		clipHandle_t;
 
 #define ALIGN(x)
 
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-
 #define	MAX_QINT			0x7fffffff
 #define	MIN_QINT			(-MAX_QINT-1)
 
@@ -151,20 +97,14 @@ typedef int		clipHandle_t;
 #define	MAX_TOKEN_CHARS		1024	// max length of an individual token
 
 #define	MAX_INFO_STRING		1024
-#define	MAX_INFO_KEY		  1024
+#define	MAX_INFO_KEY		1024
 #define	MAX_INFO_VALUE		1024
 
 #define	BIG_INFO_STRING		8192  // used for system info key only
-#define	BIG_INFO_KEY		  8192
+#define	BIG_INFO_KEY		8192
 #define	BIG_INFO_VALUE		8192
 
-
 #define	MAX_QPATH			64		// max length of a quake game pathname
-#ifdef PATH_MAX
-#define MAX_OSPATH			PATH_MAX
-#else
-#define	MAX_OSPATH			256		// max length of a filesystem pathname
-#endif
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
@@ -178,12 +118,10 @@ typedef enum {
 	EXEC_APPEND			// add to end of the command buffer (normal case)
 } cbufExec_t;
 
-
 //
 // these aren't needed by any of the VMs.  put in another header?
 //
 #define	MAX_MAP_AREA_BYTES		32		// bit vector of area visibility
-
 
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
@@ -192,11 +130,6 @@ typedef enum {
 	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
-
-
-#ifdef ERR_FATAL
-#undef ERR_FATAL			// this is be defined in malloc.h
-#endif
 
 // parameters to the main Error routine
 typedef enum {
@@ -207,9 +140,7 @@ typedef enum {
 	ERR_NEED_CD					// pop up the need-cd dialog
 } errorParm_t;
 
-
 // font rendering values used by ui and cgame
-
 #define PROP_GAP_WIDTH			cl_propgapwidth.integer
 #define PROP_SPACE_WIDTH		8
 #define PROP_HEIGHT				cl_propheight.integer
@@ -253,12 +184,6 @@ void *Hunk_Alloc( int size, ha_pref preference );
 #define Com_Memset memset
 #define Com_Memcpy memcpy
 
-#define CIN_system	1
-#define CIN_loop	2
-#define	CIN_hold	4
-#define CIN_silent	8
-#define CIN_shader	16
-
 /*
 ==============================================================
 
@@ -267,40 +192,19 @@ MATHLIB
 ==============================================================
 */
 
-
 typedef float vec_t;
 typedef vec_t vec2_t[2];
 typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
-typedef vec_t vec5_t[5];
-
-typedef	int	fixed4_t;
-typedef	int	fixed8_t;
-typedef	int	fixed16_t;
-
-typedef float mat3_t[3][3];
-
-#define copysign(x, y) ((y) < 0 ? -(x) : (x))
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h
-#endif
-
-// STONELANCE - pi / 2
-#ifndef M_PI_2
-#define M_PI_2		1.57079632679489661923f
-#endif
-
-// pi / 180
-#ifndef M_PI_180
-#define M_PI_180	0.017453292519943295769236907684886f
 #endif
 
 // 180 / pi
 #ifndef M_180_PI
 #define M_180_PI	57.295779513082320876798154814105f
 #endif
-// END
 
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
@@ -370,49 +274,12 @@ struct cplane_s;
 extern	vec3_t	vec3_origin;
 extern	vec3_t	axisDefault[3];
 
-#define	nanmask (255<<23)
-
-#define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
-
-#if idppc
-
-static ID_INLINE float Q_rsqrt( float number ) {
-		float x = 0.5f * number;
-                float y;
-#ifdef __GNUC__
-                asm("frsqrte %0,%1" : "=f" (y) : "f" (number));
-#else
-		y = __frsqrte( number );
-#endif
-		return y * (1.5f - (x * y * y));
-	}
-
-#ifdef __GNUC__
-static ID_INLINE float Q_fabs(float x) {
-    float abs_x;
-
-    asm("fabs %0,%1" : "=f" (abs_x) : "f" (x));
-    return abs_x;
-}
-#else
-#define Q_fabs __fabsf
-#endif
-
-#else
 float Q_fabs( float f );
 float Q_rsqrt( float f );		// reciprocal square root
-#endif
-
-#define SQRTFAST( x ) ( (x) * Q_rsqrt( x ) )
-
-signed char ClampChar( int i );
-signed short ClampShort( int i );
 
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir );
 void ByteToDir( int b, vec3_t dir );
-
-#if	1
 
 #define DotProduct(x,y)			((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
 #define VectorSubtract(a,b,c)	((c)[0]=(a)[0]-(b)[0],(c)[1]=(a)[1]-(b)[1],(c)[2]=(a)[2]-(b)[2])
@@ -422,17 +289,6 @@ void ByteToDir( int b, vec3_t dir );
 #define VectorCopy(a,b)			((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
 #define	VectorScale(v, s, o)	((o)[0]=(v)[0]*(s),(o)[1]=(v)[1]*(s),(o)[2]=(v)[2]*(s))
 #define	VectorMA(v, s, b, o)	((o)[0]=(v)[0]+(b)[0]*(s),(o)[1]=(v)[1]+(b)[1]*(s),(o)[2]=(v)[2]+(b)[2]*(s))
-
-#else
-
-#define DotProduct(x,y)			_DotProduct(x,y)
-#define VectorSubtract(a,b,c)	_VectorSubtract(a,b,c)
-#define VectorAdd(a,b,c)		_VectorAdd(a,b,c)
-#define VectorCopy(a,b)			_VectorCopy(a,b)
-#define	VectorScale(v, s, o)	_VectorScale(v,s,o)
-#define	VectorMA(v, s, b, o)	_VectorMA(v,s,b,o)
-
-#endif
 
 #ifdef Q3_VM
 #ifdef VectorCopy
@@ -470,38 +326,14 @@ typedef struct {
 #endif
 
 #ifdef GAME
-#define CopyAllocLen(dest, src) do {\
-    dest = (char*)BG_Alloc(strlen(src) + 1); \
-    if (dest != NULL) { \
-        strcpy(dest, src); \
-    } \
-} while(0)
-#endif
-#ifdef UI
-#define CopyAllocLen(dest, src) do {\
-    dest = (char*)UI_Alloc(strlen(src) + 1); \
-    if (dest != NULL) { \
-        strcpy(dest, src); \
-    } \
-} while(0)
-#endif
-
-#ifdef GAME
 #define Q_malloc(size) BG_Alloc(size)
-#endif
-
-#ifdef UI
-#define Q_malloc(size) UI_Alloc(size)
-#endif
-
-#ifdef GAME
 #define Q_free(ptr) BG_Free(ptr)
 #endif
 
 #ifdef UI
+#define Q_malloc(size) UI_Alloc(size)
 #define Q_free(ptr) UI_Free(ptr)
 #endif
-
 
 #define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
 // just in case you do't want to use the macros
@@ -512,16 +344,13 @@ void _VectorCopy( const vec3_t in, vec3_t out );
 void _VectorScale( const vec3_t in, float scale, vec3_t out );
 void _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
-unsigned ColorBytes3 (float r, float g, float b);
-unsigned ColorBytes4 (float r, float g, float b, float a);
-
 float NormalizeColor( const vec3_t in, vec3_t out );
 
 float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
-void ClearBounds( vec3_t mins, vec3_t maxs );
 void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
 
-#if !defined( Q3_VM ) || ( defined( Q3_VM ) && defined( __Q3_VM_MATH ) )
+#if defined( __Q3_VM_MATH )
+
 static ID_INLINE int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
 	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
 		return 0;
@@ -577,6 +406,7 @@ static ID_INLINE void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cro
 }
 
 #else
+
 int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
 vec_t VectorLength( const vec3_t v );
@@ -598,10 +428,6 @@ void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
 vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
-int Q_log2(int val);
-
-float Q_acos(float c);
 
 int		Q_rand( int *seed );
 float	Q_random( int *seed );
@@ -620,23 +446,12 @@ float Lerp(float a, float b, float f);
 void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
 
-void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
-
-qboolean BoundsIntersect(const vec3_t mins, const vec3_t maxs,
-		const vec3_t mins2, const vec3_t maxs2);
-qboolean BoundsIntersectSphere(const vec3_t mins, const vec3_t maxs,
-		const vec3_t origin, vec_t radius);
-qboolean BoundsIntersectPoint(const vec3_t mins, const vec3_t maxs,
-		const vec3_t origin);
-
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
 float	AngleSubtract( float a1, float a2 );
 void	AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
 float 	AngleAdd(float a1, float a2);
 void 	AngleMA(vec3_t aa, float scale, vec3_t ab, vec3_t ac);
-void 	AnglesAdd(vec3_t a1, vec3_t a2, vec3_t dest);
 void 	LerpAngles(vec3_t from, vec3_t to, vec3_t dest, float frac);
 
 float AngleNormalize360 ( float angle );
@@ -647,18 +462,11 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
 void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 void RotateAroundDirection( vec3_t axis[3], float yaw );
-void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 // perpendicular vector could be replaced by this
-
-//int	PlaneTypeForNormal (vec3_t normal);
 
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
 void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
-void VectorMin(const vec3_t a, const vec3_t b, vec3_t out);
-void VectorMax(const vec3_t a, const vec3_t b, vec3_t out);
 void PerpendicularVector( vec3_t dst, const vec3_t src );
-int Q_isnan( float x );
-
 
 //=============================================
 
@@ -667,29 +475,13 @@ float Com_Clamp( float min, float max, float value );
 char	*COM_SkipPath( char *pathname );
 const char	*COM_GetExtension( const char *name );
 void	COM_StripExtension(const char *in, char *out, int destsize);
-//void	COM_StripExtensionOld(const char *in, char *out);
 void	COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
-void	COM_BeginParseSession( const char *name );
-int		COM_GetCurrentParseLine( void );
 char	*COM_Parse( char **data_p );
 char	*COM_ParseExt( char **data_p, qboolean allowLineBreak );
 int		COM_Compress( char *data_p );
-void	COM_ParseError( char *format, ... ) __attribute__ ((format (printf, 1, 2)));
-void	COM_ParseWarning( char *format, ... ) __attribute__ ((format (printf, 1, 2)));
-//int		COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
-
 
 #define MAX_TOKENLENGTH		1024
-
-#ifndef TT_STRING
-//token types
-#define TT_STRING					1			// string
-#define TT_LITERAL					2			// literal
-#define TT_NUMBER					3			// number
-#define TT_NAME						4			// name
-#define TT_PUNCTUATION				5			// punctuation
-#endif
 
 typedef struct pc_token_s
 {
@@ -700,23 +492,7 @@ typedef struct pc_token_s
 	char string[MAX_TOKENLENGTH];
 } pc_token_t;
 
-// data is an in/out parm, returns a parsed out token
-
-void	COM_MatchToken( char**buf_p, char *match );
-
-void SkipBracedSection (char **program);
-void SkipRestOfLine ( char **data );
-
-void Parse1DMatrix (char **buf_p, int x, float *m);
-void Parse2DMatrix (char **buf_p, int y, int x, float *m);
-void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
-
 void	QDECL Com_sprintf (char *dest, int size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
-
-char *Com_SkipTokens( char *s, int numTokens, char *sep );
-char *Com_SkipCharset( char *s, char *sep );
-
-void Com_RandomBytes( byte *string, int len );
 
 // mode parm for FS_FOpenFile
 typedef enum {
@@ -757,7 +533,6 @@ const char	*Q_stristr( const char *s, const char *find);
  * @param destsize size of the destination array, at most destsize-1 will be copied
  */
 void	Q_strncpyz( char *dest, const char *src, int destsize );
-char* 	Q_strncat(char* dest, const char* src, size_t n);
 /**
  * Appends a string to another string. The function protects against overflow.
  * The size is the max size of the destination AFTER the string has been appended
@@ -770,61 +545,19 @@ char* 	Q_strncat(char* dest, const char* src, size_t n);
 void	Q_strcat( char *dest, int size, const char *src );
 
 /**
- * strlen that counts the length of the string after the color sequences have
- * been removed. Example: "A^2I" = 2 because it will be printed "AI"
- *
- * @param string the string to
- * @return the length of the string as printed
- */
-int Q_PrintStrlen( const char *string );
-/**
  * Removes all colors from a string.
  *
  * @param string (in/out) the string to make color less
  * @return pointer to the string
  */
 char *Q_CleanStr( char *string );
-// Count the number of char tocount encountered in string
-int Q_CountChar(const char *string, char tocount);
 
 //=============================================
 
-// 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
-typedef struct
-{
-	byte	b0;
-	byte	b1;
-	byte	b2;
-	byte	b3;
-	byte	b4;
-	byte	b5;
-	byte	b6;
-	byte	b7;
-} qint64;
-
-//=============================================
-/*
-short	BigShort(short l);
-short	LittleShort(short l);
-int		BigLong (int l);
-int		LittleLong (int l);
-qint64  BigLong64 (qint64 l);
-qint64  LittleLong64 (qint64 l);
-float	BigFloat (const float *l);
-float	LittleFloat (const float *l);
-
-void	Swap_Init (void);
-*/
 char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
 
-#define TRUNCATE_LENGTH	64
-void Com_TruncateLongString( char *buffer, const char *s );
-
-// STONELANCE
 float	AngleDifference(float ang1, float ang2);
-float	vectoyaw( const vec3_t vec );
-// END
+float	VectorToYaw( const vec3_t vec );
 
 //=============================================
 
@@ -912,23 +645,7 @@ COLLISION DETECTION
 
 ==============================================================
 */
-
 #include "surfaceflags.h"			// shared with the q3map utility
-
-// plane types are used to speed some tests
-// 0-2 are axial planes
-#define	PLANE_X			0
-#define	PLANE_Y			1
-#define	PLANE_Z			2
-#define	PLANE_NON_AXIAL	3
-
-/*
-=================
-PlaneTypeForNormal
-=================
-*/
-
-#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
 
 // plane_t structure
 // !!! if this is changed, it must be changed in asm code too !!!
@@ -939,7 +656,6 @@ typedef struct cplane_s {
 	byte	signbits;		// signx + (signy<<1) + (signz<<2), used as lookup during collision
 	byte	pad[2];
 } cplane_t;
-
 
 // a trace is returned when a box is swept through the world
 typedef struct {
@@ -952,10 +668,6 @@ typedef struct {
 	int			contents;	// contents on other side of surface hit
 	int			entityNum;	// entity the contacted sirface is a part of
 } trace_t;
-
-// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
-// or ENTITYNUM_NONE, ENTITYNUM_WORLD
-
 
 // markfragments are returned by CM_MarkFragments()
 typedef struct {
@@ -975,7 +687,6 @@ typedef struct {
 #define	KEYCATCH_MESSAGE		0x0004
 #define	KEYCATCH_CGAME			0x0008
 
-
 // sound channels
 // channel 0 never willingly overrides
 // other channels will allways override a playing sound on that channel
@@ -989,7 +700,6 @@ typedef enum {
 	CHAN_LOCAL_SOUND,	// chat messages, etc
 	CHAN_ANNOUNCER		// announcer voices, etc
 } soundChannel_t;
-
 
 /*
 ========================================================================
@@ -1009,10 +719,10 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			128		// absolute limit
+#define	MAX_CLIENTS			128
 #define MAX_LOCATIONS		64
 
-#define	GENTITYNUM_BITS		12		// don't need to send any more
+#define	GENTITYNUM_BITS		12
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
 
 // entitynums are communicated with GENTITY_BITS, so any reserved
@@ -1030,9 +740,6 @@ typedef enum {
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
 #define	CS_SERVERINFO		0		// an info string with all the serverinfo cvars
-#define	CS_SYSTEMINFO		1		// an info string for server system to client system configuration (timescale, etc)
-
-#define	RESERVED_CONFIGSTRINGS	2	// game can't modify below this, only the system can
 
 #define	MAX_GAMESTATE_CHARS	16384*16
 typedef struct {
@@ -1257,35 +964,6 @@ typedef enum {
 	CA_CINEMATIC		// playing a cinematic or a static pic, not connected to a server
 } connstate_t;
 
-// font support
-
-#define GLYPH_START 0
-#define GLYPH_END 255
-#define GLYPH_CHARSTART 32
-#define GLYPH_CHAREND 127
-#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-typedef struct {
-  int height;       // number of scan lines
-  int top;          // top of glyph in buffer
-  int bottom;       // bottom of glyph in buffer
-  int pitch;        // width for copying
-  int xSkip;        // x adjustment
-  int imageWidth;   // width of actual image
-  int imageHeight;  // height of actual image
-  float s;          // x offset in image where glyph starts
-  float t;          // y offset in image where glyph starts
-  float s2;
-  float t2;
-  qhandle_t glyph;  // handle to the shader with the glyph
-  char shaderName[32];
-} glyphInfo_t;
-
-typedef struct {
-  glyphInfo_t glyphs [GLYPHS_PER_FONT];
-  float glyphScale;
-  char name[MAX_QPATH];
-} fontInfo_t;
-
 #define Square(x) ((x)*(x))
 
 typedef struct qtime_s {
@@ -1347,16 +1025,11 @@ typedef struct highscores_s {
 	playerscore_t	highscores[SCOREBOARD_LENGTH];
 } highscores_t;
 
-#define	MAX_GLOBAL_SERVERS					4096
-#define	MAX_OTHER_SERVERS					128
 #define MAX_PINGREQUESTS					32
-#define MAX_SERVERSTATUSREQUESTS			16
 
 #define SAY_ALL		0
 #define SAY_TEAM	1
 #define SAY_TELL	2
-
-#endif	// __Q_SHARED_H
 
 #define SCORE_ACCURACY	0.5		//part of the carnage score that accuracy will apply to.
 #define SCORE_SECRET	0.10	//part of the carnage score that will be gained for each secret found.
@@ -1382,6 +1055,6 @@ typedef struct highscores_s {
 playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accuracy, float skill);
 highscores_t COM_LoadLevelScores( char *levelname );
 
-void VectorLerp(const vec3_t start, float t, const vec3_t end, vec3_t result);
-float VectorDot(const vec3_t v1, const vec3_t v2);
 float VectorDistance(const vec3_t v1, const vec3_t v2);
+
+#endif	// __Q_SHARED_H

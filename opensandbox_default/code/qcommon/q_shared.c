@@ -37,8 +37,7 @@ float Com_Clamp( float min, float max, float value ) {
 	return value;
 }
 
-// STONELANCE
-float vectoyaw( const vec3_t vec ) {
+float VectorToYaw( const vec3_t vec ) {
 	float	yaw;
 	
 	if (vec[YAW] == 0 && vec[PITCH] == 0) {
@@ -141,20 +140,6 @@ void COM_StripExtension( const char *in, char *out, int destsize ) {
 		out[length] = 0;
 }
 
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtensionOld( const char *in, char *out, int destsize ) {
-	while ( *in && *in != '.' ) {
-		*out++ = *in++;
-	}
-	*out = 0;
-}
-
-
 /*
 ==================
 COM_DefaultExtension
@@ -187,27 +172,6 @@ void COM_DefaultExtension (char *path, int maxSize, const char *extension ) {
 					BYTE ORDER FUNCTIONS
 
 ============================================================================
-*/
-/*
-// can't just use function pointers, or dll linkage can
-// mess up when qcommon is included in multiple places
-static short	(*_BigShort) (short l);
-static short	(*_LittleShort) (short l);
-static int		(*_BigLong) (int l);
-static int		(*_LittleLong) (int l);
-static qint64	(*_BigLong64) (qint64 l);
-static qint64	(*_LittleLong64) (qint64 l);
-static float	(*_BigFloat) (const float *l);
-static float	(*_LittleFloat) (const float *l);
-
-short	BigShort(short l){return _BigShort(l);}
-short	LittleShort(short l) {return _LittleShort(l);}
-int		BigLong (int l) {return _BigLong(l);}
-int		LittleLong (int l) {return _LittleLong(l);}
-qint64 	BigLong64 (qint64 l) {return _BigLong64(l);}
-qint64 	LittleLong64 (qint64 l) {return _LittleLong64(l);}
-float	BigFloat (const float *l) {return _BigFloat(l);}
-float	LittleFloat (const float *l) {return _LittleFloat(l);}
 */
 
 short   ShortSwap (short l)
@@ -242,27 +206,6 @@ int	LongNoSwap (int l)
 	return l;
 }
 
-qint64 Long64Swap (qint64 ll)
-{
-	qint64	result;
-
-	result.b0 = ll.b7;
-	result.b1 = ll.b6;
-	result.b2 = ll.b5;
-	result.b3 = ll.b4;
-	result.b4 = ll.b3;
-	result.b5 = ll.b2;
-	result.b6 = ll.b1;
-	result.b7 = ll.b0;
-
-	return result;
-}
-
-qint64 Long64NoSwap (qint64 ll)
-{
-	return ll;
-}
-
 typedef union {
     float	f;
     unsigned int i;
@@ -283,43 +226,6 @@ float FloatNoSwap (const float *f)
 }
 
 /*
-================
-Swap_Init
-================
-*/
-/*
-void Swap_Init (void)
-{
-	byte	swaptest[2] = {1,0};
-
-// set the byte swapping variables in a portable manner	
-	if ( *(short *)swaptest == 1)
-	{
-		_BigShort = ShortSwap;
-		_LittleShort = ShortNoSwap;
-		_BigLong = LongSwap;
-		_LittleLong = LongNoSwap;
-		_BigLong64 = Long64Swap;
-		_LittleLong64 = Long64NoSwap;
-		_BigFloat = FloatSwap;
-		_LittleFloat = FloatNoSwap;
-	}
-	else
-	{
-		_BigShort = ShortNoSwap;
-		_LittleShort = ShortSwap;
-		_BigLong = LongNoSwap;
-		_LittleLong = LongSwap;
-		_BigLong64 = Long64NoSwap;
-		_LittleLong64 = Long64Swap;
-		_BigFloat = FloatNoSwap;
-		_LittleFloat = FloatSwap;
-	}
-
-}
-*/
-
-/*
 ============================================================================
 
 PARSING
@@ -328,47 +234,11 @@ PARSING
 */
 
 static	char	com_token[MAX_TOKEN_CHARS];
-static	char	com_parsename[MAX_TOKEN_CHARS];
 static	int		com_lines;
-
-void COM_BeginParseSession( const char *name )
-{
-	com_lines = 0;
-	Com_sprintf(com_parsename, sizeof(com_parsename), "%s", name);
-}
-
-int COM_GetCurrentParseLine( void )
-{
-	return com_lines;
-}
 
 char *COM_Parse( char **data_p )
 {
 	return COM_ParseExt( data_p, qtrue );
-}
-
-void COM_ParseError( char *format, ... )
-{
-	va_list argptr;
-	static char string[4096];
-
-	va_start (argptr, format);
-	Q_vsnprintf (string, sizeof(string), format, argptr);
-	va_end (argptr);
-
-	Com_Printf("ERROR: %s, line %d: %s\n", com_parsename, com_lines, string);
-}
-
-void COM_ParseWarning( char *format, ... )
-{
-	va_list argptr;
-	static char string[4096];
-
-	va_start (argptr, format);
-	Q_vsnprintf (string, sizeof(string), format, argptr);
-	va_end (argptr);
-
-	Com_Printf("WARNING: %s, line %d: %s\n", com_parsename, com_lines, string);
 }
 
 /*
@@ -419,54 +289,54 @@ int COM_Compress( char *data_p ) {
 					in++;
 				if ( *in ) 
 					in += 2;
-                        // record when we hit a newline
-                        } else if ( c == '\n' || c == '\r' ) {
-                            newline = qtrue;
-                            in++;
-                        // record when we hit whitespace
-                        } else if ( c == ' ' || c == '\t') {
-                            whitespace = qtrue;
-                            in++;
-                        // an actual token
+            // record when we hit a newline
+            } else if ( c == '\n' || c == '\r' ) {
+                newline = qtrue;
+                in++;
+            // record when we hit whitespace
+            } else if ( c == ' ' || c == '\t') {
+                whitespace = qtrue;
+                in++;
+            // an actual token
 			} else {
-                            // if we have a pending newline, emit it (and it counts as whitespace)
-                            if (newline) {
-                                *out++ = '\n';
-                                newline = qfalse;
-                                whitespace = qfalse;
-                            } if (whitespace) {
-                                *out++ = ' ';
-                                whitespace = qfalse;
-                            }
-                            
-                            // copy quoted strings unmolested
-                            if (c == '"') {
-                                    *out++ = c;
-                                    in++;
-                                    while (1) {
-                                        c = *in;
-                                        if (c && c != '"') {
-                                            *out++ = c;
-                                            in++;
-                                        } else {
-                                            break;
-                                        }
-                                    }
-                                    if (c == '"') {
-                                        *out++ = c;
-                                        in++;
-                                    }
-                            } else {
-                                *out = c;
-                                out++;
-                                in++;
-                            }
+                // if we have a pending newline, emit it (and it counts as whitespace)
+                if (newline) {
+                    *out++ = '\n';
+                    newline = qfalse;
+                    whitespace = qfalse;
+                } if (whitespace) {
+                    *out++ = ' ';
+                    whitespace = qfalse;
+                }
+                
+                // copy quoted strings unmolested
+                if (c == '"') {
+                    *out++ = c;
+                    in++;
+                    while (1) {
+                        c = *in;
+                        if (c && c != '"') {
+                            *out++ = c;
+                            in++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (c == '"') {
+                        *out++ = c;
+                        in++;
+                    }
+                } else {
+                    *out = c;
+                    out++;
+                    in++;
+                }
 			}
 		}
-            *out = 0;
-            return out - data_p;
+    	*out = 0;
+    	return out - data_p;
 	}
-        return 0;
+    return 0;
 }
 
 char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
@@ -571,164 +441,6 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 	return com_token;
 }
 
-
-#if 0
-// no longer used
-/*
-===============
-COM_ParseInfos
-===============
-*/
-int COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] ) {
-	char	*token;
-	int		count;
-	char	key[MAX_TOKEN_CHARS];
-
-	count = 0;
-
-	while ( 1 ) {
-		token = COM_Parse( &buf );
-		if ( !token[0] ) {
-			break;
-		}
-		if ( strcmp( token, "{" ) ) {
-			Com_Printf( "Missing { in info file\n" );
-			break;
-		}
-
-		if ( count == max ) {
-			Com_Printf( "Max infos exceeded\n" );
-			break;
-		}
-
-		infos[count][0] = 0;
-		while ( 1 ) {
-			token = COM_ParseExt( &buf, qtrue );
-			if ( !token[0] ) {
-				Com_Printf( "Unexpected end of info file\n" );
-				break;
-			}
-			if ( !strcmp( token, "}" ) ) {
-				break;
-			}
-			Q_strncpyz( key, token, sizeof( key ) );
-
-			token = COM_ParseExt( &buf, qfalse );
-			if ( !token[0] ) {
-				strcpy( token, "<NULL>" );
-			}
-			Info_SetValueForKey( infos[count], key, token );
-		}
-		count++;
-	}
-
-	return count;
-}
-#endif
-
-
-/*
-==================
-COM_MatchToken
-==================
-*/
-void COM_MatchToken( char **buf_p, char *match ) {
-	char	*token;
-
-	token = COM_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
-		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
-	}
-}
-
-
-/*
-=================
-SkipBracedSection
-
-The next token should be an open brace.
-Skips until a matching close brace is found.
-Internal brace depths are properly skipped.
-=================
-*/
-void SkipBracedSection (char **program) {
-	char			*token;
-	int				depth;
-
-	depth = 0;
-	do {
-		token = COM_ParseExt( program, qtrue );
-		if( token[1] == 0 ) {
-			if( token[0] == '{' ) {
-				depth++;
-			}
-			else if( token[0] == '}' ) {
-				depth--;
-			}
-		}
-	} while( depth && *program );
-}
-
-/*
-=================
-SkipRestOfLine
-=================
-*/
-void SkipRestOfLine ( char **data ) {
-	char	*p;
-	int		c;
-
-	p = *data;
-	while ( (c = *p++) != 0 ) {
-		if ( c == '\n' ) {
-			com_lines++;
-			break;
-		}
-	}
-
-	*data = p;
-}
-
-
-void Parse1DMatrix (char **buf_p, int x, float *m) {
-	char	*token;
-	int		i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for (i = 0 ; i < x ; i++) {
-		token = COM_Parse(buf_p);
-		m[i] = atof(token);
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse2DMatrix (char **buf_p, int y, int x, float *m) {
-	int		i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for (i = 0 ; i < y ; i++) {
-		Parse1DMatrix (buf_p, x, m + i * x);
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m) {
-	int		i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for (i = 0 ; i < z ; i++) {
-		Parse2DMatrix (buf_p, y, x, m + i * x*y);
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-
 /*
 ============================================================================
 
@@ -805,26 +517,6 @@ void Q_strncpyz( char *dest, const char *src, int destsize ) {
 
 	strncpy( dest, src, destsize-1 );
   dest[destsize-1] = 0;
-}
-
-// Функция для безопасного объединения строк
-char* Q_strncat(char* dest, const char* src, size_t n) {
-	size_t dest_len;
-	size_t i;
-    if (!dest || !src) {
-        return dest; // Возвращаем dest, если один из указателей NULL
-    }
-
-    dest_len = strlen(dest); // Длина строки назначения
-
-    // Объединяем строки с учетом максимальной длины
-    for (i = 0; i < n && src[i] != '\0'; i++) {
-        dest[dest_len + i] = src[i]; // Копируем символы из src в dest
-    }
-    
-    dest[dest_len + i] = '\0'; // Завершаем строку
-
-    return dest; // Возвращаем указатель на строку назначения
 }
                  
 int Q_stricmpn (const char *s1, const char *s2, int n) {
@@ -955,45 +647,8 @@ const char *Q_stristr( const char *s, const char *find)
   return s;
 }
 
-
-int Q_PrintStrlen( const char *string ) {
-	int			len;
-	const char	*p;
-
-	if( !string ) {
-		return 0;
-	}
-
-	len = 0;
-	p = string;
-	while( *p ) {
-		if( Q_IsColorString( p ) ) {
-			p += 2;
-			continue;
-		}
-		p++;
-		len++;
-	}
-
-	return len;
-}
-
-
 char *Q_CleanStr( char *string ) {
 return string;
-}
-
-int Q_CountChar(const char *string, char tocount)
-{
-	int count;
-	
-	for(count = 0; *string; string++)
-	{
-		if(*string == tocount)
-			count++;
-	}
-	
-	return count;
 }
 
 void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
@@ -1027,48 +682,44 @@ does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
 ============
 */
-// Преобразование UTF-8 символов в отрицательный диапазон
 void convert_to_negative(char *str) {
 	size_t i;
     for (i = 0; str[i] != '\0';) {
         unsigned char c = (unsigned char)str[i];
         if (c >= 128) {
-            str[i] = (char)(c - 256); // Преобразование 128-255 в -128 до -1
+            str[i] = (char)(c - 256);
         }
-        // Проверка на многобайтовые символы
-        if (c >= 0xC0) { // Начало многобайтового символа
+        if (c >= 0xC0) {
             if (c >= 0xF0) {
-                i += 4; // 4 байта
+                i += 4;
             } else if (c >= 0xE0) {
-                i += 3; // 3 байта
+                i += 3;
             } else {
-                i += 2; // 2 байта
+                i += 2;
             }
         } else {
-            i++; // Один байт
+            i++;
         }
     }
 }
 
-// Преобразование обратно в положительный диапазон
 void convert_to_positive(char *str) {
 	size_t i;
     for (i = 0; str[i] != '\0';) {
         signed char c = (signed char)str[i];
         if (c < 0) {
-            str[i] = (char)(c + 256); // Преобразование -128 до -1 обратно в 128-255
+            str[i] = (char)(c + 256);
         }
-        // Проверка на многобайтовые символы
-        if ((unsigned char)c >= 0xC0) { // Начало многобайтового символа
+        if ((unsigned char)c >= 0xC0) {
             if (c >= 0xF0) {
-                i += 4; // 4 байта
+                i += 4;
             } else if (c >= 0xE0) {
-                i += 3; // 3 байта
+                i += 3;
             } else {
-                i += 2; // 2 байта
+                i += 2;
             }
         } else {
-            i++; // Один байт
+            i++;
         }
     }
 }
@@ -1085,40 +736,15 @@ char *QDECL va(char *format, ...) {
 
     va_start(argptr, format);
 
-    // Преобразуем символы в отрицательный диапазон
     convert_to_negative(buf);
     
-    // Обработка формата с преобразованием символов
     Q_vsnprintf(buf, sizeof(string[0]), format, argptr);
     
-    // Здесь вы можете использовать buf для дальнейшей обработки
-    // Например, если вам нужно вернуть результат обратно в положительный диапазон
     convert_to_positive(buf);
 
     va_end(argptr);
 
     return buf;
-}
-
-/*
-============
-Com_TruncateLongString
-
-Assumes buffer is atleast TRUNCATE_LENGTH big
-============
-*/
-void Com_TruncateLongString( char *buffer, const char *s )
-{
-	int length = strlen( s );
-
-	if( length <= TRUNCATE_LENGTH )
-		Q_strncpyz( buffer, s, TRUNCATE_LENGTH );
-	else
-	{
-		Q_strncpyz( buffer, s, ( TRUNCATE_LENGTH / 2 ) - 3 );
-		Q_strcat( buffer, TRUNCATE_LENGTH, " ... " );
-		Q_strcat( buffer, TRUNCATE_LENGTH, s + length - ( TRUNCATE_LENGTH / 2 ) + 3 );
-	}
 }
 
 /*
@@ -1340,9 +966,6 @@ void Info_RemoveKey_Big( char *s, const char *key ) {
 
 }
 
-
-
-
 /*
 ==================
 Info_Validate
@@ -1460,54 +1083,6 @@ static qboolean Com_CharIsOneOfCharset( char c, char *set )
 
 /*
 ==================
-Com_SkipCharset
-==================
-*/
-char *Com_SkipCharset( char *s, char *sep )
-{
-	char	*p = s;
-
-	while( p )
-	{
-		if( Com_CharIsOneOfCharset( *p, sep ) )
-			p++;
-		else
-			break;
-	}
-
-	return p;
-}
-
-/*
-==================
-Com_SkipTokens
-==================
-*/
-char *Com_SkipTokens( char *s, int numTokens, char *sep )
-{
-	int		sepCount = 0;
-	char	*p = s;
-
-	while( sepCount < numTokens )
-	{
-		if( Com_CharIsOneOfCharset( *p++, sep ) )
-		{
-			sepCount++;
-			while( Com_CharIsOneOfCharset( *p, sep ) )
-				p++;
-		}
-		else if( *p == '\0' )
-			break;
-	}
-
-	if( sepCount == numTokens )
-		return p;
-	else
-		return s;
-}
-
-/*
-==================
 COM_LoadLevelScores
 Loads the current highscores for a level
 ==================
@@ -1578,108 +1153,6 @@ highscores_t COM_LoadLevelScores( char *levelname ) {
 	return highScores;
 }
 
-
-/*
-==================
-COM_WriteLevelScores
-Writes the new highscores file if the player's score sets a new record score
-==================
-*/
-void COM_WriteLevelScores( char *levelname, playerscore_t scores ) {
-	highscores_t	highScores;
-	highscores_t	newHighScores;
-	char			filename[64];
-	fileHandle_t	f;
-	char			scoreInfo[MAX_INFO_STRING];
-	int				i;
-	int				newPos;
-	
-	//don't bother if the player scored 0 points
-	if ( scores.totalScore == 0 )
-		return;
-
-	Com_sprintf( filename, sizeof(filename), "games/%s-1.1.epgame", levelname );
-
-	highScores = COM_LoadLevelScores( levelname );
-
-	newPos = -1;
-	for ( i = 0; i < SCOREBOARD_LENGTH; i++ ) {
-		if ( newPos == -1 && scores.totalScore > highScores.highscores[i].totalScore ) {
-			newPos = i;
-		}
-	}
-
-	if (newPos == -1)
-		return;			//player didn't get a top-5 score
-
-	//add all scores better than player's score to new highscores struct
-	for ( i = 0; i < newPos; i++ ) {
-		newHighScores.highscores[i] = highScores.highscores[i];
-	}
-
-	//add player's score to new highscores struct
-	newHighScores.highscores[newPos].accuracy = scores.accuracy;
-	newHighScores.highscores[newPos].accuracyScore = scores.accuracyScore;
-	newHighScores.highscores[newPos].carnageScore = scores.carnageScore;
-	newHighScores.highscores[newPos].deaths = scores.deaths;
-	newHighScores.highscores[newPos].deathsScore = scores.deathsScore;
-	newHighScores.highscores[newPos].secretsCount = scores.secretsCount;
-	newHighScores.highscores[newPos].secretsFound = scores.secretsFound;
-	newHighScores.highscores[newPos].secretsScore = scores.secretsScore;
-	newHighScores.highscores[newPos].skill = scores.skill;
-	newHighScores.highscores[newPos].skillModifier = scores.skillModifier;
-	newHighScores.highscores[newPos].skillScore = scores.skillScore;
-	newHighScores.highscores[newPos].totalScore = scores.totalScore;
-
-	//add all scores worse than player's score to new highscores struct
-	if ( newPos < SCOREBOARD_LENGTH - 1 ) {
-		for ( i = newPos + 1; i < SCOREBOARD_LENGTH; i++ ) {
-			newHighScores.highscores[i].accuracy = highScores.highscores[i-1].accuracy;
-			newHighScores.highscores[i].accuracyScore = highScores.highscores[i-1].accuracyScore;
-			newHighScores.highscores[i].carnageScore = highScores.highscores[i-1].carnageScore;
-			newHighScores.highscores[i].deaths = highScores.highscores[i-1].deaths;
-			newHighScores.highscores[i].deathsScore = highScores.highscores[i-1].deathsScore;
-			newHighScores.highscores[i].secretsCount = highScores.highscores[i-1].secretsCount;
-			newHighScores.highscores[i].secretsFound = highScores.highscores[i-1].secretsFound;
-			newHighScores.highscores[i].secretsScore = highScores.highscores[i-1].secretsScore;
-			newHighScores.highscores[i].skill = highScores.highscores[i-1].skill;
-			newHighScores.highscores[i].skillModifier = highScores.highscores[i-1].skillModifier;
-			newHighScores.highscores[i].skillScore = highScores.highscores[i-1].skillScore;
-			newHighScores.highscores[i].totalScore = highScores.highscores[i-1].totalScore;
-		}
-	}
-
-
-	//write new highscore file
-
-	//For some reason part of the server info string is written to the high score file. To prevent this, we completely reset the scoreInfo string
-	for ( i = 0; i < MAX_INFO_STRING; i++ ) {
-		scoreInfo[i] = ' ';
-	}
-	//TODO: Check if the above fix doesn't mess up anything for the actual server info string.
-
-	scoreInfo[0] = '\0';
-	for ( i = 0 ; i < SCOREBOARD_LENGTH; i++ ) {
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_CARNAGESCORE), va("%i", newHighScores.highscores[i].carnageScore));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_ACCURACY), va("%i", newHighScores.highscores[i].accuracy));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_ACCURACYSCORE), va("%i", newHighScores.highscores[i].accuracyScore));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_DEATHS), va("%i", newHighScores.highscores[i].deaths));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_DEATHSSCORE), va("%i", newHighScores.highscores[i].deathsScore));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SECRETSFOUND), va("%i", newHighScores.highscores[i].secretsFound));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SECRETSCOUNT), va("%i", newHighScores.highscores[i].secretsCount));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SECRETSSCORE), va("%i", newHighScores.highscores[i].secretsScore));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SKILL), va("%1.0f", newHighScores.highscores[i].skill));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SKILLMODIFIER), va("%1.1f", newHighScores.highscores[i].skillModifier));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_SKILLSCORE), va("%i", newHighScores.highscores[i].skillScore));
-		Info_SetValueForKey(scoreInfo, va("%i%s", i, SIK_TOTALSCORE), va("%i", newHighScores.highscores[i].totalScore));
-	}
-
-	/*trap_FS_FOpenFile( filename, &f, FS_WRITE );
-	trap_FS_Write( scoreInfo, sizeof(scoreInfo), f);
-	trap_FS_FCloseFile( f );*/
-}
-
-
 /*
 ==================
 COM_AccuracyToScore
@@ -1741,16 +1214,6 @@ playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accur
 	}
 
 	return scores;
-}
-
-void VectorLerp(const vec3_t start, float t, const vec3_t end, vec3_t result) {
-    result[0] = start[0] + t * (end[0] - start[0]);
-    result[1] = start[1] + t * (end[1] - start[1]);
-    result[2] = start[2] + t * (end[2] - start[2]);
-}
-
-float VectorDot(const vec3_t v1, const vec3_t v2) {
-    return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]);
 }
 
 float VectorDistance(const vec3_t v1, const vec3_t v2) {
