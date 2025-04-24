@@ -134,7 +134,6 @@ static void UI_SaveConfigMenu_Init( void ) {
 	memset( &saveConfig, 0, sizeof(saveConfig) );
 
 	UI_SaveConfigMenu_Cache();
-	saveConfig.menu.wrapAround = qtrue;
 	saveConfig.menu.native 	   = qfalse;
 	saveConfig.menu.fullscreen = qtrue;
 

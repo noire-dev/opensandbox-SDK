@@ -172,7 +172,6 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	memset( &soundOptionsInfo, 0, sizeof(soundOptionsInfo) );
 
 	UI_SoundOptionsMenu_Cache();
-	soundOptionsInfo.menu.wrapAround = qtrue;
 	soundOptionsInfo.menu.native 	   = qfalse;
 	soundOptionsInfo.menu.fullscreen = qtrue;
 

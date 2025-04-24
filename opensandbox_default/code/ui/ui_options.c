@@ -114,7 +114,6 @@ void Options_MenuInit( void ) {
 	memset( &s_options, 0, sizeof(optionsmenu_t) );
 
 	SystemConfig_Cache();
-	s_options.menu.wrapAround = qtrue;
 	s_options.menu.native 	   = qfalse;
 
 	trap_GetClientState( &cstate );

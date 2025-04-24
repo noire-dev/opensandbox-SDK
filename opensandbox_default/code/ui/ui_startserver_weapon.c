@@ -1653,7 +1653,6 @@ void StartServer_WeaponPage_MenuInit(void)
 	menuptr = &s_weaponcontrols.menu;
 
 	menuptr->key = StartServer_WeaponPage_MenuKey;
-	menuptr->wrapAround = qtrue;
 	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_WeaponPage_MenuDraw;

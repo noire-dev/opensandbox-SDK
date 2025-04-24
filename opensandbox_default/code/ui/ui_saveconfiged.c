@@ -139,7 +139,6 @@ static void UI_saveMapEdMenu_Init( void ) {
 	memset( &saveMapEd, 0, sizeof(saveMapEd) );
 
 	UI_saveMapEdMenu_Cache();
-	saveMapEd.menu.wrapAround = qtrue;
 	saveMapEd.menu.native 	   = qfalse;
 	saveMapEd.menu.fullscreen = qfalse;
 

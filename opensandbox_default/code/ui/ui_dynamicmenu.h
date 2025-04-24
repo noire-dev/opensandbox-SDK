@@ -45,7 +45,7 @@ void DynamicMenu_AddBackground( const char* background);
 
 qboolean DynamicMenu_SubMenuInit( void);
 void DynamicMenu_FinishSubMenuInit( void );
-void DynamicMenu_MenuInit( qboolean fullscreen, qboolean wraparound );
+void DynamicMenu_MenuInit( qboolean fullscreen );
 
 void DynamicMenu_ClearFocus( int pos );
 void DynamicMenu_SetFocus( int pos );

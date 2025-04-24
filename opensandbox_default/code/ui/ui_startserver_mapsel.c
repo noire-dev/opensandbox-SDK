@@ -1579,7 +1579,6 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.index = index;
 
-	s_mapselect.menu.wrapAround = qtrue;
 	s_mapselect.menu.native 	= qfalse;
 	s_mapselect.menu.fullscreen = qtrue;
 	s_mapselect.menu.draw = MapSelect_MenuDraw;

@@ -195,7 +195,6 @@ static void UI_SetupMenu_Init( void ) {
 	UI_SetupMenu_Cache();
 
 	memset( &setupMenuInfo, 0, sizeof(setupMenuInfo) );
-	setupMenuInfo.menu.wrapAround = qtrue;
 	setupMenuInfo.menu.native 	   = qfalse;
 	setupMenuInfo.menu.fullscreen = qtrue;
 

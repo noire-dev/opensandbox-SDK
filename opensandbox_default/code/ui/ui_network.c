@@ -137,7 +137,6 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	memset( &networkOptionsInfo, 0, sizeof(networkOptionsInfo) );
 
 	UI_NetworkOptionsMenu_Cache();
-	networkOptionsInfo.menu.wrapAround = qtrue;
 	networkOptionsInfo.menu.native 	   = qfalse;
 	networkOptionsInfo.menu.fullscreen = qtrue;
 

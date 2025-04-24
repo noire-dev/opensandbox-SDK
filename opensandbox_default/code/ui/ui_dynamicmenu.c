@@ -983,7 +983,7 @@ static void DynamicMenu_MenuEvent( void* self, int event )
 DynamicMenu_MenuInit
 =================
 */
-void DynamicMenu_MenuInit( qboolean full, qboolean wrap)
+void DynamicMenu_MenuInit( qboolean full )
 {
 	int i;
 
@@ -993,7 +993,6 @@ void DynamicMenu_MenuInit( qboolean full, qboolean wrap)
 
 	s_dynamic.menu.draw = DynamicMenu_MenuDraw;
 	s_dynamic.menu.fullscreen = full;
-	s_dynamic.menu.wrapAround = wrap;
 	s_dynamic.menu.native = qfalse;
 	s_dynamic.menu.uplimitscroll = -6400;
 	s_dynamic.menu.downlimitscroll = 6400;

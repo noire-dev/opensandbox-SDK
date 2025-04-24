@@ -253,7 +253,6 @@ void UI_NSGUI( void ) {
 	} else {
 		s_nsgui.menu.fullscreen = qfalse;	
 	}
-	s_nsgui.menu.wrapAround = qtrue;
 	s_nsgui.menu.native = qfalse;
 	s_nsgui.menu.downlimitscroll = get_variable_float("gui_scroll");
 	//s_nsgui.menu.key = NSGUI_Key;

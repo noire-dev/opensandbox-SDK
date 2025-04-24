@@ -1524,7 +1524,6 @@ void StartServer_MapPage_MenuInit(void)
 
 	menuptr = &s_mapcontrols.menu;
 
-	menuptr->wrapAround = qtrue;
 	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_MapPage_MenuDraw;

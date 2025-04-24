@@ -4290,7 +4290,6 @@ static void UI_Workshop_MenuInit( void ) {
 	UI_WorkshopMenu_Cache();
 
 	memset( &s_workshop, 0 ,sizeof(workshop_t) );
-	s_workshop.menu.wrapAround = qtrue;
 	s_workshop.menu.native 	= qfalse;
 	s_workshop.menu.fullscreen = qtrue;
 	s_workshop.menu.key        = Workshop_MenuKey;

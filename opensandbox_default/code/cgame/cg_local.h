@@ -28,7 +28,6 @@
 #include "../game/bg_public.h"
 #include "cg_public.h"
 
-
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is NO persistant data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -740,14 +739,6 @@ typedef struct {
 	float				fadeDuration;		//duration of the fade
 	vec4_t				fadeStartColor;		//color at the start of fade (r, g, b, a)
 	vec4_t				fadeEndColor;		//color at the end of fade (r, g, b, a)
-
-	// entityplus subtitles
-	int				subtitlePrintTime;
-	int				subtitlePrintCharWidth;
-	int				subtitlePrintY;
-	char			subtitlePrint[256];
-	int				subtitlePrintLines;
-	float			subtitlePrintDuration;
 
     int redObeliskHealth;
     int blueObeliskHealth;

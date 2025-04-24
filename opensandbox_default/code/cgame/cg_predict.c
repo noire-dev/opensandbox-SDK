@@ -256,7 +256,7 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 
 	i = next->ps.bobCycle;
 	if ( i < prev->ps.bobCycle ) {
-		i += 256;		// handle wraparound
+		i += 256;
 	}
 	out->bobCycle = prev->ps.bobCycle + f * ( i - prev->ps.bobCycle );
 

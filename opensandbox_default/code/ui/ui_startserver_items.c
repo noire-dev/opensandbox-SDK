@@ -1226,7 +1226,6 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 	menuptr = &s_itemcontrols.menu;
 
 	menuptr->key = StartServer_BothItemMenus_MenuKey;
-	menuptr->wrapAround = qtrue;
 	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_BothItemMenus_MenuDraw;

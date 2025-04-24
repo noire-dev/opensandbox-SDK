@@ -302,7 +302,6 @@ qboolean UI_IsValidCvar(const char* cvar);
 // control event handler
 typedef void (*callbackFunc)(void* self, int event);
 
-
 typedef struct _tag_menuframework
 {
 	int	cursor;
@@ -314,8 +313,6 @@ typedef struct _tag_menuframework
 	void (*draw) (void);
 	sfxHandle_t (*key) (int key);
 
-	qboolean	wrapAround;
-	qboolean	fulllock;
 	qboolean	fullscreen;
 	qboolean	native;
 	int			uplimitscroll;
@@ -333,7 +330,6 @@ typedef struct
 	char *cmd;
 	int	id;
 	int x, y;
-	int xoffset, yoffset;
 	int left;
 	int	top;
 	int	right;
@@ -451,6 +447,49 @@ typedef struct
 
 	float range;
 } menuobject_s;
+
+typedef struct
+{
+	//menutext_s
+	menucommon_s	generic;
+	char*			string;
+	int				style;
+	float			fontsize;
+	float*			color; //menuradiobutton_s, menulist_s, menufield_s
+
+	//menubitmap_s
+	char*			focuspic;	
+	char*			errorpic;
+	qhandle_t		shader;
+	qhandle_t		focusshader;
+	int				width; //menulist_s
+	int				height; //menulist_s
+	float*			focuscolor;
+
+	//menuradiobutton_s
+	int 			curvalue; //menulist_s, menuslider_s
+
+	//menulist_s
+	int				oldvalue;
+	int				numitems;
+	int				top;
+		
+	const char 		**itemnames;
+	const char 		**itemnames2;
+
+	int				columns;
+	int				seperation;
+
+	//menuslider_s
+	float 			minvalue;
+	float 			maxvalue;
+
+	float 			range;
+
+	//menufield_s
+	mfield_t		field;
+
+} menuelement_s;
 
 typedef struct
 {

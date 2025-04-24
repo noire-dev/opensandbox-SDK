@@ -1209,7 +1209,6 @@ static void Controls_MenuInit( void )
 	Controls_Cache();
 
 	s_controls.menu.key        = Controls_MenuKey;
-	s_controls.menu.wrapAround = qtrue;
 	s_controls.menu.fullscreen = qtrue;
 	s_controls.menu.native 	   = qfalse;
 

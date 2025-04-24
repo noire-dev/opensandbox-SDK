@@ -440,7 +440,6 @@ static void PlayerSettings_MenuInit( void ) {
 	memset(&s_playersettings,0,sizeof(playersettings_t));
 
 	s_playersettings.menu.fullscreen = qtrue;
-	s_playersettings.menu.wrapAround = qtrue;
 	s_playersettings.menu.native 	   = qfalse;
 	s_playersettings.menu.draw = PlayerSettings_MenuDraw;
 

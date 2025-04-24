@@ -644,7 +644,6 @@ static void Preferences_MenuInit( void )
 
 	Preferences_Cache();
 
-	s_preferences.menu.wrapAround = qtrue;
 	s_preferences.menu.native 	   = qfalse;
 	s_preferences.menu.fullscreen = qtrue;
 

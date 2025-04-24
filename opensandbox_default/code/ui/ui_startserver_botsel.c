@@ -1181,7 +1181,6 @@ static void UI_BotSelect_Init( char *bot , int index) {
 
 	memset( &botSelectInfo, 0 ,sizeof(botSelectInfo) );
 	botSelectInfo.menu.key = UI_BotSelect_Key;
-	botSelectInfo.menu.wrapAround = qtrue;
 	botSelectInfo.menu.native 	= qfalse;
 	botSelectInfo.menu.fullscreen = qtrue;
 	botSelectInfo.menu.draw = UI_BotSelect_MenuDraw;

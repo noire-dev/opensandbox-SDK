@@ -248,13 +248,11 @@ PText_Draw
 static void PText_Draw( menutext_s *t )
 {
 	int		x;
-	int		xofs;
 	int		y;
 	float *	color;
 	int		style;
 
 	x = t->generic.x;
-	xofs = t->generic.xoffset;
 	y = t->generic.y;
 
 	if (t->generic.flags & QMF_GRAYED)
@@ -286,7 +284,7 @@ static void PText_Draw( menutext_s *t )
 		}
 	}
 
-	UI_DrawStringCustom( x+xofs, y, t->string, style, color, t->customsize, 512 );
+	UI_DrawStringCustom( x, y, t->string, style, color, t->customsize, 512 );
 }
 
 /*
@@ -2396,29 +2394,25 @@ wrap:
 
 	if ( dir == 1 ) {
 		if ( m->cursor >= m->nitems ) {
-			if ( m->wrapAround ) {
-				if ( wrapped ) {
-					m->cursor = m->cursor_prev;
-					return;
-				}
-				m->cursor = 0;
-				wrapped = qtrue;
-				goto wrap;
+			if ( wrapped ) {
+				m->cursor = m->cursor_prev;
+				return;
 			}
+			m->cursor = 0;
+			wrapped = qtrue;
+			goto wrap;
 			m->cursor = m->cursor_prev;
 		}
 	}
 	else {
 		if ( m->cursor < 0 ) {
-			if ( m->wrapAround ) {
-				if ( wrapped ) {
-					m->cursor = m->cursor_prev;
-					return;
-				}
-				m->cursor = m->nitems - 1;
-				wrapped = qtrue;
-				goto wrap;
+			if ( wrapped ) {
+				m->cursor = m->cursor_prev;
+				return;
 			}
+			m->cursor = m->nitems - 1;
+			wrapped = qtrue;
+			goto wrap;
 			m->cursor = m->cursor_prev;
 		}
 	}

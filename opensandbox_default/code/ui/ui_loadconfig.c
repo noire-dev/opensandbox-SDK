@@ -465,7 +465,6 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	UI_LoadConfig_Cache();
 
 	memset( &s_configs, 0 ,sizeof(configs_t) );
-	s_configs.menu.wrapAround = qtrue;
 	s_configs.menu.native 	  = qfalse;
 	s_configs.menu.fullscreen = qtrue;
 	s_configs.menu.draw = LoadConfig_MenuDraw;

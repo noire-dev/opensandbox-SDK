@@ -350,7 +350,6 @@ static void MapVote_MenuInit( void ) {
 
 	MapVote_Cache();
 
-	s_mapvote.menu.wrapAround = qtrue;
 	s_mapvote.menu.native 	  = qfalse;
 	s_mapvote.menu.fullscreen = qfalse;
 //	s_mapvote.menu.draw = InGame_MenuDraw;

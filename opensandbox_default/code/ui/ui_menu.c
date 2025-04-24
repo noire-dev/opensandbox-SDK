@@ -310,7 +310,6 @@ void UI_MainMenu( void ) {
 		s_errorMessage.menu.draw = Main_MenuDraw;
 		s_errorMessage.menu.key = ErrorMessage_Key;
 		s_errorMessage.menu.fullscreen = qtrue;
-		s_errorMessage.menu.wrapAround = qtrue;
 		s_errorMessage.menu.showlogo = qtrue;		
 
 		trap_Key_SetCatcher( KEYCATCH_UI );
@@ -327,7 +326,6 @@ void UI_MainMenu( void ) {
 
 	s_main.menu.draw = Main_MenuDraw;
 	s_main.menu.fullscreen = qtrue;
-	s_main.menu.wrapAround = qtrue;
 	s_main.menu.showlogo = qtrue;
 	s_main.menu.native = qfalse;
 

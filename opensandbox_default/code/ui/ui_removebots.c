@@ -376,7 +376,6 @@ static void UI_RemoveBotsMenu_Init( int action) {
 
 	memset( &removeBotsMenuInfo, 0 ,sizeof(removeBotsMenuInfo) );
 	removeBotsMenuInfo.menu.fullscreen = qfalse;
-	removeBotsMenuInfo.menu.wrapAround = qtrue;
 	removeBotsMenuInfo.menu.native 	   = qfalse;
 	removeBotsMenuInfo.menu.draw = RemoveBots_MenuDraw;
 

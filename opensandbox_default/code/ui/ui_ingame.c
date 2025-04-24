@@ -1239,7 +1239,7 @@ UI_InGameDynamic
 */
 void UI_InGameDynamic( void )
 {
-	DynamicMenu_MenuInit(qfalse, qtrue);
+	DynamicMenu_MenuInit(qfalse);
 	InGameDynamic_InitPrimaryMenu();
 }
 
@@ -1835,7 +1835,7 @@ void UI_BotCommandMenu( void )
 
 	botcommandmenu_gametype = DynamicMenu_ServerGametype();
 
-	DynamicMenu_MenuInit(qfalse, qtrue);
+	DynamicMenu_MenuInit(qfalse);
 	BotCommand_InitPrimaryMenu();
 }
 

@@ -211,7 +211,6 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	memset( &displayOptionsInfo, 0, sizeof(displayOptionsInfo) );
 
 	UI_DisplayOptionsMenu_Cache();
-	displayOptionsInfo.menu.wrapAround = qtrue;
 	displayOptionsInfo.menu.native 	   = qfalse;
 	displayOptionsInfo.menu.fullscreen = qtrue;
 
