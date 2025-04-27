@@ -68,19 +68,19 @@ REMOVE BOTS MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
-	menubitmap_s	background;
+	menuelement_s		banner;
+	menuelement_s	background;
 
-	menubitmap_s	arrows;
-	menubitmap_s	up;
-	menubitmap_s	down;
+	menuelement_s	arrows;
+	menuelement_s	up;
+	menuelement_s	down;
 
-	menutext_s		bots[7];
+	menuelement_s		bots[7];
 
-	menubitmap_s	icon;
-	menubitmap_s	icon_hilite;
-	menubitmap_s	deleteBot;
-	menubitmap_s	back;
+	menuelement_s	icon;
+	menuelement_s	icon_hilite;
+	menuelement_s	deleteBot;
+	menuelement_s	back;
 
 	int				numBots;
 	int				baseBotNum;
@@ -322,7 +322,7 @@ RemoveBots_MenuDraw
 static void RemoveBots_MenuDraw(void)
 {
 	qhandle_t hpic;
-	menubitmap_s* b;
+	menuelement_s* b;
 	int x, y, w, h;
 
 	// draw the controls
@@ -418,7 +418,7 @@ if(cl_language.integer == 1){
 }
 
 	removeBotsMenuInfo.background.generic.type	= MTYPE_BITMAP;
-	removeBotsMenuInfo.background.generic.name	= ART_BACKGROUND;
+	removeBotsMenuInfo.background.string	= ART_BACKGROUND;
 	removeBotsMenuInfo.background.generic.flags	= QMF_INACTIVE;
 	removeBotsMenuInfo.background.generic.x		= 320-233;
 	removeBotsMenuInfo.background.generic.y		= 240-166;
@@ -426,7 +426,7 @@ if(cl_language.integer == 1){
 	removeBotsMenuInfo.background.height		= 332;
 
 	removeBotsMenuInfo.arrows.generic.type		= MTYPE_BITMAP;
-	removeBotsMenuInfo.arrows.generic.name		= ART_ARROWS;
+	removeBotsMenuInfo.arrows.string		= ART_ARROWS;
 	removeBotsMenuInfo.arrows.generic.flags		= QMF_INACTIVE;
 	removeBotsMenuInfo.arrows.generic.x			= 200;
 	removeBotsMenuInfo.arrows.generic.y			= 128;
@@ -475,20 +475,20 @@ if(cl_language.integer == 1){
 	removeBotsMenuInfo.deleteBot.height  			= 64;
 
 	if (action == RBM_CALLVOTEKICK) {
-		removeBotsMenuInfo.deleteBot.generic.name		= ART_KICK0;
+		removeBotsMenuInfo.deleteBot.string		= ART_KICK0;
 		removeBotsMenuInfo.deleteBot.focuspic			= ART_KICK1;
 	}
 	else if (action == RBM_CALLVOTELEADER) {
-		removeBotsMenuInfo.deleteBot.generic.name		= ART_VOTE0;
+		removeBotsMenuInfo.deleteBot.string		= ART_VOTE0;
 		removeBotsMenuInfo.deleteBot.focuspic			= ART_VOTE1;
 	}
 	else {
-		removeBotsMenuInfo.deleteBot.generic.name		= ART_DELETE0;
+		removeBotsMenuInfo.deleteBot.string		= ART_DELETE0;
 		removeBotsMenuInfo.deleteBot.focuspic			= ART_DELETE1;
 	}
 
 	removeBotsMenuInfo.back.generic.type		= MTYPE_BITMAP;
-	removeBotsMenuInfo.back.generic.name		= ART_BACK0;
+	removeBotsMenuInfo.back.string		= ART_BACK0;
 	removeBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.back.generic.id			= ID_BACK;
 	removeBotsMenuInfo.back.generic.callback	= UI_RemoveBotsMenu_BackEvent;
@@ -509,7 +509,7 @@ if(cl_language.integer == 1){
 
 	removeBotsMenuInfo.icon.generic.type		= MTYPE_BITMAP;
 	removeBotsMenuInfo.icon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_INACTIVE;
-	removeBotsMenuInfo.icon.generic.name		= removeBotsMenuInfo.boticon;
+	removeBotsMenuInfo.icon.string		= removeBotsMenuInfo.boticon;
 	removeBotsMenuInfo.icon.generic.x			= 190 - 64;	//320 + 128;
 	removeBotsMenuInfo.icon.generic.y			= 240 - 32;
 	removeBotsMenuInfo.icon.width				= 64;

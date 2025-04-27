@@ -63,17 +63,17 @@ DEMOS MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menulist_s		list;
+	menuelement_s		list;
 
-	menuradiobutton_s	timedemo;
+	menuelement_s	timedemo;
 
-	menubitmap_s	arrows;
-	menubitmap_s	left;
-	menubitmap_s	right;
-	menubitmap_s	back;
-	menubitmap_s	go;
+	menuelement_s	arrows;
+	menuelement_s	left;
+	menuelement_s	right;
+	menuelement_s	back;
+	menuelement_s	go;
 
 	int				numDemos;
 	char			names[NAMEBUFSIZE];
@@ -263,16 +263,16 @@ static void Demos_MenuInit( void ) {
 	s_demos.timedemo.generic.x		= 480 - SMALLCHAR_WIDTH;
 	s_demos.timedemo.generic.y		= 480 - 32 - SMALLCHAR_HEIGHT / 2;
 	if(cl_language.integer == 0){
-	s_demos.timedemo.generic.name 	= "Time demo:";
+	s_demos.timedemo.string 	= "Time demo:";
 	}
 	if(cl_language.integer == 1){
-	s_demos.timedemo.generic.name 	= "Время записей:";
+	s_demos.timedemo.string 	= "Время записей:";
 	}
 	s_demos.timedemo.generic.flags	= QMF_SMALLFONT|QMF_PULSEIFFOCUS;
 	s_demos.timedemo.generic.id		= ID_TIMEDEMO;
 
 	s_demos.arrows.generic.type		= MTYPE_BITMAP;
-	s_demos.arrows.generic.name		= ART_ARROWS;
+	s_demos.arrows.string		= ART_ARROWS;
 	s_demos.arrows.generic.flags	= QMF_INACTIVE;
 	s_demos.arrows.generic.x		= 320-ARROWS_WIDTH/2;
 	s_demos.arrows.generic.y		= 400;
@@ -300,7 +300,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.right.focuspic			= ART_ARROWRIGHT;
 
 	s_demos.back.generic.type		= MTYPE_BITMAP;
-	s_demos.back.generic.name		= ART_BACK0;
+	s_demos.back.string		= ART_BACK0;
 	s_demos.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_demos.back.generic.id			= ID_BACK;
 	s_demos.back.generic.callback	= Demos_MenuEvent;
@@ -311,7 +311,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.back.focuspic			= ART_BACK1;
 
 	s_demos.go.generic.type			= MTYPE_BITMAP;
-	s_demos.go.generic.name			= ART_GO0;
+	s_demos.go.string			= ART_GO0;
 	s_demos.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_demos.go.generic.id			= ID_GO;
 	s_demos.go.generic.callback		= Demos_MenuEvent;

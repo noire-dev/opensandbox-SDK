@@ -60,24 +60,24 @@
 typedef struct {
 	menuframework_s		menu;
 
-	menutext_s			banner;
+	menuelement_s			banner;
 
-	menufield_s			name;
-	menulist_s			effects;
+	menuelement_s			name;
+	menuelement_s			effects;
 
-	menuslider_s  		flashred;
-	menuslider_s  		flashgreen;
-	menuslider_s  		flashblue;
-	menuslider_s  		heflashred;
-	menuslider_s  		heflashgreen;
-	menuslider_s  		heflashblue;
-	menuslider_s  		toflashred;
-	menuslider_s  		toflashgreen;
-	menuslider_s  		toflashblue;
-	menubitmap_s		back;
-	menubitmap_s		model;
-	menubitmap_s		item_null;
-	menutext_s			modeltype;
+	menuelement_s  		flashred;
+	menuelement_s  		flashgreen;
+	menuelement_s  		flashblue;
+	menuelement_s  		heflashred;
+	menuelement_s  		heflashgreen;
+	menuelement_s  		heflashblue;
+	menuelement_s  		toflashred;
+	menuelement_s  		toflashgreen;
+	menuelement_s  		toflashblue;
+	menuelement_s		back;
+	menuelement_s		model;
+	menuelement_s		item_null;
+	menuelement_s			modeltype;
 
 	qhandle_t			fxBasePic;
 	qhandle_t			fxPic[7];
@@ -152,7 +152,7 @@ PlayerSettings_DrawName
 =================
 */
 static void PlayerSettings_DrawName( void *self ) {
-	menufield_s		*f;
+	menuelement_s		*f;
 	qboolean		focus;
 	int				style;
 	char			*txt;
@@ -162,7 +162,7 @@ static void PlayerSettings_DrawName( void *self ) {
 	int				basex, x, y;
 	char			name[32];
 
-	f = (menufield_s*)self;
+	f = (menuelement_s*)self;
 	basex = f->generic.x;
 	y = f->generic.y;
 	focus = (f->generic.parent->cursor == f->generic.menuPosition);
@@ -228,13 +228,13 @@ PlayerSettings_DrawEffects
 =================
 */
 static void PlayerSettings_DrawEffects( void *self ) {
-	menulist_s		*item;
+	menuelement_s		*item;
 	qboolean		focus;
 	int				style;
 	float			*color;
 	int				textlen;
 
-	item = (menulist_s *)self;
+	item = (menuelement_s *)self;
 	focus = (item->generic.parent->cursor == item->generic.menuPosition);
 
 	style = UI_LEFT|UI_SMALLFONT;
@@ -258,12 +258,13 @@ static void PlayerSettings_DrawEffects( void *self ) {
 		UI_DrawString( item->generic.x, item->generic.y, "Рейл кольца:", style, color );
 	}
 	}
-if(cl_language.integer == 0){
-	textlen = UI_ProportionalStringWidth("Rail core:") * UI_ProportionalSizeScale(style, 0) * 1.00;
-}
-if(cl_language.integer == 1){
-	textlen = UI_ProportionalStringWidth("Рэйл луч:") * UI_ProportionalSizeScale(style, 0) * 1.25;
-}
+	
+	if(cl_language.integer == 0){
+		textlen = UI_ProportionalStringWidth("Rail core:", 1.00) * 1.00;
+	}
+	if(cl_language.integer == 1){
+		textlen = UI_ProportionalStringWidth("Рэйл луч:", 1.00) * 1.00;
+	}
 
 	UI_DrawHandlePic( item->generic.x + textlen, item->generic.y + 4, 128, 8, s_playersettings.fxBasePic );
 	UI_DrawHandlePic( item->generic.x + textlen + item->curvalue * 16 + 8, item->generic.y + 2, 16, 12, s_playersettings.fxPic[item->curvalue] );
@@ -447,7 +448,7 @@ static void PlayerSettings_MenuInit( void ) {
 
 	s_playersettings.menu.key        = PlayerSettings_MenuKey;
 
-	sizeScale = UI_ProportionalSizeScale( UI_SMALLFONT, 0 );
+	sizeScale = 1.00;
 
 	s_playersettings.banner.generic.type  = MTYPE_BTEXT;
 	s_playersettings.banner.generic.x     = 320;
@@ -488,7 +489,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.effects.numitems			= 7;
 
 	s_playersettings.model.generic.type			= MTYPE_BITMAP;
-	s_playersettings.model.generic.name			= ART_MODEL0;
+	s_playersettings.model.string			= ART_MODEL0;
 	s_playersettings.model.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playersettings.model.generic.id			= ID_MODEL;
 	s_playersettings.model.generic.callback		= PlayerSettings_MenuEvent;
@@ -510,10 +511,10 @@ y = 170;
 //    y += BIGCHAR_HEIGHT+2;
     s_playersettings.heflashred.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.heflashred.generic.name		= "^1Head:";
+	s_playersettings.heflashred.string		= "^1Head:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.heflashred.generic.name		= "^1Голова:";
+	s_playersettings.heflashred.string		= "^1Голова:";
 	}
 	s_playersettings.heflashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.heflashred.generic.callback	= PlayerSettings_MenuEvent;
@@ -526,10 +527,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.heflashgreen.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.heflashgreen.generic.name		= "^2Head:";
+	s_playersettings.heflashgreen.string		= "^2Head:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.heflashgreen.generic.name		= "^2Голова:";
+	s_playersettings.heflashgreen.string		= "^2Голова:";
 	}
 	s_playersettings.heflashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.heflashgreen.generic.callback	= PlayerSettings_MenuEvent;
@@ -542,10 +543,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.heflashblue.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.heflashblue.generic.name		= "^4Head:";
+	s_playersettings.heflashblue.string		= "^4Head:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.heflashblue.generic.name		= "^4Голова:";
+	s_playersettings.heflashblue.string		= "^4Голова:";
 	}
 	s_playersettings.heflashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.heflashblue.generic.callback	= PlayerSettings_MenuEvent;
@@ -558,10 +559,10 @@ y = 170;
     y += BIGCHAR_HEIGHT+50;
     s_playersettings.toflashred.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.toflashred.generic.name		= "^1Torso:";
+	s_playersettings.toflashred.string		= "^1Torso:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.toflashred.generic.name		= "^1Торс:";
+	s_playersettings.toflashred.string		= "^1Торс:";
 	}
 	s_playersettings.toflashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.toflashred.generic.callback	= PlayerSettings_MenuEvent;
@@ -574,10 +575,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.toflashgreen.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.toflashgreen.generic.name		= "^2Torso:";
+	s_playersettings.toflashgreen.string		= "^2Torso:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.toflashgreen.generic.name		= "^2Торс:";
+	s_playersettings.toflashgreen.string		= "^2Торс:";
 	}
 	s_playersettings.toflashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.toflashgreen.generic.callback	= PlayerSettings_MenuEvent;
@@ -590,10 +591,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.toflashblue.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.toflashblue.generic.name		= "^4Torso:";
+	s_playersettings.toflashblue.string		= "^4Torso:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.toflashblue.generic.name		= "^4Торс:";
+	s_playersettings.toflashblue.string		= "^4Торс:";
 	}
 	s_playersettings.toflashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.toflashblue.generic.callback	= PlayerSettings_MenuEvent;
@@ -606,10 +607,10 @@ y = 170;
     y += BIGCHAR_HEIGHT+50;
     s_playersettings.flashred.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.flashred.generic.name		= "^1Legs:";
+	s_playersettings.flashred.string		= "^1Legs:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.flashred.generic.name		= "^1Ноги:";
+	s_playersettings.flashred.string		= "^1Ноги:";
 	}
 	s_playersettings.flashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.flashred.generic.callback	= PlayerSettings_MenuEvent;
@@ -622,10 +623,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.flashgreen.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.flashgreen.generic.name		= "^2Legs:";
+	s_playersettings.flashgreen.string		= "^2Legs:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.flashgreen.generic.name		= "^2Ноги:";
+	s_playersettings.flashgreen.string		= "^2Ноги:";
 	}
 	s_playersettings.flashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.flashgreen.generic.callback	= PlayerSettings_MenuEvent;
@@ -638,10 +639,10 @@ y = 170;
         y += BIGCHAR_HEIGHT+5;
     s_playersettings.flashblue.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	s_playersettings.flashblue.generic.name		= "^4Legs:";
+	s_playersettings.flashblue.string		= "^4Legs:";
 	}
 	if(cl_language.integer == 1){
-	s_playersettings.flashblue.generic.name		= "^4Ноги:";
+	s_playersettings.flashblue.string		= "^4Ноги:";
 	}
 	s_playersettings.flashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_playersettings.flashblue.generic.callback	= PlayerSettings_MenuEvent;
@@ -652,7 +653,7 @@ y = 170;
 	s_playersettings.flashblue.maxvalue			= 255;
 
 	s_playersettings.back.generic.type			= MTYPE_BITMAP;
-	s_playersettings.back.generic.name			= ART_BACK0;
+	s_playersettings.back.string			= ART_BACK0;
 	s_playersettings.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playersettings.back.generic.id			= ID_BACK;
 	s_playersettings.back.generic.callback		= PlayerSettings_MenuEvent;

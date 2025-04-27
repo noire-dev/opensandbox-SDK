@@ -89,17 +89,6 @@ vmCvar_t	cg_effectsTime;
 vmCvar_t	cg_effectsLimit;
 vmCvar_t	cg_effectsGibs;
 
-vmCvar_t	cl_propsmallsizescale;
-vmCvar_t 	cl_propheight;
-vmCvar_t 	cl_propspacewidth;
-vmCvar_t 	cl_propgapwidth;
-vmCvar_t 	cl_smallcharwidth;
-vmCvar_t 	cl_smallcharheight;
-vmCvar_t 	cl_bigcharwidth;
-vmCvar_t 	cl_bigcharheight;
-vmCvar_t 	cl_giantcharwidth;
-vmCvar_t 	cl_giantcharheight;
-
 vmCvar_t	cg_gibjump;
 vmCvar_t	cg_gibvelocity;
 
@@ -362,17 +351,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_effectsTime, "cg_effectsTime", "10", CVAR_ARCHIVE },
 	{ &cg_effectsLimit, "cg_effectsLimit", "4096", CVAR_ARCHIVE },
 	{ &cg_effectsGibs, "cg_effectsGibs", "1", CVAR_ARCHIVE },
-
-	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", CVAR_ARCHIVE},
-	{ &cl_propheight, "cl_propheight", "21", CVAR_ARCHIVE  },
-	{ &cl_propspacewidth, "cl_propspacewidth", "8", CVAR_ARCHIVE  },
-	{ &cl_propgapwidth, "cl_propgapwidth", "3", CVAR_ARCHIVE  },
-	{ &cl_smallcharwidth, "cl_smallcharwidth", "8", CVAR_ARCHIVE  },
-	{ &cl_smallcharheight, "cl_smallcharheight", "12", CVAR_ARCHIVE  },
-	{ &cl_bigcharwidth, "cl_bigcharwidth", "12", CVAR_ARCHIVE  },
-	{ &cl_bigcharheight, "cl_bigcharheight", "12", CVAR_ARCHIVE  },
-	{ &cl_giantcharwidth, "cl_giantcharwidth", "20", CVAR_ARCHIVE  },
-	{ &cl_giantcharheight, "cl_giantcharheight", "32", CVAR_ARCHIVE  },
 	
 	{ &cg_itemscaletime, "cg_itemscaletime", "5000", CVAR_ARCHIVE },
 	{ &cg_weaponselecttime, "cg_weaponselecttime", "5000", CVAR_ARCHIVE },

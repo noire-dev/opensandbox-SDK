@@ -143,81 +143,81 @@ typedef struct
 {
 	menuframework_s		menu;
 
-	menutext_s			banner;
-//	menubitmap_s		player;
+	menuelement_s			banner;
+//	menuelement_s		player;
 
-	menutext_s			movement;
-	menutext_s			looking;
-	menutext_s			weapons;
-	menutext_s			input;
-	menutext_s			misc;
+	menuelement_s			movement;
+	menuelement_s			looking;
+	menuelement_s			weapons;
+	menuelement_s			input;
+	menuelement_s			misc;
 
-	menulist_s			mousestyle;
-	menuaction_s		walkforward;
-	menuaction_s		backpedal;
-	menuaction_s		stepleft;
-	menuaction_s		stepright;
-	menuaction_s		moveup;
-	menuaction_s		movedown;
-	menuaction_s		turnleft;
-	menuaction_s		turnright;
-	menuaction_s		sidestep;
-	menuaction_s		run;
-	menuaction_s		machinegun;
-	menuaction_s		chainsaw;
-	menuaction_s		shotgun;
-	menuaction_s		grenadelauncher;
-	menuaction_s		rocketlauncher;
-	menuaction_s		lightning;
-	menuaction_s		railgun;
-	menuaction_s		plasma;
-	menuaction_s		bfg;
-	menuaction_s		hook;
-	menuaction_s		nailgun;
-	menuaction_s		prox;
-	menuaction_s		chaingun;
-	menuaction_s		flamethrower;
-	menuaction_s		darkflare;
-	menuaction_s		attack;
-	menuaction_s		prevweapon;
-	menuaction_s		nextweapon;
-	menuaction_s		lookup;
-	menuaction_s		lookdown;
-	menuaction_s		mouselook;
-	menuradiobutton_s	freelook;
-	menuaction_s		centerview;
-	menuaction_s		zoomview;
-	menuaction_s		gesture;
-	menuradiobutton_s	invertmouse;
-	menuslider_s		sensitivity;
-	menuradiobutton_s	smoothmouse;
-	menuradiobutton_s	alwaysrun;
-	menuaction_s		showscores;
-	menuaction_s		useitem;
+	menuelement_s			mousestyle;
+	menuelement_s		walkforward;
+	menuelement_s		backpedal;
+	menuelement_s		stepleft;
+	menuelement_s		stepright;
+	menuelement_s		moveup;
+	menuelement_s		movedown;
+	menuelement_s		turnleft;
+	menuelement_s		turnright;
+	menuelement_s		sidestep;
+	menuelement_s		run;
+	menuelement_s		machinegun;
+	menuelement_s		chainsaw;
+	menuelement_s		shotgun;
+	menuelement_s		grenadelauncher;
+	menuelement_s		rocketlauncher;
+	menuelement_s		lightning;
+	menuelement_s		railgun;
+	menuelement_s		plasma;
+	menuelement_s		bfg;
+	menuelement_s		hook;
+	menuelement_s		nailgun;
+	menuelement_s		prox;
+	menuelement_s		chaingun;
+	menuelement_s		flamethrower;
+	menuelement_s		darkflare;
+	menuelement_s		attack;
+	menuelement_s		prevweapon;
+	menuelement_s		nextweapon;
+	menuelement_s		lookup;
+	menuelement_s		lookdown;
+	menuelement_s		mouselook;
+	menuelement_s	freelook;
+	menuelement_s		centerview;
+	menuelement_s		zoomview;
+	menuelement_s		gesture;
+	menuelement_s	invertmouse;
+	menuelement_s		sensitivity;
+	menuelement_s	smoothmouse;
+	menuelement_s	alwaysrun;
+	menuelement_s		showscores;
+	menuelement_s		useitem;
 	playerInfo_t		playerinfo;
 	qboolean			changesmade;
-	menuaction_s		chat;
-	menuaction_s		chat2;
-	menuaction_s		chat3;
-	menuaction_s		chat4;
-	menuaction_s		actionmenu;
-	menuaction_s		flashlight;
-	menuaction_s		thirdperson;
-	menuaction_s		dweapon;
-	menuaction_s		dholdable;
-	menuaction_s		clrun;
-	menuaction_s		sandbox;
-	menuaction_s		sandboxmode;
-	menuaction_s		exitvehicle;
-	menuradiobutton_s	joyenable;
-	menuslider_s		joythreshold;
+	menuelement_s		chat;
+	menuelement_s		chat2;
+	menuelement_s		chat3;
+	menuelement_s		chat4;
+	menuelement_s		actionmenu;
+	menuelement_s		flashlight;
+	menuelement_s		thirdperson;
+	menuelement_s		dweapon;
+	menuelement_s		dholdable;
+	menuelement_s		clrun;
+	menuelement_s		sandbox;
+	menuelement_s		sandboxmode;
+	menuelement_s		exitvehicle;
+	menuelement_s	joyenable;
+	menuelement_s		joythreshold;
 	int					section;
 	qboolean			waitingforkey;
 
 	modelAnim_t			model;
 
-	menubitmap_s		back;
-	menutext_s			name;
+	menuelement_s		back;
+	menuelement_s			name;
 } controls_t; 	
 
 static controls_t s_controls;
@@ -629,7 +629,7 @@ Controls_DrawKeyBinding
 */
 static void Controls_DrawKeyBinding( void *self )
 {
-	menuaction_s*	a;
+	menuelement_s*	a;
 	int				x;
 	int				y;
 	int				b1;
@@ -638,7 +638,7 @@ static void Controls_DrawKeyBinding( void *self )
 	char			name[32];
 	char			name2[32];
 
-	a = (menuaction_s*) self;
+	a = (menuelement_s*) self;
 
 	x =	a->generic.x;
 	y = a->generic.y;
@@ -1030,22 +1030,6 @@ static void Controls_ResetDefaults_Action( qboolean result ) {
 
 /*
 =================
-Controls_ResetDefaults_Draw
-=================
-*/
-static void Controls_ResetDefaults_Draw( void ) {
-	if(cl_language.integer == 0){
-	UI_DrawString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
-	}
-	if(cl_language.integer == 1){
-	UI_DrawString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "ВНИМАНИЕ: Вы действительно хотите сбросить", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "настройки управления до стандартных.", UI_CENTER|UI_SMALLFONT, color_yellow );
-	}
-}
-
-/*
-=================
 Controls_MenuEvent
 =================
 */
@@ -1097,10 +1081,10 @@ static void Controls_MenuEvent( void* ptr, int event )
 			if (event == QM_ACTIVATED)
 			{
 				if(cl_language.integer == 0){
-				UI_ConfirmMenu( "SET TO DEFAULTS?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action );
+				UI_ConfirmMenu( "SET TO DEFAULTS?", Controls_ResetDefaults_Action );
 				}
 				if(cl_language.integer == 1){
-				UI_ConfirmMenu( "СБРОСИТЬ ДО СТАНДАРТНЫХ?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action );
+				UI_ConfirmMenu( "СБРОСИТЬ ДО СТАНДАРТНЫХ?", Controls_ResetDefaults_Action );
 				}
 			}
 			break;
@@ -1301,7 +1285,7 @@ static void Controls_MenuInit( void )
 	s_controls.misc.color			= color_white;
 
 	s_controls.back.generic.type	 = MTYPE_BITMAP;
-	s_controls.back.generic.name     = ART_BACK0;
+	s_controls.back.string     = ART_BACK0;
 	s_controls.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.back.generic.x		 = 0 - uis.wideoffset;
 	s_controls.back.generic.y		 = 480-64;
@@ -1510,10 +1494,10 @@ static void Controls_MenuInit( void )
 	s_controls.freelook.generic.flags		= QMF_SMALLFONT;
 	s_controls.freelook.generic.x			= SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.freelook.generic.name		= "free look";
+	s_controls.freelook.string		= "free look";
 	}
 	if(cl_language.integer == 1){
-	s_controls.freelook.generic.name		= "свободный обзор";	
+	s_controls.freelook.string		= "свободный обзор";	
 	}
 	s_controls.freelook.generic.id			= ID_FREELOOK;
 	s_controls.freelook.generic.callback	= Controls_MenuEvent;
@@ -1547,10 +1531,10 @@ static void Controls_MenuInit( void )
 	s_controls.invertmouse.generic.flags	 = QMF_SMALLFONT;
 	s_controls.invertmouse.generic.x	     = SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.invertmouse.generic.name	     = "invert mouse";
+	s_controls.invertmouse.string	     = "invert mouse";
 	}
 	if(cl_language.integer == 1){
-	s_controls.invertmouse.generic.name	     = "инвертировать мышь";
+	s_controls.invertmouse.string	     = "инвертировать мышь";
 	}
 	s_controls.invertmouse.generic.id        = ID_INVERTMOUSE;
 	s_controls.invertmouse.generic.callback  = Controls_MenuEvent;
@@ -1560,10 +1544,10 @@ static void Controls_MenuInit( void )
 	s_controls.mousestyle.generic.flags	 = QMF_SMALLFONT;
 	s_controls.mousestyle.generic.x	     = SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.mousestyle.generic.name	     = "input method";
+	s_controls.mousestyle.string	     = "input method";
 	}
 	if(cl_language.integer == 1){
-	s_controls.mousestyle.generic.name	     = "метод ввода";
+	s_controls.mousestyle.string	     = "метод ввода";
 	}
 	s_controls.mousestyle.generic.id        = ID_MOUSESTYLE;
 	s_controls.mousestyle.generic.callback  = Controls_MenuEvent;
@@ -1574,10 +1558,10 @@ static void Controls_MenuInit( void )
 	s_controls.smoothmouse.generic.flags	 = QMF_SMALLFONT;
 	s_controls.smoothmouse.generic.x	     = SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.smoothmouse.generic.name	     = "smooth mouse";
+	s_controls.smoothmouse.string	     = "smooth mouse";
 	}
 	if(cl_language.integer == 1){
-	s_controls.smoothmouse.generic.name	     = "плавная мышь";
+	s_controls.smoothmouse.string	     = "плавная мышь";
 	}
 	s_controls.smoothmouse.generic.id        = ID_SMOOTHMOUSE;
 	s_controls.smoothmouse.generic.callback  = Controls_MenuEvent;
@@ -1587,10 +1571,10 @@ static void Controls_MenuInit( void )
 	s_controls.alwaysrun.generic.flags	   = QMF_SMALLFONT;
 	s_controls.alwaysrun.generic.x	       = SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.alwaysrun.generic.name	   = "always run";
+	s_controls.alwaysrun.string	   = "always run";
 	}
 	if(cl_language.integer == 1){
-	s_controls.alwaysrun.generic.name	   = "всегда бег";
+	s_controls.alwaysrun.string	   = "всегда бег";
 	}
 	s_controls.alwaysrun.generic.id        = ID_ALWAYSRUN;
 	s_controls.alwaysrun.generic.callback  = Controls_MenuEvent;
@@ -1600,10 +1584,10 @@ static void Controls_MenuInit( void )
 	s_controls.sensitivity.generic.x		 = SCREEN_WIDTH/2;
 	s_controls.sensitivity.generic.flags	 = QMF_SMALLFONT;
 	if(cl_language.integer == 0){
-	s_controls.sensitivity.generic.name	     = "mouse speed";
+	s_controls.sensitivity.string	     = "mouse speed";
 	}
 	if(cl_language.integer == 1){
-	s_controls.sensitivity.generic.name	     = "чувствительность";
+	s_controls.sensitivity.string	     = "чувствительность";
 	}
 	s_controls.sensitivity.generic.id 	     = ID_MOUSESPEED;
 	s_controls.sensitivity.generic.callback  = Controls_MenuEvent;
@@ -1699,10 +1683,10 @@ static void Controls_MenuInit( void )
 	s_controls.joyenable.generic.flags	   = QMF_SMALLFONT;
 	s_controls.joyenable.generic.x	       = SCREEN_WIDTH/2;
 	if(cl_language.integer == 0){
-	s_controls.joyenable.generic.name	   = "joystick";
+	s_controls.joyenable.string	   = "joystick";
 	}
 	if(cl_language.integer == 1){
-	s_controls.joyenable.generic.name	   = "геймпад";
+	s_controls.joyenable.string	   = "геймпад";
 	}
 	s_controls.joyenable.generic.id        = ID_JOYENABLE;
 	s_controls.joyenable.generic.callback  = Controls_MenuEvent;
@@ -1712,10 +1696,10 @@ static void Controls_MenuInit( void )
 	s_controls.joythreshold.generic.x		  = SCREEN_WIDTH/2;
 	s_controls.joythreshold.generic.flags	  = QMF_SMALLFONT;
 	if(cl_language.integer == 0){
-	s_controls.joythreshold.generic.name	  = "joystick threshold";
+	s_controls.joythreshold.string	  = "joystick threshold";
 	}
 	if(cl_language.integer == 1){
-	s_controls.joythreshold.generic.name	  = "порог геймпада";
+	s_controls.joythreshold.string	  = "порог геймпада";
 	}
 	s_controls.joythreshold.generic.id 	      = ID_JOYTHRESHOLD;
 	s_controls.joythreshold.generic.callback  = Controls_MenuEvent;

@@ -65,20 +65,20 @@ static const char *sdriver_items[] = {
 typedef struct {
 	menuframework_s		menu;
 
-	menutext_s			banner;
+	menuelement_s			banner;
 
-	menutext_s			graphics;
-	menutext_s			display;
-	menutext_s			sound;
-	menutext_s			network;
+	menuelement_s			graphics;
+	menuelement_s			display;
+	menuelement_s			sound;
+	menuelement_s			network;
 
-	menuslider_s		sfxvolume;
-	menuslider_s		musicvolume;
-	menulist_s			quality;
-	menulist_s			sdriver;
-	menuradiobutton_s	animsfx;
+	menuelement_s		sfxvolume;
+	menuelement_s		musicvolume;
+	menuelement_s			quality;
+	menuelement_s			sdriver;
+	menuelement_s	animsfx;
 
-	menubitmap_s		back;
+	menuelement_s		back;
 } soundOptionsInfo_t;
 
 static soundOptionsInfo_t	soundOptionsInfo;
@@ -263,7 +263,7 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.animsfx.generic.y				= y;
 
 	soundOptionsInfo.back.generic.type			= MTYPE_BITMAP;
-	soundOptionsInfo.back.generic.name			= ART_BACK0;
+	soundOptionsInfo.back.string			= ART_BACK0;
 	soundOptionsInfo.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	soundOptionsInfo.back.generic.callback		= UI_SoundOptionsMenu_Event;
 	soundOptionsInfo.back.generic.id			= ID_BACK;
@@ -279,13 +279,13 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.display.string				= "DISPLAY";
 	soundOptionsInfo.sound.string				= "SOUND";
 	soundOptionsInfo.network.string				= "NETWORK";
-	soundOptionsInfo.sfxvolume.generic.name		= "Effects Volume:";
-	soundOptionsInfo.musicvolume.generic.name		= "Music Volume:";
-	soundOptionsInfo.quality.generic.name		= "Sound Quality:";
+	soundOptionsInfo.sfxvolume.string		= "Effects Volume:";
+	soundOptionsInfo.musicvolume.string		= "Music Volume:";
+	soundOptionsInfo.quality.string		= "Sound Quality:";
 	soundOptionsInfo.quality.itemnames			= quality_items;
-	soundOptionsInfo.sdriver.generic.name		= "Sound Driver:";
+	soundOptionsInfo.sdriver.string		= "Sound Driver:";
 	soundOptionsInfo.sdriver.itemnames			= sdriver_items;
-	soundOptionsInfo.animsfx.generic.name			= "UI Animation sfx:";
+	soundOptionsInfo.animsfx.string			= "UI Animation sfx:";
 	}
 	
 	if(cl_language.integer == 1){
@@ -294,13 +294,13 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.display.string				= "ЭКРАН";
 	soundOptionsInfo.sound.string				= "ЗВУК";
 	soundOptionsInfo.network.string				= "СЕТЬ";
-	soundOptionsInfo.sfxvolume.generic.name		= "Громкость Эффектов:";
-	soundOptionsInfo.musicvolume.generic.name		= "Громкость Музыки:";
-	soundOptionsInfo.quality.generic.name		= "Качество Звука:";
+	soundOptionsInfo.sfxvolume.string		= "Громкость Эффектов:";
+	soundOptionsInfo.musicvolume.string		= "Громкость Музыки:";
+	soundOptionsInfo.quality.string		= "Качество Звука:";
 	soundOptionsInfo.quality.itemnames			= quality_itemsru;
-	soundOptionsInfo.sdriver.generic.name		= "Драйвер звука:";
+	soundOptionsInfo.sdriver.string		= "Драйвер звука:";
 	soundOptionsInfo.sdriver.itemnames			= sdriver_items;
-	soundOptionsInfo.animsfx.generic.name			= "UI Звуки Анимации:";
+	soundOptionsInfo.animsfx.string			= "UI Звуки Анимации:";
 	}
 
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.banner );

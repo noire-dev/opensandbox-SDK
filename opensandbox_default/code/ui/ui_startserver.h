@@ -296,19 +296,6 @@ enum botCopyTo {
 	BOT_CT_COUNT
 };
 
-
-
-// bot skill control data
-typedef struct botskill_s {
-	int low;
-	int high;
-	int value;
-
-	qboolean range;
-} botskill_t;
-
-
-
 // data used by the bot page
 typedef struct botparameters_s {
 	char name[PLAYER_SLOTS][MAX_NAME_LENGTH];
@@ -1025,14 +1012,14 @@ typedef qboolean (*callbackMapList)(const char*);
 
 int GametypeBits( char *string );
 int UI_BuildMapListByType(int* list, int listmax, int gametype, callbackMapList);
-void StartServer_SetIconFromGameType(menubitmap_s* b, int gametype, qboolean custom);
+void StartServer_SetIconFromGameType(menuelement_s* b, int gametype, qboolean custom);
 qboolean StartServer_MapSupportsBots(const char* mapname);
 int StartServer_NumCustomMapTypes(void);
 void StartServer_InitMapPictureFromIndex(mappic_t* mappic, int index);
 void StartServer_InitMapPicture(mappic_t* mappic, const char* mapname);
 void StartServer_DrawMapPicture(int x, int y, int w, int h, mappic_t* mappic, vec4_t color);
 qboolean StartServer_IsCustomMapType(const char* mapname, int type);
-const char* StartServer_MapIconFromType(int gametype, qboolean isCustomMap);
+char* StartServer_MapIconFromType(int gametype, qboolean isCustomMap);
 void UI_LoadMapTypeInfo(void);
 
 

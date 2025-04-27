@@ -2307,7 +2307,7 @@ PlayerInfo_ModelTrackCursor
 static void PlayerInfo_ModelTrackCursor( modelAnim_t* m)
 {
 	vec3_t cursor3d;
-	menubitmap_s* b;
+	menuelement_s* b;
 
 	b = &m->bitmap;
 	cursor3d[0] = 175.0;
@@ -2713,7 +2713,7 @@ GUI_PlayerInfo_AnimateModel
 */
 void GUI_PlayerInfo_AnimateModel( modelAnim_t* m)
 {
-	menubitmap_s* b;
+	menuelement_s* b;
 	char buffer[MODELNAME_BUFFER];
 	int modelchange, team_modelchange, draw_team;
 	float f;
@@ -2891,7 +2891,7 @@ void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, call
 	rm->paused = qtrue;
 
 	rm->left.generic.type	    = MTYPE_BITMAP;
-	rm->left.generic.name     = MODELSPIN_LEFT;
+	rm->left.string     = MODELSPIN_LEFT;
 	rm->left.generic.flags    = QMF_PULSEIFFOCUS;
 	rm->left.generic.callback = event_handler;
 	rm->left.generic.id	    = ID_MODELSPIN_LEFT;
@@ -2902,7 +2902,7 @@ void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, call
 	rm->left.focuspic         = MODELSPIN_LEFT1;
 
 	rm->right.generic.type	    = MTYPE_BITMAP;
-	rm->right.generic.name     = MODELSPIN_RIGHT;
+	rm->right.string     = MODELSPIN_RIGHT;
 	rm->right.generic.flags    = QMF_PULSEIFFOCUS;
 	rm->right.generic.callback = event_handler;
 	rm->right.generic.id	    = ID_MODELSPIN_RIGHT;
@@ -2913,7 +2913,7 @@ void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, call
 	rm->right.focuspic         = MODELSPIN_RIGHT1;
 
 	rm->stop.generic.type	    = MTYPE_BITMAP;
-	rm->stop.generic.name     = MODELSPIN_STOP;
+	rm->stop.string     = MODELSPIN_STOP;
 	rm->stop.generic.flags    = QMF_PULSEIFFOCUS;
 	rm->stop.generic.callback = event_handler;
 	rm->stop.generic.id	    = ID_MODELSPIN_STOP;
@@ -2924,7 +2924,7 @@ void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, call
 	rm->stop.focuspic         = MODELSPIN_STOP1;
 
 	rm->pause.generic.type	    = MTYPE_BITMAP;
-	rm->pause.generic.name     = MODELSPIN_PAUSE;
+	rm->pause.string     = MODELSPIN_PAUSE;
 	rm->pause.generic.flags    = QMF_PULSEIFFOCUS;
 	rm->pause.generic.callback = event_handler;
 	rm->pause.generic.id	    = ID_MODELSPIN_PAUSE;

@@ -42,17 +42,6 @@ gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
 int				SourceTechEntityList[MAX_GENTITIES];
 
-vmCvar_t 	cl_propsmallsizescale;
-vmCvar_t 	cl_propheight;
-vmCvar_t 	cl_propspacewidth;
-vmCvar_t 	cl_propgapwidth;
-vmCvar_t 	cl_smallcharwidth;
-vmCvar_t 	cl_smallcharheight;
-vmCvar_t 	cl_bigcharwidth;
-vmCvar_t 	cl_bigcharheight;
-vmCvar_t 	cl_giantcharwidth;
-vmCvar_t 	cl_giantcharheight;
-
 vmCvar_t	g_physimpact;
 vmCvar_t	g_physimpulse;
 vmCvar_t	g_physdamage;
@@ -578,17 +567,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 
 	{ &g_maxClients, "g_maxClients", "128", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse  },
-	
-	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", 0, 0, qtrue  },
-	{ &cl_propheight, "cl_propheight", "21", 0, 0, qtrue  },
-	{ &cl_propspacewidth, "cl_propspacewidth", "8", 0, 0, qtrue  },
-	{ &cl_propgapwidth, "cl_propgapwidth", "3", 0, 0, qtrue  },
-	{ &cl_smallcharwidth, "cl_smallcharwidth", "8", 0, 0, qtrue  },
-	{ &cl_smallcharheight, "cl_smallcharheight", "12", 0, 0, qtrue  },
-	{ &cl_bigcharwidth, "cl_bigcharwidth", "12", 0, 0, qtrue  },
-	{ &cl_bigcharheight, "cl_bigcharheight", "12", 0, 0, qtrue  },
-	{ &cl_giantcharwidth, "cl_giantcharwidth", "20", 0, 0, qtrue  },
-	{ &cl_giantcharheight, "cl_giantcharheight", "32", 0, 0, qtrue  },
 	
 	{ &g_physimpact, "g_physimpact", "0.80", 0, 0, qtrue  },
 	{ &g_physimpulse, "g_physimpulse", "450", 0, 0, qtrue  },

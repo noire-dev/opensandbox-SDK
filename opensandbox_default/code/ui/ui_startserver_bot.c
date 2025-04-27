@@ -63,18 +63,6 @@
 
 #define BOT_FADETIME 1000
 
-/*
-	new control for skill input
-
-	override generic.ownerdraw and generic.callback
-	use QMF_NODEFAULTINIT
-	generic.type ignored
-*/
-typedef struct {
-	menucommon_s generic;
-	botskill_t* data;
-} menuskill_s;
-
 // enumerator for testing cursor position
 // within control
 enum {
@@ -87,35 +75,35 @@ typedef struct botcontrols_s {
 	menuframework_s menu;
 	commoncontrols_t common;
 
-	menulist_s botGameType;
-	menubitmap_s botGameTypeIcon;
-	menulist_s botTypeSelect;
+	menuelement_s botGameType;
+	menuelement_s botGameTypeIcon;
+	menuelement_s botTypeSelect;
 
-	menufield_s numberBots;
-	menulist_s changeBots;
-	menufield_s numberOpen;
+	menuelement_s numberBots;
+	menuelement_s changeBots;
+	menuelement_s numberOpen;
 
-	menulist_s skillType;
-	menuskill_s skillValue;
-	menulist_s skillBias;
-	menuradiobutton_s joinAs;
+	menuelement_s skillType;
+	menuelement_s skillValue;
+	menuelement_s skillBias;
+	menuelement_s joinAs;
 
-	menutext_s teamLeft;
-	menutext_s teamRight;
+	menuelement_s teamLeft;
+	menuelement_s teamRight;
 
-	menubitmap_s swapArrows;
-	menubitmap_s delBot;
+	menuelement_s swapArrows;
+	menuelement_s delBot;
 
-	menulist_s slotType[PLAYER_SLOTS];
-	menutext_s slotName[PLAYER_SLOTS];
-	menuskill_s slotSkill[PLAYER_SLOTS];
-	menubitmap_s slotSelected[PLAYER_SLOTS];
+	menuelement_s slotType[PLAYER_SLOTS];
+	menuelement_s slotName[PLAYER_SLOTS];
+	menuelement_s slotSkill[PLAYER_SLOTS];
+	menuelement_s slotSelected[PLAYER_SLOTS];
 
-	menubitmap_s moveSlot;
-	menubitmap_s deleteSlot;
+	menuelement_s moveSlot;
+	menuelement_s deleteSlot;
 
-	menulist_s actionDest;
-	menubitmap_s actionActivate;
+	menuelement_s actionDest;
+	menuelement_s actionActivate;
 
 	// local, used by the interface
 	int selected;
@@ -724,7 +712,7 @@ static void StartServer_BotPage_SetTeamTitle(int swapped)
 	int x, w;
 	char* string;
 	float* color;
-	menutext_s *red, *blue;
+	menuelement_s *red, *blue;
 	float sizeScale;
 
 	if (swapped == -1) {
@@ -757,21 +745,21 @@ static void StartServer_BotPage_SetTeamTitle(int swapped)
 	red->color = color_red;
 	blue->color = color_blue;
 
-	sizeScale = UI_ProportionalSizeScale( red->style, 0 );
+	sizeScale = 1.00;
 
 	x = red->generic.x;
-	w = UI_ProportionalStringWidth( red->string ) * sizeScale;
+	w = UI_ProportionalStringWidth( red->string, 1.00 ) * sizeScale;
 	x -= w/2;
 
-	red->generic.left   = x - PROP_GAP_WIDTH * sizeScale;
-	red->generic.right  = x + w + PROP_GAP_WIDTH * sizeScale;
+	red->generic.left   = x * sizeScale;
+	red->generic.right  = x + w * sizeScale;
 
 	x = blue->generic.x;
-	w = UI_ProportionalStringWidth( blue->string ) * sizeScale;
+	w = UI_ProportionalStringWidth( blue->string, 1.00 ) * sizeScale;
 	x -= w/2;
 
-	blue->generic.left   = x - PROP_GAP_WIDTH * sizeScale;
-	blue->generic.right  = x + w + PROP_GAP_WIDTH * sizeScale;
+	blue->generic.left   = x * sizeScale;
+	blue->generic.right  = x + w * sizeScale;
 }
 
 
@@ -833,7 +821,7 @@ static void StartServer_BotPage_InitControlsFromScript(void)
 StartServer_BotPage_InitSkillControl
 =================
 */
-static void StartServer_BotPage_InitSkillControl(menuskill_s* s)
+static void StartServer_BotPage_InitSkillControl(menuelement_s* s)
 {
 	int x, y, h;
 
@@ -1038,7 +1026,7 @@ static int StartServer_BotPage_SkillOffset(qboolean range)
 StartServer_BotPage_OverSkillHotspot
 =================
 */
-static int StartServer_BotPage_OverSkillHotspot(menuskill_s* s)
+static int StartServer_BotPage_OverSkillHotspot(menuelement_s* s)
 {
 	int x, y, w, h;
 
@@ -1067,10 +1055,10 @@ StartServer_BotPage_SkillStatusBar
 */
 static void StartServer_BotPage_SkillStatusBar(void* self)
 {
-	menuskill_s* s;
+	menuelement_s* s;
 	int index, cursor;
 
-	s = (menuskill_s*)self;
+	s = (menuelement_s*)self;
 	cursor = StartServer_BotPage_OverSkillHotspot(s);
 
 	if (cursor == MSKILL_NONE)
@@ -1102,14 +1090,14 @@ StartServer_BotPage_SkillDraw
 static void StartServer_BotPage_SkillDraw(void* self)
 {
 	int skill;
-	menuskill_s* s;
+	menuelement_s* s;
 	int x, y, w, h;
 	int shader_y, cursor;
 	qhandle_t shader;
 	vec4_t temp_bkcolor, tempcolor;
 	float* color;
 
-	s = (menuskill_s*)self;
+	s = (menuelement_s*)self;
 	x = s->generic.left;
 	y = s->generic.top;
 	w = s->generic.right - x;
@@ -1213,7 +1201,7 @@ StartServer_BotPage_SkillEvent
 static void StartServer_BotPage_SkillEvent( void* ptr, int event )
 {
 	int hit;
-	menuskill_s* s;
+	menuelement_s* s;
 	botskill_t* data;
 
 	if (event == QM_GOTFOCUS) {
@@ -1226,7 +1214,7 @@ static void StartServer_BotPage_SkillEvent( void* ptr, int event )
 		return;
 	}
 
-	s = (menuskill_s*)ptr;
+	s = (menuelement_s*)ptr;
 	data = s->data;
 	hit = StartServer_BotPage_OverSkillHotspot(s);
 
@@ -1331,11 +1319,11 @@ static void StartServer_BotPage_NameDraw(void* self)
 	int style;
 	vec4_t tempcolor;
 	float*	color;
-	menutext_s* t;
+	menuelement_s* t;
 	char* string;
 	char buffer[32];
 
-	t = (menutext_s*)self;
+	t = (menuelement_s*)self;
 	x = t->generic.x;
 	y = t->generic.y;
 	style = UI_SMALLFONT;
@@ -1434,13 +1422,13 @@ StartServer_BotPage_TypeEvent
 static void StartServer_BotPage_TypeEvent( void* ptr, int event )
 {
 	int index;
-	menulist_s* s;
+	menuelement_s* s;
 
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 
-	s = (menulist_s*)ptr;
+	s = (menuelement_s*)ptr;
 	index = s->generic.id;
 	if (s->curvalue == SLOTTYPE_HUMAN)
 	{
@@ -1612,7 +1600,7 @@ StartServer_BotPage_MenuDraw
 static void StartServer_BotPage_MenuDraw(void)
 {
 	qboolean excluded;
-	menulist_s*	b;
+	menuelement_s*	b;
 	menucommon_s* g;
 	qhandle_t pic;
 	int i;
@@ -1807,10 +1795,10 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.teamRight.style = UI_CENTER;
 	s_botcontrols.teamRight.color = 0;
 
-	y += 2+ PROP_HEIGHT * UI_ProportionalSizeScale( s_botcontrols.teamLeft.style, 0 );
+	y += 2+ PROP_HEIGHT * 1.00;
 
 	s_botcontrols.swapArrows.generic.type  = MTYPE_BITMAP;
-	s_botcontrols.swapArrows.generic.name  = BOTSELECT_SWAPARROWS0;
+	s_botcontrols.swapArrows.string  = BOTSELECT_SWAPARROWS0;
 	s_botcontrols.swapArrows.generic.flags = QMF_PULSEIFFOCUS;
 	s_botcontrols.swapArrows.generic.x	   =  320 - 18;
 	s_botcontrols.swapArrows.generic.y	   = y;
@@ -1821,7 +1809,7 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.swapArrows.focuspic = BOTSELECT_SWAPARROWS1;
 
 	s_botcontrols.delBot.generic.type  = MTYPE_BITMAP;
-	s_botcontrols.delBot.generic.name  = BOTSELECT_DEL0;
+	s_botcontrols.delBot.string  = BOTSELECT_DEL0;
 	s_botcontrols.delBot.generic.flags = QMF_PULSEIFFOCUS;
 	s_botcontrols.delBot.generic.x	   =  320 - 18;
 	s_botcontrols.delBot.generic.y	   = y + 48;
@@ -1846,7 +1834,7 @@ void StartServer_BotPage_MenuInit(void)
 		s_botcontrols.slotType[i].generic.callback	= StartServer_BotPage_TypeEvent;
 		s_botcontrols.slotType[i].generic.x			= colx;
 		s_botcontrols.slotType[i].generic.y			= list_y;
-		s_botcontrols.slotType[i].generic.name		= 0;
+		s_botcontrols.slotType[i].string		= 0;
 		s_botcontrols.slotType[i].itemnames			= botSlotType_list;
 
 		s_botcontrols.slotName[i].generic.type		= MTYPE_TEXT;
@@ -1863,7 +1851,7 @@ void StartServer_BotPage_MenuInit(void)
 		s_botcontrols.slotName[i].string = s_scriptdata.bot.name[i];
 
 		s_botcontrols.slotSelected[i].generic.type  = MTYPE_BITMAP;
-		s_botcontrols.slotSelected[i].generic.name  = GAMESERVER_SELECTED0;
+		s_botcontrols.slotSelected[i].string  = GAMESERVER_SELECTED0;
 		s_botcontrols.slotSelected[i].generic.flags = QMF_PULSEIFFOCUS;
 		s_botcontrols.slotSelected[i].generic.x	   =  sel_colx;
 		s_botcontrols.slotSelected[i].generic.y	   = list_y;
@@ -1896,7 +1884,7 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.actionDest.generic.y	   = y + 100;
 
 	s_botcontrols.actionActivate.generic.type     = MTYPE_BITMAP;
-	s_botcontrols.actionActivate.generic.name     = GAMESERVER_ACTION0;
+	s_botcontrols.actionActivate.string     = GAMESERVER_ACTION0;
 	s_botcontrols.actionActivate.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_botcontrols.actionActivate.generic.callback = StartServer_BotPage_Event;
 	s_botcontrols.actionActivate.generic.id	    = ID_BOT_ACTION;
@@ -1909,35 +1897,35 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.statusbar_height = y + 16 + LINE_HEIGHT;
 	
 	if(cl_language.integer == 0){
-	s_botcontrols.botGameType.generic.name		= "Game Type:";
+	s_botcontrols.botGameType.string		= "Game Type:";
 	s_botcontrols.botGameType.itemnames			= gametype_items;
-	s_botcontrols.botTypeSelect.generic.name		= "Bot selection:";
+	s_botcontrols.botTypeSelect.string		= "Bot selection:";
 	s_botcontrols.botTypeSelect.itemnames			= botTypeSel_list;
-	s_botcontrols.numberBots.generic.name       = "Number of bots:";
-	s_botcontrols.skillType.generic.name		= "Skill:";
+	s_botcontrols.numberBots.string       = "Number of bots:";
+	s_botcontrols.skillType.string		= "Skill:";
 	s_botcontrols.skillType.itemnames			= botSkill_list;
-	s_botcontrols.changeBots.generic.name		= "Change bots:";
+	s_botcontrols.changeBots.string		= "Change bots:";
 	s_botcontrols.changeBots.itemnames			= botChange_list;
-	s_botcontrols.skillBias.generic.name		= "Skill bias:";
+	s_botcontrols.skillBias.string		= "Skill bias:";
 	s_botcontrols.skillBias.itemnames			= botSkillBias_list;
-	s_botcontrols.numberOpen.generic.name       = "Open slots:";
-	s_botcontrols.joinAs.generic.name		= "Spectator:";	
+	s_botcontrols.numberOpen.string       = "Open slots:";
+	s_botcontrols.joinAs.string		= "Spectator:";	
 	s_botcontrols.actionDest.itemnames	   = botCopyTo_items;
 	}
 	if(cl_language.integer == 1){
-	s_botcontrols.botGameType.generic.name		= "Режим Игры:";
+	s_botcontrols.botGameType.string		= "Режим Игры:";
 	s_botcontrols.botGameType.itemnames			= gametype_itemsru;
-	s_botcontrols.botTypeSelect.generic.name		= "Выбор ботов:";
+	s_botcontrols.botTypeSelect.string		= "Выбор ботов:";
 	s_botcontrols.botTypeSelect.itemnames			= botTypeSel_listru;
-	s_botcontrols.numberBots.generic.name       = "Количество ботов:";
-	s_botcontrols.skillType.generic.name		= "Сложность:";
+	s_botcontrols.numberBots.string       = "Количество ботов:";
+	s_botcontrols.skillType.string		= "Сложность:";
 	s_botcontrols.skillType.itemnames			= botSkill_listru;
-	s_botcontrols.changeBots.generic.name		= "Сменить ботов:";
+	s_botcontrols.changeBots.string		= "Сменить ботов:";
 	s_botcontrols.changeBots.itemnames			= botChange_listru;
-	s_botcontrols.skillBias.generic.name		= "Разброс сложности:";
+	s_botcontrols.skillBias.string		= "Разброс сложности:";
 	s_botcontrols.skillBias.itemnames			= botSkillBias_listru;
-	s_botcontrols.numberOpen.generic.name       = "Открытые слоты:";
-	s_botcontrols.joinAs.generic.name		= "Наблюдатель:";	
+	s_botcontrols.numberOpen.string       = "Открытые слоты:";
+	s_botcontrols.joinAs.string		= "Наблюдатель:";	
 	s_botcontrols.actionDest.itemnames	   = botCopyTo_itemsru;
 	}
 

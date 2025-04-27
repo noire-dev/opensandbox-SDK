@@ -77,7 +77,6 @@ static void InGame_QuitAction( qboolean result ) {
 		return;
 	}
 	UI_ForceMenuOff();
-	UI_CreditMenu(0);
 }
 
 /*
@@ -175,10 +174,10 @@ static void InGame_EventHandler(int id)
 
 	case ID_RESTART:
 		if(cl_language.integer == 0){
-		UI_ConfirmMenu( "RESTART ARENA?", 0, InGame_RestartAction );
+		UI_ConfirmMenu( "RESTART ARENA?", InGame_RestartAction );
 		}
 		if(cl_language.integer == 1){
-		UI_ConfirmMenu( "РЕСТАРТ АРЕНЫ?", 0, InGame_RestartAction );
+		UI_ConfirmMenu( "РЕСТАРТ АРЕНЫ?", InGame_RestartAction );
 		}
 		break;
 
@@ -192,10 +191,10 @@ static void InGame_EventHandler(int id)
 
 	case ID_NEXTMAP:
 		if(cl_language.integer == 0){
-		UI_ConfirmMenu( "NEXT MAP?", 0, InGame_NextMap);
+		UI_ConfirmMenu( "NEXT MAP?", InGame_NextMap);
 		}
 		if(cl_language.integer == 1){
-		UI_ConfirmMenu( "СЛЕДУЮШАЯ КАРТА?", 0, InGame_NextMap);
+		UI_ConfirmMenu( "СЛЕДУЮШАЯ КАРТА?", InGame_NextMap);
 		}
 		break;
 

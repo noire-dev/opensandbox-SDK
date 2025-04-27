@@ -46,13 +46,13 @@ SYSTEM CONFIGURATION MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menutext_s		graphics;
-	menutext_s		display;
-	menutext_s		sound;
-	menutext_s		network;
-	menubitmap_s	back;
+	menuelement_s		graphics;
+	menuelement_s		display;
+	menuelement_s		sound;
+	menuelement_s		network;
+	menuelement_s	back;
 } optionsmenu_t;
 
 static optionsmenu_t	s_options;
@@ -202,7 +202,7 @@ void Options_MenuInit( void ) {
 	s_options.network.style				= UI_CENTER;
 
 	s_options.back.generic.type	    = MTYPE_BITMAP;
-	s_options.back.generic.name     = ART_BACK0;
+	s_options.back.string     = ART_BACK0;
 	s_options.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_options.back.generic.callback = Options_Event;
 	s_options.back.generic.id	    = ID_BACK;

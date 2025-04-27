@@ -73,42 +73,38 @@ typedef struct mapcontrols_s {
 	menuframework_s menu;
 	commoncontrols_t common;
 
-	menulist_s gameType;
-	menubitmap_s gameTypeIcon;
+	menuelement_s gameType;
+	menuelement_s gameTypeIcon;
 
-	menubitmap_s displaySelected[NUMMAPS_PERPAGE];
-	menutext_s displayMapName[NUMMAPS_PERPAGE];
+	menuelement_s displaySelected[NUMMAPS_PERPAGE];
+	menuelement_s displayMapName[NUMMAPS_PERPAGE];
 
-	menufield_s displayFragLimit[NUMMAPS_PERPAGE];
-	menufield_s displayTimeLimit[NUMMAPS_PERPAGE];
+	menuelement_s displayFragLimit[NUMMAPS_PERPAGE];
+	menuelement_s displayTimeLimit[NUMMAPS_PERPAGE];
 
-	menulist_s timeLimitType;
-	menulist_s fragLimitType;
-	menufield_s timeLimit;
-	menufield_s fragLimit;
-	menulist_s mapSource;
-	menufield_s mapSourceCount;
-	menulist_s mapSourceType;
-	menuradiobutton_s mapRepeat;
-	menutext_s mapPage;
+	menuelement_s timeLimitType;
+	menuelement_s fragLimitType;
+	menuelement_s timeLimit;
+	menuelement_s fragLimit;
+	menuelement_s mapSource;
+	menuelement_s mapSourceCount;
+	menuelement_s mapSourceType;
+	menuelement_s mapRepeat;
+	menuelement_s mapPage;
 
-	menutext_s mapText;
-	menutext_s nameText;
-	menutext_s fragsText;
-	menutext_s timeText;
+	menuelement_s mapText;
+	menuelement_s nameText;
+	menuelement_s fragsText;
+	menuelement_s timeText;
 
-	menubitmap_s arrows;
-	menubitmap_s up;
-	menubitmap_s down;
-	menubitmap_s del;
+	menuelement_s arrows;
+	menuelement_s up;
+	menuelement_s down;
+	menuelement_s del;
 
-	menulist_s actionSrc;
-	menulist_s actionDest;
-	menubitmap_s actionActivate;
-
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	menubitmap_s logo;
-#endif
+	menuelement_s actionSrc;
+	menuelement_s actionDest;
+	menuelement_s actionActivate;
 
 	// local data implementing interface
 	int statusbar_height;
@@ -138,7 +134,7 @@ static const char *map_comsprintf[] = {
 
 
 
-static const char* fragcontrol_text[] = {
+static char* fragcontrol_text[] = {
 	"Frag Limit:", "Frags",
 	"Capture Limit:", "Caps"
 };
@@ -201,7 +197,7 @@ static const char* copyTo_items[MAP_CT_COUNT + 1] = {
 };
 
 
-static const char* fragcontrol_textru[] = {
+static char* fragcontrol_textru[] = {
 	"Лимит Фрагов:", "Фраги",
 	"Лимит Захватов:", "Захваты"
 };
@@ -355,24 +351,24 @@ static void StartServer_MapPage_UpdateActionControls( void )
 if(cl_language.integer == 0){
 	if (del)
 	{
-		s_mapcontrols.actionSrc.generic.name = ACTIONTYPE_DELETE;
+		s_mapcontrols.actionSrc.string = ACTIONTYPE_DELETE;
 		s_mapcontrols.actionDest.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
 	}
 	else
 	{
-		s_mapcontrols.actionSrc.generic.name = ACTIONTYPE_COPY;
+		s_mapcontrols.actionSrc.string = ACTIONTYPE_COPY;
 		s_mapcontrols.actionDest.generic.flags &= ~(QMF_INACTIVE|QMF_HIDDEN);
 	}
 }
 if(cl_language.integer == 1){
 	if (del)
 	{
-		s_mapcontrols.actionSrc.generic.name = ACTIONTYPE_DELETERU;
+		s_mapcontrols.actionSrc.string = ACTIONTYPE_DELETERU;
 		s_mapcontrols.actionDest.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
 	}
 	else
 	{
-		s_mapcontrols.actionSrc.generic.name = ACTIONTYPE_COPYRU;
+		s_mapcontrols.actionSrc.string = ACTIONTYPE_COPYRU;
 		s_mapcontrols.actionDest.generic.flags &= ~(QMF_INACTIVE|QMF_HIDDEN);
 	}
 }
@@ -634,7 +630,7 @@ StartServer_MapPage_DrawMapName
 */
 static void StartServer_MapPage_DrawMapName( void *item )
 {
-	menutext_s	*s;
+	menuelement_s	*s;
 	float		*color;
 	int			x, y;
 	int			style;
@@ -642,7 +638,7 @@ static void StartServer_MapPage_DrawMapName( void *item )
 	int index;
 	char* string;
 
-	s = (menutext_s *)item;
+	s = (menuelement_s *)item;
 
 	x = s->generic.x;
 	y =	s->generic.y;
@@ -748,11 +744,11 @@ static void StartServer_MapPage_InitControlsFromScript(void)
 	c = &s_mapcontrols.fragLimitType.generic;
 	if(cl_language.integer == 0){
 	c->name = fragcontrol_text[index];
-	s_mapcontrols.fragsText.generic.name = fragcontrol_text[index + 1];
+	s_mapcontrols.fragsText.string = fragcontrol_text[index + 1];
 	}
 	if(cl_language.integer == 1){
 	c->name = fragcontrol_textru[index];
-	s_mapcontrols.fragsText.generic.name = fragcontrol_textru[index + 1];
+	s_mapcontrols.fragsText.string = fragcontrol_textru[index + 1];
 	}
 	c->left = c->x - (strlen(c->name) + 1) * SMALLCHAR_WIDTH;
 
@@ -1358,14 +1354,14 @@ static void StartServer_MapPage_ChangeMapEvent( void* ptr, int event ) {
 StartServer_MapPage_InitPageText
 =================
 */
-static void StartServer_MapPage_InitPageText( menutext_s *a )
+static void StartServer_MapPage_InitPageText( menuelement_s *a )
 {
 	int	len;
 	int cw, ch;
 
 	// calculate bounds
-	if (a->generic.name)
-		len = strlen(a->generic.name);
+	if (a->string)
+		len = strlen(a->string);
 	else
 		len = 0;
 
@@ -1398,9 +1394,9 @@ static void StartServer_MapPage_DrawPageText( void* b )
 	int	x,y;
 	int	style;
 	qboolean focus;
-	menutext_s* s;
+	menuelement_s* s;
 
-	s = (menutext_s*)b;
+	s = (menuelement_s*)b;
 	x = s->generic.x;
 	y =	s->generic.y;
 
@@ -1428,7 +1424,7 @@ static void StartServer_MapPage_DrawPageText( void* b )
 		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, color_select_bluo );
 	}
 
-	UI_DrawString( x, y, s->generic.name, style, color );
+	UI_DrawString( x, y, s->string, style, color );
 }
 
 
@@ -1569,7 +1565,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.timeLimitType.generic.y	   = y;
 
 	s_mapcontrols.timeLimit.generic.type       = MTYPE_FIELD;
-	s_mapcontrols.timeLimit.generic.name       = 0;
+	s_mapcontrols.timeLimit.string       = 0;
 	s_mapcontrols.timeLimit.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
 	s_mapcontrols.timeLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * SMALLCHAR_WIDTH;
 	s_mapcontrols.timeLimit.generic.y	        = y;
@@ -1589,7 +1585,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.mapSourceCount.field.maxchars     = 2;
 
 	s_mapcontrols.mapSourceType.generic.type       = MTYPE_SPINCONTROL;
-	s_mapcontrols.mapSourceType.generic.name       = NULL;
+	s_mapcontrols.mapSourceType.string       = NULL;
 	s_mapcontrols.mapSourceType.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
 	s_mapcontrols.mapSourceType.generic.x          = MAPCOLUMN_RIGHTX + (4*SMALLCHAR_WIDTH);
 	s_mapcontrols.mapSourceType.generic.y	        = y;
@@ -1600,7 +1596,7 @@ void StartServer_MapPage_MenuInit(void)
 
 	y += LINE_HEIGHT;
 	s_mapcontrols.fragLimitType.generic.type  = MTYPE_SPINCONTROL;
-	s_mapcontrols.fragLimitType.generic.name = 0;
+	s_mapcontrols.fragLimitType.string = 0;
 	s_mapcontrols.fragLimitType.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_mapcontrols.fragLimitType.generic.id	   = ID_MAP_FRAGLIMIT;
 	s_mapcontrols.fragLimitType.generic.callback = StartServer_MapPage_MenuEvent;
@@ -1609,7 +1605,7 @@ void StartServer_MapPage_MenuInit(void)
 	
 
 	s_mapcontrols.fragLimit.generic.type       = MTYPE_FIELD;
-	s_mapcontrols.fragLimit.generic.name       = 0;
+	s_mapcontrols.fragLimit.string       = 0;
 	s_mapcontrols.fragLimit.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
 	s_mapcontrols.fragLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * SMALLCHAR_WIDTH;
 	s_mapcontrols.fragLimit.generic.y	        = y;
@@ -1653,7 +1649,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.timeText.color = color_white;
 
 	s_mapcontrols.arrows.generic.type  = MTYPE_BITMAP;
-	s_mapcontrols.arrows.generic.name  = GAMESERVER_VARROWS;
+	s_mapcontrols.arrows.string  = GAMESERVER_VARROWS;
 	s_mapcontrols.arrows.generic.flags = QMF_INACTIVE;
 	s_mapcontrols.arrows.generic.x	 = MAPBUTTONS_X;
 	s_mapcontrols.arrows.generic.y	 = y;
@@ -1681,7 +1677,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.down.focuspic = GAMESERVER_DOWN;
 
 	s_mapcontrols.del.generic.type     = MTYPE_BITMAP;
-	s_mapcontrols.del.generic.name     = GAMESERVER_DEL0;
+	s_mapcontrols.del.string     = GAMESERVER_DEL0;
 	s_mapcontrols.del.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapcontrols.del.generic.callback = StartServer_MapPage_MenuEvent;
 	s_mapcontrols.del.generic.id	    = ID_MAP_DEL;
@@ -1696,7 +1692,7 @@ void StartServer_MapPage_MenuInit(void)
 		y += (5 * LINE_HEIGHT)/4;
 
 		s_mapcontrols.displaySelected[n].generic.type  = MTYPE_BITMAP;
-		s_mapcontrols.displaySelected[n].generic.name  = GAMESERVER_SELECTED0;
+		s_mapcontrols.displaySelected[n].string  = GAMESERVER_SELECTED0;
 		s_mapcontrols.displaySelected[n].generic.flags = QMF_PULSEIFFOCUS;
 		s_mapcontrols.displaySelected[n].generic.x	   = MAPARRAYCOLUMN_X - 20;
 		s_mapcontrols.displaySelected[n].generic.y	   = y;
@@ -1723,7 +1719,7 @@ void StartServer_MapPage_MenuInit(void)
 		s_mapcontrols.displayMapName[n].color = color_white;
 
 		s_mapcontrols.displayFragLimit[n].generic.type       = MTYPE_FIELD;
-		s_mapcontrols.displayFragLimit[n].generic.name       = 0;
+		s_mapcontrols.displayFragLimit[n].string       = 0;
 		s_mapcontrols.displayFragLimit[n].generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY|QMF_PULSEIFFOCUS;
 		s_mapcontrols.displayFragLimit[n].generic.x          = MAPARRAYCOLUMN_X + MAPFRAGS_DX;
 		s_mapcontrols.displayFragLimit[n].generic.y	        = y;
@@ -1734,7 +1730,7 @@ void StartServer_MapPage_MenuInit(void)
 		s_mapcontrols.displayFragLimit[n].field.maxchars     = 3;
 
 		s_mapcontrols.displayTimeLimit[n].generic.type       = MTYPE_FIELD;
-		s_mapcontrols.displayTimeLimit[n].generic.name       = 0;
+		s_mapcontrols.displayTimeLimit[n].string       = 0;
 		s_mapcontrols.displayTimeLimit[n].generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY|QMF_PULSEIFFOCUS;
 		s_mapcontrols.displayTimeLimit[n].generic.x          = MAPARRAYCOLUMN_X + MAPTIME_DX;
 		s_mapcontrols.displayTimeLimit[n].generic.y	        = y;
@@ -1754,14 +1750,14 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.mapPage.generic.x	   = MAPARRAYCOLUMN_X;
 	s_mapcontrols.mapPage.generic.y	   = y;
 	s_mapcontrols.mapPage.generic.ownerdraw = StartServer_MapPage_DrawPageText;
-	s_mapcontrols.mapPage.generic.name = s_mapcontrols.mappage_text;
+	s_mapcontrols.mapPage.string = s_mapcontrols.mappage_text;
 	s_mapcontrols.mapPage.color 		= text_color_normal;
 	StartServer_MapPage_SetPageText();
 
 	s_mapcontrols.actionSrc.generic.type  = MTYPE_SPINCONTROL;
 	s_mapcontrols.actionSrc.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_mapcontrols.actionSrc.generic.id = ID_MAP_ACTIONTYPE;
-	s_mapcontrols.actionSrc.generic.name = ACTIONTYPE_DELETE;
+	s_mapcontrols.actionSrc.string = ACTIONTYPE_DELETE;
 	s_mapcontrols.actionSrc.generic.callback  = StartServer_MapPage_MenuEvent;
 	s_mapcontrols.actionSrc.generic.x	   = MAPACTIVATE_X+40;
 	s_mapcontrols.actionSrc.generic.y	   = y + 100;
@@ -1774,7 +1770,7 @@ void StartServer_MapPage_MenuInit(void)
 	
 
 	s_mapcontrols.actionActivate.generic.type     = MTYPE_BITMAP;
-	s_mapcontrols.actionActivate.generic.name     = GAMESERVER_ACTION0;
+	s_mapcontrols.actionActivate.string     = GAMESERVER_ACTION0;
 	s_mapcontrols.actionActivate.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapcontrols.actionActivate.generic.callback = StartServer_MapPage_MenuEvent;
 	s_mapcontrols.actionActivate.generic.id	    = ID_MAP_ACTION;
@@ -1795,12 +1791,12 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.timeText.string = "Time";
 	s_mapcontrols.nameText.string = "Name";
 	s_mapcontrols.mapText.string = "Map";
-	s_mapcontrols.mapRepeat.generic.name = "Repeat forever:";
-	s_mapcontrols.mapSourceCount.generic.name       = "Randomly choose:";
-	s_mapcontrols.timeLimitType.generic.name = "Time Limit:";
-	s_mapcontrols.mapSource.generic.name = "Map Source:";
-	s_mapcontrols.gameType.generic.name = "Game Type:";
-	s_mapcontrols.actionDest.generic.name = "to";
+	s_mapcontrols.mapRepeat.string = "Repeat forever:";
+	s_mapcontrols.mapSourceCount.string       = "Randomly choose:";
+	s_mapcontrols.timeLimitType.string = "Time Limit:";
+	s_mapcontrols.mapSource.string = "Map Source:";
+	s_mapcontrols.gameType.string = "Game Type:";
+	s_mapcontrols.actionDest.string = "to";
 	}
 	if(cl_language.integer == 1){
 	s_mapcontrols.fragLimitType.itemnames	   = fraglimittype_itemsru;
@@ -1813,24 +1809,13 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.timeText.string = "Время";
 	s_mapcontrols.nameText.string = "Имя";
 	s_mapcontrols.mapText.string = "Карта";
-	s_mapcontrols.mapRepeat.generic.name = "Повторять всегда:";
-	s_mapcontrols.mapSourceCount.generic.name       = "Выбрать случайно:";
-	s_mapcontrols.timeLimitType.generic.name = "Лимит Времени:";
-	s_mapcontrols.mapSource.generic.name = "Источник Карт:";
-	s_mapcontrols.gameType.generic.name = "Режим Игры:";
-	s_mapcontrols.actionDest.generic.name = "в";
+	s_mapcontrols.mapRepeat.string = "Повторять всегда:";
+	s_mapcontrols.mapSourceCount.string       = "Выбрать случайно:";
+	s_mapcontrols.timeLimitType.string = "Лимит Времени:";
+	s_mapcontrols.mapSource.string = "Источник Карт:";
+	s_mapcontrols.gameType.string = "Режим Игры:";
+	s_mapcontrols.actionDest.string = "в";
 	}
-
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	s_mapcontrols.logo.generic.type			= MTYPE_BITMAP;
-	s_mapcontrols.logo.generic.flags		= QMF_INACTIVE|QMF_HIGHLIGHT;
-	s_mapcontrols.logo.generic.x			= GUI_LOGO_X;
-	s_mapcontrols.logo.generic.y			= GUI_LOGO_Y;
-	s_mapcontrols.logo.width				= 64;
-	s_mapcontrols.logo.height				= 22;
-	s_mapcontrols.logo.focuspic 			= GUI_LOGO_NAME;
-	s_mapcontrols.logo.focuscolor 			= color_translucent;
-#endif
 
 	y += 32 + LINE_HEIGHT;
 	s_mapcontrols.statusbar_height = y;
@@ -1878,11 +1863,6 @@ void StartServer_MapPage_MenuInit(void)
 	Menu_AddItem( menuptr, &s_mapcontrols.actionSrc);
 	Menu_AddItem( menuptr, &s_mapcontrols.actionDest);
 	Menu_AddItem( menuptr, &s_mapcontrols.actionActivate);
-
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	if (random() < 0.1)
-		Menu_AddItem( menuptr,	&s_mapcontrols.logo);
-#endif
 
 	UI_PushMenu( &s_mapcontrols.menu);
 }

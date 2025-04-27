@@ -60,30 +60,30 @@ DISPLAY OPTIONS MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menutext_s		graphics;
-	menutext_s		display;
-	menutext_s		sound;
-	menutext_s		network;
+	menuelement_s		graphics;
+	menuelement_s		display;
+	menuelement_s		sound;
+	menuelement_s		network;
 
-	menuslider_s	brightness;
-	menuslider_s	screensize;
-	menuslider_s	crosssize;
-    menuradiobutton_s  thirdperson;
-	menuslider_s	thirdpersonrange;
-	menuslider_s	thirdpersonoffset;
-	menuradiobutton_s  icons;
-	menuradiobutton_s  status;
-	menuslider_s  gun;
-	menuslider_s  istyle;
-	menuradiobutton_s  rview;
-	menuslider_s  rviewf;
-	menuslider_s  rviewu;
-	menuradiobutton_s  speed;
-	menuradiobutton_s  friend;
+	menuelement_s	brightness;
+	menuelement_s	screensize;
+	menuelement_s	crosssize;
+    menuelement_s  thirdperson;
+	menuelement_s	thirdpersonrange;
+	menuelement_s	thirdpersonoffset;
+	menuelement_s  icons;
+	menuelement_s  status;
+	menuelement_s  gun;
+	menuelement_s  istyle;
+	menuelement_s  rview;
+	menuelement_s  rviewf;
+	menuelement_s  rviewu;
+	menuelement_s  speed;
+	menuelement_s  friend;
 
-	menubitmap_s	back;
+	menuelement_s	back;
 } displayOptionsInfo_t;
 
 static displayOptionsInfo_t	displayOptionsInfo;
@@ -290,10 +290,10 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	y = 120 - 1 * (BIGCHAR_HEIGHT+2);
 	displayOptionsInfo.brightness.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	displayOptionsInfo.brightness.generic.name		= "Brightness:";
+	displayOptionsInfo.brightness.string		= "Brightness:";
 	}
 	if(cl_language.integer == 1){
-	displayOptionsInfo.brightness.generic.name		= "Яркость:";
+	displayOptionsInfo.brightness.string		= "Яркость:";
 	}
 	displayOptionsInfo.brightness.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	displayOptionsInfo.brightness.generic.callback	= UI_DisplayOptionsMenu_Event;
@@ -306,10 +306,10 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	y += BIGCHAR_HEIGHT+2;
 	displayOptionsInfo.screensize.generic.type		= MTYPE_SLIDER;
 	if(cl_language.integer == 0){
-	displayOptionsInfo.screensize.generic.name		= "Screen Size:";
+	displayOptionsInfo.screensize.string		= "Screen Size:";
 	}
 	if(cl_language.integer == 1){
-	displayOptionsInfo.screensize.generic.name		= "Размер экрана:";
+	displayOptionsInfo.screensize.string		= "Размер экрана:";
 	}
 	displayOptionsInfo.screensize.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	displayOptionsInfo.screensize.generic.callback	= UI_DisplayOptionsMenu_Event;
@@ -438,7 +438,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
     displayOptionsInfo.istyle.maxvalue				= 3;
 
 	displayOptionsInfo.back.generic.type		= MTYPE_BITMAP;
-	displayOptionsInfo.back.generic.name		= ART_BACK0;
+	displayOptionsInfo.back.string		= ART_BACK0;
 	displayOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	displayOptionsInfo.back.generic.callback	= UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.back.generic.id			= ID_BACK;
@@ -451,39 +451,39 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 //TEXT FOR TRANSLATES
 if(cl_language.integer == 0){
 displayOptionsInfo.banner.string			= "SYSTEM SETUP";
-displayOptionsInfo.brightness.generic.name		= "Brightness:";
-displayOptionsInfo.screensize.generic.name		= "Screen Size:";
-displayOptionsInfo.crosssize.generic.name			= "Croshair size:";
-displayOptionsInfo.thirdperson.generic.name	   		= "Third person:";
-displayOptionsInfo.thirdpersonrange.generic.name			= "Third person range:";
-displayOptionsInfo.thirdpersonoffset.generic.name			= "Third person offset:";
-displayOptionsInfo.icons.generic.name	   	= "Draw 3D Icons:";
-displayOptionsInfo.status.generic.name	   	= "Draw Status:";
-displayOptionsInfo.gun.generic.name	   		= "Draw Gun:";
-displayOptionsInfo.rview.generic.name	   	= "Eyes view:";
-displayOptionsInfo.rviewf.generic.name	   	= "Eyes view forward:";
-displayOptionsInfo.rviewu.generic.name	   	= "Eyes view:";
-displayOptionsInfo.speed.generic.name	   	= "Draw Speed:";
-displayOptionsInfo.friend.generic.name	   	= "Draw Friend:";
-displayOptionsInfo.istyle.generic.name	   	= "Item Style:";
+displayOptionsInfo.brightness.string		= "Brightness:";
+displayOptionsInfo.screensize.string		= "Screen Size:";
+displayOptionsInfo.crosssize.string			= "Croshair size:";
+displayOptionsInfo.thirdperson.string	   		= "Third person:";
+displayOptionsInfo.thirdpersonrange.string			= "Third person range:";
+displayOptionsInfo.thirdpersonoffset.string			= "Third person offset:";
+displayOptionsInfo.icons.string	   	= "Draw 3D Icons:";
+displayOptionsInfo.status.string	   	= "Draw Status:";
+displayOptionsInfo.gun.string	   		= "Draw Gun:";
+displayOptionsInfo.rview.string	   	= "Eyes view:";
+displayOptionsInfo.rviewf.string	   	= "Eyes view forward:";
+displayOptionsInfo.rviewu.string	   	= "Eyes view:";
+displayOptionsInfo.speed.string	   	= "Draw Speed:";
+displayOptionsInfo.friend.string	   	= "Draw Friend:";
+displayOptionsInfo.istyle.string	   	= "Item Style:";
 }
 if(cl_language.integer == 1){
 displayOptionsInfo.banner.string			= "СИСТЕМНЫЕ НАСТРОЙКИ";
-displayOptionsInfo.brightness.generic.name		= "Яркость:";
-displayOptionsInfo.screensize.generic.name		= "Размер экрана:";
-displayOptionsInfo.crosssize.generic.name			= "Размер прицела:";
-displayOptionsInfo.thirdperson.generic.name	   		= "Вид от третьего лица:";
-displayOptionsInfo.thirdpersonrange.generic.name			= "Вид от третье лица-растояние:";
-displayOptionsInfo.thirdpersonoffset.generic.name			= "Вид от третье лица-смещение:";
-displayOptionsInfo.icons.generic.name	   	= "Отобразить 3D Значки:";
-displayOptionsInfo.status.generic.name	   	= "Отобразить статус:";
-displayOptionsInfo.gun.generic.name	   		= "Отобразить оружие:";
-displayOptionsInfo.rview.generic.name	   	= "Вид глазами:";
-displayOptionsInfo.rviewf.generic.name	   	= "Вид глазами вперёд:";
-displayOptionsInfo.rviewu.generic.name	   	= "Вид глазами вверх:";
-displayOptionsInfo.speed.generic.name	   	= "Отобразить скорость:";
-displayOptionsInfo.friend.generic.name	   	= "Отобразить друга:";
-displayOptionsInfo.istyle.generic.name	   	= "Стиль предметов:";
+displayOptionsInfo.brightness.string		= "Яркость:";
+displayOptionsInfo.screensize.string		= "Размер экрана:";
+displayOptionsInfo.crosssize.string			= "Размер прицела:";
+displayOptionsInfo.thirdperson.string	   		= "Вид от третьего лица:";
+displayOptionsInfo.thirdpersonrange.string			= "Вид от третье лица-растояние:";
+displayOptionsInfo.thirdpersonoffset.string			= "Вид от третье лица-смещение:";
+displayOptionsInfo.icons.string	   	= "Отобразить 3D Значки:";
+displayOptionsInfo.status.string	   	= "Отобразить статус:";
+displayOptionsInfo.gun.string	   		= "Отобразить оружие:";
+displayOptionsInfo.rview.string	   	= "Вид глазами:";
+displayOptionsInfo.rviewf.string	   	= "Вид глазами вперёд:";
+displayOptionsInfo.rviewu.string	   	= "Вид глазами вверх:";
+displayOptionsInfo.speed.string	   	= "Отобразить скорость:";
+displayOptionsInfo.friend.string	   	= "Отобразить друга:";
+displayOptionsInfo.istyle.string	   	= "Стиль предметов:";
 }
 
 	Menu_AddItem( &displayOptionsInfo.menu, ( void * ) &displayOptionsInfo.banner );

@@ -243,7 +243,7 @@ void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 	}
 }
 
-int UI_ProportionalStringWidth( const char* str ) {
+int UI_ProportionalStringWidth( const char* str, float size ) {
 	const char *	s;
 	int				ch;
 	int				charWidth;
@@ -258,40 +258,18 @@ int UI_ProportionalStringWidth( const char* str ) {
 			continue;
 		}
 		ch = *s & 255;
-        charWidth = 16;
+        charWidth = SMALLCHAR_WIDTH*size;
 		if ( charWidth != -1 ) {
 			width += charWidth;
-			width += PROP_GAP_WIDTH;
 		}
 		s++;
 	}
 
-	width -= PROP_GAP_WIDTH;
 	if(ifstrlenru(str)){
 		return width * 0.5;	
 	} else {
 		return width;
 	}
-}
-
-/*
-=================
-UI_ProportionalSizeScale
-=================
-*/
-float UI_ProportionalSizeScale( int style, float customsize ) {
-if(customsize == 0){
-	if(  style & UI_SMALLFONT ) {
-		return PROP_SMALL_SIZE_SCALE;
-	}
-
-	if (style & UI_MEDIUMFONT ) {
-		return PROP_MEDIUM_SIZE_SCALE;
-	}
-} else {
-	return customsize;
-}
-	return 1.00;
 }
 
 /*
@@ -497,7 +475,7 @@ void UI_DrawString( int x, int y, const char* str, int style, vec4_t color )
 UI_DrawStringCustom
 =================
 */
-void UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float csize, float width )
+void UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float size, float width )
 {
 	int		len;
 	int		charw;
@@ -513,31 +491,8 @@ void UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color
 	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
 		return;
 
-if(csize == 0){
-	if (style & UI_SMALLFONT)
-	{
-		charw =	SMALLCHAR_WIDTH;
-		charh =	SMALLCHAR_HEIGHT;
-	}
-	else if (style & UI_TINYFONT)
-	{
-		charw =	TINYCHAR_WIDTH;
-		charh =	TINYCHAR_HEIGHT;
-	}
-	else if (style & UI_GIANTFONT)
-	{
-		charw =	GIANTCHAR_WIDTH;
-		charh =	GIANTCHAR_HEIGHT;
-	}
-	else
-	{
-		charw =	BIGCHAR_WIDTH;
-		charh =	BIGCHAR_HEIGHT;
-	}
-} else {
-		charw =	BIGCHAR_WIDTH*csize;
-		charh =	BIGCHAR_HEIGHT*csize;	
-}
+	charw =	SMALLCHAR_WIDTH*size;
+	charh =	SMALLCHAR_HEIGHT*size;
 
 	if (style & UI_PULSE)
 	{
@@ -552,22 +507,24 @@ if(csize == 0){
 		case UI_CENTER:
 			// center justify at x
 			len = strlen(str);
-			x   = x - len*charw/2;
-                        charw = -charw; //Mix3r - sly way to transfer align to drawstring2
+			x = x - len*charw/2;
+            charw = -charw; //Mix3r - sly way to transfer align to drawstring2
 			break;
 
 		case UI_RIGHT:
 			// right justify at x
 			len = strlen(str);
-			x   = x - len*charw;
-                        charw = -charw; //Mix3r - sly way to transfer align to drawstring2
-                        charh = -charh;
+			x = x - len*charw;
+            charw = -charw; //Mix3r - sly way to transfer align to drawstring2
+            charh = -charh;
 			break;
 
 		default:
 			// left justify at x
 			break;
 	}
+
+	x -= charw * UI_ColorEscapes(str);		//Color escapes bypass
 
 	if ( style & UI_DROPSHADOW )
 	{
@@ -599,14 +556,14 @@ void UI_DrawChar( int x, int y, int ch, int style, vec4_t color )
 UI_DrawCharCustom
 =================
 */
-void UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float csize )
+void UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float size )
 {
 	char	buff[2];
 
 	buff[0] = ch;
 	buff[1] = '\0';
 
-	UI_DrawStringCustom( x, y, buff, style, color, csize, 512 );
+	UI_DrawStringCustom( x, y, buff, style, color, size, 512 );
 }
 
 qboolean UI_IsFullscreen( void ) {
@@ -634,7 +591,6 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		UI_ScreenOffset();
 		if(strlen(ui_3dmap.string) <= 1){
 		UI_MainMenu();
-		UI_CreditMenu(1);
 		}
 		if(strlen(ui_3dmap.string)){
 		trap_Cmd_ExecuteText( EXEC_APPEND, va("set g_maxClients 1; map %s\n", ui_3dmap.string) );
@@ -798,7 +754,6 @@ void UI_Cache_f( void ) {
 	UI_NetworkOptionsMenu_Cache();
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
-	UI_SetupMenu_Cache();
 	UI_BotSelect_Cache();
 	UI_ModsMenu_Cache();
 }
@@ -880,14 +835,6 @@ return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_controls2") == 0 ){
 UI_ControlsMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_credits0") == 0 ){
-UI_CreditMenu(0);
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_credits1") == 0 ){
-UI_CreditMenu(1);
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_demo2") == 0 ){
@@ -1183,7 +1130,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }
 
-void UI_DrawHandlePicFile( float x, float y, float w, float h, const char* file ) {
+void UI_DrawPictureElement( float x, float y, float w, float h, const char* file ) {
 	float	s0;
 	float	s1;
 	float	t0;
@@ -1233,7 +1180,7 @@ void UI_DrawHandlePicFile( float x, float y, float w, float h, const char* file 
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }
 
-void UI_DrawHandleModel( float x, float y, float w, float h, const char* model, int scale ) {
+void UI_DrawModelElement( float x, float y, float w, float h, const char* model, int scale ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
 	vec3_t			origin;
@@ -1450,7 +1397,6 @@ void UI_Refresh( int realtime )
 		}
 	}
 
-#ifndef NDEBUG
 	if (uis.debug)
 	{
 		// cursor coordinates
@@ -1464,7 +1410,6 @@ void UI_Refresh( int realtime )
 		UI_DrawString( x, 20, va("screen: %ix%i",uis.glconfig.vidWidth, uis.glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed );
 		UI_DrawString( x, 30, va("map running: %i",uis.onmap), UI_LEFT|UI_SMALLFONT, colorRed );
 	}
-#endif
 
 	// delay playing the enter sound until after the
 	// menu has been drawn, to avoid delay while
@@ -1486,4 +1431,18 @@ qboolean UI_CursorInRect (int x, int y, int width, int height)
 		return qfalse;
 
 	return qtrue;
+}
+
+int UI_ColorEscapes(const char *str) {
+    int count = 0;
+    
+    while (*str) {
+        if (*str == '^') {
+            count++;
+            str++;
+        }
+        str++;
+    }
+
+    return count;
 }

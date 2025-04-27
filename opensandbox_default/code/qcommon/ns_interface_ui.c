@@ -27,7 +27,7 @@
 
 typedef struct {
 	menuframework_s	menu;
-	menuobject_s	item[MAX_OBJECTS];
+	menuelement_s	item[MAX_OBJECTS];
 	char* lists[MAX_OBJECTS][65536];
 	char  listnames[MAX_OBJECTS][65536];
 } nsgui_t;
@@ -38,10 +38,10 @@ void NSGUI_UpdateValues( void ){
 	char buffer[MAX_VAR_CHAR_BUF];
 	int i;
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
-			if(s_nsgui.item[i].type == 4){
+			if(s_nsgui.item[i].generic.type == MTYPE_FIELD){
 				set_variable_value(va("gui%i_value", i), s_nsgui.item[i].field.buffer, TYPE_CHAR);
 			}
-			if(s_nsgui.item[i].type == 5){
+			if(s_nsgui.item[i].generic.type == MTYPE_SCROLLLIST){
 				if(s_nsgui.item[i].mode <= 0){
 					set_variable_value(va("gui%i_value", i), s_nsgui.item[i].itemnames[s_nsgui.item[i].curvalue], TYPE_CHAR);
 				}
@@ -49,7 +49,7 @@ void NSGUI_UpdateValues( void ){
 					set_variable_value(va("gui%i_value", i), va("%i", s_nsgui.item[i].curvalue), TYPE_INT);
 				}
 			}
-			if(s_nsgui.item[i].type == 7){
+			if(s_nsgui.item[i].generic.type == MTYPE_RADIOBUTTON){
 				if(s_nsgui.item[i].mode <= 0){
 				set_variable_value(va("gui%i_value", i), va("%i", s_nsgui.item[i].curvalue), TYPE_INT);
 				}
@@ -57,7 +57,7 @@ void NSGUI_UpdateValues( void ){
 				set_variable_value(va("gui%i_value", i), va("%i", !(s_nsgui.item[i].curvalue)), TYPE_INT);
 				}
 			}
-			if(s_nsgui.item[i].type == 8){
+			if(s_nsgui.item[i].generic.type == MTYPE_SLIDER){
 				set_variable_value(va("gui%i_value", i), va("%.6f", (float)s_nsgui.item[i].curvalue / (float)s_nsgui.item[i].mode), TYPE_FLOAT);
 			}
 	}
@@ -126,8 +126,8 @@ void NSGUI_Clear( void ) {
 	int i;
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
 	UI_Free(s_nsgui.item[i].generic.cmd);
-	UI_Free(s_nsgui.item[i].generic.text);
-	UI_Free(s_nsgui.item[i].generic.picn);
+	UI_Free(s_nsgui.item[i].string);
+	UI_Free(s_nsgui.item[i].file);
 	UI_Free(s_nsgui.item[i].string);
 	}
 	memset( &s_nsgui, 0 ,sizeof(nsgui_t) );
@@ -152,7 +152,7 @@ void NSGUI_Clear( void ) {
 		set_variable_value(va("gui%i_colorinnerG", i), "", TYPE_FLOAT);
 		set_variable_value(va("gui%i_colorinnerB", i), "", TYPE_FLOAT);
 		set_variable_value(va("gui%i_colorinnerA", i), "", TYPE_FLOAT);
-		set_variable_value(va("gui%i_fontsize", i), "", TYPE_FLOAT);
+		set_variable_value(va("gui%i_size", i), "", TYPE_FLOAT);
 		set_variable_value(va("gui%i_corner", i), "", TYPE_INT);
 		set_variable_value(va("gui%i_col", i), "", TYPE_INT);
 		set_variable_value(va("gui%i_mode", i), "", TYPE_INT);
@@ -187,7 +187,7 @@ void NSGUI_Init( void ) {
 		create_variable(va("gui%i_colorinnerG", i), "", TYPE_FLOAT);
 		create_variable(va("gui%i_colorinnerB", i), "", TYPE_FLOAT);
 		create_variable(va("gui%i_colorinnerA", i), "", TYPE_FLOAT);
-		create_variable(va("gui%i_fontsize", i), "", TYPE_FLOAT);
+		create_variable(va("gui%i_size", i), "", TYPE_FLOAT);
 		create_variable(va("gui%i_corner", i), "", TYPE_INT);
 		create_variable(va("gui%i_col", i), "", TYPE_INT);
 		create_variable(va("gui%i_style", i), "", TYPE_INT);
@@ -221,8 +221,8 @@ static void LoadNSGuiList( int it )
 
 		// strip extension
 		len = strlen( configname );
-		if (!Q_stricmp(configname +  len - (strlen(s_nsgui.item[it].generic.picn)+1),va(".%s", s_nsgui.item[it].generic.picn)))
-			configname[len-(strlen(s_nsgui.item[it].generic.picn)+1)] = '\0';
+		if (!Q_stricmp(configname +  len - (strlen(s_nsgui.item[it].file)+1),va(".%s", s_nsgui.item[it].file)))
+			configname[len-(strlen(s_nsgui.item[it].file)+1)] = '\0';
 
 		configname += len + 1;
 	}
@@ -240,8 +240,8 @@ void UI_NSGUI( void ) {
 
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
 	UI_Free(s_nsgui.item[i].generic.cmd);
-	UI_Free(s_nsgui.item[i].generic.text);
-	UI_Free(s_nsgui.item[i].generic.picn);
+	UI_Free(s_nsgui.item[i].string);
+	UI_Free(s_nsgui.item[i].file);
 	UI_Free(s_nsgui.item[i].string);
 	}
 	
@@ -259,7 +259,7 @@ void UI_NSGUI( void ) {
 
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
 	type = get_variable_int(va("gui%i_type", i));
-	if(type >= 1 && type <= 8){
+	if(type > MTYPE_NULL && type < MTYPE_MAX){
 	strncpy(text, get_variable_char(va("gui%i_text", i)), sizeof(text));
 	strncpy(command, get_variable_char(va("gui%i_cmd", i)), sizeof(command));
 	strncpy(pic, get_variable_char(va("gui%i_file", i)), sizeof(pic));
@@ -271,18 +271,17 @@ void UI_NSGUI( void ) {
 	color_nsgui2[i][1] = get_variable_float(va("gui%i_colorinnerG", i));
 	color_nsgui2[i][2] = get_variable_float(va("gui%i_colorinnerB", i));
 	color_nsgui2[i][3] = get_variable_float(va("gui%i_colorinnerA", i));
-	s_nsgui.item[i].generic.type			= MTYPE_UIOBJECT;
+	s_nsgui.item[i].generic.type			= type;
 	if(strlen(command) >= 1){
-	s_nsgui.item[i].generic.flags		= QMF_CENTER_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
+	s_nsgui.item[i].generic.flags			= QMF_CENTER_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
 	} else {
-	s_nsgui.item[i].generic.flags		= QMF_CENTER_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS|QMF_INACTIVE;
+	s_nsgui.item[i].generic.flags			= QMF_CENTER_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS|QMF_INACTIVE;
 	}
 	s_nsgui.item[i].generic.id				= i;
-    s_nsgui.item[i].generic.cmd 			= (char *)UI_Alloc(256);
-    s_nsgui.item[i].generic.picn 			= (char *)UI_Alloc(256);
+    s_nsgui.item[i].generic.cmd 					= (char *)UI_Alloc(256);
+    s_nsgui.item[i].file 					= (char *)UI_Alloc(256);
     s_nsgui.item[i].string 					= (char *)UI_Alloc(256);
 	s_nsgui.item[i].generic.callback		= NSGUI_Event;
-	s_nsgui.item[i].type					= type;
 	s_nsgui.item[i].generic.x				= get_variable_float(va("gui%i_x", i));
 	s_nsgui.item[i].generic.y				= get_variable_float(va("gui%i_y", i));
 	s_nsgui.item[i].width					= get_variable_float(va("gui%i_w", i));
@@ -291,19 +290,19 @@ void UI_NSGUI( void ) {
 	s_nsgui.item[i].color2					= color_nsgui2[i];
 	s_nsgui.item[i].corner					= get_variable_int(va("gui%i_corner", i));
 	s_nsgui.item[i].mode					= get_variable_int(va("gui%i_mode", i));
-	s_nsgui.item[i].fontsize				= get_variable_float(va("gui%i_fontsize", i));
-	s_nsgui.item[i].styles		    		= get_variable_float(va("gui%i_style", i));
+	s_nsgui.item[i].size				= get_variable_float(va("gui%i_size", i));
+	s_nsgui.item[i].generic.style		    = get_variable_float(va("gui%i_style", i));
 	s_nsgui.item[i].style		    		= UI_SMALLFONT;
 	strcpy(s_nsgui.item[i].string, text);
 	strcpy(s_nsgui.item[i].generic.cmd, command);
-	strcpy(s_nsgui.item[i].generic.picn, pic);
-	if(type == 4){
+	strcpy(s_nsgui.item[i].file, pic);
+	if(type == MTYPE_FIELD){
 	s_nsgui.item[i].field.widthInChars	= get_variable_float(va("gui%i_w", i));
 	s_nsgui.item[i].field.maxchars		= get_variable_float(va("gui%i_w", i));
-	s_nsgui.item[i].generic.text = (char *)UI_Alloc(256);
-	strcpy(s_nsgui.item[i].generic.text, text);
+	s_nsgui.item[i].string = (char *)UI_Alloc(256);
+	strcpy(s_nsgui.item[i].string, text);
 	}
-	if(type == 5){
+	if(type == MTYPE_SCROLLLIST){
 	if(strlen(command) >= 1){
 	s_nsgui.item[i].generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
 	} else {
@@ -312,15 +311,14 @@ void UI_NSGUI( void ) {
 	s_nsgui.item[i].numitems			= trap_FS_GetFileList( text, pic, s_nsgui.listnames[i], 65536 );
 	s_nsgui.item[i].itemnames			= (const char **)s_nsgui.lists[i];
 	s_nsgui.item[i].columns				= get_variable_int(va("gui%i_col", i));
-	s_nsgui.item[i].seperation			= 0;
 	}
-	if(type == 7){
-	s_nsgui.item[i].generic.text = (char *)UI_Alloc(256);
-	strcpy(s_nsgui.item[i].generic.text, text);
+	if(type == MTYPE_RADIOBUTTON){
+	s_nsgui.item[i].string = (char *)UI_Alloc(256);
+	strcpy(s_nsgui.item[i].string, text);
 	}
-	if(type == 8){
-	s_nsgui.item[i].generic.text = (char *)UI_Alloc(256);
-	strcpy(s_nsgui.item[i].generic.text, text);
+	if(type == MTYPE_SLIDER){
+	s_nsgui.item[i].string = (char *)UI_Alloc(256);
+	strcpy(s_nsgui.item[i].string, text);
 	s_nsgui.item[i].minvalue = get_variable_int(va("gui%i_min", i));
 	s_nsgui.item[i].maxvalue = get_variable_int(va("gui%i_max", i));
 	}
@@ -328,22 +326,22 @@ void UI_NSGUI( void ) {
 	}
 
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
-		if(s_nsgui.item[i].type >= 1 && s_nsgui.item[i].type <= 8){
-			if(s_nsgui.item[i].type == 5){
+		if(s_nsgui.item[i].generic.type > MTYPE_NULL && s_nsgui.item[i].generic.type < MTYPE_MAX){
+			if(s_nsgui.item[i].generic.type == MTYPE_SCROLLLIST){
 				LoadNSGuiList(i);
 			}
 			Menu_AddItem( &s_nsgui.menu, &s_nsgui.item[i] );
 		}
 		if(strlen(get_variable_char(va("gui%i_value", i))) != 0){
-			if(s_nsgui.item[i].type == 4){
+			if(s_nsgui.item[i].generic.type == MTYPE_FIELD){
 				Q_strncpyz( s_nsgui.item[i].field.buffer, get_variable_char(va("gui%i_value", i)), sizeof(s_nsgui.item[i].field.buffer) );
 			}
-			if(s_nsgui.item[i].type == 5){
+			if(s_nsgui.item[i].generic.type == MTYPE_FIELD){
 				if(s_nsgui.item[i].mode == 1){
 					s_nsgui.item[i].curvalue = get_variable_int(va("gui%i_value", i));
 				}
 			}
-			if(s_nsgui.item[i].type == 7){
+			if(s_nsgui.item[i].generic.type == MTYPE_RADIOBUTTON){
 				if(s_nsgui.item[i].mode <= 0){
 				s_nsgui.item[i].curvalue = get_variable_int(va("gui%i_value", i));
 				}
@@ -351,7 +349,7 @@ void UI_NSGUI( void ) {
 				s_nsgui.item[i].curvalue = !(get_variable_int(va("gui%i_value", i)));
 				}
 			}
-			if(s_nsgui.item[i].type == 8){
+			if(s_nsgui.item[i].generic.type == MTYPE_SLIDER){
 				s_nsgui.item[i].curvalue = get_variable_float(va("gui%i_value", i)) * (float)s_nsgui.item[i].mode;
 			}
 		}

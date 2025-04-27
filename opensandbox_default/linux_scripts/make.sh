@@ -181,7 +181,6 @@ $cc ../../../code/ui/ui_cinematics.c
 $cc ../../../code/ui/ui_confirm.c
 $cc ../../../code/ui/ui_connect.c
 $cc ../../../code/ui/ui_controls2.c
-$cc ../../../code/ui/ui_credits.c
 $cc ../../../code/ui/ui_demo2.c
 $cc ../../../code/ui/ui_display.c
 $cc ../../../code/ui/ui_dynamicmenu.c

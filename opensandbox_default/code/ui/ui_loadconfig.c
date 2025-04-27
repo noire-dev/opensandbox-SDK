@@ -65,19 +65,19 @@ LOAD CONFIG MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menuobject_s		list;
+	menuelement_s		list;
 
-	menufield_s		savename;
+	menuelement_s		savename;
 
-	menubitmap_s	arrows;
-	menubitmap_s	left;
-	menubitmap_s	right;
-	menubitmap_s	back;
-	menubitmap_s	go;
-	menuradiobutton_s showid;
-	menuradiobutton_s force_exec;
+	menuelement_s	arrows;
+	menuelement_s	left;
+	menuelement_s	right;
+	menuelement_s	back;
+	menuelement_s	go;
+	menuelement_s showid;
+	menuelement_s force_exec;
 
 	char			names[NAMEBUFSIZE];
 	char*			configlist[MAX_CONFIGS];
@@ -279,10 +279,10 @@ static void LoadConfig_SaveCheck( const char* configname )
 	else {
 		trap_FS_FCloseFile(handle);
 		if(cl_language.integer == 0){
-		UI_ConfirmMenu("Overwrite?", 0, LoadConfig_DoSave);
+		UI_ConfirmMenu("Overwrite?", LoadConfig_DoSave);
 		}
 		if(cl_language.integer == 1){
-		UI_ConfirmMenu("Перезаписать?", 0, LoadConfig_DoSave);
+		UI_ConfirmMenu("Перезаписать?", LoadConfig_DoSave);
 		}
 	}
 }
@@ -350,17 +350,17 @@ static void LoadConfig_MenuEvent( void *ptr, int event ) {
 		break;
 
 	case ID_LEFT:
-		UIObject_Key( &s_configs.list, K_LEFTARROW );
+		ScrollList_Key( &s_configs.list, K_LEFTARROW );
 		break;
 
 	case ID_RIGHT:
-		UIObject_Key( &s_configs.list, K_RIGHTARROW );
+		ScrollList_Key( &s_configs.list, K_RIGHTARROW );
 		break;
 
 	case ID_SHOWID:
 		trap_Cvar_SetValue("gui_config_showid", s_configs.showid.curvalue);
 		LoadConfig_LoadFileNames();
-		UIObject_Init(&s_configs.list);
+		ScrollList_Init(&s_configs.list);
 		break;
 
 	case ID_LIST:
@@ -388,12 +388,12 @@ UI_SaveConfigMenu_SavenameDraw
 ===============
 */
 static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
-	menufield_s		*f;
+	menuelement_s		*f;
 	int				style;
 	float			*color;
 	vec4_t			fade;
 
-	f = (menufield_s *)self;
+	f = (menuelement_s *)self;
 
 	if( f == Menu_ItemAtCursor( &s_configs.menu ) ) {
 		style = UI_LEFT|UI_PULSE|UI_SMALLFONT;
@@ -416,7 +416,7 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 	UI_DrawString( 320, FILENAME_Y - 36, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey );
 	}
 	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
-	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color );
+	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
 }
 
 
@@ -502,7 +502,7 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.banner.style			= UI_CENTER;
 
 	s_configs.arrows.generic.type	= MTYPE_BITMAP;
-	s_configs.arrows.generic.name	= ART_ARROWS;
+	s_configs.arrows.string	= ART_ARROWS;
 	s_configs.arrows.generic.flags	= QMF_INACTIVE;
 	s_configs.arrows.generic.x		= 320-ARROWS_WIDTH/2;
 	s_configs.arrows.generic.y		= 400 - 48;
@@ -530,7 +530,7 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.right.focuspic		= ART_ARROWRIGHT;
 
 	s_configs.back.generic.type		= MTYPE_BITMAP;
-	s_configs.back.generic.name		= ART_BACK0;
+	s_configs.back.string		= ART_BACK0;
 	s_configs.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_configs.back.generic.id		= ID_BACK;
 	s_configs.back.generic.callback	= LoadConfig_MenuEvent;
@@ -550,11 +550,11 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.go.height				= 64;
 
 	if (load) {
-		s_configs.go.generic.name		= ART_FIGHT0;
+		s_configs.go.string		= ART_FIGHT0;
 		s_configs.go.focuspic			= ART_FIGHT1;
 	}
 	else {
-		s_configs.go.generic.name		= ART_SAVE0;
+		s_configs.go.string		= ART_SAVE0;
 		s_configs.go.focuspic			= ART_SAVE1;
 	}
 
@@ -574,10 +574,10 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.showid.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_configs.showid.generic.id			= ID_SHOWID;
 	if(cl_language.integer == 0){
-	s_configs.showid.generic.name		= "OpenSandbox configs:";
+	s_configs.showid.string		= "OpenSandbox configs:";
 	}
 	if(cl_language.integer == 1){
-	s_configs.showid.generic.name		= "OpenSandbox файлы:";
+	s_configs.showid.string		= "OpenSandbox файлы:";
 	}
 	s_configs.showid.generic.callback	= LoadConfig_MenuEvent;
 	s_configs.showid.generic.x			= 640 - 8 * SMALLCHAR_WIDTH;
@@ -588,10 +588,10 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.force_exec.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_configs.force_exec.generic.id			= ID_EXECFORCED;
 	if(cl_language.integer == 0){
-	s_configs.force_exec.generic.name		= "Force exec:";
+	s_configs.force_exec.string		= "Force exec:";
 	}
 	if(cl_language.integer == 1){
-	s_configs.force_exec.generic.name		= "Принудительный запуск:";
+	s_configs.force_exec.string		= "Принудительный запуск:";
 	}
 	s_configs.force_exec.generic.callback	= LoadConfig_MenuEvent;
 	s_configs.force_exec.generic.x			= 640 - 8 * SMALLCHAR_WIDTH;
@@ -599,7 +599,7 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.force_exec.curvalue 			= qfalse;
 
 	// scan for configs
-	s_configs.list.generic.type		= MTYPE_UIOBJECT;
+	s_configs.list.generic.type		= MTYPE_SCROLLLIST;
 	s_configs.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_configs.list.generic.callback	= LoadConfig_MenuEvent;
 	s_configs.list.generic.id		= ID_LIST;
@@ -610,9 +610,8 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.list.height			= 20;
 	s_configs.list.itemnames		= (const char **)s_configs.configlist;
 	s_configs.list.columns			= 1;
-	s_configs.list.fontsize			= 1;
-	s_configs.list.type				= 5;
-	s_configs.list.styles			= 1;
+	s_configs.list.size				= 1;
+	s_configs.list.generic.style	= 1;
 	
 
 	LoadConfig_LoadFileNames();

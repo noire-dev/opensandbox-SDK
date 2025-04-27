@@ -62,18 +62,18 @@ ADD BOTS MENU
 
 typedef struct {
 	menuframework_s	menu;
-	menubitmap_s	arrows;
-	menubitmap_s	up;
-	menubitmap_s	down;
-	menutext_s		bots[7];
-	menulist_s		skill;
-   menuslider_s   skill_slider;
-	menulist_s		team;
-	menubitmap_s	icon;
-	menubitmap_s	icon_hilite;
+	menuelement_s	arrows;
+	menuelement_s	up;
+	menuelement_s	down;
+	menuelement_s		bots[7];
+	menuelement_s		skill;
+   menuelement_s   skill_slider;
+	menuelement_s		team;
+	menuelement_s	icon;
+	menuelement_s	icon_hilite;
 
-	menubitmap_s	go;
-	menubitmap_s	back;
+	menuelement_s	go;
+	menuelement_s	back;
 
 	int				numBots;
 	int				delay;
@@ -120,12 +120,12 @@ static void UI_AddBotsMenu_SkillChangeEvent( void* ptr, int event) {
    common = (menucommon_s*) ptr;
    switch (common->id) {
       case ID_SKILL: {
-         menulist_s* skill = (menulist_s*)ptr;
+         menuelement_s* skill = (menuelement_s*)ptr;
          addBotsMenuInfo.skill_slider.curvalue = skill->curvalue;
          break;
       }
       case ID_SKILLSLIDER: {
-         menuslider_s* skillslider = (menuslider_s*)ptr;
+         menuelement_s* skillslider = (menuelement_s*)ptr;
          addBotsMenuInfo.skill.curvalue = (int)skillslider->curvalue;
          break;
       }   
@@ -314,7 +314,7 @@ UI_AddBotsMenu_Draw
 */
 static void UI_AddBotsMenu_Draw( void ) {
 	qhandle_t hpic;
-	menubitmap_s* b;
+	menuelement_s* b;
 	int x, y, w, h;
 	int skill;
    float f_skill;
@@ -431,7 +431,7 @@ static void UI_AddBotsMenu_Init( void ) {
 
    // prepare the menu items
 	addBotsMenuInfo.arrows.generic.type  = MTYPE_BITMAP;
-	addBotsMenuInfo.arrows.generic.name  = ART_ARROWS;
+	addBotsMenuInfo.arrows.string  = ART_ARROWS;
 	addBotsMenuInfo.arrows.generic.flags = QMF_INACTIVE;
 	addBotsMenuInfo.arrows.generic.x	 = 200;
 	addBotsMenuInfo.arrows.generic.y	 = 128;
@@ -475,10 +475,10 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.skill_slider.generic.x			= 320;
 	addBotsMenuInfo.skill_slider.generic.y			= y;
 if(cl_language.integer == 0){
-	addBotsMenuInfo.skill_slider.generic.name		= "Skill:";
+	addBotsMenuInfo.skill_slider.string		= "Skill:";
 }
 if(cl_language.integer == 1){
-	addBotsMenuInfo.skill_slider.generic.name		= "Сложность:";
+	addBotsMenuInfo.skill_slider.string		= "Сложность:";
 }
 	addBotsMenuInfo.skill_slider.generic.callback = UI_AddBotsMenu_SkillChangeEvent;
 	addBotsMenuInfo.skill_slider.generic.id		= ID_SKILLSLIDER;
@@ -508,10 +508,10 @@ if(cl_language.integer == 1){
 	addBotsMenuInfo.team.generic.x			= 320;
 	addBotsMenuInfo.team.generic.y			= y;
 if(cl_language.integer == 0){
-	addBotsMenuInfo.team.generic.name		= "Team: ";
+	addBotsMenuInfo.team.string		= "Team: ";
 }
 if(cl_language.integer == 1){
-	addBotsMenuInfo.team.generic.name		= "Команда: ";
+	addBotsMenuInfo.team.string		= "Команда: ";
 }
 	addBotsMenuInfo.team.generic.id			= ID_TEAM;
 	if( addBotsMenuInfo.gametype >= GT_TEAM && !(addBotsMenuInfo.gametype == GT_LMS) ) {
@@ -523,7 +523,7 @@ if(cl_language.integer == 1){
 	}
 
 	addBotsMenuInfo.go.generic.type			= MTYPE_BITMAP;
-	addBotsMenuInfo.go.generic.name			= ART_FIGHT0;
+	addBotsMenuInfo.go.string			= ART_FIGHT0;
 	addBotsMenuInfo.go.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.go.generic.id			= ID_GO;
 	addBotsMenuInfo.go.generic.callback		= UI_AddBotsMenu_FightEvent;
@@ -534,7 +534,7 @@ if(cl_language.integer == 1){
 	addBotsMenuInfo.go.focuspic				= ART_FIGHT1;
 
 	addBotsMenuInfo.back.generic.type		= MTYPE_BITMAP;
-	addBotsMenuInfo.back.generic.name		= ART_BACK0;
+	addBotsMenuInfo.back.string		= ART_BACK0;
 	addBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.back.generic.id			= ID_BACK;
 	addBotsMenuInfo.back.generic.callback	= UI_AddBotsMenu_BackEvent;
@@ -555,7 +555,7 @@ if(cl_language.integer == 1){
 
 	addBotsMenuInfo.icon.generic.type		= MTYPE_BITMAP;
 	addBotsMenuInfo.icon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_INACTIVE;
-	addBotsMenuInfo.icon.generic.name		= addBotsMenuInfo.boticon;
+	addBotsMenuInfo.icon.string		= addBotsMenuInfo.boticon;
 	addBotsMenuInfo.icon.generic.x			= 190 - 64; //320 + 128;
 	addBotsMenuInfo.icon.generic.y			= 240 - 32;
 	addBotsMenuInfo.icon.width				= 64;

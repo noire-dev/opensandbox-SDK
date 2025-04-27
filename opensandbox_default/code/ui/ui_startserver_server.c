@@ -343,7 +343,7 @@ typedef struct controlinit_s {
 typedef struct initlist_s {
 	int id;
 	char* title;
-	menutext_s* menutext;
+	menuelement_s* menutext;
 	controlinit_t* list;
 	int count;
 } initlist_t;
@@ -353,21 +353,21 @@ typedef struct initlist_s {
 
 
 typedef struct radiobuttoncontrol_s {
-	menuradiobutton_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } radiobuttoncontrol_t;
 
 
 typedef struct textfieldcontrol_s {
-	menufield_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } textfieldcontrol_t;
 
 
 typedef struct spincontrol_s {
-	menulist_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } spincontrol_t;
@@ -384,31 +384,31 @@ typedef struct servercontrols_s {
 	menuframework_s menu;
 	commoncontrols_t common;
 
-	menulist_s gameType;
-	menubitmap_s gameTypeIcon;
-	menufield_s hostname;
+	menuelement_s gameType;
+	menuelement_s gameTypeIcon;
+	menuelement_s hostname;
 
 	radiobuttoncontrol_t radio[MAX_SERVER_RADIO_CONTROL];
 	textfieldcontrol_t field[MAX_SERVER_MFIELD_CONTROL];
 	spincontrol_t spin[MAX_SERVER_SPIN_CONTROL];
 
-	menutext_s connect;
-	menutext_s admin;
-	menutext_s general;
-	menutext_s gamemode;
-	menutext_s physics;
-	menutext_s rules;
-	menutext_s rune1;
-	menutext_s rune2;
-	menutext_s redteam;
-	menutext_s blueteam;
-	menutext_s redteamweapons;
-	menutext_s blueteamweapons;
-	menutext_s teamother;
-	menutext_s other;
-	menutext_s enviroment;
-	menutext_s item;
-	menutext_s time;
+	menuelement_s connect;
+	menuelement_s admin;
+	menuelement_s general;
+	menuelement_s gamemode;
+	menuelement_s physics;
+	menuelement_s rules;
+	menuelement_s rune1;
+	menuelement_s rune2;
+	menuelement_s redteam;
+	menuelement_s blueteam;
+	menuelement_s redteamweapons;
+	menuelement_s blueteamweapons;
+	menuelement_s teamother;
+	menuelement_s other;
+	menuelement_s enviroment;
+	menuelement_s item;
+	menuelement_s time;
 
 	// currently selected tabbeed page for server
 	int activePage;
@@ -422,8 +422,8 @@ typedef struct servercontrols_s {
 	int num_field;
 	int num_spin;
 
-	menubitmap_s saveScript;
-	menubitmap_s loadScript;
+	menuelement_s saveScript;
+	menuelement_s loadScript;
 
 	int statusbar_height;
 	int savetime;
@@ -1500,7 +1500,7 @@ static void StartServer_ServerPage_InitSpinCtrl(controlinit_t* c, int height)
 	s->init = c;
 
 	s->control.generic.type		= MTYPE_SPINCONTROL;
-	s->control.generic.name		= c->title;
+	s->control.string		= c->title;
 	s->control.generic.id		= s_servercontrols.num_spin;	// self reference
 	s->control.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_RIGHT_JUSTIFY;
 	s->control.generic.callback	= StartServer_ServerPage_SpinEvent;
@@ -1544,7 +1544,7 @@ static void StartServer_ServerPage_InitRadioCtrl(controlinit_t* c, int height)
 	r->init = c;
 
 	r->control.generic.type		= MTYPE_RADIOBUTTON;
-	r->control.generic.name		= c->title;
+	r->control.string		= c->title;
 	r->control.generic.id		= s_servercontrols.num_radio;	// self reference
 	r->control.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_RIGHT_JUSTIFY;
 	r->control.generic.callback	= StartServer_ServerPage_RadioEvent;
@@ -1593,7 +1593,7 @@ static void StartServer_ServerPage_InitFieldCtrl(controlinit_t* c, int height)
 		flags |= QMF_NUMBERSONLY;
 
 	f->control.generic.type       = MTYPE_FIELD;
-	f->control.generic.name       = c->title;
+	f->control.string       = c->title;
 	f->control.generic.id		= s_servercontrols.num_field;	// self reference
 	f->control.generic.callback	= StartServer_ServerPage_FieldEvent;
 	f->control.generic.statusbar	= StartServer_ServerPage_ControlListStatusBar;
@@ -2196,7 +2196,7 @@ void StartServer_ServerPage_MenuInit(void)
 	y += LINE_HEIGHT;
 
 	s_servercontrols.saveScript.generic.type  = MTYPE_BITMAP;
-	s_servercontrols.saveScript.generic.name  = SERVER_SAVE0;
+	s_servercontrols.saveScript.string  = SERVER_SAVE0;
 	s_servercontrols.saveScript.generic.flags = QMF_PULSEIFFOCUS;
 	s_servercontrols.saveScript.generic.x	   =  320 - 128;
 	s_servercontrols.saveScript.generic.y	   = 480 - 64;
@@ -2208,7 +2208,7 @@ void StartServer_ServerPage_MenuInit(void)
 	s_servercontrols.saveScript.focuspic = SERVER_SAVE1;
 
 	s_servercontrols.loadScript.generic.type  = MTYPE_BITMAP;
-	s_servercontrols.loadScript.generic.name  = SERVER_LOAD0;
+	s_servercontrols.loadScript.string  = SERVER_LOAD0;
 	s_servercontrols.loadScript.generic.flags = QMF_PULSEIFFOCUS;
 	s_servercontrols.loadScript.generic.x	   =  320;
 	s_servercontrols.loadScript.generic.y	   = 480 - 64;
@@ -2222,14 +2222,14 @@ void StartServer_ServerPage_MenuInit(void)
 	s_servercontrols.statusbar_height = 480 - 64 - LINE_HEIGHT;
 	
 	if(cl_language.integer == 0){
-	s_servercontrols.gameType.generic.name		= "Game Type:";
+	s_servercontrols.gameType.string		= "Game Type:";
 	s_servercontrols.gameType.itemnames			= gametype_items;
-	s_servercontrols.hostname.generic.name       = "Hostname:";
+	s_servercontrols.hostname.string       = "Hostname:";
 	}
 	if(cl_language.integer == 1){
-	s_servercontrols.gameType.generic.name		= "Режим Игры:";
+	s_servercontrols.gameType.string		= "Режим Игры:";
 	s_servercontrols.gameType.itemnames			= gametype_itemsru;
-	s_servercontrols.hostname.generic.name       = "Имя сервера:";
+	s_servercontrols.hostname.string       = "Имя сервера:";
 	}
 
 
@@ -2241,7 +2241,7 @@ void StartServer_ServerPage_MenuInit(void)
 	}
 
 	style = UI_RIGHT|UI_MEDIUMFONT;
-	scale = UI_ProportionalSizeScale(style, 0);
+	scale = 1.00;
 	y_base = TABCONTROLCENTER_Y - s_servercontrols.pageListSize*PROP_HEIGHT*scale/2;
 
 	for (i = 0; i < s_servercontrols.pageListSize; i++)

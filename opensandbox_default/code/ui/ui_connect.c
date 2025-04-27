@@ -34,7 +34,7 @@ CONNECTION SCREEN
 */
 
 qboolean	passwordNeeded = qtrue;
-menufield_s passwordField;
+menuelement_s passwordField;
 
 static connstate_t	lastConnState;
 static char			lastLoadingText[MAX_INFO_VALUE];
@@ -94,10 +94,10 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 	fprintf( stderr, "DB: UI frametime:  %16d\n", uis.frametime );	// bk
 #endif
 
-	leftWidth = width = UI_ProportionalStringWidth( dlText ) * UI_ProportionalSizeScale( style, 0 );
-	width = UI_ProportionalStringWidth( etaText ) * UI_ProportionalSizeScale( style, 0 );
+	leftWidth = width = UI_ProportionalStringWidth( dlText, 1.00 ) * 1.00;
+	width = UI_ProportionalStringWidth( etaText, 1.00 ) * 1.00;
 	if (width > leftWidth) leftWidth = width;
-	width = UI_ProportionalStringWidth( xferText ) * UI_ProportionalSizeScale( style, 0 );
+	width = UI_ProportionalStringWidth( xferText, 1.00 ) * 1.00;
 	if (width > leftWidth) leftWidth = width;
 	leftWidth += 16;
 

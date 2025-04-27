@@ -78,14 +78,14 @@ typedef struct iteminfo_s {
 	int ident;	// ITEM_* flag
 
 	itemnode_t* item;
-	menuradiobutton_s* control;
+	menuelement_s* control;
 } iteminfo_t;
 
 
 
 
 typedef struct itemradionbutton_s {
-	menuradiobutton_s control;
+	menuelement_s control;
 	iteminfo_t* item;
 	int bg_index;	// bg_items[] index
 } itemradiobutton_t;
@@ -95,10 +95,10 @@ typedef struct itemradionbutton_s {
 
 // controls that appear when used as an in-game menu
 typedef struct ingame_controls_t {
-	menutext_s		title;
-	menubitmap_s	cancel;
-	menubitmap_s	accept;
-	menutext_s		info;
+	menuelement_s		title;
+	menuelement_s	cancel;
+	menuelement_s	accept;
+	menuelement_s		info;
 } ingame_controls_s;
 
 
@@ -109,15 +109,15 @@ typedef struct itemcontrols_s {
 	commoncontrols_t 	common;
 	ingame_controls_s	ingame;
 
-	menulist_s 		gameType;
-	menubitmap_s 	gameTypeIcon;
+	menuelement_s 		gameType;
+	menuelement_s 	gameTypeIcon;
 
-	menulist_s 		groupMaster[ITEMGROUP_COUNT];	// don't use ITEMGROUP_* to index
-	menutext_s		tabbedText[ITEMGROUP_COUNT];	// selection text for a page of items
+	menuelement_s 		groupMaster[ITEMGROUP_COUNT];	// don't use ITEMGROUP_* to index
+	menuelement_s		tabbedText[ITEMGROUP_COUNT];	// selection text for a page of items
 
 	itemradiobutton_t itemCtrl[MAX_ITEM_ONPAGE]; // don't use ITEM_* to index
 
-	menubitmap_s	reset;
+	menuelement_s	reset;
 
 	qboolean ingame_menu;	// menu display format
 
@@ -263,7 +263,7 @@ typedef struct mastercontrol_s {
 	char* tabbedTitle;
 	char* masterTitleru;
 	char* tabbedTitleru;
-	menulist_s* control;
+	menuelement_s* control;
 	iteminfo_t* items;
 	int item_count;
 } mastercontrol_t;
@@ -474,7 +474,7 @@ static void StartServer_BothItemMenus_UpdateInterface(void)
 {
 	int i;
 	int page, type;
-	menuradiobutton_s* ctrl;
+	menuelement_s* ctrl;
 	iteminfo_t* item;
 
 	// menu type specific interface updates
@@ -545,12 +545,12 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 	float *color;
 	int	style;
 	qboolean focus;
-	menuradiobutton_s *rb;
+	menuelement_s *rb;
 	char* iconname;
 	qhandle_t	icon;
 	vec4_t gcolor;
 
-	rb = (menuradiobutton_s*)ptr;
+	rb = (menuelement_s*)ptr;
 	x = rb->generic.x;
 	y = rb->generic.y;
 
@@ -585,8 +585,8 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 	}
 
 	// draw it!
-	if ( rb->generic.name )
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->generic.name, UI_RIGHT|UI_SMALLFONT, color );
+	if ( rb->string )
+		UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color );
 
 	if ( !rb->curvalue )
 	{
@@ -628,7 +628,7 @@ setting to change as well. We must keep these values in sync
 */
 static void StartServer_BothItemMenus_ItemEvent( void* ptr, int event )
 {
-	menuradiobutton_s* rb;
+	menuelement_s* rb;
 	iteminfo_t* item;
 	int i, type, page;
 	qboolean enabled;
@@ -638,7 +638,7 @@ static void StartServer_BothItemMenus_ItemEvent( void* ptr, int event )
 		return;
 
 	// store the value of the control in server_itemlist[]
-	rb = (menuradiobutton_s*)ptr;
+	rb = (menuelement_s*)ptr;
 	item = s_itemcontrols.itemCtrl[ rb->generic.id ].item;
 
 	if (item) {
@@ -710,10 +710,10 @@ static void StartServer_BothItemMenus_InitTabbedControls(int page)
 		s_itemcontrols.itemCtrl[i].control.generic.type	= MTYPE_RADIOBUTTON;
 		s_itemcontrols.itemCtrl[i].control.generic.flags	= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NODEFAULTINIT;
 		if(cl_language.integer == 0){
-		s_itemcontrols.itemCtrl[i].control.generic.name 	= items[i].name;
+		s_itemcontrols.itemCtrl[i].control.string 	= items[i].name;
 		}
 		if(cl_language.integer == 1){
-		s_itemcontrols.itemCtrl[i].control.generic.name 	= items[i].runame;
+		s_itemcontrols.itemCtrl[i].control.string 	= items[i].runame;
 		}
 		s_itemcontrols.itemCtrl[i].control.generic.callback	= StartServer_BothItemMenus_ItemEvent;
 		s_itemcontrols.itemCtrl[i].control.generic.ownerdraw = StartServer_BothItemMenus_DrawItemButton;
@@ -758,13 +758,13 @@ Syncs array with data control value
 */
 static void StartServer_BothItemMenus_GroupEvent( void* ptr, int event )
 {
-	menulist_s* l;
+	menuelement_s* l;
 
 	if (event != QM_ACTIVATED)
 		return;
 
 	// store the value of the control
-	l = (menulist_s*)ptr;
+	l = (menuelement_s*)ptr;
 	s_itemcontrols.grouptype[l->generic.id] = l->curvalue;
 
 	if (l->generic.id != s_itemcontrols.currentPage)
@@ -811,12 +811,12 @@ StartServer_BothItemMenus_TabbedEvent
 */
 static void StartServer_BothItemMenus_TabbedEvent( void* ptr, int event )
 {
-	menutext_s* m;
+	menuelement_s* m;
 
 	if (event != QM_ACTIVATED)
 		return;
 
-	m = (menutext_s*)ptr;
+	m = (menuelement_s*)ptr;
 
 	StartServer_BothItemMenus_SetTabbedControlsPage(m->generic.id);
 	StartServer_BothItemMenus_UpdateInterface();
@@ -859,7 +859,7 @@ static void StartServer_BothItemMenus_SetupItemControls(int y)
 	// setup tabbed selection controls
 	//
 	style = UI_RIGHT|UI_MEDIUMFONT;
-	scale = UI_ProportionalSizeScale(style, 0);
+	scale = 1.00;
 
 	y_base = TABCONTROLCENTER_Y;	// approx middle of free area
 	if (s_itemcontrols.ingame_menu)
@@ -912,11 +912,11 @@ static void StartServer_BothItemMenus_AddMasterControls(int y)
 		s_itemcontrols.groupMaster[i].generic.x		= x;
 		s_itemcontrols.groupMaster[i].generic.y		= y + dy +30;
 		if(cl_language.integer == 0){
-		s_itemcontrols.groupMaster[i].generic.name		= masterControl[i].masterTitle;
+		s_itemcontrols.groupMaster[i].string		= masterControl[i].masterTitle;
 		s_itemcontrols.groupMaster[i].itemnames		= allgroups_items;
 		}
 		if(cl_language.integer == 1){
-		s_itemcontrols.groupMaster[i].generic.name		= masterControl[i].masterTitleru;
+		s_itemcontrols.groupMaster[i].string		= masterControl[i].masterTitleru;
 		s_itemcontrols.groupMaster[i].itemnames		= allgroups_itemsru;
 		}
 
@@ -1242,7 +1242,7 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 		s_itemcontrols.ingame.title.style			= UI_CENTER;
 
 		s_itemcontrols.ingame.cancel.generic.type     = MTYPE_BITMAP;
-		s_itemcontrols.ingame.cancel.generic.name     = INGAME_CANCEL0;
+		s_itemcontrols.ingame.cancel.string     = INGAME_CANCEL0;
 		s_itemcontrols.ingame.cancel.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 		s_itemcontrols.ingame.cancel.generic.callback = StartServer_InGame_Event;
 		s_itemcontrols.ingame.cancel.generic.id	    = ID_ITEMINGAME_CANCEL;
@@ -1253,7 +1253,7 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 		s_itemcontrols.ingame.cancel.focuspic         = INGAME_CANCEL1;
 
 		s_itemcontrols.ingame.accept.generic.type     = MTYPE_BITMAP;
-		s_itemcontrols.ingame.accept.generic.name     = INGAME_ACCEPT0;
+		s_itemcontrols.ingame.accept.string     = INGAME_ACCEPT0;
 		s_itemcontrols.ingame.accept.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 		s_itemcontrols.ingame.accept.generic.callback = StartServer_InGame_Event;
 		s_itemcontrols.ingame.accept.generic.id	    = ID_ITEMINGAME_ACCEPT;
@@ -1295,11 +1295,11 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 		s_itemcontrols.gameType.generic.x			= GAMETYPECOLUMN_X;
 		s_itemcontrols.gameType.generic.y			= y;
 		if(cl_language.integer == 0){
-		s_itemcontrols.gameType.generic.name		= "Game Type:";
+		s_itemcontrols.gameType.string		= "Game Type:";
 		s_itemcontrols.gameType.itemnames			= gametype_items;
 		}
 		if(cl_language.integer == 1){
-		s_itemcontrols.gameType.generic.name		= "Режим Игры:";
+		s_itemcontrols.gameType.string		= "Режим Игры:";
 		s_itemcontrols.gameType.itemnames			= gametype_itemsru;
 		}
 
@@ -1319,7 +1319,7 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 
 	// controls common to both pages
 	s_itemcontrols.reset.generic.type     = MTYPE_BITMAP;
-	s_itemcontrols.reset.generic.name     = SERVER_ITEM_RESET0;
+	s_itemcontrols.reset.string     = SERVER_ITEM_RESET0;
 	s_itemcontrols.reset.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_itemcontrols.reset.generic.callback = StartServer_BothItemMenus_Event;
 	s_itemcontrols.reset.generic.id	    = ID_ITEM_RESET;

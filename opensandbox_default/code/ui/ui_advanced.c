@@ -44,14 +44,14 @@
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menulist_s		list;
-	menufield_s		filter;
-	menufield_s		value;
+	menuelement_s		list;
+	menuelement_s		filter;
+	menuelement_s		value;
 
-	menubitmap_s	back;
-	menubitmap_s	go;
+	menuelement_s	back;
+	menuelement_s	go;
 
 	char			description[NAMEBUFSIZE];
 	char			fs_game[GAMEBUFSIZE];
@@ -114,15 +114,6 @@ static void UI_Advanced_MenuEvent2( void *ptr, int event ) {
 
 char* 			advanced_items[] = {
 "cg_leiChibi",
-"cl_propsmallsizescale",
-"cl_propheight",
-"cl_propgapwidth",
-"cl_smallcharwidth",
-"cl_smallcharheight",
-"cl_bigcharwidth",
-"cl_bigcharheight",
-"cl_giantcharwidth",
-"cl_giantcharheight",
 "cg_brassTime",
 "cg_gibvelocity",
 "cg_gibjump",
@@ -280,7 +271,7 @@ static void UI_Advanced_MenuInit( void ) {
 	s_advanced.banner.style				= UI_CENTER;
 
 	s_advanced.back.generic.type		= MTYPE_BITMAP;
-	s_advanced.back.generic.name		= ART_BACK0;
+	s_advanced.back.string		= ART_BACK0;
 	s_advanced.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_advanced.back.generic.id			= ID_BACK;
 	s_advanced.back.generic.callback	= UI_Advanced_MenuEvent;
@@ -291,7 +282,7 @@ static void UI_Advanced_MenuInit( void ) {
 	s_advanced.back.focuspic			= ART_BACK1;
 
 	s_advanced.go.generic.type			= MTYPE_BITMAP;
-	s_advanced.go.generic.name			= ART_FIGHT0;
+	s_advanced.go.string			= ART_FIGHT0;
 	s_advanced.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_advanced.go.generic.id			= ID_GO;
 	s_advanced.go.generic.callback		= UI_Advanced_MenuEvent;
@@ -308,10 +299,10 @@ static void UI_Advanced_MenuInit( void ) {
 	s_advanced.filter.field.widthInChars	= 16;
 	s_advanced.filter.field.maxchars		= 16;
 	if(cl_language.integer == 0){
-	s_advanced.filter.generic.name			= "Search:";
+	s_advanced.filter.string			= "Search:";
 	}
 	if(cl_language.integer == 1){
-	s_advanced.filter.generic.name			= "Поиск:";
+	s_advanced.filter.string			= "Поиск:";
 	}
 	s_advanced.filter.generic.x				= 240;
 	s_advanced.filter.generic.y				= 430;
@@ -323,10 +314,10 @@ static void UI_Advanced_MenuInit( void ) {
 	s_advanced.value.field.widthInChars		= 20;
 	s_advanced.value.field.maxchars			= 128;
 	if(cl_language.integer == 0){
-	s_advanced.value.generic.name			= "Value:";
+	s_advanced.value.string			= "Value:";
 	}
 	if(cl_language.integer == 1){
-	s_advanced.value.generic.name			= "Значение:";
+	s_advanced.value.string			= "Значение:";
 	}
 	s_advanced.value.generic.x				= 240;
 	s_advanced.value.generic.y				= 450;

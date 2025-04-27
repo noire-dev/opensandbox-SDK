@@ -42,13 +42,13 @@
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menulist_s		list;
-	menufield_s		filter;
+	menuelement_s		list;
+	menuelement_s		filter;
 
-	menubitmap_s	back;
-	menubitmap_s	go;
+	menuelement_s	back;
+	menuelement_s	go;
 
 	char			description[NAMEBUFSIZE];
 	char			fs_game[GAMEBUFSIZE];
@@ -4308,7 +4308,7 @@ static void UI_Workshop_MenuInit( void ) {
 	s_workshop.banner.style				= UI_CENTER;
 
 	s_workshop.back.generic.type		= MTYPE_BITMAP;
-	s_workshop.back.generic.name		= ART_BACK0;
+	s_workshop.back.string		= ART_BACK0;
 	s_workshop.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_workshop.back.generic.id			= ID_BACK;
 	s_workshop.back.generic.callback	= UI_Workshop_MenuEvent;
@@ -4319,7 +4319,7 @@ static void UI_Workshop_MenuInit( void ) {
 	s_workshop.back.focuspic			= ART_BACK1;
 
 	s_workshop.go.generic.type			= MTYPE_BITMAP;
-	s_workshop.go.generic.name			= ART_FIGHT0;
+	s_workshop.go.string			= ART_FIGHT0;
 	s_workshop.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_workshop.go.generic.id			= ID_GO;
 	s_workshop.go.generic.callback		= UI_Workshop_MenuEvent;
@@ -4334,10 +4334,10 @@ static void UI_Workshop_MenuInit( void ) {
 	s_workshop.filter.field.widthInChars	= 16;
 	s_workshop.filter.field.maxchars		= 16;
 	if(cl_language.integer == 0){
-	s_workshop.filter.generic.name			= "Search:";
+	s_workshop.filter.string			= "Search:";
 	}
 	if(cl_language.integer == 1){
-	s_workshop.filter.generic.name			= "Поиск:";
+	s_workshop.filter.string			= "Поиск:";
 	}
 	s_workshop.filter.generic.x				= 240;
 	s_workshop.filter.generic.y				= 460;

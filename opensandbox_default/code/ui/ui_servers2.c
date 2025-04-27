@@ -240,30 +240,30 @@ typedef struct {
 typedef struct {
 	menuframework_s		menu;
 
-	menutext_s			banner;
+	menuelement_s			banner;
 
-	menulist_s			master;
-	menulist_s			gametype;
-	menulist_s			sortkey;
-	menuradiobutton_s	showfull;
-	menuradiobutton_s	showempty;
+	menuelement_s			master;
+	menuelement_s			gametype;
+	menuelement_s			sortkey;
+	menuelement_s	showfull;
+	menuelement_s	showempty;
 
-	menulist_s			list;
-	menubitmap_s		mappic;
-	menubitmap_s		arrows;
-	menubitmap_s		up;
-	menubitmap_s		down;
-	menutext_s			status;
-	menutext_s			statusbar;
-	menubitmap_s       save;
+	menuelement_s			list;
+	menuelement_s		mappic;
+	menuelement_s		arrows;
+	menuelement_s		up;
+	menuelement_s		down;
+	menuelement_s			status;
+	menuelement_s			statusbar;
+	menuelement_s       save;
 	
-	menubitmap_s		remove;
-	menubitmap_s		back;
-	menubitmap_s		refresh;
-	menubitmap_s		specify;
-	menubitmap_s		create;
-	menubitmap_s		go;
-	menufield_s		password;
+	menuelement_s		remove;
+	menuelement_s		back;
+	menuelement_s		refresh;
+	menuelement_s		specify;
+	menuelement_s		create;
+	menuelement_s		go;
+	menuelement_s		password;
 
 	pinglist_t			pinglist[MAX_PINGREQUESTS];
 	table_t				table[MAX_LISTBOXITEMS];
@@ -404,12 +404,12 @@ static void ArenaServers_UpdatePicture( void ) {
 	servernode_t*	servernodeptr;
 
 	if( !g_arenaservers.list.numitems ) {
-		g_arenaservers.mappic.generic.name = NULL;
+		g_arenaservers.mappic.string = NULL;
 	}
 	else {
 		servernodeptr = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 		Com_sprintf( picname, sizeof(picname), "levelshots/%s.tga", servernodeptr->mapname );
-		g_arenaservers.mappic.generic.name = picname;
+		g_arenaservers.mappic.string = picname;
 	
 	}
 
@@ -1606,7 +1606,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.mappic.errorpic				= ART_UNKNOWNMAP;
 
 	g_arenaservers.arrows.generic.type			= MTYPE_BITMAP;
-	g_arenaservers.arrows.generic.name			= ART_ARROWS0;
+	g_arenaservers.arrows.string			= ART_ARROWS0;
 	g_arenaservers.arrows.generic.flags			= QMF_LEFT_JUSTIFY|QMF_INACTIVE;
 	g_arenaservers.arrows.generic.callback		= ArenaServers_Event;
 	g_arenaservers.arrows.generic.x				= 512+48+uis.wideoffset;
@@ -1651,7 +1651,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.statusbar.color	        = text_color_normal;
 
 	g_arenaservers.remove.generic.type		= MTYPE_BITMAP;
-	g_arenaservers.remove.generic.name		= ART_REMOVE0;
+	g_arenaservers.remove.string		= ART_REMOVE0;
 	g_arenaservers.remove.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.remove.generic.callback	= ArenaServers_Event;
 	g_arenaservers.remove.generic.id		= ID_REMOVE;
@@ -1662,7 +1662,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.remove.focuspic			= ART_REMOVE1;
 
 	g_arenaservers.save.generic.type = MTYPE_BITMAP;
-	g_arenaservers.save.generic.name = ART_SAVE0;
+	g_arenaservers.save.string = ART_SAVE0;
 	g_arenaservers.save.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.save.generic.callback = ArenaServers_Event;
 	g_arenaservers.save.generic.id = ID_SAVE;
@@ -1673,7 +1673,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.save.focuspic = ART_SAVE1;
 
 	g_arenaservers.back.generic.type		= MTYPE_BITMAP;
-	g_arenaservers.back.generic.name		= ART_BACK0;
+	g_arenaservers.back.string		= ART_BACK0;
 	g_arenaservers.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.back.generic.callback	= ArenaServers_Event;
 	g_arenaservers.back.generic.id			= ID_BACK;
@@ -1684,7 +1684,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.back.focuspic			= ART_BACK1;
 
 	g_arenaservers.specify.generic.type	    = MTYPE_BITMAP;
-	g_arenaservers.specify.generic.name		= ART_SPECIFY0;
+	g_arenaservers.specify.string		= ART_SPECIFY0;
 	g_arenaservers.specify.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.specify.generic.callback = ArenaServers_Event;
 	g_arenaservers.specify.generic.id	    = ID_SPECIFY;
@@ -1695,7 +1695,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.specify.focuspic         = ART_SPECIFY1;
 
 	g_arenaservers.refresh.generic.type		= MTYPE_BITMAP;
-	g_arenaservers.refresh.generic.name		= ART_REFRESH0;
+	g_arenaservers.refresh.string		= ART_REFRESH0;
 	g_arenaservers.refresh.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.refresh.generic.callback	= ArenaServers_Event;
 	g_arenaservers.refresh.generic.id		= ID_REFRESH;
@@ -1706,7 +1706,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.refresh.focuspic			= ART_REFRESH1;
 
 	g_arenaservers.create.generic.type		= MTYPE_BITMAP;
-	g_arenaservers.create.generic.name		= ART_CREATE0;
+	g_arenaservers.create.string		= ART_CREATE0;
 	g_arenaservers.create.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.create.generic.callback	= ArenaServers_Event;
 	g_arenaservers.create.generic.id		= ID_CREATE;
@@ -1717,7 +1717,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.create.focuspic			= ART_CREATE1;
 
 	g_arenaservers.go.generic.type			= MTYPE_BITMAP;
-	g_arenaservers.go.generic.name			= ART_CONNECT0;
+	g_arenaservers.go.string			= ART_CONNECT0;
 	g_arenaservers.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.go.generic.callback		= ArenaServers_Event;
 	g_arenaservers.go.generic.id			= ID_CONNECT;
@@ -1729,27 +1729,27 @@ static void ArenaServers_MenuInit( void ) {
 	
 	if(cl_language.integer == 0){
 	g_arenaservers.banner.string  		= "SERVERS";
-	g_arenaservers.master.generic.name			= "Servers:";
+	g_arenaservers.master.string			= "Servers:";
 	g_arenaservers.master.itemnames				= master_items;
-	g_arenaservers.gametype.generic.name		= "Game Type:";
+	g_arenaservers.gametype.string		= "Game Type:";
 	g_arenaservers.gametype.itemnames			= servertype_items;
-	g_arenaservers.sortkey.generic.name			= "Sort By:";
+	g_arenaservers.sortkey.string			= "Sort By:";
 	g_arenaservers.sortkey.itemnames			= sortkey_items;
-	g_arenaservers.showfull.generic.name		= "Show Full:";
-	g_arenaservers.showempty.generic.name		= "Show Empty:";
-	g_arenaservers.password.generic.name		= "Password:";
+	g_arenaservers.showfull.string		= "Show Full:";
+	g_arenaservers.showempty.string		= "Show Empty:";
+	g_arenaservers.password.string		= "Password:";
 	}
 	if(cl_language.integer == 1){
 	g_arenaservers.banner.string  		= "СЕРВЕРА";
-	g_arenaservers.master.generic.name			= "Сервера:";
+	g_arenaservers.master.string			= "Сервера:";
 	g_arenaservers.master.itemnames				= master_itemsru;
-	g_arenaservers.gametype.generic.name		= "Режим Игры:";
+	g_arenaservers.gametype.string		= "Режим Игры:";
 	g_arenaservers.gametype.itemnames			= servertype_itemsru;
-	g_arenaservers.sortkey.generic.name			= "Сортировка По:";
+	g_arenaservers.sortkey.string			= "Сортировка По:";
 	g_arenaservers.sortkey.itemnames			= sortkey_itemsru;
-	g_arenaservers.showfull.generic.name		= "Показать Полные:";
-	g_arenaservers.showempty.generic.name		= "Показать Пустые:";
-	g_arenaservers.password.generic.name		= "Пароль:";
+	g_arenaservers.showfull.string		= "Показать Полные:";
+	g_arenaservers.showempty.string		= "Показать Пустые:";
+	g_arenaservers.password.string		= "Пароль:";
 	}
 
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.banner );

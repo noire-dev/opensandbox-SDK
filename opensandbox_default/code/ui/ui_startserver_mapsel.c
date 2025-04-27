@@ -103,31 +103,27 @@ static vec4_t color_nomap = {0.75, 0.0, 0.0, 1.0};
 typedef struct mapselect_s {
 	menuframework_s menu;
 
-	menutext_s banner;
-	menubitmap_s mappics[MAX_GRIDMAPSPERPAGE];
+	menuelement_s banner;
+	menuelement_s mappics[MAX_GRIDMAPSPERPAGE];
 
-	menubitmap_s icona;
-	menubitmap_s iconb;
+	menuelement_s icona;
+	menuelement_s iconb;
 
-	menubitmap_s arrows;
-	menubitmap_s next;
-	menubitmap_s previous;
-	menubitmap_s cancel;
-	menubitmap_s accept;
+	menuelement_s arrows;
+	menuelement_s next;
+	menuelement_s previous;
+	menuelement_s cancel;
+	menuelement_s accept;
 
-	menutext_s maptype;
-	menuradiobutton_s allmaps;
-	menulist_s filter;
-	menulist_s mapicons;
+	menuelement_s maptype;
+	menuelement_s allmaps;
+	menuelement_s filter;
+	menuelement_s mapicons;
 
-	menuradiobutton_s multisel;
-	menuradiobutton_s listview;
+	menuelement_s multisel;
+	menuelement_s listview;
 
-	menulist_s maplist;
-
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	menubitmap_s	logo;
-#endif
+	menuelement_s maplist;
 
 	int gametype;	// GT_* format
 	int nummaps;
@@ -442,8 +438,8 @@ MapSelect_SetMapTypeIcons
 static void MapSelect_SetMapTypeIcons( void )
 {
 	int gametype, customtype;
-	menubitmap_s* icon_type;
-	menubitmap_s* icon_custom;
+	menuelement_s* icon_type;
+	menuelement_s* icon_custom;
 
 	icon_type = &s_mapselect.icona;
 	icon_custom = &s_mapselect.iconb;
@@ -745,7 +741,7 @@ static void MapSelect_SetNewMapPics( void )
 	if (!s_mapselect.listview.curvalue) {
 		for (; i < MAX_GRIDMAPSPERPAGE; i++)
 		{
-			s_mapselect.mappics[i].generic.name = 0;
+			s_mapselect.mappics[i].string = 0;
 			s_mapselect.mappics[i].shader = 0;
 		}
 	}
@@ -999,7 +995,7 @@ MapSelect_DrawMapPic
 =================
 */
 static void MapSelect_DrawMapPic( void *self ) {
-	menubitmap_s	*b;
+	menuelement_s	*b;
 	int				x;
 	int				y;
 	int				w;
@@ -1019,7 +1015,7 @@ static void MapSelect_DrawMapPic( void *self ) {
 	colormaps[2] = 0.4;
 	colormaps[3] = 1.0;
 
-	b = (menubitmap_s *)self;
+	b = (menuelement_s *)self;
 
 	if( b->focuspic && !b->focusshader ) {
 		b->focusshader = trap_R_RegisterShaderNoMip( b->focuspic );
@@ -1181,7 +1177,7 @@ static void MapSelect_ScrollListDraw( void* ptr )
 	float*		color;
 	qboolean	hasfocus;
 	int			style;
-	menulist_s *l;
+	menuelement_s *l;
 	float	scale;
 	int 	charwidth;
 	int 	charheight;
@@ -1190,7 +1186,7 @@ static void MapSelect_ScrollListDraw( void* ptr )
 	int		map;
 	int 	offset;
 
-	l = (menulist_s*)ptr;
+	l = (menuelement_s*)ptr;
 	hasfocus = (l->generic.parent->cursor == l->generic.menuPosition);
 	MapSelect_ScrollCharParams( &charheight, &charwidth, &lineheight);
 
@@ -1253,7 +1249,7 @@ static void MapSelect_ScrollListDraw( void* ptr )
 
 			y += lineheight;
 		}
-		x += (l->width + l->seperation) * charwidth;
+		x += l->width * charwidth;
 	}
 }
 
@@ -1266,7 +1262,7 @@ MapSelect_ListIndexFromCursor
 */
 static qboolean MapSelect_ListIndexFromCursor(int* pos)
 {
-	menulist_s* l;
+	menuelement_s* l;
 	int	x;
 	int	y;
 	int	w;
@@ -1285,7 +1281,7 @@ static qboolean MapSelect_ListIndexFromCursor(int* pos)
 	// check scroll region
 	x = l->generic.x;
 	y = l->generic.y;
-	w = ( (l->width + l->seperation) * l->columns - l->seperation) * charwidth;
+	w = ( l->width * l->columns) * charwidth;
 	if( l->generic.flags & QMF_CENTER_JUSTIFY ) {
 		x -= w / 2;
 	}
@@ -1293,7 +1289,7 @@ static qboolean MapSelect_ListIndexFromCursor(int* pos)
 		return qfalse;
 
 	cursorx = (uis.cursorx - x)/charwidth;
-	column = cursorx / (l->width + l->seperation);
+	column = cursorx / l->width;
 	cursory = (uis.cursory - y)/lineheight;
 	*pos = column * l->height + cursory;
 
@@ -1404,7 +1400,7 @@ Returns true if the list box accepts that key input
 */
 static qboolean MapSelect_HandleListKey( int key, sfxHandle_t* psfx)
 {
-	menulist_s* l;
+	menuelement_s* l;
 	int	index;
 	int	sel;
 
@@ -1457,10 +1453,10 @@ MapSelect_Key
 */
 static sfxHandle_t MapSelect_Key( int key )
 {
-	menulist_s	*l;
+	menuelement_s	*l;
 	sfxHandle_t sfx;
 
-	l = (menulist_s	*)Menu_ItemAtCursor( &s_mapselect.menu );
+	l = (menuelement_s	*)Menu_ItemAtCursor( &s_mapselect.menu );
 
 	sfx = menu_null_sound;
 	if( l == &s_mapselect.maplist) {
@@ -1482,7 +1478,7 @@ static sfxHandle_t MapSelect_Key( int key )
 MapSelect_ScrollList_Init
 =================
 */
-static void MapSelect_ScrollListInit( menulist_s *l )
+static void MapSelect_ScrollListInit( menuelement_s *l )
 {
 	int		w;
 	int 	charwidth;
@@ -1497,13 +1493,9 @@ static void MapSelect_ScrollListInit( menulist_s *l )
 
 	if( !l->columns ) {
 		l->columns = 1;
-		l->seperation = 0;
-	}
-	else if( !l->seperation ) {
-		l->seperation = 3;
 	}
 
-	w = ( (l->width + l->seperation) * l->columns - l->seperation) * charwidth;
+	w = ( l->width * l->columns) * charwidth;
 
 	l->generic.left   =	l->generic.x;
 	l->generic.top    = l->generic.y;
@@ -1597,7 +1589,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.icona.generic.type  = MTYPE_BITMAP;
 	s_mapselect.icona.generic.flags = QMF_INACTIVE;
-//	s_mapselect.icona.generic.name = "menu/medals/medal_excellent";
+//	s_mapselect.icona.string = "menu/medals/medal_excellent";
 	s_mapselect.icona.generic.x	 = 420  - 32 - SMALLCHAR_WIDTH;
 	s_mapselect.icona.generic.y	 = 8 + (SMALLCHAR_HEIGHT - 32)/2;
 	s_mapselect.icona.width  	     = 32;
@@ -1605,7 +1597,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.iconb.generic.type  = MTYPE_BITMAP;
 	s_mapselect.iconb.generic.flags = QMF_INACTIVE;
-//	s_mapselect.iconb.generic.name = "menu/medals/medal_victory";
+//	s_mapselect.iconb.string = "menu/medals/medal_victory";
 	s_mapselect.iconb.generic.x	 = 420 - 64 - SMALLCHAR_WIDTH;
 	s_mapselect.iconb.generic.y	 = 8 + (SMALLCHAR_HEIGHT - 32)/2;
 	s_mapselect.iconb.width  	     = 32;
@@ -1631,7 +1623,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.mapicons.curvalue = (int)Com_Clamp(0, MAPICONS_MAX - 1, gui_mapicons.integer);
 
 	s_mapselect.arrows.generic.type  = MTYPE_BITMAP;
-	s_mapselect.arrows.generic.name  = MAPSELECT_HARROWS;
+	s_mapselect.arrows.string  = MAPSELECT_HARROWS;
 	s_mapselect.arrows.generic.flags = QMF_INACTIVE;
 	s_mapselect.arrows.generic.x	 = 320;
 	s_mapselect.arrows.generic.y	 = 480 - 64;
@@ -1659,7 +1651,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.next.focuspic = MAPSELECT_NEXT;
 
 	s_mapselect.cancel.generic.type  = MTYPE_BITMAP;
-	s_mapselect.cancel.generic.name  = MAPSELECT_CANCEL0;
+	s_mapselect.cancel.string  = MAPSELECT_CANCEL0;
 	s_mapselect.cancel.generic.flags  = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapselect.cancel.generic.id  = ID_MAPSELECT_CANCEL;
 	s_mapselect.cancel.generic.callback  = MapSelect_MenuEvent;
@@ -1670,7 +1662,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.cancel.focuspic     = MAPSELECT_CANCEL1;
 
 	s_mapselect.accept.generic.type  = MTYPE_BITMAP;
-	s_mapselect.accept.generic.name  = MAPSELECT_ACCEPT0;
+	s_mapselect.accept.string  = MAPSELECT_ACCEPT0;
 	s_mapselect.accept.generic.flags  = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapselect.accept.generic.id = ID_MAPSELECT_OK;
 	s_mapselect.accept.generic.callback  = MapSelect_MenuEvent;
@@ -1686,7 +1678,6 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.maplist.generic.y = 64;
 	s_mapselect.maplist.generic.ownerdraw = MapSelect_ScrollListDraw;
 	s_mapselect.maplist.columns = MAPLIST_COLUMNS;
-	s_mapselect.maplist.seperation = 2;
 	s_mapselect.maplist.height = MAPLIST_ROWS;
 	s_mapselect.maplist.width = 22;
     MapSelect_ScrollListInit(&s_mapselect.maplist);
@@ -1705,7 +1696,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 		y = 64 + (i / MAPGRID_COLUMNS) * colh; // offset by one button
 
 		s_mapselect.mappics[i].generic.type  = MTYPE_BITMAP;
-		s_mapselect.mappics[i].generic.name  = 0;
+		s_mapselect.mappics[i].string  = 0;
 		s_mapselect.mappics[i].generic.flags  = QMF_NODEFAULTINIT;
 		s_mapselect.mappics[i].generic.ownerdraw = MapSelect_DrawMapPic;
 		s_mapselect.mappics[i].generic.callback = MapSelect_MapSelectEvent;
@@ -1738,38 +1729,27 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.multisel.curvalue = (int)Com_Clamp(0,1, trap_Cvar_VariableValue("gui_map_multisel"));
 	s_mapselect.listview.curvalue = (int)Com_Clamp(0,1, trap_Cvar_VariableValue("gui_map_list"));
 
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	s_mapselect.logo.generic.type			= MTYPE_BITMAP;
-	s_mapselect.logo.generic.flags		= QMF_INACTIVE|QMF_HIGHLIGHT;
-	s_mapselect.logo.generic.x			= GUI_LOGO_X;
-	s_mapselect.logo.generic.y			= GUI_LOGO_Y;
-	s_mapselect.logo.width				= 64;
-	s_mapselect.logo.height				= 22;
-	s_mapselect.logo.focuspic 			= GUI_LOGO_NAME;
-	s_mapselect.logo.focuscolor 			= color_translucent;
-#endif
-
 	if(cl_language.integer == 0){
 	s_mapselect.banner.string        = "MAP SELECT";
-	s_mapselect.filter.generic.name = "Filter:";
+	s_mapselect.filter.string = "Filter:";
 	s_mapselect.filter.itemnames  = mapfilter_items;
-	s_mapselect.allmaps.generic.name = "All maps:";
-	s_mapselect.mapicons.generic.name = "Icons:";
+	s_mapselect.allmaps.string = "All maps:";
+	s_mapselect.mapicons.string = "Icons:";
 	s_mapselect.maplist.itemnames = s_mapselect.maplist_alias;
-	s_mapselect.multisel.generic.name = "Multi-select:";
-	s_mapselect.listview.generic.name = "List view:";
+	s_mapselect.multisel.string = "Multi-select:";
+	s_mapselect.listview.string = "List view:";
 	s_mapselect.mapicons.itemnames  = mapicons_items;
 	s_mapselect.maptype.string        = (char*)gametype_items[gametype];
 	}
 	if(cl_language.integer == 1){
 	s_mapselect.banner.string        = "ВЫБОР КАРТЫ";
-	s_mapselect.filter.generic.name = "Фильтр:";
+	s_mapselect.filter.string = "Фильтр:";
 	s_mapselect.filter.itemnames  = mapfilter_itemsru;
-	s_mapselect.allmaps.generic.name = "Все карты:";
-	s_mapselect.mapicons.generic.name = "Значки:";
+	s_mapselect.allmaps.string = "Все карты:";
+	s_mapselect.mapicons.string = "Значки:";
 	s_mapselect.maplist.itemnames = s_mapselect.maplist_alias;
-	s_mapselect.multisel.generic.name = "Мульти-выбор:";
-	s_mapselect.listview.generic.name = "Список:";
+	s_mapselect.multisel.string = "Мульти-выбор:";
+	s_mapselect.listview.string = "Список:";
 	s_mapselect.mapicons.itemnames  = mapicons_itemsru;
 	s_mapselect.maptype.string        = (char*)gametype_itemsru[gametype];
 	}
@@ -1803,11 +1783,6 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	MapSelect_SetNewMapPage();
 	MapSelect_SetMapTypeIcons();
-
-#ifndef NO_GUI_MINILOGO_SKIRMISH
-	if (random() < 0.1)
-		Menu_AddItem( &s_mapselect.menu, &s_mapselect.logo);
-#endif
 
 	UI_PushMenu( &s_mapselect.menu );
 }

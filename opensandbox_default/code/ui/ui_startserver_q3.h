@@ -90,19 +90,19 @@ typedef void (*CtrlCallback_t)(void * self, int event);
 
 // all the controls common to menus
 typedef struct commoncontrols_s {
-	menubitmap_s back;
-	menubitmap_s fight;
-	menubitmap_s server;
-	menubitmap_s weapon;
-	menubitmap_s items;
-	menubitmap_s maps;
-	menubitmap_s bots;
+	menuelement_s back;
+	menuelement_s fight;
+	menuelement_s server;
+	menuelement_s weapon;
+	menuelement_s items;
+	menuelement_s maps;
+	menuelement_s bots;
 
-	menutext_s servertext;
-	menutext_s itemtext;
-	menutext_s maptext;
-	menutext_s bottext;
-	menutext_s weapontext;
+	menuelement_s servertext;
+	menuelement_s itemtext;
+	menuelement_s maptext;
+	menuelement_s bottext;
+	menuelement_s weapontext;
 
 } commoncontrols_t;
 

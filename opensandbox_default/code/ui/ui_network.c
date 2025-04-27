@@ -56,16 +56,16 @@ static const char *rate_items[] = {
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menutext_s		graphics;
-	menutext_s		display;
-	menutext_s		sound;
-	menutext_s		network;
+	menuelement_s		graphics;
+	menuelement_s		display;
+	menuelement_s		sound;
+	menuelement_s		network;
 
-	menulist_s		rate;
+	menuelement_s		rate;
 
-	menubitmap_s	back;
+	menuelement_s	back;
 } networkOptionsInfo_t;
 
 static networkOptionsInfo_t	networkOptionsInfo;
@@ -216,10 +216,10 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	y = 240 - 1 * (BIGCHAR_HEIGHT+2);
 	networkOptionsInfo.rate.generic.type		= MTYPE_SPINCONTROL;
 	if(cl_language.integer == 0){
-	networkOptionsInfo.rate.generic.name		= "Data Rate:";
+	networkOptionsInfo.rate.string		= "Data Rate:";
 	}
 	if(cl_language.integer == 1){
-	networkOptionsInfo.rate.generic.name		= "Скорость Сети:";
+	networkOptionsInfo.rate.string		= "Скорость Сети:";
 	}
 	networkOptionsInfo.rate.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	networkOptionsInfo.rate.generic.callback	= UI_NetworkOptionsMenu_Event;
@@ -229,7 +229,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.rate.itemnames			= rate_items;
 
 	networkOptionsInfo.back.generic.type		= MTYPE_BITMAP;
-	networkOptionsInfo.back.generic.name		= ART_BACK0;
+	networkOptionsInfo.back.string		= ART_BACK0;
 	networkOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	networkOptionsInfo.back.generic.callback	= UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.back.generic.id			= ID_BACK;

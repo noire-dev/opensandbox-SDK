@@ -48,11 +48,11 @@ SAVE CONFIG MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
-	menubitmap_s	background;
-	menufield_s		savename;
-	menubitmap_s	back;
-	menubitmap_s	save;
+	menuelement_s		banner;
+	menuelement_s	background;
+	menuelement_s		savename;
+	menuelement_s	back;
+	menuelement_s	save;
 } saveMapEd_t;
 
 static saveMapEd_t		saveMapEd;
@@ -105,11 +105,11 @@ UI_saveMapEdMenu_SavenameDraw
 ===============
 */
 static void UI_saveMapEdMenu_SavenameDraw( void *self ) {
-	menufield_s		*f;
+	menuelement_s		*f;
 	int				style;
 	float			*color;
 
-	f = (menufield_s *)self;
+	f = (menuelement_s *)self;
 
 	if( f == Menu_ItemAtCursor( &saveMapEd.menu ) ) {
 		style = UI_LEFT|UI_PULSE|UI_SMALLFONT;
@@ -126,7 +126,7 @@ static void UI_saveMapEdMenu_SavenameDraw( void *self ) {
 	UI_DrawString( 320, 192, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey );
 	}
 	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
-	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color );
+	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
 }
 
 
@@ -155,7 +155,7 @@ static void UI_saveMapEdMenu_Init( void ) {
 	saveMapEd.banner.style				= UI_CENTER;
 
 	saveMapEd.background.generic.type		= MTYPE_BITMAP;
-	saveMapEd.background.generic.name		= ART_BACKGROUND;
+	saveMapEd.background.string		= ART_BACKGROUND;
 	saveMapEd.background.generic.flags		= QMF_INACTIVE;
 	saveMapEd.background.generic.x			= -10000000;
 	saveMapEd.background.generic.y			= -1000;
@@ -175,7 +175,7 @@ static void UI_saveMapEdMenu_Init( void ) {
 	saveMapEd.savename.generic.bottom		= 155+72 + SMALLCHAR_HEIGHT+2;
 
 	saveMapEd.back.generic.type		= MTYPE_BITMAP;
-	saveMapEd.back.generic.name		= ART_BACK0;
+	saveMapEd.back.string		= ART_BACK0;
 	saveMapEd.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveMapEd.back.generic.id			= ID_BACK;
 	saveMapEd.back.generic.callback	= UI_saveMapEdMenu_BackEvent;
@@ -186,7 +186,7 @@ static void UI_saveMapEdMenu_Init( void ) {
 	saveMapEd.back.focuspic			= ART_BACK1;
 
 	saveMapEd.save.generic.type		= MTYPE_BITMAP;
-	saveMapEd.save.generic.name		= ART_SAVE0;
+	saveMapEd.save.string		= ART_SAVE0;
 	saveMapEd.save.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveMapEd.save.generic.id			= ID_SAVE;
 	saveMapEd.save.generic.callback	= UI_saveMapEdMenu_SaveEvent;

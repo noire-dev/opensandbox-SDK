@@ -1648,6 +1648,10 @@ after the first ClientBegin, and after each respawn
 Initializes all non-persistant parts of playerState
 ============
 */
+void ClientSelectSpawn(gentity_t *ent) {
+
+}
+
 void ClientSpawn(gentity_t *ent) {
 	int		index;
 	vec3_t	spawn_origin, spawn_angles;

@@ -49,11 +49,11 @@ static char* specifyserver_artlist[] =
 typedef struct
 {
 	menuframework_s	menu;
-	menutext_s		banner;
-	menufield_s		domain;
-	menufield_s		port;
-	menubitmap_s	go;
-	menubitmap_s	back;
+	menuelement_s		banner;
+	menuelement_s		domain;
+	menuelement_s		port;
+	menuelement_s	go;
+	menuelement_s	back;
 } specifyserver_t;
 
 static specifyserver_t	s_specifyserver;
@@ -132,10 +132,10 @@ void SpecifyServer_MenuInit( void )
 
 	s_specifyserver.domain.generic.type       = MTYPE_FIELD;
 	if(cl_language.integer == 0){
-	s_specifyserver.domain.generic.name       = "Address:";
+	s_specifyserver.domain.string       = "Address:";
 	}
 	if(cl_language.integer == 1){
-	s_specifyserver.domain.generic.name       = "Адрес:";
+	s_specifyserver.domain.string       = "Адрес:";
 	}
 	s_specifyserver.domain.generic.flags      = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_specifyserver.domain.generic.x	      = 206;
@@ -145,10 +145,10 @@ void SpecifyServer_MenuInit( void )
 
 	s_specifyserver.port.generic.type       = MTYPE_FIELD;
 	if(cl_language.integer == 0){
-	s_specifyserver.port.generic.name	    = "Port:";
+	s_specifyserver.port.string	    = "Port:";
 	}
 	if(cl_language.integer == 1){
-	s_specifyserver.port.generic.name	    = "Порт:";
+	s_specifyserver.port.string	    = "Порт:";
 	}
 	s_specifyserver.port.generic.flags	    = QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NUMBERSONLY;
 	s_specifyserver.port.generic.x	        = 206;
@@ -157,7 +157,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.port.field.maxchars     = 5;
 
 	s_specifyserver.go.generic.type	    = MTYPE_BITMAP;
-	s_specifyserver.go.generic.name     = SPECIFYSERVER_FIGHT0;
+	s_specifyserver.go.string     = SPECIFYSERVER_FIGHT0;
 	s_specifyserver.go.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_specifyserver.go.generic.callback = SpecifyServer_Event;
 	s_specifyserver.go.generic.id	    = ID_SPECIFYSERVERGO;
@@ -168,7 +168,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.go.focuspic         = SPECIFYSERVER_FIGHT1;
 
 	s_specifyserver.back.generic.type	  = MTYPE_BITMAP;
-	s_specifyserver.back.generic.name     = SPECIFYSERVER_BACK0;
+	s_specifyserver.back.string     = SPECIFYSERVER_BACK0;
 	s_specifyserver.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_specifyserver.back.generic.callback = SpecifyServer_Event;
 	s_specifyserver.back.generic.id	      = ID_SPECIFYSERVERBACK;

@@ -44,7 +44,6 @@ typedef void (*voidfunc_f)(void);
 // in q_shared.h, but a UI only mod shouldn't really
 // be touching that file
 #define UI_MEDIUMFONT 0x000080
-#define PROP_MEDIUM_SIZE_SCALE	0.87
 
 
 // model screen position
@@ -61,9 +60,7 @@ typedef void (*voidfunc_f)(void);
 // map lists
 #define MAX_MAPS_LIST 1024
 
-
 // logo art, all are 128x32 but they view very well at 64x16
-// define NO_GUI_MINILOGO to remove 
 #define GUI_LOGO_POWERED "menu/assets/gui_powered"
 #define GUI_LOGO_ASSISTED "menu/assets/gui_assisted"
 #define GUI_LOGO_INCLUDE "menu/assets/gui_include"
@@ -74,20 +71,17 @@ typedef void (*voidfunc_f)(void);
 #define GUI_LOGO_X 570
 #define GUI_LOGO_Y 390
 
+#define	OSUI_MAX_ELEMENTS 99
+
+#define LST_SIMPLE 		0
+#define LST_ICONS 		1
+#define LST_GRID 		2
+
+#define AST_BACK 		0
+
 //
 // ui_main.c
 //
-
-extern	vmCvar_t 	cl_propsmallsizescale;
-extern	vmCvar_t 	cl_propheight;
-extern	vmCvar_t 	cl_propspacewidth;
-extern	vmCvar_t 	cl_propgapwidth;
-extern	vmCvar_t 	cl_smallcharwidth;
-extern	vmCvar_t 	cl_smallcharheight;
-extern	vmCvar_t 	cl_bigcharwidth;
-extern	vmCvar_t 	cl_bigcharheight;
-extern	vmCvar_t 	cl_giantcharwidth;
-extern	vmCvar_t 	cl_giantcharheight;
 
 //OpenSandbox Sandbox
 extern vmCvar_t	sb_private;
@@ -260,17 +254,22 @@ qboolean UI_IsValidCvar(const char* cvar);
 #define MAX_MENUITEMS			256
 
 #define MTYPE_NULL				0
-#define MTYPE_SLIDER			1	
-#define MTYPE_ACTION			2
-#define MTYPE_SPINCONTROL		3
-#define MTYPE_FIELD				4
-#define MTYPE_RADIOBUTTON		5
-#define MTYPE_BITMAP			6	
-#define MTYPE_TEXT				7
-#define MTYPE_SCROLLLIST		8
-#define MTYPE_PTEXT				9
-#define MTYPE_BTEXT				10
-#define MTYPE_UIOBJECT			11	
+
+#define MTYPE_BUTTON			1
+#define MTYPE_PICTURE			2
+#define MTYPE_MODEL				3
+#define MTYPE_SLIDER			4	
+#define MTYPE_ACTION			5
+#define MTYPE_SPINCONTROL		6
+#define MTYPE_FIELD				7
+#define MTYPE_RADIOBUTTON		8
+#define MTYPE_BITMAP			9	
+#define MTYPE_TEXT				10
+#define MTYPE_SCROLLLIST		11
+#define MTYPE_PTEXT				12
+#define MTYPE_BTEXT				13
+
+#define MTYPE_MAX				14
 
 #define QMF_BLINK				0x00000001
 #define QMF_SMALLFONT			0x00000002
@@ -302,46 +301,51 @@ qboolean UI_IsValidCvar(const char* cvar);
 // control event handler
 typedef void (*callbackFunc)(void* self, int event);
 
-typedef struct _tag_menuframework
-{
-	int	cursor;
-	int cursor_prev;
+typedef struct _tag_menuframework {
+	int			cursor;
+	int 		cursor_prev;
 
-	int	nitems;
-	void *items[MAX_MENUITEMS];
+	int			nitems;
+	void 		*items[MAX_MENUITEMS];
 
-	void (*draw) (void);
+	void 		(*draw)(void);
 	sfxHandle_t (*key) (int key);
 
 	qboolean	fullscreen;
 	qboolean	native;
 	int			uplimitscroll;
 	int			downlimitscroll;
-	int			number;
-	qboolean	showlogo;
 } menuframework_s;
 
-typedef struct
-{
-	int type;
-	const char *name;
-	char *text;
-	char *picn;
-	char *cmd;
-	int	id;
-	int x, y;
-	int left;
-	int	top;
-	int	right;
-	int	bottom;
-	float heightmod;
-	menuframework_s *parent;
-	int menuPosition;
-	unsigned flags;
+typedef struct {
+	int 			type;
+	int 			style;
+	qhandle_t		shader;
+	qhandle_t		model;
 
-	void (*callback)( void *self, int event );
-	void (*statusbar)( void *self );
-	void (*ownerdraw)( void *self );
+	//extended callback
+	void 			(*excallback)( void *self, int event );
+	int				excallbacktype;
+	char*			cmd;
+	char*			var;
+	void 			(*func)( void );
+
+	const char 		*name;
+	int				id;
+	int				callid;
+	int 			x, y;
+	int 			left;
+	int				top;
+	int				right;
+	int				bottom;
+	float 			heightmod;
+	menuframework_s *parent;
+	int 			menuPosition;
+	unsigned 		flags;
+
+	void 			(*callback)( void *self, int event );
+	void 			(*statusbar)( void *self );
+	void 			(*ownerdraw)( void *self );
 } menucommon_s;
 
 typedef struct {
@@ -352,157 +356,57 @@ typedef struct {
 	int		maxchars;
 } mfield_t;
 
-typedef struct
-{
-	menucommon_s	generic;
-	mfield_t		field;
-	float* 			color;
-} menufield_s;
+typedef struct botskill_s {
+	int low;
+	int high;
+	int value;
+	qboolean range;
+} botskill_t;
 
-typedef struct 
-{
-	menucommon_s generic;
-
-	float minvalue;
-	float maxvalue;
-	float curvalue;
-
-	float range;
-} menuslider_s;
-
-typedef struct
-{
-	menucommon_s generic;
-
-	int	oldvalue;
-	int curvalue;
-	int	numitems;
-	int	top;
-		
-	const char **itemnames;
-	const char **itemnames2;
-
-	int width;
-	int height;
-	int	columns;
-	int	seperation;
-	float* color;
-} menulist_s;
-
-typedef struct
-{
-	menucommon_s generic;
-} menuaction_s;
-
-typedef struct
-{
-	menucommon_s generic;
-	int curvalue;
-	float* color;
-} menuradiobutton_s;
-
-typedef struct
-{
-	menucommon_s	generic;
-	char*			focuspic;	
-	char*			errorpic;
-	qhandle_t		shader;
-	qhandle_t		focusshader;
-	int				width;
-	int				height;
-	float*			focuscolor;
-} menubitmap_s;
-
-typedef struct
-{
-	menucommon_s	generic;
-	qhandle_t		shader;
-	qhandle_t		model;
-	int				type;
-	int				mode;
-	int				width;
-	int				height;
-	char 			*string;
-	int				style;
-	int				styles;
-	float*			color;
-	float*			color2;
-	int				corner;
-	float			fontsize;
-	mfield_t		field;
-	
-	int	oldvalue;
-	int curvalue;
-	int	numitems;
-	int	top;
-	
-	const char **itemnames;
-	const char **itemnames2;
-
-	int	columns;
-	int	seperation;
-	
-	int minvalue;
-	int maxvalue;
-
-	float range;
-} menuobject_s;
-
-typedef struct
-{
-	//menutext_s
+typedef struct {
 	menucommon_s	generic;
 	char*			string;
 	int				style;
-	float			fontsize;
-	float*			color; //menuradiobutton_s, menulist_s, menufield_s
+	float			size;
+	float*			color;
+	float*			color2;
 
-	//menubitmap_s
 	char*			focuspic;	
 	char*			errorpic;
 	qhandle_t		shader;
 	qhandle_t		focusshader;
-	int				width; //menulist_s
-	int				height; //menulist_s
+	int				width;
+	int				height;
 	float*			focuscolor;
 
-	//menuradiobutton_s
-	int 			curvalue; //menulist_s, menuslider_s
+	int 			curvalue;
 
-	//menulist_s
 	int				oldvalue;
 	int				numitems;
 	int				top;
-		
 	const char 		**itemnames;
-	const char 		**itemnames2;
-
+	char*			list[1];
+	char			names[1];
 	int				columns;
-	int				seperation;
+	char 			*file;
+	char 			*extension;
 
-	//menuslider_s
 	float 			minvalue;
 	float 			maxvalue;
-
 	float 			range;
 
-	//menufield_s
 	mfield_t		field;
+
+	int				corner;
+	int				mode;
+
+	botskill_t* 	data;
 
 } menuelement_s;
 
-typedef struct
-{
-	menucommon_s	generic;
-	char*			string;
-	int				style;
-	float			customsize;
-	float*			color;
-} menutext_s;
-
 extern void			Menu_Cache( void );
 extern void			Menu_Focus( menucommon_s *m );
-extern void			Menu_AddItem( menuframework_s *menu, void *item );
+extern void			Menu_AddItem( menuframework_s *menu, menuelement_s *item );
 extern void			Menu_AdjustCursor( menuframework_s *menu, int dir );
 extern void			Menu_Draw( menuframework_s *menu );
 extern void			*Menu_ItemAtCursor( menuframework_s *m );
@@ -510,12 +414,12 @@ extern sfxHandle_t	Menu_ActivateItem( menuframework_s *s, menucommon_s* item );
 extern void			Menu_SetCursor( menuframework_s *s, int cursor );
 extern void			Menu_SetCursorToItem( menuframework_s *m, void* ptr );
 extern sfxHandle_t	Menu_DefaultKey( menuframework_s *s, int key );
-extern void			Bitmap_Init( menubitmap_s *b );
-extern void			Bitmap_Draw( menubitmap_s *b );
-extern void			UIObject_Init( menuobject_s *b );
-extern void			UIObject_Draw( menuobject_s *b );
-extern void			ScrollList_Draw( menulist_s *l );
-extern sfxHandle_t	ScrollList_Key( menulist_s *l, int key );
+extern void			Bitmap_Init( menuelement_s *b );
+extern void			Bitmap_Draw( menuelement_s *b );
+/*extern void			UIObject_Init( menuelement_s *b );
+extern void			UIObject_Draw( menuelement_s *b );*/
+extern void			ScrollList_Draw( menuelement_s *l );
+extern sfxHandle_t	ScrollList_Key( menuelement_s *l, int key );
 extern sfxHandle_t	menu_in_sound;
 extern sfxHandle_t	menu_move_sound;
 extern sfxHandle_t	menu_out_sound;
@@ -553,10 +457,10 @@ extern vec4_t		text_color_disabled;
 extern vec4_t		text_color_normal;
 extern vec4_t 		color_select_bluo;
 
-extern void PText_Init( menutext_s *b );
-extern void	ScrollList_Init( menulist_s *l );
-extern void	RadioButton_Init( menuradiobutton_s *rb );
-extern void	SpinControl_Init( menulist_s *s );
+extern void PText_Init( menuelement_s *b );
+extern void	ScrollList_Init( menuelement_s *l );
+extern void	RadioButton_Init( menuelement_s *rb );
+extern void	SpinControl_Init( menuelement_s *s );
 
 extern char	*ui_medalNames[];
 extern char	*ui_medalPicNames[];
@@ -574,16 +478,10 @@ extern void UI_AdvancedMenu_Cache( void );
 extern void			MField_Clear( mfield_t *edit );
 extern void			MField_KeyDownEvent( mfield_t *edit, int key );
 extern void			MField_CharEvent( mfield_t *edit, int ch );
-extern void			MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color );
-extern void			MField_DrawCustom( mfield_t *edit, int x, int y, int style, vec4_t color, float csize );
-extern void			MenuField_Init( menufield_s* m );
-extern void			MenuField_Draw( menufield_s *f );
-extern sfxHandle_t	MenuField_Key( menufield_s* m, int* key );
-
-//
-// ui_credits.c
-//
-extern void UI_CreditMenu( int num );
+extern void			MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float size );
+extern void			MenuField_Init( menuelement_s* m );
+extern void			MenuField_Draw( menuelement_s *f );
+extern sfxHandle_t	MenuField_Key( menuelement_s* m, int* key );
 
 //
 // ui_ingame.c
@@ -597,9 +495,8 @@ extern void UI_BotCommandMenu_f( void );
 // ui_confirm.c
 //
 extern void ConfirmMenu_Cache( void );
-extern void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) );
-extern void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void ), void (*action)( qboolean result ) );
-extern void UI_Message( const char **lines );
+extern void UI_ConfirmMenu( const char *question, void (*action)( qboolean result ) );
+extern void UI_ConfirmMenu_Style( const char *question, int style, void (*action)( qboolean result ) );
 
 //
 // ui_sandbox.c
@@ -609,7 +506,6 @@ extern void UI_SandboxMainMenu(void);
 //
 // ui_setup.c
 //
-extern void UI_SetupMenu_Cache( void );
 extern void UI_SetupMenu(void);
 
 //
@@ -693,7 +589,7 @@ extern int Clamp_Random(int range);
 extern void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize );
 extern void GUI_InGame_EnabledItems(void);
 extern void GUI_StartServer_RegisterDisableCvars(qboolean init);
-extern const char* GUI_DefaultIconFromGameType(int gametype);
+extern char* GUI_DefaultIconFromGameType(int gametype);
 
 //
 // ui_video.c
@@ -831,10 +727,10 @@ typedef struct {
 
 
 typedef struct {
-	menubitmap_s stop;
-	menubitmap_s pause;
-	menubitmap_s left;
-	menubitmap_s right;
+	menuelement_s stop;
+	menuelement_s pause;
+	menuelement_s left;
+	menuelement_s right;
 
 	float yaw;
 	int rotate;
@@ -854,7 +750,7 @@ typedef struct {
 	char team_headskin[MODELNAME_BUFFER];	// team head for 1.27
 	char team_legsskin[MODELNAME_BUFFER];	// head model for 1.27
 	
-	menubitmap_s bitmap;
+	menuelement_s bitmap;
 
 	modelRotate_t spin;
 
@@ -970,12 +866,11 @@ extern void			UI_FillRect( float x, float y, float width, float height, const fl
 extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
 extern void			UI_UpdateScreen( void );
 extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
-extern float		UI_ProportionalSizeScale( int style, float customsize );
-extern int			UI_ProportionalStringWidth( const char* str );
+extern int			UI_ProportionalStringWidth( const char* str, float size );
 extern void			UI_DrawString( int x, int y, const char* str, int style, vec4_t color );
-extern void			UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float csize, float width );
+extern void			UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float size, float width );
 extern void			UI_DrawChar( int x, int y, int ch, int style, vec4_t color );
-extern void			UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float csize );
+extern void			UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float size );
 extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
 extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
 extern qboolean		UI_IsFullscreen( void );
@@ -989,6 +884,9 @@ extern void			UI_Refresh( int time );
 extern void			UI_StartDemoLoop( void );
 extern qboolean		m_entersound;
 extern uiStatic_t	uis;
+
+extern void			UI_DrawPictureElement( float x, float y, float w, float h, const char* file );
+extern void 		UI_DrawModelElement( float x, float y, float w, float h, const char* model, int scale );
 
 //
 // ui_syscalls.c
@@ -1154,5 +1052,11 @@ void UI_saveMapEdMenu( void );
 
 void UI_MapCallVote( void );
 
+void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
+void UI_CTextButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
+void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid);
+void UI_FillList(menuelement_s* e, char* location, char* extension, char* names, int namesSize, char** configlist);
 
 #endif

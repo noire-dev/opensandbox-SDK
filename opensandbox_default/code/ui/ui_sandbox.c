@@ -60,20 +60,20 @@
 typedef struct
 {
 	menuframework_s	menu;
-	menubitmap_s	frame;
-	menutext_s		spawnobject;
-	menuradiobutton_s		priv;
-	menufield_s		grid;
-	menutext_s		savemap;
-	menutext_s		loadmap;
-	menutext_s		propstext;
-	menutext_s		classtext;
-	menufield_s		modif[PROPERTIES_NUM];
-	menuobject_s	list;
-	menuobject_s	classlist;
-	menuobject_s	texturelist;
-	menutext_s		tab[8];
-	menutext_s		ctab[10];
+	menuelement_s	frame;
+	menuelement_s		spawnobject;
+	menuelement_s		priv;
+	menuelement_s		grid;
+	menuelement_s		savemap;
+	menuelement_s		loadmap;
+	menuelement_s		propstext;
+	menuelement_s		classtext;
+	menuelement_s		modif[PROPERTIES_NUM];
+	menuelement_s	list;
+	menuelement_s	classlist;
+	menuelement_s	texturelist;
+	menuelement_s		tab[8];
+	menuelement_s		ctab[10];
 	
 	char			names[524288];
 	char			names2[524288];
@@ -479,44 +479,44 @@ static void SandboxMain_MenuDraw( void ) {
 
 	Menu_Draw( &s_sandboxmain.menu );
 	
-	s_sandboxmain.modif[0].generic.name           	= toolgun_toolset1.string;
-	s_sandboxmain.modif[1].generic.name          	= toolgun_toolset2.string;
-	s_sandboxmain.modif[2].generic.name          	= toolgun_toolset3.string;
-	s_sandboxmain.modif[3].generic.name           	= toolgun_toolset4.string;
-	s_sandboxmain.modif[4].generic.name           	= toolgun_toolset5.string;
-	s_sandboxmain.modif[5].generic.name          	= toolgun_toolset6.string;
-	s_sandboxmain.modif[6].generic.name          	= toolgun_toolset7.string;
-	s_sandboxmain.modif[7].generic.name           	= toolgun_toolset8.string;
-	s_sandboxmain.modif[8].generic.name          	= toolgun_toolset9.string;
-	s_sandboxmain.modif[9].generic.name           	= toolgun_toolset10.string;
-	s_sandboxmain.modif[10].generic.name           	= toolgun_toolset11.string;
-	s_sandboxmain.modif[11].generic.name          	= toolgun_toolset12.string;
-	s_sandboxmain.modif[12].generic.name          	= toolgun_toolset13.string;
-	s_sandboxmain.modif[13].generic.name           	= toolgun_toolset14.string;
-	s_sandboxmain.modif[14].generic.name           	= toolgun_toolset15.string;
-	s_sandboxmain.modif[15].generic.name          	= toolgun_toolset16.string;
-	s_sandboxmain.modif[16].generic.name          	= toolgun_toolset17.string;
-	s_sandboxmain.modif[17].generic.name           	= toolgun_toolset18.string;
+	s_sandboxmain.modif[0].string           	= toolgun_toolset1.string;
+	s_sandboxmain.modif[1].string          	= toolgun_toolset2.string;
+	s_sandboxmain.modif[2].string          	= toolgun_toolset3.string;
+	s_sandboxmain.modif[3].string           	= toolgun_toolset4.string;
+	s_sandboxmain.modif[4].string           	= toolgun_toolset5.string;
+	s_sandboxmain.modif[5].string          	= toolgun_toolset6.string;
+	s_sandboxmain.modif[6].string          	= toolgun_toolset7.string;
+	s_sandboxmain.modif[7].string           	= toolgun_toolset8.string;
+	s_sandboxmain.modif[8].string          	= toolgun_toolset9.string;
+	s_sandboxmain.modif[9].string           	= toolgun_toolset10.string;
+	s_sandboxmain.modif[10].string           	= toolgun_toolset11.string;
+	s_sandboxmain.modif[11].string          	= toolgun_toolset12.string;
+	s_sandboxmain.modif[12].string          	= toolgun_toolset13.string;
+	s_sandboxmain.modif[13].string           	= toolgun_toolset14.string;
+	s_sandboxmain.modif[14].string           	= toolgun_toolset15.string;
+	s_sandboxmain.modif[15].string          	= toolgun_toolset16.string;
+	s_sandboxmain.modif[16].string          	= toolgun_toolset17.string;
+	s_sandboxmain.modif[17].string           	= toolgun_toolset18.string;
 	
 	if(uis.sb_tab == STAB_NPC){
-		s_sandboxmain.modif[0].generic.name       		= "Skill:";
-		s_sandboxmain.modif[1].generic.name           	= "Health:";
-		s_sandboxmain.modif[2].generic.name          	= "Name:";
-		s_sandboxmain.modif[3].generic.name          	= "Music:";
-		s_sandboxmain.modif[4].generic.name           	= "Weapon(id):";
-		s_sandboxmain.modif[5].generic.name          	= "--------:";
-		s_sandboxmain.modif[6].generic.name          	= "--------:";
-		s_sandboxmain.modif[7].generic.name           	= "--------:";
-		s_sandboxmain.modif[8].generic.name          	= "--------:";
-		s_sandboxmain.modif[9].generic.name           	= "--------:";
-		s_sandboxmain.modif[10].generic.name           	= "--------:";
-		s_sandboxmain.modif[11].generic.name          	= "--------:";
-		s_sandboxmain.modif[12].generic.name          	= "--------:";
-		s_sandboxmain.modif[13].generic.name           	= "--------:";
-		s_sandboxmain.modif[14].generic.name           	= "--------:";
-		s_sandboxmain.modif[15].generic.name          	= "--------:";
-		s_sandboxmain.modif[16].generic.name          	= "--------:";
-		s_sandboxmain.modif[17].generic.name           	= "--------:";
+		s_sandboxmain.modif[0].string       		= "Skill:";
+		s_sandboxmain.modif[1].string           	= "Health:";
+		s_sandboxmain.modif[2].string          	= "Name:";
+		s_sandboxmain.modif[3].string          	= "Music:";
+		s_sandboxmain.modif[4].string           	= "Weapon(id):";
+		s_sandboxmain.modif[5].string          	= "--------:";
+		s_sandboxmain.modif[6].string          	= "--------:";
+		s_sandboxmain.modif[7].string           	= "--------:";
+		s_sandboxmain.modif[8].string          	= "--------:";
+		s_sandboxmain.modif[9].string           	= "--------:";
+		s_sandboxmain.modif[10].string           	= "--------:";
+		s_sandboxmain.modif[11].string          	= "--------:";
+		s_sandboxmain.modif[12].string          	= "--------:";
+		s_sandboxmain.modif[13].string           	= "--------:";
+		s_sandboxmain.modif[14].string           	= "--------:";
+		s_sandboxmain.modif[15].string          	= "--------:";
+		s_sandboxmain.modif[16].string          	= "--------:";
+		s_sandboxmain.modif[17].string           	= "--------:";
 	}
 }
 
@@ -703,8 +703,8 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.tab[7].string         = "Addons";
 	s_sandboxmain.savemap.string		= "Save map";
 	s_sandboxmain.loadmap.string		= "Load map";
-	s_sandboxmain.priv.generic.name		= "Private:";
-	s_sandboxmain.grid.generic.name		= "Grid size:";
+	s_sandboxmain.priv.string		= "Private:";
+	s_sandboxmain.grid.string		= "Grid size:";
 	
 	for (i = 0; i < 8; i++){
 	s_sandboxmain.tab[i].generic.type     	= MTYPE_PTEXT;
@@ -715,7 +715,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.tab[i].generic.y        	= 30;
 	s_sandboxmain.tab[i].color			    = s_sandboxmain_color1;
 	s_sandboxmain.tab[i].style			    = UI_CENTER;
-	s_sandboxmain.tab[i].customsize			= 0.5;
+	s_sandboxmain.tab[i].size			= 0.5;
 	s_sandboxmain.tab[i].generic.heightmod	= 1.05;
 	}
 
@@ -734,7 +734,7 @@ void SandboxMain_MenuInit( void ) {
     }
 	s_sandboxmain.ctab[i].color			    = s_sandboxmain_color1;
 	s_sandboxmain.ctab[i].style			    = UI_CENTER;
-	s_sandboxmain.ctab[i].customsize		= 0.5;
+	s_sandboxmain.ctab[i].size			= 0.5;
 	s_sandboxmain.ctab[i].generic.heightmod	= 1.05;
 	}
 	
@@ -796,12 +796,11 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.style					= UI_CENTER;
 
 	if(uis.sb_tab == STAB_CREATE){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 2;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 2;
 	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.list.string			= "props";
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
@@ -814,11 +813,10 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.configlist;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.texturelist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.texturelist.type				= 5;
-	s_sandboxmain.texturelist.styles			= 2;
+	s_sandboxmain.texturelist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.texturelist.generic.style			= 2;
 	s_sandboxmain.texturelist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
-	s_sandboxmain.texturelist.fontsize			= 1;
+	s_sandboxmain.texturelist.size				= 1;
 	s_sandboxmain.texturelist.corner			= 65;
 	s_sandboxmain.texturelist.generic.flags		= QMF_PULSEIFFOCUS;
 	s_sandboxmain.texturelist.generic.callback	= SandboxMain_MenuEvent;
@@ -850,10 +848,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string           		= "Create";
 	}
 	if(uis.sb_tab == STAB_ENTITIES){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 1;
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.list.generic.id		= ID_LIST;
@@ -866,12 +863,11 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.columns			= 1;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles			= 2;
+	s_sandboxmain.classlist.generic.type	= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style	= 2;
 	s_sandboxmain.classlist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.classlist.string			= "icons/classes";
-	s_sandboxmain.classlist.fontsize		= 1;
+	s_sandboxmain.classlist.size			= 1;
 	s_sandboxmain.classlist.corner			= 40;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
@@ -904,12 +900,11 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string           		= "Create";
 	}
 	if(uis.sb_tab == STAB_NPC){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 2;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 2;
 	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.list.string			= "bots";
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
@@ -922,10 +917,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.configlist;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 1;
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style		= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;
@@ -960,12 +954,11 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string           		= "Create";
 	}
 	if(uis.sb_tab == STAB_ITEMS){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 2;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 2;
 	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.list.string			= "";
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
@@ -978,10 +971,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.item_itemslist;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 1;
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style		= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;
@@ -1014,12 +1006,11 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string          		= "Give";
 	}
 	if(uis.sb_tab == STAB_LISTS){
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 2;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style		= 2;
 	s_sandboxmain.classlist.columns				= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.classlist.string 				= "spawnlists/icons";
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.corner				= 65;
 	s_sandboxmain.classlist.generic.flags		= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
@@ -1035,12 +1026,11 @@ void SandboxMain_MenuInit( void ) {
 		
 	UI_Free(s_sandboxmain.list.string);
 		
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 2;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 2;
 	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
 	s_sandboxmain.list.string 			= (char *)UI_Alloc(256);
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
@@ -1072,10 +1062,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string           		= "Create";
 	}
 	if(uis.sb_tab == STAB_SCRIPTS){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 0;
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style	= 0;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.list.generic.id		= ID_LIST;
@@ -1088,10 +1077,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.columns			= 1;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 1;
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style		= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;
@@ -1124,10 +1112,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string          		= "Execute";
 	}
 	if(uis.sb_tab == STAB_TOOLS){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 0;
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style			= 0;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.list.generic.id		= ID_LIST;
@@ -1140,10 +1127,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.columns			= 1;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 1;
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style				= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;
@@ -1176,10 +1162,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.spawnobject.string          		= "Select";
 	}
 	if(uis.sb_tab == STAB_ADDONS){
-	s_sandboxmain.list.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.list.type				= 5;
-	s_sandboxmain.list.styles			= 1;
-	s_sandboxmain.list.fontsize			= 1;
+	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.list.generic.style			= 1;
+	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.string			= "nsgui/icons";
 	s_sandboxmain.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.list.generic.callback	= SandboxMain_MenuEvent;
@@ -1193,10 +1178,9 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.columns			= 1;
 	s_sandboxmain.list.color			= s_sandboxmain_color1;
 	
-	s_sandboxmain.classlist.generic.type		= MTYPE_UIOBJECT;
-	s_sandboxmain.classlist.type				= 5;
-	s_sandboxmain.classlist.styles				= 1;
-	s_sandboxmain.classlist.fontsize			= 1;
+	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
+	s_sandboxmain.classlist.generic.style				= 1;
+	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.generic.flags	= QMF_PULSEIFFOCUS;
 	s_sandboxmain.classlist.generic.callback	= SandboxMain_MenuEvent;
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;

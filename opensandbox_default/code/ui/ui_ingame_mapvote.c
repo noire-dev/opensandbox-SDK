@@ -56,17 +56,17 @@
 typedef struct {
 	menuframework_s menu;
 
-	menubitmap_s 	frame;
-	menutext_s		banner;
+	menuelement_s 	frame;
+	menuelement_s		banner;
 
-	menubitmap_s 	callvote;
-	menubitmap_s 	cancel;
-	menulist_s 		maps;
-	menulist_s 		filter;
+	menuelement_s 	callvote;
+	menuelement_s 	cancel;
+	menuelement_s 		maps;
+	menuelement_s 		filter;
 
-	menubitmap_s 	arrows;
-	menubitmap_s 	up;
-	menubitmap_s 	down;
+	menuelement_s 	arrows;
+	menuelement_s 	up;
+	menuelement_s 	down;
 
 	// local data
 	int nummaps;
@@ -356,7 +356,7 @@ static void MapVote_MenuInit( void ) {
 
 	s_mapvote.frame.generic.type			= MTYPE_BITMAP;
 	s_mapvote.frame.generic.flags		= QMF_INACTIVE;
-	s_mapvote.frame.generic.name			= MAPVOTE_FRAME;
+	s_mapvote.frame.string			= MAPVOTE_FRAME;
 	s_mapvote.frame.generic.x			= 320-280;
 	s_mapvote.frame.generic.y			= 240-180;
 	s_mapvote.frame.width				= 560;
@@ -393,7 +393,7 @@ static void MapVote_MenuInit( void ) {
 
 	y = 180;
 	s_mapvote.arrows.generic.type  = MTYPE_BITMAP;
-	s_mapvote.arrows.generic.name  = ART_ARROWS;
+	s_mapvote.arrows.string  = ART_ARROWS;
 	s_mapvote.arrows.generic.flags = QMF_INACTIVE;
 	s_mapvote.arrows.generic.x	 = SCROLLBUTTONS_X;
 	s_mapvote.arrows.generic.y	 = y;
@@ -421,7 +421,7 @@ static void MapVote_MenuInit( void ) {
 	s_mapvote.down.focuspic = ART_ARROWDOWN;
 
 	s_mapvote.callvote.generic.type     = MTYPE_BITMAP;
-	s_mapvote.callvote.generic.name 	= ART_VOTE0;
+	s_mapvote.callvote.string 	= ART_VOTE0;
 	s_mapvote.callvote.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapvote.callvote.generic.callback = MapVote_Event;
 	s_mapvote.callvote.generic.id	    = ID_CALLVOTE;
@@ -432,7 +432,7 @@ static void MapVote_MenuInit( void ) {
 	s_mapvote.callvote.focuspic 		= ART_VOTE1;
 
 	s_mapvote.cancel.generic.type     = MTYPE_BITMAP;
-	s_mapvote.cancel.generic.name 	= ART_BACK0;
+	s_mapvote.cancel.string 	= ART_BACK0;
 	s_mapvote.cancel.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapvote.cancel.generic.callback = MapVote_Event;
 	s_mapvote.cancel.generic.id	    = ID_CANCEL;
@@ -449,11 +449,11 @@ static void MapVote_MenuInit( void ) {
 	s_mapvote.filter.generic.x			= 320;
 	s_mapvote.filter.generic.y			= 256 + 64 - SMALLCHAR_HEIGHT;
 	if(cl_language.integer == 0){
-	s_mapvote.filter.generic.name		= "Gametype:";
+	s_mapvote.filter.string		= "Gametype:";
 	s_mapvote.filter.itemnames			= filter_gametype_list;
 	}
 	if(cl_language.integer == 1){
-	s_mapvote.filter.generic.name		= "Режим игры:";
+	s_mapvote.filter.string		= "Режим игры:";
 	s_mapvote.filter.itemnames			= filter_gametype_listru;
 	}
 

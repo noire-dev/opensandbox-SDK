@@ -90,20 +90,20 @@ static vec4_t transparent_color = { 1.0, 1.0, 1.0, 0.7 };
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menubitmap_s	picbuttons[MAX_GRIDMODELSPERPAGE];
+	menuelement_s	picbuttons[MAX_GRIDMODELSPERPAGE];
 
-	menubitmap_s	arrows;
-	menubitmap_s	left;
-	menubitmap_s	right;
+	menuelement_s	arrows;
+	menuelement_s	left;
+	menuelement_s	right;
 
-	menubitmap_s	go;
-	menubitmap_s	back;
+	menuelement_s	go;
+	menuelement_s	back;
 
-	menulist_s		botlist; 	// only ever contains a screen full of information
-	menuradiobutton_s	viewlist;
-	menuradiobutton_s	multisel;
+	menuelement_s		botlist; 	// only ever contains a screen full of information
+	menuelement_s	viewlist;
+	menuelement_s	multisel;
 
 	int 			maxBotsPerPage;
 
@@ -752,9 +752,9 @@ static void UI_BotSelect_ScrollList_LineSize( int* charheight, int* charwidth, i
 {
 	float	scale;
 
-	scale = UI_ProportionalSizeScale(UI_SMALLFONT, 0);
+	scale = 1.00;
 
-	*charwidth = scale * UI_ProportionalStringWidth("X");
+	*charwidth = scale * UI_ProportionalStringWidth("X", 1.00);
 	*charheight = scale * PROP_HEIGHT;
 
 	if (*charheight > BOTLIST_ICONSIZE)
@@ -775,7 +775,7 @@ Implements the list box input, but with larger proportional fonts
 */
 static qboolean UI_BotSelect_HandleListKey( int key, sfxHandle_t* psfx)
 {
-	menulist_s* l;
+	menuelement_s* l;
 	int	x;
 	int	y;
 	int	w;
@@ -799,14 +799,14 @@ static qboolean UI_BotSelect_HandleListKey( int key, sfxHandle_t* psfx)
 			// check scroll region
 			x = l->generic.x;
 			y = l->generic.y;
-			w = ( (l->width + l->seperation) * l->columns - l->seperation) * charwidth;
+			w = ( l->width * l->columns) * charwidth;
 			if( l->generic.flags & QMF_CENTER_JUSTIFY ) {
 				x -= w / 2;
 			}
 			if (UI_CursorInRect( x, y, w, l->height*lineheight ))
 			{
 				cursorx = (uis.cursorx - x)/charwidth;
-				column = cursorx / (l->width + l->seperation);
+				column = cursorx / l->width;
 				cursory = (uis.cursory - y)/lineheight;
 				index = column * l->height + cursory;
 				if (l->top + index < l->numitems)
@@ -850,10 +850,10 @@ UI_BotSelect_Key
 */
 static sfxHandle_t UI_BotSelect_Key( int key )
 {
-	menulist_s	*l;
+	menuelement_s	*l;
 	sfxHandle_t sfx;
 
-	l = (menulist_s	*)Menu_ItemAtCursor( &botSelectInfo.menu );
+	l = (menuelement_s	*)Menu_ItemAtCursor( &botSelectInfo.menu );
 
 	sfx = menu_null_sound;
 	if( l == &botSelectInfo.botlist) {
@@ -875,7 +875,7 @@ static sfxHandle_t UI_BotSelect_Key( int key )
 UI_BotSelect_ScrollList_Init
 =================
 */
-static void UI_BotSelect_ScrollList_Init( menulist_s *l )
+static void UI_BotSelect_ScrollList_Init( menuelement_s *l )
 {
 	int		w;
 	int 	charwidth;
@@ -890,13 +890,9 @@ static void UI_BotSelect_ScrollList_Init( menulist_s *l )
 
 	if( !l->columns ) {
 		l->columns = 1;
-		l->seperation = 0;
-	}
-	else if( !l->seperation ) {
-		l->seperation = 3;
 	}
 
-	w = ( (l->width + l->seperation) * l->columns - l->seperation) * charwidth;
+	w = ( l->width * l->columns) * charwidth;
 
 	l->generic.left   =	l->generic.x;
 	l->generic.top    = l->generic.y;
@@ -926,7 +922,7 @@ static void UI_BotSelect_ScrollListDraw( void* ptr )
 	float*		color;
 	qboolean	hasfocus;
 	int			style;
-	menulist_s *l;
+	menuelement_s *l;
 	float	scale;
 	int 	charwidth;
 	int 	charheight;
@@ -937,7 +933,7 @@ static void UI_BotSelect_ScrollListDraw( void* ptr )
 
 	UI_BotSelect_ScrollList_LineSize(&charheight, &charwidth, &lineheight);
 
-	l = (menulist_s*)ptr;
+	l = (menuelement_s*)ptr;
 	hasfocus = (l->generic.parent->cursor == l->generic.menuPosition);
 
 	x =	l->generic.x;
@@ -1005,7 +1001,7 @@ static void UI_BotSelect_ScrollListDraw( void* ptr )
 
 			y += lineheight;
 		}
-		x += (l->width + l->seperation) * charwidth;
+		x += l->width * charwidth;
 	}
 }
 
@@ -1026,11 +1022,11 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 	vec4_t	tempcolor;
 	float*	color;
 	int 	index;
-	menubitmap_s* b;
+	menuelement_s* b;
 	int 	i;
 	int 	bot;
 
-	b = (menubitmap_s*)ptr;
+	b = (menuelement_s*)ptr;
 
 	//
 	// draw bot icon
@@ -1096,9 +1092,9 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 	}
 
 	// used to refresh shader
-	if (b->generic.name && !b->shader)
+	if (b->string && !b->shader)
 	{
-		b->shader = trap_R_RegisterShaderNoMip( b->generic.name );
+		b->shader = trap_R_RegisterShaderNoMip( b->string );
 		if (!b->shader && b->errorpic)
 			b->shader = trap_R_RegisterShaderNoMip( b->errorpic );
 	}
@@ -1223,7 +1219,6 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	botSelectInfo.botlist.generic.y = 60;
 	botSelectInfo.botlist.generic.ownerdraw = UI_BotSelect_ScrollListDraw;
 	botSelectInfo.botlist.columns = BOTLIST_COLS;
-	botSelectInfo.botlist.seperation = 2;
 	botSelectInfo.botlist.height = BOTLIST_ROWS;
 	botSelectInfo.botlist.width = 14;
 	botSelectInfo.botlist.itemnames = botSelectInfo.botalias;
@@ -1256,7 +1251,7 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	}
 
 	botSelectInfo.arrows.generic.type		= MTYPE_BITMAP;
-	botSelectInfo.arrows.generic.name		= BOTSELECT_ARROWS;
+	botSelectInfo.arrows.string		= BOTSELECT_ARROWS;
 	botSelectInfo.arrows.generic.flags		= QMF_INACTIVE;
 	botSelectInfo.arrows.generic.x			= 260;
 	botSelectInfo.arrows.generic.y			= 440;
@@ -1284,7 +1279,7 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	botSelectInfo.right.focuspic			= BOTSELECT_ARROWSR;
 
 	botSelectInfo.back.generic.type		= MTYPE_BITMAP;
-	botSelectInfo.back.generic.name		= BOTSELECT_BACK0;
+	botSelectInfo.back.string		= BOTSELECT_BACK0;
 	botSelectInfo.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.back.generic.callback	= UI_BotSelect_Event;
 	botSelectInfo.back.generic.id = ID_BOTSELECT_BACK;
@@ -1295,7 +1290,7 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	botSelectInfo.back.focuspic			= BOTSELECT_BACK1;
 
 	botSelectInfo.go.generic.type		= MTYPE_BITMAP;
-	botSelectInfo.go.generic.name		= BOTSELECT_ACCEPT0;
+	botSelectInfo.go.string		= BOTSELECT_ACCEPT0;
 	botSelectInfo.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.go.generic.callback	= UI_BotSelect_Event;
 	botSelectInfo.go.generic.id = ID_BOTSELECT_ACCEPT;
@@ -1307,13 +1302,13 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	
 	if(cl_language.integer == 0){
 	botSelectInfo.banner.string			= "SELECT BOT";
-	botSelectInfo.viewlist.generic.name = "View list:";
-	botSelectInfo.multisel.generic.name = "Multi-select:";
+	botSelectInfo.viewlist.string = "View list:";
+	botSelectInfo.multisel.string = "Multi-select:";
 	}
 	if(cl_language.integer == 1){
 	botSelectInfo.banner.string			= "ВЫБОР БОТА";
-	botSelectInfo.viewlist.generic.name = "Список:";
-	botSelectInfo.multisel.generic.name = "Мульти-выбор:";
+	botSelectInfo.viewlist.string = "Список:";
+	botSelectInfo.multisel.string = "Мульти-выбор:";
 	}
 
 	Menu_AddItem( &botSelectInfo.menu, &botSelectInfo.banner );

@@ -48,11 +48,11 @@ SAVE CONFIG MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
-	menubitmap_s	background;
-	menufield_s		savename;
-	menubitmap_s	back;
-	menubitmap_s	save;
+	menuelement_s		banner;
+	menuelement_s	background;
+	menuelement_s		savename;
+	menuelement_s	back;
+	menuelement_s	save;
 } saveConfig_t;
 
 static saveConfig_t		saveConfig;
@@ -100,11 +100,11 @@ UI_SaveConfigMenu_SavenameDraw
 ===============
 */
 static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
-	menufield_s		*f;
+	menuelement_s		*f;
 	int				style;
 	float			*color;
 
-	f = (menufield_s *)self;
+	f = (menuelement_s *)self;
 
 	if( f == Menu_ItemAtCursor( &saveConfig.menu ) ) {
 		style = UI_LEFT|UI_PULSE|UI_SMALLFONT;
@@ -121,7 +121,7 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 	UI_DrawString( 320, 192, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey );
 	}
 	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
-	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color );
+	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
 }
 
 
@@ -150,7 +150,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.banner.style				= UI_CENTER;
 
 	saveConfig.background.generic.type		= MTYPE_BITMAP;
-	saveConfig.background.generic.name		= ART_BACKGROUND;
+	saveConfig.background.string		= ART_BACKGROUND;
 	saveConfig.background.generic.flags		= QMF_INACTIVE;
 	saveConfig.background.generic.x			= 142;
 	saveConfig.background.generic.y			= 118;
@@ -170,7 +170,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.savename.generic.bottom		= 155+72 + SMALLCHAR_HEIGHT+2;
 
 	saveConfig.back.generic.type		= MTYPE_BITMAP;
-	saveConfig.back.generic.name		= ART_BACK0;
+	saveConfig.back.string		= ART_BACK0;
 	saveConfig.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.back.generic.id			= ID_BACK;
 	saveConfig.back.generic.callback	= UI_SaveConfigMenu_BackEvent;
@@ -181,7 +181,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.back.focuspic			= ART_BACK1;
 
 	saveConfig.save.generic.type		= MTYPE_BITMAP;
-	saveConfig.save.generic.name		= ART_SAVE0;
+	saveConfig.save.string		= ART_SAVE0;
 	saveConfig.save.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.save.generic.id			= ID_SAVE;
 	saveConfig.save.generic.callback	= UI_SaveConfigMenu_SaveEvent;

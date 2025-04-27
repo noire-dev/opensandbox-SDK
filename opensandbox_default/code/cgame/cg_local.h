@@ -1387,17 +1387,6 @@ extern	vmCvar_t	cg_effectsTime;
 extern	vmCvar_t	cg_effectsLimit;
 extern	vmCvar_t	cg_effectsGibs;
 
-extern	vmCvar_t 	cl_propsmallsizescale;
-extern	vmCvar_t 	cl_propheight;
-extern	vmCvar_t 	cl_propspacewidth;
-extern	vmCvar_t 	cl_propgapwidth;
-extern	vmCvar_t 	cl_smallcharwidth;
-extern	vmCvar_t 	cl_smallcharheight;
-extern	vmCvar_t 	cl_bigcharwidth;
-extern	vmCvar_t 	cl_bigcharheight;
-extern	vmCvar_t 	cl_giantcharwidth;
-extern	vmCvar_t 	cl_giantcharheight;
-
 extern	vmCvar_t	cg_gibjump;
 extern	vmCvar_t	cg_gibvelocity;
 

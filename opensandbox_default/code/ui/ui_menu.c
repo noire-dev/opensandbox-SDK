@@ -61,28 +61,26 @@ vec4_t color_translucent	= {1.0f, 1.0f, 1.0f, 0.2f};
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		workshop;
-    menubitmap_s	modloader;
-	menubitmap_s	link;
-	menubitmap_s	addonstoggle;
-	menutext_s		resume;
-	menutext_s		singleplayer;
-	menutext_s      skirmish;
-	menutext_s		multiplayer;
-	menutext_s		setup;
-	menutext_s		demos;
-	menutext_s		mods;
-	menutext_s		disconnect;
-	menutext_s		exit;
-	menutext_s		name;
-	menuobject_s	modlist;
+	menuelement_s		workshop;
+    menuelement_s	modloader;
+	menuelement_s	link;
+	menuelement_s	addonstoggle;
+	menuelement_s		resume;
+	menuelement_s		singleplayer;
+	menuelement_s      skirmish;
+	menuelement_s		multiplayer;
+	menuelement_s		setup;
+	menuelement_s		demos;
+	menuelement_s		mods;
+	menuelement_s		disconnect;
+	menuelement_s		exit;
+	menuelement_s		name;
+	menuelement_s	modlist;
 	
 	char			names[524288];
 	char*			configlist[524288];
 
-#ifndef NO_GUI_MINILOGO
-	menubitmap_s	logo;
-#endif
+	menuelement_s	logo;
 } mainmenu_t;
 
 
@@ -97,19 +95,6 @@ static errorMessage_t s_errorMessage;
 
 /*
 =================
-MainMenu_ExitAction
-=================
-*/
-static void MainMenu_ExitAction( qboolean result ) {
-	if( !result ) {
-		return;
-	}
-	UI_PopMenu();
-	UI_CreditMenu(0);
-}
-
-/*
-=================
 MainMenu_ReloadAction
 =================
 */
@@ -117,7 +102,7 @@ static void MainMenu_ReloadAction( qboolean result ) {
 	if( !result ) {
 		return;
 	}
-trap_Cmd_ExecuteText( EXEC_APPEND, "game_restart;" );
+	trap_Cmd_ExecuteText( EXEC_APPEND, "game_restart;" );
 }
 
 /*
@@ -135,10 +120,10 @@ static qboolean MainMenu_LoadScript( const char* filename )
 void MainMenu_ReloadGame( void )
 {
 	if(cl_language.integer == 0){
-	UI_ConfirmMenu( "RELOAD GAME?", 0, MainMenu_ReloadAction );
+	UI_ConfirmMenu( "RELOAD GAME?", MainMenu_ReloadAction );
 	}
 	if(cl_language.integer == 1){
-	UI_ConfirmMenu( "ПЕРЕЗАГРУЗИТЬ ИГРУ?", 0, MainMenu_ReloadAction );
+	UI_ConfirmMenu( "ПЕРЕЗАГРУЗИТЬ ИГРУ?", MainMenu_ReloadAction );
 	}
 }
 
@@ -217,7 +202,7 @@ void Main_MenuEvent (void* ptr, int event) {
 		break;
 
 	case ID_EXIT:
-		UI_CreditMenu(0);
+		trap_Cmd_ExecuteText( EXEC_APPEND,"quit\n" );
 		break;
 	case ID_TOGGLEADDONS:
 	if(!uis.addonsdraw){
@@ -296,8 +281,6 @@ void UI_MainMenu( void ) {
 	int		len;
 	char	*configname;
 
-	//trap_Cvar_Set( "sv_killserver", "1" );
-
 	memset( &s_main, 0 ,sizeof(mainmenu_t) );
 	memset( &s_errorMessage, 0 ,sizeof(errorMessage_t) );
 
@@ -309,8 +292,7 @@ void UI_MainMenu( void ) {
 	{	
 		s_errorMessage.menu.draw = Main_MenuDraw;
 		s_errorMessage.menu.key = ErrorMessage_Key;
-		s_errorMessage.menu.fullscreen = qtrue;
-		s_errorMessage.menu.showlogo = qtrue;		
+		s_errorMessage.menu.fullscreen = qtrue;	
 
 		trap_Key_SetCatcher( KEYCATCH_UI );
 		uis.menusp = 0;
@@ -319,14 +301,13 @@ void UI_MainMenu( void ) {
 		return;
 	}
 
-	sizeScale = UI_ProportionalSizeScale( UI_SMALLFONT, 0 );
+	sizeScale = 1.00;
 	style = UI_CENTER | UI_DROPSHADOW;
 
 	MainMenu_Cache();
 
 	s_main.menu.draw = Main_MenuDraw;
 	s_main.menu.fullscreen = qtrue;
-	s_main.menu.showlogo = qtrue;
 	s_main.menu.native = qfalse;
 
 	s_main.modloader.generic.type		= MTYPE_BITMAP;
@@ -495,7 +476,6 @@ void UI_MainMenu( void ) {
     s_main.exit.string			    	= "Выйти";
 	}
 
-#ifndef NO_GUI_MINILOGO
 	s_main.logo.generic.type			= MTYPE_BITMAP;
 	s_main.logo.generic.flags		= QMF_INACTIVE|QMF_HIGHLIGHT;
 	s_main.logo.generic.x			= 58 - uis.wideoffset;
@@ -505,19 +485,17 @@ void UI_MainMenu( void ) {
 	s_main.logo.focuspic 			= GUI_LOGO_NAME;
 
 	Menu_AddItem( &s_main.menu,	&s_main.logo);
-#endif
 
-	s_main.modloader.generic.name		= MODLOADER;
+	s_main.modloader.string		= MODLOADER;
 	s_main.modloader.focuspic			= MODLOADER;
-	s_main.link.generic.name			= LINK;
+	s_main.link.string			= LINK;
 	s_main.link.focuspic				= LINK;	
-	s_main.addonstoggle.generic.name	= M_ADDONSTOGGLE;
+	s_main.addonstoggle.string	= M_ADDONSTOGGLE;
 	s_main.addonstoggle.focuspic		= M_ADDONSTOGGLE;
 
-	s_main.modlist.generic.type			= MTYPE_UIOBJECT;
-	s_main.modlist.type					= 5;
-	s_main.modlist.styles				= 1;
-	s_main.modlist.fontsize				= 1.25;
+	s_main.modlist.generic.type			= MTYPE_SCROLLLIST;
+	s_main.modlist.generic.style		= 1;
+	s_main.modlist.size					= 1.25;
 	s_main.modlist.string				= "nsgui/icons";
 	s_main.modlist.generic.flags		= QMF_PULSEIFFOCUS;
 	s_main.modlist.generic.callback		= Main_MenuEvent;
@@ -532,7 +510,7 @@ void UI_MainMenu( void ) {
 	s_main.modlist.color				= color_white;
 	
 	if (!s_main.modlist.numitems) {
-		strcpy(s_main.names,"No addons");
+		strcpy(s_main.names,"Empty");
 		s_main.modlist.numitems = 1;
 	}
 	else if (s_main.modlist.numitems > 65536)

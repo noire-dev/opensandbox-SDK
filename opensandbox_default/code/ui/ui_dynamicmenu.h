@@ -31,9 +31,6 @@
 #define PT_EXCLUDEGRANDPARENT	32
 #define PT_ALL					64
 
-
-
-
 typedef void (*createHandler)(void);
 typedef void (*eventHandler)(int index);
 

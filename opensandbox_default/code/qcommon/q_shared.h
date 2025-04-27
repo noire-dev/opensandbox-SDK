@@ -140,14 +140,8 @@ typedef enum {
 	ERR_NEED_CD					// pop up the need-cd dialog
 } errorParm_t;
 
-// font rendering values used by ui and cgame
-#define PROP_GAP_WIDTH			cl_propgapwidth.integer
-#define PROP_SPACE_WIDTH		8
-#define PROP_HEIGHT				cl_propheight.integer
-#define PROP_SMALL_SIZE_SCALE	cl_propsmallsizescale.value
-
-#define BLINK_DIVISOR			200
-#define PULSE_DIVISOR			60
+#define BLINK_DIVISOR			100
+#define PULSE_DIVISOR			30
 
 #define UI_LEFT			0x00000000	// default
 #define UI_CENTER		0x00000001
@@ -214,17 +208,19 @@ extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 #define	SCREEN_WIDTH		640
 #define	SCREEN_HEIGHT		480
 
-#define TINYCHAR_WIDTH		(cl_smallcharwidth.integer*0.80)
-#define TINYCHAR_HEIGHT		(cl_smallcharheight.integer*0.80)
+#define TINYCHAR_WIDTH		6
+#define TINYCHAR_HEIGHT		8
 
-#define SMALLCHAR_WIDTH		cl_smallcharwidth.integer
-#define SMALLCHAR_HEIGHT	cl_smallcharheight.integer
+#define SMALLCHAR_WIDTH		9
+#define SMALLCHAR_HEIGHT	11
 
-#define BIGCHAR_WIDTH		cl_bigcharwidth.integer
-#define BIGCHAR_HEIGHT		cl_bigcharheight.integer
+#define BIGCHAR_WIDTH		12
+#define BIGCHAR_HEIGHT		12
 
-#define	GIANTCHAR_WIDTH		cl_giantcharwidth.integer
-#define	GIANTCHAR_HEIGHT	cl_giantcharheight.integer
+#define	GIANTCHAR_WIDTH		20
+#define	GIANTCHAR_HEIGHT	32
+
+#define PROP_HEIGHT				16
 
 extern	vec4_t		colorBlack;
 extern	vec4_t		colorRed;

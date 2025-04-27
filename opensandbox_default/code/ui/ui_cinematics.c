@@ -44,16 +44,16 @@
 
 typedef struct {
 	menuframework_s	menu;
-	menutext_s		banner;
-	menutext_s		cin_idlogo;
-	menutext_s		cin_intro;
-	menutext_s		cin_tier1;
-	menutext_s		cin_tier2;
-	menutext_s		cin_tier3;
-	menutext_s		cin_tier4;
-	menutext_s		cin_tier5;
-	menutext_s		cin_tier6;
-	menubitmap_s	back;
+	menuelement_s		banner;
+	menuelement_s		cin_idlogo;
+	menuelement_s		cin_intro;
+	menuelement_s		cin_tier1;
+	menuelement_s		cin_tier2;
+	menuelement_s		cin_tier3;
+	menuelement_s		cin_tier4;
+	menuelement_s		cin_tier5;
+	menuelement_s		cin_tier6;
+	menuelement_s	back;
 } cinematicsMenuInfo_t;
 
 static cinematicsMenuInfo_t	cinematicsMenuInfo;
@@ -255,7 +255,7 @@ static void UI_CinematicsMenu_Init( int load ) {
 	
 
 	cinematicsMenuInfo.back.generic.type		= MTYPE_BITMAP;
-	cinematicsMenuInfo.back.generic.name		= ART_BACK0;
+	cinematicsMenuInfo.back.string		= ART_BACK0;
 	cinematicsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cinematicsMenuInfo.back.generic.id			= ID_BACK;
 	cinematicsMenuInfo.back.generic.callback	= UI_CinematicsMenu_BackEvent;

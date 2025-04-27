@@ -42,12 +42,12 @@
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menulist_s		list;
+	menuelement_s		list;
 
-	menubitmap_s	back;
-	menubitmap_s	go;
+	menuelement_s	back;
+	menuelement_s	go;
 
 	char			description[NAMEBUFSIZE];
 	char			fs_game[GAMEBUFSIZE];
@@ -60,7 +60,6 @@ typedef struct {
 } mods_t;
 
 static mods_t	s_mods;
-
 
 /*
 ===============
@@ -204,7 +203,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.banner.style				= UI_CENTER;
 
 	s_mods.back.generic.type		= MTYPE_BITMAP;
-	s_mods.back.generic.name		= ART_BACK0;
+	s_mods.back.string		= ART_BACK0;
 	s_mods.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mods.back.generic.id			= ID_BACK;
 	s_mods.back.generic.callback	= UI_Mods_MenuEvent;
@@ -215,7 +214,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.back.focuspic			= ART_BACK1;
 
 	s_mods.go.generic.type			= MTYPE_BITMAP;
-	s_mods.go.generic.name			= ART_FIGHT0;
+	s_mods.go.string			= ART_FIGHT0;
 	s_mods.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mods.go.generic.id			= ID_GO;
 	s_mods.go.generic.callback		= UI_Mods_MenuEvent;
@@ -232,6 +231,8 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.list.generic.id			= ID_LIST;
 	s_mods.list.generic.x			= 320;
 	s_mods.list.generic.y			= 130;
+	s_mods.list.generic.style		= 0;
+	s_mods.list.columns				= 1;
 	s_mods.list.width				= 48;
 	s_mods.list.height				= 14;
 

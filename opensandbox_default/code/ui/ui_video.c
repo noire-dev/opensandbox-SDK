@@ -50,8 +50,8 @@ static char* driverinfo_artlist[] =
 typedef struct
 {
 	menuframework_s	menu;
-	menutext_s		banner;
-	menubitmap_s	back;
+	menuelement_s		banner;
+	menuelement_s	back;
 	char			stringbuff[1024];
 	char*			strings[64];
 	int				numstrings;
@@ -154,7 +154,7 @@ static void UI_DriverInfo_Menu( void )
 	s_driverinfo.banner.style	      = UI_CENTER;
 
 	s_driverinfo.back.generic.type	   = MTYPE_BITMAP;
-	s_driverinfo.back.generic.name     = DRIVERINFO_BACK0;
+	s_driverinfo.back.string     = DRIVERINFO_BACK0;
 	s_driverinfo.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_driverinfo.back.generic.callback = DriverInfo_Event;
 	s_driverinfo.back.generic.id	   = ID_DRIVERINFOBACK;
@@ -226,32 +226,32 @@ GRAPHICS OPTIONS MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menutext_s		graphics;
-	menutext_s		display;
-	menutext_s		sound;
-	menutext_s		network;
+	menuelement_s		graphics;
+	menuelement_s		display;
+	menuelement_s		sound;
+	menuelement_s		network;
 
-	menulist_s		list;
-        menulist_s              ratio;
-	menulist_s		mode;
-	menulist_s		detail;
-	menuslider_s	tq;
-	menulist_s  	fs;
-	menulist_s  	envlevel;
-        menulist_s  	postfx;
-	menulist_s  	allow_extensions;
-	menulist_s  	texturebits;
-	menulist_s  	bloomlevel;
-	menulist_s  	filter;
-        menulist_s  	aniso;
-        menulist_s  	aniso2;
-	menulist_s  	hdr;
-	menutext_s		driverinfo;
+	menuelement_s		list;
+        menuelement_s              ratio;
+	menuelement_s		mode;
+	menuelement_s		detail;
+	menuelement_s	tq;
+	menuelement_s  	fs;
+	menuelement_s  	envlevel;
+        menuelement_s  	postfx;
+	menuelement_s  	allow_extensions;
+	menuelement_s  	texturebits;
+	menuelement_s  	bloomlevel;
+	menuelement_s  	filter;
+        menuelement_s  	aniso;
+        menuelement_s  	aniso2;
+	menuelement_s  	hdr;
+	menuelement_s		driverinfo;
 
-	menubitmap_s	apply;
-	menubitmap_s	back;
+	menuelement_s	apply;
+	menuelement_s	back;
 } graphicsoptions_t;
 
 typedef struct
@@ -1099,7 +1099,7 @@ void GraphicsOptions_MenuInit( void )
 	y += BIGCHAR_HEIGHT+2;
 
 	s_graphicsoptions.back.generic.type	    = MTYPE_BITMAP;
-	s_graphicsoptions.back.generic.name     = GRAPHICSOPTIONS_BACK0;
+	s_graphicsoptions.back.string     = GRAPHICSOPTIONS_BACK0;
 	s_graphicsoptions.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_graphicsoptions.back.generic.callback = GraphicsOptions_Event;
 	s_graphicsoptions.back.generic.id	    = ID_BACK2;
@@ -1110,7 +1110,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.back.focuspic         = GRAPHICSOPTIONS_BACK1;
 
 	s_graphicsoptions.apply.generic.type     = MTYPE_BITMAP;
-	s_graphicsoptions.apply.generic.name     = GRAPHICSOPTIONS_ACCEPT0;
+	s_graphicsoptions.apply.string     = GRAPHICSOPTIONS_ACCEPT0;
 	s_graphicsoptions.apply.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_HIDDEN|QMF_INACTIVE;
 	s_graphicsoptions.apply.generic.callback = GraphicsOptions_ApplyChanges;
 	s_graphicsoptions.apply.generic.x        = 640 + uis.wideoffset;
@@ -1126,32 +1126,32 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "DISPLAY";
 	s_graphicsoptions.sound.string				= "SOUND";
 	s_graphicsoptions.network.string			= "NETWORK";
-	s_graphicsoptions.list.generic.name     = "Realistic rendering:";
+	s_graphicsoptions.list.string     = "Realistic rendering:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_names;
-	s_graphicsoptions.detail.generic.name  = "Level of Detail:";
+	s_graphicsoptions.detail.string  = "Level of Detail:";
 	s_graphicsoptions.detail.itemnames     = s_detail_names;
-	s_graphicsoptions.allow_extensions.generic.name	    = "GL Extensions:";
+	s_graphicsoptions.allow_extensions.string	    = "GL Extensions:";
 	s_graphicsoptions.allow_extensions.itemnames        = enabled_names;
-	s_graphicsoptions.ratio.generic.name     = "Aspect Ratio:";
-	s_graphicsoptions.mode.generic.name     = "Window resolution:";
-	s_graphicsoptions.fs.generic.name	  = "Fullscreen:";
+	s_graphicsoptions.ratio.string     = "Aspect Ratio:";
+	s_graphicsoptions.mode.string     = "Window resolution:";
+	s_graphicsoptions.fs.string	  = "Fullscreen:";
 	s_graphicsoptions.fs.itemnames	      = enabled_names;
-	s_graphicsoptions.envlevel.generic.name	 = "Effects level:";
+	s_graphicsoptions.envlevel.string	 = "Effects level:";
 	s_graphicsoptions.envlevel.itemnames     = envlevel_names;
-	s_graphicsoptions.postfx.generic.name	  = "Post-processing:";
+	s_graphicsoptions.postfx.string	  = "Post-processing:";
 	s_graphicsoptions.postfx.itemnames	      = enabled_names;
-	s_graphicsoptions.hdr.generic.name	  = "HDR:";
+	s_graphicsoptions.hdr.string	  = "HDR:";
 	s_graphicsoptions.hdr.itemnames	      = enabled_names;
-	s_graphicsoptions.bloomlevel.generic.name	 = "Bloom level:";
+	s_graphicsoptions.bloomlevel.string	 = "Bloom level:";
 	s_graphicsoptions.bloomlevel.itemnames     = quality_names;
-	s_graphicsoptions.tq.generic.name	= "Texture Detail:";
-	s_graphicsoptions.texturebits.generic.name	= "Texture Quality:";
+	s_graphicsoptions.tq.string	= "Texture Detail:";
+	s_graphicsoptions.texturebits.string	= "Texture Quality:";
 	s_graphicsoptions.texturebits.itemnames     = tq_names;
-	s_graphicsoptions.filter.generic.name	= "Texture Filter:";
+	s_graphicsoptions.filter.string	= "Texture Filter:";
 	s_graphicsoptions.filter.itemnames      = filter_names;
-	s_graphicsoptions.aniso.generic.name	= "Anisotropy:";
+	s_graphicsoptions.aniso.string	= "Anisotropy:";
 	s_graphicsoptions.aniso.itemnames      = aniso_names;
-	s_graphicsoptions.aniso2.generic.name	= "Anti-Aliasing:";
+	s_graphicsoptions.aniso2.string	= "Anti-Aliasing:";
 	s_graphicsoptions.aniso2.itemnames      = aniso_names;
 	s_graphicsoptions.driverinfo.string           = "Driver Info";	
 	}
@@ -1162,32 +1162,32 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.display.string			= "ЭКРАН";
 	s_graphicsoptions.sound.string				= "ЗВУК";
 	s_graphicsoptions.network.string			= "СЕТЬ";
-	s_graphicsoptions.list.generic.name     = "Реалистичный рендеринг:";
+	s_graphicsoptions.list.string     = "Реалистичный рендеринг:";
 	s_graphicsoptions.list.itemnames        = s_graphics_options_namesru;
-	s_graphicsoptions.detail.generic.name  = "Уровень детализации:";
+	s_graphicsoptions.detail.string  = "Уровень детализации:";
 	s_graphicsoptions.detail.itemnames     = s_detail_namesru;
-	s_graphicsoptions.allow_extensions.generic.name	    = "GL Расширения:";
+	s_graphicsoptions.allow_extensions.string	    = "GL Расширения:";
 	s_graphicsoptions.allow_extensions.itemnames        = enabled_namesru;
-	s_graphicsoptions.ratio.generic.name     = "Соотношение Сторон:";
-	s_graphicsoptions.mode.generic.name     = "Разрешение окна:";
-	s_graphicsoptions.fs.generic.name	  = "Полный экран:";
+	s_graphicsoptions.ratio.string     = "Соотношение Сторон:";
+	s_graphicsoptions.mode.string     = "Разрешение окна:";
+	s_graphicsoptions.fs.string	  = "Полный экран:";
 	s_graphicsoptions.fs.itemnames	      = enabled_namesru;
-	s_graphicsoptions.envlevel.generic.name	 = "Уровень эффектов:";
+	s_graphicsoptions.envlevel.string	 = "Уровень эффектов:";
 	s_graphicsoptions.envlevel.itemnames     = envlevel_namesru;
-	s_graphicsoptions.postfx.generic.name	  = "Пост-обработка:";
+	s_graphicsoptions.postfx.string	  = "Пост-обработка:";
 	s_graphicsoptions.postfx.itemnames	      = enabled_namesru;
-	s_graphicsoptions.hdr.generic.name	  = "HDR:";
+	s_graphicsoptions.hdr.string	  = "HDR:";
 	s_graphicsoptions.hdr.itemnames	      = enabled_namesru;
-	s_graphicsoptions.bloomlevel.generic.name	 = "Сила свечения:";
+	s_graphicsoptions.bloomlevel.string	 = "Сила свечения:";
 	s_graphicsoptions.bloomlevel.itemnames     = quality_namesru;
-	s_graphicsoptions.tq.generic.name	= "Детализация текстур:";
-	s_graphicsoptions.texturebits.generic.name	= "Качество текстур:";
+	s_graphicsoptions.tq.string	= "Детализация текстур:";
+	s_graphicsoptions.texturebits.string	= "Качество текстур:";
 	s_graphicsoptions.texturebits.itemnames     = tq_namesru;
-	s_graphicsoptions.filter.generic.name	= "Текстурный фильтр:";
+	s_graphicsoptions.filter.string	= "Текстурный фильтр:";
 	s_graphicsoptions.filter.itemnames      = filter_namesru;
-	s_graphicsoptions.aniso.generic.name	= "Анизотропная фильтрация:";
+	s_graphicsoptions.aniso.string	= "Анизотропная фильтрация:";
 	s_graphicsoptions.aniso.itemnames      = aniso_namesru;
-	s_graphicsoptions.aniso2.generic.name	= "Сглаживание:";
+	s_graphicsoptions.aniso2.string	= "Сглаживание:";
 	s_graphicsoptions.aniso2.itemnames      = aniso_namesru;
 	s_graphicsoptions.driverinfo.string           = "Информация о драйвере";	
 	}

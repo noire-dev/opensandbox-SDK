@@ -59,16 +59,16 @@ LOAD CONFIG MENU
 typedef struct {
 	menuframework_s	menu;
 
-	menutext_s		banner;
+	menuelement_s		banner;
 
-	menuobject_s	list;
+	menuelement_s	list;
 
-	menubitmap_s	arrows;
-	menubitmap_s	left;
-	menubitmap_s	right;
-	menubitmap_s	back;
-	menubitmap_s	go;
-	menubitmap_s	background;
+	menuelement_s	arrows;
+	menuelement_s	left;
+	menuelement_s	right;
+	menuelement_s	back;
+	menuelement_s	go;
+	menuelement_s	background;
 
 	char			names[524288];
 	char*			configlist[65536];
@@ -99,11 +99,11 @@ static void loadMapEd_MenuEvent( void *ptr, int event ) {
 		break;
 
 	case ID_LEFT:
-		UIObject_Key( &s_loadMapEd.list, K_LEFTARROW );
+		ScrollList_Key( &s_loadMapEd.list, K_LEFTARROW );
 		break;
 
 	case ID_RIGHT:
-		UIObject_Key( &s_loadMapEd.list, K_RIGHTARROW );
+		ScrollList_Key( &s_loadMapEd.list, K_RIGHTARROW );
 		break;
 	}
 }
@@ -138,7 +138,7 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.banner.style			= UI_CENTER;
 	
 	s_loadMapEd.background.generic.type		= MTYPE_BITMAP;
-	s_loadMapEd.background.generic.name		= ART_BACKGROUND;
+	s_loadMapEd.background.string		= ART_BACKGROUND;
 	s_loadMapEd.background.generic.flags		= QMF_INACTIVE;
 	s_loadMapEd.background.generic.x			= -10000000;
 	s_loadMapEd.background.generic.y			= -1000;
@@ -146,7 +146,7 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.background.height			= 33200000;
 
 	s_loadMapEd.arrows.generic.type	= MTYPE_BITMAP;
-	s_loadMapEd.arrows.generic.name	= ART_ARROWS;
+	s_loadMapEd.arrows.string	= ART_ARROWS;
 	s_loadMapEd.arrows.generic.flags	= QMF_INACTIVE;
 	s_loadMapEd.arrows.generic.x		= 320-ARROWS_WIDTH/2;
 	s_loadMapEd.arrows.generic.y		= 400;
@@ -174,7 +174,7 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.right.focuspic		= ART_ARROWRIGHT;
 
 	s_loadMapEd.back.generic.type		= MTYPE_BITMAP;
-	s_loadMapEd.back.generic.name		= ART_BACK0;
+	s_loadMapEd.back.string		= ART_BACK0;
 	s_loadMapEd.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_loadMapEd.back.generic.id		= ID_BACK;
 	s_loadMapEd.back.generic.callback	= loadMapEd_MenuEvent;
@@ -185,7 +185,7 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.back.focuspic			= ART_BACK1;
 
 	s_loadMapEd.go.generic.type		= MTYPE_BITMAP;
-	s_loadMapEd.go.generic.name		= ART_FIGHT0;
+	s_loadMapEd.go.string		= ART_FIGHT0;
 	s_loadMapEd.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_loadMapEd.go.generic.id			= ID_GO;
 	s_loadMapEd.go.generic.callback	= loadMapEd_MenuEvent;
@@ -196,10 +196,9 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.go.focuspic			= ART_FIGHT1;
 
 	// scan for configs
-	s_loadMapEd.list.generic.type			= MTYPE_UIOBJECT;
-	s_loadMapEd.list.type					= 5;
-	s_loadMapEd.list.styles					= 2;
-	s_loadMapEd.list.fontsize				= 1;
+	s_loadMapEd.list.generic.type			= MTYPE_SCROLLLIST;
+	s_loadMapEd.list.generic.style			= 2;
+	s_loadMapEd.list.size					= 1;
 	s_loadMapEd.list.string					= "screenshots/maps/";
 	s_loadMapEd.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_loadMapEd.list.generic.callback	= loadMapEd_MenuEvent;

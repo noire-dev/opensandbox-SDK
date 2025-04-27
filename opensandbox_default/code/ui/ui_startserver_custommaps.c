@@ -89,7 +89,7 @@ static vec4_t shadow_color = {0.0, 0.0, 0.0, 1.0 };
 
 
 
-static const char* maptype_icon[NUM_GAMETYPES] = {
+static char* maptype_icon[NUM_GAMETYPES] = {
 	"menu/assets/gt_sandbox",		// GT_SANDBOX
 	"menu/assets/gt_mapeditor",		// GT_MAPEDITOR
 	"menu/assets/gt_single",		// GT_SINGLE
@@ -303,7 +303,7 @@ int UI_BuildMapListByType(int* list, int listmax, int gametype,
 GUI_DefaultIconFromGameType
 =================
 */
-const char* GUI_DefaultIconFromGameType(int gametype)
+char* GUI_DefaultIconFromGameType(int gametype)
 {
 	if (gametype < 0 || gametype > NUM_GAMETYPES) {
 		trap_Print(va(S_COLOR_RED"Unknown gametype icon: %i\n", gametype));
@@ -327,25 +327,25 @@ if needed. Note: these Id icons don't have the
 proper transparency behaviour
 =================
 */
-void StartServer_SetIconFromGameType(menubitmap_s* b, int gametype, qboolean custom)
+void StartServer_SetIconFromGameType(menuelement_s* b, int gametype, qboolean custom)
 {
-	const char* new_icon;
+	char* new_icon;
 
 	if (!b)
 		return;
 
 	if (gametype < 0)
 	{
-		b->generic.name = 0;
+		b->string = 0;
 		b->shader = 0;
 		return;
 	}
 
 	new_icon = StartServer_MapIconFromType(gametype, custom);
 
-	if (new_icon != b->generic.name)
+	if (new_icon != b->string)
 	{
-		b->generic.name = new_icon;
+		b->string = new_icon;
 		b->shader = 0;
 	}
 }
@@ -964,7 +964,7 @@ int StartServer_NumCustomMapTypes(void)
 StartServer_MapIconFromType
 =================
 */
-const char* StartServer_MapIconFromType(int gametype, qboolean isCustomMap)
+char* StartServer_MapIconFromType(int gametype, qboolean isCustomMap)
 {
 	if (!maplist_loaded)
 		UI_LoadMapTypeInfo();

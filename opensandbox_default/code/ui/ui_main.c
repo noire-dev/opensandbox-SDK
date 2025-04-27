@@ -97,17 +97,6 @@ typedef struct {
 	int			cvarFlags;
 } cvarTable_t;
 
-vmCvar_t	cl_propsmallsizescale;
-vmCvar_t 	cl_propheight;
-vmCvar_t 	cl_propspacewidth;
-vmCvar_t 	cl_propgapwidth;
-vmCvar_t 	cl_smallcharwidth;
-vmCvar_t 	cl_smallcharheight;
-vmCvar_t 	cl_bigcharwidth;
-vmCvar_t 	cl_bigcharheight;
-vmCvar_t 	cl_giantcharwidth;
-vmCvar_t 	cl_giantcharheight;
-
 //OpenSandbox Sandbox
 vmCvar_t	sb_private;
 vmCvar_t	sb_texture;
@@ -257,18 +246,6 @@ vmCvar_t	gui_bot_list;
 
 
 static cvarTable_t		cvarTable[] = {
-
-	{ &cl_propsmallsizescale, "cl_propsmallsizescale", "0.60", CVAR_ARCHIVE },
-	{ &cl_propheight, "cl_propheight", "21", CVAR_ARCHIVE  },
-	{ &cl_propspacewidth, "cl_propspacewidth", "8", CVAR_ARCHIVE  },
-	{ &cl_propgapwidth, "cl_propgapwidth", "3", CVAR_ARCHIVE  },
-	{ &cl_smallcharwidth, "cl_smallcharwidth", "8", CVAR_ARCHIVE  },
-	{ &cl_smallcharheight, "cl_smallcharheight", "12", CVAR_ARCHIVE  },
-	{ &cl_bigcharwidth, "cl_bigcharwidth", "12", CVAR_ARCHIVE  },
-	{ &cl_bigcharheight, "cl_bigcharheight", "12", CVAR_ARCHIVE  },
-	{ &cl_giantcharwidth, "cl_giantcharwidth", "20", CVAR_ARCHIVE  },
-	{ &cl_giantcharheight, "cl_giantcharheight", "32", CVAR_ARCHIVE  },
-
 //OpenSandbox Sandbox
 	{ &sb_private, "sb_private", "0", 0 },
 	{ &sb_grid, "sb_grid", "25", 0 },

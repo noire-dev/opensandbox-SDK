@@ -1310,17 +1310,6 @@ extern	int			mod_slickmove;
 extern	int			mod_overlay;
 extern	int			mod_gravity;
 
-extern	vmCvar_t 	cl_propsmallsizescale;
-extern	vmCvar_t 	cl_propheight;
-extern	vmCvar_t 	cl_propspacewidth;
-extern	vmCvar_t 	cl_propgapwidth;
-extern	vmCvar_t 	cl_smallcharwidth;
-extern	vmCvar_t 	cl_smallcharheight;
-extern	vmCvar_t 	cl_bigcharwidth;
-extern	vmCvar_t 	cl_bigcharheight;
-extern	vmCvar_t 	cl_giantcharwidth;
-extern	vmCvar_t 	cl_giantcharheight;
-
 extern	vmCvar_t	g_physimpact;
 extern	vmCvar_t	g_physimpulse;
 extern	vmCvar_t	g_physdamage;

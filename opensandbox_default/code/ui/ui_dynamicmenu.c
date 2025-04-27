@@ -82,7 +82,7 @@ typedef struct {
 typedef struct {
 	menuframework_s menu;
 
-	menutext_s item[MAX_MENUITEMS];
+	menuelement_s item[MAX_MENUITEMS];
 	dynamicitem_t data[MAX_MENUITEMS];
 	qhandle_t	background[MAX_MENUITEMS];
 
@@ -508,7 +508,7 @@ void DynamicMenu_FinishSubMenuInit( void )
 	float posx, posy;
 	int i, count, start, active;
 	float scale;
-	menutext_s* ptr;
+	menuelement_s* ptr;
 	dynamicitem_t* dptr;
 	qboolean submenu;
 	qboolean icon;
@@ -523,7 +523,7 @@ void DynamicMenu_FinishSubMenuInit( void )
 	count = s_dynamic.end[depth] - start;
 	for ( i = 0; i < count; i++)
 	{
-		width = UI_ProportionalStringWidth(s_dynamic.data[i + start].text);
+		width = UI_ProportionalStringWidth(s_dynamic.data[i + start].text, 1.00);
 		if (width > maxwidth)
 			maxwidth = width;
 
@@ -536,10 +536,10 @@ void DynamicMenu_FinishSubMenuInit( void )
 
 	if (submenu)
 	{
-		maxwidth += UI_ProportionalStringWidth(" \r");	// space and submenu pointer
+		maxwidth += UI_ProportionalStringWidth(" \r", 1.00);	// space and submenu pointer
 	}
 
-	scale = UI_ProportionalSizeScale(UI_SMALLFONT, 0);
+	scale = 1.00;
 	maxwidth *= scale;
 	maxwidth *= (MENU_SCALE * 1.2);	// some adjustment for scaling of font used
     maxwidth += MENUSPACE_X;
@@ -659,7 +659,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 	float 	fx, fy, fh, fw;
 	float 	*color;
 	int		style;
-	menutext_s* t;
+	menuelement_s* t;
 	dynamicitem_t *dptr;
 	vec4_t	tmp_color;
 	int 	depth;
@@ -667,7 +667,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 	float scale, txt_y, offset;
 	int charh;
 
-	t = (menutext_s*)self;
+	t = (menuelement_s*)self;
 	dptr = &s_dynamic.data[ t->generic.id ];
 
 	depth = DynamicMenu_DepthOfIndex(t->generic.id) - 1;
@@ -736,7 +736,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 		}
 	}
 
-	txt_y = fy + 0.5*(fh - PROP_HEIGHT * MENU_SCALE * UI_ProportionalSizeScale( style, 0 ));
+	txt_y = fy + 0.5*(fh - PROP_HEIGHT * MENU_SCALE * 1.00);
 	UI_DrawString( fx, txt_y, t->string, style, color );
 
 
@@ -960,9 +960,9 @@ DynamicMenu_MenuEvent
 */
 static void DynamicMenu_MenuEvent( void* self, int event )
 {
-	menutext_s* t;
+	menuelement_s* t;
 
-	t = (menutext_s*)self;
+	t = (menuelement_s*)self;
 
 	switch (event)
 	{

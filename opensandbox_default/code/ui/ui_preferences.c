@@ -86,45 +86,45 @@ GAME OPTIONS MENU
 typedef struct {
 	menuframework_s		menu;
 
-	menutext_s			banner;
+	menuelement_s			banner;
 
-	menutext_s			hud;
-	menutext_s			render;
-	menutext_s			objects;
-    menutext_s			misc;
+	menuelement_s			hud;
+	menuelement_s			render;
+	menuelement_s			objects;
+    menuelement_s			misc;
 
-	menulist_s			crosshair;
+	menuelement_s			crosshair;
     //Crosshair colors:
-    menuslider_s            crosshairColorRed;
-    menuslider_s            crosshairColorGreen;
-    menuslider_s            crosshairColorBlue;
-	menuradiobutton_s	simpleitems;
-    menuradiobutton_s	alwaysweaponbar;
-	menuradiobutton_s	brass;
-	menuradiobutton_s	wallmarks;
-	menuradiobutton_s	dynamiclights;
-	menuradiobutton_s	identifytarget;
-	menuradiobutton_s	highqualitysky;
-	menuradiobutton_s	synceveryframe;
-	menuradiobutton_s	allowdownload;
-	menuradiobutton_s	botmenu;
+    menuelement_s            crosshairColorRed;
+    menuelement_s            crosshairColorGreen;
+    menuelement_s            crosshairColorBlue;
+	menuelement_s	simpleitems;
+    menuelement_s	alwaysweaponbar;
+	menuelement_s	brass;
+	menuelement_s	wallmarks;
+	menuelement_s	dynamiclights;
+	menuelement_s	identifytarget;
+	menuelement_s	highqualitysky;
+	menuelement_s	synceveryframe;
+	menuelement_s	allowdownload;
+	menuelement_s	botmenu;
 
-	menuradiobutton_s	gibs;
-	menuradiobutton_s	blood;
-	menuradiobutton_s	drawfps;
-	menuradiobutton_s	drawtimer;
-	menuradiobutton_s	drawlagometer;
-	menuradiobutton_s	drawgun;
-	menuradiobutton_s	predictitems;
-	menulist_s			shadows;
+	menuelement_s	gibs;
+	menuelement_s	blood;
+	menuelement_s	drawfps;
+	menuelement_s	drawtimer;
+	menuelement_s	drawlagometer;
+	menuelement_s	drawgun;
+	menuelement_s	predictitems;
+	menuelement_s			shadows;
 
-	menufield_s			teamchatheight;
-	menufield_s			fov;
-	menufield_s			zoomfov;
+	menuelement_s			teamchatheight;
+	menuelement_s			fov;
+	menuelement_s			zoomfov;
 
-	menuradiobutton_s	truelightning;
+	menuelement_s	truelightning;
 
-	menubitmap_s		back;
+	menuelement_s		back;
 
 	qhandle_t			crosshairShader[NUM_CROSSHAIRS];
 	int section;
@@ -524,14 +524,14 @@ Crosshair_Draw
 =================
 */
 static void Crosshair_Draw( void *self ) {
-	menulist_s	*s;
+	menuelement_s	*s;
 	float		*color;
 	int			x, y;
 	int			style;
 	qboolean	focus;
         vec4_t          color4;
 
-	s = (menulist_s *)self;
+	s = (menuelement_s *)self;
 	x = s->generic.x;
 	y =	s->generic.y;
 
@@ -558,7 +558,7 @@ static void Crosshair_Draw( void *self ) {
 		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
+	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color );
 	if( !s->curvalue ) {
 		return;
 	}
@@ -690,7 +690,7 @@ static void Preferences_MenuInit( void )
 	s_preferences.misc.color			= color_white;
 
 	s_preferences.back.generic.type	    = MTYPE_BITMAP;
-	s_preferences.back.generic.name     = ART_BACK0;
+	s_preferences.back.string     = ART_BACK0;
 	s_preferences.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_preferences.back.generic.callback = Preferences_Event;
 	s_preferences.back.generic.id	    = ID_BACK;
@@ -859,32 +859,32 @@ s_preferences.hud.string			= "HUD";
 s_preferences.render.string			= "RENDER";
 s_preferences.objects.string			= "OBJECTS";
 s_preferences.misc.string			= "MISC";
-s_preferences.crosshair.generic.name		= "Crosshair:";
-s_preferences.crosshairColorRed.generic.name		= "Color red:";
-s_preferences.crosshairColorGreen.generic.name		= "Color green:";
-s_preferences.crosshairColorBlue.generic.name		= "Color blue:";
-s_preferences.alwaysweaponbar.generic.name	      = "Always show weapons:";
-s_preferences.simpleitems.generic.name	      = "Simple Items:";
-s_preferences.wallmarks.generic.name	      = "Marks on Walls:";
-s_preferences.brass.generic.name	          = "Ejecting Brass:";
-s_preferences.dynamiclights.generic.name	  = "Dynamic Lights:";
-s_preferences.highqualitysky.generic.name	  = "High Quality Sky:";
-s_preferences.shadows.generic.name	   = "Shadow type:";
-s_preferences.gibs.generic.name	   = "Body Gibs:";
-s_preferences.blood.generic.name	   = "Blood:";
-s_preferences.identifytarget.generic.name	  = "Identify Target:";
-s_preferences.drawfps.generic.name	   = "Draw FPS:";
-s_preferences.drawtimer.generic.name	   = "Draw Timer:";
-s_preferences.drawlagometer.generic.name	   = "Draw Lagometer:";
-s_preferences.drawgun.generic.name	   = "Secret setting =P:";
-s_preferences.teamchatheight.generic.name       = "FPS Limit:";
-s_preferences.fov.generic.name       = "FOV:";
-s_preferences.zoomfov.generic.name       = "Zoom FOV:";
-s_preferences.predictitems.generic.name	   = "Predict Items:";
-s_preferences.truelightning.generic.name	  = "True lightning:";
-s_preferences.synceveryframe.generic.name	  = "V-Sync:";
-s_preferences.allowdownload.generic.name	   = "Automatic Downloading:";
-s_preferences.botmenu.generic.name	  = "AutoClose Bot Menu:";
+s_preferences.crosshair.string		= "Crosshair:";
+s_preferences.crosshairColorRed.string		= "Color red:";
+s_preferences.crosshairColorGreen.string		= "Color green:";
+s_preferences.crosshairColorBlue.string		= "Color blue:";
+s_preferences.alwaysweaponbar.string	      = "Always show weapons:";
+s_preferences.simpleitems.string	      = "Simple Items:";
+s_preferences.wallmarks.string	      = "Marks on Walls:";
+s_preferences.brass.string	          = "Ejecting Brass:";
+s_preferences.dynamiclights.string	  = "Dynamic Lights:";
+s_preferences.highqualitysky.string	  = "High Quality Sky:";
+s_preferences.shadows.string	   = "Shadow type:";
+s_preferences.gibs.string	   = "Body Gibs:";
+s_preferences.blood.string	   = "Blood:";
+s_preferences.identifytarget.string	  = "Identify Target:";
+s_preferences.drawfps.string	   = "Draw FPS:";
+s_preferences.drawtimer.string	   = "Draw Timer:";
+s_preferences.drawlagometer.string	   = "Draw Lagometer:";
+s_preferences.drawgun.string	   = "Secret setting =P:";
+s_preferences.teamchatheight.string       = "FPS Limit:";
+s_preferences.fov.string       = "FOV:";
+s_preferences.zoomfov.string       = "Zoom FOV:";
+s_preferences.predictitems.string	   = "Predict Items:";
+s_preferences.truelightning.string	  = "True lightning:";
+s_preferences.synceveryframe.string	  = "V-Sync:";
+s_preferences.allowdownload.string	   = "Automatic Downloading:";
+s_preferences.botmenu.string	  = "AutoClose Bot Menu:";
 s_preferences.shadows.itemnames			= shadow_types;
 }
 if(cl_language.integer == 1){
@@ -893,32 +893,32 @@ s_preferences.hud.string			= "HUD";
 s_preferences.render.string			= "РЕНДЕР";
 s_preferences.objects.string			= "ОБЪЕКТЫ";
 s_preferences.misc.string			= "ДРУГОЕ";
-s_preferences.crosshair.generic.name		= "Прицел:";
-s_preferences.crosshairColorRed.generic.name		= "Цвет красный:";
-s_preferences.crosshairColorGreen.generic.name		= "Цвет зеленый:";
-s_preferences.crosshairColorBlue.generic.name		= "Цвет синий:";
-s_preferences.alwaysweaponbar.generic.name	      = "Всегда показывать оружие:";
-s_preferences.simpleitems.generic.name	      = "Простые предметы:";
-s_preferences.wallmarks.generic.name	      = "Отметки на стенах:";
-s_preferences.brass.generic.name	          = "Гильзы от пуль:";
-s_preferences.dynamiclights.generic.name	  = "Динамическое освещение:";
-s_preferences.highqualitysky.generic.name	  = "Небо высокого качества:";
-s_preferences.shadows.generic.name	   = "Тип теней:";
-s_preferences.gibs.generic.name	   = "Куски тел:";
-s_preferences.blood.generic.name	   = "Кровь:";
-s_preferences.identifytarget.generic.name	  = "Определить цель:";
-s_preferences.drawfps.generic.name	   = "Отображение FPS:";
-s_preferences.drawtimer.generic.name	   = "Отображение Времени:";
-s_preferences.drawlagometer.generic.name	   = "Отображение Сети:";
-s_preferences.drawgun.generic.name	   = "Секретная настройка =P:";
-s_preferences.teamchatheight.generic.name       = "Лимит FPS:";
-s_preferences.fov.generic.name       = "Поле зрения:";
-s_preferences.zoomfov.generic.name       = "Увеличение:";
-s_preferences.predictitems.generic.name	   = "Предметы клиент:";
-s_preferences.truelightning.generic.name	  = "Правильный эффект молнии:";
-s_preferences.synceveryframe.generic.name	  = "Вертикальная синхронизация:";
-s_preferences.allowdownload.generic.name	   = "Автоматическое скачивание:";
-s_preferences.botmenu.generic.name	  = "Авто закрытие Бот Меню:";
+s_preferences.crosshair.string		= "Прицел:";
+s_preferences.crosshairColorRed.string		= "Цвет красный:";
+s_preferences.crosshairColorGreen.string		= "Цвет зеленый:";
+s_preferences.crosshairColorBlue.string		= "Цвет синий:";
+s_preferences.alwaysweaponbar.string	      = "Всегда показывать оружие:";
+s_preferences.simpleitems.string	      = "Простые предметы:";
+s_preferences.wallmarks.string	      = "Отметки на стенах:";
+s_preferences.brass.string	          = "Гильзы от пуль:";
+s_preferences.dynamiclights.string	  = "Динамическое освещение:";
+s_preferences.highqualitysky.string	  = "Небо высокого качества:";
+s_preferences.shadows.string	   = "Тип теней:";
+s_preferences.gibs.string	   = "Куски тел:";
+s_preferences.blood.string	   = "Кровь:";
+s_preferences.identifytarget.string	  = "Определить цель:";
+s_preferences.drawfps.string	   = "Отображение FPS:";
+s_preferences.drawtimer.string	   = "Отображение Времени:";
+s_preferences.drawlagometer.string	   = "Отображение Сети:";
+s_preferences.drawgun.string	   = "Секретная настройка =P:";
+s_preferences.teamchatheight.string       = "Лимит FPS:";
+s_preferences.fov.string       = "Поле зрения:";
+s_preferences.zoomfov.string       = "Увеличение:";
+s_preferences.predictitems.string	   = "Предметы клиент:";
+s_preferences.truelightning.string	  = "Правильный эффект молнии:";
+s_preferences.synceveryframe.string	  = "Вертикальная синхронизация:";
+s_preferences.allowdownload.string	   = "Автоматическое скачивание:";
+s_preferences.botmenu.string	  = "Авто закрытие Бот Меню:";
 s_preferences.shadows.itemnames			= shadow_typesru;
 }
 

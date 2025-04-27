@@ -320,7 +320,7 @@ typedef struct controlinit_s {
 typedef struct initlist_s {
 	int id;
 	char* title;
-	menutext_s* menutext;
+	menuelement_s* menutext;
 	controlinit_t* list;
 	int count;
 } initlist_t;
@@ -330,21 +330,21 @@ typedef struct initlist_s {
 
 
 typedef struct radiobuttoncontrol_s {
-	menuradiobutton_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } radiobuttoncontrol_t;
 
 
 typedef struct textfieldcontrol_s {
-	menufield_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } textfieldcontrol_t;
 
 
 typedef struct spincontrol_s {
-	menulist_s control;
+	menuelement_s control;
 
 	controlinit_t* init;
 } spincontrol_t;
@@ -361,29 +361,29 @@ typedef struct servercontrols_s {
 	menuframework_s menu;
 	commoncontrols_t common;
 
-	menulist_s gameType;
-	menubitmap_s gameTypeIcon;
-	menufield_s hostname;
+	menuelement_s gameType;
+	menuelement_s gameTypeIcon;
+	menuelement_s hostname;
 
 	radiobuttoncontrol_t radio[MAX_SERVER_RADIO_CONTROL];
 	textfieldcontrol_t field[MAX_SERVER_MFIELD_CONTROL];
 	spincontrol_t spin[MAX_SERVER_SPIN_CONTROL];
 
-	menutext_s hook;
-	menutext_s gauntlet;
-	menutext_s machinegun;
-	menutext_s shotgun;
-	menutext_s grenade;
-	menutext_s rocket;
-	menutext_s plasma;
-	menutext_s lightning;
-	menutext_s railgun;
-	menutext_s bfg;
-	menutext_s nailgun;
-	menutext_s prox;
-	menutext_s chaingun;
-	menutext_s flamethrower;
-	menutext_s darkflare;
+	menuelement_s hook;
+	menuelement_s gauntlet;
+	menuelement_s machinegun;
+	menuelement_s shotgun;
+	menuelement_s grenade;
+	menuelement_s rocket;
+	menuelement_s plasma;
+	menuelement_s lightning;
+	menuelement_s railgun;
+	menuelement_s bfg;
+	menuelement_s nailgun;
+	menuelement_s prox;
+	menuelement_s chaingun;
+	menuelement_s flamethrower;
+	menuelement_s darkflare;
 
 	// currently selected tabbeed page for server
 	int activePage;
@@ -397,8 +397,8 @@ typedef struct servercontrols_s {
 	int num_field;
 	int num_spin;
 
-	menubitmap_s saveScript;
-	menubitmap_s loadScript;
+	menuelement_s saveScript;
+	menuelement_s loadScript;
 
 	int statusbar_height;
 	int savetime;
@@ -1031,7 +1031,7 @@ static void StartServer_WeaponPage_InitSpinCtrl(controlinit_t* c, int height)
 	s->init = c;
 
 	s->control.generic.type		= MTYPE_SPINCONTROL;
-	s->control.generic.name		= c->title;
+	s->control.string		= c->title;
 	s->control.generic.id		= s_weaponcontrols.num_spin;	// self reference
 	s->control.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_RIGHT_JUSTIFY;
 	s->control.generic.callback	= StartServer_WeaponPage_SpinEvent;
@@ -1075,7 +1075,7 @@ static void StartServer_WeaponPage_InitRadioCtrl(controlinit_t* c, int height)
 	r->init = c;
 
 	r->control.generic.type		= MTYPE_RADIOBUTTON;
-	r->control.generic.name		= c->title;
+	r->control.string		= c->title;
 	r->control.generic.id		= s_weaponcontrols.num_radio;	// self reference
 	r->control.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_RIGHT_JUSTIFY;
 	r->control.generic.callback	= StartServer_WeaponPage_RadioEvent;
@@ -1124,7 +1124,7 @@ static void StartServer_WeaponPage_InitFieldCtrl(controlinit_t* c, int height)
 		flags |= QMF_NUMBERSONLY;
 
 	f->control.generic.type       = MTYPE_FIELD;
-	f->control.generic.name       = c->title;
+	f->control.string       = c->title;
 	f->control.generic.id		= s_weaponcontrols.num_field;	// self reference
 	f->control.generic.callback	= StartServer_WeaponPage_FieldEvent;
 	f->control.generic.statusbar	= StartServer_WeaponPage_ControlListStatusBar;
@@ -1697,7 +1697,7 @@ void StartServer_WeaponPage_MenuInit(void)
 	y += LINE_HEIGHT;
 
 	s_weaponcontrols.saveScript.generic.type  = MTYPE_BITMAP;
-	s_weaponcontrols.saveScript.generic.name  = SERVER_SAVE0;
+	s_weaponcontrols.saveScript.string  = SERVER_SAVE0;
 	s_weaponcontrols.saveScript.generic.flags = QMF_PULSEIFFOCUS;
 	s_weaponcontrols.saveScript.generic.x	   =  320 - 128;
 	s_weaponcontrols.saveScript.generic.y	   = 480 - 64;
@@ -1709,7 +1709,7 @@ void StartServer_WeaponPage_MenuInit(void)
 	s_weaponcontrols.saveScript.focuspic = SERVER_SAVE1;
 
 	s_weaponcontrols.loadScript.generic.type  = MTYPE_BITMAP;
-	s_weaponcontrols.loadScript.generic.name  = SERVER_LOAD0;
+	s_weaponcontrols.loadScript.string  = SERVER_LOAD0;
 	s_weaponcontrols.loadScript.generic.flags = QMF_PULSEIFFOCUS;
 	s_weaponcontrols.loadScript.generic.x	   =  320;
 	s_weaponcontrols.loadScript.generic.y	   = 480 - 64;
@@ -1723,14 +1723,14 @@ void StartServer_WeaponPage_MenuInit(void)
 	s_weaponcontrols.statusbar_height = 480 - 64 - LINE_HEIGHT;
 	
 	if(cl_language.integer == 0){
-	s_weaponcontrols.gameType.generic.name		= "Game Type:";
+	s_weaponcontrols.gameType.string		= "Game Type:";
 	s_weaponcontrols.gameType.itemnames			= gametype_items;
-	s_weaponcontrols.hostname.generic.name       = "Hostname:";
+	s_weaponcontrols.hostname.string       = "Hostname:";
 	}
 	if(cl_language.integer == 1){
-	s_weaponcontrols.gameType.generic.name		= "Режим Игры:";
+	s_weaponcontrols.gameType.string		= "Режим Игры:";
 	s_weaponcontrols.gameType.itemnames			= gametype_itemsru;
-	s_weaponcontrols.hostname.generic.name       = "Имя сервера:";
+	s_weaponcontrols.hostname.string       = "Имя сервера:";
 	}
 
 	// init the tabbed control list for the page
@@ -1739,7 +1739,7 @@ void StartServer_WeaponPage_MenuInit(void)
 	s_weaponcontrols.pageListSize = ARRAY_COUNT(weapv_multiplayerserver);
 
 	style = UI_RIGHT|UI_MEDIUMFONT;
-	scale = UI_ProportionalSizeScale(style, 0);
+	scale = 1.00;
 	y_base = TABCONTROLCENTER_Y - s_weaponcontrols.pageListSize*PROP_HEIGHT*scale/2;
 
 	for (i = 0; i < s_weaponcontrols.pageListSize; i++)

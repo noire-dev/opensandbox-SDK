@@ -90,9 +90,9 @@ void StartServer_SelectionDraw(void* self )
 	float	h;
 	float offset;
 	qhandle_t shader;
-	menubitmap_s* b;
+	menuelement_s* b;
 
-	b = (menubitmap_s*)self;
+	b = (menuelement_s*)self;
 
 	x = b->generic.x;
 	y = b->generic.y;
@@ -100,9 +100,9 @@ void StartServer_SelectionDraw(void* self )
 	h =	b->height;
 
 	// used to refresh shader
-	if (b->generic.name && !b->shader)
+	if (b->string && !b->shader)
 	{
-		b->shader = trap_R_RegisterShaderNoMip( b->generic.name );
+		b->shader = trap_R_RegisterShaderNoMip( b->string );
 		if (!b->shader && b->errorpic)
 			b->shader = trap_R_RegisterShaderNoMip( b->errorpic );
 	}
@@ -176,7 +176,7 @@ void StartServer_CommonControls_Init(
 	StartServer_CommonControls_Cache();
 
 	common->back.generic.type     = MTYPE_BITMAP;
-	common->back.generic.name     = GAMESERVER_BACK0;
+	common->back.string     = GAMESERVER_BACK0;
 	common->back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->back.generic.callback = callback;
 	common->back.generic.id	    = ID_SERVERCOMMON_BACK;
@@ -187,7 +187,7 @@ void StartServer_CommonControls_Init(
 	common->back.focuspic         = GAMESERVER_BACK1;
 
 	common->fight.generic.type     = MTYPE_BITMAP;
-	common->fight.generic.name     = GAMESERVER_FIGHT0;
+	common->fight.string     = GAMESERVER_FIGHT0;
 	common->fight.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->fight.generic.callback = callback;
 	common->fight.generic.id	    = ID_SERVERCOMMON_FIGHT;
@@ -198,7 +198,7 @@ void StartServer_CommonControls_Init(
 	common->fight.focuspic         = GAMESERVER_FIGHT1;
 
 	common->maps.generic.type     = MTYPE_BITMAP;
-	common->maps.generic.name     = GAMESERVER_MAPS0;
+	common->maps.string     = GAMESERVER_MAPS0;
 	common->maps.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->maps.generic.callback = callback;
 	common->maps.generic.id	    = ID_SERVERCOMMON_MAPS;
@@ -209,7 +209,7 @@ void StartServer_CommonControls_Init(
 	common->maps.focuspic         = GAMESERVER_MAPS1;
 
 	common->bots.generic.type     = MTYPE_BITMAP;
-	common->bots.generic.name     = GAMESERVER_BOTS0;
+	common->bots.string     = GAMESERVER_BOTS0;
 	common->bots.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->bots.generic.callback = callback;
 	common->bots.generic.id	    = ID_SERVERCOMMON_BOTS;
@@ -220,7 +220,7 @@ void StartServer_CommonControls_Init(
 	common->bots.focuspic         = GAMESERVER_BOTS1;
 
 	common->items.generic.type     = MTYPE_BITMAP;
-	common->items.generic.name     = GAMESERVER_ITEMS0;
+	common->items.string     = GAMESERVER_ITEMS0;
 	common->items.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->items.generic.callback = callback;
 	common->items.generic.id	    = ID_SERVERCOMMON_ITEMS;
@@ -231,7 +231,7 @@ void StartServer_CommonControls_Init(
 	common->items.focuspic         = GAMESERVER_ITEMS1;
 
 	common->server.generic.type     = MTYPE_BITMAP;
-	common->server.generic.name     = GAMESERVER_SERVER0;
+	common->server.string     = GAMESERVER_SERVER0;
 	common->server.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->server.generic.callback = callback;
 	common->server.generic.id	    = ID_SERVERCOMMON_SERVER;
@@ -242,7 +242,7 @@ void StartServer_CommonControls_Init(
 	common->server.focuspic         = GAMESERVER_SERVER1;
 	
 	common->weapon.generic.type     = MTYPE_BITMAP;
-	common->weapon.generic.name     = GAMESERVER_WEAPONS0;
+	common->weapon.string     = GAMESERVER_WEAPONS0;
 	common->weapon.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	common->weapon.generic.callback = callback;
 	common->weapon.generic.id	    = ID_SERVERCOMMON_WEAPON;
@@ -252,7 +252,7 @@ void StartServer_CommonControls_Init(
 	common->weapon.height  		    = 64;
 	common->weapon.focuspic         = GAMESERVER_WEAPONS1;
 
-	scale = UI_ProportionalSizeScale( UI_BIGFONT, 0 );
+	scale = 1.00;
 	height = (64 - PROP_HEIGHT * scale)/2;
 
 	common->maptext.generic.type			= MTYPE_PTEXT;
