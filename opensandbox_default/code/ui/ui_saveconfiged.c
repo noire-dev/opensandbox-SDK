@@ -142,7 +142,7 @@ static void UI_saveMapEdMenu_Init( void ) {
 	saveMapEd.menu.native 	   = qfalse;
 	saveMapEd.menu.fullscreen = qfalse;
 
-	saveMapEd.banner.generic.type		= MTYPE_BTEXT;
+	saveMapEd.banner.generic.type		= MTYPE_TEXT;
 	saveMapEd.banner.generic.x			= 320;
 	saveMapEd.banner.generic.y			= 16;
 	if(cl_language.integer == 0){

@@ -214,7 +214,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.menu.native 	   = qfalse;
 	displayOptionsInfo.menu.fullscreen = qtrue;
 
-	displayOptionsInfo.banner.generic.type		= MTYPE_BTEXT;
+	displayOptionsInfo.banner.generic.type		= MTYPE_TEXT;
 	displayOptionsInfo.banner.generic.flags		= QMF_CENTER_JUSTIFY;
 	displayOptionsInfo.banner.generic.x			= 320;
 	displayOptionsInfo.banner.generic.y			= 16;

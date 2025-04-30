@@ -258,7 +258,7 @@ static void PlayerSettings_DrawEffects( void *self ) {
 		UI_DrawString( item->generic.x, item->generic.y, "Рейл кольца:", style, color );
 	}
 	}
-	
+
 	if(cl_language.integer == 0){
 		textlen = UI_ProportionalStringWidth("Rail core:", 1.00) * 1.00;
 	}
@@ -450,7 +450,7 @@ static void PlayerSettings_MenuInit( void ) {
 
 	sizeScale = 1.00;
 
-	s_playersettings.banner.generic.type  = MTYPE_BTEXT;
+	s_playersettings.banner.generic.type  = MTYPE_TEXT;
 	s_playersettings.banner.generic.x     = 320;
 	s_playersettings.banner.generic.y     = 16;
 	if(cl_language.integer == 0){

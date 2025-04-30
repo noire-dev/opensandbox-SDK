@@ -1450,7 +1450,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 		break;
 
 	case ID_CREATE:
-		UI_StartServerMenu( qtrue );
+		UI_StartServerMenu();
 		break;
 
 	case ID_CONNECT:
@@ -1528,7 +1528,7 @@ static void ArenaServers_MenuInit( void ) {
     g_arenaservers.menu.draw       = ArenaServers_MenuDraw;
 	g_arenaservers.menu.key        = ArenaServers_MenuKey;
 
-	g_arenaservers.banner.generic.type  = MTYPE_BTEXT;
+	g_arenaservers.banner.generic.type  = MTYPE_TEXT;
 	g_arenaservers.banner.generic.flags = QMF_CENTER_JUSTIFY;
 	g_arenaservers.banner.generic.x	    = 320;
 	g_arenaservers.banner.generic.y	    = 16;

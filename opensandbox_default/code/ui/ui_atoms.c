@@ -736,13 +736,11 @@ UI_Cache
 =================
 */
 void UI_Cache_f( void ) {
-	MainMenu_Cache();
 	ConfirmMenu_Cache();
 	PlayerModel_Cache();
 	PlayerSettings_Cache();
 	Controls_Cache();
 	Demos_Cache();
-	UI_CinematicsMenu_Cache();
 	Preferences_Cache();
 	SpecifyServer_Cache();
 	ArenaServers_Cache();
@@ -826,11 +824,11 @@ UI_AdvancedMenu();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_savegame") == 0 ){
-UI_CinematicsMenu(0);
+UI_SavesMenu_Save();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_loadgame") == 0 ){
-UI_CinematicsMenu(1);
+UI_SavesMenu_Load();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_controls2") == 0 ){
@@ -914,7 +912,7 @@ UI_ArenaServersMenu();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_setup") == 0 ){
-UI_SetupMenu();
+UI_Setup();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_sound") == 0 ){
@@ -1009,16 +1007,6 @@ return qtrue;
 
 	if ( Q_stricmp (cmd, "ui_cache") == 0 ) {
 		UI_Cache_f();
-		return qtrue;
-	}
-
-	if ( Q_stricmp (cmd, "save_menu") == 0 ) {
-		UI_CinematicsMenu_f(0);
-		return qtrue;
-	}
-	
-	if ( Q_stricmp (cmd, "load_menu") == 0 ) {
-		UI_CinematicsMenu_f(1);
 		return qtrue;
 	}
 

@@ -4295,7 +4295,7 @@ static void UI_Workshop_MenuInit( void ) {
 	s_workshop.menu.key        = Workshop_MenuKey;
 	s_workshop.menu.draw 	   = UI_Workshop_Draw;
 
-	s_workshop.banner.generic.type		= MTYPE_BTEXT;
+	s_workshop.banner.generic.type		= MTYPE_TEXT;
 	s_workshop.banner.generic.x			= 320;
 	s_workshop.banner.generic.y			= 16;
 	if(cl_language.integer == 0){

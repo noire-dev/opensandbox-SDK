@@ -972,7 +972,7 @@ void GUI_ConvertOldCvar( char* cvar, int size);
 
 
 // ui_startserver_script.c
-void StartServer_InitScriptData(qboolean multi);
+void StartServer_InitScriptData(void);
 void StartServer_LoadScriptDataFromType(int gametype);
 void StartServer_SaveScriptData(void);
 

@@ -1186,7 +1186,7 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	botSelectInfo.index = index;
 	botSelectInfo.numMultiSel = 0;
 
-	botSelectInfo.banner.generic.type	= MTYPE_BTEXT;
+	botSelectInfo.banner.generic.type	= MTYPE_TEXT;
 	botSelectInfo.banner.generic.x		= 320;
 	botSelectInfo.banner.generic.y		= 16;
 	botSelectInfo.banner.color			= color_white;

@@ -118,7 +118,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.menu.native 	   = qfalse;
 	s_specifyserver.menu.fullscreen = qtrue;
 
-	s_specifyserver.banner.generic.type	 = MTYPE_BTEXT;
+	s_specifyserver.banner.generic.type	 = MTYPE_TEXT;
 	s_specifyserver.banner.generic.x     = 320;
 	s_specifyserver.banner.generic.y     = 16;
 	if(cl_language.integer == 0){

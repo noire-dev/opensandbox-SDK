@@ -247,7 +247,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.menu.fullscreen = qtrue;
 	s_demos.menu.native 	= qfalse;
 
-	s_demos.banner.generic.type		= MTYPE_BTEXT;
+	s_demos.banner.generic.type		= MTYPE_TEXT;
 	s_demos.banner.generic.x		= 320;
 	s_demos.banner.generic.y		= 16;
 	if(cl_language.integer == 0){

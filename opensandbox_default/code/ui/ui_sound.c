@@ -175,7 +175,7 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.menu.native 	   = qfalse;
 	soundOptionsInfo.menu.fullscreen = qtrue;
 
-	soundOptionsInfo.banner.generic.type		= MTYPE_BTEXT;
+	soundOptionsInfo.banner.generic.type		= MTYPE_TEXT;
 	soundOptionsInfo.banner.generic.flags		= QMF_CENTER_JUSTIFY;
 	soundOptionsInfo.banner.generic.x			= 320;
 	soundOptionsInfo.banner.generic.y			= 16;

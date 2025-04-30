@@ -1886,10 +1886,10 @@ START SERVER MENU *****
 UI_StartServerMenu
 =================
 */
-void UI_StartServerMenu( qboolean multi)
+void UI_StartServerMenu( void )
 {
 	StartServer_Cache();
-	StartServer_InitScriptData(multi);
+	StartServer_InitScriptData();
 	StartServer_MapPage_MenuInit();
 }
 

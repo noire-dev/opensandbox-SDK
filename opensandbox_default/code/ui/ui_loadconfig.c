@@ -494,7 +494,7 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	}
 	Q_strncpyz(titlebuf, title, 20);
 
-	s_configs.banner.generic.type	= MTYPE_BTEXT;
+	s_configs.banner.generic.type	= MTYPE_TEXT;
 	s_configs.banner.generic.x		= 320;
 	s_configs.banner.generic.y		= 16;
 	s_configs.banner.string 		= titlebuf;

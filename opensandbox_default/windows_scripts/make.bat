@@ -182,7 +182,6 @@ cd windows\build\ui
 %cc%  ../../../code/ui/ui_addbots.c
 %cc%  ../../../code/ui/ui_advanced.c
 %cc%  ../../../code/ui/ui_atoms.c
-%cc%  ../../../code/ui/ui_cinematics.c
 %cc%  ../../../code/ui/ui_confirm.c
 %cc%  ../../../code/ui/ui_connect.c
 %cc%  ../../../code/ui/ui_controls2.c
@@ -207,6 +206,7 @@ cd windows\build\ui
 %cc%  ../../../code/ui/ui_removebots.c
 %cc%  ../../../code/ui/ui_sandbox.c
 %cc%  ../../../code/ui/ui_saveconfiged.c
+%cc%  ../../../code/ui/ui_saves.c
 %cc%  ../../../code/ui/ui_servers2.c
 %cc%  ../../../code/ui/ui_setup.c
 %cc%  ../../../code/ui/ui_sound.c

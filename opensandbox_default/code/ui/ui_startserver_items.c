@@ -1235,7 +1235,7 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 
 	// menu type specific initialization
 	if (ingame) {
-		s_itemcontrols.ingame.title.generic.type     = MTYPE_BTEXT;
+		s_itemcontrols.ingame.title.generic.type     = MTYPE_TEXT;
 		s_itemcontrols.ingame.title.generic.x		= 320;
 		s_itemcontrols.ingame.title.generic.y		= 4;
 		s_itemcontrols.ingame.title.color			= color_white;

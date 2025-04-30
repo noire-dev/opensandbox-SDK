@@ -4,7 +4,6 @@ ui_main
 ui_addbots
 ui_advanced
 ui_atoms
-ui_cinematics
 ui_confirm
 ui_connect
 ui_controls2
@@ -28,6 +27,7 @@ ui_qmenu
 ui_removebots
 ui_sandbox
 ui_saveconfiged
+ui_saves
 ui_servers2
 ui_setup
 ui_sound

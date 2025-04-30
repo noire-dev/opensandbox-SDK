@@ -124,7 +124,7 @@ void Options_MenuInit( void ) {
 		s_options.menu.fullscreen = qtrue;
 	}
 
-	s_options.banner.generic.type	= MTYPE_BTEXT;
+	s_options.banner.generic.type	= MTYPE_TEXT;
 	s_options.banner.generic.flags	= QMF_CENTER_JUSTIFY;
 	s_options.banner.generic.x		= 320;
 	s_options.banner.generic.y		= 16;

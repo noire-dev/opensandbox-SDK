@@ -1575,7 +1575,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	s_mapselect.menu.fullscreen = qtrue;
 	s_mapselect.menu.draw = MapSelect_MenuDraw;
 
-	s_mapselect.banner.generic.type  = MTYPE_BTEXT;
+	s_mapselect.banner.generic.type  = MTYPE_TEXT;
 	s_mapselect.banner.generic.x	   = 160;
 	s_mapselect.banner.generic.y	   = 4;
 	s_mapselect.banner.color         = color_white;

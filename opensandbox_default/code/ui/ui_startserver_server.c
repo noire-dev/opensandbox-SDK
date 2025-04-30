@@ -1958,7 +1958,7 @@ StartServer_ServerPage_Mods
 */
 void StartServer_ServerPage_Mods(void)
 {
-UI_StartServerMenu( qtrue );
+UI_StartServerMenu();
 StartServer_MapPage_MenuInit();
 StartServer_BotPage_MenuInit();
 StartServer_ItemPage_MenuInit();

@@ -214,8 +214,6 @@ typedef struct
 	int					section;
 	qboolean			waitingforkey;
 
-	modelAnim_t			model;
-
 	menuelement_s		back;
 	menuelement_s			name;
 } controls_t; 	
@@ -514,17 +512,6 @@ static float Controls_GetCvarValue( char* name )
 	return (cvarptr->value);
 }
 
-
-/*
-=================
-Controls_UpdateModel
-=================
-*/
-static void Controls_UpdateModel( int anim ) {
-	GUI_PlayerInfo_ChangeAnimation(&s_controls.model, anim);
-}
-
-
 /*
 =================
 Controls_Update
@@ -667,35 +654,19 @@ static void Controls_DrawKeyBinding( void *self )
 	if (c)
 	{
 		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, color_select_bluo ); 
-		if(cl_language.integer == 0){
 		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight );
-		}
-		if(cl_language.integer == 1){
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindingsrus[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight );
-		}
 		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight );
 
 		if (s_controls.waitingforkey)
 		{
 			UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight);
-			if(cl_language.integer == 0){
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
-			}
-			if(cl_language.integer == 1){
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Ожидание новой кнопки ... ESCAPE для отмены", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
-			}
 		}
 		else
 		{
 			UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight);
-			if(cl_language.integer == 0){
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
-			}
-			if(cl_language.integer == 1){
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Нажмите ENTER или ЛКМ для изменения", UI_SMALLFONT|UI_CENTER, colorWhite );
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Нажмите BACKSPACE для сброса", UI_SMALLFONT|UI_CENTER, colorWhite );
-			}
 		}
 	}
 	else
@@ -736,16 +707,6 @@ static void Controls_StatusBar( void *self )
 	if(cl_language.integer == 1){
 	UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Используйте стрелочки или ЛКМ для изменения", UI_SMALLFONT|UI_CENTER, colorWhite );
 	}
-}
-
-
-/*
-=================
-Controls_DrawPlayer
-=================
-*/
-static void Controls_DrawPlayer( void *self ) {
-	GUI_PlayerInfo_AnimateModel(&s_controls.model);
 }
 
 
@@ -1136,45 +1097,10 @@ Controls_ActionEvent
 */
 static void Controls_ActionEvent( void* ptr, int event )
 {
-	if (event == QM_LOSTFOCUS)
-	{
-		Controls_UpdateModel( ANIM_IDLE );
-	}
-	else if (event == QM_GOTFOCUS)
-	{
-		Controls_UpdateModel( g_bindings[((menucommon_s*)ptr)->id].anim );
-	}
-	else if ((event == QM_ACTIVATED) && !s_controls.waitingforkey)
+	if ((event == QM_ACTIVATED) && !s_controls.waitingforkey)
 	{
 		s_controls.waitingforkey = 1;
 		Controls_Update();
-	}
-}
-
-/*
-=================
-Controls_InitModel
-=================
-*/
-static void Controls_InitModel( void )
-{
-	GUI_PlayerInfo_InitModel(&s_controls.model);
-	s_controls.model.bNoIdleAnim = qtrue;
-}
-
-/*
-=================
-Controls_InitWeapons
-=================
-*/
-static void Controls_InitWeapons( void ) {
-	gitem_t *	item;
-
-	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
-		if ( item->giType != IT_WEAPON ) {
-			continue;
-		}
-		trap_R_RegisterModel( item->world_model[0] );
 	}
 }
 
@@ -1196,7 +1122,7 @@ static void Controls_MenuInit( void )
 	s_controls.menu.fullscreen = qtrue;
 	s_controls.menu.native 	   = qfalse;
 
-	s_controls.banner.generic.type	= MTYPE_BTEXT;
+	s_controls.banner.generic.type	= MTYPE_TEXT;
 	s_controls.banner.generic.flags	= QMF_CENTER_JUSTIFY;
 	s_controls.banner.generic.x		= 320;
 	s_controls.banner.generic.y		= 16;
@@ -1294,14 +1220,6 @@ static void Controls_MenuInit( void )
 	s_controls.back.width  		     = 128;
 	s_controls.back.height  		 = 64;
 	s_controls.back.focuspic         = ART_BACK1;
-
-	s_controls.model.bitmap.generic.type      = MTYPE_BITMAP;
-	s_controls.model.bitmap.generic.flags     = QMF_INACTIVE;
-	s_controls.model.bitmap.generic.ownerdraw = Controls_DrawPlayer;
-	s_controls.model.bitmap.generic.x	        = PLAYERMODEL_X;
-	s_controls.model.bitmap.generic.y	        = PLAYERMODEL_Y;
-	s_controls.model.bitmap.width	            = PLAYERMODEL_WIDTH;
-	s_controls.model.bitmap.height            = PLAYERMODEL_HEIGHT;
 
 	s_controls.walkforward.generic.type	     = MTYPE_ACTION;
 	s_controls.walkforward.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1716,7 +1634,6 @@ static void Controls_MenuInit( void )
 	s_controls.name.color			= text_color_normal;
 
 	Menu_AddItem( &s_controls.menu, &s_controls.banner );
-	Menu_AddItem( &s_controls.menu, &s_controls.model.bitmap );
 	Menu_AddItem( &s_controls.menu, &s_controls.name );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.looking );
@@ -1798,12 +1715,6 @@ static void Controls_MenuInit( void )
 
 	// initialize the current config
 	Controls_GetConfig();
-
-	// intialize the model
-	Controls_InitModel();
-
-	// intialize the weapons
-	Controls_InitWeapons ();
 
 	// initial default section
 	s_controls.section = C_LOOKING;

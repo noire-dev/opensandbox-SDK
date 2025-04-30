@@ -3764,13 +3764,13 @@ StartServer_InitScriptData
 Loads all script data
 =================
 */
-void StartServer_InitScriptData(qboolean multiplayer)
+void StartServer_InitScriptData( void )
 {
 	memset(&s_scriptdata, 0, sizeof(scriptdata_t));
 
 	GUI_StartServer_LoadSkirmishCvars();
 
-	s_scriptdata.multiplayer = multiplayer;
+	s_scriptdata.multiplayer = qtrue;
 	StartServer_LoadScriptDataFromType((int)Com_Clamp( 0, MAX_GAME_TYPE, GUI_GetSkirmishCvarInt( NULL, "gui_gametype" ) ));
 	StartServer_BuildMapDistribution();
 }

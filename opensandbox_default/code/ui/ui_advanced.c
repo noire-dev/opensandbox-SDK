@@ -258,7 +258,7 @@ static void UI_Advanced_MenuInit( void ) {
 	s_advanced.menu.key        = Advanced_MenuKey;
 	s_advanced.menu.draw 	   = UI_Advanced_Draw;
 
-	s_advanced.banner.generic.type		= MTYPE_BTEXT;
+	s_advanced.banner.generic.type		= MTYPE_TEXT;
 	s_advanced.banner.generic.x			= 320;
 	s_advanced.banner.generic.y			= 16;
 	if(cl_language.integer == 0){

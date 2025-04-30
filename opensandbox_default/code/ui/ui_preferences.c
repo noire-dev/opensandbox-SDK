@@ -647,7 +647,7 @@ static void Preferences_MenuInit( void )
 	s_preferences.menu.native 	   = qfalse;
 	s_preferences.menu.fullscreen = qtrue;
 
-	s_preferences.banner.generic.type  = MTYPE_BTEXT;
+	s_preferences.banner.generic.type  = MTYPE_TEXT;
 	s_preferences.banner.generic.x	   = 320;
 	s_preferences.banner.generic.y	   = 16;
 	s_preferences.banner.color         = color_white;
@@ -702,7 +702,6 @@ static void Preferences_MenuInit( void )
 
 
 	// tabbed controls
-
 	s_preferences.crosshair.generic.type		= MTYPE_TEXT;
 	s_preferences.crosshair.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NODEFAULTINIT|QMF_OWNERDRAW;
 	s_preferences.crosshair.generic.callback	= Preferences_Event;

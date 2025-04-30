@@ -362,7 +362,7 @@ static void MapVote_MenuInit( void ) {
 	s_mapvote.frame.width				= 560;
 	s_mapvote.frame.height				= 360;
 
-	s_mapvote.banner.generic.type		= MTYPE_BTEXT;
+	s_mapvote.banner.generic.type		= MTYPE_TEXT;
 	s_mapvote.banner.generic.x			= 320;
 	s_mapvote.banner.generic.y			= 16;
 	s_mapvote.banner.color				= color_white;

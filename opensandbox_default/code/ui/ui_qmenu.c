@@ -82,19 +82,15 @@ static void	Slider_Draw( menuelement_s *s );
 static void	SpinControl_Draw( menuelement_s *s );
 static sfxHandle_t SpinControl_Key( menuelement_s *l, int key );
 
-// text widget
-static void Text_Init( menuelement_s *b );
-static void Text_Draw( menuelement_s *b );
-
 // scrolllist widget
 sfxHandle_t ScrollList_Key( menuelement_s *l, int key );
 
 // proportional text widget
 static void PText_Draw( menuelement_s *b );
 
-// proportional banner text widget
-static void BText_Init( menuelement_s *b );
-static void BText_Draw( menuelement_s *b );
+//text widget
+static void Text_Init( menuelement_s *b );
+static void Text_Draw( menuelement_s *b );
 
 /*
 ===============
@@ -126,39 +122,6 @@ gitem_t	*UI_FindItemClassname( const char *classname ) {
 
 /*
 =================
-Text_Init
-=================
-*/
-static void Text_Init( menuelement_s *t )
-{
-	t->generic.flags |= QMF_INACTIVE;
-}
-
-/*
-=================
-Text_Draw
-=================
-*/
-static void Text_Draw( menuelement_s *t )
-{
-	int		x;
-	int		y;
-	char	buff[512];	
-	float*	color;
-
-	x = t->generic.x;
-	y = t->generic.y;
-		
-	if (t->generic.flags & QMF_GRAYED)
-		color = text_color_disabled;
-	else
-		color = t->color;
-
-	UI_DrawString( x, y, t->string, t->style, color );
-}
-
-/*
-=================
 BText_Init
 =================
 */
@@ -169,10 +132,10 @@ static void BText_Init( menuelement_s *t )
 
 /*
 =================
-BText_Draw
+Text_Draw
 =================
 */
-static void BText_Draw( menuelement_s *t )
+static void Text_Draw( menuelement_s *t )
 {
 	int		x;
 	int		y;
@@ -2210,9 +2173,9 @@ void ScrollList_Draw( menuelement_s *l )
 	gitem_t		*it;
 	const char	*info;
 	char		pic[MAX_QPATH];
-	float		select_x;
-	float		select_y;
-	int			select_i;
+	float		select_x = 0;
+	float		select_y = 0;
+	int			select_i = 0;
 
 	hasfocus = (l->generic.parent->cursor == l->generic.menuPosition);
 
@@ -2351,8 +2314,8 @@ void ScrollList_Draw( menuelement_s *l )
 		}
 	}
 
-	if(l->generic.style == 2){
-		if(strlen(l->itemnames[select_i]) > 0 && hasfocus && UI_CursorInRect( select_x, select_y, SMALLCHAR_WIDTH*l->width, SMALLCHAR_WIDTH*l->width)){
+	if(l->generic.style == 2 && hasfocus && UI_CursorInRect( select_x, select_y, (SMALLCHAR_WIDTH*l->width), SMALLCHAR_WIDTH*l->width)){
+		if(l->itemnames[select_i]){
 			float wordsize = (SMALLCHAR_HEIGHT*l->size);
 			select_x += wordsize;
 			select_y -= wordsize*1.45;
@@ -2422,10 +2385,6 @@ void Menu_AddItem( menuframework_s *menu, menuelement_s *item )
 				Bitmap_Init((menuelement_s*)item);
 				break;
 
-			case MTYPE_TEXT:
-				Text_Init((menuelement_s*)item);
-				break;
-
 			case MTYPE_SCROLLLIST:
 				ScrollList_Init((menuelement_s*)item);
 				break;
@@ -2434,7 +2393,7 @@ void Menu_AddItem( menuframework_s *menu, menuelement_s *item )
 				PText_Init((menuelement_s*)item);
 				break;
 
-			case MTYPE_BTEXT:
+			case MTYPE_TEXT:
 				BText_Init((menuelement_s*)item);
 				break;
 
@@ -2619,10 +2578,6 @@ void Menu_Draw( menuframework_s *menu )
 					Bitmap_Draw( (menuelement_s*)itemptr );
 					break;
 
-				case MTYPE_TEXT:
-					Text_Draw( (menuelement_s*)itemptr );
-					break;
-
 				case MTYPE_SCROLLLIST:
 					ScrollList_Draw( (menuelement_s*)itemptr );
 					break;
@@ -2631,8 +2586,8 @@ void Menu_Draw( menuframework_s *menu )
 					PText_Draw( (menuelement_s*)itemptr );
 					break;
 
-				case MTYPE_BTEXT:
-					BText_Draw( (menuelement_s*)itemptr );
+				case MTYPE_TEXT:
+					Text_Draw( (menuelement_s*)itemptr );
 					break;
 
 				default:
@@ -3321,7 +3276,23 @@ void UI_FindButtonPic( menuelement_s* e, int pic ) {
 	switch( pic ) {
 	case AST_BACK:
 		e->string = "menu/assets/back_0";
-		e->focuspic ="menu/assets/back_1";
+		e->focuspic = "menu/assets/back_1";
+		break;
+	case AST_OSLOGO:
+		e->string = "menu/sandbox_logo";
+		e->focuspic = "menu/sandbox_logo";
+		break;
+	case AST_MOD:
+		e->string = "menu/gamemode_default";
+		e->focuspic = "menu/gamemode_default";
+		break;
+	case AST_LINK:
+		e->string = "menu/officialsite";
+		e->focuspic = "menu/officialsite";
+		break;
+	case AST_ADDONBTN:
+		e->string = "menu/addonstoggle";
+		e->focuspic = "menu/addonstoggle";
 		break;
 	}
 }
@@ -3361,11 +3332,11 @@ void UI_GeneralCallback( void *ptr, int event ) {
 
 	switch( ((menucommon_s*)ptr)->excallbacktype ) {
 		case CB_COMMAND:
-
+			trap_Cmd_ExecuteText( EXEC_APPEND, ((menucommon_s*)ptr)->cmd );
 			break;
 	
 		case CB_VARIABLE:
-
+			//trap_Cvar_Set(((menucommon_s*)ptr)->var, null);
 			break;
 	
 		case CB_FUNC:
@@ -3387,7 +3358,7 @@ void UI_CreateUI(menuframework_s* menu, menuelement_s* e) {
 	}
 }
 
-void UI_CTextButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid) {
+void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid) {
 	e->generic.type					= MTYPE_PTEXT;
 	e->generic.x					= x;
 	e->generic.y					= y;
@@ -3437,7 +3408,7 @@ void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, f
 }
 
 void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size) {
-	e->generic.type				= MTYPE_BTEXT;
+	e->generic.type				= MTYPE_TEXT;
 	e->generic.x				= x;
 	e->generic.y				= y;
 	e->size						= size;
@@ -3473,6 +3444,31 @@ void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, i
 		e->generic.excallbacktype	= CB_FUNC;
 		e->generic.func				= func;
 	}
+	e->generic.x					= x;
+	e->generic.y					= y;
+	e->width						= w;
+	e->height						= h;
+}
+
+void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid) {
+	UI_FindButtonPic(e, pic);
+
+	e->generic.type					= MTYPE_BITMAP;
+	e->generic.flags				= flags;
+	e->generic.callback				= callback;
+	e->generic.callid				= callid;
+	e->generic.excallback			= UI_GeneralCallback;
+	if(cmd){
+		e->generic.excallbacktype	= CB_COMMAND;
+		e->generic.cmd				= cmd;
+	} else if(var){
+		e->generic.excallbacktype	= CB_VARIABLE;
+		e->generic.var				= var;
+	} else if(func){
+		e->generic.excallbacktype	= CB_FUNC;
+		e->generic.func				= func;
+	}
+	e->generic.flags				|= QMF_INACTIVE;
 	e->generic.x					= x;
 	e->generic.y					= y;
 	e->width						= w;

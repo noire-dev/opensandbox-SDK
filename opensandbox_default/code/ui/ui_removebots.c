@@ -388,7 +388,7 @@ static void UI_RemoveBotsMenu_Init( int action) {
 	UI_RemoveBotsMenu_SetBotNames();
 	count = removeBotsMenuInfo.numBots < 7 ? removeBotsMenuInfo.numBots : 7;
 
-	removeBotsMenuInfo.banner.generic.type		= MTYPE_BTEXT;
+	removeBotsMenuInfo.banner.generic.type		= MTYPE_TEXT;
 	removeBotsMenuInfo.banner.generic.x			= 320;
 	removeBotsMenuInfo.banner.generic.y			= 16;
 	removeBotsMenuInfo.banner.color				= color_white;

@@ -147,7 +147,7 @@ static void UI_DriverInfo_Menu( void )
 	s_driverinfo.menu.fullscreen = qtrue;
 	s_driverinfo.menu.draw       = DriverInfo_MenuDraw;
 
-	s_driverinfo.banner.generic.type  = MTYPE_BTEXT;
+	s_driverinfo.banner.generic.type  = MTYPE_TEXT;
 	s_driverinfo.banner.generic.x	  = 320;
 	s_driverinfo.banner.generic.y	  = 16;
 	s_driverinfo.banner.color	      = color_white;
@@ -934,7 +934,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.menu.fullscreen = qtrue;
 	s_graphicsoptions.menu.draw       = GraphicsOptions_MenuDraw;
 
-	s_graphicsoptions.banner.generic.type  = MTYPE_BTEXT;
+	s_graphicsoptions.banner.generic.type  = MTYPE_TEXT;
 	s_graphicsoptions.banner.generic.x	   = 320;
 	s_graphicsoptions.banner.generic.y	   = 16;
 	s_graphicsoptions.banner.color         = color_white;

@@ -137,7 +137,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.menu.native 	   = qfalse;
 	saveConfig.menu.fullscreen = qtrue;
 
-	saveConfig.banner.generic.type		= MTYPE_BTEXT;
+	saveConfig.banner.generic.type		= MTYPE_TEXT;
 	saveConfig.banner.generic.x			= 320;
 	saveConfig.banner.generic.y			= 16;
 	if(cl_language.integer == 0){

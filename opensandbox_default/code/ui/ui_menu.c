@@ -22,257 +22,88 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-/*
-=======================================================================
-
-MAIN MENU
-
-=======================================================================
-*/
 
 #include "ui_local.h"
+#include "ui_startserver_q3.h"
 
-#define MODLOADER				"menu/gamemode_default"
-
-#define ID_RESUME				10
-#define ID_SINGLEPLAYER			11
-#define ID_MULTIPLAYER			12
-#define ID_SETUP				13
-#define ID_DEMOS				14
-#define ID_MODS					15
-#define ID_EXIT					16
-#define ID_DISCONNECT			17
-#define ID_SKIRMISH             18
-#define ID_PLAYERNAME			19
-#define ID_GAMEMODEP			20
-#define ID_LINK					21
-#define ID_MODLOADER			22
-#define ID_TOGGLEADDONS			23
-#define ID_MODLIST				24
-
-#define LINK					"menu/officialsite"
-#define M_ADDONSTOGGLE			"menu/addonstoggle"
-#define MAIN_MENU_VERTICAL_SPACING		34
-
-#define MAIN_MENU_CENTER 200
-
-vec4_t color_translucent	= {1.0f, 1.0f, 1.0f, 0.2f};
+#define ID_LINK			100
+#define ID_ADDONS		99
+#define ID_MODLIST		98
 
 typedef struct {
 	menuframework_s	menu;
+	menuelement_s	e[OSUI_MAX_ELEMENTS];
 
-	menuelement_s		workshop;
-    menuelement_s	modloader;
-	menuelement_s	link;
-	menuelement_s	addonstoggle;
-	menuelement_s		resume;
-	menuelement_s		singleplayer;
-	menuelement_s      skirmish;
-	menuelement_s		multiplayer;
-	menuelement_s		setup;
-	menuelement_s		demos;
-	menuelement_s		mods;
-	menuelement_s		disconnect;
-	menuelement_s		exit;
-	menuelement_s		name;
-	menuelement_s	modlist;
-	
-	char			names[524288];
-	char*			configlist[524288];
-
-	menuelement_s	logo;
+	char			names1[524288];
+	char*			list1[524288];
+	char 			error[4096];
 } mainmenu_t;
 
+static mainmenu_t main;
 
-static mainmenu_t s_main;
-
-typedef struct {
-	menuframework_s menu;	
-	char errorMessage[4096];
-} errorMessage_t;
-
-static errorMessage_t s_errorMessage;
-
-/*
-=================
-MainMenu_ReloadAction
-=================
-*/
 static void MainMenu_ReloadAction( qboolean result ) {
-	if( !result ) {
-		return;
-	}
+	if( !result ) { return; }
+
 	trap_Cmd_ExecuteText( EXEC_APPEND, "game_restart;" );
 }
 
-/*
-=================
-MainMenu_LoadScript
-=================
-*/
-static qboolean MainMenu_LoadScript( const char* filename )
-{
-	UI_PopMenu();
-	MainMenu_ReloadGame();
-	return qtrue;
-}
-
-void MainMenu_ReloadGame( void )
+static void MainMenu_ReloadGame( void )
 {
 	if(cl_language.integer == 0){
-	UI_ConfirmMenu( "RELOAD GAME?", MainMenu_ReloadAction );
+		UI_ConfirmMenu( "RELOAD GAME?", MainMenu_ReloadAction );
 	}
 	if(cl_language.integer == 1){
-	UI_ConfirmMenu( "ПЕРЕЗАГРУЗИТЬ ИГРУ?", MainMenu_ReloadAction );
+		UI_ConfirmMenu( "ПЕРЕЗАГРУЗИТЬ ИГРУ?", MainMenu_ReloadAction );
 	}
 }
 
-/*
-=================
-Main_MenuEvent
-=================
-*/
-void Main_MenuEvent (void* ptr, int event) {
-	if( event != QM_ACTIVATED ) {
-		return;
-	}
+static void Main_MenuEvent (void* ptr, int event) {
+	if( event != QM_ACTIVATED ) { return; }
 
-	switch( ((menucommon_s*)ptr)->id ) {
-	case ID_RESUME:
-		UI_ForceMenuOff();
-		break;
-
-	case ID_SINGLEPLAYER:
-        if(ui_singlemode.integer){
-            trap_Cmd_ExecuteText( EXEC_APPEND, "ns_openscript_ui new_game.ns \n" );
-        }
-		UI_StartServerMenu( qtrue );
-		break;
-
-    case ID_SKIRMISH:
-        UI_StartServerMenu(qtrue);
-        break;
-
-	case ID_MULTIPLAYER:
-		if(!ui_singlemode.integer){
-		UI_ArenaServersMenu();
-		} else {
-		UI_CinematicsMenu(1);	
+	switch( ((menucommon_s*)ptr)->callid ) {
+	case ID_LINK:
+		if(trap_Cvar_VariableValue("os_windows")){
+			trap_System("start https://opensandbox.neocities.org/");
+		}
+		if(trap_Cvar_VariableValue("os_linux")){
+			trap_System("xdg-open https://opensandbox.neocities.org/");
+		}
+		if(trap_Cvar_VariableValue("os_macos")){
+			trap_System("open https://opensandbox.neocities.org/");
 		}
 		break;
-
-	case ID_SETUP:
-		UI_SetupMenu();
-		break;
-
-	case ID_DEMOS:
-		UI_DemosMenu();
-		break;
-
-	case ID_MODS:
-		UI_ModsMenu();
-		break;
-
-	case ID_PLAYERNAME:
-		UI_PlayerSettingsMenu();
-		break;
 		
-	case ID_GAMEMODEP:
-		UI_WorkshopMenu();
-		break;
-		
-	case ID_MODLOADER:
-		StartServer_ServerPage_Mods();
-		break;
-		
-	case ID_LINK:
-	if(trap_Cvar_VariableValue("os_windows")){
-		trap_System("start https://opensandbox.neocities.org/");
-	}
-	if(trap_Cvar_VariableValue("os_linux")){
-		trap_System("xdg-open https://opensandbox.neocities.org/");
-	}
-	if(trap_Cvar_VariableValue("os_macos")){
-		trap_System("open https://opensandbox.neocities.org/");
-	}
-		break;
-
-	case ID_DISCONNECT:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
-		break;
-
-	case ID_EXIT:
-		trap_Cmd_ExecuteText( EXEC_APPEND,"quit\n" );
-		break;
-	case ID_TOGGLEADDONS:
-	if(!uis.addonsdraw){
-		uis.addonsdraw = qtrue;
-	} else {
-		uis.addonsdraw = qfalse;
-	}
+	case ID_ADDONS:
+		if(!uis.addonsdraw){
+			uis.addonsdraw = qtrue;
+		} else {
+			uis.addonsdraw = qfalse;
+		}
 		UI_MainMenu();
 		break;
+
 	case ID_MODLIST:
-		trap_Cmd_ExecuteText( EXEC_INSERT, va("nsgui %s.ns \n", s_main.modlist.itemnames[s_main.modlist.curvalue]) );
+		trap_Cmd_ExecuteText( EXEC_INSERT, va("nsgui %s.ns \n", main.e[ID_MODLIST].itemnames[main.e[ID_MODLIST].curvalue]) );
 		break;
+
 	}
 }
-
-
-/*
-===============
-MainMenu_Cache
-===============
-*/
-void MainMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( MODLOADER );
-	trap_R_RegisterShaderNoMip( LINK );
-	trap_R_RegisterShaderNoMip( M_ADDONSTOGGLE );
-}
-
-sfxHandle_t ErrorMessage_Key(int key)
-{
-	trap_Cvar_Set( "com_errorMessage", "" );
-	UI_MainMenu();
-	return (menu_null_sound);
-}
-
-/*
-===============
-Main_MenuDraw
-TTimo: this function is common to the main menu and errorMessage menu
-===============
-*/
 
 static void Main_MenuDraw( void ) {
 	vec4_t			color = {0.85, 0.9, 1.0, 1};
-	char 			buffer[MAX_NAME_LENGTH];
 	vec4_t			modlistcolor = {0.00f, 0.00f, 0.00f, 0.40f};
 
-	if (strlen(s_errorMessage.errorMessage))
-	{
-		UI_DrawString( 320, 192, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+	Menu_Draw( &main.menu );
+
+	if (strlen(main.error)){
+		UI_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color );
 	}
-	else
-	{
-	   if(uis.addonsdraw){
-	   UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*SMALLCHAR_HEIGHT*1.25)+4, 10, modlistcolor);
-	   }
-	   // standard menu drawing
-	   Menu_Draw( &s_main.menu );
-	   UI_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color );
-   }
+	if(uis.addonsdraw){
+		UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*SMALLCHAR_HEIGHT*1.25)+4, 10, modlistcolor);
+	}
+	UI_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color );
 }
 
-/*
-===============
-UI_MainMenu
-
-The main menu only comes up when not in a game,
-so make sure that the attract loop server is down
-and that local cinematics are killed
-===============
-*/
 void UI_MainMenu( void ) {
 	int		y;
 	int		style;
@@ -281,280 +112,52 @@ void UI_MainMenu( void ) {
 	int		len;
 	char	*configname;
 
-	memset( &s_main, 0 ,sizeof(mainmenu_t) );
-	memset( &s_errorMessage, 0 ,sizeof(errorMessage_t) );
-
-	// com_errorMessage would need that too
-	MainMenu_Cache();
+	memset( &main, 0 ,sizeof(mainmenu_t) );
 	
-	trap_Cvar_VariableStringBuffer( "com_errorMessage", s_errorMessage.errorMessage, sizeof(s_errorMessage.errorMessage) );
-	if (strlen(s_errorMessage.errorMessage))
-	{	
-		s_errorMessage.menu.draw = Main_MenuDraw;
-		s_errorMessage.menu.key = ErrorMessage_Key;
-		s_errorMessage.menu.fullscreen = qtrue;	
+	trap_Cvar_VariableStringBuffer( "com_errorMessage", main.error, sizeof(main.error) );
 
-		trap_Key_SetCatcher( KEYCATCH_UI );
-		uis.menusp = 0;
-		UI_PushMenu ( &s_errorMessage.menu );
-		
-		return;
-	}
-
-	sizeScale = 1.00;
-	style = UI_CENTER | UI_DROPSHADOW;
-
-	MainMenu_Cache();
-
-	s_main.menu.draw = Main_MenuDraw;
-	s_main.menu.fullscreen = qtrue;
-	s_main.menu.native = qfalse;
-
-	s_main.modloader.generic.type		= MTYPE_BITMAP;
-	s_main.modloader.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.modloader.generic.id			= ID_MODLOADER;
-	s_main.modloader.generic.callback	= Main_MenuEvent;
-	s_main.modloader.generic.x			= 390 + 256*0.62 + 5 + uis.wideoffset;
-	s_main.modloader.generic.y			= 450;
-	s_main.modloader.width				= 256*0.62;
-	s_main.modloader.height				= 38*0.62;
-	
-	s_main.link.generic.type		= MTYPE_BITMAP;
-	s_main.link.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.link.generic.id			= ID_LINK;
-	s_main.link.generic.callback	= Main_MenuEvent;
-	s_main.link.generic.x			= 390 + uis.wideoffset;
-	s_main.link.generic.y			= 450;
-	s_main.link.width				= 256*0.62;
-	s_main.link.height				= 38*0.62;
-	
-	s_main.addonstoggle.generic.type			= MTYPE_BITMAP;
-	s_main.addonstoggle.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.addonstoggle.generic.id			= ID_TOGGLEADDONS;
-	s_main.addonstoggle.generic.callback		= Main_MenuEvent;
-	s_main.addonstoggle.generic.x			= 625 + uis.wideoffset;
-	s_main.addonstoggle.generic.y			= 2;
-	s_main.addonstoggle.width				= 24;
-	s_main.addonstoggle.height				= 12;
+	main.menu.draw = Main_MenuDraw;
+	main.menu.fullscreen = qtrue;
+	main.menu.native = qfalse;
 
 	y = 145;
-	s_main.resume.generic.type				= MTYPE_PTEXT;
-	s_main.resume.generic.flags				= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.resume.generic.id				= ID_RESUME;
-	s_main.resume.generic.callback			= Main_MenuEvent;
-	s_main.resume.generic.x					= 64 - uis.wideoffset;
-	s_main.resume.generic.y					= y;
-	s_main.resume.color						= color_white;
-	s_main.resume.style		    			= UI_LEFT|UI_SMALLFONT;
-
 	if(uis.onmap){
-		y += 35;
+		UI_CButton(&main.e[0], 64 - uis.wideoffset, y, "Resume game", UI_LEFT, 1.00, NULL, NULL, UI_ForceMenuOff, NULL, 0); y += 36;
 	}
-	s_main.singleplayer.generic.type		= MTYPE_PTEXT;
-	s_main.singleplayer.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.singleplayer.generic.id			= ID_SINGLEPLAYER;
-	s_main.singleplayer.generic.callback	= Main_MenuEvent;
-	s_main.singleplayer.generic.x			= 64 - uis.wideoffset;
-	s_main.singleplayer.generic.y			= y;
-	s_main.singleplayer.color				= color_white;
-	s_main.singleplayer.style		    	= UI_LEFT|UI_SMALLFONT;
-	
-	y += 18;
-	s_main.multiplayer.generic.type		= MTYPE_PTEXT;
-	s_main.multiplayer.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
-	s_main.multiplayer.generic.callback	= Main_MenuEvent;
-	s_main.multiplayer.generic.x			= 64 - uis.wideoffset;
-	s_main.multiplayer.generic.y			= y;
-	s_main.multiplayer.color				= color_white;
-	s_main.multiplayer.style		    	= UI_LEFT|UI_SMALLFONT;
-	
-	y += 35;
-	s_main.workshop.generic.type		= MTYPE_PTEXT;
-	s_main.workshop.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.workshop.generic.id			= ID_GAMEMODEP;
-	s_main.workshop.generic.callback	= Main_MenuEvent;
-	s_main.workshop.generic.x			= 64 - uis.wideoffset;
-	s_main.workshop.generic.y			= y;
-	s_main.workshop.color				= color_white;
-	s_main.workshop.style		    	= UI_LEFT|UI_SMALLFONT;
-
-	y += 19;
-	s_main.name.generic.type			= MTYPE_PTEXT;
-	s_main.name.generic.flags			= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.name.generic.x				= 64 - uis.wideoffset;
-	s_main.name.generic.y				= y;
-	s_main.name.generic.id				= ID_PLAYERNAME;
-	s_main.name.generic.callback		= Main_MenuEvent;
-	s_main.name.color					= color_white;
-	s_main.name.style					= UI_LEFT|UI_SMALLFONT;
-	
-	y += 19;
-	s_main.mods.generic.type		= MTYPE_PTEXT;
-	s_main.mods.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.mods.generic.id			= ID_MODS;
-	s_main.mods.generic.callback	= Main_MenuEvent;
-	s_main.mods.generic.x			= 64 - uis.wideoffset;
-	s_main.mods.generic.y			= y;
-	s_main.mods.color				= color_white;
-	s_main.mods.style		    	= UI_LEFT|UI_SMALLFONT;
-	
-	y += 19;
-	s_main.demos.generic.type		= MTYPE_PTEXT;
-	s_main.demos.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.demos.generic.id			= ID_DEMOS;
-	s_main.demos.generic.callback	= Main_MenuEvent;
-	s_main.demos.generic.x			= 64 - uis.wideoffset;
-	s_main.demos.generic.y			= y;
-	s_main.demos.color				= color_white;
-	s_main.demos.style		    	= UI_LEFT|UI_SMALLFONT;
-	
-	y += 36;
-	s_main.setup.generic.type		= MTYPE_PTEXT;
-	s_main.setup.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.setup.generic.id			= ID_SETUP;
-	s_main.setup.generic.callback	= Main_MenuEvent;
-	s_main.setup.generic.x			= 64 - uis.wideoffset;
-	s_main.setup.generic.y			= y;
-	s_main.setup.color				= color_white;
-	s_main.setup.style		    	= UI_LEFT|UI_SMALLFONT;
-	
-	y += 36;
-	s_main.disconnect.generic.type		= MTYPE_PTEXT;
-	s_main.disconnect.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.disconnect.generic.id		= ID_DISCONNECT;
-	s_main.disconnect.generic.callback	= Main_MenuEvent;
-	s_main.disconnect.generic.x			= 64 - uis.wideoffset;
-	s_main.disconnect.generic.y			= y;
-	s_main.disconnect.color				= color_white;
-	s_main.disconnect.style		    	= UI_LEFT|UI_SMALLFONT;
-
+	if(ui_singlemode.integer){
+		UI_CButton(&main.e[1], 64 - uis.wideoffset, y, "Start New Game", UI_LEFT, 1.00, "ns_openscript_ui new_game.ns\n", NULL, NULL, NULL, 0); y += 18;
+	} else {
+		UI_CButton(&main.e[1], 64 - uis.wideoffset, y, "Start New Game", UI_LEFT, 1.00, NULL, NULL, UI_StartServerMenu, NULL, 0); y += 18;
+	}
+	if(ui_singlemode.integer){
+		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Load Saved Game", UI_LEFT, 1.00, NULL, NULL, UI_SavesMenu_Load, NULL, 0); y += 36;
+	} else {
+		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Find Multiplayer Game", UI_LEFT, 1.00, NULL, NULL, UI_ArenaServersMenu, NULL, 0); y += 36;
+	}
+	UI_CButton(&main.e[3], 64 - uis.wideoffset, y, "Workshop", UI_LEFT, 1.00, NULL, NULL, UI_WorkshopMenu, NULL, 0); y += 18;
+	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerSettingsMenu, NULL, 0); y += 18;
+	UI_CButton(&main.e[5], 64 - uis.wideoffset, y, "Mods", UI_LEFT, 1.00, NULL, NULL, UI_ModsMenu, NULL, 0); y += 18;
+	UI_CButton(&main.e[6], 64 - uis.wideoffset, y, "Demos", UI_LEFT, 1.00, NULL, NULL, UI_DemosMenu, NULL, 0); y += 36;
+	UI_CButton(&main.e[7], 64 - uis.wideoffset, y, "Options", UI_LEFT, 1.00, NULL, NULL, UI_Setup, NULL, 0); y += 36;
 	if(uis.onmap){
-		y += 19;
+		UI_CButton(&main.e[8], 64 - uis.wideoffset, y, "Disconnect", UI_LEFT, 1.00, "disconnect \n", NULL, NULL, NULL, 0); y += 18;
 	}
-	s_main.exit.generic.type		= MTYPE_PTEXT;
-	s_main.exit.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.exit.generic.id			= ID_EXIT;
-	s_main.exit.generic.callback	= Main_MenuEvent;
-	s_main.exit.generic.x			= 64 - uis.wideoffset;
-	s_main.exit.generic.y			= y;
-	s_main.exit.color				= color_white;
-	s_main.exit.style		    	= UI_LEFT|UI_SMALLFONT;
+	UI_CButton(&main.e[9], 64 - uis.wideoffset, y, "Quit", UI_LEFT, 1.00, "quit \n", NULL, NULL, NULL, 0);
 
-	y += MAIN_MENU_VERTICAL_SPACING;
-	
-	if(cl_language.integer == 0){
-	s_main.resume.string				= "Resume game";
-    s_main.singleplayer.string			= "Start New Game";
-	if(!ui_singlemode.integer){
-    s_main.multiplayer.string			= "Find Multiplayer Game";
-	} else {
-	s_main.multiplayer.string			= "Load Singleplayer Game";
-	}
-    s_main.workshop.string			    = "Workshop";
-	s_main.name.string					= "Profile";
-    s_main.mods.string			   	 	= "Mods";
-    s_main.demos.string			    	= "Demos";
-    s_main.setup.string			    	= "Options";
-    s_main.disconnect.string			= "Disconnect";
-    s_main.exit.string			    	= "Quit";
-	}
-	if(cl_language.integer == 1){
-	s_main.resume.string				= "Продолжить игру";
-    s_main.singleplayer.string			= "Начать новую игру";
-	if(!ui_singlemode.integer){
-    s_main.multiplayer.string			= "Найти сетевую игру";
-	} else {
-	s_main.multiplayer.string			= "Загрузить сохр игру";
-	}
-    s_main.workshop.string			    = "Дополнения";
-	s_main.name.string					= "Профиль";
-    s_main.mods.string			    	= "Моды";
-    s_main.demos.string			    	= "Повторы";
-    s_main.setup.string			    	= "Настройки";
-    s_main.disconnect.string			= "Отключиться";
-    s_main.exit.string			    	= "Выйти";
-	}
+	UI_CPicture(&main.e[10], 58 - uis.wideoffset, 64, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, NULL, 0);
 
-	s_main.logo.generic.type			= MTYPE_BITMAP;
-	s_main.logo.generic.flags		= QMF_INACTIVE|QMF_HIGHLIGHT;
-	s_main.logo.generic.x			= 58 - uis.wideoffset;
-	s_main.logo.generic.y			= 64;
-	s_main.logo.width				= 158;
-	s_main.logo.height				= 55;
-	s_main.logo.focuspic 			= GUI_LOGO_NAME;
+	UI_CBitmap(&main.e[11], 315 + 256*0.62 + 5 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_MOD, 0, NULL, NULL, StartServer_ServerPage_Mods, NULL, 0);
+	UI_CBitmap(&main.e[ID_LINK], 315 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_LINK, 0, NULL, NULL, NULL, Main_MenuEvent, ID_LINK);
 
-	Menu_AddItem( &s_main.menu,	&s_main.logo);
-
-	s_main.modloader.string		= MODLOADER;
-	s_main.modloader.focuspic			= MODLOADER;
-	s_main.link.string			= LINK;
-	s_main.link.focuspic				= LINK;	
-	s_main.addonstoggle.string	= M_ADDONSTOGGLE;
-	s_main.addonstoggle.focuspic		= M_ADDONSTOGGLE;
-
-	s_main.modlist.generic.type			= MTYPE_SCROLLLIST;
-	s_main.modlist.generic.style		= 1;
-	s_main.modlist.size					= 1.25;
-	s_main.modlist.string				= "nsgui/icons";
-	s_main.modlist.generic.flags		= QMF_PULSEIFFOCUS;
-	s_main.modlist.generic.callback		= Main_MenuEvent;
-	s_main.modlist.generic.id			= ID_MODLIST;
-	s_main.modlist.generic.x			= 319 + uis.wideoffset;
-	s_main.modlist.generic.y			= 30;
-	s_main.modlist.width				= 32;
-	s_main.modlist.height				= 20;
-	s_main.modlist.numitems				= trap_FS_GetFileList( "nsgui", "ns", s_main.names, 524288 );
-	s_main.modlist.itemnames			= (const char **)s_main.configlist;
-	s_main.modlist.columns				= 1;
-	s_main.modlist.color				= color_white;
-	
-	if (!s_main.modlist.numitems) {
-		strcpy(s_main.names,"Empty");
-		s_main.modlist.numitems = 1;
-	}
-	else if (s_main.modlist.numitems > 65536)
-		s_main.modlist.numitems = 65536;
-
-	configname = s_main.names;
-	for ( i = 0; i < s_main.modlist.numitems; i++ ) {
-		s_main.modlist.itemnames[i] = configname;
-
-		// strip extension
-		len = strlen( configname );
-		if (!Q_stricmp(configname +  len - 3,".ns"))
-			configname[len-3] = '\0';
-
-		configname += len + 1;
-	}
-
-	if(!uis.onmap){
-		Menu_AddItem( &s_main.menu,	&s_main.modloader );
-		Menu_AddItem( &s_main.menu,	&s_main.link );
-	}
-	Menu_AddItem( &s_main.menu,	&s_main.addonstoggle );
-	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
-	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
-	Menu_AddItem( &s_main.menu,	&s_main.workshop );
-	Menu_AddItem( &s_main.menu,	&s_main.setup );
-	Menu_AddItem( &s_main.menu,	&s_main.demos );
-	Menu_AddItem( &s_main.menu,	&s_main.mods );
-	Menu_AddItem( &s_main.menu,	&s_main.exit );
-	Menu_AddItem( &s_main.menu,	&s_main.name );
+	UI_CBitmap(&main.e[ID_ADDONS], 613 + uis.wideoffset, 2, 24, 12, AST_ADDONBTN, 0, NULL, NULL, NULL, Main_MenuEvent, ID_ADDONS);
 	if(uis.addonsdraw){
-		Menu_AddItem( &s_main.menu, &s_main.modlist );
-	}
-	if(uis.onmap){
-		Menu_AddItem( &s_main.menu,	&s_main.resume );
-		Menu_AddItem( &s_main.menu,	&s_main.disconnect );
+		UI_CList(&main.e[ID_MODLIST], 320 + uis.wideoffset, 32, 32, 20, LST_ICONS, 1.24, 1, Main_MenuEvent, ID_MODLIST);
+		UI_FillList(&main.e[ID_MODLIST], "nsgui/", ".ns", main.names1, 524288, main.list1);
 	}
 
-	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
-	UI_PushMenu ( &s_main.menu );
+
+	UI_CreateUI( &main.menu, main.e);
+	trap_Key_SetCatcher( KEYCATCH_UI );
+	UI_PushMenu ( &main.menu );
 }
-
-
-
-
-

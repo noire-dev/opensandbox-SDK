@@ -1777,7 +1777,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.menu.native 	   = qfalse;
 	s_playermodel.menu.fullscreen = qtrue;
 
-	s_playermodel.banner.generic.type  = MTYPE_BTEXT;
+	s_playermodel.banner.generic.type  = MTYPE_TEXT;
 	s_playermodel.banner.generic.x     = 320;
 	s_playermodel.banner.generic.y     = 16;
 	if(cl_language.integer == 0){

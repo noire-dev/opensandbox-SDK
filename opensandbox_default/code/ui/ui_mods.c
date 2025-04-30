@@ -190,7 +190,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.menu.native 	   = qfalse;
 	s_mods.menu.fullscreen = qtrue;
 
-	s_mods.banner.generic.type		= MTYPE_BTEXT;
+	s_mods.banner.generic.type		= MTYPE_TEXT;
 	s_mods.banner.generic.x			= 320;
 	s_mods.banner.generic.y			= 16;
 	if(cl_language.integer == 0){

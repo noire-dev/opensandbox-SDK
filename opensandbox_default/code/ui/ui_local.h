@@ -66,18 +66,22 @@ typedef void (*voidfunc_f)(void);
 #define GUI_LOGO_INCLUDE "menu/assets/gui_include"
 #define GUI_LOGO_IMPROVED "menu/assets/gui_improved"
 #define GUI_LOGO_USING "menu/assets/gui_using"
-#define GUI_LOGO_NAME "menu/sandbox_logo"
 
 #define GUI_LOGO_X 570
 #define GUI_LOGO_Y 390
 
-#define	OSUI_MAX_ELEMENTS 99
+#define	OSUI_MAX_ELEMENTS 101
 
 #define LST_SIMPLE 		0
 #define LST_ICONS 		1
 #define LST_GRID 		2
 
 #define AST_BACK 		0
+
+#define AST_OSLOGO 		1000
+#define AST_MOD 		1001
+#define AST_LINK 		1002
+#define AST_ADDONBTN 	1003
 
 //
 // ui_main.c
@@ -263,13 +267,12 @@ qboolean UI_IsValidCvar(const char* cvar);
 #define MTYPE_SPINCONTROL		6
 #define MTYPE_FIELD				7
 #define MTYPE_RADIOBUTTON		8
-#define MTYPE_BITMAP			9	
-#define MTYPE_TEXT				10
-#define MTYPE_SCROLLLIST		11
-#define MTYPE_PTEXT				12
-#define MTYPE_BTEXT				13
+#define MTYPE_BITMAP			9
+#define MTYPE_SCROLLLIST		10
+#define MTYPE_PTEXT				11
+#define MTYPE_TEXT				12
 
-#define MTYPE_MAX				14
+#define MTYPE_MAX				13
 
 #define QMF_BLINK				0x00000001
 #define QMF_SMALLFONT			0x00000002
@@ -506,7 +509,7 @@ extern void UI_SandboxMainMenu(void);
 //
 // ui_setup.c
 //
-extern void UI_SetupMenu(void);
+extern void UI_Setup(void);
 
 //
 // ui_connect.c
@@ -526,11 +529,12 @@ extern void UI_DemosMenu( void );
 extern void Demos_Cache( void );
 
 //
-// ui_cinematics.c
+// ui_saves.c
 //
-extern void UI_CinematicsMenu( int num );
-extern void UI_CinematicsMenu_f( int num );
-extern void UI_CinematicsMenu_Cache( void );
+extern void UI_SavesMenu( int num );
+extern void UI_SavesMenu_Save( void );
+extern void UI_SavesMenu_Load( void );
+extern void UI_SavesMenu_Cache( void );
 
 //
 // ui_mods.c
@@ -581,7 +585,7 @@ extern void ArenaServers_Cache( void );
 //
 // ui_startserver.c group of files
 //
-extern void UI_StartServerMenu( qboolean multiplayer );
+extern void UI_StartServerMenu( void );
 extern void StartServer_Cache( void );
 extern void UI_BotSelect( char *bot );
 extern void UI_BotSelect_Cache( void );
@@ -1009,11 +1013,6 @@ void UI_NetworkOptionsMenu( void );
 //
 // ui_menu.c
 //
-
-extern vec4_t		color_translucent;
-
-
-extern void MainMenu_Cache( void );
 extern void UI_MainMenu(void);
 extern void MainMenu_ReloadGame(void);
 extern void UI_RegisterCvars( void );
@@ -1053,8 +1052,9 @@ void UI_saveMapEdMenu( void );
 void UI_MapCallVote( void );
 
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
-void UI_CTextButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
 void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid);
 void UI_FillList(menuelement_s* e, char* location, char* extension, char* names, int namesSize, char** configlist);

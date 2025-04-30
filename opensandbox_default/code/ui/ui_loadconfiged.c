@@ -125,7 +125,7 @@ static void loadMapEd_MenuInit( void ) {
 	s_loadMapEd.menu.native 	= qfalse;
 	s_loadMapEd.menu.fullscreen = qfalse;
 
-	s_loadMapEd.banner.generic.type	= MTYPE_BTEXT;
+	s_loadMapEd.banner.generic.type	= MTYPE_TEXT;
 	s_loadMapEd.banner.generic.x		= 320;
 	s_loadMapEd.banner.generic.y		= 16;
 	if(cl_language.integer == 0){

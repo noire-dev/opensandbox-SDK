@@ -140,7 +140,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.menu.native 	   = qfalse;
 	networkOptionsInfo.menu.fullscreen = qtrue;
 
-	networkOptionsInfo.banner.generic.type		= MTYPE_BTEXT;
+	networkOptionsInfo.banner.generic.type		= MTYPE_TEXT;
 	networkOptionsInfo.banner.generic.flags		= QMF_CENTER_JUSTIFY;
 	networkOptionsInfo.banner.generic.x			= 320;
 	networkOptionsInfo.banner.generic.y			= 16;
