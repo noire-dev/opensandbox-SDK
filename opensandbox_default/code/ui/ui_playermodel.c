@@ -205,17 +205,6 @@ typedef struct
 
 static playermodel_t s_playermodel;
 
-
-typedef struct {
-	menuelement_s*	control;
-
-	int 		anim;
-	float		row;
-	float		column;
-	char*	text;
-} animControls_t;
-
-
 enum {
 	MODELCHANGE_BODY,
 	MODELCHANGE_HEAD,
@@ -264,39 +253,6 @@ static const char* anim_sfx[] =
 	0
 };
 
-
-// controls for animation of model
-static animControls_t animControl[] = {
-	{ NULL, ANIM_RUN, 0.0, -0.7, "RUN"},
-	{ NULL, ANIM_BACK, 0.0, 0.7, "BACK"},
-	{ NULL, ANIM_STEPLEFT, 1.0, -0.7, "STEP LEFT"},
-	{ NULL, ANIM_STEPRIGHT, 1.0, 0.7, "STEP RIGHT"},
-	{ NULL, ANIM_JUMP, 2.0, -0.7, "JUMP"},
-	{ NULL, ANIM_CROUCH, 2.0, 0.7, "CROUCH"},
-	{ NULL, ANIM_WALK, 3.0, -0.7, "WALK"},
-	{ NULL, ANIM_SWIM, 3.0, 0.7, "SWIM"},
-	{ NULL, ANIM_IDLE, 4.0, 0.0, "STAND"},
-	{ NULL, ANIM_LOOKUP, 6.0, 0.0, "LOOK UP"},
-	{ NULL, ANIM_TURNLEFT, 7.0, -0.75, "LOOK LEFT"},
-	{ NULL, ANIM_TURNRIGHT, 7.0, 0.75, "LOOK RIGHT"},
-	{ NULL, ANIM_LOOKDOWN, 8.0, 0.0, "LOOK DOWN"},
-	{ NULL, ANIM_ATTACK, 10.0, 0.0, "FIRE!"},
-	{ NULL, ANIM_WEAPON1, 11.0, -1.3, "MELEE"},
-	{ NULL, ANIM_WEAPON2, 11.0, 0.0, "M-GUN"},
-	{ NULL, ANIM_WEAPON3, 11.0, 1.3, "SHOTGUN"},
-	{ NULL, ANIM_WEAPON4, 12.0, -1.3, "GRENADE"},
-	{ NULL, ANIM_WEAPON5, 12.0, 0.0, "ROCKET"},
-	{ NULL, ANIM_WEAPON6, 12.0, 1.3, "LIGHTNING"},
-	{ NULL, ANIM_WEAPON7, 13.0, -1.3, "RAILGUN"},
-	{ NULL, ANIM_WEAPON8, 13.0, 0.0, "PLASMA"},
-	{ NULL, ANIM_WEAPON9, 13.0, 1.3, "BFG"},
-	{ NULL, ANIM_GESTURE, 15.0, 0.0, "GESTURE"},
-	{ NULL, ANIM_DIE, 16.0, -1.1, "DEATH"},
-	{ NULL, ANIM_DIE2, 16.0, 0.0, "DEATH2"},
-	{ NULL, ANIM_DIE3, 16.0, 1.1, "DEATH3"},
-	{ NULL, ANIM_IDLE, 17.0, 0.0, "STAND"}
-};
-
 static const char* model_partchangeru[] =
 {
 	"Выбрать Тело",	// MODELCHANGE_BODY
@@ -337,45 +293,6 @@ static const char* anim_sfxru[] =
 	"Звуки персонажа on",	//
 	0
 };
-
-
-// controls for animation of model
-static animControls_t animControlru[] = {
-	{ NULL, ANIM_RUN, 0.0, -0.7, "БЕЖАТЬ"},
-	{ NULL, ANIM_BACK, 0.0, 0.7, "НАЗАД"},
-	{ NULL, ANIM_STEPLEFT, 1.0, -0.7, "ИДТИ ВЛЕВО"},
-	{ NULL, ANIM_STEPRIGHT, 1.0, 0.7, "ИДТИ ВПРАВО"},
-	{ NULL, ANIM_JUMP, 2.0, -0.7, "ПРЫЖОК"},
-	{ NULL, ANIM_CROUCH, 2.0, 0.7, "ПРИСЕСТЬ"},
-	{ NULL, ANIM_WALK, 3.0, -0.7, "ИДТИ"},
-	{ NULL, ANIM_SWIM, 3.0, 0.7, "ПЛАВАТЬ"},
-	{ NULL, ANIM_IDLE, 4.0, 0.0, "СТОЯТЬ"},
-	{ NULL, ANIM_LOOKUP, 6.0, 0.0, "СМОТРЕТЬ ВВЕРХ"},
-	{ NULL, ANIM_TURNLEFT, 7.0, -0.75, "СМОТРЕТЬ ВЛЕВО"},
-	{ NULL, ANIM_TURNRIGHT, 7.0, 0.75, "СМОТРЕТЬ ВПРАВО"},
-	{ NULL, ANIM_LOOKDOWN, 8.0, 0.0, "СМОТРЕТЬ ВНИЗ"},
-	{ NULL, ANIM_ATTACK, 10.0, 0.0, "АТАКА!"},
-	{ NULL, ANIM_WEAPON1, 11.0, -1.3, "БЛИЖНИЙ БОЙ"},
-	{ NULL, ANIM_WEAPON2, 11.0, 0.0, "АВТОМАТ"},
-	{ NULL, ANIM_WEAPON3, 11.0, 1.3, "ДРОБОВИК"},
-	{ NULL, ANIM_WEAPON4, 12.0, -1.3, "ГРАНАТЫ"},
-	{ NULL, ANIM_WEAPON5, 12.0, 0.0, "РАКЕТЫ"},
-	{ NULL, ANIM_WEAPON6, 12.0, 1.3, "МОЛНИЯ"},
-	{ NULL, ANIM_WEAPON7, 13.0, -1.3, "РЕЙЛГАН"},
-	{ NULL, ANIM_WEAPON8, 13.0, 0.0, "ПЛАЗМА"},
-	{ NULL, ANIM_WEAPON9, 13.0, 1.3, "БФГ"},
-	{ NULL, ANIM_GESTURE, 15.0, 0.0, "ЖЕСТ"},
-	{ NULL, ANIM_DIE, 16.0, -1.1, "СМЕРТЬ1"},
-	{ NULL, ANIM_DIE2, 16.0, 0.0, "СМЕРТЬ2"},
-	{ NULL, ANIM_DIE3, 16.0, 1.1, "СМЕРТЬ3"},
-	{ NULL, ANIM_IDLE, 17.0, 0.0, "СТОЯТЬ"}
-};
-
-
-static int num_animControls = sizeof(animControl)/sizeof(animControl[0]);
-
-
-
 
 /*
 =================
@@ -763,10 +680,6 @@ static void PlayerModel_ShowControls( void )
 			s_playermodel.models[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 		for (i = 0; i < MAX_SKINSPERPAGE; i++)
 			s_playermodel.skins[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
 	else {
 	if(!s_playermodel.showColor){
@@ -799,10 +712,6 @@ static void PlayerModel_ShowControls( void )
 			s_playermodel.modelChange.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 		else
 			s_playermodel.modelChange.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 	}
 	}
 	if(s_playermodel.showColor){
@@ -819,22 +728,11 @@ static void PlayerModel_ShowControls( void )
 		s_playermodel.modelChange.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 		s_playermodel.forceHeadMatch.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 
-//		s_playermodel.animsfx.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-/*		s_playermodel.animate.string     = MODEL_ANIMSELECT0;
-		s_playermodel.animate.focuspic         = MODEL_ANIMSELECT1;
-		s_playermodel.animate.shader   = 0;
-		s_playermodel.animate.focusshader   = 0;*/
-
 		// model icons
 		for (i = 0; i < MAX_MODELSPERPAGE; i++)
 			s_playermodel.models[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 		for (i = 0; i < MAX_SKINSPERPAGE; i++)
 			s_playermodel.skins[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-/*		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);*/
 	}
 }
 
@@ -857,8 +755,6 @@ static void PlayerModel_AnimEvent( void* ptr, int event )
 
 	a = (menuelement_s*)ptr;
 	id = a->generic.id - ID_ANIMTEXT0;
-
-	GUI_PlayerInfo_ChangeTimedAnimation(&s_playermodel.model, animControl[id].anim);
 }
 
 
@@ -1080,7 +976,6 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 		case ID_ANIMATE:
 			if (s_playermodel.showAnim)
 			{
-				GUI_PlayerInfo_ChangeAnimation(&s_playermodel.model, ANIM_IDLE);
 				s_playermodel.showAnim = qfalse;
 			}
 			else {
@@ -1429,22 +1324,6 @@ static qboolean PlayerModel_SetModelFromSelection(char* model)
 	}
 	return qfalse;
 }
-
-
-/*
-=================
-PlayerModel_RotateControlEvent
-=================
-*/
-static void PlayerModel_RotateControlEvent( void* ptr, int event )
-{
-	if (event != QM_ACTIVATED)
-		return;
-
-	PlayerInfo_ModelSpinEvent(&s_playermodel.model.spin, ((menucommon_s*)ptr)->id);
-}
-
-
 
 /*
 =================
@@ -2000,36 +1879,6 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.colorchange.itemnames				= model_colorchangeru;
 	}
 
-	if (NUMANIM_CONTROLS < num_animControls) {
-		trap_Print("Animation menu: not enough controls\n");
-		num_animControls = NUMANIM_CONTROLS;
-	}
-
-	// setup the animation controls
-	for (i=0; i < num_animControls; i++)
-	{
-		ctrl = &s_playermodel.animation[i];
-		animControl[i].control = ctrl;
-
-		ctrl->generic.type  = MTYPE_PTEXT;
-		ctrl->generic.flags = QMF_CENTER_JUSTIFY|QMF_SMALLFONT|QMF_PULSEIFFOCUS;
-		ctrl->generic.x	  = ANIMATION_X + ANIMATION_DX * animControl[i].column;
-		ctrl->generic.y	  = MODELARRAY_Y + ANIMATION_DY * (animControl[i].row + 0.5);
-		ctrl->generic.id = ID_ANIMTEXT0 + i;
-		ctrl->generic.callback = PlayerModel_AnimEvent;
-		if(cl_language.integer == 0){
-		ctrl->string	      = animControl[i].text;
-		}
-		if(cl_language.integer == 1){
-		ctrl->string	      = animControlru[i].text;		
-		}
-		ctrl->style		  = UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW;
-		ctrl->color         = color_white;
-	}
-
-	GUI_PlayerInfo_InitRotateModel(&s_playermodel.menu, &s_playermodel.model.spin,
-		PlayerModel_RotateControlEvent, 640 - 128 - 64, 480 - 64);
-
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.banner );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.ports );
 
@@ -2058,16 +1907,8 @@ static void PlayerModel_MenuInit( void )
 	//Menu_AddItem( &s_playermodel.menu,	&s_playermodel.colorchange );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.teamModel );
 
-	for (i=0; i < num_animControls; i++)
-	{
-		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.animation[i] );
-	}
-
 	// set initial states
 	GUI_PlayerInfo_InitModel(&s_playermodel.model);
-	s_playermodel.model.bNoIdleAnim = qtrue;
-	s_playermodel.model.bNoAutoUpdate = qtrue;
-	s_playermodel.model.allowCursorFire = qtrue;
 
 	PlayerModel_SetMenuItems();
 	PlayerModel_ShowControls();

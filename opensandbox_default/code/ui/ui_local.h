@@ -779,10 +779,7 @@ typedef struct {
 	qboolean bUnknownModel;
 	qboolean bUnknownHeadModel;
 	qboolean bUnknownLegsModel;
-	qboolean bNoIdleAnim;
-	qboolean bNoAutoUpdate;
 	qboolean bForceUpdate;
-	qboolean allowCursorFire;
 } modelAnim_t;
 
 
@@ -800,8 +797,6 @@ typedef void (*callbackOwnerDraw)(void* self);
 //extern void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time );
 //extern void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat );
 
-extern void GUI_PlayerInfo_ChangeTimedAnimation( modelAnim_t* m, int anim);
-extern void GUI_PlayerInfo_ChangeAnimation( modelAnim_t* m, int anim);
 extern void GUI_PlayerInfo_InitModel(modelAnim_t* m);
 extern void GUI_PlayerInfo_AnimateModel( modelAnim_t* m);
 
@@ -810,10 +805,6 @@ extern const char* GUI_ModelSkin( const char* modelname );
 
 extern void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel );
 extern qboolean GUI_PlayerInfo_IsTeamModel( void );
-
-// spin/rotate controls
-extern void PlayerInfo_ModelSpinEvent( modelRotate_t* rm, int id);
-extern void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, callbackFunc event_handler, int x, int y);
 
 //
 // ui_atoms.c
