@@ -54,7 +54,7 @@ typedef struct {
 	qboolean			waitingforkey;
 } controls_t; 	
 
-static controls_t s_controls;
+static controls_t controls;
 
 static bind_t g_bindings[] = {
 	{"+scores",					"show scores",			0,	-1, -1},
@@ -103,83 +103,83 @@ static const char* mousestyle_description[] = {
 Controls_Update
 =================
 */
-static void Controls_Update( void ) {
+static void Controls_Update( void ){
 	int		i, j, y;
 
 	// disable all controls in all groups
 	for( i = 0; i < C_MAX; i++ ) {
 		if(i == C_KEYS){
-			for( j = 0;	j <= KEYS_NUM; j++ ) {
-				s_controls.e[j].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
+			for( j = 0;	j <= KEYS_NUM; j++ ){
+				controls.e[j].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 			}
 		}
 		if(i == C_SETTINGS){
-			for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++ ) {
-				s_controls.e[j].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
+			for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++ ){
+				controls.e[j].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
 			}
 		}
 	}
 
 	// enable controls in active group (and count number of items for vertical centering)
-	if(s_controls.section == C_KEYS){
-		for( j = 0;	j <= KEYS_NUM; j++ ) {
-			s_controls.e[j].generic.flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
+	if(controls.section == C_KEYS){
+		for( j = 0;	j <= KEYS_NUM; j++ ){
+			controls.e[j].generic.flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
 		}
 	}
-	if(s_controls.section == C_SETTINGS){
-		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++ ) {
-			s_controls.e[j].generic.flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
+	if(controls.section == C_SETTINGS){
+		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++ ){
+			controls.e[j].generic.flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
 		}
 	}
 
 	// position controls
 	y = 80;
-	if(s_controls.section == C_KEYS){
-		for( j = 0; j <= KEYS_NUM; j++, y += SMALLCHAR_HEIGHT ) {
-			s_controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
-			s_controls.e[j].generic.y      = y-30;
-			s_controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
-			s_controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
-			s_controls.e[j].generic.top    = y-30;
-			s_controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
+	if(controls.section == C_KEYS){
+		for( j = 0; j <= KEYS_NUM; j++, y += SMALLCHAR_HEIGHT ){
+			controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
+			controls.e[j].generic.y      = y-30;
+			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
+			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
+			controls.e[j].generic.top    = y-30;
+			controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
 		}
 	}
-	if(s_controls.section == C_SETTINGS){
-		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++, y += SMALLCHAR_HEIGHT ) {
-			s_controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
-			s_controls.e[j].generic.y      = y-30;
-			s_controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
-			s_controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
-			s_controls.e[j].generic.top    = y-30;
-			s_controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
+	if(controls.section == C_SETTINGS){
+		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++, y += SMALLCHAR_HEIGHT ){
+			controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
+			controls.e[j].generic.y      = y-30;
+			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
+			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
+			controls.e[j].generic.top    = y-30;
+			controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
 		}
 	}
 
-	if( s_controls.waitingforkey ) {
+	if( controls.waitingforkey ){
 		// disable everybody
-		for( i = 0; i < s_controls.menu.nitems; i++ ) {
-			((menucommon_s*)(s_controls.menu.items[i]))->flags |= QMF_GRAYED;
+		for( i = 0; i < controls.menu.nitems; i++ ){
+			((menucommon_s*)(controls.menu.items[i]))->flags |= QMF_GRAYED;
 		}
 
 		// enable action item
-		((menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]))->flags &= ~QMF_GRAYED;
+		((menucommon_s*)(controls.menu.items[controls.menu.cursor]))->flags &= ~QMF_GRAYED;
 		return;
 	}
 
 	// enable everybody
-	for( i = 0; i < s_controls.menu.nitems; i++ ) {
-		((menucommon_s*)(s_controls.menu.items[i]))->flags &= ~QMF_GRAYED;
+	for( i = 0; i < controls.menu.nitems; i++ ){
+		((menucommon_s*)(controls.menu.items[i]))->flags &= ~QMF_GRAYED;
 	}
 
-	for( i = 90; i < 100; i++ ) {
-		s_controls.e[i].generic.flags &= ~(QMF_GRAYED | QMF_INACTIVE);
+	for( i = 90; i < 100; i++ ){
+		controls.e[i].generic.flags &= ~(QMF_GRAYED | QMF_INACTIVE);
 	}
-	switch (s_controls.section) {
+	switch (controls.section){
 		case C_KEYS:
-			s_controls.e[ID_KEYS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE);
+			controls.e[ID_KEYS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE);
 			break;
 		case C_SETTINGS:
-			s_controls.e[ID_SETTINGS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE);
+			controls.e[ID_SETTINGS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE);
 			break;
 	}
 }
@@ -189,7 +189,7 @@ static void Controls_Update( void ) {
 Controls_DrawKeyBinding
 =================
 */
-static void Controls_DrawKeyBinding( void *self ) {
+static void Controls_DrawKeyBinding( void *self ){
 	menuelement_s*	a;
 	int				x;
 	int				y;
@@ -223,12 +223,12 @@ static void Controls_DrawKeyBinding( void *self ) {
 		}
 	}
 
-	if (c) {
+	if (c){
 		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, color_select_bluo ); 
 		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight );
 		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight );
 
-		if (s_controls.waitingforkey) {
+		if (controls.waitingforkey){
 			UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight);
 			UI_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
 		} else {
@@ -237,7 +237,7 @@ static void Controls_DrawKeyBinding( void *self ) {
 			UI_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
 		}
 	} else {
-		if (a->generic.flags & QMF_GRAYED) {
+		if (a->generic.flags & QMF_GRAYED){
 			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
 			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
 		} else {
@@ -252,7 +252,7 @@ static void Controls_DrawKeyBinding( void *self ) {
 Controls_GetKeyAssignment
 =================
 */
-static void Controls_GetKeyAssignment (char *command, int *twokeys) {
+static void Controls_GetKeyAssignment (char *command, int *twokeys){
 	int		count;
 	int		j;
 	char	b[256];
@@ -260,12 +260,12 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys) {
 	twokeys[0] = twokeys[1] = -1;
 	count = 0;
 
-	for ( j = 0; j < 256; j++ ) {
+	for ( j = 0; j < 256; j++ ){
 		trap_Key_GetBindingBuf( j, b, 256 );
 		if ( *b == 0 ) {
 			continue;
 		}
-		if ( !Q_stricmp( b, command ) ) {
+		if ( !Q_stricmp( b, command ) ){
 			twokeys[count] = j;
 			count++;
 			if (count == 2)
@@ -279,7 +279,7 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys) {
 Controls_GetConfig
 =================
 */
-static void Controls_GetConfig( void ) {
+static void Controls_GetConfig( void ){
 	int		i;
 	int		twokeys[2];
 	bind_t*	bindptr;
@@ -288,7 +288,7 @@ static void Controls_GetConfig( void ) {
 	bindptr = g_bindings;
 
 	// iterate each command, get its numeric binding
-	for (i=0; ;i++,bindptr++) {
+	for (i=0; ;i++,bindptr++){
 		if (!bindptr->label)
 			break;
 
@@ -297,7 +297,7 @@ static void Controls_GetConfig( void ) {
 		bindptr->bind1 = twokeys[0];
 		bindptr->bind2 = twokeys[1];
 	}
-	s_controls.e[KEYS_NUM+1].curvalue = (trap_Cvar_VariableValue( "in_mouse" ) > 0) ? 1:0;
+	controls.e[KEYS_NUM+1].curvalue = (trap_Cvar_VariableValue( "in_mouse" ) > 0) ? 1:0;
 }
 
 /*
@@ -305,7 +305,7 @@ static void Controls_GetConfig( void ) {
 Controls_SetConfig
 =================
 */
-static void Controls_SetConfig( void ) {
+static void Controls_SetConfig( void ){
 	int		i;
 	bind_t*	bindptr;
 
@@ -331,15 +331,14 @@ static void Controls_SetConfig( void ) {
 Controls_MenuKey
 =================
 */
-static sfxHandle_t Controls_MenuKey( int key )
-{
+static sfxHandle_t Controls_MenuKey( int key ){
 	int			id;
 	int			i;
 	qboolean	found;
 	bind_t*		bindptr;
 	found = qfalse;
 
-	if (!s_controls.waitingforkey) {
+	if (!controls.waitingforkey) {
 		switch (key) {
 			case K_BACKSPACE:
 			case K_DEL:
@@ -361,7 +360,7 @@ static sfxHandle_t Controls_MenuKey( int key )
 
 		switch (key) {
 			case K_ESCAPE:
-				s_controls.waitingforkey = qfalse;
+				controls.waitingforkey = qfalse;
 				Controls_Update();
 				return (menu_out_sound);
 	
@@ -373,7 +372,7 @@ static sfxHandle_t Controls_MenuKey( int key )
 	if (key != -1) {
 		// remove from any other bind
 		bindptr = g_bindings;
-		for (i=0; ;i++,bindptr++) {
+		for (i=0; ;i++,bindptr++){
 			if (!bindptr->label)	
 				break;
 
@@ -389,26 +388,26 @@ static sfxHandle_t Controls_MenuKey( int key )
 	}
 
 	// assign key to local store
-	id      = ((menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]))->id;
+	id      = ((menucommon_s*)(controls.menu.items[controls.menu.cursor]))->id;
 	bindptr = g_bindings;
-	for (i=0; ;i++,bindptr++) {
+	for (i=0; ;i++,bindptr++){
 		if (!bindptr->label)	
 			break;
 		
-		if (bindptr->id == id) {
+		if (bindptr->id == id){
 			found = qtrue;
 			if (key == -1) {
-				if( bindptr->bind1 != -1 ) {
+				if( bindptr->bind1 != -1 ){
 					trap_Key_SetBinding( bindptr->bind1, "" );
 					bindptr->bind1 = -1;
 				}
-				if( bindptr->bind2 != -1 ) {
+				if( bindptr->bind2 != -1 ){
 					trap_Key_SetBinding( bindptr->bind2, "" );
 					bindptr->bind2 = -1;
 				}
-			} else if (bindptr->bind1 == -1) {
+			} else if (bindptr->bind1 == -1){
 				bindptr->bind1 = key;
-			} else if (bindptr->bind1 != key && bindptr->bind2 == -1) {
+			} else if (bindptr->bind1 != key && bindptr->bind2 == -1){
 				bindptr->bind2 = key;
 			} else {
 				trap_Key_SetBinding( bindptr->bind1, "" );
@@ -420,7 +419,7 @@ static sfxHandle_t Controls_MenuKey( int key )
 		}
 	}				
 		
-	s_controls.waitingforkey = qfalse;
+	controls.waitingforkey = qfalse;
 
 	if (found) {	
 		Controls_Update();
@@ -428,7 +427,7 @@ static sfxHandle_t Controls_MenuKey( int key )
 	}
 
 ignorekey:
-	return Menu_DefaultKey( &s_controls.menu, key );
+	return Menu_DefaultKey( &controls.menu, key );
 }
 
 /*
@@ -436,17 +435,16 @@ ignorekey:
 Controls_MenuEvent
 =================
 */
-static void Controls_MenuEvent( void* ptr, int event )
-{
+static void Controls_MenuEvent( void* ptr, int event ){
 	if (event != QM_ACTIVATED) { return; }
-	switch (((menucommon_s*)ptr)->id) {
+	switch (((menucommon_s*)ptr)->id){
 		case ID_KEYS:
-			s_controls.section = C_KEYS; 
+			controls.section = C_KEYS; 
 			Controls_Update();
 			break;
 
 		case ID_SETTINGS:
-			s_controls.section = C_SETTINGS; 
+			controls.section = C_SETTINGS; 
 			Controls_Update();
 			break;
 
@@ -456,7 +454,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 			break;
 
 		case KEYS_NUM+1:
-			trap_Cvar_SetValue( "in_mouse", (s_controls.e[KEYS_NUM+1].curvalue == 1) ? 1:-1);
+			trap_Cvar_SetValue( "in_mouse", (controls.e[KEYS_NUM+1].curvalue == 1) ? 1:-1);
 			trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 			break;		
 	}
@@ -467,10 +465,9 @@ static void Controls_MenuEvent( void* ptr, int event )
 Controls_ActionEvent
 =================
 */
-static void Controls_ActionEvent( void* ptr, int event )
-{
-	if ((event == QM_ACTIVATED) && !s_controls.waitingforkey){
-		s_controls.waitingforkey = 1;
+static void Controls_ActionEvent( void* ptr, int event ){
+	if ((event == QM_ACTIVATED) && !controls.waitingforkey){
+		controls.waitingforkey = 1;
 		Controls_Update();
 	}
 }
@@ -480,49 +477,49 @@ static void Controls_ActionEvent( void* ptr, int event )
 UI_Controls
 =================
 */
-void UI_Controls( void ) {
+void UI_Controls( void ){
 	int 		i;
 	int			y;
 
 	// zero set all our globals
-	memset( &s_controls, 0 ,sizeof(controls_t) );
+	memset( &controls, 0 ,sizeof(controls_t) );
 
-	s_controls.menu.key        					= Controls_MenuKey;
-	s_controls.menu.fullscreen 					= qtrue;
-	s_controls.menu.native 	   					= qfalse;
+	controls.menu.key        					= Controls_MenuKey;
+	controls.menu.fullscreen 					= qtrue;
+	controls.menu.native 	   					= qfalse;
 
-	UI_CText(&s_controls.e[89], OSUI_LOGO_X, OSUI_LOGO_Y+24, "CONTROLS", UI_LEFT, 1.80);
+	UI_CText(&controls.e[89], OSUI_LOGO_X, OSUI_LOGO_Y+24, "CONTROLS", UI_LEFT, 1.80);
 
 	y = OSUI_STANDARD_Y;
-	UI_CButton(&s_controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS); y += OSUI_SPACING_Y;
-	UI_CButton(&s_controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS); y += OSUI_SPACING_Y;
+	UI_CButton(&controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS); y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&s_controls.e[ID_BACK], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_BACK); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&controls.e[ID_BACK], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, NULL, Controls_MenuEvent, ID_BACK); y += OSUI_BIGSPACING_Y;
 
 	for(i = 0; i <= KEYS_NUM; i++){
-		s_controls.e[i].generic.type			= MTYPE_ACTION;
-		s_controls.e[i].generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
-		s_controls.e[i].generic.callback		= Controls_ActionEvent;
-		s_controls.e[i].generic.ownerdraw		= Controls_DrawKeyBinding;
-		s_controls.e[i].generic.id				= i;
+		controls.e[i].generic.type			= MTYPE_ACTION;
+		controls.e[i].generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
+		controls.e[i].generic.callback		= Controls_ActionEvent;
+		controls.e[i].generic.ownerdraw		= Controls_DrawKeyBinding;
+		controls.e[i].generic.id				= i;
 	}
 
-	UI_CSpinControl(&s_controls.e[KEYS_NUM+1], SCREEN_WIDTH*0.64, 0, "input method", 2.00, mousestyle_description, Controls_MenuEvent, KEYS_NUM+1);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", 2.00, "cl_freelook", RBT_NORMAL, NULL, 0);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", 2.00, "m_filter", RBT_NORMAL, NULL, 0);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", 2.00, "cl_run", RBT_NORMAL, NULL, 0);
-	UI_CSlider(&s_controls.e[KEYS_NUM+5], SCREEN_WIDTH*0.64, 0, "mouse speed", 2.00, "sensitivity", 2, 30, 1, NULL, 0);
+	UI_CSpinControl(&controls.e[KEYS_NUM+1], SCREEN_WIDTH*0.64, 0, "input method", 2.00, mousestyle_description, Controls_MenuEvent, KEYS_NUM+1);
+	UI_CRadioButton(&controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", 2.00, "cl_freelook", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", 2.00, "m_filter", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", 2.00, "cl_run", RBT_NORMAL, NULL, 0);
+	UI_CSlider(&controls.e[KEYS_NUM+5], SCREEN_WIDTH*0.64, 0, "mouse speed", 2.00, "sensitivity", 2, 30, 1, NULL, 0);
 
-	UI_CreateUI( &s_controls.menu, s_controls.e);
+	UI_CreateUI( &controls.menu, controls.e);
 
 	// initialize the current config
 	Controls_GetConfig();
 
 	// initial default section
-	s_controls.section = C_KEYS;
+	controls.section = C_KEYS;
 
 	// update the ui
 	Controls_Update();
 
-	UI_PushMenu( &s_controls.menu );
+	UI_PushMenu( &controls.menu );
 }

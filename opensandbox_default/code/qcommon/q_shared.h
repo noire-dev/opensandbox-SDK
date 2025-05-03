@@ -136,19 +136,18 @@ typedef enum {
 	ERR_FATAL,					// exit the entire game with a popup window
 	ERR_DROP,					// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,		// don't kill server
-	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_NEED_CD					// pop up the need-cd dialog
+	ERR_DISCONNECT
 } errorParm_t;
 
-#define BLINK_DIVISOR			100
-#define PULSE_DIVISOR			30
+#define BLINK_DIVISOR			200
+#define PULSE_DIVISOR			75
 
 #define UI_LEFT			0x00000000	// default
 #define UI_CENTER		0x00000001
 #define UI_RIGHT		0x00000002
 #define UI_FORMATMASK	0x00000007
-#define UI_SMALLFONT	0x00000010
-#define UI_BIGFONT		0x00000020	// default
+#define UI_SMALLFONT	0x00000010	// default
+#define UI_BIGFONT		0x00000020
 #define UI_GIANTFONT	0x00000040
 #define UI_DROPSHADOW	0x00000800
 #define UI_BLINK		0x00001000
