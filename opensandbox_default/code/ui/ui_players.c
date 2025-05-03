@@ -24,352 +24,27 @@
 // 
 // ui_players.c
 
-
-
-
 #include "ui_local.h"
-
-
-#define UI_TIMER_GESTURE		2300
-#define UI_TIMER_JUMP			1000
-#define UI_TIMER_LAND			130
-#define UI_TIMER_ATTACK			500
-#define	UI_TIMER_MUZZLE_FLASH	20
-
-#define JUMP_HEIGHT				56
 
 #define SWINGSPEED				0.3f
 
-#define SPIN_SPEED				0.9f
-#define COAST_TIME				1000
-
-#define DEFAULT_MODEL	"sarge"
+#define DEFAULT_MODEL			"beret"
 #define IDLE_ANIM_STARTTIME 	8000
 
 #define ANIM_SLOWDOWN 			1.7
 
-#define LIGHTNING_SFX_DURATION	964
-
-
-#define MODELSPIN_STOP "menu/assets/rotate_stop"
-#define MODELSPIN_STOP1 "menu/assets/rotate_stop1"
-#define MODELSPIN_PAUSE "menu/assets/rotate_pause"
-#define MODELSPIN_PAUSE1 "menu/assets/rotate_pause1"
-#define MODELSPIN_LEFT "menu/assets/rotate_left"
-#define MODELSPIN_LEFT1 "menu/assets/rotate_left1"
-#define MODELSPIN_RIGHT "menu/assets/rotate_right"
-#define MODELSPIN_RIGHT1 "menu/assets/rotate_right1"
-
-
-#define ID_MODELSPIN_STOP   1
-#define ID_MODELSPIN_LEFT   2
-#define ID_MODELSPIN_RIGHT	3
-#define ID_MODELSPIN_PAUSE	4
-
-
-
-
-// copied from cg_local.h
-typedef enum {
-	FOOTSTEP_NORMAL,
-	FOOTSTEP_BOOT,
-	FOOTSTEP_FLESH,
-	FOOTSTEP_MECH,
-	FOOTSTEP_ENERGY,
-	FOOTSTEP_METAL,
-	FOOTSTEP_SPLASH,
-
-	FOOTSTEP_TOTAL
-} footstep_t;
-
-
-typedef struct {
-	sfxHandle_t		gesture;
-	sfxHandle_t		footstep;
-	sfxHandle_t		jump;
-	sfxHandle_t		land;
-	sfxHandle_t 	death1;
-	sfxHandle_t 	death2;
-	sfxHandle_t 	death3;
-    sfxHandle_t		drop;
-
-	footstep_t footsteps;
-	sfxHandle_t step[4];
-} sfxModel_t;
-
-static sfxModel_t	sfxModel;
 static int			dp_realtime;
-static float		jumpHeight;
-static int			forceNextAnim;
 
 // set team model drawing here so all modelAnim_t
 // structs use the same value
-static qboolean drawTeamModel = qfalse;
-
-// Detection for model code crashing the UI (VM builds)
-// never expected to be true in a public release,
-// but might allow the UI to run if bugs have been
-// introduced into the model code
-static qboolean		crashProtected;
-static qboolean		startupCrashDetect = qtrue;
-static int 			crashAnimCount = 3;
-
-char* ui_footstepName[] = {
-	"step",
-	"boot",
-	"flesh",
-	"mech",
-	"energy",
-	"clank",
-	"splash"
-};
-
-/*
-===============
-PlayerInfo_PlayModelSound
-===============
-*/
-static void PlayerInfo_PlayModelSound(int torsoAnim, int legsAnim)
-{
-	sfxHandle_t sfx;
-	int channel;
-
-	if (!gui_animsfx.integer)
-		return;
-
-	sfx = 0;
-	channel = CHAN_VOICE;
-	switch (torsoAnim) {
-	case TORSO_GESTURE:
-		sfx = sfxModel.gesture;
-		break;
-	case BOTH_DEATH1:
-		sfx = sfxModel.death1;
-		break;
-	case BOTH_DEATH2:
-		sfx = sfxModel.death2;
-		break;
-	case BOTH_DEATH3:
-		sfx = sfxModel.death3;
-		break;
-	case TORSO_DROP:
-		sfx = sfxModel.drop;
-		channel = CHAN_BODY;
-		break;
-	}
-
-	if (sfx)
-		trap_S_StartLocalSound( sfx, channel);
-
-	sfx = 0;
-	switch (legsAnim) {
-	case LEGS_JUMP:
-		sfx = sfxModel.jump;
-		break;
-	case LEGS_LAND:
-		sfx = sfxModel.land;
-		break;	
-	}
-
-	if (sfx)
-		trap_S_StartLocalSound( sfx, CHAN_BODY);
-}
-
-
-/*
-===============
-PlayerInfo_PlayModelFootstep
-===============
-*/
-static void PlayerInfo_PlayModelFootstep(playerInfo_t* pi)
-{
-	lerpFrame_t* lf;
-	animation_t* anim;
-	int f, old, mid, animNum;
-
-	if (!gui_animsfx.integer)
-		return;
-
-	old = pi->oldFrame;
-	lf = &pi->legs;
-	anim = lf->animation;
-	f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
-
-	if ( f >= anim->numFrames ) {
-		f -= anim->numFrames;
-		if ( anim->loopFrames ) {
-			f %= anim->loopFrames;
-			f += anim->numFrames - anim->loopFrames;
-		}
-	}
-	pi->oldFrame = f;
-
-	animNum = lf->animationNumber & ~ANIM_TOGGLEBIT;
-	if (animNum != LEGS_RUN && animNum != LEGS_BACK)
-		return; 
-
-	mid = anim->numFrames/2;
-	if ((old <= mid && f > mid) || (old > f && f >= 0) )
-		trap_S_StartLocalSound( sfxModel.step[rand() & 3], CHAN_BODY );
-}
-
-/*
-===============
-UI_ForceLegsAnim
-===============
-*/
-static void UI_ForceLegsAnim( playerInfo_t *pi, int anim ) {
-	pi->legsAnim = ( ( pi->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-
-	if ( anim == LEGS_JUMP ) {
-		pi->legsAnimationTimer = UI_TIMER_JUMP;
-	}
-}
-
-
-/*
-===============
-UI_SetLegsAnim
-===============
-*/
-static void UI_SetLegsAnim( playerInfo_t *pi, int anim ) {
-	if ( pi->pendingLegsAnim ) {
-		anim = pi->pendingLegsAnim;
-		pi->pendingLegsAnim = 0;
-	}
-	UI_ForceLegsAnim( pi, anim );
-}
-
-
-/*
-===============
-UI_ForceTorsoAnim
-===============
-*/
-static void UI_ForceTorsoAnim( playerInfo_t *pi, int anim ) {
-	pi->torsoAnim = ( ( pi->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-
-	if ( anim == TORSO_GESTURE ) {
-		pi->torsoAnimationTimer = UI_TIMER_GESTURE;
-	}
-
-	if ( anim == TORSO_ATTACK || anim == TORSO_ATTACK2 ) {
-		pi->torsoAnimationTimer = UI_TIMER_ATTACK;
-	}
-}
-
-
-/*
-===============
-UI_SetTorsoAnim
-===============
-*/
-static void UI_SetTorsoAnim( playerInfo_t *pi, int anim ) {
-	if ( pi->pendingTorsoAnim ) {
-		anim = pi->pendingTorsoAnim;
-		pi->pendingTorsoAnim = 0;
-	}
-
-	UI_ForceTorsoAnim( pi, anim );
-}
-
-
-/*
-===============
-UI_TorsoSequencing
-===============
-*/
-static void UI_TorsoSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
-
-	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
-
-	if ( pi->torsoAnimationTimer > 0 ) {
-		return;
-	}
-
-	if( currentAnim == TORSO_GESTURE ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
-		return;
-	}
-
-	if( currentAnim == TORSO_ATTACK || currentAnim == TORSO_ATTACK2 ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
-		return;
-	}
-
-	if ( currentAnim == TORSO_RAISE ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
-		return;
-	}
-}
-
-
-/*
-===============
-UI_LegsSequencing
-===============
-*/
-static void UI_LegsSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
-
-	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
-
-	if ( pi->legsAnimationTimer > 0 ) {
-		if ( currentAnim == LEGS_JUMP ) {
-			jumpHeight = JUMP_HEIGHT * sin( M_PI * ( UI_TIMER_JUMP - pi->legsAnimationTimer ) / UI_TIMER_JUMP );
-		}
-		return;
-	}
-
-	if ( currentAnim == LEGS_JUMP ) {
-		UI_ForceLegsAnim( pi, LEGS_LAND );
-		pi->legsAnimationTimer = UI_TIMER_LAND;
-		jumpHeight = 0;
-		return;
-	}
-
-	if ( currentAnim == LEGS_LAND ) {
-		PlayerInfo_PlayModelSound(-1, LEGS_LAND);
-		UI_SetLegsAnim( pi, LEGS_IDLE );
-		return;
-	}
-}
-
-
-/*
-======================
-UI_PositionEntityOnTag
-======================
-*/
-static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
-							clipHandle_t parentModel, char *tagName ) {
-	int				i;
-	orientation_t	lerped;
-	
-	// lerp the tag
-	trap_CM_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
-		1.0 - parent->backlerp, tagName );
-
-	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
-	for ( i = 0 ; i < 3 ; i++ ) {
-		VectorMA( entity->origin, lerped.origin[i], parent->axis[i], entity->origin );
-	}
-
-	// cast away const because of compiler problems
-	MatrixMultiply( lerped.axis, ((refEntity_t*)parent)->axis, entity->axis );
-	entity->backlerp = parent->backlerp;
-}
-
+qboolean drawTeamModel = qfalse;
 
 /*
 ======================
 UI_PositionRotatedEntityOnTag
 ======================
 */
-static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
-							clipHandle_t parentModel, char *tagName ) {
+static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, clipHandle_t parentModel, char *tagName ) {
 	int				i;
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
@@ -388,7 +63,6 @@ static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_
 	MatrixMultiply( entity->axis, ((refEntity_t *)parent)->axis, tempAxis );
 	MatrixMultiply( lerped.axis, tempAxis, entity->axis );
 }
-
 
 /*
 ===============
@@ -410,7 +84,6 @@ static void UI_SetLerpFrameAnimation( playerInfo_t *ci, lerpFrame_t *lf, int new
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
 }
-
 
 /*
 ===============
@@ -473,7 +146,6 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation
 	}
 }
 
-
 /*
 ===============
 UI_PlayerAnimation
@@ -487,8 +159,6 @@ static void UI_PlayerAnimation( playerInfo_t *pi, int *legsOld, int *legs, float
 	if ( pi->legsAnimationTimer < 0 ) {
 		pi->legsAnimationTimer = 0;
 	}
-
-	UI_LegsSequencing( pi );
 
 	if ( pi->legs.yawing && ( pi->legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE ) {
 		UI_RunLerpFrame( pi, &pi->legs, LEGS_TURN );
@@ -505,14 +175,11 @@ static void UI_PlayerAnimation( playerInfo_t *pi, int *legsOld, int *legs, float
 		pi->torsoAnimationTimer = 0;
 	}
 
-	UI_TorsoSequencing( pi );
-
 	UI_RunLerpFrame( pi, &pi->torso, pi->torsoAnim );
 	*torsoOld = pi->torso.oldFrame;
 	*torso = pi->torso.frame;
 	*torsoBackLerp = pi->torso.backlerp;
 }
-
 
 /*
 ==================
@@ -619,7 +286,6 @@ static float UI_MovedirAdjustment( playerInfo_t *pi ) {
 	return -22;
 }
 
-
 /*
 ===============
 UI_PlayerAngles
@@ -688,91 +354,10 @@ static void UI_PlayerAngles( modelAnim_t* m, vec3_t legs[3], vec3_t torso[3], ve
 	AnglesSubtract( headAngles, torsoAngles, headAngles );
 	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
 
-	// ------------- model rotation ----------------
-
-	// Insert model rotation into legs only
-	// Torso and head are relative to the legs
-	// Do this here, before animation makes model "step" to rotate 
-	mr = &m->spin;
-	if (mr->useSpin) {
-		delta = 0.0;
-		if (!mr->paused) {
-			// roate at 90 degrees every 4 seconds
-			// or multiples of
-			delta = (float)(mr->rotate * uis.frametime) * 0.0225;
-
-			mr->yaw += delta;
-			if (mr->yaw > 360.0)
-				mr->yaw -= 360.0;
-
-			if (mr->yaw < -360.0)
-				mr->yaw += 360.0;
-
-		}
-		legsAngles[YAW] += mr->yaw;
-	}
-
 	AnglesToAxis( legsAngles, legs );
 	AnglesToAxis( torsoAngles, torso );
 	AnglesToAxis( headAngles, head );
 }
-
-
-/*
-===============
-UI_PlayerFloatSprite
-===============
-*/
-static void UI_PlayerFloatSprite( playerInfo_t *pi, vec3_t origin, qhandle_t shader ) {
-	refEntity_t		ent;
-
-	memset( &ent, 0, sizeof( ent ) );
-	VectorCopy( origin, ent.origin );
-	ent.origin[2] += 48;
-	ent.reType = RT_SPRITE;
-	ent.customShader = shader;
-	ent.radius = 10;
-	ent.renderfx = 0;
-	trap_R_AddRefEntityToScene( &ent );
-}
-
-
-/*
-======================
-UI_MachinegunSpinAngle
-======================
-*/
-float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
-	int		delta;
-	float	angle;
-	float	speed;
-	int		torsoAnim;
-
-	delta = dp_realtime - pi->barrelTime;
-	if ( pi->barrelSpinning ) {
-		angle = pi->barrelAngle + delta * SPIN_SPEED;
-	} else {
-		if ( delta > COAST_TIME ) {
-			delta = COAST_TIME;
-		}
-
-		speed = 0.5 * ( SPIN_SPEED + (float)( COAST_TIME - delta ) / COAST_TIME );
-		angle = pi->barrelAngle + delta * speed;
-	}
-
-	torsoAnim = pi->torsoAnim  & ~ANIM_TOGGLEBIT;
-	if( torsoAnim == TORSO_ATTACK2 ) {
-		torsoAnim = TORSO_ATTACK;
-	}
-	if ( pi->barrelSpinning == !(torsoAnim == TORSO_ATTACK) ) {
-		pi->barrelTime = dp_realtime;
-		pi->barrelAngle = AngleMod( angle );
-		pi->barrelSpinning = !!(torsoAnim == TORSO_ATTACK);
-	}
-
-	return angle;
-}
-
 
 /*
 ===============
@@ -803,8 +388,6 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	dp_realtime = time;
 
 	UI_AdjustFrom640( &x, &y, &w, &h );
-
-	y -= jumpHeight;
 
 	memset( &refdef, 0, sizeof( refdef ) );
 	memset( &legs, 0, sizeof(legs) );
@@ -917,13 +500,6 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	trap_R_AddRefEntityToScene( &head );
 
 	//
-	// add the chat icon
-	//
-	if ( pi->chat ) {
-		UI_PlayerFloatSprite( pi, origin, trap_R_RegisterShaderNoMip( "sprites/balloon3" ) );
-	}
-
-	//
 	// add an accent light
 	//
 	origin[0] -= 100;	// + = behind, - = in front
@@ -939,14 +515,12 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	trap_R_RenderScene( &refdef );
 }
 
-
 /*
 ==========================
 UI_RegisterClientSkin
 ==========================
 */
-static qboolean UI_RegisterClientSkin( playerInfo_t *pi, const char *modelName, const char *skinName, qboolean head, qboolean legs, qboolean model)
-{
+static qboolean UI_RegisterClientSkin( playerInfo_t *pi, const char *modelName, const char *skinName, qboolean head, qboolean legs, qboolean model) {
 	char		filename[MAX_QPATH];
 	qboolean 	skinLoaded = qfalse;
 
@@ -993,7 +567,6 @@ static qboolean UI_RegisterClientSkin( playerInfo_t *pi, const char *modelName, 
 	}
 }
 
-
 /*
 ======================
 UI_ParseAnimationFile
@@ -1030,7 +603,6 @@ static qboolean UI_ParseAnimationFile( const char *filename, playerInfo_t* pi) {
 	// parse the text
 	text_p = text;
 	skip = 0;	// quite the compiler warning
-	sfxModel.footsteps = FOOTSTEP_NORMAL;
 	pi->fixedtorso = qfalse;
 	pi->fixedlegs = qfalse;
 
@@ -1045,19 +617,6 @@ static qboolean UI_ParseAnimationFile( const char *filename, playerInfo_t* pi) {
 			token = COM_Parse( &text_p );
 			if ( !token ) {
 				break;
-			}
-			if ( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) ) {
-				sfxModel.footsteps = FOOTSTEP_NORMAL;
-			} else if ( !Q_stricmp( token, "boot" ) ) {
-				sfxModel.footsteps = FOOTSTEP_BOOT;
-			} else if ( !Q_stricmp( token, "flesh" ) ) {
-				sfxModel.footsteps = FOOTSTEP_FLESH;
-			} else if ( !Q_stricmp( token, "mech" ) ) {
-				sfxModel.footsteps = FOOTSTEP_MECH;
-			} else if ( !Q_stricmp( token, "energy" ) ) {
-				sfxModel.footsteps = FOOTSTEP_ENERGY;
-			} else {
-				Com_Printf( "Bad footsteps parm in %s: %s\n", filename, token );
 			}
 			continue;
 		} else if ( !Q_stricmp( token, "headoffset" ) ) {
@@ -1139,14 +698,12 @@ static qboolean UI_ParseAnimationFile( const char *filename, playerInfo_t* pi) {
 	return qtrue;
 }
 
-
 /*
 ==========================
 UI_RegisterClientModelname
 ==========================
 */
-qboolean UI_RegisterClientModelname( modelAnim_t* m)
-{
+qboolean UI_RegisterClientModelname( modelAnim_t* m) {
 	playerInfo_t *pi;
 
 	// separated skin and model names
@@ -1169,7 +726,7 @@ qboolean UI_RegisterClientModelname( modelAnim_t* m)
 	pi->headModel = 0;
 
 	// define which model we're working with
-	if (GUI_PlayerInfo_IsTeamModel()){
+	if (drawTeamModel){
 		modelSkinName = m->team_modelskin;
 		modelHeadName = m->team_headskin;
 		modelLegsName = m->team_legsskin;
@@ -1269,14 +826,12 @@ qboolean UI_RegisterClientModelname( modelAnim_t* m)
 	return qtrue;
 }
 
-
 /*
 ===============
 UI_PlayerInfo_SetModel
 ===============
 */
-static qboolean UI_PlayerInfo_SetModel( modelAnim_t* m )
-{
+static qboolean UI_PlayerInfo_SetModel( modelAnim_t* m ) {
 	playerInfo_t *pi;
 
 	pi = &m->player;
@@ -1289,18 +844,13 @@ static qboolean UI_PlayerInfo_SetModel( modelAnim_t* m )
 	return qtrue;
 }
 
-
 /*
 ===============
 UI_PlayerInfo_SetInfo
 ===============
 */
-static void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, qboolean chat ) {
+static void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles ) {
 	int			currentAnim;
-	int 		deathAnim;
-	qboolean	useDeathAnim;
-
-	pi->chat = chat;
 
 	// view angles
 	VectorCopy( viewAngles, pi->viewAngles );
@@ -1311,59 +861,23 @@ static void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim
 	if ( pi->newModel ) {
 		pi->newModel = qfalse;
 
-		jumpHeight = 0;
 		pi->pendingLegsAnim = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
+		pi->legsAnim = ( ( pi->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | legsAnim;
 		pi->legs.yawAngle = viewAngles[YAW];
 		pi->legs.yawing = qfalse;
 
 		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
+		pi->torsoAnim = ( ( pi->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | torsoAnim;
 		pi->torso.yawAngle = viewAngles[YAW];
 		pi->torso.yawing = qfalse;
 		pi->torso.pitchAngle = viewAngles[PITCH];
 		pi->torso.pitching = qfalse;
-
-		return;
-	}
-
-	deathAnim = 0;
-	useDeathAnim = qfalse;
-	if (torsoAnim == BOTH_DEATH1 || torsoAnim == BOTH_DEATH2 || torsoAnim == BOTH_DEATH3) {
-		deathAnim = torsoAnim;
-		useDeathAnim = qtrue;
-	}
-	if (legsAnim == BOTH_DEATH1 || legsAnim == BOTH_DEATH2 || legsAnim == BOTH_DEATH3) {
-		deathAnim = legsAnim;
-		useDeathAnim = qtrue;
-	}
-
-	// play sfx
-	PlayerInfo_PlayModelSound(torsoAnim, legsAnim);
-
-	if ( useDeathAnim ) {
-		torsoAnim = legsAnim = deathAnim;
-
-		jumpHeight = 0;
-		pi->pendingLegsAnim = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
-
-		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
-
 		return;
 	}
 
 	// leg animation
 	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
-	if ( legsAnim != LEGS_JUMP && ( currentAnim == LEGS_JUMP || currentAnim == LEGS_LAND ) ) {
-		pi->pendingLegsAnim = legsAnim;
-	}
-	else if ( legsAnim != currentAnim ) {
-		jumpHeight = 0;
-		pi->pendingLegsAnim = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
-	}
+	pi->pendingLegsAnim = legsAnim;
 
 	// torso animation
 	if ( torsoAnim == TORSO_STAND || torsoAnim == TORSO_STAND2 ) {
@@ -1371,341 +885,18 @@ static void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim
 	}
 
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
-
-	if ( currentAnim == TORSO_RAISE || currentAnim == TORSO_DROP ) {
-		pi->pendingTorsoAnim = torsoAnim;
-	}
-	else if ( ( currentAnim == TORSO_GESTURE || currentAnim == TORSO_ATTACK ) && ( torsoAnim != currentAnim ) ) {
-		pi->pendingTorsoAnim = torsoAnim;
-	}
-	else if ( torsoAnim != currentAnim ) {
-		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
-	}
 }
-
-//------------------------------------------------------------------------
-
-/*
-=================
-PlayerInfo_MergeModelViewAngles
-=================
-*/
-static void PlayerInfo_MergeModelViewAngles( modelAnim_t* m) {
-	switch( m->anim ) {
-	case ANIM_TURNLEFT:
-		m->viewangles[YAW] += 90;
-		break;
-
-	case ANIM_TURNRIGHT:
-		m->viewangles[YAW] -= 90;
-		break;
-
-	case ANIM_STEPLEFT:
-		m->moveangles[YAW] = m->viewangles[YAW] + 90;
-		break;
-
-	case ANIM_STEPRIGHT:
-		m->moveangles[YAW] = m->viewangles[YAW] - 90;
-		break;
-
-	case ANIM_LOOKUP:
-		m->viewangles[PITCH] += -45;
-		break;
-
-	case ANIM_LOOKDOWN:
-		m->viewangles[PITCH] += 45;
-		break;
-	default:
-		break;
-	}
-}
-
-/*
-=================
-PlayerInfo_SetAnimation
-=================
-*/
-static void PlayerInfo_SetAnimation( modelAnim_t* m)
-{
-	m->playerChat = qfalse;
-
-	switch( m->anim ) {
-	case ANIM_CHAT:
-		m->playerChat = qtrue;
-		m->playerLegs		     = LEGS_IDLE;
-		m->playerTorso			 = TORSO_STAND;
-		break;
-
-	case ANIM_IDLE:
-		m->playerLegs		     = LEGS_IDLE;
-		m->playerTorso			 = TORSO_STAND;
-		break;
-
-	case ANIM_SWIM:
-		m->playerLegs = LEGS_SWIM;
-		break;
-
-	case ANIM_RUN:
-		m->playerLegs = LEGS_RUN;
-		break;
-
-	case ANIM_WALK:
-		m->playerLegs = LEGS_WALK;
-		break;
-
-	case ANIM_BACK:
-		m->playerLegs = LEGS_BACK;
-		break;
-
-	case ANIM_JUMP:
-		m->playerLegs = LEGS_JUMP;
-		break;
-
-	case ANIM_CROUCH:
-		m->playerLegs = LEGS_IDLECR;
-		break;
-
-	case ANIM_TURNLEFT:
-		break;
-
-	case ANIM_TURNRIGHT:
-		break;
-
-	case ANIM_STEPLEFT:
-		m->playerLegs = LEGS_WALK;
-		break;
-
-	case ANIM_STEPRIGHT:
-		m->playerLegs = LEGS_WALK;
-		break;
-
-	case ANIM_LOOKUP:
-		break;
-
-	case ANIM_LOOKDOWN:
-		break;
-
-	case ANIM_ATTACK:
-		m->playerTorso = TORSO_ATTACK;
-		break;
-
-	case ANIM_GESTURE:
-		m->playerTorso = TORSO_GESTURE;
-		break;
-
-	case ANIM_DIE:
-		m->playerLegs = BOTH_DEATH1;
-		m->playerTorso = BOTH_DEATH1;
-		break;
-
-	case ANIM_DIE2:
-		m->playerLegs = BOTH_DEATH2;
-		m->playerTorso = BOTH_DEATH2;
-		break;
-
-	case ANIM_DIE3:
-		m->playerLegs = BOTH_DEATH3;
-		m->playerTorso = BOTH_DEATH3;
-		break;
-
-	default:
-		Com_Printf( "Unknown anim: %i\n", m->anim );
-		break;
-	}
-}
-
-/*
-=================
-PlayerInfo_IsDeathAnim
-=================
-*/
-static qboolean PlayerInfo_IsDeathAnim( int anim)
-{
-	if (anim == ANIM_DIE || anim == ANIM_DIE2 || anim == ANIM_DIE3)
-		return qtrue;
-
-	return qfalse;
-}
-
-
-
-
-/*
-=================
-PlayerInfo_UsableAnimation
-=================
-*/
-static qboolean PlayerInfo_UsableAnimation( modelAnim_t* m, int anim)
-{
-	int i;
-	int a;
-	qboolean death;
-
-	if (anim == 0 || anim == ANIM_IDLE || anim == ANIM_CHAT)
-		return qfalse;
-
-	// infrequent swimmer	
-	if (anim == ANIM_SWIM && random() > 0.3)
-		return qfalse;
-
-	// check anim not used recently
-	death = PlayerInfo_IsDeathAnim(anim);
-	for (i = 0; i < MAX_RECENT_ANIMS; i++) {
-		a = m->recent_anims[i];
-		if ( a == anim)
-			return qfalse;
-		if (death && PlayerInfo_IsDeathAnim(a))
-			return qfalse;
-	}
-
-	// reduce frequency of death animation
-	if (death && random() < 0.25) {
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
-=================
-PlayerInfo_ChangeTimedAnimation
-=================
-*/
-static void PlayerInfo_ChangeTimedAnimation( modelAnim_t* m)
-{
-	int changetime;
-	int anim;
-	int firetime;
-
-	if (forceNextAnim) {
-		anim = forceNextAnim;
-		forceNextAnim = 0;
-	}
-	else
-		do {
-			anim = Clamp_Random(ANIM_MAX - 1);
-		} while (!PlayerInfo_UsableAnimation(m, anim));
-
-	changetime = 5000;
-
-	switch( anim ) {
-	case ANIM_RUN:
-	case ANIM_WALK:
-	case ANIM_BACK:
-	case ANIM_SWIM:
-		break;
-
-	case ANIM_JUMP:
-		changetime = 3000;
-		break;
-
-	case ANIM_CROUCH:
-		break;
-
-	case ANIM_TURNLEFT:
-	case ANIM_TURNRIGHT:
-		break;
-
-	case ANIM_STEPLEFT:
-	case ANIM_STEPRIGHT:
-		break;
-
-	case ANIM_LOOKUP:
-	case ANIM_LOOKDOWN:
-		changetime = 2500;
-		break;
-
-	case ANIM_GESTURE:
-		changetime = 5000;
-		break;
-
-	case ANIM_DIE:
-	case ANIM_DIE2:
-	case ANIM_DIE3:
-		changetime = 5000;
-		break;
-
-	case ANIM_CHAT:
-		changetime = 2000;
-		break;
-
-	default:
-		break;
-	}
-
-	if (anim != ANIM_ATTACK) {
-		m->shotsRemaining = 0;
-		m->player.humTimer = 0;
-		m->player.delayFireTimer = 0;
-	}
-
-	// store the anim value
-	if (m->bDoingIdleAnim)
-	{
-		m->recent_anims[ m->recent_anims_index++ ] = anim;
-		if (m->recent_anims_index == MAX_RECENT_ANIMS)
-			m->recent_anims_index = 0;
-	}
-
-	// reset current anims that cause problems
-	if (PlayerInfo_IsDeathAnim(m->anim) || m->anim == ANIM_GESTURE || m->anim == ANIM_JUMP || m->anim == ANIM_ATTACK) {
-		m->playerTorso = TORSO_STAND;
-		m->playerLegs = LEGS_IDLE;
-		if (m->bDoingIdleAnim)
-		{
-			switch (Clamp_Random(5)) {
-			default:
-			case 0:
-				m->playerLegs = LEGS_IDLE; break;
-			case 1:
-				m->playerLegs = LEGS_RUN; break;
-			case 2:
-				m->playerLegs = LEGS_WALK; break;
-			case 3:
-				m->playerLegs = LEGS_IDLECR; break;
-			case 4:
-				m->playerLegs = LEGS_BACK; break;
-			case 5:
-				m->playerLegs = LEGS_SWIM; break;
-			}
-		}
-	}
-
-	// make the anim change
-	GUI_PlayerInfo_ChangeAnimation(m, anim);
-	m->NextIdleAnimTime = uis.realtime + changetime;
-}
-
-
-
-/*
-=================
-GUI_PlayerInfo_ChangeTimedAnimation
-=================
-*/
-void GUI_PlayerInfo_ChangeTimedAnimation( modelAnim_t* m, int anim)
-{
-	if (crashProtected)
-		return;
-
-	forceNextAnim = anim;
-	PlayerInfo_ChangeTimedAnimation(m);
-}
-
-
 
 /*
 =================
 PlayerInfo_CursorChanged
 =================
 */
-static qboolean PlayerInfo_CursorChanged( modelAnim_t* m)
-{
+static qboolean PlayerInfo_CursorChanged( modelAnim_t* m) {
 	// check for cursor position change
 	if (uis.cursorx != m->cursorx || uis.cursory != m->cursory) {
 		if (m->bDoingIdleAnim) {
-			GUI_PlayerInfo_ChangeAnimation(m, ANIM_IDLE);
+			GUI_PlayerInfo_UpdateAnimation(m);
 			m->bDoingIdleAnim = qfalse;
 		}
 		m->cursorx = uis.cursorx;
@@ -1717,16 +908,12 @@ static qboolean PlayerInfo_CursorChanged( modelAnim_t* m)
 	return qfalse;
 }
 
-
-
-
 /*
 =================
 PlayerInfo_ModelTrackCursor
 =================
 */
-static void PlayerInfo_ModelTrackCursor( modelAnim_t* m)
-{
+static void PlayerInfo_ModelTrackCursor( modelAnim_t* m) {
 	vec3_t cursor3d;
 	menuelement_s* b;
 
@@ -1740,10 +927,6 @@ static void PlayerInfo_ModelTrackCursor( modelAnim_t* m)
 
 	vectoangles(cursor3d, m->viewangles);
 
-	// prevent cursor movement "rotating" while body is spinning
-	if (m->spin.useSpin && m->spin.rotate)
-		m->viewangles[YAW] = 0;
-
 	VectorCopy(m->viewangles, m->moveangles);
 
 	// prevent stoop or back-breaking during attract mode
@@ -1755,29 +938,20 @@ static void PlayerInfo_ModelTrackCursor( modelAnim_t* m)
 			m->viewangles[PITCH] = -20;
 	}
 
-	// prevent cursor moving torso during death
-	if (PlayerInfo_IsDeathAnim(m->anim))
-		m->viewangles[PITCH] = 0;
-
 	// orient for co-ordinate system	
 	m->viewangles[PITCH] = -m->viewangles[PITCH];
 	m->viewangles[YAW]   += 180;
 
-	PlayerInfo_MergeModelViewAngles(m);
-
 	VectorCopy(m->viewangles, m->player.viewAngles);
 	VectorCopy(m->moveangles, m->player.moveAngles);
 }
-
-
 
 /*
 =================
 PlayerInfo_SetupNewModel
 =================
 */
-static void PlayerInfo_SetupNewModel( modelAnim_t* m)
-{
+static void PlayerInfo_SetupNewModel( modelAnim_t* m) {
 	char dir[MODELNAME_BUFFER];
 	int i;
 	char* fallback;
@@ -1799,9 +973,7 @@ static void PlayerInfo_SetupNewModel( modelAnim_t* m)
 		tmp_view[YAW] = 180 - 30;
 	}
 
-	forceNextAnim = ANIM_IDLE;
 	memset( &m->player, 0, sizeof(playerInfo_t));
-	memset( &sfxModel, 0, sizeof(sfxModel_t));
 
 	VectorCopy(tmp_view, m->viewangles);
 	VectorCopy(tmp_move, m->moveangles);
@@ -1814,143 +986,36 @@ static void PlayerInfo_SetupNewModel( modelAnim_t* m)
 		return;
 	}
 
-	//
-	// load sfx for model
-	//
-
-	// get model name only, handle case where "/default" assumed
-	slash = 0;
-	fallback = DEFAULT_MODEL;
-	if (GUI_PlayerInfo_IsTeamModel())
-		str = m->team_modelskin;
-	else
-		str = m->modelskin;
-
-	slash = strchr(str, '/');
-	if (slash)
-	{
-		Q_strncpyz(dir, str, slash - str + 1);
-	}
-	else
-	{
-		strcpy(dir, str);
-	}
-
-	// load the sfx, using fallback if not provided
-	sfxModel.gesture = trap_S_RegisterSound( va("sound/player/%s/taunt.wav", dir), qfalse );
-	if (!sfxModel.gesture)
-		sfxModel.gesture = trap_S_RegisterSound( va("sound/player/%s/taunt.wav", fallback), qfalse );
-
-	sfxModel.death1 = trap_S_RegisterSound( va("sound/player/%s/death1.wav", dir), qfalse );
-	if (!sfxModel.death1)
-		sfxModel.death1 = trap_S_RegisterSound( va("sound/player/%s/death1.wav", fallback), qfalse );
-
-	sfxModel.death2 = trap_S_RegisterSound( va("sound/player/%s/death2.wav", dir), qfalse );
-	if (!sfxModel.death2)
-		sfxModel.death2 = trap_S_RegisterSound( va("sound/player/%s/death2.wav", fallback), qfalse );
-
-	sfxModel.death3 = trap_S_RegisterSound( va("sound/player/%s/death3.wav", dir), qfalse );
-	if (!sfxModel.death3)
-		sfxModel.death3 = trap_S_RegisterSound( va("sound/player/%s/death3.wav", fallback), qfalse );
-
-	sfxModel.jump = trap_S_RegisterSound( va("sound/player/%s/jump1.wav", dir), qfalse );
-	if (!sfxModel.jump)
-		sfxModel.jump= trap_S_RegisterSound( va("sound/player/%s/jump1.wav", fallback), qfalse );
-
-	sfxModel.land = trap_S_RegisterSound( "sound/player/land1.wav", qfalse );
-	sfxModel.drop = trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
-
-	for (i = 0; i < 4; i++) {
-		sfxModel.step[i] = trap_S_RegisterSound( va("sound/player/footsteps/%s%i.wav",
-			ui_footstepName[sfxModel.footsteps], i+1), qfalse );
-	}
-
 	// update animation
-	GUI_PlayerInfo_ChangeAnimation( m, ANIM_IDLE );
+	GUI_PlayerInfo_UpdateAnimation( m );
 
 	// model change done
 	m->cursorx = m->cursory = -1;
 	m->NextIdleAnimTime = 0;
 }
 
-
-
 /*
 =================
-GUI_PlayerInfo_ChangeAnimation
+GUI_PlayerInfo_UpdateAnimation
 =================
 */
-void GUI_PlayerInfo_ChangeAnimation( modelAnim_t* m, int anim)
-{
-	if (crashProtected)
-		return;
-
-	m->anim = anim;
-	PlayerInfo_SetAnimation(m);
+void GUI_PlayerInfo_UpdateAnimation( modelAnim_t* m ) {
+	m->playerLegs = LEGS_IDLE;
+	m->playerTorso = TORSO_STAND2;
 	PlayerInfo_ModelTrackCursor(m);
 
 	UI_PlayerInfo_SetInfo( &m->player, m->playerLegs, m->playerTorso,
-		m->viewangles, m->moveangles, m->playerChat );
+		m->viewangles, m->moveangles );
 }
-
-
-
-/*
-=================
-GUI_PlayerInfo_SetupCrashProtection
-=================
-*/
-static void GUI_PlayerInfo_SetupCrashProtection( void )
-{
-	int crash;
-
-	if (!startupCrashDetect)
-		return;
-
-	startupCrashDetect = qfalse;
-
-	crash = (int)trap_Cvar_VariableValue("gui_crashprotection");
-	if (crash)
-	{
-		//crashProtected = qtrue;
-		return;
-	}
-
-	// create cvar with default value of 0
-	trap_Cvar_Create( "gui_crashprotection", "0", CVAR_ROM);
-	trap_Cvar_Set( "gui_crashprotection", "1");
-}
-
-
-
-/*
-=================
-GUI_PlayerInfo_ClearCrashProtection
-=================
-*/
-static void GUI_PlayerInfo_ClearCrashProtection( void )
-{
-	trap_Cvar_Set( "gui_crashprotection", "0");
-}
-
-
-
-
 
 /*
 =================
 GUI_PlayerInfo_InitModel
 =================
 */
-void GUI_PlayerInfo_InitModel(modelAnim_t* m)
-{
+void GUI_PlayerInfo_InitModel(modelAnim_t* m) {
 	char 	buffer[MODELNAME_BUFFER];
 	int 	i;
-
-	GUI_PlayerInfo_SetupCrashProtection();
-
-	if (crashProtected)
-		return;
 
 	trap_Cvar_VariableStringBuffer( "model", buffer, MODELNAME_BUFFER );
 	strcpy(m->modelskin, buffer);
@@ -1978,37 +1043,12 @@ void GUI_PlayerInfo_InitModel(modelAnim_t* m)
 	PlayerInfo_SetupNewModel(m);
 }
 
-
-
-/*
-=================
-PlayerInfo_UpdateIdleAnimation
-=================
-*/
-static void PlayerInfo_UpdateIdleAnimation( modelAnim_t* m)
-{
-	playerInfo_t* pi;
-
-	pi = &m->player;
-
-	// check its time to change the animation
-	if (uis.realtime >= m->NextIdleAnimTime && !m->bNoIdleAnim) {
-		// make the animation change
-		m->bDoingIdleAnim = qtrue;
-		PlayerInfo_ChangeTimedAnimation(m);
-	}
-}
-
-
-
-
 /*
 =================
 GUI_PlayerInfo_SetTeamModel
 =================
 */
-void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel )
-{
+void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel ) {
 	if (teamModel != drawTeamModel)
 	{
 		drawTeamModel = teamModel;
@@ -2016,28 +1056,12 @@ void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel )
 	}
 }
 
-
-
-/*
-=================
-GUI_PlayerInfo_IsTeamModel
-=================
-*/
-qboolean GUI_PlayerInfo_IsTeamModel( void )
-{
-	return drawTeamModel;
-}
-
-
-
-
 /*
 =================
 GUI_ModelSkin
 =================
 */
-const char* GUI_ModelSkin( const char* modelname )
-{
+const char* GUI_ModelSkin( const char* modelname ) {
 	static char skin[MODELNAME_BUFFER];
 	char* ptr;
 
@@ -2061,14 +1085,12 @@ const char* GUI_ModelSkin( const char* modelname )
 	return skin;
 }
 
-
 /*
 =================
 GUI_ModelName
 =================
 */
-const char* GUI_ModelName( const char* modelname )
-{
+const char* GUI_ModelName( const char* modelname ) {
 	static char model[MODELNAME_BUFFER];
 	char* ptr;
 
@@ -2091,34 +1113,18 @@ const char* GUI_ModelName( const char* modelname )
 	return model;
 }
 
-
-
-
 /*
 =================
 GUI_PlayerInfo_AnimateModel
 =================
 */
-void GUI_PlayerInfo_AnimateModel( modelAnim_t* m)
-{
+void GUI_PlayerInfo_AnimateModel( modelAnim_t* m) {
 	menuelement_s* b;
 	char buffer[MODELNAME_BUFFER];
 	int modelchange, team_modelchange, draw_team;
 	float f;
 
 	b = &m->bitmap;
-
-	if( crashProtected ) {
-		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "CRASH DETECTED", UI_LEFT, color_white );
-		return;
-	}
-
-	if (crashAnimCount > 0)
-	{
-		crashAnimCount--;
-		if (crashAnimCount == 0)
-			GUI_PlayerInfo_ClearCrashProtection();
-	}
 
 	if( trap_MemoryRemaining() <= LOW_MEMORY ) {
 		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_white );
@@ -2129,7 +1135,7 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m)
 	// only update models when we're actually viewing them
 	modelchange = 0;
 	team_modelchange = 0;
-	draw_team = GUI_PlayerInfo_IsTeamModel();
+	draw_team = drawTeamModel;
 	if (!m->bNoAutoUpdate)
 	{
 		trap_Cvar_VariableStringBuffer( "model", buffer, MODELNAME_BUFFER );
@@ -2195,138 +1201,10 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m)
 	if (PlayerInfo_CursorChanged(m) || m->bForceUpdate) {
 		// follow cursor, and delay idle animation
 		PlayerInfo_ModelTrackCursor(m);
-		if (!m->allowCursorFire) {
-			m->shotsRemaining = 0;
-			m->player.delayFireTimer = 0;
-		}
 		m->NextIdleAnimTime = uis.realtime + IDLE_ANIM_STARTTIME;
 	}
 
 	m->bForceUpdate = qfalse;
 
-	// shift random number generator
-	// otherwise we see identical model animation sequences
-	f = random();
-
-	PlayerInfo_UpdateIdleAnimation(m);
-
 	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, m, uis.realtime/ANIM_SLOWDOWN );
-	PlayerInfo_PlayModelFootstep(&m->player);
 }
-
-
-
-
-//----------------------------------------------
-
-
-#define ROTATION_MAX 6
-
-
-/*
-=================
-PlayerInfo_ModelSpinEvent
-=================
-*/
-void PlayerInfo_ModelSpinEvent( modelRotate_t* rm, int id)
-{
-	rm->pause.generic.flags &= ~QMF_HIGHLIGHT;
-	rm->pause.generic.flags |= QMF_PULSEIFFOCUS;
-
-	switch (id) {
-	case ID_MODELSPIN_LEFT:
-		rm->paused = qfalse;
-		if (rm->rotate > -ROTATION_MAX)
-			rm->rotate--;
-		break;
-
-	case ID_MODELSPIN_RIGHT:
-		rm->paused = qfalse;
-		if (rm->rotate < ROTATION_MAX)
-			rm->rotate++;
-		break;
-
-	case ID_MODELSPIN_STOP:
-		rm->paused = qfalse;
-		rm->rotate = 0;
-		rm->yaw = 0.0;
-		break;
-
-	case ID_MODELSPIN_PAUSE:
-		if (rm->paused) {
-			rm->paused = qfalse;
-		}
-		else {
-			rm->pause.generic.flags |= QMF_HIGHLIGHT;
-			rm->pause.generic.flags &= ~QMF_PULSEIFFOCUS;
-			rm->paused = qtrue;
-		}
-		break;
-
-	};
-}
-
-
-/*
-=================
-GUI_PlayerInfo_InitRotateModel
-=================
-*/
-void GUI_PlayerInfo_InitRotateModel(menuframework_s* mf, modelRotate_t* rm, callbackFunc event_handler, int x, int y)
-{
-	rm->yaw = 0.0;
-	rm->rotate = 0;
-	rm->paused = qtrue;
-
-	rm->left.generic.type	    = MTYPE_BITMAP;
-	rm->left.string     = MODELSPIN_LEFT;
-	rm->left.generic.flags    = QMF_PULSEIFFOCUS;
-	rm->left.generic.callback = event_handler;
-	rm->left.generic.id	    = ID_MODELSPIN_LEFT;
-	rm->left.generic.x		= x;
-	rm->left.generic.y		= y;
-	rm->left.width  		    = 32;
-	rm->left.height  		    = 32;
-	rm->left.focuspic         = MODELSPIN_LEFT1;
-
-	rm->right.generic.type	    = MTYPE_BITMAP;
-	rm->right.string     = MODELSPIN_RIGHT;
-	rm->right.generic.flags    = QMF_PULSEIFFOCUS;
-	rm->right.generic.callback = event_handler;
-	rm->right.generic.id	    = ID_MODELSPIN_RIGHT;
-	rm->right.generic.x		= x + 32;
-	rm->right.generic.y		= y;
-	rm->right.width  		    = 32;
-	rm->right.height  		    = 32;
-	rm->right.focuspic         = MODELSPIN_RIGHT1;
-
-	rm->stop.generic.type	    = MTYPE_BITMAP;
-	rm->stop.string     = MODELSPIN_STOP;
-	rm->stop.generic.flags    = QMF_PULSEIFFOCUS;
-	rm->stop.generic.callback = event_handler;
-	rm->stop.generic.id	    = ID_MODELSPIN_STOP;
-	rm->stop.generic.x		= x;
-	rm->stop.generic.y		= y + 32;
-	rm->stop.width  		    = 32;
-	rm->stop.height  		    = 32;
-	rm->stop.focuspic         = MODELSPIN_STOP1;
-
-	rm->pause.generic.type	    = MTYPE_BITMAP;
-	rm->pause.string     = MODELSPIN_PAUSE;
-	rm->pause.generic.flags    = QMF_PULSEIFFOCUS;
-	rm->pause.generic.callback = event_handler;
-	rm->pause.generic.id	    = ID_MODELSPIN_PAUSE;
-	rm->pause.generic.x		= x + 32;
-	rm->pause.generic.y		= y + 32;
-	rm->pause.width  		    = 32;
-	rm->pause.height  		    = 32;
-	rm->pause.focuspic         = MODELSPIN_PAUSE1;
-
-	Menu_AddItem(mf, &rm->left);
-	Menu_AddItem(mf, &rm->right);
-	Menu_AddItem(mf, &rm->stop);
-	Menu_AddItem(mf, &rm->pause);
-
-	rm->useSpin = qtrue;
-}
-

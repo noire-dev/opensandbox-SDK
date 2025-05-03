@@ -762,7 +762,6 @@ typedef struct {
 	int playerLegs;
 	int playerTorso;
 	int playerWeapon;
-	qboolean playerChat;
 	vec3_t viewangles;
 	vec3_t moveangles;
 
@@ -807,7 +806,7 @@ extern const char* GUI_ModelName( const char* modelname );
 extern const char* GUI_ModelSkin( const char* modelname );
 
 extern void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel );
-extern qboolean GUI_PlayerInfo_IsTeamModel( void );
+extern qboolean drawTeamModel;
 
 //
 // ui_atoms.c

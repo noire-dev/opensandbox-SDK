@@ -99,7 +99,7 @@ PlayerSettings_SetPlayerModelType
 */
 static void PlayerSettings_SetPlayerModelType( void )
 {
-	if (GUI_PlayerInfo_IsTeamModel())
+	if (drawTeamModel)
 	{
 		if(cl_language.integer == 0){
 		s_playersettings.modeltype.string = "Team Model";
@@ -132,7 +132,7 @@ static void PlayerSettings_ToggleModelType( void )
 {
 	qboolean type;
 
-	if (GUI_PlayerInfo_IsTeamModel()) {
+	if (drawTeamModel) {
 		type = qfalse;
 	}
 	else {

@@ -21,11 +21,7 @@
 // along with this project. If not, see <http://www.gnu.org/licenses/>.
 // 
 // Contact: opensandboxteam@gmail.com
-// 
-
-
-
-
+//
 
 #include "ui_local.h"
 
@@ -40,15 +36,8 @@
 #define MODEL_ARROWSBT		"menu/assets/arrows_vert_0"
 #define MODEL_ARROWSB		"menu/assets/arrows_vert_bot"
 #define MODEL_ARROWST		"menu/assets/arrows_vert_top"
-#define MODEL_ANIMATE0		"menu/assets/animate_0"
-#define MODEL_ANIMATE1		"menu/assets/animate_1"
-#define MODEL_ANIMSELECT0	"menu/assets/select_0"
-#define MODEL_ANIMSELECT1	"menu/assets/select_1"
 
-#define MODELDIR "models/players"
-
-//#define LOW_MEMORY			(5 * 1024 * 1024)
-
+#define MODELDIR 			"models/players"
 
 static char* playermodel_artlist[] =
 {
@@ -63,13 +52,8 @@ static char* playermodel_artlist[] =
 	MODEL_ARROWSBT,
 	MODEL_ARROWSB,
 	MODEL_ARROWST,
-	MODEL_ANIMATE0,
-	MODEL_ANIMATE1,
-	MODEL_ANIMSELECT0,
-	MODEL_ANIMSELECT1,
 	NULL
 };
-
 
 // common string names for all dm/team model changing
 const char* drawmodel_list[] =
@@ -78,18 +62,6 @@ const char* drawmodel_list[] =
 	"Team",	// DRAWMODEL_TEAM
 	0
 };
-
-
-
-
-static char* playermodel_modelorder[] = {
-	"icon_default",
-	"icon_blue",
-	"icon_red",
-	"icon_xp"
-};
-
-
 
 #define PLAYERGRID_COLS		4
 #define PLAYERGRID_ROWS		4
@@ -113,7 +85,6 @@ static char* playermodel_modelorder[] = {
 // each id starts a list of controls
 #define ID_PLAYERPIC0		0
 #define ID_SKINPIC0			32
-#define ID_ANIMTEXT0		50
 
 // the rest of the controls
 #define ID_PREVPAGE			100
@@ -121,22 +92,13 @@ static char* playermodel_modelorder[] = {
 #define ID_BACK				102
 #define ID_PREVSKINPAGE		103
 #define ID_NEXTSKINPAGE		104
-#define ID_ANIMATE			105
-#define ID_ANIMSFX			106
-#define ID_MODELCHANGE		107
-#define ID_TEAMMODEL		108
-#define ID_FORCEHEADMATCH	109
-#define ID_COLORSELECT		110
-
-#define ANIMATION_X			200
-#define ANIMATION_DX		100
-#define ANIMATION_DY		19
-
-#define NUMANIM_CONTROLS 32
+#define ID_MODELCHANGE		105
+#define ID_TEAMMODEL		106
+#define ID_FORCEHEADMATCH	107
+#define ID_COLORSELECT		108
 
 #define BODYPART_COLUMN (128 + 64 + 128 + 32 + 8)
 #define TEAMANDSFX_COLUMN (128 + 64)
-
 
 // defines used for drawing player model names (OR flags)
 #define MODELNAME_ALLBOLD   0
@@ -152,8 +114,6 @@ static char* playermodel_modelorder[] = {
 
 #define PLAYERLEGSSKIN_X PLAYERMODELNAME_X+150
 #define PLAYERLEGSSKIN_Y 200
-
-
 
 typedef struct
 {
@@ -171,17 +131,10 @@ typedef struct
 	menuelement_s	skinarrows;
 	menuelement_s	skinleft;
 	menuelement_s	skinright;
-	menuelement_s	animate;
 
 	menuelement_s			forceHeadMatch;
 	menuelement_s			modelChange;
 	menuelement_s			teamModel;
-	menuelement_s			colorchange;
-	menuelement_s			animsfx;
-
-	menuelement_s		animation[NUMANIM_CONTROLS];
-	qboolean		showAnim;
-	qboolean		showColor;
 
 	int				nummodels;
 	char			modelnames[MAX_PLAYERMODELS][MODELNAME_BUFFER];
@@ -206,16 +159,6 @@ typedef struct
 static playermodel_t s_playermodel;
 
 
-typedef struct {
-	menuelement_s*	control;
-
-	int 		anim;
-	float		row;
-	float		column;
-	char*	text;
-} animControls_t;
-
-
 enum {
 	MODELCHANGE_BODY,
 	MODELCHANGE_HEAD,
@@ -231,15 +174,6 @@ static const char* model_partchange[] =
 	0
 };
 
-static const char* model_colorchange[] =
-{
-	"Choose Models",	// MODELCHANGE_BODY
-	"Choose Color",	// MODELCHANGE_HEAD
-	0
-};
-
-
-
 static const char* model_dmteam[] =
 {
 	"DM model",	// DRAWMODEL_DM
@@ -247,135 +181,12 @@ static const char* model_dmteam[] =
 	0
 };
 
-
-
 static const char* model_simplesplit[] =
 {
 	"Split model",	//
 	"Simple model",	//
 	0
 };
-
-
-static const char* anim_sfx[] =
-{
-	"Anim SFX off",	//
-	"Anim SFX on",	//
-	0
-};
-
-
-// controls for animation of model
-static animControls_t animControl[] = {
-	{ NULL, ANIM_RUN, 0.0, -0.7, "RUN"},
-	{ NULL, ANIM_BACK, 0.0, 0.7, "BACK"},
-	{ NULL, ANIM_STEPLEFT, 1.0, -0.7, "STEP LEFT"},
-	{ NULL, ANIM_STEPRIGHT, 1.0, 0.7, "STEP RIGHT"},
-	{ NULL, ANIM_JUMP, 2.0, -0.7, "JUMP"},
-	{ NULL, ANIM_CROUCH, 2.0, 0.7, "CROUCH"},
-	{ NULL, ANIM_WALK, 3.0, -0.7, "WALK"},
-	{ NULL, ANIM_SWIM, 3.0, 0.7, "SWIM"},
-	{ NULL, ANIM_IDLE, 4.0, 0.0, "STAND"},
-	{ NULL, ANIM_LOOKUP, 6.0, 0.0, "LOOK UP"},
-	{ NULL, ANIM_TURNLEFT, 7.0, -0.75, "LOOK LEFT"},
-	{ NULL, ANIM_TURNRIGHT, 7.0, 0.75, "LOOK RIGHT"},
-	{ NULL, ANIM_LOOKDOWN, 8.0, 0.0, "LOOK DOWN"},
-	{ NULL, ANIM_ATTACK, 10.0, 0.0, "FIRE!"},
-	{ NULL, ANIM_WEAPON1, 11.0, -1.3, "MELEE"},
-	{ NULL, ANIM_WEAPON2, 11.0, 0.0, "M-GUN"},
-	{ NULL, ANIM_WEAPON3, 11.0, 1.3, "SHOTGUN"},
-	{ NULL, ANIM_WEAPON4, 12.0, -1.3, "GRENADE"},
-	{ NULL, ANIM_WEAPON5, 12.0, 0.0, "ROCKET"},
-	{ NULL, ANIM_WEAPON6, 12.0, 1.3, "LIGHTNING"},
-	{ NULL, ANIM_WEAPON7, 13.0, -1.3, "RAILGUN"},
-	{ NULL, ANIM_WEAPON8, 13.0, 0.0, "PLASMA"},
-	{ NULL, ANIM_WEAPON9, 13.0, 1.3, "BFG"},
-	{ NULL, ANIM_GESTURE, 15.0, 0.0, "GESTURE"},
-	{ NULL, ANIM_DIE, 16.0, -1.1, "DEATH"},
-	{ NULL, ANIM_DIE2, 16.0, 0.0, "DEATH2"},
-	{ NULL, ANIM_DIE3, 16.0, 1.1, "DEATH3"},
-	{ NULL, ANIM_IDLE, 17.0, 0.0, "STAND"}
-};
-
-static const char* model_partchangeru[] =
-{
-	"Выбрать Тело",	// MODELCHANGE_BODY
-	"Выбрать Голову",	// MODELCHANGE_HEAD
-	"Выбрать Ноги",	// MODELCHANGE_LEGS
-	0
-};
-
-static const char* model_colorchangeru[] =
-{
-	"Выбрать Модель",	// MODELCHANGE_BODY
-	"Выбрать Цвет",	// MODELCHANGE_HEAD
-	0
-};
-
-
-
-static const char* model_dmteamru[] =
-{
-	"Обычная модель",	// DRAWMODEL_DM
-	"Командная модель",	// DRAWMODEL_TEAM
-	0
-};
-
-
-
-static const char* model_simplesplitru[] =
-{
-	"Раздельная модель",	//
-	"Простая модель",	//
-	0
-};
-
-
-static const char* anim_sfxru[] =
-{
-	"Звуки персонажа off",	//
-	"Звуки персонажа on",	//
-	0
-};
-
-
-// controls for animation of model
-static animControls_t animControlru[] = {
-	{ NULL, ANIM_RUN, 0.0, -0.7, "БЕЖАТЬ"},
-	{ NULL, ANIM_BACK, 0.0, 0.7, "НАЗАД"},
-	{ NULL, ANIM_STEPLEFT, 1.0, -0.7, "ИДТИ ВЛЕВО"},
-	{ NULL, ANIM_STEPRIGHT, 1.0, 0.7, "ИДТИ ВПРАВО"},
-	{ NULL, ANIM_JUMP, 2.0, -0.7, "ПРЫЖОК"},
-	{ NULL, ANIM_CROUCH, 2.0, 0.7, "ПРИСЕСТЬ"},
-	{ NULL, ANIM_WALK, 3.0, -0.7, "ИДТИ"},
-	{ NULL, ANIM_SWIM, 3.0, 0.7, "ПЛАВАТЬ"},
-	{ NULL, ANIM_IDLE, 4.0, 0.0, "СТОЯТЬ"},
-	{ NULL, ANIM_LOOKUP, 6.0, 0.0, "СМОТРЕТЬ ВВЕРХ"},
-	{ NULL, ANIM_TURNLEFT, 7.0, -0.75, "СМОТРЕТЬ ВЛЕВО"},
-	{ NULL, ANIM_TURNRIGHT, 7.0, 0.75, "СМОТРЕТЬ ВПРАВО"},
-	{ NULL, ANIM_LOOKDOWN, 8.0, 0.0, "СМОТРЕТЬ ВНИЗ"},
-	{ NULL, ANIM_ATTACK, 10.0, 0.0, "АТАКА!"},
-	{ NULL, ANIM_WEAPON1, 11.0, -1.3, "БЛИЖНИЙ БОЙ"},
-	{ NULL, ANIM_WEAPON2, 11.0, 0.0, "АВТОМАТ"},
-	{ NULL, ANIM_WEAPON3, 11.0, 1.3, "ДРОБОВИК"},
-	{ NULL, ANIM_WEAPON4, 12.0, -1.3, "ГРАНАТЫ"},
-	{ NULL, ANIM_WEAPON5, 12.0, 0.0, "РАКЕТЫ"},
-	{ NULL, ANIM_WEAPON6, 12.0, 1.3, "МОЛНИЯ"},
-	{ NULL, ANIM_WEAPON7, 13.0, -1.3, "РЕЙЛГАН"},
-	{ NULL, ANIM_WEAPON8, 13.0, 0.0, "ПЛАЗМА"},
-	{ NULL, ANIM_WEAPON9, 13.0, 1.3, "БФГ"},
-	{ NULL, ANIM_GESTURE, 15.0, 0.0, "ЖЕСТ"},
-	{ NULL, ANIM_DIE, 16.0, -1.1, "СМЕРТЬ1"},
-	{ NULL, ANIM_DIE2, 16.0, 0.0, "СМЕРТЬ2"},
-	{ NULL, ANIM_DIE3, 16.0, 1.1, "СМЕРТЬ3"},
-	{ NULL, ANIM_IDLE, 17.0, 0.0, "СТОЯТЬ"}
-};
-
-
-static int num_animControls = sizeof(animControl)/sizeof(animControl[0]);
-
-
-
 
 /*
 =================
@@ -515,16 +326,13 @@ static void PlayerModel_UpdateSkinGrid( void )
 
 }
 
-
-
-
 /*
 =================
 PlayerModel_BuildList
 =================
 */
-	char	pm_dirlist[131072];
-	char	pm_filelist[131072];
+char	pm_dirlist[131072];
+char	pm_filelist[131072];
 static void PlayerModel_BuildList( void )
 {
 	int		numdirs;
@@ -536,10 +344,7 @@ static void PlayerModel_BuildList( void )
 	int		j;
 	int		dirlen;
 	int		filelen;
-	qboolean precache;
 	char*	defaultskin;
-
-	precache = trap_Cvar_VariableValue("com_buildscript");
 
 	s_playermodel.modelpage = 0;
 	s_playermodel.nummodels = 0;
@@ -567,8 +372,7 @@ static void PlayerModel_BuildList( void )
 			COM_StripExtension(fileptr,skinname, sizeof(skinname));
 
 			// look for icon_????
-			if (!Q_stricmpn(skinname,"icon_",5))
-			{
+			if (!Q_stricmpn(skinname,"icon_",5)){
 				if (!defaultskin)
 					defaultskin = fileptr;
 
@@ -576,8 +380,6 @@ static void PlayerModel_BuildList( void )
 					defaultskin = fileptr;
 
 			}
-			if (precache)
-				trap_S_RegisterSound( va( "sound/player/announce/%s_wins.wav", skinname ), qfalse );
 		}
 
 		// save the default model/skin combo
@@ -588,8 +390,6 @@ static void PlayerModel_BuildList( void )
 				MODELDIR"/%s/%s", dirptr, skinname);
 		}
 	}
-
-	//APSFIXME - Degenerate no models case
 
 	s_playermodel.numpages = s_playermodel.nummodels/MAX_MODELSPERPAGE;
 	if (s_playermodel.nummodels % MAX_MODELSPERPAGE)
@@ -609,82 +409,38 @@ static void PlayerModel_LoadSkins( int modelnum )
 	char	skinname[MODELNAME_BUFFER];
 	char*	fileptr;
 	int		i;
-	int		j;
-	int		dirlen;
 	int		filelen;
-	int		skin[3];
-	int		idx, slot;
 
 	s_playermodel.skinpage = 0;
 	s_playermodel.numskins = 0;
 
-	for (i = 0; i < 3; i++)
-		skin[i] = -1;
-
 	fullmodelname = s_playermodel.modelnames[modelnum] + strlen(MODELDIR) + 1;
 
 	// iterate all skin files in directory
-	numfiles = trap_FS_GetFileList( va(MODELDIR"/%s",GUI_ModelName(fullmodelname)),
-		"", pm_filelist, 131072 );
+	numfiles = trap_FS_GetFileList( va(MODELDIR"/%s", GUI_ModelName(fullmodelname)), "", pm_filelist, 131072 );
 	fileptr = pm_filelist;
 
-	for (i=0; i<numfiles && s_playermodel.numskins < MAX_PLAYERSKINS; i++,fileptr+=filelen+1)
+	for (i = 0; i < numfiles && s_playermodel.numskins < MAX_PLAYERSKINS; i++, fileptr += filelen + 1)
 	{
 		filelen = strlen(fileptr);
 
 		COM_StripExtension(fileptr, skinname, sizeof(skinname));
 
 		// look for icon_????
-		if (!Q_stricmpn(skinname,"icon_",5))
+		if (!Q_stricmpn(skinname, "icon_", 5))
 		{
-			Com_sprintf( s_playermodel.modelskins[s_playermodel.numskins],
-				sizeof( s_playermodel.modelskins[s_playermodel.numskins] ),
-				MODELDIR"/%s/%s", GUI_ModelName(fullmodelname), skinname );
-
-			for (j = 0; j < 3; j++)
-				if (!Q_stricmp(skinname, playermodel_modelorder[j]))
-					skin[j] = s_playermodel.numskins;
+			Com_sprintf(s_playermodel.modelskins[s_playermodel.numskins],
+				sizeof(s_playermodel.modelskins[s_playermodel.numskins]),
+				MODELDIR"/%s/%s", GUI_ModelName(fullmodelname), skinname);
 
 			s_playermodel.numskins++;
 		}
 	}
 
-	// order the models so we have the default one first, then team blue/red
-	slot = 0;
-	for ( i = 0; i < 3; i++)
-	{
-		idx = skin[i];
-		if (idx < 0)
-			continue;
-
-		// move all the skin names up one place
-		if (idx != slot)
-		{
-			memcpy(skinname, s_playermodel.modelskins[ idx ], MODELNAME_BUFFER);
-			for (j = idx - 1; j >= slot; j--)
-				memcpy(s_playermodel.modelskins[j+1], s_playermodel.modelskins[j], MODELNAME_BUFFER);
-			memcpy(s_playermodel.modelskins[slot], skinname, MODELNAME_BUFFER);
-
-			// correct for move just made
-			for (j = i+1; j < 3; j++) {
-				if (skin[j] == -1)
-					continue;
-				if (skin[j] < idx)
-					skin[j]++;
-			}
-		}
-
-		slot++;
-	}
-
-	//APSFIXME - Degenerate no models case
-
-	s_playermodel.numskinpages = s_playermodel.numskins/MAX_SKINSPERPAGE;
+	s_playermodel.numskinpages = s_playermodel.numskins / MAX_SKINSPERPAGE;
 	if (s_playermodel.numskins % MAX_SKINSPERPAGE)
 		s_playermodel.numskinpages++;
 }
-
-
 
 /*
 =================
@@ -736,131 +492,29 @@ static void PlayerModel_ShowControls( void )
 {
 	int i;
 
-	if (s_playermodel.showAnim) {
-		// background artwork, already inactive
-		s_playermodel.modelarrows.generic.flags |= QMF_HIDDEN;
-		s_playermodel.skinarrows.generic.flags |= QMF_HIDDEN;
-		s_playermodel.ports.generic.flags |= QMF_HIDDEN;
+	s_playermodel.modelarrows.generic.flags &= ~QMF_HIDDEN;
+	s_playermodel.skinarrows.generic.flags &= ~QMF_HIDDEN;
+	s_playermodel.ports.generic.flags &= ~QMF_HIDDEN;
 
-		// possibly active controls
-		s_playermodel.modelup.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.modeldown.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.skinleft.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.skinright.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
+	s_playermodel.modelChange.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
+	s_playermodel.forceHeadMatch.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
+
+	// model icons
+	for (i = 0; i < MAX_MODELSPERPAGE; i++)
+		s_playermodel.models[i].generic.flags &= ~QMF_HIDDEN;
+	for (i = 0; i < MAX_SKINSPERPAGE; i++)
+		s_playermodel.skins[i].generic.flags &= ~QMF_HIDDEN;
+
+
+	PlayerModel_UpdateGrid();
+	PlayerModel_UpdateSkinGrid();
+
+	// head/body update
+	if (s_playermodel.forceHeadMatch.curvalue)
 		s_playermodel.modelChange.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.forceHeadMatch.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-		s_playermodel.animsfx.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-		s_playermodel.animate.string     = MODEL_ANIMSELECT0;
-		s_playermodel.animate.focuspic         = MODEL_ANIMSELECT1;
-		s_playermodel.animate.shader   = 0;
-		s_playermodel.animate.focusshader   = 0;
-
-		// model icons
-		for (i = 0; i < MAX_MODELSPERPAGE; i++)
-			s_playermodel.models[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		for (i = 0; i < MAX_SKINSPERPAGE; i++)
-			s_playermodel.skins[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-	}
-	else {
-	if(!s_playermodel.showColor){
-		s_playermodel.modelarrows.generic.flags &= ~QMF_HIDDEN;
-		s_playermodel.skinarrows.generic.flags &= ~QMF_HIDDEN;
-		s_playermodel.ports.generic.flags &= ~QMF_HIDDEN;
-
-		s_playermodel.animsfx.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
+	else
 		s_playermodel.modelChange.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.forceHeadMatch.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-		s_playermodel.animate.string     = MODEL_ANIMATE0;
-		s_playermodel.animate.focuspic         = MODEL_ANIMATE1;
-		s_playermodel.animate.shader   = 0;
-		s_playermodel.animate.focusshader   = 0;
-
-
-		// model icons
-		for (i = 0; i < MAX_MODELSPERPAGE; i++)
-			s_playermodel.models[i].generic.flags &= ~QMF_HIDDEN;
-		for (i = 0; i < MAX_SKINSPERPAGE; i++)
-			s_playermodel.skins[i].generic.flags &= ~QMF_HIDDEN;
-
-
-		PlayerModel_UpdateGrid();
-		PlayerModel_UpdateSkinGrid();
-
-		// head/body update
-		if (s_playermodel.forceHeadMatch.curvalue)
-			s_playermodel.modelChange.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		else
-			s_playermodel.modelChange.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-	}
-	}
-	if(s_playermodel.showColor){
-		// background artwork, already inactive
-		s_playermodel.modelarrows.generic.flags |= QMF_HIDDEN;
-		s_playermodel.skinarrows.generic.flags |= QMF_HIDDEN;
-		s_playermodel.ports.generic.flags |= QMF_HIDDEN;
-
-		// possibly active controls
-		s_playermodel.modelup.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.modeldown.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.skinleft.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.skinright.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.modelChange.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		s_playermodel.forceHeadMatch.generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-//		s_playermodel.animsfx.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
-
-/*		s_playermodel.animate.string     = MODEL_ANIMSELECT0;
-		s_playermodel.animate.focuspic         = MODEL_ANIMSELECT1;
-		s_playermodel.animate.shader   = 0;
-		s_playermodel.animate.focusshader   = 0;*/
-
-		// model icons
-		for (i = 0; i < MAX_MODELSPERPAGE; i++)
-			s_playermodel.models[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-		for (i = 0; i < MAX_SKINSPERPAGE; i++)
-			s_playermodel.skins[i].generic.flags |= (QMF_HIDDEN|QMF_INACTIVE);
-
-/*		// anim controls
-		for (i = 0; i < num_animControls; i++)
-			s_playermodel.animation[i].generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);*/
-	}
 }
-
-
-
-
-
-/*
-=================
-PlayerModel_AnimEvent
-=================
-*/
-static void PlayerModel_AnimEvent( void* ptr, int event )
-{
-	int id;
-	menuelement_s* a;
-
-	if (event != QM_ACTIVATED)
-		return;
-
-	a = (menuelement_s*)ptr;
-	id = a->generic.id - ID_ANIMTEXT0;
-
-	GUI_PlayerInfo_ChangeTimedAnimation(&s_playermodel.model, animControl[id].anim);
-}
-
-
 
 /*
 =================
@@ -885,7 +539,7 @@ static qboolean PlayerModel_SetModelIconSelection( qboolean samepage )
 	int				modelLegs;
 	int 			oldmodel_page;
 
-	teamModel = GUI_PlayerInfo_IsTeamModel();
+	teamModel = drawTeamModel;
 	modelBody = qfalse;
 
 	if (s_playermodel.forceHeadMatch.curvalue || s_playermodel.modelChange.curvalue == MODELCHANGE_BODY){
@@ -1007,7 +661,7 @@ static void PlayerModel_SwapOtherHeads( int modelchange )
 	char* thishead;
 
 	// select set we are changing
-	if (GUI_PlayerInfo_IsTeamModel()) {
+	if (drawTeamModel) {
 		thishead = s_playermodel.model.team_headskin;
 	}
 	else {
@@ -1076,22 +730,6 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 				PlayerModel_UpdateSkinGrid();
 			}
 			break;
-		case ID_ANIMATE:
-			if (s_playermodel.showAnim)
-			{
-				GUI_PlayerInfo_ChangeAnimation(&s_playermodel.model, ANIM_IDLE);
-				s_playermodel.showAnim = qfalse;
-			}
-			else {
-				s_playermodel.showAnim = qtrue;
-			}
-
-			PlayerModel_ShowControls();
-			break;
-
-		case ID_ANIMSFX:
-			trap_Cvar_SetValue("gui_s_animsfx", s_playermodel.animsfx.curvalue);
-			break;
 
 		case ID_TEAMMODEL:
 			PlayerModel_SwapOtherHeads(1);
@@ -1102,24 +740,9 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 
 			GUI_PlayerInfo_DrawTeamModel( &s_playermodel.model, s_playermodel.teamModel.curvalue);
 
-			if (!s_playermodel.showAnim)
-			{
-				PlayerModel_SetModelIconSelection(qfalse);
-				PlayerModel_UpdateGrid();
-				PlayerModel_UpdateSkinGrid();
-			}
-			PlayerModel_ShowControls();
-			break;
-			
-		case ID_COLORSELECT:
-			if (s_playermodel.showColor)
-			{
-				s_playermodel.showColor = qfalse;
-			}
-			else {
-				s_playermodel.showColor = qtrue;
-			}
-
+			PlayerModel_SetModelIconSelection(qfalse);
+			PlayerModel_UpdateGrid();
+			PlayerModel_UpdateSkinGrid();
 			PlayerModel_ShowControls();
 			break;
 
@@ -1376,7 +999,7 @@ static qboolean PlayerModel_SetModelFromSelection(char* model)
 	if (pdest)
 	{
 		// select set we are changing
-		if (GUI_PlayerInfo_IsTeamModel())
+		if (drawTeamModel)
 		{
 			bodymodel = s_playermodel.model.team_modelskin;
 			headmodel = s_playermodel.model.team_headskin;
@@ -1428,22 +1051,6 @@ static qboolean PlayerModel_SetModelFromSelection(char* model)
 	}
 	return qfalse;
 }
-
-
-/*
-=================
-PlayerModel_RotateControlEvent
-=================
-*/
-static void PlayerModel_RotateControlEvent( void* ptr, int event )
-{
-	if (event != QM_ACTIVATED)
-		return;
-
-	PlayerInfo_ModelSpinEvent(&s_playermodel.model.spin, ((menucommon_s*)ptr)->id);
-}
-
-
 
 /*
 =================
@@ -1531,20 +1138,17 @@ static void PlayerModel_DrawPlayer( void *self )
 {
 	int style;
 
-	if (!s_playermodel.showAnim)
+	style = MODELNAME_ALLBOLD;
+	if (!s_playermodel.forceHeadMatch.curvalue)
 	{
-		style = MODELNAME_ALLBOLD;
-		if (!s_playermodel.forceHeadMatch.curvalue)
+		if (s_playermodel.modelChange.curvalue == MODELCHANGE_HEAD) {
+			style |= MODELNAME_BODYWEAK;
+		}
+		else if (s_playermodel.modelChange.curvalue == MODELCHANGE_LEGS) {
+			style |= MODELNAME_LEGSWEAK;
+		} else 
 		{
-			if (s_playermodel.modelChange.curvalue == MODELCHANGE_HEAD) {
-				style |= MODELNAME_BODYWEAK;
-			}
-			else if (s_playermodel.modelChange.curvalue == MODELCHANGE_LEGS) {
-				style |= MODELNAME_LEGSWEAK;
-			} else 
-			{
-				style |= MODELNAME_HEADWEAK;
-			}
+			style |= MODELNAME_HEADWEAK;
 		}
 	}
 
@@ -1569,15 +1173,11 @@ static void PlayerModel_SetMenuItems( void )
 	char* otherlegsmodel;
 	modelAnim_t* m;
 
-	// sound
-	s_playermodel.animsfx.curvalue = (int)trap_Cvar_VariableValue("gui_s_animsfx");
-
 	// Hypo: 3d model already initialized
-
 	m = &s_playermodel.model;
 
 	// team or dm model
-	if (GUI_PlayerInfo_IsTeamModel()) {
+	if (drawTeamModel) {
 		s_playermodel.teamModel.curvalue = DRAWMODEL_TEAM;
 		thismodel = m->team_modelskin;
 		thisheadmodel = m->team_headskin;
@@ -1622,91 +1222,6 @@ static void PlayerModel_SetMenuItems( void )
 	PlayerModel_SetModelIconSelection(qfalse);
 }
 
-
-/*
-=================
-PlayerModel_InitLargeSpinControl
-=================
-*/
-static void PlayerModel_InitLargeSpinControl( menuelement_s* t )
-{
-	int	x;
-	int	y;
-	int	w;
-	int	h;
-	int size;
-	const char* str;
-	float	sizeScale;
-
-	sizeScale = 1.00;
-
-	x = t->generic.x;
-	y = t->generic.y;
-	w = 0;
-	h =	PROP_HEIGHT * sizeScale;
-
-	t->numitems = 0;
-	while ((str = t->itemnames[t->numitems]) != 0) {
-		size = UI_ProportionalStringWidth( str, 1.00 ) * sizeScale;
-		if (size > w)
-			w = size;
-		t->numitems++;
-	}
-
-
-	if( t->generic.flags & QMF_RIGHT_JUSTIFY ) {
-		x -= w;
-	}
-	else if( t->generic.flags & QMF_CENTER_JUSTIFY ) {
-		x -= w / 2;
-	}
-
-	t->generic.left   = x * sizeScale;
-	t->generic.right  = x + w * sizeScale;
-	t->generic.top    = y;
-	t->generic.bottom = y + h;
-}
-
-
-
-/*
-=================
-PlayerModel_DrawLargeSpinControl
-=================
-*/
-static void PlayerModel_DrawLargeSpinControl( void* self )
-{
-	menuelement_s* t;
-	int style;
-	float* color;
-
-	t = (menuelement_s*)self;
-
-	style = UI_SMALLFONT;
-	if( t->generic.flags & QMF_RIGHT_JUSTIFY ) {
-		style |= UI_RIGHT;
-	}
-	else if( t->generic.flags & QMF_CENTER_JUSTIFY ) {
-		style |= UI_CENTER;
-	}
-
-	if (t->generic.flags & QMF_GRAYED)
-		color = text_color_disabled;
-	else {
-		color = text_color_normal;
-		if( t->generic.flags & QMF_PULSEIFFOCUS ) {
-			if( Menu_ItemAtCursor( t->generic.parent ) == t ) {
-				style |= UI_PULSE;
-			}
-			else {
-				style |= UI_INVERSE;
-			}
-		}
-	}
-
-	UI_DrawString(t->generic.x, t->generic.y, t->itemnames[ t->curvalue ], style, color);
-}
-
 /*
 =================
 PlayerModel_MenuDraw
@@ -1721,32 +1236,30 @@ static void PlayerModel_MenuDraw( void )
 	// draw standard menu
 	Menu_Draw(&s_playermodel.menu);
 
-	if (!s_playermodel.showAnim) {
-		buf[1] = '\0';
+	buf[1] = '\0';
+	if(cl_language.integer == 0){
+	ptr = "MODELS";
+	}
+	if(cl_language.integer == 1){
+	ptr = "МОДЕЛИ";
+	}
+	y = MODELARRAY_Y;
+	while (*ptr)
+	{
+		buf[0] = *ptr++;
+		UI_DrawString( 24, y, buf, UI_SMALLFONT|UI_CENTER, color_white );
 		if(cl_language.integer == 0){
-		ptr = "MODELS";
+		y += 16;
 		}
 		if(cl_language.integer == 1){
-		ptr = "МОДЕЛИ";
+		y += 8;
 		}
-		y = MODELARRAY_Y;
-		while (*ptr)
-		{
-			buf[0] = *ptr++;
-			UI_DrawString( 24, y, buf, UI_SMALLFONT|UI_CENTER, color_white );
-			if(cl_language.integer == 0){
-			y += 16;
-			}
-			if(cl_language.integer == 1){
-			y += 8;
-			}
-		};
-		if(cl_language.integer == 0){
-		UI_DrawString( 288, 412, "SKINS", UI_SMALLFONT, color_white );
-		}
-		if(cl_language.integer == 1){
-		UI_DrawString( 288, 412, "СКИНЫ", UI_SMALLFONT, color_white );
-		}
+	};
+	if(cl_language.integer == 0){
+	UI_DrawString( 288, 412, "SKINS", UI_SMALLFONT, color_white );
+	}
+	if(cl_language.integer == 1){
+	UI_DrawString( 288, 412, "СКИНЫ", UI_SMALLFONT, color_white );
 	}
 }
 
@@ -1917,30 +1430,6 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.back.height  		    = 64;
 	s_playermodel.back.focuspic         = MODEL_BACK1;
 
-	s_playermodel.animate.generic.type	    = MTYPE_BITMAP;
-	s_playermodel.animate.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_playermodel.animate.generic.callback = PlayerModel_MenuEvent;
-	s_playermodel.animate.generic.id	    = ID_ANIMATE;
-	s_playermodel.animate.generic.x		= 640 - 128 + uis.wideoffset;
-	s_playermodel.animate.generic.y		= 480-64;
-	s_playermodel.animate.width  		    = 128;
-	s_playermodel.animate.height  		    = 64;
-
-
-	s_playermodel.animsfx.generic.type			= MTYPE_SPINCONTROL;
-	s_playermodel.animsfx.string			= "";
-	s_playermodel.animsfx.generic.flags			= QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
-	s_playermodel.animsfx.generic.callback		= PlayerModel_MenuEvent;
-	s_playermodel.animsfx.generic.id				= ID_ANIMSFX;
-	s_playermodel.animsfx.generic.x				= TEAMANDSFX_COLUMN-50;
-	s_playermodel.animsfx.generic.y				= 480 - 50 + 16;
-	if(cl_language.integer == 0){
-	s_playermodel.animsfx.itemnames				= anim_sfx;
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.animsfx.itemnames				= anim_sfxru;
-	}
-
 	s_playermodel.teamModel.generic.type			= MTYPE_SPINCONTROL;
 	s_playermodel.teamModel.string			= "";
 	s_playermodel.teamModel.generic.flags			= QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
@@ -1948,14 +1437,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.teamModel.generic.id				= ID_TEAMMODEL;
 	s_playermodel.teamModel.generic.x				= TEAMANDSFX_COLUMN-50;
 	s_playermodel.teamModel.generic.y				= 480 - 50 + 16 + SMALLCHAR_HEIGHT + 2;
-	
-	if(cl_language.integer == 0){
 	s_playermodel.teamModel.itemnames				= model_dmteam;
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.teamModel.itemnames				= model_dmteamru;
-	}
-
 
 	s_playermodel.forceHeadMatch.generic.type			= MTYPE_SPINCONTROL;
 	s_playermodel.forceHeadMatch.string			= "";
@@ -1964,12 +1446,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.forceHeadMatch.generic.id				= ID_FORCEHEADMATCH;
 	s_playermodel.forceHeadMatch.generic.x				= BODYPART_COLUMN-50;
 	s_playermodel.forceHeadMatch.generic.y				= 480 - 50 + 16 + SMALLCHAR_HEIGHT + 2;
-	if(cl_language.integer == 0){
 	s_playermodel.forceHeadMatch.itemnames				= model_simplesplit;
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.forceHeadMatch.itemnames				= model_simplesplitru;		
-	}
 
 	s_playermodel.modelChange.generic.type			= MTYPE_SPINCONTROL;
 	s_playermodel.modelChange.string			= "";
@@ -1978,56 +1455,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.modelChange.generic.id				= ID_MODELCHANGE;
 	s_playermodel.modelChange.generic.x				= BODYPART_COLUMN-50;
 	s_playermodel.modelChange.generic.y				= 480 - 50 + 16;
-	if(cl_language.integer == 0){
 	s_playermodel.modelChange.itemnames				= model_partchange;
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.modelChange.itemnames				= model_partchangeru;
-	}
-	
-	s_playermodel.colorchange.generic.type			= MTYPE_SPINCONTROL;
-	s_playermodel.colorchange.string			= "";
-	s_playermodel.colorchange.generic.flags			= QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
-	s_playermodel.colorchange.generic.callback		= PlayerModel_MenuEvent;
-	s_playermodel.colorchange.generic.id				= ID_COLORSELECT;
-	s_playermodel.colorchange.generic.x				= BODYPART_COLUMN-50;
-	s_playermodel.colorchange.generic.y				= 10 + 16;
-	if(cl_language.integer == 0){
-	s_playermodel.colorchange.itemnames				= model_colorchange;
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.colorchange.itemnames				= model_colorchangeru;
-	}
-
-	if (NUMANIM_CONTROLS < num_animControls) {
-		trap_Print("Animation menu: not enough controls\n");
-		num_animControls = NUMANIM_CONTROLS;
-	}
-
-	// setup the animation controls
-	for (i=0; i < num_animControls; i++)
-	{
-		ctrl = &s_playermodel.animation[i];
-		animControl[i].control = ctrl;
-
-		ctrl->generic.type  = MTYPE_PTEXT;
-		ctrl->generic.flags = QMF_CENTER_JUSTIFY|QMF_SMALLFONT|QMF_PULSEIFFOCUS;
-		ctrl->generic.x	  = ANIMATION_X + ANIMATION_DX * animControl[i].column;
-		ctrl->generic.y	  = MODELARRAY_Y + ANIMATION_DY * (animControl[i].row + 0.5);
-		ctrl->generic.id = ID_ANIMTEXT0 + i;
-		ctrl->generic.callback = PlayerModel_AnimEvent;
-		if(cl_language.integer == 0){
-		ctrl->string	      = animControl[i].text;
-		}
-		if(cl_language.integer == 1){
-		ctrl->string	      = animControlru[i].text;		
-		}
-		ctrl->style		  = UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW;
-		ctrl->color         = color_white;
-	}
-
-	GUI_PlayerInfo_InitRotateModel(&s_playermodel.menu, &s_playermodel.model.spin,
-		PlayerModel_RotateControlEvent, 640 - 128 - 64, 480 - 64);
 
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.banner );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.ports );
@@ -2050,17 +1478,9 @@ static void PlayerModel_MenuInit( void )
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.skinleft);
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.skinright);
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.back );
-	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.animate );
-	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.animsfx );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.forceHeadMatch );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.modelChange );
-	//Menu_AddItem( &s_playermodel.menu,	&s_playermodel.colorchange );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.teamModel );
-
-	for (i=0; i < num_animControls; i++)
-	{
-		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.animation[i] );
-	}
 
 	// set initial states
 	GUI_PlayerInfo_InitModel(&s_playermodel.model);
