@@ -124,20 +124,28 @@ const char *COM_GetExtension( const char *name ) {
 COM_StripExtension
 ============
 */
-void COM_StripExtension( const char *in, char *out, int destsize ) {
-	int             length;
+void COM_StripExtension(const char *in, char *out, int destsize) {
+	int length;
+
+	if (!in || !out || destsize <= 0)
+		return;
 
 	Q_strncpyz(out, in, destsize);
 
-	length = strlen(out)-1;
-	while (length > 0 && out[length] != '.')
-	{
-		length--;
+	length = strlen(out);
+	if (length == 0)
+		return;
+
+	length--; // move to last valid index
+
+	while (length > 0 && out[length] != '.') {
 		if (out[length] == '/')
-			return;		// no extension
+			return; // no extension
+		length--;
 	}
-	if (length)
-		out[length] = 0;
+
+	if (length > 0 && out[length] == '.')
+		out[length] = '\0';
 }
 
 /*

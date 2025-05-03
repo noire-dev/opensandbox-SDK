@@ -597,7 +597,6 @@ static void PlayerModel_BuildList( void )
 }
 
 
-
 /*
 =================
 PlayerModel_LoadSkins
