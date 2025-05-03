@@ -158,13 +158,11 @@ typedef struct
 
 static playermodel_t s_playermodel;
 
-
 enum {
 	MODELCHANGE_BODY,
 	MODELCHANGE_HEAD,
 	MODELCHANGE_LEGS
 };
-
 
 static const char* model_partchange[] =
 {
@@ -255,9 +253,6 @@ static void PlayerModel_UpdateGrid( void )
 		s_playermodel.models[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 	}
 }
-
-
-
 
 /*
 =================
@@ -396,7 +391,6 @@ static void PlayerModel_BuildList( void )
 		s_playermodel.numpages++;
 }
 
-
 /*
 =================
 PlayerModel_LoadSkins
@@ -480,8 +474,6 @@ static void PlayerModel_SaveChanges( void )
 
 
 }
-
-
 
 /*
 =================
@@ -647,9 +639,6 @@ static qboolean PlayerModel_SetModelIconSelection( qboolean samepage )
 	return qtrue;
 }
 
-
-
-
 /*
 =================
 PlayerModel_SwapOtherHeads
@@ -681,9 +670,6 @@ static void PlayerModel_SwapOtherHeads( int modelchange )
 		Q_strncpyz(s_playermodel.other_head, tmp, MODELNAME_BUFFER);
 	}
 }
-
-
-
 
 /*
 =================
@@ -839,11 +825,6 @@ static sfxHandle_t PlayerModel_MenuKey( int key )
 	return ( Menu_DefaultKey( &s_playermodel.menu, key ) );
 }
 
-
-
-
-
-
 /*
 =================
 PlayerModel_PicInit
@@ -884,8 +865,6 @@ void PlayerModel_PicInit( menuelement_s *b )
 	b->shader      = 0;
 	b->focusshader = 0;
 }
-
-
 
 /*
 =================
@@ -1094,8 +1073,6 @@ static void PlayerModel_PicEvent( void* ptr, int event )
 	}
 }
 
-
-
 /*
 =================
 PlayerModel_SkinPicEvent
@@ -1128,7 +1105,6 @@ static void PlayerModel_SkinPicEvent( void* ptr, int event )
 	}
 }
 
-
 /*
 =================
 PlayerModel_DrawPlayer
@@ -1154,9 +1130,6 @@ static void PlayerModel_DrawPlayer( void *self )
 
 	GUI_PlayerInfo_AnimateModel(&s_playermodel.model);
 }
-
-
-
 
 /*
 =================
@@ -1237,30 +1210,15 @@ static void PlayerModel_MenuDraw( void )
 	Menu_Draw(&s_playermodel.menu);
 
 	buf[1] = '\0';
-	if(cl_language.integer == 0){
 	ptr = "MODELS";
-	}
-	if(cl_language.integer == 1){
-	ptr = "МОДЕЛИ";
-	}
 	y = MODELARRAY_Y;
 	while (*ptr)
 	{
 		buf[0] = *ptr++;
 		UI_DrawString( 24, y, buf, UI_SMALLFONT|UI_CENTER, color_white );
-		if(cl_language.integer == 0){
 		y += 16;
-		}
-		if(cl_language.integer == 1){
-		y += 8;
-		}
 	};
-	if(cl_language.integer == 0){
 	UI_DrawString( 288, 412, "SKINS", UI_SMALLFONT, color_white );
-	}
-	if(cl_language.integer == 1){
-	UI_DrawString( 288, 412, "СКИНЫ", UI_SMALLFONT, color_white );
-	}
 }
 
 /*
@@ -1268,16 +1226,12 @@ static void PlayerModel_MenuDraw( void )
 PlayerModel_MenuInit
 =================
 */
-static void PlayerModel_MenuInit( void )
-{
+static void PlayerModel_MenuInit( void ) {
 	int			i;
 	int			j;
 	int			k;
 	int			x;
 	int			y;
-//	static char	modelname[32];
-//	static char	skinname[32];
-	menuelement_s*	ctrl;
 
 	// zero set all our globals
 	memset( &s_playermodel, 0 ,sizeof(playermodel_t) );
@@ -1292,12 +1246,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.banner.generic.type  = MTYPE_TEXT;
 	s_playermodel.banner.generic.x     = 320;
 	s_playermodel.banner.generic.y     = 16;
-	if(cl_language.integer == 0){
 	s_playermodel.banner.string        = "PLAYER MODEL";
-	}
-	if(cl_language.integer == 1){
-	s_playermodel.banner.string        = "МОДЕЛЬ ИГРОКА";
-	}
 	s_playermodel.banner.color         = color_white;
 	s_playermodel.banner.style         = UI_CENTER;
 
@@ -1310,11 +1259,9 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.ports.height        = 280;
 
 	y =	MODELARRAY_Y;
-	for (i=0,k=0; i<PLAYERGRID_ROWS; i++)
-	{
+	for (i=0,k=0; i<PLAYERGRID_ROWS; i++) {
 		x =	MODELARRAY_X;
-		for (j=0; j<PLAYERGRID_COLS; j++,k++)
-		{
+		for (j=0; j<PLAYERGRID_COLS; j++,k++) {
 			s_playermodel.models[k].generic.type	 = MTYPE_BITMAP;
 			s_playermodel.models[k].generic.flags    = QMF_LEFT_JUSTIFY|QMF_NODEFAULTINIT|QMF_PULSEIFFOCUS;
 			s_playermodel.models[k].generic.id	     = ID_PLAYERPIC0+k;
@@ -1336,8 +1283,7 @@ static void PlayerModel_MenuInit( void )
 	y =	MODELARRAY_Y + 4*(ICON_SIZE + PICTURE_GAP);
 	x =	MODELARRAY_X - (ICON_SIZE + PICTURE_GAP)/2;
 
-	for (i=0; i < MAX_SKINSPERPAGE; i++)
-	{
+	for (i=0; i < MAX_SKINSPERPAGE; i++) {
 		s_playermodel.skins[i].generic.type	 = MTYPE_BITMAP;
 		s_playermodel.skins[i].generic.flags    = QMF_LEFT_JUSTIFY|QMF_NODEFAULTINIT|QMF_PULSEIFFOCUS;
 		s_playermodel.skins[i].generic.id	     = ID_SKINPIC0 + i;
@@ -1460,13 +1406,11 @@ static void PlayerModel_MenuInit( void )
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.banner );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.ports );
 
-	for (i=0; i<MAX_MODELSPERPAGE; i++)
-	{
+	for (i=0; i<MAX_MODELSPERPAGE; i++) {
 		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.models[i] );
 	}
 
-	for (i=0; i < MAX_SKINSPERPAGE; i++)
-	{
+	for (i=0; i < MAX_SKINSPERPAGE; i++) {
 		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.skins[i] );
 	}
 
@@ -1484,9 +1428,6 @@ static void PlayerModel_MenuInit( void )
 
 	// set initial states
 	GUI_PlayerInfo_InitModel(&s_playermodel.model);
-	s_playermodel.model.bNoIdleAnim = qtrue;
-	s_playermodel.model.bNoAutoUpdate = qtrue;
-	s_playermodel.model.allowCursorFire = qtrue;
 
 	PlayerModel_SetMenuItems();
 	PlayerModel_ShowControls();
@@ -1520,5 +1461,3 @@ void UI_PlayerModelMenu(void)
 	if (s_playermodel.selectedmodel != -1)
 		Menu_SetCursorToItem( &s_playermodel.menu, &s_playermodel.models[s_playermodel.selectedmodel % MAX_MODELSPERPAGE] );
 }
-
-

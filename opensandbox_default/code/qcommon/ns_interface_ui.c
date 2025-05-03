@@ -42,23 +42,23 @@ void NSGUI_UpdateValues( void ){
 				set_variable_value(va("gui%i_value", i), s_nsgui.item[i].field.buffer, TYPE_CHAR);
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_SCROLLLIST){
-				if(s_nsgui.item[i].mode <= 0){
+				if(s_nsgui.item[i].generic.mode <= 0){
 					set_variable_value(va("gui%i_value", i), s_nsgui.item[i].itemnames[s_nsgui.item[i].curvalue], TYPE_CHAR);
 				}
-				if(s_nsgui.item[i].mode == 1){
+				if(s_nsgui.item[i].generic.mode == 1){
 					set_variable_value(va("gui%i_value", i), va("%i", s_nsgui.item[i].curvalue), TYPE_INT);
 				}
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_RADIOBUTTON){
-				if(s_nsgui.item[i].mode <= 0){
+				if(s_nsgui.item[i].generic.mode <= 0){
 				set_variable_value(va("gui%i_value", i), va("%i", s_nsgui.item[i].curvalue), TYPE_INT);
 				}
-				if(s_nsgui.item[i].mode == 1){
+				if(s_nsgui.item[i].generic.mode == 1){
 				set_variable_value(va("gui%i_value", i), va("%i", !(s_nsgui.item[i].curvalue)), TYPE_INT);
 				}
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_SLIDER){
-				set_variable_value(va("gui%i_value", i), va("%.6f", (float)s_nsgui.item[i].curvalue / (float)s_nsgui.item[i].mode), TYPE_FLOAT);
+				set_variable_value(va("gui%i_value", i), va("%.6f", (float)s_nsgui.item[i].curvalue / (float)s_nsgui.item[i].generic.mode), TYPE_FLOAT);
 			}
 	}
 }
@@ -289,7 +289,7 @@ void UI_NSGUI( void ) {
 	s_nsgui.item[i].color					= color_nsgui[i];
 	s_nsgui.item[i].color2					= color_nsgui2[i];
 	s_nsgui.item[i].corner					= get_variable_int(va("gui%i_corner", i));
-	s_nsgui.item[i].mode					= get_variable_int(va("gui%i_mode", i));
+	s_nsgui.item[i].generic.mode					= get_variable_int(va("gui%i_mode", i));
 	s_nsgui.item[i].size				= get_variable_float(va("gui%i_size", i));
 	s_nsgui.item[i].generic.style		    = get_variable_float(va("gui%i_style", i));
 	s_nsgui.item[i].style		    		= UI_SMALLFONT;
@@ -337,20 +337,20 @@ void UI_NSGUI( void ) {
 				Q_strncpyz( s_nsgui.item[i].field.buffer, get_variable_char(va("gui%i_value", i)), sizeof(s_nsgui.item[i].field.buffer) );
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_FIELD){
-				if(s_nsgui.item[i].mode == 1){
+				if(s_nsgui.item[i].generic.mode == 1){
 					s_nsgui.item[i].curvalue = get_variable_int(va("gui%i_value", i));
 				}
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_RADIOBUTTON){
-				if(s_nsgui.item[i].mode <= 0){
+				if(s_nsgui.item[i].generic.mode <= 0){
 				s_nsgui.item[i].curvalue = get_variable_int(va("gui%i_value", i));
 				}
-				if(s_nsgui.item[i].mode == 1){
+				if(s_nsgui.item[i].generic.mode == 1){
 				s_nsgui.item[i].curvalue = !(get_variable_int(va("gui%i_value", i)));
 				}
 			}
 			if(s_nsgui.item[i].generic.type == MTYPE_SLIDER){
-				s_nsgui.item[i].curvalue = get_variable_float(va("gui%i_value", i)) * (float)s_nsgui.item[i].mode;
+				s_nsgui.item[i].curvalue = get_variable_float(va("gui%i_value", i)) * (float)s_nsgui.item[i].generic.mode;
 			}
 		}
 	}

@@ -60,17 +60,14 @@ typedef void (*voidfunc_f)(void);
 // map lists
 #define MAX_MAPS_LIST 1024
 
-// logo art, all are 128x32 but they view very well at 64x16
-#define GUI_LOGO_POWERED "menu/assets/gui_powered"
-#define GUI_LOGO_ASSISTED "menu/assets/gui_assisted"
-#define GUI_LOGO_INCLUDE "menu/assets/gui_include"
-#define GUI_LOGO_IMPROVED "menu/assets/gui_improved"
-#define GUI_LOGO_USING "menu/assets/gui_using"
+#define	OSUI_LOGO_X 		58 - uis.wideoffset
+#define	OSUI_LOGO_Y 		64
 
-#define GUI_LOGO_X 570
-#define GUI_LOGO_Y 390
+#define	OSUI_STANDARD_Y 	145
+#define	OSUI_SPACING_Y 		18
+#define	OSUI_BIGSPACING_Y 	36
 
-#define	OSUI_MAX_ELEMENTS 101
+#define	OSUI_MAX_ELEMENTS 	101
 
 #define LST_SIMPLE 		0
 #define LST_ICONS 		1
@@ -346,6 +343,10 @@ typedef struct {
 	int 			menuPosition;
 	unsigned 		flags;
 
+	int				mode;
+	char*			buffer;
+	int*			value;
+
 	void 			(*callback)( void *self, int event );
 	void 			(*statusbar)( void *self );
 	void 			(*ownerdraw)( void *self );
@@ -388,8 +389,6 @@ typedef struct {
 	int				numitems;
 	int				top;
 	const char 		**itemnames;
-	char*			list[1];
-	char			names[1];
 	int				columns;
 	char 			*file;
 	char 			*extension;
@@ -401,7 +400,6 @@ typedef struct {
 	mfield_t		field;
 
 	int				corner;
-	int				mode;
 
 	botskill_t* 	data;
 
@@ -419,8 +417,6 @@ extern void			Menu_SetCursorToItem( menuframework_s *m, void* ptr );
 extern sfxHandle_t	Menu_DefaultKey( menuframework_s *s, int key );
 extern void			Bitmap_Init( menuelement_s *b );
 extern void			Bitmap_Draw( menuelement_s *b );
-/*extern void			UIObject_Init( menuelement_s *b );
-extern void			UIObject_Draw( menuelement_s *b );*/
 extern void			ScrollList_Draw( menuelement_s *l );
 extern sfxHandle_t	ScrollList_Key( menuelement_s *l, int key );
 extern sfxHandle_t	menu_in_sound;
@@ -520,7 +516,6 @@ extern void UI_DrawConnectScreen( qboolean overlay );
 // ui_controls2.c
 //
 extern void UI_ControlsMenu( void );
-extern void Controls_Cache( void );
 
 //
 // ui_demo2.c
@@ -685,65 +680,7 @@ typedef struct {
 	int 			oldFrame;
 } playerInfo_t;
 
-
-#define ANIM_IDLE		1
-#define ANIM_RUN		2
-#define ANIM_WALK		3
-#define ANIM_BACK		4
-#define ANIM_JUMP		5
-#define ANIM_CROUCH		6
-#define ANIM_STEPLEFT	7
-#define ANIM_STEPRIGHT	8
-#define ANIM_TURNLEFT	9
-#define ANIM_TURNRIGHT	10
-#define ANIM_LOOKUP		11
-#define ANIM_LOOKDOWN	12
-#define ANIM_WEAPON1	13
-#define ANIM_WEAPON2	14
-#define ANIM_WEAPON3	15
-#define ANIM_WEAPON4	16
-#define ANIM_WEAPON5	17
-#define ANIM_WEAPON6	18
-#define ANIM_WEAPON7	19
-#define ANIM_WEAPON8	20
-#define ANIM_WEAPON9	21
-#define ANIM_WEAPON10	22
-#define ANIM_WEAPON11	23
-#define ANIM_WEAPON12	24
-#define ANIM_WEAPON13	25
-#define ANIM_WEAPON14	26
-#define ANIM_WEAPON15	27
-#define ANIM_ATTACK		28
-#define ANIM_GESTURE	29
-#define ANIM_DIE		30
-#define ANIM_DIE2		31
-#define ANIM_DIE3		32
-#define ANIM_SWIM		33
-
-// ANIM_CHAT should always be the last animation value
-#define ANIM_CHAT		34
-
-#define ANIM_MAX (ANIM_CHAT + 1)
-
-#define MAX_RECENT_ANIMS 10
 #define MODELNAME_BUFFER MAX_QPATH
-
-
-
-typedef struct {
-	menuelement_s stop;
-	menuelement_s pause;
-	menuelement_s left;
-	menuelement_s right;
-
-	float yaw;
-	int rotate;
-	qboolean paused;
-
-	qboolean useSpin;
-} modelRotate_t;
-
-
 
 typedef struct {
 	playerInfo_t player;
@@ -756,8 +693,6 @@ typedef struct {
 	
 	menuelement_s bitmap;
 
-	modelRotate_t spin;
-
 	int anim;
 	int playerLegs;
 	int playerTorso;
@@ -767,23 +702,13 @@ typedef struct {
 
 	int cursorx;
 	int cursory;
-	int NextIdleAnimTime;
 	qboolean bDoingIdleAnim;
-	int recent_anims[MAX_RECENT_ANIMS];
-	int recent_anims_index;
-	int current_weapon;
-	int shotsRemaining;
-	int nextFireTime;
 
 	qboolean bUnknownModel;
 	qboolean bUnknownHeadModel;
 	qboolean bUnknownLegsModel;
-	qboolean bNoIdleAnim;
-	qboolean bNoAutoUpdate;
 	qboolean bForceUpdate;
-	qboolean allowCursorFire;
 } modelAnim_t;
-
 
 // these enums are used in several places
 // and match the items on drawmodel_list[]
@@ -791,7 +716,6 @@ enum {
 	DRAWMODEL_DM,
 	DRAWMODEL_TEAM
 };
-
 
 typedef void (*callbackOwnerDraw)(void* self);
 
@@ -1047,6 +971,9 @@ void UI_MapCallVote( void );
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
 void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CSlider(menuelement_s* e, float x, float y, char* text, float size, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid);
+void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, float size, char* var, float mod, void (*callback)( void *self, int event ), int callid);
+void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, float size, const char **list, void (*callback)( void *self, int event ), int callid);
 void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
 void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid);

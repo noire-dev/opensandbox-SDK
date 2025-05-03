@@ -3336,7 +3336,9 @@ void UI_GeneralCallback( void *ptr, int event ) {
 			break;
 	
 		case CB_VARIABLE:
-			//trap_Cvar_Set(((menucommon_s*)ptr)->var, null);
+			if(((menucommon_s*)ptr)->type == MTYPE_SLIDER){
+				trap_Cvar_Set(((menucommon_s*)ptr)->var, va("%.6f", (float)*((menucommon_s*)ptr)->value / (float)((menucommon_s*)ptr)->mode));
+			}
 			break;
 	
 		case CB_FUNC:
@@ -3351,7 +3353,18 @@ void UI_CreateUI(menuframework_s* menu, menuelement_s* e) {
 
 	for(i = 0; i <= OSUI_MAX_ELEMENTS-1; i++){
 		if(e[i].generic.type != MTYPE_NULL){
+			//ID
 			e[i].generic.id = i;
+
+			//Pointers
+			e[i].generic.buffer = e[i].field.buffer;
+			e[i].generic.value = &e[i].curvalue;
+
+			//Get value
+			if(e[i].generic.type == MTYPE_SLIDER){
+				e[i].curvalue = trap_Cvar_VariableValue( e[i].generic.var ) * (float)e[i].generic.mode;
+			}
+
 			e[i].generic.flags |= (QMF_PULSEIFFOCUS);
 			Menu_AddItem( menu, &e[i] );
 		}
@@ -3391,6 +3404,54 @@ void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float
 		e->generic.flags			= QMF_RIGHT_JUSTIFY;
 		e->style					= UI_RIGHT;
 	}
+}
+
+void UI_CSlider(menuelement_s* e, float x, float y, char* text, float size, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid) {
+	e->generic.type					= MTYPE_SLIDER;
+	e->generic.x					= x;
+	e->generic.y					= y;
+	e->size							= size;
+	e->string						= text;
+	e->generic.callback				= callback;
+	e->generic.callid				= callid;
+	e->generic.excallback			= UI_GeneralCallback;
+	e->minvalue		    			= min;
+	e->maxvalue		    			= max;
+	e->generic.mode		    		= mod;
+	if(var){
+		e->generic.excallbacktype	= CB_VARIABLE;
+		e->generic.var				= var;
+	}
+	e->color						= color_white;
+}
+
+void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, float size, char* var, float mod, void (*callback)( void *self, int event ), int callid) {
+	e->generic.type					= MTYPE_RADIOBUTTON;
+	e->generic.x					= x;
+	e->generic.y					= y;
+	e->size							= size;
+	e->string						= text;
+	e->generic.callback				= callback;
+	e->generic.callid				= callid;
+	e->generic.excallback			= UI_GeneralCallback;
+	e->generic.mode		    		= mod;
+	if(var){
+		e->generic.excallbacktype	= CB_VARIABLE;
+		e->generic.var				= var;
+	}
+	e->color						= color_white;
+}
+
+void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, float size, const char **list, void (*callback)( void *self, int event ), int callid) {
+	e->generic.type					= MTYPE_SPINCONTROL;
+	e->generic.x					= x;
+	e->generic.y					= y;
+	e->size							= size;
+	e->string						= text;
+	e->generic.callback				= callback;
+	e->generic.callid				= callid;
+	e->itemnames		    		= list;
+	e->color						= color_white;
 }
 
 void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid) {

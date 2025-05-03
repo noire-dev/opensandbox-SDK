@@ -297,7 +297,6 @@ static void UI_PlayerAngles( modelAnim_t* m, vec3_t legs[3], vec3_t torso[3], ve
 	float		adjust;
 	float		delta;
 	playerInfo_t *pi;
-	modelRotate_t* mr;
 
 	pi = &m->player;
 	VectorCopy( pi->viewAngles, headAngles );
@@ -991,7 +990,6 @@ static void PlayerInfo_SetupNewModel( modelAnim_t* m) {
 
 	// model change done
 	m->cursorx = m->cursory = -1;
-	m->NextIdleAnimTime = 0;
 }
 
 /*
@@ -1034,11 +1032,6 @@ void GUI_PlayerInfo_InitModel(modelAnim_t* m) {
 	
 	trap_Cvar_VariableStringBuffer( "team_legsskin", buffer, MODELNAME_BUFFER );
 	strcpy(m->team_legsskin, buffer);
-
-	// init the recent animations history
-	for (i = 0; i < MAX_RECENT_ANIMS; i++) {
-		m->recent_anims[i] = ANIM_IDLE;
-	}
 
 	PlayerInfo_SetupNewModel(m);
 }
@@ -1136,47 +1129,6 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m) {
 	modelchange = 0;
 	team_modelchange = 0;
 	draw_team = drawTeamModel;
-	if (!m->bNoAutoUpdate)
-	{
-		trap_Cvar_VariableStringBuffer( "model", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->modelskin) ) {
-			strcpy(m->modelskin, buffer);
-			modelchange = 1;
-		}
-
-		trap_Cvar_VariableStringBuffer( "headmodel", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->headskin) ) {
-			strcpy(m->headskin, buffer);
-			modelchange = 1;
-		}
-		
-		trap_Cvar_VariableStringBuffer( "legsskin", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->legsskin) ) {
-			strcpy(m->legsskin, buffer);
-			modelchange = 1;
-		}
-
-		trap_Cvar_VariableStringBuffer( "team_model", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->team_modelskin) ) {
-			strcpy(m->team_modelskin, buffer);
-			team_modelchange = 1;
-		}
-
-		trap_Cvar_VariableStringBuffer( "team_headmodel", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->team_headskin) ) {
-			strcpy(m->team_headskin, buffer);
-			team_modelchange = 1;
-		}
-		
-		trap_Cvar_VariableStringBuffer( "team_legsskin", buffer, MODELNAME_BUFFER );
-		if (Q_stricmp(buffer, m->team_legsskin) ) {
-			strcpy(m->team_legsskin, buffer);
-			team_modelchange = 1;
-		}
-
-		if ((modelchange && !draw_team) || (team_modelchange && draw_team))
-			m->bForceUpdate = qtrue;
-	}
 
 	// update might be forced from elsewhere
 	if (m->bForceUpdate || uis.firstdraw) {
@@ -1201,7 +1153,6 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m) {
 	if (PlayerInfo_CursorChanged(m) || m->bForceUpdate) {
 		// follow cursor, and delay idle animation
 		PlayerInfo_ModelTrackCursor(m);
-		m->NextIdleAnimTime = uis.realtime + IDLE_ANIM_STARTTIME;
 	}
 
 	m->bForceUpdate = qfalse;

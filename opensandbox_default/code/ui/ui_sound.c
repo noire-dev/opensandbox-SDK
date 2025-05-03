@@ -30,9 +30,6 @@ SOUND OPTIONS MENU
 =======================================================================
 */
 
-
-
-
 #include "ui_local.h"
 
 #define ART_BACK0			"menu/assets/back_0"

@@ -25,18 +25,12 @@
 
 #include "ui_local.h"
 
-#define SPACING			34
-
 #define ID_DEFAULTS 	100
 #define ID_LANGUAGE 	99
-#define ID_MUSIC 		98
 
 typedef struct {
 	menuframework_s	menu;
 	menuelement_s	e[OSUI_MAX_ELEMENTS];
-
-	char			names1[524288];
-	char*			list1[524288];
 } setup_t;
 
 static setup_t	setup;
@@ -60,11 +54,6 @@ static void UI_Setup_Event( void *ptr, int event ) {
 	case ID_LANGUAGE:
 		//Make language list
 		break;
-
-	case ID_MUSIC:
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("music \"music/%s\" \n", setup.e[ID_MUSIC].itemnames[setup.e[ID_MUSIC].curvalue]) );
-		break;
-
 	}
 }
 
@@ -75,24 +64,24 @@ void UI_Setup( void ) {
 	setup.menu.native		= qfalse;
 	setup.menu.fullscreen 	= qtrue;
 
-	UI_CText(&setup.e[0], 320, 16, "OPTIONS", UI_CENTER, 1.80);
+	UI_CText(&setup.e[0], OSUI_LOGO_X, OSUI_LOGO_Y+24, "OPTIONS", UI_LEFT, 1.80);
 
-	y = 128 - SPACING;
-	UI_CButton(&setup.e[1], 320, y, "PLAYER", UI_CENTER, 1.30, NULL, NULL, UI_PlayerSettingsMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[2], 320, y, "MODEL", UI_CENTER, 1.30, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[3], 320, y, "CONTROLS", UI_CENTER, 1.30, NULL, NULL, UI_ControlsMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[4], 320, y, "SYSTEM", UI_CENTER, 1.30, NULL, NULL, UI_GraphicsOptionsMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[5], 320, y, "GAME OPTIONS", UI_CENTER, 1.30, NULL, NULL, UI_PreferencesMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[6], 320, y, "ADVANCED", UI_CENTER, 1.30, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[7], 320, y, "LOAD/EXEC CONFIG", UI_CENTER, 1.30, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[8], 320, y, "SAVE CONFIG", UI_CENTER, 1.30, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[ID_DEFAULTS], 320, y, "DEFAULTS", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_DEFAULTS); y += SPACING;
-	UI_CButton(&setup.e[ID_LANGUAGE], 320, y, "РУССКИЙ", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_LANGUAGE);
+	y = OSUI_STANDARD_Y;
+	UI_CButton(&setup.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, NULL, NULL, UI_PlayerSettingsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[2], 64 - uis.wideoffset, y, "Model", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	UI_CBitmap(&setup.e[9], 0 - uis.wideoffset, 480-64, 128, 64, AST_BACK, 0, NULL, NULL, UI_PopMenu, NULL, 0);
+	UI_CButton(&setup.e[3], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, NULL, NULL, UI_ControlsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[4], 64 - uis.wideoffset, y, "System", UI_LEFT, 1.00, NULL, NULL, UI_GraphicsOptionsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[5], 64 - uis.wideoffset, y, "Game Options", UI_LEFT, 1.00, NULL, NULL, UI_PreferencesMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[6], 64 - uis.wideoffset, y, "Advanced", UI_LEFT, 1.00, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	UI_CList(&setup.e[ID_MUSIC], 0-uis.wideoffset, 20, 24, 10, LST_SIMPLE, 1.00, 1, UI_Setup_Event, ID_MUSIC);
-	UI_FillList(&setup.e[ID_MUSIC], "music/", "", setup.names1, 524288, setup.list1);
+	UI_CButton(&setup.e[7], 64 - uis.wideoffset, y, "Load Config", UI_LEFT, 1.00, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[8], 64 - uis.wideoffset, y, "Save Config", UI_LEFT, 1.00, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
+
+	UI_CButton(&setup.e[ID_DEFAULTS], 64 - uis.wideoffset, y, "Defaults", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Setup_Event, ID_DEFAULTS); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[ID_LANGUAGE], 64 - uis.wideoffset, y, "Language", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Setup_Event, ID_LANGUAGE); y += OSUI_BIGSPACING_Y;
+
+	UI_CButton(&setup.e[9], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, UI_PopMenu, NULL, 0);
 
 	UI_CreateUI( &setup.menu, setup.e);
 	UI_PushMenu( &setup.menu );

@@ -708,7 +708,7 @@ static void Preferences_MenuInit( void )
 	s_preferences.crosshair.generic.ownerdraw	= Crosshair_Draw;
 	s_preferences.crosshair.generic.id			= ID_CROSSHAIR;
 
-     s_preferences.crosshairColorRed.generic.type		= MTYPE_SLIDER;
+    s_preferences.crosshairColorRed.generic.type		= MTYPE_SLIDER;
 	s_preferences.crosshairColorRed.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NODEFAULTINIT|QMF_OWNERDRAW;
 	s_preferences.crosshairColorRed.generic.callback	= Preferences_Event;
 	s_preferences.crosshairColorRed.generic.id		= ID_COLORRED;
