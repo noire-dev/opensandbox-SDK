@@ -25,11 +25,11 @@
 
 #include "ui_local.h"
 
-#define SPACING		34
+#define SPACING			34
 
-#define ID_DEFAULTS 	0
-#define ID_LANGUAGE 	1
-#define ID_MUSIC 		2
+#define ID_DEFAULTS 	100
+#define ID_LANGUAGE 	99
+#define ID_MUSIC 		98
 
 typedef struct {
 	menuframework_s	menu;
@@ -62,7 +62,7 @@ static void UI_Setup_Event( void *ptr, int event ) {
 		break;
 
 	case ID_MUSIC:
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("music \"music/%s\" \n", setup.e[12].itemnames[setup.e[12].curvalue]) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va("music \"music/%s\" \n", setup.e[ID_MUSIC].itemnames[setup.e[ID_MUSIC].curvalue]) );
 		break;
 
 	}
@@ -86,13 +86,13 @@ void UI_Setup( void ) {
 	UI_CButton(&setup.e[6], 320, y, "ADVANCED", UI_CENTER, 1.30, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += SPACING;
 	UI_CButton(&setup.e[7], 320, y, "LOAD/EXEC CONFIG", UI_CENTER, 1.30, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += SPACING;
 	UI_CButton(&setup.e[8], 320, y, "SAVE CONFIG", UI_CENTER, 1.30, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += SPACING;
-	UI_CButton(&setup.e[9], 320, y, "DEFAULTS", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_DEFAULTS); y += SPACING;
-	UI_CButton(&setup.e[10], 320, y, "РУССКИЙ", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_LANGUAGE);
+	UI_CButton(&setup.e[ID_DEFAULTS], 320, y, "DEFAULTS", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_DEFAULTS); y += SPACING;
+	UI_CButton(&setup.e[ID_LANGUAGE], 320, y, "РУССКИЙ", UI_CENTER, 1.30, NULL, NULL, NULL, UI_Setup_Event, ID_LANGUAGE);
 
-	UI_CBitmap(&setup.e[11], 0 - uis.wideoffset, 480-64, 128, 64, AST_BACK, 0, NULL, NULL, UI_PopMenu, NULL, 0);
+	UI_CBitmap(&setup.e[9], 0 - uis.wideoffset, 480-64, 128, 64, AST_BACK, 0, NULL, NULL, UI_PopMenu, NULL, 0);
 
-	UI_CList(&setup.e[12], 0-uis.wideoffset, 20, 24, 10, LST_SIMPLE, 1.00, 1, UI_Setup_Event, ID_MUSIC);
-	UI_FillList(&setup.e[12], "music/", "", setup.names1, 524288, setup.list1);
+	UI_CList(&setup.e[ID_MUSIC], 0-uis.wideoffset, 20, 24, 10, LST_SIMPLE, 1.00, 1, UI_Setup_Event, ID_MUSIC);
+	UI_FillList(&setup.e[ID_MUSIC], "music/", "", setup.names1, 524288, setup.list1);
 
 	UI_CreateUI( &setup.menu, setup.e);
 	UI_PushMenu( &setup.menu );

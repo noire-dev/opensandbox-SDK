@@ -3349,7 +3349,7 @@ void UI_GeneralCallback( void *ptr, int event ) {
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e) {
 	int i;
 
-	for(i = 0; i < OSUI_MAX_ELEMENTS-1; i++){
+	for(i = 0; i <= OSUI_MAX_ELEMENTS-1; i++){
 		if(e[i].generic.type != MTYPE_NULL){
 			e[i].generic.id = i;
 			e[i].generic.flags |= (QMF_PULSEIFFOCUS);

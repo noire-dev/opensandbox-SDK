@@ -779,7 +779,10 @@ typedef struct {
 	qboolean bUnknownModel;
 	qboolean bUnknownHeadModel;
 	qboolean bUnknownLegsModel;
+	qboolean bNoIdleAnim;
+	qboolean bNoAutoUpdate;
 	qboolean bForceUpdate;
+	qboolean allowCursorFire;
 } modelAnim_t;
 
 

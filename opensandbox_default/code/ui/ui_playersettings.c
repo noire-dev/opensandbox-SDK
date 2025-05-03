@@ -343,7 +343,7 @@ static void PlayerSettings_SetMenuItems( void ) {
 	}
 	s_playersettings.effects.curvalue = gamecodetoui[c];
 
-s_playersettings.heflashred.curvalue  = trap_Cvar_VariableValue( "cg_helightred");
+	s_playersettings.heflashred.curvalue  = trap_Cvar_VariableValue( "cg_helightred");
 	
 	s_playersettings.heflashgreen.curvalue  = trap_Cvar_VariableValue( "cg_helightgreen");
 	
