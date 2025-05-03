@@ -73,6 +73,9 @@ typedef void (*voidfunc_f)(void);
 #define LST_ICONS 		1
 #define LST_GRID 		2
 
+#define RBT_NORMAL 		0
+#define RBT_INVERSE 	1
+
 #define AST_BACK 		0
 
 #define AST_OSLOGO 		1000
@@ -515,7 +518,7 @@ extern void UI_DrawConnectScreen( qboolean overlay );
 //
 // ui_controls2.c
 //
-extern void UI_ControlsMenu( void );
+extern void UI_Controls( void );
 
 //
 // ui_demo2.c

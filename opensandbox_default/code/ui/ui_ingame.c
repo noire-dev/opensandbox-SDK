@@ -426,7 +426,7 @@ static void IG_Setup_Event( int index )
 		UI_PlayerModelMenu();
 		break;
 	case IGS_CONTROLS:
-		UI_ControlsMenu();
+		UI_Controls();
 		break;
 	case IGS_OPTIONS:
 		UI_PreferencesMenu();

@@ -477,10 +477,10 @@ static void Controls_ActionEvent( void* ptr, int event )
 
 /*
 =================
-Controls_MenuInit
+UI_Controls
 =================
 */
-static void Controls_MenuInit( void ){
+void UI_Controls( void ) {
 	int 		i;
 	int			y;
 
@@ -508,9 +508,9 @@ static void Controls_MenuInit( void ){
 	}
 
 	UI_CSpinControl(&s_controls.e[KEYS_NUM+1], SCREEN_WIDTH*0.64, 0, "input method", 2.00, mousestyle_description, Controls_MenuEvent, KEYS_NUM+1);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", 2.00, "cl_freelook", 0, NULL, 0);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", 2.00, "m_filter", 0, NULL, 0);
-	UI_CRadioButton(&s_controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", 2.00, "cl_run", 0, NULL, 0);
+	UI_CRadioButton(&s_controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", 2.00, "cl_freelook", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&s_controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", 2.00, "m_filter", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&s_controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", 2.00, "cl_run", RBT_NORMAL, NULL, 0);
 	UI_CSlider(&s_controls.e[KEYS_NUM+5], SCREEN_WIDTH*0.64, 0, "mouse speed", 2.00, "sensitivity", 2, 30, 1, NULL, 0);
 
 	UI_CreateUI( &s_controls.menu, s_controls.e);
@@ -523,14 +523,6 @@ static void Controls_MenuInit( void ){
 
 	// update the ui
 	Controls_Update();
-}
 
-/*
-=================
-UI_ControlsMenu
-=================
-*/
-void UI_ControlsMenu( void ) {
-	Controls_MenuInit();
 	UI_PushMenu( &s_controls.menu );
 }

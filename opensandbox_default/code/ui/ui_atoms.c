@@ -830,8 +830,8 @@ if( Q_stricmp (UI_Argv(0), "ui_loadgame") == 0 ){
 UI_SavesMenu_Load();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_controls2") == 0 ){
-UI_ControlsMenu();
+if( Q_stricmp (UI_Argv(0), "ui_controls") == 0 ){
+UI_Controls();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_demo2") == 0 ){

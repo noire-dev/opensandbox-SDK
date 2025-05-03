@@ -3337,7 +3337,18 @@ void UI_GeneralCallback( void *ptr, int event ) {
 	
 		case CB_VARIABLE:
 			if(((menucommon_s*)ptr)->type == MTYPE_SLIDER){
-				trap_Cvar_Set(((menucommon_s*)ptr)->var, va("%.6f", (float)*((menucommon_s*)ptr)->value / (float)((menucommon_s*)ptr)->mode));
+				trap_Cvar_SetValue(((menucommon_s*)ptr)->var, (float)*((menucommon_s*)ptr)->value / (float)((menucommon_s*)ptr)->mode);
+			}
+			if(((menucommon_s*)ptr)->type == MTYPE_FIELD){
+				trap_Cvar_Set(((menucommon_s*)ptr)->var, ((menucommon_s*)ptr)->buffer);
+			}
+			if(((menucommon_s*)ptr)->type == MTYPE_RADIOBUTTON){
+				if(((menucommon_s*)ptr)->mode == RBT_NORMAL){
+					trap_Cvar_SetValue(((menucommon_s*)ptr)->var, (float)*((menucommon_s*)ptr)->value);
+				}
+				if(((menucommon_s*)ptr)->mode == RBT_INVERSE){
+					trap_Cvar_SetValue(((menucommon_s*)ptr)->var, -(float)*((menucommon_s*)ptr)->value);
+				}
 			}
 			break;
 	
@@ -3345,7 +3356,6 @@ void UI_GeneralCallback( void *ptr, int event ) {
 			((menucommon_s*)ptr)->func();
 			break;
 	}
-
 }
 
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e) {
@@ -3361,8 +3371,21 @@ void UI_CreateUI(menuframework_s* menu, menuelement_s* e) {
 			e[i].generic.value = &e[i].curvalue;
 
 			//Get value
-			if(e[i].generic.type == MTYPE_SLIDER){
-				e[i].curvalue = trap_Cvar_VariableValue( e[i].generic.var ) * (float)e[i].generic.mode;
+			if(e[i].generic.var){
+				if(e[i].generic.type == MTYPE_SLIDER){
+					e[i].curvalue = trap_Cvar_VariableValue( e[i].generic.var ) * (float)e[i].generic.mode;
+				}
+				if(e[i].generic.type == MTYPE_FIELD){
+					trap_Cvar_VariableStringBuffer( e[i].generic.var, e[i].field.buffer, sizeof(e[i].field.buffer) );
+				}
+				if(e[i].generic.type == MTYPE_RADIOBUTTON){
+					if(e[i].generic.mode == RBT_NORMAL){
+						e[i].curvalue = trap_Cvar_VariableValue( e[i].generic.var );
+					}
+					if(e[i].generic.mode == RBT_INVERSE){
+						e[i].curvalue = -trap_Cvar_VariableValue( e[i].generic.var );
+					}
+				}
 			}
 
 			e[i].generic.flags |= (QMF_PULSEIFFOCUS);

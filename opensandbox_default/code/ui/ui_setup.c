@@ -70,7 +70,7 @@ void UI_Setup( void ) {
 	UI_CButton(&setup.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, NULL, NULL, UI_PlayerSettingsMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&setup.e[2], 64 - uis.wideoffset, y, "Model", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&setup.e[3], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, NULL, NULL, UI_ControlsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&setup.e[3], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, NULL, NULL, UI_Controls, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&setup.e[4], 64 - uis.wideoffset, y, "System", UI_LEFT, 1.00, NULL, NULL, UI_GraphicsOptionsMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&setup.e[5], 64 - uis.wideoffset, y, "Game Options", UI_LEFT, 1.00, NULL, NULL, UI_PreferencesMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&setup.e[6], 64 - uis.wideoffset, y, "Advanced", UI_LEFT, 1.00, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
