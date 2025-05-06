@@ -1188,8 +1188,8 @@ static void PlayerModel_SetMenuItems( void )
 
 	// We need to copy current head selections into history buffers
 	// Copy over the body model/skin, this is a good default
-	strncpy(s_playermodel.other_head, thismodel, MODELNAME_BUFFER);
-	strncpy(s_playermodel.prevother_head, othermodel, MODELNAME_BUFFER);
+	Q_strncpyz(s_playermodel.other_head, thismodel, MODELNAME_BUFFER);
+	Q_strncpyz(s_playermodel.prevother_head, othermodel, MODELNAME_BUFFER);
 
 	// find model in our list
 	PlayerModel_SetModelIconSelection(qfalse);

@@ -2403,7 +2403,7 @@ void CG_AddNotify(const char *text, int type) {
         cg.notifications[i] = cg.notifications[i - 1];
     }
 
-    strncpy(cg.notifications[0].text, text, 127);
+    Q_strncpyz(cg.notifications[0].text, text, 127);
     cg.notifications[0].text[127] = '\0';
     cg.notifications[0].type = type;
     cg.notifications[0].startTime = cg.time;
@@ -2976,7 +2976,7 @@ void RunScriptThreads(int time) {
             script->lastRunTime = time;
 
             // Используем временный буфер для выполнения скрипта
-            strncpy(cgameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
+            Q_strncpyz(cgameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
             cgameThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0'; // Убедимся, что буфер терминальный
 
             Interpret(cgameThreadBuffer); // Запускаем скрипт из временного буфера

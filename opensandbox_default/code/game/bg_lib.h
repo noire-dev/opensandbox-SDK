@@ -95,7 +95,6 @@ int strcmp( const char *string1, const char *string2 );
 char *strchr( const char *string, int c );
 char *strrchr(const char *string, int c);
 char *strstr( const char *string, const char *strCharSet );
-char *strncpy( char *strDest, const char *strSource, size_t count );
 int tolower( int c );
 int toupper( int c );
 
@@ -111,21 +110,22 @@ int Q_snprintf( char *buffer, size_t length, const char *fmt, ... ) __attribute_
 
 int sscanf( const char *buffer, const char *fmt, ... ) __attribute__ ((format (scanf, 2, 3)));
 
-// Memory functions
+// qvm-side functions
 void *memmove( void *dest, const void *src, size_t count );
-void *memset( void *dest, int c, size_t count );
-void *memcpy( void *dest, const void *src, size_t count );
-
-// Math functions
-double ceil( double x );
-double floor( double x );
-double sqrt( double x );
-double sin( double x );
-double cos( double x );
-double atan2( double y, double x );
 double tan( double x );
 int abs( int n );
 double fabs( double x );
 double acos( double x );
+
+// SHARED SYSCALLS
+void *memset( void *dest, int c, size_t count );
+void *memcpy( void *dest, const void *src, size_t count );
+char *strncpy( char *strDest, const char *strSource, size_t count );
+double sin( double x );
+double cos( double x );
+double atan2( double y, double x );
+double sqrt( double x );
+double floor( double x );
+double ceil( double x );
 
 #endif // BG_LIB_H

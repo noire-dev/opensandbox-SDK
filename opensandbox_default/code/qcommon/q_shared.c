@@ -513,18 +513,20 @@ Safe strncpy that ensures a trailing zero
 =============
 */
 void Q_strncpyz( char *dest, const char *src, int destsize ) {
-  if ( !dest ) {
-    Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
-  }
+  	if ( !dest ) {
+    	Com_Printf( "Q_strncpyz: NULL dest \n" );
+		return; 
+  	}
 	if ( !src ) {
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
+		return; 
 	}
 	if ( destsize < 1 ) {
-		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" ); 
+		Com_Printf( "Q_strncpyz: destsize < 1 \n" );
+		return; 
 	}
 
 	strncpy( dest, src, destsize-1 );
-  dest[destsize-1] = 0;
+  	dest[destsize-1] = 0;
 }
                  
 int Q_stricmpn (const char *s1, const char *s2, int n) {

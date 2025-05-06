@@ -729,7 +729,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.ctab[i].generic.y        	= 10;
     s_sandboxmain.ctab[i].string 			= (char *)UI_Alloc(MAX_TAB_TEXT + 1);
     if (s_sandboxmain.ctab[i].string) {
-        strncpy(s_sandboxmain.ctab[i].string, get_cvar_char(va("sb_ctab_%i", i+1)), MAX_TAB_TEXT);
+        Q_strncpyz(s_sandboxmain.ctab[i].string, get_cvar_char(va("sb_ctab_%i", i+1)), MAX_TAB_TEXT);
         s_sandboxmain.ctab[i].string[MAX_TAB_TEXT] = '\0';
     }
 	s_sandboxmain.ctab[i].color			    = s_sandboxmain_color1;

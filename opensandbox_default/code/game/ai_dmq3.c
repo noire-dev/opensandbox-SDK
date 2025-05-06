@@ -1518,7 +1518,7 @@ char *ClientName(int client, char *name, int size) {
 		return "[client out of range]";
 	}
 	trap_GetConfigstring(CS_PLAYERS+client, buf, sizeof(buf));
-	strncpy(name, Info_ValueForKey(buf, "n"), size-1);
+	Q_strncpyz(name, Info_ValueForKey(buf, "n"), size-1);
 	name[size-1] = '\0';
 	//Q_CleanStr( name );
 	RemoveColorEscapeSequences( buf );
@@ -1538,7 +1538,7 @@ char *ClientSkin(int client, char *skin, int size) {
 		return "[client out of range]";
 	}
 	trap_GetConfigstring(CS_PLAYERS+client, buf, sizeof(buf));
-	strncpy(skin, Info_ValueForKey(buf, "model"), size-1);
+	Q_strncpyz(skin, Info_ValueForKey(buf, "model"), size-1);
 	skin[size-1] = '\0';
 	return skin;
 }
@@ -1635,40 +1635,7 @@ char *EasyClientName(int client, char *buf, int size) {
 	char name[128];
 
 	ClientName(client, name, sizeof(name));
-	/*for (i = 0; name[i]; i++) name[i] &= 127;
-	//remove all spaces
-	for (ptr = strstr(name, " "); ptr; ptr = strstr(name, " ")) {
-		memmove(ptr, ptr+1, strlen(ptr+1)+1);
-	}
-	//check for [x] and ]x[ clan names
-	str1 = strstr(name, "[");
-	str2 = strstr(name, "]");
-	if (str1 && str2) {
-		if (str2 > str1) memmove(str1, str2+1, strlen(str2+1)+1);
-		else memmove(str2, str1+1, strlen(str1+1)+1);
-	}
-	//remove Mr prefix
-	if ((name[0] == 'm' || name[0] == 'M') &&
-			(name[1] == 'r' || name[1] == 'R')) {
-		memmove(name, name+2, strlen(name+2)+1);
-	}
-	//only allow lower case alphabet characters
-	ptr = name;
-	while(*ptr) {
-		c = *ptr;
-		if ((c >= 'a' && c <= 'z') ||
-				(c >= '0' && c <= '9') || c == '_') {
-			ptr++;
-		}
-		else if (c >= 'A' && c <= 'Z') {
-			*ptr += 'a' - 'A';
-			ptr++;
-		}
-		else {
-			memmove(ptr, ptr+1, strlen(ptr + 1)+1);
-		}
-	}*/
-	strncpy(buf, name, size-1);
+	Q_strncpyz(buf, name, size-1);
 	buf[size-1] = '\0';
 	return buf;
 }
@@ -3762,7 +3729,7 @@ void BotMapScripts(bot_state_t *bs) {
 
 	trap_GetServerinfo(info, sizeof(info));
 
-	strncpy(mapname, Info_ValueForKey( info, "mapname" ), sizeof(mapname)-1);
+	Q_strncpyz(mapname, Info_ValueForKey( info, "mapname" ), sizeof(mapname)-1);
 	mapname[sizeof(mapname)-1] = '\0';
 
 	if (!Q_stricmp(mapname, "q3tourney6")) {

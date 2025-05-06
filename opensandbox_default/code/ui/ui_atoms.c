@@ -1304,7 +1304,7 @@ void RunScriptThreads(int time) {
             script->lastRunTime = time;
 
             // Используем временный буфер для выполнения скрипта
-            strncpy(uiThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
+            Q_strncpyz(uiThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
             uiThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0'; // Убедимся, что буфер терминальный
 
             Interpret(uiThreadBuffer); // Запускаем скрипт из временного буфера

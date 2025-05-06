@@ -3179,7 +3179,7 @@ void RunScriptThreads(int time) {
             script->lastRunTime = time;
 
             // Используем временный буфер для выполнения скрипта
-            strncpy(qagameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
+            Q_strncpyz(qagameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
             qagameThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0'; // Убедимся, что буфер терминальный
 
             Interpret(qagameThreadBuffer); // Запускаем скрипт из временного буфера

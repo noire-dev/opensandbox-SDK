@@ -260,9 +260,9 @@ void UI_NSGUI( void ) {
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
 	type = get_variable_int(va("gui%i_type", i));
 	if(type > MTYPE_NULL && type < MTYPE_MAX){
-	strncpy(text, get_variable_char(va("gui%i_text", i)), sizeof(text));
-	strncpy(command, get_variable_char(va("gui%i_cmd", i)), sizeof(command));
-	strncpy(pic, get_variable_char(va("gui%i_file", i)), sizeof(pic));
+	Q_strncpyz(text, get_variable_char(va("gui%i_text", i)), sizeof(text));
+	Q_strncpyz(command, get_variable_char(va("gui%i_cmd", i)), sizeof(command));
+	Q_strncpyz(pic, get_variable_char(va("gui%i_file", i)), sizeof(pic));
 	color_nsgui[i][0] = get_variable_float(va("gui%i_colorR", i));
 	color_nsgui[i][1] = get_variable_float(va("gui%i_colorG", i));
 	color_nsgui[i][2] = get_variable_float(va("gui%i_colorB", i));

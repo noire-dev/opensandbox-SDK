@@ -2393,9 +2393,9 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_WaterEvents();
 
 	// snap some parts of playerstate to save network bandwidth
-        //But only if pmove_float is not enabled
-        if(!(pm->pmove_float))
-            trap_SnapVector( pm->ps->velocity );
+    // But only if pmove_float is not enabled
+    if(!(pm->pmove_float))
+		SnapVector( pm->ps->velocity );
 }
 
 

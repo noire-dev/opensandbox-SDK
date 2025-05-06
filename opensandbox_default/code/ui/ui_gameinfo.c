@@ -74,17 +74,12 @@ UI_Free
 ===============
 */
 void UI_Free(void *ptr) {
-	// Определение смещения указателя от начала пула памяти
     int offset = (char*)ptr - memoryPool;
 	
-    // Ничего не делать, если указатель равен NULL
     if (ptr == NULL)
         return;
 
-    // Очистка области памяти путем установки ее байтов в 0
     memset(ptr, 0, offset);
-
-    // Сдвиг allocPoint, чтобы освободить эту область памяти для будущего использования
     allocPoint = offset;
 }
 
@@ -227,26 +222,29 @@ static void UI_LoadUnscriptedMaps( void )
 	int dirlen;
 	int nummaps;
 	char* dirptr;
+	char mapname[MAX_QPATH];
 
-	nummaps = trap_FS_GetFileList("maps", ".bsp", dirlist, DIRLIST_SIZE );
+	nummaps = trap_FS_GetFileList("maps", ".bsp", dirlist, DIRLIST_SIZE);
 	dirptr = dirlist;
-	for (i = 0; i < nummaps;  i++, dirptr+= dirlen + 1) {
+
+	for (i = 0; i < nummaps; i++, dirptr += dirlen + 1) {
 		if (ui_numArenas == MAX_ARENAS)
 			break;
 
 		dirlen = strlen(dirptr);
 
-		COM_StripExtension(dirptr, dirptr, sizeof(dirptr));
+		COM_StripExtension(dirptr, mapname, sizeof(mapname));
 
-		if (UI_GetArenaInfoByMap( dirptr ))
+		if (UI_GetArenaInfoByMap(mapname))
 			continue;
 
-		if (UI_StoreInfo(va("\\map\\%s", dirptr), &ui_arenaInfos[ui_numArenas])) {
-			trap_Print(va("Found unscripted map: %s\n", dirptr));
+		if (UI_StoreInfo(va("\\map\\%s", mapname), &ui_arenaInfos[ui_numArenas])) {
+			trap_Print(va("Found unscripted map: %s\n", mapname));
 			ui_numArenas++;
 		}
 	}
 }
+
 
 /*
 ===============

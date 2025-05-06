@@ -1396,7 +1396,7 @@ static void StartServer_BotPage_NameEvent( void* ptr, int event )
 		for (i = 0; i < botnum; i++)
 		{
 			bot = UI_GetBotInfoByNumber( i );
-			strncpy(botname, Info_ValueForKey(bot, "name"), MAX_NAME_LENGTH);
+			Q_strncpyz(botname, Info_ValueForKey(bot, "name"), MAX_NAME_LENGTH);
 			Q_CleanStr(botname);
 			if (Q_stricmp(botname, s_scriptdata.bot.name[index]))
 				continue;
