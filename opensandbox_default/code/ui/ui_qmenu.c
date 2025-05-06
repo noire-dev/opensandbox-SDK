@@ -3429,11 +3429,10 @@ void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float
 	}
 }
 
-void UI_CSlider(menuelement_s* e, float x, float y, char* text, float size, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid) {
+void UI_CSlider(menuelement_s* e, float x, float y, char* text, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid) {
 	e->generic.type					= MTYPE_SLIDER;
 	e->generic.x					= x;
 	e->generic.y					= y;
-	e->size							= size;
 	e->string						= text;
 	e->generic.callback				= callback;
 	e->generic.callid				= callid;
@@ -3448,11 +3447,10 @@ void UI_CSlider(menuelement_s* e, float x, float y, char* text, float size, char
 	e->color						= color_white;
 }
 
-void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, float size, char* var, float mod, void (*callback)( void *self, int event ), int callid) {
+void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, char* var, float mod, void (*callback)( void *self, int event ), int callid) {
 	e->generic.type					= MTYPE_RADIOBUTTON;
 	e->generic.x					= x;
 	e->generic.y					= y;
-	e->size							= size;
 	e->string						= text;
 	e->generic.callback				= callback;
 	e->generic.callid				= callid;
@@ -3465,11 +3463,10 @@ void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, float size,
 	e->color						= color_white;
 }
 
-void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, float size, const char **list, void (*callback)( void *self, int event ), int callid) {
+void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, const char **list, void (*callback)( void *self, int event ), int callid) {
 	e->generic.type					= MTYPE_SPINCONTROL;
 	e->generic.x					= x;
 	e->generic.y					= y;
-	e->size							= size;
 	e->string						= text;
 	e->generic.callback				= callback;
 	e->generic.callid				= callid;

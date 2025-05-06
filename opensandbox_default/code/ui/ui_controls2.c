@@ -33,7 +33,6 @@ typedef struct {
 	int		bind2;
 } bind_t;
 
-// control sections
 #define C_KEYS			0
 #define C_SETTINGS		1
 #define C_MAX			2
@@ -98,11 +97,6 @@ static const char* mousestyle_description[] = {
 	NULL
 };
 
-/*
-=================
-Controls_Update
-=================
-*/
 static void Controls_Update( void ){
 	int		i, j, y;
 
@@ -184,11 +178,6 @@ static void Controls_Update( void ){
 	}
 }
 
-/*
-=================
-Controls_DrawKeyBinding
-=================
-*/
 static void Controls_DrawKeyBinding( void *self ){
 	menuelement_s*	a;
 	int				x;
@@ -247,11 +236,6 @@ static void Controls_DrawKeyBinding( void *self ){
 	}
 }
 
-/*
-=================
-Controls_GetKeyAssignment
-=================
-*/
 static void Controls_GetKeyAssignment (char *command, int *twokeys){
 	int		count;
 	int		j;
@@ -274,11 +258,6 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys){
 	}
 }
 
-/*
-=================
-Controls_GetConfig
-=================
-*/
 static void Controls_GetConfig( void ){
 	int		i;
 	int		twokeys[2];
@@ -300,11 +279,6 @@ static void Controls_GetConfig( void ){
 	controls.e[KEYS_NUM+1].curvalue = (trap_Cvar_VariableValue( "in_mouse" ) > 0) ? 1:0;
 }
 
-/*
-=================
-Controls_SetConfig
-=================
-*/
 static void Controls_SetConfig( void ){
 	int		i;
 	bind_t*	bindptr;
@@ -326,11 +300,6 @@ static void Controls_SetConfig( void ){
 	}
 }
 
-/*
-=================
-Controls_MenuKey
-=================
-*/
 static sfxHandle_t Controls_MenuKey( int key ){
 	int			id;
 	int			i;
@@ -430,11 +399,6 @@ ignorekey:
 	return Menu_DefaultKey( &controls.menu, key );
 }
 
-/*
-=================
-Controls_MenuEvent
-=================
-*/
 static void Controls_MenuEvent( void* ptr, int event ){
 	if (event != QM_ACTIVATED) { return; }
 	switch (((menucommon_s*)ptr)->id){
@@ -460,11 +424,6 @@ static void Controls_MenuEvent( void* ptr, int event ){
 	}
 }
 
-/*
-=================
-Controls_ActionEvent
-=================
-*/
 static void Controls_ActionEvent( void* ptr, int event ){
 	if ((event == QM_ACTIVATED) && !controls.waitingforkey){
 		controls.waitingforkey = 1;
@@ -472,18 +431,11 @@ static void Controls_ActionEvent( void* ptr, int event ){
 	}
 }
 
-/*
-=================
-UI_Controls
-=================
-*/
 void UI_Controls( void ){
 	int 		i;
 	int			y;
 
-	// zero set all our globals
 	memset( &controls, 0 ,sizeof(controls_t) );
-
 	controls.menu.key        					= Controls_MenuKey;
 	controls.menu.fullscreen 					= qtrue;
 	controls.menu.native 	   					= qfalse;
@@ -504,21 +456,18 @@ void UI_Controls( void ){
 		controls.e[i].generic.id				= i;
 	}
 
-	UI_CSpinControl(&controls.e[KEYS_NUM+1], SCREEN_WIDTH*0.64, 0, "input method", 2.00, mousestyle_description, Controls_MenuEvent, KEYS_NUM+1);
-	UI_CRadioButton(&controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", 2.00, "cl_freelook", RBT_NORMAL, NULL, 0);
-	UI_CRadioButton(&controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", 2.00, "m_filter", RBT_NORMAL, NULL, 0);
-	UI_CRadioButton(&controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", 2.00, "cl_run", RBT_NORMAL, NULL, 0);
-	UI_CSlider(&controls.e[KEYS_NUM+5], SCREEN_WIDTH*0.64, 0, "mouse speed", 2.00, "sensitivity", 2, 30, 1, NULL, 0);
+	UI_CSpinControl(&controls.e[KEYS_NUM+1], SCREEN_WIDTH*0.64, 0, "input method", mousestyle_description, Controls_MenuEvent, KEYS_NUM+1);
+	UI_CRadioButton(&controls.e[KEYS_NUM+2], SCREEN_WIDTH*0.64, 0, "free look", "cl_freelook", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&controls.e[KEYS_NUM+3], SCREEN_WIDTH*0.64, 0, "smooth mouse", "m_filter", RBT_NORMAL, NULL, 0);
+	UI_CRadioButton(&controls.e[KEYS_NUM+4], SCREEN_WIDTH*0.64, 0, "always run", "cl_run", RBT_NORMAL, NULL, 0);
+	UI_CSlider(&controls.e[KEYS_NUM+5], SCREEN_WIDTH*0.64, 0, "mouse speed", "sensitivity", 2, 30, 1, NULL, 0);
 
 	UI_CreateUI( &controls.menu, controls.e);
 
-	// initialize the current config
 	Controls_GetConfig();
 
-	// initial default section
 	controls.section = C_KEYS;
 
-	// update the ui
 	Controls_Update();
 
 	UI_PushMenu( &controls.menu );

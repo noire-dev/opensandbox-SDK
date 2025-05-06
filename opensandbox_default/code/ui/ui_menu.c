@@ -108,9 +108,7 @@ void UI_MainMenu( void ) {
 	int		y;
 
 	memset( &main, 0 ,sizeof(mainmenu_t) );
-	
 	trap_Cvar_VariableStringBuffer( "com_errorMessage", main.error, sizeof(main.error) );
-
 	main.menu.draw = Main_MenuDraw;
 	main.menu.fullscreen = qtrue;
 	main.menu.native = qfalse;

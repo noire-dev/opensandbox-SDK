@@ -43,15 +43,6 @@
 #define ID_BACK			12
 #define ID_MODEL		13
 #define ID_MODELTYPE	14
-#define ID_FLASHRED				15
-#define ID_FLASHGREEN			16
-#define ID_FLASHBLUE			17
-#define ID_HEFLASHRED			18
-#define ID_HEFLASHGREEN			19
-#define ID_HEFLASHBLUE			20
-#define ID_TOFLASHRED			21
-#define ID_TOFLASHGREEN			22
-#define ID_TOFLASHBLUE			23
 
 #define MAX_NAMELENGTH	32
 
@@ -59,21 +50,13 @@
 
 typedef struct {
 	menuframework_s		menu;
+	menuelement_s		e[OSUI_MAX_ELEMENTS];
 
 	menuelement_s			banner;
 
 	menuelement_s			name;
 	menuelement_s			effects;
 
-	menuelement_s  		flashred;
-	menuelement_s  		flashgreen;
-	menuelement_s  		flashblue;
-	menuelement_s  		heflashred;
-	menuelement_s  		heflashgreen;
-	menuelement_s  		heflashblue;
-	menuelement_s  		toflashred;
-	menuelement_s  		toflashgreen;
-	menuelement_s  		toflashblue;
 	menuelement_s		back;
 	menuelement_s		model;
 	menuelement_s		item_null;
@@ -343,24 +326,6 @@ static void PlayerSettings_SetMenuItems( void ) {
 	}
 	s_playersettings.effects.curvalue = gamecodetoui[c];
 
-	s_playersettings.heflashred.curvalue  = trap_Cvar_VariableValue( "cg_helightred");
-	
-	s_playersettings.heflashgreen.curvalue  = trap_Cvar_VariableValue( "cg_helightgreen");
-	
-	s_playersettings.heflashblue.curvalue  = trap_Cvar_VariableValue( "cg_helightblue");
-
-	s_playersettings.toflashred.curvalue  = trap_Cvar_VariableValue( "cg_tolightred");
-	
-	s_playersettings.toflashgreen.curvalue  = trap_Cvar_VariableValue( "cg_tolightgreen");
-	
-	s_playersettings.toflashblue.curvalue  = trap_Cvar_VariableValue( "cg_tolightblue");
-
-	s_playersettings.flashred.curvalue  = trap_Cvar_VariableValue( "cg_plightred");
-	
-	s_playersettings.flashgreen.curvalue  = trap_Cvar_VariableValue( "cg_plightgreen");
-	
-	s_playersettings.flashblue.curvalue  = trap_Cvar_VariableValue( "cg_plightblue");
-
 	// model/skin
 	GUI_PlayerInfo_InitModel(&s_playersettings.player);
 }
@@ -389,41 +354,6 @@ static void PlayerSettings_MenuEvent( void* ptr, int event ) {
 	case ID_BACK:
 		PlayerSettings_SaveChanges();
 		UI_PopMenu();
-		break;
-	case ID_FLASHRED:
-		trap_Cvar_SetValue( "cg_plightred", s_playersettings.flashred.curvalue);
-		break;
-		
-	case ID_FLASHGREEN:
-		trap_Cvar_SetValue( "cg_plightgreen", s_playersettings.flashgreen.curvalue);
-		break;
-		
-	case ID_FLASHBLUE:
-		trap_Cvar_SetValue( "cg_plightblue", s_playersettings.flashblue.curvalue);
-		break;
-		
-	case ID_TOFLASHRED:
-		trap_Cvar_SetValue( "cg_tolightred", s_playersettings.toflashred.curvalue);
-		break;
-		
-	case ID_TOFLASHGREEN:
-		trap_Cvar_SetValue( "cg_tolightgreen", s_playersettings.toflashgreen.curvalue);
-		break;
-		
-	case ID_TOFLASHBLUE:
-		trap_Cvar_SetValue( "cg_tolightblue", s_playersettings.toflashblue.curvalue);
-		break;
-		
-	case ID_HEFLASHRED:
-		trap_Cvar_SetValue( "cg_helightred", s_playersettings.heflashred.curvalue);
-		break;
-		
-	case ID_HEFLASHGREEN:
-		trap_Cvar_SetValue( "cg_helightgreen", s_playersettings.heflashgreen.curvalue);
-		break;
-		
-	case ID_HEFLASHBLUE:
-		trap_Cvar_SetValue( "cg_helightblue", s_playersettings.heflashblue.curvalue);
 		break;
 	}
 }
@@ -507,150 +437,18 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.player.bitmap.width				= PLAYERMODEL_WIDTH;
 	s_playersettings.player.bitmap.height				= PLAYERMODEL_HEIGHT;
 
-y = 170;
-//    y += BIGCHAR_HEIGHT+2;
-    s_playersettings.heflashred.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.heflashred.string		= "^1Head:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.heflashred.string		= "^1Голова:";
-	}
-	s_playersettings.heflashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.heflashred.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.heflashred.generic.id		= ID_HEFLASHRED;
-	s_playersettings.heflashred.generic.x			= 220;
-	s_playersettings.heflashred.generic.y			= y;
-	s_playersettings.heflashred.minvalue			= 0.0f;
-	s_playersettings.heflashred.maxvalue			= 255;
+	y = 170;
+	UI_CSlider(&s_playersettings.e[0], 220, y, "^1Head:", "cg_helightred", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[1], 220, y, "^2Head:", "cg_helightgreen", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[2], 220, y, "^4Head:", "cg_helightblue", 0, 255, 1, NULL, 0); y += 36;
 
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.heflashgreen.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.heflashgreen.string		= "^2Head:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.heflashgreen.string		= "^2Голова:";
-	}
-	s_playersettings.heflashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.heflashgreen.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.heflashgreen.generic.id			= ID_HEFLASHGREEN;
-	s_playersettings.heflashgreen.generic.x			= 220;
-	s_playersettings.heflashgreen.generic.y			= y;
-	s_playersettings.heflashgreen.minvalue			= 0.0f;
-	s_playersettings.heflashgreen.maxvalue			= 255;
+	UI_CSlider(&s_playersettings.e[3], 220, y, "^1Torso:", "cg_tolightred", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[4], 220, y, "^2Torso:", "cg_tolightgreen", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[5], 220, y, "^4Torso:", "cg_tolightblue", 0, 255, 1, NULL, 0); y += 36;
 
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.heflashblue.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.heflashblue.string		= "^4Head:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.heflashblue.string		= "^4Голова:";
-	}
-	s_playersettings.heflashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.heflashblue.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.heflashblue.generic.id		= ID_HEFLASHBLUE;
-	s_playersettings.heflashblue.generic.x			= 220;
-	s_playersettings.heflashblue.generic.y			= y;
-	s_playersettings.heflashblue.minvalue			= 0;
-	s_playersettings.heflashblue.maxvalue			= 255;
-	
-    y += BIGCHAR_HEIGHT+50;
-    s_playersettings.toflashred.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.toflashred.string		= "^1Torso:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.toflashred.string		= "^1Торс:";
-	}
-	s_playersettings.toflashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.toflashred.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.toflashred.generic.id		= ID_TOFLASHRED;
-	s_playersettings.toflashred.generic.x			= 220;
-	s_playersettings.toflashred.generic.y			= y;
-	s_playersettings.toflashred.minvalue			= 0.0f;
-	s_playersettings.toflashred.maxvalue			= 255;
-
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.toflashgreen.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.toflashgreen.string		= "^2Torso:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.toflashgreen.string		= "^2Торс:";
-	}
-	s_playersettings.toflashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.toflashgreen.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.toflashgreen.generic.id			= ID_TOFLASHGREEN;
-	s_playersettings.toflashgreen.generic.x			= 220;
-	s_playersettings.toflashgreen.generic.y			= y;
-	s_playersettings.toflashgreen.minvalue			= 0.0f;
-	s_playersettings.toflashgreen.maxvalue			= 255;
-
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.toflashblue.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.toflashblue.string		= "^4Torso:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.toflashblue.string		= "^4Торс:";
-	}
-	s_playersettings.toflashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.toflashblue.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.toflashblue.generic.id		= ID_TOFLASHBLUE;
-	s_playersettings.toflashblue.generic.x			= 220;
-	s_playersettings.toflashblue.generic.y			= y;
-	s_playersettings.toflashblue.minvalue			= 0;
-	s_playersettings.toflashblue.maxvalue			= 255;
-	
-    y += BIGCHAR_HEIGHT+50;
-    s_playersettings.flashred.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.flashred.string		= "^1Legs:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.flashred.string		= "^1Ноги:";
-	}
-	s_playersettings.flashred.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.flashred.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.flashred.generic.id		= ID_FLASHRED;
-	s_playersettings.flashred.generic.x			= 220;
-	s_playersettings.flashred.generic.y			= y;
-	s_playersettings.flashred.minvalue			= 0.0f;
-	s_playersettings.flashred.maxvalue			= 255;
-
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.flashgreen.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.flashgreen.string		= "^2Legs:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.flashgreen.string		= "^2Ноги:";
-	}
-	s_playersettings.flashgreen.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.flashgreen.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.flashgreen.generic.id			= ID_FLASHGREEN;
-	s_playersettings.flashgreen.generic.x			= 220;
-	s_playersettings.flashgreen.generic.y			= y;
-	s_playersettings.flashgreen.minvalue			= 0.0f;
-	s_playersettings.flashgreen.maxvalue			= 255;
-
-        y += BIGCHAR_HEIGHT+5;
-    s_playersettings.flashblue.generic.type		= MTYPE_SLIDER;
-	if(cl_language.integer == 0){
-	s_playersettings.flashblue.string		= "^4Legs:";
-	}
-	if(cl_language.integer == 1){
-	s_playersettings.flashblue.string		= "^4Ноги:";
-	}
-	s_playersettings.flashblue.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_playersettings.flashblue.generic.callback	= PlayerSettings_MenuEvent;
-	s_playersettings.flashblue.generic.id		= ID_FLASHBLUE;
-	s_playersettings.flashblue.generic.x			= 220;
-	s_playersettings.flashblue.generic.y			= y;
-	s_playersettings.flashblue.minvalue			= 0;
-	s_playersettings.flashblue.maxvalue			= 255;
+	UI_CSlider(&s_playersettings.e[6], 220, y, "^1Legs:", "cg_plightred", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[7], 220, y, "^2Legs:", "cg_plightgreen", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[8], 220, y, "^4Legs:", "cg_plightblue", 0, 255, 1, NULL, 0); y += 36;
 
 	s_playersettings.back.generic.type			= MTYPE_BITMAP;
 	s_playersettings.back.string			= ART_BACK0;
@@ -686,15 +484,7 @@ y = 170;
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.effects );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.model );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.back );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.flashred );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.flashgreen );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.flashblue );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.heflashred );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.heflashgreen );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.heflashblue );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.toflashred );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.toflashgreen );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.toflashblue );
+	UI_CreateUI( &s_playersettings.menu, s_playersettings.e);
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.modeltype );
 
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.player.bitmap );
