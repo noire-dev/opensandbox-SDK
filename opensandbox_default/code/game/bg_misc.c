@@ -29,22 +29,6 @@
 #include "bg_public.h"
 #include "g_local.h"
 
-/*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
-DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
-The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
-
-If an item is the target of another entity, it will not spawn in until fired.
-
-An item fires all of its targets when it is picked up.  If the toucher can't carry it, the targets won't be fired.
-
-"notfree" if set to 1, don't spawn in free for all games
-"notteam" if set to 1, don't spawn in team games
-"notsingle" if set to 1, don't spawn in single player games
-"wait"	override the default wait before respawning.  -1 = never respawn automatically, which can be used with targeted spawning.
-"random" random number of plus or minus seconds varied from the respawn time
-"count" override quantity or duration on most items.
-*/
-
 gitem_t	bg_itemlist[] = 
 {
 	{
@@ -1030,7 +1014,7 @@ gitem_t	bg_itemlist[] =
 		"",
 		""
 	},
-/*QUAKED holdable_key_iron (.2 .2 .2) (-16 -16 -16) (16 16 16) suspended*/
+
 	{
 		"holdable_key_iron", 
 		"sound/items/key_01+02.wav",
@@ -1045,9 +1029,6 @@ gitem_t	bg_itemlist[] =
 		""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointAblue",
 		NULL,
@@ -1063,9 +1044,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointBblue",
 		NULL,
@@ -1081,9 +1059,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointAred",
 		NULL,
@@ -1099,9 +1074,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointBred",
 		NULL,
@@ -1117,9 +1089,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointAwhite",
 		NULL,
@@ -1135,9 +1104,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-/*QUAKED team_DD_point
-Only in DD games
-*/
 	{
 		"team_DD_pointBwhite",
 		NULL,
@@ -1153,12 +1119,6 @@ Only in DD games
 /* sounds */ ""
 	},
 
-//Now things for standard domination:
-
-
-/*QUAKED 
-Only in Domination games
-*/
 	{
 		"team_dom_pointWhite",
 		NULL,
@@ -1174,9 +1134,6 @@ Only in Domination games
 /* sounds */ ""
 	},
 
-/*QUAKED 
-Only in Domination games
-*/
 	{
 		"team_dom_pointRed",
 		NULL,
@@ -1192,9 +1149,6 @@ Only in Domination games
 /* sounds */ ""
 	},
 
-/*QUAKED 
-Only in Domination games
-*/
 	{
 		"team_dom_pointBlue",
 		NULL,
@@ -1210,8 +1164,6 @@ Only in Domination games
 /* sounds */ ""
 	},
 	
-/*QUAKED weapon_toolgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
 	{
 		"weapon_toolgun", 
 		"sound/misc/w_pkup.wav",
@@ -1227,8 +1179,6 @@ Only in Domination games
 /* sounds */ ""
 	},
 	
-/*QUAKED weapon_physgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
 	{
 		"weapon_physgun", 
 		"sound/misc/w_pkup.wav",
@@ -1244,8 +1194,6 @@ Only in Domination games
 /* sounds */ ""
 	},
 	
-/*QUAKED weapon_gravitygun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
 	{
 		"weapon_gravitygun", 
 		"sound/misc/w_pkup.wav",

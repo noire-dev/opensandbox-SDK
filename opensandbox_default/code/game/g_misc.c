@@ -27,56 +27,28 @@
 
 #include "g_local.h"
 
-/*QUAKED info_camp (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
-*/
 void SP_info_camp( gentity_t *self ) {
 	G_SetOrigin( self, self->s.origin );
 }
 
-/*QUAKED info_waypoint (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a waypoint target for bot patrolling
-*/
 void SP_info_waypoint( gentity_t *self ) {
 }
 
-/*QUAKED info_backpack (0 0.5 0) ?
-Used as a teleportation target for backpacks that fall into a nodrop brush
-*/
 void SP_info_backpack( gentity_t *self ) {
 }
 
-/*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
-*/
 void SP_info_null( gentity_t *self ) {
 	G_FreeEntity( self );
 }
 
-
-/*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
-target_position does the same thing
-*/
 void SP_info_notnull( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
 }
 
-
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
-Non-displayed light.
-"light" overrides the default 300 intensity.
-Linear checbox gives linear falloff instead of inverse square
-Lights pointed at a target will be spotlights.
-"radius" overrides the default 64 unit radius of a spotlight at the target point.
-*/
 void SP_light( gentity_t *self ) {
 	G_FreeEntity( self );
 }
 
-/*QUAKED info_camera (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional and viewangles target for in-game cutscenes.
-*/
 void originToVariableInfo( char variableInfo[MAX_INFO_STRING], vec3_t origin ) {
 	Info_SetValueForKey(variableInfo, "o10", va("%f", origin[0]));
 	Info_SetValueForKey(variableInfo, "o11", va("%f", origin[1]));
@@ -283,11 +255,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	}
 }
 
-/*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
-Point teleporters at these.
-Now that we don't have teleport destination pads, this is just
-an info_notnull
-*/
 void SP_misc_teleporter_dest( gentity_t *ent ) {
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -309,9 +276,6 @@ void SP_misc_teleporter_dest( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16)
-"model"		arbitrary .md3 file to display
-*/
 void SP_misc_model( gentity_t *ent ) {
 	G_FreeEntity( ent );
 }
@@ -362,10 +326,6 @@ void locateCamera( gentity_t *ent ) {
 	ent->s.eventParm = DirToByte( dir );
 }
 
-/*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
-The portal surface nearest this entity will show a view from the targeted misc_portal_camera, or a mirror view if untargeted.
-This must be within 64 world units of the surface!
-*/
 void SP_misc_portal_surface(gentity_t *ent) {
 	VectorClear( ent->r.mins );
 	VectorClear( ent->r.maxs );
@@ -382,10 +342,6 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	}
 }
 
-/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
-The target for a misc_portal_director.  You can set either angles or target another entity to determine the direction of view.
-"roll" an angle modifier to orient the camera around the target vector;
-*/
 void SP_misc_portal_camera(gentity_t *ent) {
 	float	roll;
 
@@ -498,66 +454,34 @@ void InitShooter( gentity_t *ent, int weapon ) {
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_rocket( gentity_t *ent ) {
 	InitShooter( ent, WP_ROCKET_LAUNCHER );
 }
 
-/*QUAKED shooter_plasma (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_plasma( gentity_t *ent ) {
 	InitShooter( ent, WP_PLASMAGUN);
 }
 
-/*QUAKED shooter_grenade (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_grenade( gentity_t *ent ) {
 	InitShooter( ent, WP_GRENADE_LAUNCHER);
 }
 
-/*QUAKED SP_shooter_bfg (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_bfg( gentity_t *ent ) {
 	InitShooter( ent, WP_BFG);
 }
 
-/*QUAKED SP_shooter_prox (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_prox( gentity_t *ent ) {
 	InitShooter( ent, WP_PROX_LAUNCHER);
 }
 
-/*QUAKED SP_shooter_flame (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_flame( gentity_t *ent ) {
 	InitShooter( ent, WP_FLAMETHROWER);
 }
 
-/*QUAKED SP_shooter_antimatter (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_antimatter( gentity_t *ent ) {
 	InitShooter( ent, WP_ANTIMATTER);
 }
 
-/*QUAKED SP_shooter_custom (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
-*/
 void SP_shooter_custom( gentity_t *ent ) {
 	InitShooter( ent, WP_NAILGUN);
 }

@@ -692,13 +692,6 @@ qboolean G_ParseSpawnVars( void ) {
 	return qtrue;
 }
 
-/*QUAKED worldspawn (0 0 0) ?
-
-Every map should have exactly one worldspawn.
-"music"		music wav file
-"gravity"	800 is default gravity
-"message"	Text to print during connection process
-*/
 void SP_worldspawn( void ) {
 	char	*s;
 	char	*music;

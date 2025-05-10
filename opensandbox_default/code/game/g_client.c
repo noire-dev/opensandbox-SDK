@@ -27,18 +27,10 @@
 
 // g_client.c -- client functions that don't happen every frame
 
+#define	MAX_SPAWN_POINTS	MAX_CLIENTS
 
 static vec3_t	playerMins = {-15, -15, -24};
 static vec3_t	playerMaxs = {15, 15, 32};
-
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
-potential spawning position for deathmatch games.
-The first time a player enters the game, they will be at an 'initial' spot.
-Targets will be fired when someone spawns in on them.
-"nobots" will prevent bots from using this spot.
-"nohumans" will prevent non-bots from using this spot.
-"count" is used to limit the number of times the spawnpoint can be used. When 0 or omitted there is no limit
-*/
 
 void info_player_deathmatch_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	self->flags ^= FL_NO_SPAWN;	//toggle no spawn flag
@@ -86,9 +78,6 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
-*/
 void SP_info_player_start(gentity_t *ent) {
 	ent->classname = "info_player_deathmatch";
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
@@ -180,9 +169,6 @@ void SP_info_player_dd_blue(gentity_t *ent) {
 void SP_domination_point(gentity_t *ent) {
 }
 
-/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
 void SP_info_player_intermission( gentity_t *ent ) {
 
 }
@@ -257,7 +243,6 @@ SelectNearestDeathmatchSpawnPoint
 Find the spot that we DON'T want to use
 ================
 */
-#define	MAX_SPAWN_POINTS	128
 gentity_t *SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
 	gentity_t	*spot;
 	vec3_t		delta;
@@ -289,7 +274,6 @@ SelectRandomDeathmatchSpawnPoint
 go to a random point that doesn't telefrag
 ================
 */
-#define	MAX_SPAWN_POINTS	128
 gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	gentity_t	*spot;
 	int			count;

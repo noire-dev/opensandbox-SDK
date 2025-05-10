@@ -1187,25 +1187,6 @@ void Think_MatchTeam( gentity_t *ent ) {
 	MatchTeam( ent, ent->moverState, level.time );
 }
 
-
-/*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER
-TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER	monsters will not trigger this door
-
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"speed"		movement speed (100 default)
-"wait"		wait before returning (3 default, -1 = never return)
-"lip"		lip remaining at end of move (8 default)
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
-"health"	if set, the door must be shot open
-"startsound"  if set, overrides the sound to play when the door starts moving
-"endsound"  if set, overrides the sound to play when the door has stopped moving
-*/
 void SP_func_door (gentity_t *ent) {
 	char  *startsound;
 	char  *endsound;
@@ -1295,25 +1276,6 @@ void SP_func_door (gentity_t *ent) {
 
 
 }
-
-/*QUAKED func_door_rotating (0 .5 .8) START_OPEN - CRUSHER REVERSE Z_AXIS X_AXIS
-This is the rotating door... just as the name suggests it's a door that rotates
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.
-REVERSE		if you want the door to open in the other direction, use this switch.
-TOGGLE		wait in both the start and end states for a trigger event.
-X_AXIS		open on the X-axis instead of the Z-axis
-Y_AXIS		open on the Y-axis instead of the Z-axis
-  
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the Z_AXIS or X_AXIS box to change that.
-
-"model2"	.md3 model to also draw
-"distance"	how many degrees the door will open
-"speed"	 	how fast the door will open (degrees/second)
-"color"		constantLight color
-"light"		constantLight radius
-*/
 
 void SP_func_door_rotating ( gentity_t *ent ) {
 	char	*startsound;
@@ -1507,18 +1469,6 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 	trap_LinkEntity (trigger);
 }
 
-
-/*QUAKED func_plat (0 .5 .8) ?
-Plats are always drawn in the extended position so they will light correctly.
-
-"lip"		default 8, protrusion above rest position
-"height"	total height of movement, defaults to model height
-"speed"		overrides default 200.
-"dmg"		overrides default 2
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void SP_func_plat (gentity_t *ent) {
 	float		lip, height;
 
@@ -1588,21 +1538,6 @@ void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	}
 }
 
-
-/*QUAKED func_button (0 .5 .8) ?
-When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets, waits some time, then returns to it's original position where it can be triggered again.
-
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"target"	all entities with a matching targetname will be used
-"speed"		override the default 40 speed
-"wait"		override the default 1 second wait (-1 = never return)
-"lip"		override the default 4 pixel lip remaining at end of move
-"health"	if set, the button must be killed instead of touched
-"sound"		if set, overrides the sound played when the button is pressed
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void SP_func_button( gentity_t *ent ) {
 	char		*sound;
 	vec3_t		abs_movedir;
@@ -1818,14 +1753,6 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 	Reached_Train( ent );
 }
 
-
-
-/*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
-Train path corners.
-Target: next path corner and other targets to fire
-"speed" speed to move to the next corner
-"wait" seconds to wait before behining move to next corner
-*/
 void SP_path_corner( gentity_t *self ) {
 	if ( !self->targetname ) {
                 G_Printf ("path_corner with no targetname at %s\n", vtos(self->s.origin));
@@ -1835,20 +1762,6 @@ void SP_path_corner( gentity_t *self ) {
 	// path corners don't need to be linked in
 }
 
-
-
-/*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
-A train is a mover that moves between path_corner target points.
-Trains MUST HAVE AN ORIGIN BRUSH.
-The train spawns at the first target it is pointing at.
-"model2"	.md3 model to also draw
-"speed"		default 100
-"dmg"		default	2
-"noise"		looping sound to play when the train is in motion
-"target"	next path corner
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void Use_Train (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->s.pos.trType == TR_STATIONARY) {
 		ent->s.pos.trType = TR_LINEAR_STOP;
@@ -1921,12 +1834,6 @@ void Use_Static(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 	G_SetEntityLinked(ent, 0);
 }
 
-/*QUAKED func_static (0 .5 .8) ? START_UNLINKED
-A bmodel that just sits there, doing nothing.  Can be used for conditional walls and models.
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void SP_func_static( gentity_t *ent ) {
 	if(!ent->sandboxObject){
 	trap_SetBrushModel( ent, ent->model );}
@@ -2026,13 +1933,6 @@ void Use_Breakable (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	Break_Breakable( ent, activator );
 }
 
-/*QUAKED func_breakable (0 .5 .8) ? see PickDebrisType in g_util.c for spawnflags
-A bmodel that just sits there, doing nothing. It is removed when it received a set amount of damage.
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-"health"	the amount of damage required before this entity is removed
-*/
 void SP_func_breakable( gentity_t *ent ) {
 	char  *noise;
 	if(!ent->sandboxObject){
@@ -2054,7 +1954,6 @@ void SP_func_breakable( gentity_t *ent ) {
 	}
 }
 
-
 /*
 ===============================================================================
 
@@ -2063,20 +1962,6 @@ ROTATING
 ===============================================================================
 */
 
-
-/*QUAKED func_rotating (0 .5 .8) ? START_ON - X_AXIS Y_AXIS
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. You can check the X_AXIS, Y_AXIS or Z_AXIS boxes to 
-determine around which axes the brush will be rotated. If no boxes are checked the brush will
-rotate around the Z axis by default. If the START_OFF spawnflag is set, the func_rotating
-will initially not rotate.
-
-"model2"	.md3 model to also draw
-"speed"		determines how fast it moves; default value is 100.
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void Use_Rotating (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 	if ( ent->s.apos.trTime > 0 ) 
@@ -2145,17 +2030,6 @@ BOBBING
 ===============================================================================
 */
 
-
-/*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
-Normally bobs on the Z axis
-"model2"	.md3 model to also draw
-"height"	amplitude of bob (32 default)
-"speed"		seconds to complete a bob cycle (4 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void SP_func_bobbing (gentity_t *ent) {
 	float		height;
 	float		phase;
@@ -2201,18 +2075,6 @@ PENDULUM
 ===============================================================================
 */
 
-
-/*QUAKED func_pendulum (0 .5 .8) ?
-You need to have an origin brush as part of this entity.
-Pendulums always swing north / south on unrotated models.  Add an angles field to the model to allow rotation in other directions.
-Pendulum frequency is a physical constant based on the length of the beam and gravity.
-"model2"	.md3 model to also draw
-"speed"		the number of degrees each way the pendulum swings, (30 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
-*/
 void SP_func_pendulum(gentity_t *ent) {
 	float		freq;
 	float		length;

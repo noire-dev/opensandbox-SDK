@@ -25,10 +25,6 @@
 //
 #include "g_local.h"
 
-/*QUAKED target_give (1 0 0) (-8 -8 -8) (8 8 8)
-Gives the activator all the items pointed to.
-GIVE_PLAYER : targeted item is always given to player instead of activating entity.
-*/
 void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	gentity_t	*t;
 	trace_t		trace;
@@ -62,10 +58,6 @@ void SP_target_give( gentity_t *ent ) {
 	ent->use = Use_Target_Give;
 }
 
-/*QUAKED target_remove_powerups (1 0 0) (-8 -8 -8) (8 8 8)
-takes away all the activators powerups.
-Used to drop flight powerups into death puts.
-*/
 void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int i;
 
@@ -106,10 +98,6 @@ void SP_target_remove_powerups( gentity_t *ent ) {
 	ent->use = Use_target_remove_powerups;
 }
 
-/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8)
-"wait" seconds to pause before firing targets.
-"random" delay variance, total delay = delay +/- random seconds
-*/
 void Think_Target_Delay( gentity_t *ent ) {
 	if (!ent->r.linked)
 		return;
@@ -144,12 +132,6 @@ void SP_target_delay( gentity_t *ent ) {
 	ent->r.linked = qtrue;
 }
 
-
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
-"count" number of points to add, default 1
-
-The activator is given this many points.
-*/
 void Use_Target_Score (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	AddScore( activator, ent->r.currentOrigin, ent->count );
 }
@@ -161,11 +143,6 @@ void SP_target_score( gentity_t *ent ) {
 	ent->use = Use_Target_Score;
 }
 
-/*QUAKED target_clienttarg (1 0 0) (-8 -8 -8) (8 8 8)
-"count" number of points to add, default 1
-
-The activator is given this many points.
-*/
 void Use_Target_Clienttarg (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		activator->targetname = ent->value;
 }
@@ -174,7 +151,6 @@ void SP_target_clienttarg( gentity_t *ent ) {
 	ent->use = Use_Target_Clienttarg;
 }
 
-/*QUAKED target_stats for OpenSandbox (1 0 0) (-8 -8 -8) (8 8 8)*/
 void Use_Target_Stats (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 if(ent->spawnflags & 1){
 if(ent->type == 1){
@@ -246,10 +222,6 @@ void SP_target_stats( gentity_t *ent ) {
 	ent->use = Use_Target_Stats;
 }
 
-/*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) redteam blueteam private
-"message"	text to print
-If "private", only the activator gets the message.  If no checks, all clients get the message.
-*/
 void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 if ( ent->spawnflags & 8 ) {
 	if ( activator->client && ( ent->spawnflags & 4 ) ) {
@@ -292,19 +264,6 @@ void SP_target_print( gentity_t *ent ) {
 	ent->use = Use_Target_Print;
 }
 
-
-/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator
-"noise"		wav file to play
-
-A global sound will play full volume throughout the level.
-Activator sounds will play on the player that activated the target.
-Global and activator sounds can't be combined with looping.
-Normal sounds play each time the target is used.
-Looped sounds will be toggled by use functions.
-Multiple identical looping sounds will just increase volume without any speed cost.
-"wait" : Seconds between auto triggerings, 0 = don't auto trigger
-"random"	wait variance, default is 0
-*/
 void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->spawnflags & 3) {	// looping sound toggles
 		if (ent->s.loopSound)
@@ -371,9 +330,6 @@ void SP_target_speaker( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED target_laser (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
-When triggered, fires a laser.  You can either set a target or a direction.
-*/
 void target_laser_think(gentity_t *self) {
 	vec3_t	end;
 	trace_t	tr;
@@ -517,9 +473,6 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 	TeleportPlayer( activator, dest->s.origin, dest->s.angles );
 }
 
-/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
-The activator will be teleported away.
-*/
 void SP_target_teleporter( gentity_t *self ) {
 	if (!self->targetname)
             G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
@@ -527,12 +480,6 @@ void SP_target_teleporter( gentity_t *self ) {
 	self->use = target_teleporter_use;
 }
 
-/*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM
-This doesn't perform any actions except fire its targets.
-The activator can be forced to be from a certain team.
-if RANDOM is checked, only one of the targets will be fired, not all of them
-A count key can be set to delay the triggering until the entity has been triggered [count] number of times
-*/
 void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if (!self->r.linked)
 		return;
@@ -587,11 +534,6 @@ void SP_target_relay (gentity_t *self) {
 	self->r.linked = qtrue;
 }
 
-/*QUAKED target_logic (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM STAY_ON
-This doesn't perform any actions except fire its targets when it's triggered by two different triggers.
-The activator can be forced to be from a certain team.
-if RANDOM is checked, only one of the targets will be fired, not all of them
-*/
 void target_logic_reset (gentity_t *self) {
 	int i;
 	for (i = 0; i < MAX_LOGIC_ENTITIES; i++)
@@ -673,9 +615,6 @@ void SP_target_logic (gentity_t *self) {
 	target_logic_reset( self );
 }
 
-/*QUAKED target_mapchange (.5 .5 .5) (-8 -8 -8) (8 8 8)
-When triggered, loads the specified map. 
-*/
 void target_mapchange_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	self->nextthink = level.time + FADEOUT_TIME;
 	
@@ -713,10 +652,6 @@ void SP_target_mapchange (gentity_t *self) {
 	self->think = target_mapchange_think;
 }
 
-/*QUAKED target_gravity (.5 .5 .5) (-8 -8 -8) (8 8 8) GLOBAL
-Sets the gravity of the activator. The gravity is set through the "count" key.
-If GLOBAL is checked, all players in the game will have their gravity changed.
-*/
 void target_gravity_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	int i;
 
@@ -738,13 +673,6 @@ void SP_target_gravity (gentity_t *self) {
 	self->use = target_gravity_use;
 }
 
-/*QUAKED target_botspawn (.5 .5 .5) (-8 -8 -8) (8 8 8) 
-WP_GAUNTLET WP_MACHINEGUN WP_SHOTGUN WP_GRENADE_LAUNCHER WP_ROCKET_LAUNCHER WP_LIGHTNING WP_RAILGUN WP_PLASMAGUN WP_BFG - - IGNORE_PLAYER PATROL_WALK ALWAYS_WALK 
-Spawns a bot into the game
-Use the health key to determine the amount of health the bot will spawn with
-The entity specified with deathtarget will be activated when the spawned bot dies
-Use the skill key to specify the skill level for the bot relative to the g_spskill level. This is only applied to the amount of damage it deals.
-*/
 void target_botspawn_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if ( g_debugBotspawns.integer ) 
 		G_Printf("\ntime %i\n spawn bot \"%s\"\n botspawn \"%s\" / \"%s\" (%i)\n waypoint \"%s\"\n health %i\n", level.time, self->clientname, self->targetname, self->targetname2, self->s.number, self->target, self->health);
@@ -789,9 +717,6 @@ void SP_target_botspawn (gentity_t *self) {
 	}
 }
 
-/*QUAKED target_disable (.5 .5 .5) (-8 -8 -8) (8 8 8) - - ALWAYS_UNLINK ALWAYS_LINK IMMEDIATELY
-links or unlinks entities from the world, effectively enabling or disabling triggers
-*/
 void target_unlink_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	G_ToggleTargetsLinked( self );
 }
@@ -811,9 +736,6 @@ void SP_target_unlink (gentity_t *self) {
 	}
 }
 
-/*QUAKED target_playerspeed (.5 .5 .5) (-8 -8 -8) (8 8 8) GLOBAL
-Sets the movement speed for player(s). Defaults to the speed set through the g_speed cvar (320 by default).
-*/
 void target_playerspeed_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if ( !self->speed ) {
 		self->speed = g_speed.value;
@@ -831,11 +753,6 @@ void SP_target_playerspeed (gentity_t *self) {
 	self->use = target_playerspeed_use;
 }
 
-/*QUAKED target_debrisemitter (.5 .5 .5) (-8 -8 -8) (8 8 8) see PickDebrisType in g_util.c for spawnflags
-Emits chunks of debris.
-If no spawnflag is set, the entity will emit light chunks of concrete
-*/
-
 void target_debrisemitter_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	gentity_t *ent;
 	
@@ -850,11 +767,6 @@ void SP_target_debrisemitter (gentity_t *self) {
 	self->use = target_debrisemitter_use;
 }
 
-/*QUAKED target_objective (.5 .5 .5) (-8 -8 -8) (8 8 8) SECONDARY SILENT
-Sets the textual representation of the player's objective.
-Set the SECONDARY spawnflag to set the secondary objective instead of the primary.
-*/
-
 void target_objective_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	
 	if ( self->spawnflags & 1 )
@@ -864,17 +776,12 @@ void target_objective_use (gentity_t *self, gentity_t *other, gentity_t *activat
 
 	if ( !(self->spawnflags & 2) )
 		trap_SendServerCommand( -1, "ou" );
-		//G_TempEntity( self->s.origin, EV_OBJECTIVES_UPDATED );
 }
 
 void SP_target_objective (gentity_t *self) {
 	G_SpawnInt( "id", "-1", &self->s.generic1 );
 	self->use = target_objective_use;
 }
-
-/*QUAKED target_skill (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Sets the skill level for the next map that will be loaded
-*/
 
 void target_skill_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	trap_SendConsoleCommand( EXEC_INSERT, va( "seta g_spskill %i\n", self->skill) );
@@ -890,12 +797,6 @@ void SP_target_skill (gentity_t *self) {
 	
 	self->use = target_skill_use;
 }
-
-/*QUAKED target_earthquake (.5 .5 .5) (-8 -8 -8) (8 8 8)
-starts earthquake
-"length" - length in  seconds (2-32, in steps of 2)
-"intensity" - strength of earthquake (1-16)
-*/
 
 void target_earthquake_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	G_AddEvent(activator, EV_EARTHQUAKE, self->s.generic1);
@@ -925,18 +826,6 @@ void SP_target_earthquake (gentity_t *self) {
 	self->s.eType = ET_EVENTS;
 	trap_LinkEntity (self);
 }
-
-/*QUAKED target_effect (.5 .5 .5) (-8 -8 -8) (8 8 8) EXPLOSION PARTICLES_GRAVITY PARTICLES_LINEAR PARTICLES_LINEAR_UP PARTICLES_LINEAR_DOWN OVERLAY FADE
-shows animated environmental effect
-The EXPLOSION spawnflag will cause the entity to show an explosion
-The PARTICLES_GRAVITY spawnflag will cause the entity to show particles which are affected by gravity and drop to the ground
-The PARTICLES_LINEAR spawnflag will cause the entity to show particles which are not affected by gravity and move in a straight line
-color key takes normalized color values (0.0 - 1.0)
-startcolor key takes normalized color values (0.0 - 1.0)
-endcolor key takes normalized color values (0.0 - 1.0)
-count key takes int (0 - 255)
-speed key takes int (0 - 255)
-*/
 
 void target_effect_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	gentity_t	*ent2;
@@ -1136,12 +1025,6 @@ void SP_target_effect (gentity_t *self) {
 	trap_LinkEntity( self );
 }
 
-/*QUAKED target_finish (.5 .5 .5) (-8 -8 -8) (8 8 8)
-When triggered, forces the game to go into the intermission which will show the SP end-level scores, registers the player's score as new 
-high score (if it is higher than the current highscore) for the current map and, when the player clicks during the intermission, ends the
-game.
-*/
-
 void target_finish_think(gentity_t* self) {
 	target_finish_use(self, self, level.player);
 }
@@ -1179,9 +1062,6 @@ void SP_target_finish (gentity_t *self) {
 	self->use = target_finish_use;
 }
 
-/*QUAKED target_modify (.5 .5 .5) (-8 -8 -8) (8 8 8)
-When triggered, modifies the value of the specified key on the entities the target_modify targets
-*/
 void modify_entity ( gentity_t *self, gentity_t *ent ) {
 	if ( !strcmp( self->key, "spawnflags" ) ) {
 		ent->spawnflags = atoi(self->value);
@@ -1454,10 +1334,6 @@ void SP_target_modify (gentity_t *self) {
 	}
 }
 
-/*QUAKED target_secret (.5 .5 .5) (-8 -8 -8) (8 8 8) SILENT
-When triggered, marks the secret as 'found'
-*/
-
 void target_secret_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	activator->client->ps.persistant[PERS_SECRETS]++;
 
@@ -1480,10 +1356,6 @@ void SP_target_secret (gentity_t *self) {
 	self->use = target_secret_use;
 }
 
-/*QUAKED target_playerstats (.5 .5 .5) (-8 -8 -8) (8 8 8) ONLY_WHEN_LOWER NO_HEALTH NO_ARMOR
-When triggered, sets to the players health/armor to the specified amounts
-*/
-
 void target_playerstats_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if ( IsBot(activator) )		//do not allow bots to trigger this entity
 		return;
@@ -1499,10 +1371,6 @@ void SP_target_playerstats (gentity_t *self) {
 	self->use = target_playerstats_use;
 }
 
-/*QUAKED target_cutscene (.5 .5 .5) (-8 -8 -8) (8 8 8) HALT_AI
-When triggered, starts a cutscene.
-HALT_AI: Prevents bots from moving and shooting while the cutscene is playing
-*/
 void target_cutscene_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	int i;
 
@@ -1570,10 +1438,6 @@ void SP_target_cutscene (gentity_t *self) {
 	self->use = target_cutscene_use;
 }
 
-/*QUAKED target_botremove (.5 .5 .5) (-8 -8 -8) (8 8 8) LETHAL_INJECTION SPONTANEOUS_COMBUSTION
-When triggered, removes all bots that were spawned by the targeted target_botspawn entity
-*/
-
 void target_botremove_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	G_RemoveBotsForTarget( self, (self->spawnflags & 1), (self->spawnflags & 2) );
 }
@@ -1588,9 +1452,6 @@ void SP_target_botremove (gentity_t *self) {
 	self->use = target_botremove_use;
 }
 
-/*QUAKED target_music (0 .7 .7) (-8 -8 -8) (8 8 8)
-When triggered, starts playing specified music track
-*/
 void target_music_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	trap_SetConfigstring( CS_MUSIC, self->music );
 }
@@ -1604,10 +1465,6 @@ void SP_target_music (gentity_t *self) {
 	self->use = target_music_use;
 }
 
-
-/*QUAKED target_kill (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Kills the activator.
-*/
 void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
@@ -1616,9 +1473,6 @@ void SP_target_kill( gentity_t *self ) {
 	self->use = target_kill_use;
 }
 
-/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
-*/
 void SP_target_position( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
 }
@@ -1653,14 +1507,6 @@ static void target_location_linkup(gentity_t *ent)
 	// All linked together now
 }
 
-/*QUAKED target_location (0 0.5 0) (-8 -8 -8) (8 8 8)
-Set "message" to the name of this location.
-Set "count" to 0-7 for color.
-0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
-
-Closest target_location in sight used for the location, if none
-in site, closest in distance
-*/
 void SP_target_location( gentity_t *self ){
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
@@ -1691,10 +1537,6 @@ void SP_rally_weather_snow( gentity_t *ent ){
 
 	trap_LinkEntity (ent);
 }
-
-/*QUAKED script_variable (.5 .5 .5) (-8 -8 -8) (8 8 8) = != <= >= IMMEDIATELY
-When triggered, this writes a variable with a specified value to memory or compares the value of that variable
-*/
 
 void script_variable_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	char buf[MAX_INFO_STRING];

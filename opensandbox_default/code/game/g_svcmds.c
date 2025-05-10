@@ -194,7 +194,6 @@ struct
   { "replacetexture", qfalse, Svcmd_ReplaceTexture_f },
   { "say_team", qtrue, Svcmd_TeamMessage_f },
   { "say", qtrue, Svcmd_MessageWrapper },
-  { "shuffle", qfalse, ShuffleTeams },
   { "savemap", qfalse, G_WriteMapfile_f },
   { "deletemap", qfalse, G_DeleteMapfile_f },
   { "clearmap", qfalse, G_ClearMap_f },

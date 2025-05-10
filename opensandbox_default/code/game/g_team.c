@@ -26,6 +26,7 @@
 
 #include "g_local.h"
 
+#define	MAX_TEAM_SPAWN_POINTS	MAX_CLIENTS
 
 typedef struct teamgame_s {
 	float			last_flag_capture;
@@ -1488,9 +1489,6 @@ qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 	return qtrue;
 }
 
-
-/*---------------------------------------------------------------------------*/
-
 /*
 ================
 SelectRandomDeathmatchSpawnPoint
@@ -1498,7 +1496,6 @@ SelectRandomDeathmatchSpawnPoint
 go to a random point that doesn't telefrag
 ================
 */
-#define	MAX_TEAM_SPAWN_POINTS	32
 gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 	gentity_t	*spot;
 	int			count;
@@ -1562,7 +1559,6 @@ SelectRandomDDSpawnPoint
 go to a random Double Domination Spawn Point
 ================
 */
-#define	MAX_TEAM_SPAWN_POINTS	32
 gentity_t *SelectRandomDDSpawnPoint( void ) {
 	gentity_t	*spot;
 	int			count;
@@ -1796,11 +1792,6 @@ void CheckTeamStatus(void) {
 	}
 }
 
-/*-----------------------------------------------------------------*/
-
-/*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32)
-Only in CTF games.  Red players spawn here at game start.
-*/
 void SP_team_CTF_redplayer( gentity_t *ent ) {
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -1823,10 +1814,6 @@ void SP_team_CTF_redplayer( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-
-/*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32)
-Only in CTF games.  Blue players spawn here at game start.
-*/
 void SP_team_CTF_blueplayer( gentity_t *ent ) {
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -1849,11 +1836,6 @@ void SP_team_CTF_blueplayer( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-
-/*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32)
-potential spawning position for red team in CTF games.
-Targets will be fired when someone spawns in on them.
-*/
 void SP_team_CTF_redspawn(gentity_t *ent) {
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -1876,10 +1858,6 @@ void SP_team_CTF_redspawn(gentity_t *ent) {
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32)
-potential spawning position for blue team in CTF games.
-Targets will be fired when someone spawns in on them.
-*/
 void SP_team_CTF_bluespawn(gentity_t *ent) {
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -1923,7 +1901,6 @@ static void ObeliskHealthChange( int team, int health ) {
             level.healthBlueObelisk = percentage;
         }
         level.MustSendObeliskHealth = qtrue;
-        //G_Printf("Obelisk health %i %i\n",team,percentage);
         ObeliskHealthMessage();
     }
 } 
@@ -1945,7 +1922,6 @@ static void ObeliskRegen( gentity_t *self ) {
 	self->activator->s.frame = 0;
 }
 
-
 static void ObeliskRespawn( gentity_t *self ) {
 	self->takedamage = qtrue;
 	self->health = g_obeliskHealth.integer;
@@ -1955,7 +1931,6 @@ static void ObeliskRespawn( gentity_t *self ) {
 
 	self->activator->s.frame = 0;
 }
-
 
 static void ObeliskDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod ) {
 	int			otherTeam;
@@ -1989,7 +1964,6 @@ static void ObeliskDie( gentity_t *self, gentity_t *inflictor, gentity_t *attack
 	teamgame.redObeliskAttackedTime = 0;
 	teamgame.blueObeliskAttackedTime = 0;
 }
-
 
 static void ObeliskTouch( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	int			tokens,i;
@@ -2109,8 +2083,6 @@ gentity_t *SpawnObelisk( vec3_t origin, int team, int spawnflags) {
 	return ent;
 }
 
-/*QUAKED team_redobelisk (1 0 0) (-16 -16 0) (16 16 8)
-*/
 void SP_team_redobelisk( gentity_t *ent ) {
 	gentity_t *obelisk;
 
@@ -2134,8 +2106,6 @@ void SP_team_redobelisk( gentity_t *ent ) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED team_blueobelisk (0 0 1) (-16 -16 0) (16 16 88)
-*/
 void SP_team_blueobelisk( gentity_t *ent ) {
 	gentity_t *obelisk;
 
@@ -2159,8 +2129,6 @@ void SP_team_blueobelisk( gentity_t *ent ) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED team_neutralobelisk (0 0 1) (-16 -16 0) (16 16 88)
-*/
 void SP_team_neutralobelisk( gentity_t *ent ) {
 	if ( g_gametype.integer != GT_1FCTF && g_gametype.integer != GT_HARVESTER ) {
 		G_FreeEntity(ent);
@@ -2174,7 +2142,6 @@ void SP_team_neutralobelisk( gentity_t *ent ) {
 	ent->s.modelindex = TEAM_FREE;
 	trap_LinkEntity(ent);
 }
-
 
 /*
 ================
@@ -2222,55 +2189,3 @@ qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker ) {
 
 	return qfalse;
 }
-
-/*
-================
-ShuffleTeams
- *Randomizes the teams based on a type of function and then restarts the map
- *Currently there is only one type so type is ignored. You can add total randomizaion or waighted randomization later.
- *
- *The function will split the teams like this:
- *1. Red team
- *2. Blue team
- *3. Blue team
- *4. Red team
- *5. Go to 1
-================
-*/
-void ShuffleTeams(void) {
-    int i;
-    int assignedClients=1, nextTeam=TEAM_RED;
-
-    if ( g_gametype.integer < GT_TEAM || g_ffa_gt==1)
-        return; //Can only shuffle team games!
-
-    for( i=0;i < level.numConnectedClients; i++ ) {
-        if( g_entities[ &level.clients[level.sortedClients[i]] - level.clients].r.svFlags & SVF_BOT)
-            continue; //Don't sort bots... they are always equal
-        
-        if(level.clients[level.sortedClients[i]].sess.sessionTeam==TEAM_RED || level.clients[level.sortedClients[i]].sess.sessionTeam==TEAM_BLUE ) {
-            //For every second client we chenge team. But we do it a little of to make it slightly more fair
-            if(assignedClients>1) {
-                assignedClients=0;
-                if(nextTeam == TEAM_RED)
-                    nextTeam = TEAM_BLUE;
-                else
-                    nextTeam = TEAM_RED;
-            }
-
-            //Set the team
-            //We do not run all the logic because we shall run map_restart in a moment.
-            level.clients[level.sortedClients[i]].sess.sessionTeam = nextTeam;
-
-            ClientUserinfoChanged( level.sortedClients[i] );
-            ClientBegin( level.sortedClients[i] );
-
-            assignedClients++;
-        }
-    }
-
-    //Restart!
-    trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-
-}
-
