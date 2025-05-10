@@ -281,19 +281,7 @@ void setModel(gentity_t *ent, char *modelName) {
     CopyAlloc(ent->model, modelName);
 
     if (len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3")) {
-        Com_Printf("MD3 Model load: '%s'\n", ent->model);
-        ent->model[len - 4] = '\0'; // Убираем расширение
-        memset(ent->model + len - 3, 0, 4); // Удаляем остатки
-    }
-
-    if (len >= 4 && !Q_stricmp(ent->model + len - 4, ".mdr")) {
-        Com_Printf("MDR Model load: '%s'\n", ent->model);
-        ent->model[len - 4] = '\0'; // Убираем расширение
-        memset(ent->model + len - 3, 0, 4); // Удаляем остатки
-    }
-
-    if (len >= 4 && !Q_stricmp(ent->model + len - 4, ".iqm")) {
-        Com_Printf("IQM Model load: '%s'\n", ent->model);
+        Com_Printf("Mesh load: '%s'\n", ent->model);
         ent->model[len - 4] = '\0'; // Убираем расширение
         memset(ent->model + len - 3, 0, 4); // Удаляем остатки
     }
