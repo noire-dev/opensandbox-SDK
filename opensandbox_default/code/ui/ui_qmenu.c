@@ -2731,7 +2731,6 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	// default handling
 	switch ( key )
 	{
-#ifndef NDEBUG
 		case K_PGDN:
 		case K_KP_PGDN:
 		case K_MWHEELDOWN:
@@ -2760,7 +2759,6 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 		case K_F12:
 			trap_Cmd_ExecuteText(EXEC_APPEND, "screenshotJPEG\n");
 			break;
-#endif
 		case K_KP_UPARROW:
 		case K_UPARROW:
 			cursor_prev    = m->cursor;

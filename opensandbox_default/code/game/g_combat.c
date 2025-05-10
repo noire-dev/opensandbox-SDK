@@ -861,7 +861,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 
 	// armor
 	count = client->ps.stats[STAT_ARMOR];
-	save = ceil( damage * g_armorprotect.value );
+	save = damage * g_armorprotect.value;
 	if (save >= count)
 		save = count;
 

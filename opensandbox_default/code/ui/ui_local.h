@@ -967,5 +967,6 @@ int				trap_LAN_GetServerCount( int source );
 void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
 void			trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 void 			trap_System( const char *command );
+void			trap_R_AddLinearLightToScene( const vec3_t start, const vec3_t end, float intensity, float r, float g, float b );
 
 #endif

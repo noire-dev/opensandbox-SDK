@@ -601,13 +601,8 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		UI_MainMenu();
 		return;
 
-	// bk001204
-	case UIMENU_TEAM:
-	case UIMENU_POSTGAME:
 	default:
-#ifndef NDEBUG
-	  Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu );
-#endif
+		Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu );
 	break;
 	}
 }

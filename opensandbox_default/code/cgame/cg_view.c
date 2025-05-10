@@ -82,7 +82,7 @@ static void CG_ViewFog( void ) {
 		return;
 	}
 
-	cg.viewfog[0].hModel = trap_R_RegisterModel_SourceTech( va("models/fog%i", mod_fogModel) );
+	cg.viewfog[0].hModel = trap_R_RegisterModel( va("models/fog%i", mod_fogModel) );
 	cg.viewfog[0].customShader = trap_R_RegisterShader(va("models/fogtex%i", mod_fogShader));
 
 	for(i = 0; i < 16; i++){
@@ -116,7 +116,7 @@ static void CG_ViewSky( void ) {
 		return;
 	}
 
-	cg.viewsky.hModel = trap_R_RegisterModel_SourceTech( "models/fog1" );
+	cg.viewsky.hModel = trap_R_RegisterModel( "models/fog1" );
 	cg.viewsky.customShader = trap_R_RegisterShader(va("models/skytex%i", mod_skyShader));
 
 	VectorCopy(cg.refdef.vieworg, cg.viewsky.origin);
@@ -390,7 +390,7 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 #define	WAVE_AMPLITUDE	1
 #define	WAVE_FREQUENCY	0.4
 
-static int CG_CalcFov( void ) {
+static void CG_CalcFov( void ) {
 	float	x;
 	float	phase;
 	float	v;
@@ -398,7 +398,6 @@ static int CG_CalcFov( void ) {
 	float	fov_x, fov_y;
 	float	zoomFov;
 	float	f;
-	int		inwater;
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		// if in intermission, use a fixed value
@@ -458,12 +457,7 @@ static int CG_CalcFov( void ) {
 		v = WAVE_AMPLITUDE * sin( phase );
 		fov_x += v;
 		fov_y -= v;
-		inwater = qtrue;
 	}
-	else {
-		inwater = qfalse;
-	}
-
 
 	// set it
 	cg.refdef.fov_x = fov_x;
@@ -475,7 +469,7 @@ static int CG_CalcFov( void ) {
 		cg.zoomSensitivity = cg.refdef.fov_y / 75.0;
 	}
 
-	return inwater;
+	return;
 }
 
 
@@ -519,12 +513,11 @@ static void CG_DamageBlendBlob( void ) {
 	trap_R_AddRefEntityToScene( &ent );
 }
 
-static int CG_CalcCutsceneFov(int startFov, int endFov, float progress) {
+static void CG_CalcCutsceneFov(int startFov, int endFov, float progress) {
 	int diff;
 	float fov_x, fov_y;
 	int x, contents;
 	float phase, v;
-	qboolean inwater;
 
 	//calculate new FOV
 	diff = endFov - startFov;
@@ -541,20 +534,16 @@ static int CG_CalcCutsceneFov(int startFov, int endFov, float progress) {
 		v = WAVE_AMPLITUDE * sin( phase );
 		fov_x += v;
 		fov_y -= v;
-		inwater = qtrue;
-	}
-	else {
-		inwater = qfalse;
 	}
 
 	// set it
 	cg.refdef.fov_x = fov_x;
 	cg.refdef.fov_y = fov_y;
 
-	return inwater;
+	return;
 }
 
-static int CG_CalcCutsceneViewValues( ) {
+static void CG_CalcCutsceneViewValues( ) {
 	const char *cutsceneData;
 	char buf[MAX_INFO_STRING];
 	float wait;
@@ -566,7 +555,6 @@ static int CG_CalcCutsceneViewValues( ) {
 	float diff;
 	int motion;
 	int newFov, destFov;
-	int inwater;
 
 	cutsceneData = CG_ConfigString( CS_CUTSCENE );
 
@@ -632,16 +620,16 @@ static int CG_CalcCutsceneViewValues( ) {
 		VectorCopy( newOrigin, cg.refdef.vieworg );
 		VectorCopy( newAngles, cg.refdefViewAngles );
 
-		inwater = CG_CalcCutsceneFov(newFov, destFov, progress);
+		CG_CalcCutsceneFov(newFov, destFov, progress);
 	} else {
 		VectorCopy( newOrigin, cg.refdef.vieworg );
 		VectorCopy( newAngles, cg.refdefViewAngles );
-		inwater = CG_CalcCutsceneFov(newFov, newFov, progress);
+		CG_CalcCutsceneFov(newFov, newFov, progress);
 	}
 
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
 
-	return inwater;
+	return;
 }
 
 /*
@@ -651,7 +639,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void ) {
+static void CG_CalcViewValues( void ) {
 	playerState_t	*ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -663,7 +651,8 @@ static int CG_CalcViewValues( void ) {
 
 	//cutscene view
 	if ( ps->pm_type == PM_CUTSCENE ) {
-		return CG_CalcCutsceneViewValues();	//this also calculates fov
+		CG_CalcCutsceneViewValues();	//this also calculates fov
+		return;
 	}
 
 	// intermission view
@@ -671,7 +660,8 @@ static int CG_CalcViewValues( void ) {
 		VectorCopy( ps->origin, cg.refdef.vieworg );
 		VectorCopy( ps->viewangles, cg.refdefViewAngles );
 		AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-		return CG_CalcFov();
+		CG_CalcFov();
+		return;
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
@@ -733,7 +723,8 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	// field of view
-	return CG_CalcFov();
+	CG_CalcFov();
+	return;
 }
 
 
@@ -800,8 +791,6 @@ Generates and draws a game scene and status information at the given time.
 =================
 */
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
-	int		inwater;
-
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
@@ -846,7 +835,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.renderingEyesPerson = !cg_thirdPerson.integer && cg_cameraEyes.integer && cg.snap->ps.pm_type != PM_CUTSCENE && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
 
 	// build cg.refdef
-	inwater = CG_CalcViewValues();
+	CG_CalcViewValues();
 
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson ) {
@@ -874,7 +863,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_PowerupTimerSounds();
 
 	// update audio positions
-	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
+	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis );
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
 	if ( stereoView != STEREO_RIGHT ) {

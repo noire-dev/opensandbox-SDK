@@ -2199,8 +2199,6 @@ PmoveSingle
 
 ================
 */
-void trap_SnapVector( float *v );
-
 void PmoveSingle (pmove_t *pmove) {
 	pm = pmove;
 

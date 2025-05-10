@@ -267,7 +267,7 @@ static void CG_DrawToolgun() {
 		if (strcmp(entityInfos[1], "<NULL>")) {
 			if(!BG_CheckClassname(entityInfos[0])){
 				CG_Draw3DModelToolgun( x, y-48, 48, 48,
-				trap_R_RegisterModel_SourceTech( entityInfos[1] ), entityInfos[1], entityInfos[2] );
+				trap_R_RegisterModel( entityInfos[1] ), entityInfos[1], entityInfos[2] );
 			} else {
 				//nothing
 			}
