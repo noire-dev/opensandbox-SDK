@@ -49,7 +49,6 @@
 
 #define TIME_BETWEENCHATTING	25
 
-
 /*
 ==================
 BotNumActivePlayers

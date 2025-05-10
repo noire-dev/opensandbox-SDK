@@ -27,13 +27,6 @@
 
 #include "bg_lib.h"
 
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static char sccsid[] = "@(#)qsort.c	8.1 (Berkeley) 6/4/93";
-#endif
-static const char rcsid[] =
-#endif /* LIBC_SCCS and not lint */
-
 static char* med3(char *, char *, char *, cmp_t *);
 static void	 swapfunc(char *, char *, int, int);
 
@@ -41,134 +34,125 @@ static void	 swapfunc(char *, char *, int, int);
 #define min(a, b)	((a) < (b) ? (a) : (b))
 #endif
 
-/*
- * Qsort routine from Bentley & McIlroy's "Engineering a Sort Function".
- */
-#define swapcode(TYPE, parmi, parmj, n) { 		\
-	long i = (n) / sizeof (TYPE); 			\
-	register TYPE *pi = (TYPE *) (parmi); 		\
-	register TYPE *pj = (TYPE *) (parmj); 		\
-	do { 						\
-		register TYPE	t = *pi;		\
-		*pi++ = *pj;				\
-		*pj++ = t;				\
-        } while (--i > 0);				\
+#define swapcode(TYPE, a, b, n) {          \
+    long i = (n) / sizeof(TYPE);           \
+    TYPE *pa = (TYPE *)(a);                \
+    TYPE *pb = (TYPE *)(b);                \
+    do {                                   \
+        TYPE tmp = *pa;                    \
+        *pa++ = *pb;                       \
+        *pb++ = tmp;                       \
+    } while (--i > 0);                     \
 }
 
-#define SWAPINIT(a, es) swaptype = ((char *)a - (char *)0) % sizeof(long) || \
-	es % sizeof(long) ? 2 : es == sizeof(long)? 0 : 1;
+#define SWAPINIT(a, es) \
+    swaptype = ((char *)(a) - (char *)0) % sizeof(long) || (es) % sizeof(long) ? 2 : ((es) == sizeof(long) ? 0 : 1)
 
-static void
-swapfunc(a, b, n, swaptype)
-	char *a, *b;
-	int n, swaptype;
-{
-	if(swaptype <= 1)
-		swapcode(long, a, b, n)
-	else
-		swapcode(char, a, b, n)
+static void swapfunc(char *a, char *b, int n, int swaptype) {
+    if (swaptype <= 1)
+        swapcode(long, a, b, n)
+    else
+        swapcode(char, a, b, n)
 }
 
-#define swap(a, b)					\
-	if (swaptype == 0) {				\
-		long t = *(long *)(a);			\
-		*(long *)(a) = *(long *)(b);		\
-		*(long *)(b) = t;			\
-	} else						\
-		swapfunc(a, b, es, swaptype)
+#define swap(a, b)                        \
+    if (swaptype == 0) {                  \
+        long t = *(long *)(a);            \
+        *(long *)(a) = *(long *)(b);      \
+        *(long *)(b) = t;                 \
+    } else {                              \
+        swapfunc(a, b, es, swaptype);     \
+    }
 
-#define vecswap(a, b, n) 	if ((n) > 0) swapfunc(a, b, n, swaptype)
+#define vecswap(a, b, n) \
+    if ((n) > 0) swapfunc(a, b, n, swaptype)
 
-static char *
-med3(a, b, c, cmp)
-	char *a, *b, *c;
-	cmp_t *cmp;
-{
-	return cmp(a, b) < 0 ?
-	       (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a ))
-              :(cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c ));
+static char *med3(char *a, char *b, char *c, cmp_t *cmp) {
+    return cmp(a, b) < 0 ?
+           (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) :
+           (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c));
 }
 
-void
-qsort(a, n, es, cmp)
-	void *a;
-	size_t n, es;
-	cmp_t *cmp;
-{
-	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
-	int d, r, swaptype, swap_cnt;
+void qsort(void *a, size_t n, size_t es, cmp_t *cmp) {
+    char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
+    int d, r, swaptype, swap_cnt;
 
-loop:	SWAPINIT(a, es);
-	swap_cnt = 0;
-	if (n < 7) {
-		for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-			for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0;
-			     pl -= es)
-				swap(pl, pl - es);
-		return;
-	}
-	pm = (char *)a + (n / 2) * es;
-	if (n > 7) {
-		pl = a;
-		pn = (char *)a + (n - 1) * es;
-		if (n > 40) {
-			d = (n / 8) * es;
-			pl = med3(pl, pl + d, pl + 2 * d, cmp);
-			pm = med3(pm - d, pm, pm + d, cmp);
-			pn = med3(pn - 2 * d, pn - d, pn, cmp);
-		}
-		pm = med3(pl, pm, pn, cmp);
-	}
-	swap(a, pm);
-	pa = pb = (char *)a + es;
+loop:
+    SWAPINIT(a, es);
+    swap_cnt = 0;
 
-	pc = pd = (char *)a + (n - 1) * es;
-	for (;;) {
-		while (pb <= pc && (r = cmp(pb, a)) <= 0) {
-			if (r == 0) {
-				swap_cnt = 1;
-				swap(pa, pb);
-				pa += es;
-			}
-			pb += es;
-		}
-		while (pb <= pc && (r = cmp(pc, a)) >= 0) {
-			if (r == 0) {
-				swap_cnt = 1;
-				swap(pc, pd);
-				pd -= es;
-			}
-			pc -= es;
-		}
-		if (pb > pc)
-			break;
-		swap(pb, pc);
-		swap_cnt = 1;
-		pb += es;
-		pc -= es;
-	}
-	if (swap_cnt == 0) {  /* Switch to insertion sort */
-		for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-			for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0;
-			     pl -= es)
-				swap(pl, pl - es);
-		return;
-	}
+    if (n < 7) {
+        for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
+            for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es)
+                swap(pl, pl - es);
+        return;
+    }
 
-	pn = (char *)a + n * es;
-	r = min(pa - (char *)a, pb - pa);
-	vecswap(a, pb - r, r);
-	r = min(pd - pc, pn - pd - es);
-	vecswap(pb, pn - r, r);
-	if ((r = pb - pa) > es)
-		qsort(a, r / es, es, cmp);
-	if ((r = pd - pc) > es) {
-		/* Iterate rather than recurse to save stack space */
-		a = pn - r;
-		n = r / es;
-		goto loop;
-	}
-/*		qsort(pn - r, r / es, es, cmp);*/
+    pm = (char *)a + (n / 2) * es;
+    if (n > 7) {
+        pl = a;
+        pn = (char *)a + (n - 1) * es;
+        if (n > 40) {
+            d = (n / 8) * es;
+            pl = med3(pl, pl + d, pl + 2 * d, cmp);
+            pm = med3(pm - d, pm, pm + d, cmp);
+            pn = med3(pn - 2 * d, pn - d, pn, cmp);
+        }
+        pm = med3(pl, pm, pn, cmp);
+    }
+
+    swap(a, pm);
+
+    pa = pb = (char *)a + es;
+    pc = pd = (char *)a + (n - 1) * es;
+
+    while (1) {
+        while (pb <= pc && (r = cmp(pb, a)) <= 0) {
+            if (r == 0) {
+                swap_cnt = 1;
+                swap(pa, pb);
+                pa += es;
+            }
+            pb += es;
+        }
+        while (pb <= pc && (r = cmp(pc, a)) >= 0) {
+            if (r == 0) {
+                swap_cnt = 1;
+                swap(pc, pd);
+                pd -= es;
+            }
+            pc -= es;
+        }
+        if (pb > pc)
+            break;
+        swap(pb, pc);
+        swap_cnt = 1;
+        pb += es;
+        pc -= es;
+    }
+
+    if (swap_cnt == 0) {
+        for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
+            for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es)
+                swap(pl, pl - es);
+        return;
+    }
+
+    pn = (char *)a + n * es;
+
+    r = (int)(pa - (char *)a);
+    vecswap(a, pb - r, r);
+
+    r = (int)(pd - pc);
+    vecswap(pb, pn - r, r);
+
+    if ((r = (int)(pb - pa)) > (int)es)
+        qsort(a, r / es, es, cmp);
+    if ((r = (int)(pd - pc)) > (int)es) {
+        a = pn - r;
+        n = r / es;
+        goto loop;
+    }
 }
 
 size_t strlen( const char *string ) {
@@ -188,17 +172,15 @@ int strlenru( const char *string ) {
     while (string[i] != '\0') {
         unsigned char c = string[i];
         
-        // Если символ ASCII (0-127), то учитываем 1 байт
         if (c <= 127) {
             result += 1;
             i += 1;
         }
-        // Если символ в UTF-8 (русский, двухбайтовый)
-        else if (c >= 192 && c <= 223) {  // Первый байт в диапазоне 0xC0 - 0xDF
-            result += 1;  // Учитываем символ как 1 символ
-            i += 2;  // Перемещаемся на 2 байта вперед
+
+        else if (c >= 192 && c <= 223) {
+            result += 1;
+            i += 2;
         } else {
-            // Невозможно обработать этот символ, просто пропускаем его
             i += 1;
         }
     }
@@ -227,7 +209,6 @@ int ifstrlenru( const char *string ) {
 	return rucount;
 }
 
-
 char *strcat( char *strDestination, const char *strSource ) {
 	char	*s;
 
@@ -252,7 +233,6 @@ char *strcpy( char *strDestination, const char *strSource ) {
 	*s = 0;
 	return strDestination;
 }
-
 
 int strcmp( const char *string1, const char *string2 ) {
 	while ( *string1 == *string2 && *string1 && *string2 ) {
@@ -324,7 +304,6 @@ int tolower( int c ) {
 	}
 	return c;
 }
-
 
 int toupper( int c ) {
 	if ( c >= 'a' && c <= 'z' ) {
@@ -512,8 +491,7 @@ The variable pointed to by endptr will hold the location of the first character
 in the nptr string that was not used in the conversion
 ==============
 */
-double strtod( const char *nptr, const char **endptr )
-{
+double strtod( const char *nptr, const char **endptr ){
 	double res;
 	qboolean neg = qfalse;
 
@@ -774,7 +752,6 @@ int atoi( const char *string ) {
 	return value * sign;
 }
 
-
 int _atoi( const char **stringPtr ) {
 	int		sign;
 	int		value;
@@ -834,8 +811,7 @@ Will not overflow - returns LONG_MIN or LONG_MAX as appropriate
 *endptr is set to the location of the first character not used
 ==============
 */
-long strtol( const char *nptr, const char **endptr, int base )
-{
+long strtol( const char *nptr, const char **endptr, int base ){
 	long res;
 	qboolean pos = qtrue;
 
@@ -924,91 +900,17 @@ double fabs( double x ) {
 }
 
 /* 
- * New implementation by Patrick Powell and others for vsnprintf.
- * Supports length checking in strings.
-*/
-
-/*
  * Copyright Patrick Powell 1995
  * This code is based on code written by Patrick Powell (papowell@astart.com)
  * It may be used for any purpose as long as this notice remains intact
  * on all source code distributions
+ * New implementation by Patrick Powell and others for vsnprintf.
+ * Supports length checking in strings.
  */
 
-/**************************************************************
- * Original:
- * Patrick Powell Tue Apr 11 09:48:21 PDT 1995
- * A bombproof version of doprnt (dopr) included.
- * Sigh.  This sort of thing is always nasty do deal with.  Note that
- * the version here does not include floating point...
- *
- * snprintf() is used instead of sprintf() as it does limit checks
- * for string length.  This covers a nasty loophole.
- *
- * The other functions are there to prevent NULL pointers from
- * causing nast effects.
- *
- * More Recently:
- *  Brandon Long <blong@fiction.net> 9/15/96 for mutt 0.43
- *  This was ugly.  It is still ugly.  I opted out of floating point
- *  numbers, but the formatter understands just about everything
- *  from the normal C string format, at least as far as I can tell from
- *  the Solaris 2.5 printf(3S) man page.
- *
- *  Brandon Long <blong@fiction.net> 10/22/97 for mutt 0.87.1
- *    Ok, added some minimal floating point support, which means this
- *    probably requires libm on most operating systems.  Don't yet
- *    support the exponent (e,E) and sigfig (g,G).  Also, fmtint()
- *    was pretty badly broken, it just wasn't being exercised in ways
- *    which showed it, so that's been fixed.  Also, formated the code
- *    to mutt conventions, and removed dead code left over from the
- *    original.  Also, there is now a builtin-test, just compile with:
- *           gcc -DTEST_SNPRINTF -o snprintf snprintf.c -lm
- *    and run snprintf for results.
- * 
- *  Thomas Roessler <roessler@guug.de> 01/27/98 for mutt 0.89i
- *    The PGP code was using unsigned hexadecimal formats. 
- *    Unfortunately, unsigned formats simply didn't work.
- *
- *  Michael Elkins <me@cs.hmc.edu> 03/05/98 for mutt 0.90.8
- *    The original code assumed that both snprintf() and vsnprintf() were
- *    missing.  Some systems only have snprintf() but not vsnprintf(), so
- *    the code is now broken down under HAVE_SNPRINTF and HAVE_VSNPRINTF.
- *
- *  Andrew Tridgell (tridge@samba.org) Oct 1998
- *    fixed handling of %.0f
- *    added test for HAVE_LONG_DOUBLE
- *
- *  Russ Allbery <rra@stanford.edu> 2000-08-26
- *    fixed return value to comply with C99
- *    fixed handling of snprintf(NULL, ...)
- *
- *  Hrvoje Niksic <hniksic@arsdigita.com> 2000-11-04
- *    include <config.h> instead of "config.h".
- *    moved TEST_SNPRINTF stuff out of HAVE_SNPRINTF ifdef.
- *    include <stdio.h> for NULL.
- *    added support and test cases for long long.
- *    don't declare argument types to (v)snprintf if stdarg is not used.
- *    use int instead of short int as 2nd arg to va_arg.
- *
- **************************************************************/
 
-/* BDR 2002-01-13  %e and %g were being ignored.  Now do something,
-   if not necessarily correctly */
-
-#if (SIZEOF_LONG_DOUBLE > 0)
-/* #ifdef HAVE_LONG_DOUBLE */
-#define LDOUBLE long double
-#else
 #define LDOUBLE double
-#endif
-
-#if (SIZEOF_LONG_LONG > 0)
-/* #ifdef HAVE_LONG_LONG */
-# define LLONG long long
-#else
-# define LLONG long
-#endif
+#define LLONG long
 
 static int dopr (char *buffer, size_t maxlen, const char *format, 
                  va_list args);
@@ -1054,8 +956,7 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
 #define MAX(p,q) ((p >= q) ? p : q)
 #define MIN(p,q) ((p <= q) ? p : q)
 
-static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
-{
+static int dopr (char *buffer, size_t maxlen, const char *format, va_list args){
   char ch;
   LLONG value;
   LDOUBLE fvalue;
@@ -1210,7 +1111,6 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'o':
 	flags |= DP_F_UNSIGNED;
 	if (cflags == DP_C_SHORT)
-//	  value = (unsigned short int) va_arg (args, unsigned short int); // Thilo: This does not work because the rcc compiler cannot do that cast correctly.
 	  value = va_arg (args, unsigned int) & ( (1 << sizeof(unsigned short int) * 8) - 1); // Using this workaround instead.
 	else if (cflags == DP_C_LONG)
 	  value = va_arg (args, unsigned long int);
@@ -1346,8 +1246,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 }
 
 static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-                   char *value, int flags, int min, int max)
-{
+                   char *value, int flags, int min, int max){
   int padlen, strln;     /* amount to pad */
   int cnt = 0;
   int total = 0;
@@ -1387,8 +1286,7 @@ static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
 /* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
 
 static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
-		   LLONG value, int base, int min, int max, int flags)
-{
+		   LLONG value, int base, int min, int max, int flags){
   int signvalue = 0;
   unsigned LLONG uvalue;
   char convert[24];
@@ -1442,11 +1340,6 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
   if (flags & DP_F_MINUS) 
     spadlen = -spadlen; /* Left Justifty */
 
-#ifdef DEBUG_SNPRINTF
-  dprint (1, (debugfile, "zpad: %d, spad: %d, min: %d, max: %d, place: %d\n",
-      zpadlen, spadlen, min, max, place));
-#endif
-
   /* Spaces */
   while (spadlen > 0) 
   {
@@ -1481,8 +1374,7 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static LDOUBLE abs_val (LDOUBLE value)
-{
+static LDOUBLE abs_val (LDOUBLE value){
   LDOUBLE result = value;
 
   if (value < 0)
@@ -1491,8 +1383,7 @@ static LDOUBLE abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE pow10 (int exp)
-{
+static LDOUBLE pow10 (int exp){
   LDOUBLE result = 1;
 
   while (exp)
@@ -1504,8 +1395,7 @@ static LDOUBLE pow10 (int exp)
   return result;
 }
 
-static long round (LDOUBLE value)
-{
+static long round (LDOUBLE value){
   long intpart;
 
   intpart = value;
@@ -1517,8 +1407,7 @@ static long round (LDOUBLE value)
 }
 
 static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-		  LDOUBLE fvalue, int min, int max, int flags)
-{
+		  LDOUBLE fvalue, int min, int max, int flags){
   int signvalue = 0;
   LDOUBLE ufvalue;
   char iconvert[20];
@@ -1550,10 +1439,6 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
       if (flags & DP_F_SPACE)
 	signvalue = ' ';
 
-#if 0
-  if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
-#endif
-
   intpart = ufvalue;
 
   /* 
@@ -1573,10 +1458,6 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     intpart++;
     fracpart -= pow10 (max);
   }
-
-#ifdef DEBUG_SNPRINTF
-  dprint (1, (debugfile, "fmtfp: %f =? %d.%d\n", fvalue, intpart, fracpart));
-#endif
 
   /* Convert integer part */
   do {
@@ -1655,22 +1536,19 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
-{
+static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c){
   if (*currlen + 1 < maxlen)
     buffer[(*currlen)++] = c;
   return 1;
 }
 
-int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args)
-{
+int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args){
 	if (str != NULL)
 		str[0] = 0;
 	return dopr(str, length, fmt, args);
 }
 
-int Q_snprintf(char *str, size_t length, const char *fmt, ...)
-{
+int Q_snprintf(char *str, size_t length, const char *fmt, ...){
 	va_list ap;
 	int retval;
 

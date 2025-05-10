@@ -29,12 +29,7 @@
 #if !defined( BG_LIB_H ) && defined( Q3_VM )
 #define BG_LIB_H
 
-//Ignore __attribute__ on non-gcc platforms
-#ifndef __GNUC__
-#ifndef __attribute__
 #define __attribute__(x)
-#endif
-#endif
 
 #ifndef NULL
 #define NULL ((void *)0)
