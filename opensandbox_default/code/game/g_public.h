@@ -37,9 +37,8 @@
 #define	SVF_USE_CURRENT_ORIGIN	0x00000010	// entity->r.currentOrigin instead of entity->s.origin
 #define SVF_SINGLECLIENT		0x00000020	// only send to a single client (entityShared_t->singleClient)
 #define SVF_NOSERVERINFO		0x00000040	// don't send CS_SERVERINFO updates to this client
-#define SVF_CAPSULE				0x00000080	// use capsule for collision detection instead of bbox
-#define SVF_NOTSINGLECLIENT		0x00000100	// send entity to everyone but one client
-#define SVF_SELF_PORTAL2		0x00000200  // merge a second pvs at entity->r.s.origin2 into snapshots
+#define SVF_NOTSINGLECLIENT		0x00000080	// send entity to everyone but one client
+#define SVF_SELF_PORTAL2		0x00000100  // merge a second pvs at entity->r.s.origin2 into snapshots
 typedef struct {
 	entityState_t	s;				// communicated by server to clients
 

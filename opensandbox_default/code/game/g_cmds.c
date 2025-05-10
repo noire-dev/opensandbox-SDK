@@ -1075,7 +1075,7 @@ static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, cons
 		return;
 	}
 
-    if ((ent->r.svFlags & SVF_BOT) && trap_Cvar_VariableValue( "bot_nochat" )>1) return;
+    if ((ent->r.svFlags & SVF_BOT) && cvar_VariableValue( "bot_nochat" )>1) return;
 
 	trap_SendServerCommand( other-g_entities, va("%s \"%s%c%c%s\"",
 		mode == SAY_TEAM ? "tchat" : "chat",
@@ -1093,7 +1093,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		text[MAX_SAY_TEXT];
 	char		location[64];
 
-    if ((ent->r.svFlags & SVF_BOT) && trap_Cvar_VariableValue( "bot_nochat" )>1) return;
+    if ((ent->r.svFlags & SVF_BOT) && cvar_VariableValue( "bot_nochat" )>1) return;
 
 	switch ( mode ) {
 	default:

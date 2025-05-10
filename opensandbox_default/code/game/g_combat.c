@@ -1179,7 +1179,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	if ( attacker && attacker->singlebot){
-			float skill = trap_Cvar_VariableValue( "g_spSkill" );
+			float skill = cvar_VariableValue( "g_spSkill" );
 			int orgdmg = damage;
 	
 			if ( attacker->botspawn && attacker->botspawn->skill )

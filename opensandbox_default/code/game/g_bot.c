@@ -40,7 +40,7 @@ typedef struct {
 
 static botSpawnQueue_t	botSpawnQueue[BOT_SPAWN_QUEUE_DEPTH];
 
-float trap_Cvar_VariableValue( const char *var_name ) {
+float cvar_VariableValue( const char *var_name ) {
 	char buf[128];
 
 	trap_Cvar_VariableStringBuffer(var_name, buf, sizeof(buf));
@@ -495,7 +495,7 @@ G_AddSinglePlayerBot
 */
 
 void G_AddCustomBot( char *name, int parentEntityNum, char* waypoint, float relSkill, int npcid, char* altname ) {
-	float skill = trap_Cvar_VariableValue( "g_spSkill" );
+	float skill = cvar_VariableValue( "g_spSkill" );
 	int noprint = trap_Cvar_VariableIntegerValue( "cl_noprint" );
 
 	//apply relative skill level to bot's general skill level

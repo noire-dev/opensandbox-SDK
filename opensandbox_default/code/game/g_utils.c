@@ -1539,7 +1539,7 @@ playerscore_t G_CalculatePlayerScore( gentity_t *ent ) {
 		accuracy = 0;
 
 	// get skill
-	skill = trap_Cvar_VariableValue( "g_spskill" );
+	skill = cvar_VariableValue( "g_spskill" );
 
 	return COM_CalculatePlayerScore( ent->client->ps.persistant, accuracy, (int)skill);
 }
