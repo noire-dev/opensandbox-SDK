@@ -76,6 +76,21 @@ itemInfo_t			cg_items[MAX_ITEMS];
 
 vmCvar_t	g_gametype;
 
+vmCvar_t	legsmodel;
+vmCvar_t	team_legsmodel;
+vmCvar_t    headR;
+vmCvar_t    headG;
+vmCvar_t    headB;
+vmCvar_t    modelR;
+vmCvar_t    modelG;
+vmCvar_t    modelB;
+vmCvar_t    legsR;
+vmCvar_t    legsG;
+vmCvar_t    legsB;
+vmCvar_t    physR;
+vmCvar_t    physG;
+vmCvar_t    physB;
+
 vmCvar_t	cg_effectsTime;
 vmCvar_t	cg_effectsLimit;
 vmCvar_t	cg_effectsGibs;
@@ -129,18 +144,7 @@ vmCvar_t	cg_postprocess;
 vmCvar_t	cl_language;
 vmCvar_t	con_notifytime;
 vmCvar_t 	cg_leiChibi;
-vmCvar_t    cg_helightred;
-vmCvar_t    cg_helightgreen;
-vmCvar_t    cg_helightblue;
-vmCvar_t    cg_tolightred;
-vmCvar_t    cg_tolightgreen;
-vmCvar_t    cg_tolightblue;
-vmCvar_t    cg_plightred;
-vmCvar_t    cg_plightgreen;
-vmCvar_t    cg_plightblue;
 vmCvar_t    cl_screenoffset;
-vmCvar_t	legsskin;
-vmCvar_t	team_legsskin;
 vmCvar_t	cg_itemstyle;
 vmCvar_t	cg_paintballMode;
 vmCvar_t	cg_railTrailTime;
@@ -202,7 +206,6 @@ vmCvar_t 	cg_stats;
 vmCvar_t 	cg_buildScript;
 vmCvar_t	cg_paused;
 vmCvar_t	cg_blood;
-vmCvar_t	cg_predictItems;
 vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
 vmCvar_t	cg_teamChatsOnly;
@@ -339,6 +342,21 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &g_gametype, "g_gametype", "0", 0},
 
+	{ &legsmodel, "legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &team_legsmodel, "team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &headR, "headR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &headG, "headG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &headB, "headB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &modelR, "modelR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &modelG, "modelG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &modelB, "modelB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &legsR, "legsR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &legsG, "legsG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &legsB, "legsB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &physR, "physR", "128", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &physG, "physG", "225", CVAR_USERINFO | CVAR_ARCHIVE },
+    { &physB, "physB", "255", CVAR_USERINFO | CVAR_ARCHIVE },
+
 	{ &cg_effectsTime, "cg_effectsTime", "10", CVAR_ARCHIVE },
 	{ &cg_effectsLimit, "cg_effectsLimit", "4096", CVAR_ARCHIVE },
 	{ &cg_effectsGibs, "cg_effectsGibs", "1", CVAR_ARCHIVE },
@@ -389,19 +407,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
 	{ &con_notifytime, "con_notifytime", "3", CVAR_ARCHIVE },
 	{ &cg_leiChibi, "cg_leiChibi", "0", CVAR_ARCHIVE}, // LEILEI
-    { &cg_helightred, "cg_helightred", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_helightgreen, "cg_helightgreen", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_helightblue, "cg_helightblue", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_tolightred, "cg_tolightred", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_tolightgreen, "cg_tolightgreen", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_tolightblue, "cg_tolightblue", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_plightred, "cg_plightred", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_plightgreen, "cg_plightgreen", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &cg_plightblue, "cg_plightblue", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
 	{ &cg_itemstyle, "cg_itemstyle", "2", CVAR_ARCHIVE },
-	{ &legsskin, "legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
-	{ &team_legsskin, "team_legsskin", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_gibjump, "cg_gibjump", "350", CVAR_ARCHIVE },
 	{ &cg_gibvelocity, "cg_gibvelocity", "500", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
@@ -460,7 +467,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_teamChatHeight, "cg_teamChatHeight", "8", CVAR_ARCHIVE  },
 	{ &cg_teamChatScaleX, "cg_teamChatScaleX", "0.7", CVAR_ARCHIVE  },
 	{ &cg_teamChatScaleY, "cg_teamChatScaleY", "1", CVAR_ARCHIVE  },
-	{ &cg_predictItems, "cg_predictItems", "1", CVAR_ARCHIVE },
 	{ &cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM | CVAR_USERINFO },
 	{ &cg_stats, "cg_stats", "0", 0 },
 	{ &cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE },
@@ -1082,10 +1088,10 @@ static void CG_RegisterGraphics( void ) {
 
 	// precache status bar pics
 	if(cl_language.integer == 0){
-	CG_LoadingString( "game media", 0.72 );
+	CG_LoadingString( "game media", 0.60 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игровые ресурсы", 0.72 );
+	CG_LoadingString( "игровые ресурсы", 0.60 );
 	}
 
 	for ( i=0 ; i<11 ; i++) {
@@ -1462,6 +1468,26 @@ static void CG_RegisterClients( void ) {
 }
 
 /*
+===================
+CG_ImportModelsOBJ
+===================
+*/
+static void CG_ImportModelsOBJ(void) {
+    char dirlist[32000];
+    int numfiles = trap_FS_GetFileList("props", ".obj", dirlist, sizeof(dirlist));
+	int i;
+	char* file;
+
+    file = dirlist;
+    for (i = 0; i < numfiles; i++) {
+        char nameWithoutExt[128];
+        Q_snprintf(nameWithoutExt, sizeof(nameWithoutExt), "props/%.*s", (int)(strlen(file) - 4), file);
+        trap_ImportOBJ(nameWithoutExt);
+        file += strlen(file) + 1;
+    }
+}
+
+/*
 =================
 CG_ConfigString
 =================
@@ -1556,10 +1582,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_items, 0, sizeof(cg_items) );
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "game core", 0.12 );
+	CG_LoadingString( "game core", 0.10 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игровое ядро", 0.12 );
+	CG_LoadingString( "игровое ядро", 0.10 );
 	}
 
 	cg.clientNum = clientNum;
@@ -1575,10 +1601,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.media.corner          	= trap_R_RegisterShader( "menu/corner" );
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "noire.script", 0.24 );
+	CG_LoadingString( "noire.script", 0.20 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "noire.script", 0.24 );
+	CG_LoadingString( "noire.script", 0.20 );
 	}
 
 	CG_RegisterCvars();
@@ -1626,8 +1652,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 		cgs.screenXBias = 0;
 	}
 
-
-
 	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
 
@@ -1641,10 +1665,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	// load the new map
 	if(cl_language.integer == 0){
-	CG_LoadingString( "collision map", 0.36 );
+	CG_LoadingString( "collision map", 0.30 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "карта столкновений", 0.36 );
+	CG_LoadingString( "карта столкновений", 0.30 );
 	}
 
 	trap_CM_LoadMap( cgs.mapname );
@@ -1652,28 +1676,28 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cg.loading = qtrue;		// force players to load instead of defer
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "sounds", 0.48 );
+	CG_LoadingString( "sounds", 0.40 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "звуки", 0.48 );
+	CG_LoadingString( "звуки", 0.40 );
 	}
 
 	CG_RegisterSounds();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "graphics", 0.60 );
+	CG_LoadingString( "graphics", 0.50 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "графика", 0.60 );
+	CG_LoadingString( "графика", 0.50 );
 	}
 
 	CG_RegisterGraphics();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "clients", 0.84 );
+	CG_LoadingString( "clients", 0.70 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игроки", 0.84 );
+	CG_LoadingString( "игроки", 0.70 );
 	}
 
 	CG_RegisterClients();		// if low on memory, some clients will be deferred
@@ -1681,10 +1705,19 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cg.loading = qfalse;	// future players will be deferred
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "entities", 0.96 );
+	CG_LoadingString( "import OBJ", 0.80 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "объекты", 0.96 );
+	CG_LoadingString( "импорт OBJ", 0.80 );
+	}
+
+	CG_ImportModelsOBJ();
+
+	if(cl_language.integer == 0){
+	CG_LoadingString( "entities", 0.90 );
+	}
+	if(cl_language.integer == 1){
+	CG_LoadingString( "объекты", 0.90 );
 	}
 
 	CG_InitLocalEntities();
@@ -1695,10 +1728,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_SetConfigValues();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "100%", 1.00 );
+	CG_LoadingString( "Loaded!", 1.00 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "100%", 1.00 );
+	CG_LoadingString( "Loaded!", 1.00 );
 	}
 	
 

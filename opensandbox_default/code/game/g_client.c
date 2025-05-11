@@ -1210,33 +1210,31 @@ if desired.
 */
 void ClientUserinfoChanged( int clientNum ) {
 	gentity_t *ent;
-	int		teamTask, teamLeader, team, health;
-	int		singlebot;
-	int		botskill;
-	char	*s;
-	char	model[MAX_QPATH];
-	char	headModel[MAX_QPATH];
-	char	oldname[MAX_STRING_CHARS];
+	int			teamTask, teamLeader, team, health;
+	int			singlebot;
+	int			botskill;
+	char		*s;
+	char		model[MAX_QPATH];
+	char		headModel[MAX_QPATH];
+	char		legsModel[MAX_QPATH];
+	char		headR[16];
+	char		headG[16];
+	char		headB[16];
+	char		modelR[16];
+	char		modelG[16];
+	char		modelB[16];
+	char		legsR[16];
+	char		legsG[16];
+	char		legsB[16];
+	char		physR[16];
+	char		physG[16];
+	char		physB[16];
+	char		swep_id[16];
+	char		oldname[MAX_STRING_CHARS];
 	char        err[MAX_STRING_CHARS];
-	qboolean    revertName = qfalse;
 	gclient_t	*client;
-	char	c1[MAX_INFO_STRING];
-	char	heligred[MAX_INFO_STRING];
-	char	heliggreen[MAX_INFO_STRING];
-	char	heligblue[MAX_INFO_STRING];
-	char	toligred[MAX_INFO_STRING];
-	char	toliggreen[MAX_INFO_STRING];
-	char	toligblue[MAX_INFO_STRING];
-	char	pligred[MAX_INFO_STRING];
-	char	pliggreen[MAX_INFO_STRING];
-	char	pligblue[MAX_INFO_STRING];
-	char	pgred[MAX_INFO_STRING];
-	char	pggreen[MAX_INFO_STRING];
-	char	pgblue[MAX_INFO_STRING];
-	char	swep_id[MAX_INFO_STRING];
-	char	redTeam[MAX_INFO_STRING];
-	char	blueTeam[MAX_INFO_STRING];
-	char	userinfo[MAX_INFO_STRING];
+	char		c1[MAX_INFO_STRING];
+	char		userinfo[MAX_INFO_STRING];
 
 	ent = g_entities + clientNum;
 	client = ent->client;
@@ -1252,14 +1250,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	s = Info_ValueForKey( userinfo, "ip" );
 	if ( !strcmp( s, "localhost" ) ) {
 		client->pers.localClient = qtrue;
-	}
-
-	// check the item prediction
-	s = Info_ValueForKey( userinfo, "cg_predictItems" );
-	if ( !atoi( s ) ) {
-		client->pers.predictItemPickup = qfalse;
-	} else {
-		client->pers.predictItemPickup = qtrue;
 	}
 
 	//unlagged - client options
@@ -1280,51 +1270,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	s = Info_ValueForKey (userinfo, "name");
 	ClientCleanName( s, client->pers.netname, sizeof(client->pers.netname), clientNum );
 
-    //KK-OAPub Added From Tremulous-Control Name Changes
-    if( strcmp( oldname, client->pers.netname ) )
-    {
-        //Never revert a bots name... just to bad if it hapens... but the bot will always be expendeble :-)
-        if (ent->r.svFlags & SVF_BOT)
-            revertName = qfalse;
-
-        if( revertName )
-        {
-            Q_strncpyz( client->pers.netname, *oldname ? oldname : "Sandbox Player",
-                sizeof( client->pers.netname ) );
-            Info_SetValueForKey( userinfo, "name", oldname );
-            trap_SetUserinfo( clientNum, userinfo );
-        }
-    }
-
 	ent->tool_id = atoi( Info_ValueForKey( userinfo, "toolgun_tool" ) );
 	ent->tool_entity = NULL;
-
-	if ( ent->r.svFlags & SVF_BOT ) {
-	botskill = atoi( Info_ValueForKey( userinfo, "skill" ) );
-	ent->botskill = botskill;
-	singlebot = atoi( Info_ValueForKey( userinfo, "singlebot" ) );
-	ent->singlebot = singlebot;
-	if(ent->singlebot){
-	if(!G_NpcFactionProp(NP_PICKUP, ent)){
-	ent->client->ps.stats[STAT_NO_PICKUP] = 1;
-	ent->wait_to_pickup = 100000000;
-	}}
-	}
-
-	// N_G: this condition makes no sense to me and I'm not going to
-	// try finding out what it means, I've added parentheses according to
-	// evaluation rules of the original code so grab a
-	// parentheses pairing highlighting text editor and see for yourself
-	// if you got it right
-	//Sago: One redundant check and CTF Elim and LMS was missing. Not an important function and I might never have noticed, should properly be ||
-	if ( ( ( client->sess.sessionTeam == TEAM_SPECTATOR ) ||
-		( ( ( client->isEliminated ) /*||
-		( client->ps.pm_type == PM_SPECTATOR )*/ ) &&   //Sago: If this is true client.isEliminated or TEAM_SPECTATOR is true to and this is redundant
-		( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) ) ) &&
-		( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) ) {
-
-		Q_strncpyz( client->pers.netname, "scoreboard", sizeof(client->pers.netname) );
-	}
 
 	if ( client->pers.connected == CON_CONNECTED ) {
 		if ( strcmp( oldname, client->pers.netname ) ) {
@@ -1337,22 +1284,40 @@ void ClientUserinfoChanged( int clientNum ) {
 	if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0) {
 		Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
 		Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
-		strcpy(redTeam, Info_ValueForKey( userinfo, "team_legsskin" ));
+		Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "team_legsmodel"), sizeof( legsModel ) );
 	} else {
 		Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
 		Q_strncpyz( headModel, Info_ValueForKey (userinfo, "headmodel"), sizeof( headModel ) );
-		strcpy(redTeam, Info_ValueForKey( userinfo, "legsskin" ));
+		Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "legsmodel"), sizeof( legsModel ) );
 	}
 	
 	if ( ent->r.svFlags & SVF_BOT ) {
 		if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0) {
-			strcpy(redTeam, Info_ValueForKey( userinfo, "team_model" ));
+			Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "team_model"), sizeof( legsModel ) );
 		} else {
-			strcpy(redTeam, Info_ValueForKey( userinfo, "model" ));
-		}	
+			Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "model"), sizeof( legsModel ) );
+		}
+
+		botskill = atoi( Info_ValueForKey( userinfo, "skill" ) );
+		ent->botskill = botskill;
+		singlebot = atoi( Info_ValueForKey( userinfo, "singlebot" ) );
+		ent->singlebot = singlebot;
 	}
 
-	// bots set their team a few frames later
+	strcpy(legsR, Info_ValueForKey( userinfo, "legsR" ));
+	strcpy(legsG, Info_ValueForKey( userinfo, "legsG" ));
+	strcpy(legsB, Info_ValueForKey( userinfo, "legsB" ));
+	strcpy(modelR, Info_ValueForKey( userinfo, "modelR" ));
+	strcpy(modelG, Info_ValueForKey( userinfo, "modelG" ));
+	strcpy(modelB, Info_ValueForKey( userinfo, "modelB" ));
+	strcpy(headR, Info_ValueForKey( userinfo, "headR" ));
+	strcpy(headG, Info_ValueForKey( userinfo, "headG" ));
+	strcpy(headB, Info_ValueForKey( userinfo, "headB" ));
+	strcpy(physR, Info_ValueForKey( userinfo, "physR" ));
+	strcpy(physG, Info_ValueForKey( userinfo, "physG" ));
+	strcpy(physB, Info_ValueForKey( userinfo, "physB" ));
+
+	// set team
 	if (g_gametype.integer >= GT_TEAM && g_ffa_gt==0 && g_entities[clientNum].r.svFlags & SVF_BOT) {
 		s = Info_ValueForKey( userinfo, "team" );
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
@@ -1387,47 +1352,16 @@ void ClientUserinfoChanged( int clientNum ) {
 	// team Leader (1 = leader, 0 is normal player)
 	teamLeader = client->sess.teamLeader;
 
-	// colors
-    if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0 ) {
-        switch(team) {
-            case TEAM_RED:
-                c1[0] = COLOR_BLUE;
-                c1[1] = 0;
-                break;
-            case TEAM_BLUE:
-                c1[0] = COLOR_RED;
-                c1[1] = 0;
-                break;
-            default:
-                break;
-        }
-    } else {
-        strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
-    }
-
-	strcpy(pligred, Info_ValueForKey( userinfo, "cg_plightred" ));
-	strcpy(pliggreen, Info_ValueForKey( userinfo, "cg_plightgreen" ));
-	strcpy(pligblue, Info_ValueForKey( userinfo, "cg_plightblue" ));
-	strcpy(toligred, Info_ValueForKey( userinfo, "cg_tolightred" ));
-	strcpy(toliggreen, Info_ValueForKey( userinfo, "cg_tolightgreen" ));
-	strcpy(toligblue, Info_ValueForKey( userinfo, "cg_tolightblue" ));
-	strcpy(heligred, Info_ValueForKey( userinfo, "cg_helightred" ));
-	strcpy(heliggreen, Info_ValueForKey( userinfo, "cg_helightgreen" ));
-	strcpy(heligblue, Info_ValueForKey( userinfo, "cg_helightblue" ));
-	strcpy(pgred, Info_ValueForKey( userinfo, "cg_crosshairColorRed" ));
-	strcpy(pggreen, Info_ValueForKey( userinfo, "cg_crosshairColorGreen" ));
-	strcpy(pgblue, Info_ValueForKey( userinfo, "cg_crosshairColorBlue" ));
 	strcpy(swep_id, va("%i", ent->swep_id));
-	strcpy(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ));
 
 	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\g_redteam\\%s\\g_blueteam\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\isnpc\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, redTeam, blueTeam, swep_id, client->vehiclenum, c1,
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
+			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, c1,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, ent->singlebot,
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\g_redteam\\%s\\g_blueteam\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\tr\\%s\\tg\\%s\\tb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\pg_r\\%s\\pg_g\\%s\\pg_b\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\flashl\\%i",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, redTeam, blueTeam, heligred, heliggreen, heligblue, toligred, toliggreen, toligblue, pligred, pliggreen, pligblue, pgred, pggreen, pgblue, swep_id, client->vehiclenum, c1,
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\f\\%i",
+			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum, c1,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader, ent->flashon);
 	}
 

@@ -169,8 +169,6 @@ vmCvar_t	ui_3dmap;
 vmCvar_t	ui_effectslevel;
 
 vmCvar_t	ui_singlemode;
-vmCvar_t	legsskin;
-vmCvar_t	team_legsskin;
 vmCvar_t	cl_selectedmod;
 vmCvar_t	cl_language;
 vmCvar_t	cl_screenoffset;
@@ -319,8 +317,6 @@ static cvarTable_t		cvarTable[] = {
 
 	{ &ui_singlemode, "ui_singlemode", "0", CVAR_ARCHIVE },
 	{ &ui_loaded, "ui_loaded", "0", 0 },
-	{ &legsskin, "legsskin", "beret/default", CVAR_ARCHIVE },
-	{ &team_legsskin, "team_legsskin", "beret/default", CVAR_ARCHIVE },
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
 	{ &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },

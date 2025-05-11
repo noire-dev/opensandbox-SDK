@@ -160,9 +160,7 @@ extern vmCvar_t	ui_3dmap;
 extern vmCvar_t	ui_effectslevel;
 
 extern vmCvar_t	ui_singlemode;
-extern vmCvar_t	legsskin;
 extern vmCvar_t	sensitivitymenu;
-extern vmCvar_t	team_legsskin;
 extern vmCvar_t	cl_selectedmod;
 extern vmCvar_t	cl_language;
 extern vmCvar_t	ui_loaded;
@@ -686,11 +684,11 @@ typedef struct {
 typedef struct {
 	playerInfo_t player;
 	char modelskin[MODELNAME_BUFFER];
-	char headskin[MODELNAME_BUFFER];	// head model for 1.27
-	char legsskin[MODELNAME_BUFFER];	// head model for 1.27
-	char team_modelskin[MODELNAME_BUFFER];	// team model
-	char team_headskin[MODELNAME_BUFFER];	// team head for 1.27
-	char team_legsskin[MODELNAME_BUFFER];	// head model for 1.27
+	char headskin[MODELNAME_BUFFER];
+	char legsskin[MODELNAME_BUFFER];
+	char team_modelskin[MODELNAME_BUFFER];
+	char team_headskin[MODELNAME_BUFFER];
+	char team_legsskin[MODELNAME_BUFFER];
 	
 	menuelement_s bitmap;
 
@@ -927,7 +925,7 @@ int				trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void			trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void			trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void			trap_FS_FCloseFile( fileHandle_t f );
-int				trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
+int				trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 qhandle_t		trap_R_RegisterModel( const char *name );
 qhandle_t		trap_R_RegisterSkin( const char *name );
 qhandle_t		trap_R_RegisterShaderNoMip( const char *name );

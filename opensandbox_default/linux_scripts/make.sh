@@ -11,10 +11,10 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/game
 
+cp linux_scripts/asm linux/build/game/
 cp linux_scripts/lcc linux/build/game/
-cp linux_scripts/q3cpp linux/build/game/
-cp linux_scripts/q3rcc linux/build/game/
-cp linux_scripts/q3asm linux/build/game/
+cp linux_scripts/cpp linux/build/game/
+cp linux_scripts/rcc linux/build/game/
 cp linux_scripts/game.q3asm linux/build/
 
 LIBRARY=""
@@ -74,7 +74,7 @@ echo "-----------------"
 echo "game.qvm compiled"
 echo "-----------------"
 
-./q3asm -f ../game
+./asm -f ../game
 
 # ########################################
 # End of compilation files, add yours here
@@ -88,10 +88,10 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/cgame
 
+cp linux_scripts/asm linux/build/cgame/
 cp linux_scripts/lcc linux/build/cgame/
-cp linux_scripts/q3cpp linux/build/cgame/
-cp linux_scripts/q3rcc linux/build/cgame/
-cp linux_scripts/q3asm linux/build/cgame/
+cp linux_scripts/cpp linux/build/cgame/
+cp linux_scripts/rcc linux/build/cgame/
 cp linux_scripts/cgame.q3asm linux/build/
 
 LIBRARY=""
@@ -143,7 +143,7 @@ echo "-----------------"
 echo "cgame.qvm compiled"
 echo "-----------------"
 
-./q3asm -f ../cgame
+./asm -f ../cgame
 
 # ########################################
 # End of compilation files, add yours here
@@ -157,10 +157,10 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/ui
 
+cp linux_scripts/asm linux/build/ui/
 cp linux_scripts/lcc linux/build/ui/
-cp linux_scripts/q3cpp linux/build/ui/
-cp linux_scripts/q3rcc linux/build/ui/
-cp linux_scripts/q3asm linux/build/ui/
+cp linux_scripts/cpp linux/build/ui/
+cp linux_scripts/rcc linux/build/ui/
 cp linux_scripts/ui.q3asm linux/build/
 
 LIBRARY=""
@@ -235,7 +235,7 @@ echo "-----------------"
 echo "ui.qvm compiled"
 echo "-----------------"
 
-./q3asm -f ../ui
+./asm -f ../ui
 
 # ########################################
 # End of compilation files, add yours here

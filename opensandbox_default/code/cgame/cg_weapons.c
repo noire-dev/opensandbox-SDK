@@ -236,14 +236,14 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	VectorCopy(start, re->origin);
 	VectorCopy(end, re->oldorigin);
  
-	re->shaderRGBA[0] = ci->color1[0] * 255;
-	re->shaderRGBA[1] = ci->color1[1] * 255;
-	re->shaderRGBA[2] = ci->color1[2] * 255;
+	re->shaderRGBA[0] = 0;
+	re->shaderRGBA[1] = 255;
+	re->shaderRGBA[2] = 0;
 	re->shaderRGBA[3] = 255;
 
-	le->color[0] = ci->color1[0] * 0.75;
-	le->color[1] = ci->color1[1] * 0.75;
-	le->color[2] = ci->color1[2] * 0.75;
+	le->color[0] = 0.0f;
+	le->color[1] = 1.0f;
+	le->color[2] = 0.0f;
 	le->color[3] = 1.0f;
 
 	AxisClear( re->axis );
@@ -281,14 +281,14 @@ void CG_PhysgunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	VectorCopy(start, re->origin);
 	VectorCopy(end, re->oldorigin);
  
-	re->shaderRGBA[0] = ci->pg_red;
-	re->shaderRGBA[1] = ci->pg_green;
-	re->shaderRGBA[2] = ci->pg_blue;
+	re->shaderRGBA[0] = ci->physR;
+	re->shaderRGBA[1] = ci->physG;
+	re->shaderRGBA[2] = ci->physB;
 	re->shaderRGBA[3] = 255;
 
-	le->color[0] = (ci->pg_red / 255);
-	le->color[1] = (ci->pg_green / 255);
-	le->color[2] = (ci->pg_blue / 255);
+	le->color[0] = (float)ci->physR / 255.0f;
+	le->color[1] = (float)ci->physG / 255.0f;
+	le->color[2] = (float)ci->physB / 255.0f;
 	le->color[3] = 1.0f;
 
 	AxisClear( re->axis );
@@ -1027,16 +1027,6 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
 	}
 
-#if 0
-	// drop the weapon when stair climbing
-	delta = cg.time - cg.stepTime;
-	if ( delta < STEP_TIME/2 ) {
-		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
-	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
-	}
-#endif
-
 	// idle drift
 	scale = cg.xyspeed + 40;
 	fracsin = sin( cg.time * 0.001 );
@@ -1347,9 +1337,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 	
 	if ( weaponNum == WP_PHYSGUN ){
-		gun.shaderRGBA[0] = ci->pg_red;
-		gun.shaderRGBA[1] = ci->pg_green;
-		gun.shaderRGBA[2] = ci->pg_blue;
+		gun.shaderRGBA[0] = ci->physR;
+		gun.shaderRGBA[1] = ci->physG;
+		gun.shaderRGBA[2] = ci->physB;
 		gun.shaderRGBA[3] = 255;
 	}
 	if ( weaponNum == WP_GRAVITYGUN ){
@@ -1458,9 +1448,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		clientInfo_t	*ci;
 
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		flash.shaderRGBA[0] = 255 * ci->color1[0];
-		flash.shaderRGBA[1] = 255 * ci->color1[1];
-		flash.shaderRGBA[2] = 255 * ci->color1[2];
+		flash.shaderRGBA[0] = 0;
+		flash.shaderRGBA[1] = 255;
+		flash.shaderRGBA[2] = 0;
 	}
 
 	CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
@@ -1904,8 +1894,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	int				duration;
 	vec3_t			sprOrg;
 	vec3_t			sprVel;
-	
-	//CG_Printf(va("CG_MissileHitWall: %i\n", weapon));
 
 	mark = 0;
 	radius = 32;
@@ -2133,14 +2121,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 							   duration, isSprite );
 		le->light = light;
 		VectorCopy( lightColor, le->lightColor );
-		if ( weapon == WP_RAILGUN ) {
-			// colorize with client color
-			VectorCopy( cgs.clientinfo[clientNum].color1, le->color );
-			le->refEntity.shaderRGBA[0] = le->color[0] * 0xff;
-			le->refEntity.shaderRGBA[1] = le->color[1] * 0xff;
-			le->refEntity.shaderRGBA[2] = le->color[2] * 0xff;
-			le->refEntity.shaderRGBA[3] = 0xff;
-		}
 	}
 
 	//
@@ -2148,13 +2128,9 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	//
 	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
 	if ( weapon == WP_RAILGUN ) {
-		float	*color;
-
-		// colorize with client color
-		color = cgs.clientinfo[clientNum].color1;
-		CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
+		CG_ImpactMark( mark, origin, dir, random()*360, 0, 1, 0, 1, alphaFade, radius, qfalse );
 	} else {
-		CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
+		CG_ImpactMark( mark, origin, dir, random()*360, 1, 1, 1, 1, alphaFade, radius, qfalse );
 	}
 }
 

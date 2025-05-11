@@ -457,7 +457,7 @@ static void PlayerModel_SaveChanges( void )
 	strcpy(model, s_playermodel.model.team_legsskin);
 	Q_strlwr(model);
 	legs = strchr( model, '/' );
-	trap_Cvar_Set( "team_legsskin", model );	
+	trap_Cvar_Set( "team_legsmodel", model );	
 
 	strcpy(model, s_playermodel.model.modelskin);
 	Q_strlwr(model);
@@ -470,7 +470,7 @@ static void PlayerModel_SaveChanges( void )
 	strcpy(model, s_playermodel.model.legsskin);
 	Q_strlwr(model);
 	legs = strchr( model, '/' );
-	trap_Cvar_Set( "legsskin", model );
+	trap_Cvar_Set( "legsmodel", model );
 
 
 }

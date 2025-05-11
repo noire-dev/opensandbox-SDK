@@ -813,17 +813,15 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 
 	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
 
-	predict = other->client->pers.predictItemPickup;
+	predict = qtrue;
 
 	// call the item-specific pickup function
 	switch( ent->item->giType ) {
 	case IT_WEAPON:
 		respawn = Pickup_Weapon(ent, other);
-//		predict = qfalse;
 		break;
 	case IT_AMMO:
 		respawn = Pickup_Ammo(ent, other);
-//		predict = qfalse;
 		break;
 	case IT_ARMOR:
 		respawn = Pickup_Armor(ent, other);
@@ -860,31 +858,31 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 
 	// play the normal pickup sound
 	if (!(ent->spawnflags & 2)) {
-	if (predict) {
-		G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-	} else {
-		G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-	}
-
-	// powerup pickups are global broadcasts
-	if ( (ent->item->giType == IT_POWERUP && g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) || ent->item->giType == IT_TEAM) {	//disabled powerup sound for all cuz it annoying
-		// if we want the global sound to play
-		if (!ent->speed) {
-			gentity_t	*te;
-
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-			te->s.eventParm = ent->s.modelindex;
-			te->r.svFlags |= SVF_BROADCAST;
+		if (predict) {
+			G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
 		} else {
-			gentity_t	*te;
-
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-			te->s.eventParm = ent->s.modelindex;
-			// only send this temp entity to a single client
-			te->r.svFlags |= SVF_SINGLECLIENT;
-			te->r.singleClient = other->s.number;
+			G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
 		}
-	}
+
+		// powerup pickups are global broadcasts
+		if ( (ent->item->giType == IT_POWERUP && g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) || ent->item->giType == IT_TEAM) {	//disabled powerup sound for all cuz it annoying
+			// if we want the global sound to play
+			if (!ent->speed) {
+				gentity_t	*te;
+
+				te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+				te->s.eventParm = ent->s.modelindex;
+				te->r.svFlags |= SVF_BROADCAST;
+			} else {
+				gentity_t	*te;
+
+				te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+				te->s.eventParm = ent->s.modelindex;
+				// only send this temp entity to a single client
+				te->r.svFlags |= SVF_SINGLECLIENT;
+				te->r.singleClient = other->s.number;
+			}
+		}
 	}
 
 	

@@ -1274,11 +1274,6 @@ if ( !ent->speed ){
 	ent->client->ps.generic2 = ent->swep_id;
 	ent->client->ps.stats[STAT_SWEPAMMO] = ent->swep_ammo[ent->swep_id];
 	ent->s.generic3 = ent->swep_ammo[ent->swep_id];
-	if(ent->singlebot){
-	if(!G_NpcFactionProp(NP_PICKUP, ent)){
-	ent->client->ps.stats[STAT_NO_PICKUP] = 1;
-	ent->wait_to_pickup = 70000000;
-	}}
 
 	// execute client events
 	ClientEvents( ent, oldEventSequence );

@@ -57,10 +57,10 @@ equ trap_R_RemapShader						-54
 equ trap_System 		                    -55
 equ trap_R_AddLinearLightToScene		    -56
 
-equ	memset						            -101
-equ	memcpy						            -102
-equ	strncpy						            -103
-equ	sin							            -104
-equ	cos							            -105
-equ	atan2						            -106
-equ	sqrt						            -107
+equ	memset						            -1001
+equ	memcpy						            -1002
+equ	strncpy						            -1003
+equ	sin							            -1004
+equ	cos							            -1005
+equ	atan2						            -1006
+equ	sqrt						            -1007

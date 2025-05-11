@@ -357,20 +357,18 @@ typedef struct {
 
 	int				isNPC;		// 0 = not NPC, 1 = NPC
 
-	vec3_t			color1;
-
-	int			helred;
-	int			helgreen;
-	int			helblue;
-	int			tolred;
-	int			tolgreen;
-	int			tolblue;
-	int			plred;
-	int			plgreen;
-	int			plblue;
-	float		pg_red;
-	float		pg_green;
-	float		pg_blue;
+	int			headR;
+	int			headG;
+	int			headB;
+	int			modelR;
+	int			modelG;
+	int			modelB;
+	int			legsR;
+	int			legsG;
+	int			legsB;
+	int			physR;
+	int			physG;
+	int			physB;
 	int			swepid;
 	int			vehiclenum;
 	int			totex;
@@ -407,11 +405,8 @@ typedef struct {
 	char			headSkinName[MAX_QPATH];
 	char			legsModelName[MAX_QPATH];
 	char			legsSkinName[MAX_QPATH];
-	char			redTeam[MAX_TEAMNAME];
-	char			blueTeam[MAX_TEAMNAME];
 	qboolean		deferred;
 
-	qboolean		newAnims;		// true if using the new mission pack animations
 	qboolean		fixedlegs;		// true if legs yaw is always the same as torso yaw
 	qboolean		fixedtorso;		// true if torso never changes yaw
 
@@ -1224,8 +1219,6 @@ typedef struct {
 	int				timelimit;
 	int				maxclients;
 	char			mapname[MAX_QPATH];
-	char			redTeam[MAX_QPATH];
-	char			blueTeam[MAX_QPATH];
 
 	int				voteTime;
 	int				voteYes;
@@ -1383,6 +1376,21 @@ extern	int 	mod_skyColorA;
 
 extern	vmCvar_t 	g_gametype;
 
+extern	vmCvar_t	legsmodel;
+extern	vmCvar_t	team_legsmodel;
+extern  vmCvar_t    headR;
+extern  vmCvar_t    headG;
+extern  vmCvar_t    headB;
+extern  vmCvar_t    modelR;
+extern  vmCvar_t    modelG;
+extern  vmCvar_t    modelB;
+extern  vmCvar_t    legsR;
+extern  vmCvar_t    legsG;
+extern  vmCvar_t    legsB;
+extern  vmCvar_t    physR;
+extern  vmCvar_t    physG;
+extern  vmCvar_t    physB;
+
 extern	vmCvar_t	cg_effectsTime;
 extern	vmCvar_t	cg_effectsLimit;
 extern	vmCvar_t	cg_effectsGibs;
@@ -1435,23 +1443,9 @@ extern	vmCvar_t	ns_haveerror;		//Noire.Script error
 extern	vmCvar_t	cg_postprocess;
 extern	vmCvar_t	cl_language;
 extern	vmCvar_t	con_notifytime;
-extern  vmCvar_t    cg_helightred;
-extern  vmCvar_t    cg_helightgreen;
-extern  vmCvar_t    cg_helightblue;
-extern  vmCvar_t    cg_ptex;
-extern  vmCvar_t    cg_totex;
-extern  vmCvar_t    cg_hetex;
-extern  vmCvar_t    cg_tolightred;
-extern  vmCvar_t    cg_tolightgreen;
-extern  vmCvar_t    cg_tolightblue;
-extern  vmCvar_t    cg_plightred;
-extern  vmCvar_t    cg_plightgreen;
-extern  vmCvar_t    cg_plightblue;
-extern  vmCvar_t    cg_plightradius;
 extern  vmCvar_t 	cg_leiChibi;
 extern  vmCvar_t    cl_screenoffset;
-extern	vmCvar_t	legsskin;
-extern	vmCvar_t	team_legsskin;
+
 extern	vmCvar_t	cg_itemstyle;
 extern	vmCvar_t		cg_centertime;
 extern	vmCvar_t		cg_drawsubtitles;
@@ -1517,7 +1511,6 @@ extern	vmCvar_t		cg_stats;
 extern	vmCvar_t 		cg_buildScript;
 extern	vmCvar_t		cg_paused;
 extern	vmCvar_t		cg_blood;
-extern	vmCvar_t		cg_predictItems;
 extern	vmCvar_t		cg_drawFriend;
 extern	vmCvar_t		cg_teamChatsOnly;
 extern	vmCvar_t		cg_noVoiceText;
@@ -1929,3 +1922,5 @@ void		trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3
 void		trap_S_StopLoopingSound(int entnum);
 void 		trap_System( const char *command );
 void		trap_R_AddLinearLightToScene( const vec3_t start, const vec3_t end, float intensity, float r, float g, float b );
+int			trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+void		trap_ImportOBJ( const char *name );

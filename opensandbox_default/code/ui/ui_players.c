@@ -432,9 +432,9 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	legs.hModel = pi->legsModel;
 	legs.customSkin = pi->legsSkin;
 	legs.customShader = pi->legsShader;
-	legs.shaderRGBA[0] = trap_Cvar_VariableValue( "cg_plightred");
-	legs.shaderRGBA[1] = trap_Cvar_VariableValue( "cg_plightgreen");
-	legs.shaderRGBA[2] = trap_Cvar_VariableValue( "cg_plightblue");
+	legs.shaderRGBA[0] = trap_Cvar_VariableValue( "legsR");
+	legs.shaderRGBA[1] = trap_Cvar_VariableValue( "legsG");
+	legs.shaderRGBA[2] = trap_Cvar_VariableValue( "legsB");
 	legs.shaderRGBA[3] = 255;
 
 	VectorCopy( origin, legs.origin );
@@ -461,9 +461,9 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	if(!torso.customSkin){
 	torso.customShader = pi->torsoShader;
 	}
-	torso.shaderRGBA[0] = trap_Cvar_VariableValue( "cg_tolightred");
-	torso.shaderRGBA[1] = trap_Cvar_VariableValue( "cg_tolightgreen");
-	torso.shaderRGBA[2] = trap_Cvar_VariableValue( "cg_tolightblue");
+	torso.shaderRGBA[0] = trap_Cvar_VariableValue( "modelR");
+	torso.shaderRGBA[1] = trap_Cvar_VariableValue( "modelG");
+	torso.shaderRGBA[2] = trap_Cvar_VariableValue( "modelB");
 	torso.shaderRGBA[3] = 255;
 
 	VectorCopy( origin, torso.lightingOrigin );
@@ -485,9 +485,9 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	if(!head.customSkin){
 	head.customShader = pi->headShader;
 	}
-	head.shaderRGBA[0] = trap_Cvar_VariableValue( "cg_helightred");
-	head.shaderRGBA[1] = trap_Cvar_VariableValue( "cg_helightgreen");
-	head.shaderRGBA[2] = trap_Cvar_VariableValue( "cg_helightblue");
+	head.shaderRGBA[0] = trap_Cvar_VariableValue( "headR");
+	head.shaderRGBA[1] = trap_Cvar_VariableValue( "headG");
+	head.shaderRGBA[2] = trap_Cvar_VariableValue( "headB");
 	head.shaderRGBA[3] = 255;
 
 	VectorCopy( origin, head.lightingOrigin );
@@ -1021,7 +1021,7 @@ void GUI_PlayerInfo_InitModel(modelAnim_t* m) {
 	trap_Cvar_VariableStringBuffer( "headmodel", buffer, MODELNAME_BUFFER );
 	strcpy(m->headskin, buffer);
 	
-	trap_Cvar_VariableStringBuffer( "legsskin", buffer, MODELNAME_BUFFER );
+	trap_Cvar_VariableStringBuffer( "legsmodel", buffer, MODELNAME_BUFFER );
 	strcpy(m->legsskin, buffer);
 
 	trap_Cvar_VariableStringBuffer( "team_model", buffer, MODELNAME_BUFFER );
@@ -1030,7 +1030,7 @@ void GUI_PlayerInfo_InitModel(modelAnim_t* m) {
 	trap_Cvar_VariableStringBuffer( "team_headmodel", buffer, MODELNAME_BUFFER );
 	strcpy(m->team_headskin, buffer);
 	
-	trap_Cvar_VariableStringBuffer( "team_legsskin", buffer, MODELNAME_BUFFER );
+	trap_Cvar_VariableStringBuffer( "team_legsmodel", buffer, MODELNAME_BUFFER );
 	strcpy(m->team_legsskin, buffer);
 
 	PlayerInfo_SetupNewModel(m);

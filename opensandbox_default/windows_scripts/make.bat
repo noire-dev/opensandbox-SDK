@@ -13,10 +13,10 @@ mkdir windows\game
 mkdir windows\game\qvm
 mkdir windows\build\game
 
+copy windows_scripts\asm.exe  windows\build\game\
 copy windows_scripts\lcc.exe  windows\build\game\
-copy windows_scripts\q3cpp.exe  windows\build\game\
-copy windows_scripts\q3rcc.exe  windows\build\game\
-copy windows_scripts\q3asm.exe  windows\build\game\
+copy windows_scripts\cpp.exe  windows\build\game\
+copy windows_scripts\rcc.exe  windows\build\game\
 copy windows_scripts\game.q3asm windows\build\
 
 set LIBRARY=
@@ -76,7 +76,7 @@ echo -----------------
 echo game.qvm compiled
 echo -----------------
 
-q3asm -f ../game
+asm -f ../game
 
 :: ########################################
 :: End of compilation files, add yours here
@@ -92,11 +92,11 @@ mkdir windows\game
 mkdir windows\game\qvm
 mkdir windows\build\cgame
 
+copy windows_scripts\asm.exe  windows\build\cgame\
 copy windows_scripts\lcc.exe  windows\build\cgame\
-copy windows_scripts\q3cpp.exe  windows\build\cgame\
-copy windows_scripts\q3rcc.exe  windows\build\cgame\
-copy windows_scripts\q3asm.exe  windows\build\cgame\
-copy windows_scripts\cgame.q3asm windows\build\cgame.q3asm
+copy windows_scripts\cpp.exe  windows\build\cgame\
+copy windows_scripts\rcc.exe  windows\build\cgame\
+copy windows_scripts\cgame.q3asm windows\build\
 
 set LIBRARY=
 set INCLUDE=
@@ -146,7 +146,7 @@ echo -----------------
 echo cgame.qvm compiled
 echo -----------------
 
-q3asm -f ../cgame
+asm -f ../cgame
 
 :: ########################################
 :: End of compilation files, add yours here
@@ -162,10 +162,10 @@ mkdir windows\game
 mkdir windows\game\qvm
 mkdir windows\build\ui
 
+copy windows_scripts\asm.exe  windows\build\ui\
 copy windows_scripts\lcc.exe  windows\build\ui\
-copy windows_scripts\q3cpp.exe  windows\build\ui\
-copy windows_scripts\q3rcc.exe  windows\build\ui\
-copy windows_scripts\q3asm.exe  windows\build\ui\
+copy windows_scripts\cpp.exe  windows\build\ui\
+copy windows_scripts\rcc.exe  windows\build\ui\
 copy windows_scripts\ui.q3asm windows\build\
 
 set LIBRARY=
@@ -240,7 +240,7 @@ echo -----------------
 echo ui.qvm compiled
 echo -----------------
 
-q3asm -f ../ui
+asm -f ../ui
 
 :: ########################################
 :: End of compilation files, add yours here

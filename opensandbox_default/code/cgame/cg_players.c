@@ -527,15 +527,6 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 		modelloaded = qfalse;
 	}
 
-	ci->newAnims = qfalse;
-	if ( ci->torsoModel ) {
-		orientation_t tag;
-		// if the torso model has the "tag_flag"
-		/*if ( trap_R_LerpTag( &tag, ci->torsoModel, 0, 0, 1, "tag_flag" ) ) {
-			ci->newAnims = qtrue;
-		}*/
-	}
-
 	// sounds
 	dir = ci->modelName;
 	fallback = (cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
@@ -626,8 +617,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 	to->headShader = from->headShader;
 	to->modelIcon = from->modelIcon;
 
-	to->newAnims = from->newAnims;
-
 	memcpy( to->animations, from->animations, sizeof( to->animations ) );
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 }
@@ -653,8 +642,6 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 			&& !Q_stricmp( ci->skinName, match->skinName )
 			&& !Q_stricmp( ci->headModelName, match->headModelName )
 			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
-			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
-			&& !Q_stricmp( ci->redTeam, match->redTeam )
 			&& (cgs.gametype < GT_TEAM || cgs.ffa_gt==1 || ci->team == match->team) ) {
 			// this clientinfo is identical, so use it's handles
 
@@ -698,47 +685,6 @@ void CG_NewClientInfo( int clientNum ) {
 	v = Info_ValueForKey(configstring, "n");
 	Q_strncpyz( newInfo.name, v, sizeof( newInfo.name ) );
 
-	// colors
-	v = Info_ValueForKey( configstring, "c1" );
-	CG_ColorFromString( v, newInfo.color1 );
-
-	// cpma skin mode
-	v = Info_ValueForKey( configstring, "hr" );
-	newInfo.helred = atoi( v );
-
-	v = Info_ValueForKey( configstring, "hg" );
-	newInfo.helgreen = atoi( v );
-
-	v = Info_ValueForKey( configstring, "hb" );
-	newInfo.helblue = atoi( v );
-
-	v = Info_ValueForKey( configstring, "tr" );
-	newInfo.tolred = atoi( v );
-
-	v = Info_ValueForKey( configstring, "tg" );
-	newInfo.tolgreen = atoi( v );
-
-	v = Info_ValueForKey( configstring, "tb" );
-	newInfo.tolblue = atoi( v );
-
-	v = Info_ValueForKey( configstring, "pr" );
-	newInfo.plred = atoi( v );
-
-	v = Info_ValueForKey( configstring, "pg" );
-	newInfo.plgreen = atoi( v );
-
-	v = Info_ValueForKey( configstring, "pb" );
-	newInfo.plblue = atoi( v );
-	
-	v = Info_ValueForKey( configstring, "pg_r" );
-	newInfo.pg_red = atof( v )*255;
-
-	v = Info_ValueForKey( configstring, "pg_g" );
-	newInfo.pg_green = atof( v )*255;
-
-	v = Info_ValueForKey( configstring, "pg_b" );
-	newInfo.pg_blue = atof( v )*255;
-
 	v = Info_ValueForKey( configstring, "si" );
 	newInfo.swepid = atoi( v );
 	
@@ -746,11 +692,11 @@ void CG_NewClientInfo( int clientNum ) {
 	newInfo.vehiclenum = atoi( v );
 
 	// npc?
-	v = Info_ValueForKey( configstring, "isnpc" );
+	v = Info_ValueForKey( configstring, "i" );
 	newInfo.isNPC = atoi( v );
 
 	// bot skill
-	v = Info_ValueForKey( configstring, "skill" );
+	v = Info_ValueForKey( configstring, "s" );
 	newInfo.botSkill = atoi( v );
 
 	// handicap
@@ -778,25 +724,11 @@ void CG_NewClientInfo( int clientNum ) {
 	newInfo.teamLeader = atoi(v);
 
 	// flashlight
-	v = Info_ValueForKey( configstring, "flashl" );
+	v = Info_ValueForKey( configstring, "f" );
 	newInfo.flashlight = atoi(v);
 
-	v = Info_ValueForKey( configstring, "g_redteam" );
-	
-	Q_strncpyz( newInfo.legsModelName, v, sizeof( newInfo.legsModelName ) );
-
-	slash = strchr( newInfo.legsModelName, '/' );
-	if ( !slash ) {
-		// modelName didn not include a skin name
-		Q_strncpyz( newInfo.legsSkinName, "default", sizeof( newInfo.legsSkinName ) );
-	} else {
-		Q_strncpyz( newInfo.legsSkinName, slash + 1, sizeof( newInfo.legsSkinName ) );
-		// truncate modelName
-		*slash = 0;
-	}
-
 	// model
-	v = Info_ValueForKey( configstring, "model" );
+	v = Info_ValueForKey( configstring, "m" );
 
 	Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
 
@@ -811,7 +743,7 @@ void CG_NewClientInfo( int clientNum ) {
 	}
 
 	// head model
-	v = Info_ValueForKey( configstring, "hmodel" );
+	v = Info_ValueForKey( configstring, "hm" );
 	
 	Q_strncpyz( newInfo.headModelName, v, sizeof( newInfo.headModelName ) );
 
@@ -824,6 +756,58 @@ void CG_NewClientInfo( int clientNum ) {
 		// truncate modelName
 		*slash = 0;
 	}
+
+	// legs model
+	v = Info_ValueForKey( configstring, "lm" );
+
+	Q_strncpyz( newInfo.legsModelName, v, sizeof( newInfo.legsModelName ) );
+
+	slash = strchr( newInfo.legsModelName, '/' );
+	if ( !slash ) {
+		// modelName didn not include a skin name
+		Q_strncpyz( newInfo.legsSkinName, "default", sizeof( newInfo.legsSkinName ) );
+	} else {
+		Q_strncpyz( newInfo.legsSkinName, slash + 1, sizeof( newInfo.legsSkinName ) );
+		// truncate modelName
+		*slash = 0;
+	}
+
+	//Colors
+	v = Info_ValueForKey( configstring, "hr" );
+	newInfo.headR = atoi( v );
+
+	v = Info_ValueForKey( configstring, "hg" );
+	newInfo.headG = atoi( v );
+
+	v = Info_ValueForKey( configstring, "hb" );
+	newInfo.headB = atoi( v );
+
+	v = Info_ValueForKey( configstring, "mr" );
+	newInfo.modelR = atoi( v );
+
+	v = Info_ValueForKey( configstring, "mg" );
+	newInfo.modelG = atoi( v );
+
+	v = Info_ValueForKey( configstring, "mb" );
+	newInfo.modelB = atoi( v );
+
+	v = Info_ValueForKey( configstring, "lr" );
+	newInfo.legsR = atoi( v );
+
+	v = Info_ValueForKey( configstring, "lg" );
+	newInfo.legsG = atoi( v );
+
+	v = Info_ValueForKey( configstring, "lb" );
+	newInfo.legsB = atoi( v );
+	
+	v = Info_ValueForKey( configstring, "pr" );
+	newInfo.physR = atoi( v );
+
+	v = Info_ValueForKey( configstring, "pg" );
+	newInfo.physG = atoi( v );
+
+	v = Info_ValueForKey( configstring, "pb" );
+	newInfo.physB = atoi( v );
 
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible
@@ -1425,103 +1409,6 @@ static void CG_TrailItem( centity_t *cent, qhandle_t hModel ) {
 	trap_R_AddRefEntityToScene( &ent );
 }
 
-
-/*
-===============
-CG_PlayerFlag
-===============
-*/
-static void CG_PlayerFlag( centity_t *cent, qhandle_t hSkin, refEntity_t *torso ) {
-	clientInfo_t	*ci;
-	refEntity_t	pole;
-	refEntity_t	flag;
-	vec3_t		angles, dir;
-	int			legsAnim, flagAnim, updateangles;
-	float		angle, d;
-
-	// show the flag pole model
-	memset( &pole, 0, sizeof(pole) );
-	pole.hModel = cgs.media.flagPoleModel;
-	VectorCopy( torso->lightingOrigin, pole.lightingOrigin );
-	pole.shadowPlane = torso->shadowPlane;
-	pole.renderfx = torso->renderfx;
-	CG_PositionEntityOnTag( &pole, torso, torso->hModel, "tag_flag" );
-	trap_R_AddRefEntityToScene( &pole );
-
-	// show the flag model
-	memset( &flag, 0, sizeof(flag) );
-	flag.hModel = cgs.media.flagFlapModel;
-	flag.customSkin = hSkin;
-	VectorCopy( torso->lightingOrigin, flag.lightingOrigin );
-	flag.shadowPlane = torso->shadowPlane;
-	flag.renderfx = torso->renderfx;
-
-	VectorClear(angles);
-
-	updateangles = qfalse;
-	legsAnim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-	if( legsAnim == LEGS_IDLE || legsAnim == LEGS_IDLECR ) {
-		flagAnim = FLAG_STAND;
-	} else if ( legsAnim == LEGS_WALK || legsAnim == LEGS_WALKCR ) {
-		flagAnim = FLAG_STAND;
-		updateangles = qtrue;
-	} else {
-		flagAnim = FLAG_RUN;
-		updateangles = qtrue;
-	}
-
-	if ( updateangles ) {
-		VectorCopy( cent->currentState.pos.trDelta, dir );
-		// add gravity
-		dir[2] += 100;
-		VectorNormalize( dir );
-		d = DotProduct(pole.axis[2], dir);
-		// if there is anough movement orthogonal to the flag pole
-		if (fabs(d) < 0.9) {
-			//
-			d = DotProduct(pole.axis[0], dir);
-			if (d > 1.0f) {
-				d = 1.0f;
-			}
-			else if (d < -1.0f) {
-				d = -1.0f;
-			}
-			angle = acos(d);
-
-			d = DotProduct(pole.axis[1], dir);
-			if (d < 0) {
-				angles[YAW] = 360 - angle * 180 / M_PI;
-			}
-			else {
-				angles[YAW] = angle * 180 / M_PI;
-			}
-			if (angles[YAW] < 0)
-				angles[YAW] += 360;
-			if (angles[YAW] > 360)
-				angles[YAW] -= 360;
-
-			//vectoangles( cent->currentState.pos.trDelta, tmpangles );
-			//angles[YAW] = tmpangles[YAW] + 45 - cent->pe.torso.yawAngle;
-			// change the yaw angle
-			CG_SwingAngles( angles[YAW], 25, 90, 0.15f, &cent->pe.flag.yawAngle, &cent->pe.flag.yawing );
-		}
-	}
-
-	// set the yaw angle
-	angles[YAW] = cent->pe.flag.yawAngle;
-	// lerp the flag animation frames
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1 );
-	flag.oldframe = cent->pe.flag.oldFrame;
-	flag.frame = cent->pe.flag.frame;
-	flag.backlerp = cent->pe.flag.backlerp;
-
-	AnglesToAxis( angles, flag.axis );
-	CG_PositionRotatedEntityOnTag( &flag, &pole, pole.hModel, "tag_flag" );
-
-	trap_R_AddRefEntityToScene( &flag );
-}
-
 /*
 ===============
 CG_PlayerTokens
@@ -1616,34 +1503,19 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
-		if (ci->newAnims) {
-			CG_PlayerFlag( cent, cgs.media.redFlagFlapSkin, torso );
-		}
-		else {
-			CG_TrailItem( cent, cgs.media.redFlagModel );
-		}
+		CG_TrailItem( cent, cgs.media.redFlagModel );
 		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1.0, 0.2f, 0.2f );
 	}
 
 	// blueflag
 	if ( powerups & ( 1 << PW_BLUEFLAG ) ) {
-		if (ci->newAnims){
-			CG_PlayerFlag( cent, cgs.media.blueFlagFlapSkin, torso );
-		}
-		else {
-			CG_TrailItem( cent, cgs.media.blueFlagModel );
-		}
+		CG_TrailItem( cent, cgs.media.blueFlagModel );
 		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1.0 );
 	}
 
 	// neutralflag
 	if ( powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		if (ci->newAnims) {
-			CG_PlayerFlag( cent, cgs.media.neutralFlagFlapSkin, torso );
-		}
-		else {
-			CG_TrailItem( cent, cgs.media.neutralFlagModel );
-		}
+		CG_TrailItem( cent, cgs.media.neutralFlagModel );
 		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1.0, 1.0, 1.0 );
 	}
 
@@ -2081,9 +1953,9 @@ void CG_Player( centity_t *cent ) {
 	if(!legs.customSkin){
 	legs.customShader = ci->legsShader;	
 	}
-	legs.shaderRGBA[0] = ci->plred;
-	legs.shaderRGBA[1] = ci->plgreen;
-	legs.shaderRGBA[2] = ci->plblue;
+	legs.shaderRGBA[0] = ci->legsR;
+	legs.shaderRGBA[1] = ci->legsG;
+	legs.shaderRGBA[2] = ci->legsB;
 	legs.shaderRGBA[3] = 255;
 	VectorCopy( cent->lerpOrigin, legs.origin );
 
@@ -2128,9 +2000,9 @@ void CG_Player( centity_t *cent ) {
 	if(!torso.customSkin){
 	torso.customShader = ci->torsoShader;	
 	}
-	torso.shaderRGBA[0] = ci->tolred;
-	torso.shaderRGBA[1] = ci->tolgreen;
-	torso.shaderRGBA[2] = ci->tolblue;
+	torso.shaderRGBA[0] = ci->modelR;
+	torso.shaderRGBA[1] = ci->modelG;
+	torso.shaderRGBA[2] = ci->modelB;
 	torso.shaderRGBA[3] = 255;
 
 	VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
@@ -2362,9 +2234,9 @@ void CG_Player( centity_t *cent ) {
 	if(!head.customSkin){
 	head.customShader = ci->headShader;	
 	}
-	head.shaderRGBA[0] = ci->helred;
-	head.shaderRGBA[1] = ci->helgreen;
-	head.shaderRGBA[2] = ci->helblue;
+	head.shaderRGBA[0] = ci->headR;
+	head.shaderRGBA[1] = ci->headG;
+	head.shaderRGBA[2] = ci->headB;
 	head.shaderRGBA[3] = 255;
 
 	VectorCopy( cent->lerpOrigin, head.lightingOrigin );

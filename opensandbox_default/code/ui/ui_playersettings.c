@@ -438,17 +438,17 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.player.bitmap.height				= PLAYERMODEL_HEIGHT;
 
 	y = 170;
-	UI_CSlider(&s_playersettings.e[0], 220, y, "^1Head:", "cg_helightred", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[1], 220, y, "^2Head:", "cg_helightgreen", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[2], 220, y, "^4Head:", "cg_helightblue", 0, 255, 1, NULL, 0); y += 36;
+	UI_CSlider(&s_playersettings.e[0], 220, y, "^1Head:", "headR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[1], 220, y, "^2Head:", "headG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[2], 220, y, "^4Head:", "headB", 0, 255, 1, NULL, 0); y += 36;
 
-	UI_CSlider(&s_playersettings.e[3], 220, y, "^1Torso:", "cg_tolightred", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[4], 220, y, "^2Torso:", "cg_tolightgreen", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[5], 220, y, "^4Torso:", "cg_tolightblue", 0, 255, 1, NULL, 0); y += 36;
+	UI_CSlider(&s_playersettings.e[3], 220, y, "^1Torso:", "modelR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[4], 220, y, "^2Torso:", "modelG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[5], 220, y, "^4Torso:", "modelB", 0, 255, 1, NULL, 0); y += 36;
 
-	UI_CSlider(&s_playersettings.e[6], 220, y, "^1Legs:", "cg_plightred", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[7], 220, y, "^2Legs:", "cg_plightgreen", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playersettings.e[8], 220, y, "^4Legs:", "cg_plightblue", 0, 255, 1, NULL, 0); y += 36;
+	UI_CSlider(&s_playersettings.e[6], 220, y, "^1Legs:", "legsR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[7], 220, y, "^2Legs:", "legsG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playersettings.e[8], 220, y, "^4Legs:", "legsB", 0, 255, 1, NULL, 0); y += 36;
 
 	s_playersettings.back.generic.type			= MTYPE_BITMAP;
 	s_playersettings.back.string			= ART_BACK0;
