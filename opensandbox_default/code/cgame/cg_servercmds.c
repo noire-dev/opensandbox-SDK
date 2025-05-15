@@ -707,22 +707,12 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if ( !strcmp( cmd, "undoProp" ) ) {
-		if(cl_language.integer == 0){
-			CG_AddNotify ("Undone \"Prop\"", NOTIFY_UNDO);
-		}
-		if(cl_language.integer == 1){
-			CG_AddNotify ("Отменён элемент \"Prop\"", NOTIFY_UNDO);
-		}
+		CG_AddNotify ("Undone \"Prop\"", NOTIFY_UNDO);
 		return;
 	}
 
 	if ( !strcmp( cmd, "undoNPC" ) ) {
-		if(cl_language.integer == 0){
-			CG_AddNotify ("Undone \"NPC\"", NOTIFY_UNDO);
-		}
-		if(cl_language.integer == 1){
-			CG_AddNotify ("Отменён элемент \"NPC\"", NOTIFY_UNDO);
-		}
+		CG_AddNotify ("Undone \"NPC\"", NOTIFY_UNDO);
 		return;
 	}
 

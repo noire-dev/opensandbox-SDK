@@ -135,10 +135,7 @@ void CG_PuffTrail( localEntity_t *le ) {
 		return;
 
 	if ( le->leTrailType == LETT_BLOOD ) {
-		if (cg_gibs.integer == 2)
-			step = 50;
-		else
-	step = 150;
+		step = 150;
 		r = 1;
 		g = 1;
 		b = 1;

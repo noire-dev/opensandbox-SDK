@@ -275,27 +275,28 @@ static void CG_OffsetFirstPersonView( void ) {
 	// add angles based on velocity
 	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
 
-	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
-	angles[PITCH] += delta * 0.002;
-	
-	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
-	angles[ROLL] -= delta * 0.005;
+	if(cg_disableBobbing.integer){
+		angles[PITCH] += DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
+		angles[ROLL] -= DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
+	} else {
+		delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
+		angles[PITCH] += delta * 0.002;
+		delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
+		angles[ROLL] -= delta * 0.005;
 
-	// add angles based on bob
-
-	// make sure the bob is visible even at low speeds
-	speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
-
-	delta = cg.bobfracsin * 0.002 * speed;
-	if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
-		delta *= 3;		// crouching
-	angles[PITCH] += delta;
-	delta = cg.bobfracsin * 0.002 * speed;
-	if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
-		delta *= 3;		// crouching accentuates roll
-	if (cg.bobcycle & 1)
-		delta = -delta;
-	angles[ROLL] += delta;
+		// make sure the bob is visible even at low speeds
+		speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
+		delta = cg.bobfracsin * 0.002 * speed;
+		if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
+			delta *= 3;		// crouching
+		angles[PITCH] += delta;
+		delta = cg.bobfracsin * 0.002 * speed;
+		if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
+			delta *= 3;		// crouching accentuates roll
+		if (cg.bobcycle & 1)
+			delta = -delta;
+		angles[ROLL] += delta;
+	}
 
 	// add view height
 	origin[2] += cg.predictedPlayerState.viewheight;
@@ -308,9 +309,13 @@ static void CG_OffsetFirstPersonView( void ) {
 	}
 
 	// add bob height
-	bob = cg.bobfracsin * cg.xyspeed * 0.005;
-	if (bob > 6) {
-		bob = 6;
+	if(cg_disableBobbing.integer){
+		bob = 0.0f;
+	} else {
+		bob = cg.bobfracsin * cg.xyspeed * 0.002;
+		if (bob > 6) {
+			bob = 6;
+		}
 	}
 
 	origin[2] += bob;

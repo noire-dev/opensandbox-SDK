@@ -413,17 +413,12 @@ static void CG_DrawStatusBar( void ) {
 	if ( weaphack ) { //VEHICLE-SYSTEM: vehicle's speedmeter for all
 		value = ps->stats[STAT_SWEPAMMO];
 		if(value <= 0 && value != -1){	// OpenSandbox weapon predict
-		cg.swep_listcl[ps->generic2] = 2;
+			cg.swep_listcl[ps->generic2] = 2;
 		} else {
-		cg.swep_listcl[ps->generic2] = 1;	
+			cg.swep_listcl[ps->generic2] = 1;	
 		}
 		if ( value > -1 ) {
-		if(cl_language.integer == 0){
-		CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "AMMO");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "ПАТРОНЫ");
-		}
+			CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "AMMO");
 		}
 	}
 	} else {
@@ -435,61 +430,36 @@ static void CG_DrawStatusBar( void ) {
 			cg.swep_listcl[ps->generic2] = 1;	
 			}
 			if ( value > -1 ) {
-			if(cl_language.integer == 0){
-			CG_DrawStatusElement(628+cl_screenoffset.value-230, 440, value, "AMMO");
-			}
-			if(cl_language.integer == 1){
-			CG_DrawStatusElement(628+cl_screenoffset.value-230, 440, value, "ПАТРОНЫ");
-			}
+				CG_DrawStatusElement(628+cl_screenoffset.value-230, 440, value, "AMMO");
 			}
 		}
 		value = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * 0.20;
-		if(cl_language.integer == 0){
 		CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "KM/H");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "КМ/Ч");
-		}
 	}
 
 	//
 	// health
 	//
 	if(!ps->stats[STAT_VEHICLE]){ //VEHICLE-SYSTEM: vehicle's hp instead player
-	value = ps->stats[STAT_HEALTH];
+		value = ps->stats[STAT_HEALTH];
 	} else {
-	value = ps->stats[STAT_VEHICLEHP];	
+		value = ps->stats[STAT_VEHICLEHP];	
 	}
-	if(cl_language.integer == 0){
 	CG_DrawStatusElement(12-cl_screenoffset.value, 440, value, "HEALTH");
-	}
-	if(cl_language.integer == 1){
-	CG_DrawStatusElement(12-cl_screenoffset.value, 440, value, "ЖИЗНИ");
-	}
 		
 	//
 	// armor
 	//
 	value = ps->stats[STAT_ARMOR];
 	if (value > 0 ) {
-		if(cl_language.integer == 0){
 		CG_DrawStatusElement(22-cl_screenoffset.value+110, 440, value, "ARMOR");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElement(22-cl_screenoffset.value+110, 440, value, "БРОНЯ");
-		}
 	}
 
     //Skulls!
 	if(cgs.gametype == GT_HARVESTER) {
         value = ps->generic1;
         if (value > 0 ) {
-			if(cl_language.integer == 0){
 			CG_DrawStatusElement(32-cl_screenoffset.value+220, 440, value, "SKULLS");
-			}
-			if(cl_language.integer == 1){
-			CG_DrawStatusElement(32-cl_screenoffset.value+220, 440, value, "ЧЕРЕПА");
-			}
         }
     }
 }
@@ -536,22 +506,12 @@ static float CG_DrawCounters( float y ) {
 
 	if(cgs.gametype == GT_SANDBOX || cgs.gametype == GT_MAPEDITOR){
 		if(seconds == 3 && !n_tip1){
-			if(cl_language.integer == 0){
-				CG_AddNotify ("Welcome to OpenSandbox", NOTIFY_INFO);
-			}
-			if(cl_language.integer == 1){
-				CG_AddNotify ("Добро пожаловать в OpenSandbox", NOTIFY_INFO);
-			}
+			CG_AddNotify ("Welcome to OpenSandbox", NOTIFY_INFO);
 			n_tip1 = qtrue;
 		}
 
 		if(seconds == 6 && !n_tip2){
-			if(cl_language.integer == 0){
-				CG_AddNotify ("Press [Q] to open the spawn menu", NOTIFY_INFO);
-			}
-			if(cl_language.integer == 1){
-				CG_AddNotify ("Нажмите [Q], чтобы открыть меню спавна", NOTIFY_INFO);
-			}
+			CG_AddNotify ("Press [Q] to open the spawn menu", NOTIFY_INFO);
 			n_tip2 = qtrue;
 		}
 	}
@@ -585,12 +545,7 @@ static float CG_DrawCounters( float y ) {
 	//Speed
 	speed = sqrt(cg.snap->ps.velocity[0] * cg.snap->ps.velocity[0] + cg.snap->ps.velocity[1] * cg.snap->ps.velocity[1]);
 	if (cg_drawSpeed.integer == 1) {
-		if(cl_language.integer == 0){
 		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", speed), "Speed");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", speed), "Скорость");
-		}
 		y += 24;
 	}
 
@@ -613,12 +568,7 @@ static float CG_DrawCounters( float y ) {
 		fps = 1000 * FPS_FRAMES / total;
 	}
 	if (cg_drawFPS.integer == 1) {
-		if(cl_language.integer == 0){
 		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "fps");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", fps), "к/с");
-		}
 		y += 24;
 	}
 
@@ -632,12 +582,7 @@ static float CG_DrawCounters( float y ) {
 	seconds -= tens * 10;
 
 	if (cg_drawTimer.integer == 1) {
-		if(cl_language.integer == 0){
 		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Time");
-		}
-		if(cl_language.integer == 1){
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Время");
-		}
 		y += 24;
 	}
 
@@ -659,19 +604,10 @@ static float CG_DrawCounters( float y ) {
 			tens = seconds / 10;
 			seconds -= tens * 10;
 
-			if(cl_language.integer == 0){
-				if(msec>=0){
-					CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Round");
-				} else {
-					CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "", "Round");
-				}
-			}
-			if(cl_language.integer == 1){
-				if(msec>=0){
-				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Раунд");
-				} else {
-				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "", "Раунд");
-				}
+			if(msec>=0){
+				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Round");
+			} else {
+				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "", "Round");
 			}
 			y += 24;
 		}
@@ -682,20 +618,10 @@ static float CG_DrawCounters( float y ) {
 		if( (cgs.elimflags&EF_ONEWAY)==0) {
 		//Nothing
 		} else if(cgs.attackingTeam == TEAM_BLUE) {
-			if(cl_language.integer == 0){
 			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^4B", "Attack");
-			}
-			if(cl_language.integer == 1){
-			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^4С", "Атака");
-			}
 		y += 24;
 		} else {
-			if(cl_language.integer == 0){
 			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^1R", "Attack");
-			}
-			if(cl_language.integer == 1){
-			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^1К", "Атака");
-			}
 		y += 24;
 		}
 	}
@@ -1244,12 +1170,7 @@ static int CG_DrawPickupItem( int y ) {
 			CG_RegisterItemVisuals( value );
 			trap_R_SetColor( fadeColor );
 			CG_DrawPic( 8 - cl_screenoffset.value, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			if(cl_language.integer == 0){
 			CG_DrawBigString( ICON_SIZE - cl_screenoffset.value + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0] );
-			}
-			if(cl_language.integer == 1){
-			CG_DrawBigString( ICON_SIZE - cl_screenoffset.value + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_nameru, fadeColor[0] );
-			}
 			trap_R_SetColor( NULL );
 		}
 	}
@@ -1868,30 +1789,15 @@ static void CG_DrawCenter1FctfString( void ) {
     switch(status)
     {
         case 2:
-		if(cl_language.integer == 0){
             line = va("Red has the flag!");
-		}
-		if(cl_language.integer == 1){
-            line = va("Красные взяли флаг!");
-		}
             color = colorRed;
             break;
         case 3:
-		if(cl_language.integer == 0){
             line = va("Blue has the flag!");
-		}
-		if(cl_language.integer == 1){
-            line = va("Синие взяли флаг!");
-		}
             color = colorBlue;
             break;
         case 4:
-		if(cl_language.integer == 0){
             line = va("Flag dropped!");
-		}
-		if(cl_language.integer == 1){
-			line = va("Флаг потерян!");
-		}
             color = colorWhite;
             break;
         default:
@@ -1936,20 +1842,10 @@ static void CG_DrawCenterDDString( void ) {
         return; //No team is dominating
 
     if(statusA == TEAM_BLUE) {
-	if(cl_language.integer == 0){
         line = va("Blue scores in %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-	}
-	if(cl_language.integer == 1){
-        line = va("Синие победят через %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-	}
         color = colorBlue;
     } else if(statusA == TEAM_RED) {
-	if(cl_language.integer == 0){
         line = va("Red scores in %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-	}
-	if(cl_language.integer == 1){
-        line = va("Красные победят через %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-	}
         color = colorRed;
     } else {
         lastDDSec = -100;
@@ -2230,18 +2126,10 @@ static void CG_DrawVote(void) {
 	if ( sec < 0 ) {
 		sec = 0;
 	}
-	if(cl_language.integer == 0){
 	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.voteString, cgs.voteYes, cgs.voteNo);
 	CG_DrawSmallString( 0, 58, s, 1.0F );
 	s = "or press ESC then click Vote";
 	CG_DrawSmallString( 0, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
-	}
-	if(cl_language.integer == 1){
-	s = va("ГОЛОСОВАНИЕ(%i):%s да:%i нет:%i", sec, cgs.voteString, cgs.voteYes, cgs.voteNo);
-	CG_DrawSmallString( 0, 58, s, 1.0F );
-	s = "или нажмите ESC потом нажмите Голосование";
-	CG_DrawSmallString( 0, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
-	}
 }
 
 /*
@@ -2349,20 +2237,11 @@ static void CG_DrawProxWarning( void ) {
     proxTick = proxCounter--;
     proxTime = cg.time + 1000;
   }
-if(cl_language.integer == 0){
   if (proxTick != 0) {
     Com_sprintf(s, sizeof(s), "INTERNAL COMBUSTION IN: %i", proxTick);
   } else {
     Com_sprintf(s, sizeof(s), "YOU HAVE BEEN MINED");
   }
-}
-if(cl_language.integer == 1){
-  if (proxTick != 0) {
-    Com_sprintf(s, sizeof(s), "ВЗРЫВ ЧЕРЕЗ: %i", proxTick);
-  } else {
-    Com_sprintf(s, sizeof(s), "ВЫ БЫЛИ ЗАМИНИРОВАНЫ");
-  }
-}
 
 	w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 	CG_DrawBigStringColor( 320 - w / 2, 64 + BIGCHAR_HEIGHT, s, g_color_table[ColorIndex(COLOR_RED)] );
@@ -2378,21 +2257,10 @@ void CG_NSErrors( void ) {
 		cgs.media.errIcon = trap_R_RegisterShaderNoMip( "menu/erricon" );
 	}
 
-	if(cl_language.integer == 0){
 	CG_DrawRoundedRect(21-cl_screenoffset.value, 21, 180, 16, 0, colord);
 	CG_DrawRoundedRect(20-cl_screenoffset.value, 20, 180, 16, 0, color);
-	}
-	if(cl_language.integer == 1){
-	CG_DrawRoundedRect(21-cl_screenoffset.value, 21, 190, 16, 0, colord);
-	CG_DrawRoundedRect(20-cl_screenoffset.value, 20, 190, 16, 0, color);
-	}
 	CG_DrawPic( 23-cl_screenoffset.value, 20+3, 10, 10, cgs.media.errIcon );
-	if(cl_language.integer == 0){
 	CG_DrawStringExt( 38-cl_screenoffset.value, 20+5, "Something is creating script errors", colortex, qfalse, qfalse, 8, 6, 128, -3.5 );
-	}
-	if(cl_language.integer == 1){
-	CG_DrawStringExt( 38-cl_screenoffset.value, 20+5, "Что-то создает скриптовые ошибки", colortex, qfalse, qfalse, 8, 6, 128, -3 );
-	}
 }
 
 void CG_AddNotify(const char *text, int type) {
@@ -2509,12 +2377,7 @@ static void CG_DrawWarmup( void ) {
 	}
 
 	if ( sec < 0 ) {
-		if(cl_language.integer == 0){
 		s = "Waiting for players";
-		}
-		if(cl_language.integer == 1){
-		s = "Ожидание игроков";
-		}
 		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
 		cg.warmupCount = 0;
@@ -2547,47 +2410,33 @@ static void CG_DrawWarmup( void ) {
 		}
 	} else {
 		if ( cgs.gametype == GT_SANDBOX ) {
-			if(cl_language.integer == 0){s = "Sandbox";}
-			if(cl_language.integer == 1){s = "Песочница";}
+			s = "Sandbox";
 		} else if ( cgs.gametype == GT_MAPEDITOR ) {
-			if(cl_language.integer == 0){s = "Map Editor";}
-			if(cl_language.integer == 1){s = "Редактор Карт";}
+			s = "Map Editor";
 		} else if ( cgs.gametype == GT_SINGLE ) {
-			if(cl_language.integer == 0){s = "Single Player";}
-			if(cl_language.integer == 1){s = "Одиночная Игра";}
+			s = "Single Player";
 		} else if ( cgs.gametype == GT_FFA ) {
-			if(cl_language.integer == 0){s = "Free For All";}
-			if(cl_language.integer == 1){s = "Все Против Всех";}
+			s = "Free For All";
 		} else if ( cgs.gametype == GT_TEAM ) {
-			if(cl_language.integer == 0){s = "Team Deathmatch";}
-			if(cl_language.integer == 1){s = "Командный Бой";}
+			s = "Team Deathmatch";
 		} else if ( cgs.gametype == GT_CTF ) {
-			if(cl_language.integer == 0){s = "Capture the Flag";}
-			if(cl_language.integer == 1){s = "Захват Флага";}
+			s = "Capture the Flag";
 		} else if ( cgs.gametype == GT_ELIMINATION ) {
-			if(cl_language.integer == 0){s = "Elimination";}
-			if(cl_language.integer == 1){s = "Устранение";}
+			s = "Elimination";
 		} else if ( cgs.gametype == GT_CTF_ELIMINATION ) {
-			if(cl_language.integer == 0){s = "CTF Elimination";}
-			if(cl_language.integer == 1){s = "CTF Устранение";}
+			s = "CTF Elimination";
 		} else if ( cgs.gametype == GT_LMS ) {
-			if(cl_language.integer == 0){s = "Last Man Standing";}
-			if(cl_language.integer == 1){s = "Последний Оставшийся";}
+			s = "Last Man Standing";
 		} else if ( cgs.gametype == GT_DOUBLE_D ) {
-			if(cl_language.integer == 0){s = "Double Domination";}
-			if(cl_language.integer == 1){s = "Двойное Доминирование";}
+			s = "Double Domination";
 		} else if ( cgs.gametype == GT_1FCTF ) {
-			if(cl_language.integer == 0){s = "One Flag CTF";}
-			if(cl_language.integer == 1){s = "Один Флаг";}
+			s = "One Flag CTF";
 		} else if ( cgs.gametype == GT_OBELISK ) {
-			if(cl_language.integer == 0){s = "Overload";}
-			if(cl_language.integer == 1){s = "Атака Базы";}
+			s = "Overload";
 		} else if ( cgs.gametype == GT_HARVESTER ) {
-			if(cl_language.integer == 0){s = "Harvester";}
-			if(cl_language.integer == 1){s = "Жнец";}
+			s = "Harvester";
         } else if ( cgs.gametype == GT_DOMINATION ) {
-			if(cl_language.integer == 0){s = "Domination";}
-			if(cl_language.integer == 1){s = "Доминирование";}
+			s = "Domination";
 		} else {
 			s = "";
 		}
@@ -2605,12 +2454,7 @@ static void CG_DrawWarmup( void ) {
 		cg.warmup = 0;
 		sec = 0;
 	}
-if(cl_language.integer == 0){
 	s = va( "Starts in: %i", sec + 1 );
-}
-if(cl_language.integer == 1){
-	s = va( "Старт через: %i", sec + 1 );
-}
 	if ( sec != cg.warmupCount ) {
 		cg.warmupCount = sec;
 		switch ( sec ) {
@@ -2654,19 +2498,9 @@ if(cl_language.integer == 1){
 
 static void CG_DrawDeathMessage( void ) {
 	if(((double) cg.respawnTime - (double) cg.time) / 1000.0 <= 0){
-		if(cl_language.integer == 0){
-			CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( "Press fire key to respawn" ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Press fire key to respawn", 1.0);
-		}
-		if(cl_language.integer == 1){
-			CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( "Нажмите кнопку стрельбы для респавна" )*0.5)) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Нажмите кнопку стрельбы для респавна", 1.0);
-		}
+		CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( "Press fire key to respawn" ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Press fire key to respawn", 1.0);
 	} else {
-		if(cl_language.integer == 0){
-			CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
-		}
-		if(cl_language.integer == 1){
-			CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( va("Респавн: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) )*0.5)) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Респавн: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
-		}
+		CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
 	}
 }
 

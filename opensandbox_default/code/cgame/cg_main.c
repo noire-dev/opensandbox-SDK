@@ -138,7 +138,6 @@ vmCvar_t	cl_language;
 vmCvar_t    cl_screenoffset;
 vmCvar_t	cg_disableBobbing;
 vmCvar_t	cg_shadows;
-vmCvar_t	cg_gibs;
 vmCvar_t	cg_drawTimer;
 vmCvar_t	cg_drawFPS;
 vmCvar_t	cg_draw3dIcons;
@@ -359,7 +358,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
 	{ &cg_viewsize, "cg_viewsize", "100", 0 },
 	{ &cg_shadows, "cg_shadows", "1", CVAR_ARCHIVE  },
-	{ &cg_gibs, "cg_gibs", "1", CVAR_ARCHIVE  },
 	{ &cg_draw2D, "cg_draw2D", "1", CVAR_ARCHIVE  },
 	{ &cg_drawStatus, "cg_drawStatus", "1", CVAR_ARCHIVE  },
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
@@ -374,7 +372,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_crosshairY, "cg_crosshairY", "0", CVAR_ARCHIVE },
 	{ &cg_addMarks, "cg_marks", "1", CVAR_ARCHIVE },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
-	{ &cg_disableBobbing, "cg_disableBobbing", "0.002", CVAR_ARCHIVE},
+	{ &cg_disableBobbing, "cg_disableBobbing", "0", CVAR_ARCHIVE},
 	{ &cg_debugAnim, "cg_debuganim", "0", CVAR_CHEAT },
 	{ &cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT },
 	{ &cg_nopredict, "cg_nopredict", "0", 0 },
@@ -965,12 +963,7 @@ static void CG_RegisterGraphics( void ) {
 	CG_SetDefaultGameCvars();
 
 	// precache status bar pics
-	if(cl_language.integer == 0){
 	CG_LoadingString( "game media", 0.70 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "игровые ресурсы", 0.70 );
-	}
 
 	for ( i=0 ; i<11 ; i++) {
 		cgs.media.numberShaders[i] = trap_R_RegisterShader( sb_nums[i] );
@@ -1351,12 +1344,7 @@ static void CG_ImportModelsOBJ(void) {
         char nameWithoutExt[128];
         Q_snprintf(nameWithoutExt, sizeof(nameWithoutExt), "props/%.*s", (int)(strlen(file) - 4), file);
         trap_ImportOBJ(nameWithoutExt);
-		if(cl_language.integer == 0){
 		CG_LoadingString( va("import OBJ: %s", nameWithoutExt), 0.30 );
-		}
-		if(cl_language.integer == 1){
-		CG_LoadingString( va("импорт OBJ: %s", nameWithoutExt), 0.30 );
-		}
         file += strlen(file) + 1;
     }
 }
@@ -1455,12 +1443,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
 	memset( cg_items, 0, sizeof(cg_items) );
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "game core", 0.10 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "игровое ядро", 0.10 );
-	}
 
 	cg.clientNum = clientNum;
 
@@ -1474,12 +1457,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
 	cgs.media.corner          	= trap_R_RegisterShader( "menu/corner" );
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "noire.script", 0.20 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "noire.script", 0.20 );
-	}
 
 	CG_RegisterCvars();
 
@@ -1540,52 +1518,27 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_ParseServerinfo();
 
 	// load the new map
-	if(cl_language.integer == 0){
 	CG_LoadingString( "collision map", 0.40 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "карта столкновений", 0.40 );
-	}
 
 	trap_CM_LoadMap( cgs.mapname );
 
 	cg.loading = qtrue;
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "sounds", 0.50 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "звуки", 0.50 );
-	}
 
 	CG_RegisterSounds();
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "graphics", 0.60 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "графика", 0.60 );
-	}
 
 	CG_RegisterGraphics();
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "clients", 0.80 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "игроки", 0.80 );
-	}
 
 	CG_RegisterClients();		// if low on memory, some clients will be deferred
 
 	cg.loading = qfalse;	// future players will be deferred
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "entities", 0.90 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "объекты", 0.90 );
-	}
 
 	CG_InitLocalEntities();
 
@@ -1594,12 +1547,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
-	if(cl_language.integer == 0){
 	CG_LoadingString( "Loaded!", 1.00 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "Loaded!", 1.00 );
-	}
 	
 	CG_StartMusic();
 
@@ -1629,8 +1577,6 @@ void CG_Shutdown( void ) {
 	// like closing files or archiving session data
 }
 
-//unlagged - attack prediction #3
-// moved from g_weapon.c
 /*
 ======================
 SnapVectorTowards
@@ -1652,4 +1598,3 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 		}
 	}
 }
-//unlagged - attack prediction #3

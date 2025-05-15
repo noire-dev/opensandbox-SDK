@@ -296,12 +296,7 @@ static void UI_AddBotsMenu_Draw( void ) {
 	int skill;
    float f_skill;
 
-if(cl_language.integer == 0){
 	UI_DrawString( 320, 16, "ADD BOTS", UI_CENTER, color_white );
-}
-if(cl_language.integer == 1){
-	UI_DrawString( 320, 16, "ДОБАВИТЬ БОТОВ", UI_CENTER, color_white );
-}
 	UI_DrawNamedPic( 320-233, 240-166, 466, 332, ART_BACKGROUND );
 
 	// standard menu drawing

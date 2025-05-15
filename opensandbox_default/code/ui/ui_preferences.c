@@ -228,7 +228,6 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
 	s_preferences.botmenu.curvalue			= trap_Cvar_VariableValue( "gui_autoclosebotmenu" ) != 0;
 
-	s_preferences.gibs.curvalue				= trap_Cvar_VariableValue( "cg_gibs" ) != 0;
 	s_preferences.blood.curvalue			= trap_Cvar_VariableValue( "com_blood" ) != 0;
 	s_preferences.drawfps.curvalue			= trap_Cvar_VariableValue( "cg_drawFPS" ) != 0;
 	s_preferences.drawtimer.curvalue		= trap_Cvar_VariableValue( "cg_drawTimer" ) != 0;
@@ -455,10 +454,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_BOTMENU:
 		trap_Cvar_SetValue( "gui_autoclosebotmenu", s_preferences.botmenu.curvalue );
-		break;
-
-	case ID_GIBS:
-		trap_Cvar_SetValue( "cg_gibs", s_preferences.gibs.curvalue );
 		break;
 
 	case ID_BLOOD:

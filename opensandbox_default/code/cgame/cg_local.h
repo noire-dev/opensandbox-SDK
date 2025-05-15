@@ -1421,7 +1421,6 @@ extern  vmCvar_t    cl_screenoffset;
 
 extern	vmCvar_t		cg_disableBobbing;
 extern	vmCvar_t		cg_shadows;
-extern	vmCvar_t		cg_gibs;
 extern	vmCvar_t		cg_drawTimer;
 extern	vmCvar_t		cg_drawFPS;
 extern	vmCvar_t		cg_draw3dIcons;

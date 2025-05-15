@@ -42,14 +42,9 @@ CG_LoadingString
 ======================
 */
 void CG_LoadingString( const char *s, float value ) {
-	if(cl_language.integer == 0){
-		Q_strncpyz( cg.infoScreenText, va("Loading... %s", s), sizeof( cg.infoScreenText ) );
-	}
-	if(cl_language.integer == 1){
-		Q_strncpyz( cg.infoScreenText, va("Загрузка... %s", s), sizeof( cg.infoScreenText ) );
-	}
+	Q_strncpyz( cg.infoScreenText, va("Loading... %s", s), sizeof( cg.infoScreenText ) );
 	if(value != -1){
-	cg.infoScreenValue = value;
+		cg.infoScreenValue = value;
 	}
 
 	trap_UpdateScreen();
@@ -65,12 +60,7 @@ void CG_LoadingItem( int itemNum ) {
 
 	item = &bg_itemlist[itemNum];
 	
-	if(cl_language.integer == 0){
 	CG_LoadingString( item->pickup_name, -1 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( item->pickup_nameru, -1 );
-	}
 }
 
 /*
@@ -181,7 +171,6 @@ void CG_DrawInformation( void ) {
 	CG_DrawBigString( 110-cl_screenoffset.value, y, buf, 1.0F );
 	y += PROP_HEIGHT;
 
-if(cl_language.integer == 0){
 	// game type
 	switch ( cgs.gametype ) {
 	case GT_SANDBOX:
@@ -233,60 +222,6 @@ if(cl_language.integer == 0){
 		s = "Unknown Gametype";
 		break;
 	}
-}
-if(cl_language.integer == 1){
-	// game type
-	switch ( cgs.gametype ) {
-	case GT_SANDBOX:
-		s = "Песочница";
-		break;
-	case GT_MAPEDITOR:
-		s = "Редактор Карт";
-		break;
-	case GT_SINGLE:
-		s = "Одиночная Игра";
-		break;
-	case GT_FFA:
-		s = "Все Против Всех";
-		break;
-	case GT_TOURNAMENT:
-		s = "Турнир";
-		break;
-	case GT_TEAM:
-		s = "Командный Бой";
-		break;
-	case GT_CTF:
-		s = "Захват Флага";
-		break;
-	case GT_1FCTF:
-		s = "Один Флаг";
-		break;
-	case GT_OBELISK:
-		s = "Атака Базы";
-		break;
-	case GT_HARVESTER:
-		s = "Жнец";
-		break;
-	case GT_ELIMINATION:
-		s = "Устранение";
-		break;
-	case GT_CTF_ELIMINATION:
-		s = "Устранение: Захват Флага";
-		break;
-	case GT_LMS:
-		s = "Последний Оставшийся";
-		break;
-	case GT_DOUBLE_D:
-		s = "Двойное Доминирование";
-		break;
-        case GT_DOMINATION:
-		s = "Доминирование";
-		break;
-	default:
-		s = "Неизвесный режим";
-		break;
-	}
-}
 	CG_DrawBigString( 110-cl_screenoffset.value, y, s, 1.0F );
 }
 

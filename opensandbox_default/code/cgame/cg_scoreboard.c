@@ -238,18 +238,10 @@ qboolean CG_DrawScoreboard( void ) {
 	// scoreboard
 	y = SB_HEADER;
 
-	if(cl_language.integer == 0){
 	CG_DrawSmallString( SB_SCORE_X + (SB_RATING_WIDTH / 2), y, "Score", fade );
 	CG_DrawSmallString( SB_PING_X + (SB_RATING_WIDTH / 2), y, "Ping", fade );
 	CG_DrawSmallString( SB_TIME_X + (SB_RATING_WIDTH / 2), y, "Time", fade );
 	CG_DrawSmallString( SB_NAME_X + (SB_RATING_WIDTH / 2), y, "Name", fade );
-	}
-	if(cl_language.integer == 1){
-	CG_DrawSmallString( SB_SCORE_X + (SB_RATING_WIDTH / 2), y, "Счет", fade );
-	CG_DrawSmallString( SB_PING_X + (SB_RATING_WIDTH / 2), y, "Пинг", fade );
-	CG_DrawSmallString( SB_TIME_X + (SB_RATING_WIDTH / 2), y, "Время", fade );
-	CG_DrawSmallString( SB_NAME_X + (SB_RATING_WIDTH / 2), y, "Имя", fade );
-	}
 
 	y = SB_TOP;
 

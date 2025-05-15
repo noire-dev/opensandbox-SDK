@@ -560,11 +560,6 @@ void CG_GibPlayer( vec3_t playerOrigin ) {
 		CG_LaunchGib( origin, velocity, cgs.media.gibBrain );
 	}
 
-	// allow gibs to be turned off for speed
-	if ( !cg_gibs.integer ) {
-		return;
-	}
-
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;

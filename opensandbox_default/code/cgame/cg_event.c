@@ -40,12 +40,7 @@ const char	*CG_PlaceString( int rank ) {
 
 	if ( rank & RANK_TIED_FLAG ) {
 		rank &= ~RANK_TIED_FLAG;
-		if(cl_language.integer == 0){
 		t = "Tied for ";
-		}
-		if(cl_language.integer == 1){
-		t = "Делит ";
-		}
 	} else {
 		t = "";
 	}
@@ -120,97 +115,40 @@ static void CG_Obituary( entityState_t *ent ) {
 
 	// check for single client messages
 	gender = ci->gender;
-if(cl_language.integer == 0){
-        if(attacker != ENTITYNUM_WORLD)
-            message = NULL;
-        else
-            switch( mod ) {
-            case MOD_SUICIDE:
-                    return;
-                    break;
-            case MOD_FALLING:
-                    message = "cratered";
-                    break;
-            case MOD_CRUSH:
-                    message = "was squished";
-                    break;
-            case MOD_WATER:
-                    message = "sank like a rock";
-                    break;
-            case MOD_SLIME:
-                    message = "melted";
-                    break;
-            case MOD_LAVA:
-                    message = "does a back flip into the lava";
-                    break;
-            case MOD_TARGET_LASER:
-                    message = "saw the light";
-                    break;
-            case MOD_TRIGGER_HURT:
-                    message = "was in the wrong place";
-                    break;
-            default:
-                    message = NULL;
-                    break;
-            }
-}
-if(cl_language.integer == 1){
-        if(attacker != ENTITYNUM_WORLD)
-            message = NULL;
-        else
-            switch( mod ) {
-            case MOD_SUICIDE:
-				return;
-                    break;
-            case MOD_FALLING:
-					if ( gender == GENDER_FEMALE )
-					message = "разбилась";
-					else
-					message = "разбился";
-                    break;
-            case MOD_CRUSH:
-                    if ( gender == GENDER_FEMALE )
-					message = "была раздавлена";
-					else
-					message = "был раздавлен";
-                    break;
-            case MOD_WATER:
-			        if ( gender == GENDER_FEMALE )
-					message = "затонула как камень";
-					else
-					message = "затонул как камень";
-                    break;
-            case MOD_SLIME:
-			        if ( gender == GENDER_FEMALE )
-					message = "растворилась";
-					else
-                    message = "растворился";
-                    break;
-            case MOD_LAVA:
-					if ( gender == GENDER_FEMALE )
-					message = "сделала сальто назад в лаву";
-					else
-                    message = "сделал сальто назад в лаву";
-                    break;
-            case MOD_TARGET_LASER:
-					if ( gender == GENDER_FEMALE )
-					message = "увидела свет";
-					else
-                    message = "увидел свет";
-                    break;
-            case MOD_TRIGGER_HURT:
-					if ( gender == GENDER_FEMALE )
-					message = "оказалась не в том месте";
-					else
-                    message = "оказался не в том месте";
-                    break;
-            default:
-                    message = NULL;
-                    break;
-            }
-}
+    if(attacker != ENTITYNUM_WORLD)
+        message = NULL;
+    else
+        switch( mod ) {
+        case MOD_SUICIDE:
+                return;
+                break;
+        case MOD_FALLING:
+                message = "cratered";
+                break;
+        case MOD_CRUSH:
+                message = "was squished";
+                break;
+        case MOD_WATER:
+                message = "sank like a rock";
+                break;
+        case MOD_SLIME:
+                message = "melted";
+                break;
+        case MOD_LAVA:
+                message = "does a back flip into the lava";
+                break;
+        case MOD_TARGET_LASER:
+                message = "saw the light";
+                break;
+        case MOD_TRIGGER_HURT:
+                message = "was in the wrong place";
+                break;
+        default:
+                message = NULL;
+                break;
+        }
 	gender = ci->gender;
-if(cl_language.integer == 0){
+
 	if (attacker == target) {
 		switch (mod) {
 		case MOD_KAMIKAZE:
@@ -296,97 +234,6 @@ if(cl_language.integer == 0){
 			break;
 		}
 	}
-}
-if(cl_language.integer == 1){
-	if (attacker == target) {
-		switch (mod) {
-		case MOD_KAMIKAZE:
-			message = "выходит с треском";
-			break;
-		case MOD_CAR:
-		if ( gender == GENDER_FEMALE )
-			message = "взорвалась в своей машине";
-		else
-			message = "взорвался в своей машине";
-			break;
-		case MOD_CAREXPLODE:
-		if ( gender == GENDER_FEMALE )
-			message = "взорвала себя своей машиной";
-		else
-			message = "взорвал себя своей машиной";
-			break;
-		case MOD_PROP:
-		if ( gender == GENDER_FEMALE )
-			message = "была раздавлена предметом, который она бросила сама";
-		else
-			message = "был раздавлен предметом, который он бросил сам";
-			break;
-		case MOD_GRENADE_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "споткнулась о собственную гранату";
-			else if ( gender == GENDER_NEUTER )
-				message = "споткнулся о собственную гранату";
-			else
-				message = "споткнулся о собственную гранату";
-			break;
-		case MOD_ROCKET_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "взорвала себя";
-			else if ( gender == GENDER_NEUTER )
-				message = "взорвал себя";
-			else
-				message = "взорвал себя";
-			break;
-		case MOD_PLASMA_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "растаяла";
-			else if ( gender == GENDER_NEUTER )
-				message = "растаял";
-			else
-				message = "растаял";
-			break;
-		case MOD_BFG_SPLASH:
-			if ( gender == GENDER_FEMALE )
-			message = "не справилась с мощной пушкой";
-			else
-			message = "не справился с мощной пушкой";
-			break;
-		case MOD_PROXIMITY_MINE:
-			if( gender == GENDER_FEMALE ) {
-				message = "нашла свою бомбу";
-			} else if ( gender == GENDER_NEUTER ) {
-				message = "нашел свою бомбу";
-			} else {
-				message = "нашел свою бомбу";
-			}
-			break;
-		case MOD_FLAME_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "сожгла себя";
-			else if ( gender == GENDER_NEUTER )
-				message = "сжег себя";
-			else
-				message = "сжег себя";
-			break;
-		case MOD_ANTIMATTER_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "разорвала себя";
-			else if ( gender == GENDER_NEUTER )
-				message = "разорвал себя";
-			else
-				message = "разорвал себя";
-			break;
-		default:
-			if ( gender == GENDER_FEMALE )
-				message = "убила себя";
-			else if ( gender == GENDER_NEUTER )
-				message = "убил себя";
-			else
-				message = "убил себя";
-			break;
-		}
-	}
-}
 
     //If a suicide happens while disconnecting then we might not have a targetName
 	if(mod == MOD_SUICIDE){
@@ -408,7 +255,6 @@ if(cl_language.integer == 1){
 	if ( attacker == cg.snap->ps.clientNum ) {
 		char	*s;
 
-if(cl_language.integer == 0){
 		if ( cgs.gametype < GT_TEAM ) {
 			s = va("You killed %s\n%s place with %i", targetName, 
 				CG_PlaceString( cg.snap->ps.persistant[PERS_RANK] + 1 ),
@@ -419,19 +265,6 @@ if(cl_language.integer == 0){
                     else
 			s = va("You killed %s", targetName );
 		}
-}
-if(cl_language.integer == 1){
-		if ( cgs.gametype < GT_TEAM ) {
-			s = va("Вы убили %s\n %s место с %i фрагами", targetName, 
-				CG_PlaceString( cg.snap->ps.persistant[PERS_RANK] + 1 ),
-				cg.snap->ps.persistant[PERS_SCORE] );
-		} else {
-                    if(ent->generic1)
-                        s = va("Вы убили своего ^2СОЮЗНИКА^7 %s", targetName );
-                    else
-			s = va("Вы убили %s", targetName );
-		}
-}
 	if(cgs.gametype != GT_SINGLE && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
 		CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, (int)(BIGCHAR_WIDTH * 0.6) );
 	}
@@ -452,8 +285,7 @@ if(cl_language.integer == 1){
 		}
 	}
 
-gender = ci->gender;
-if(cl_language.integer == 0){
+	gender = ci->gender;
 	if ( attacker != ENTITYNUM_WORLD ) {
 
         if(ent->generic1) {
@@ -561,202 +393,6 @@ if(cl_language.integer == 0){
 			break;
 		}
 	}
-}
-if(cl_language.integer == 1){
-	if ( attacker != ENTITYNUM_WORLD ) {
-	message2 = " ";
-                if(ent->generic1) {
-					if ( gender == GENDER_FEMALE )
-					message = "была убита ^2СОЮЗНИКОМ^7";
-					else
-                    message = "был убит ^2СОЮЗНИКОМ^7";
-                }
-                else
-		switch (mod) {
-		case MOD_GRAPPLE:
-			if ( gender == GENDER_FEMALE )
-			message = "была поймана";
-			else
-			message = "был пойман";
-			break;
-		case MOD_GAUNTLET:
-			if ( gender == GENDER_FEMALE )
-			message = "была избита";
-			else
-			message = "был избит";
-			break;
-		case MOD_MACHINEGUN:
-			if ( gender == GENDER_FEMALE )
-			message = "была расстреляна";
-			else
-			message = "был расстрелян";
-			break;
-		case MOD_SHOTGUN:
-			if ( gender == GENDER_FEMALE )
-			message = "была застрелена";
-			else
-			message = "был застрелен";
-			break;
-		case MOD_GRENADE:
-			if ( gender == GENDER_FEMALE )
-			message = "съела гранату";
-			else
-			message = "съел гранату";
-			message2 = " ";
-			break;
-		case MOD_GRENADE_SPLASH:
-			if ( gender == GENDER_FEMALE )
-			message = "была взорвана гранатой";
-			else
-			message = "был взорван гранатой";
-			message2 = " ";
-			break;
-		case MOD_ROCKET:
-			if ( gender == GENDER_FEMALE )
-			message = "съела ракету";
-			else
-			message = "съел ракету";
-			message2 = " ";
-			break;
-		case MOD_ROCKET_SPLASH:
-			if ( gender == GENDER_FEMALE )
-			message = "почти увернулась от ракеты";
-			else
-			message = "почти увернулся от ракеты";
-			message2 = " ";
-			break;
-		case MOD_PLASMA:
-			if ( gender == GENDER_FEMALE )
-			message = "была переплавлена";
-			else
-			message = "был переплавлен";
-			message2 = " с помощью плазмагана";
-			break;
-		case MOD_PLASMA_SPLASH:
-			if ( gender == GENDER_FEMALE )
-			message = "была расплавлена";
-			else
-			message = "был расплавлен";
-			message2 = " с помощью плазмагана";
-			break;
-		case MOD_RAILGUN:
-			if ( gender == GENDER_FEMALE )
-			message = "была пробита";
-			else
-			message = "был пробит";
-			break;
-		case MOD_LIGHTNING:
-			if ( gender == GENDER_FEMALE )
-			message = "была убита электрическим током";
-			else
-			message = "был убит электрическим током";
-			break;
-		case MOD_BFG:
-		case MOD_BFG_SPLASH:
-			if ( gender == GENDER_FEMALE )
-			message = "была взорвана";
-			else
-			message = "был взорван";
-			message2 = " с помощью БФГ";
-			break;
-		case MOD_NAIL:
-			if ( gender == GENDER_FEMALE )
-			message = "была прибита";
-			else
-			message = "был прибит";
-			break;
-		case MOD_CHAINGUN:
-			if ( gender == GENDER_FEMALE )
-			message = "получила отравление свинцом от";
-			else
-			message = "получил отравление свинцом от";
-			message2 = " ";
-			break;
-		case MOD_PROXIMITY_MINE:
-			if ( gender == GENDER_FEMALE )
-			message = "была слишком близок к мине";
-			else
-			message = "был слишком близок к мине";
-			message2 = " ";
-			break;
-		case MOD_KAMIKAZE:
-			if ( gender == GENDER_FEMALE )
-			message = "упала от взрывной волны";
-			else
-			message = "упал от взрывной волны";
-			message2 = " ";
-			break;
-		case MOD_JUICED:
-			if ( gender == GENDER_FEMALE )
-			message = "была выжата благодаря";
-			else
-			message = "был выжат благодаря";
-			break;
-		case MOD_CAR:
-			if ( gender == GENDER_FEMALE )
-			message = "не выдержала столкновения с";
-			else
-			message = "не выдержал столкновения с";
-			break;
-		case MOD_CAREXPLODE:
-		if ( gender == GENDER_FEMALE )
-			message = "взорвана машиной";
-		else
-			message = "взорван машиной";
-			break;
-		case MOD_PROP:
-		if ( gender == GENDER_FEMALE )
-			message = "была раздавлена брошенным предметом от";
-		else
-			message = "был раздавлен брошенным предметом от";
-			break;
-		case MOD_TELEFRAG:
-			if ( gender == GENDER_FEMALE )
-			message = "пыталась вторгнуться в личное пространство";
-			else
-			message = "пытался вторгнуться в личное пространство";
-			message2 = " ";
-			break;
-                case MOD_LAVA:
-						if ( gender == GENDER_FEMALE )
-						message = "получила горячую ванну от";
-						else
-                        message = "получил горячую ванну от";
-                        break;
-                case MOD_SLIME:
-						if ( gender == GENDER_FEMALE )
-						message = "приняла кислотную ванну от";
-						else
-                        message = "принял кислотную ванну от";
-                        break;
-                case MOD_FALLING:
-						if ( gender == GENDER_FEMALE )
-						message = "получила небольшой толчок от";
-						else
-                        message = "получил небольшой толчок от";
-                        break;
-                case MOD_TRIGGER_HURT:
-						if ( gender == GENDER_FEMALE )
-						message = "получила помощь в полете от";
-						else
-                        message = "получил помощь в полете от";
-                        break;
-                case MOD_CRUSH:
-						if ( gender == GENDER_FEMALE )
-						message = "была раздавлена в ловушке";
-						else
-                        message = "был раздавлен в ловушке";
-                        message2 = " ";
-                        break;
-		default:
-			if ( gender == GENDER_FEMALE )
-			message = "была убита";
-			else
-			message = "был убит";
-			break;
-		}
-	}
-}
 		if (message) {
 			CG_Printf( "%s> %s%s%s %s%s %s%s%s\n", 
 				S_COLOR_YELLOW,
@@ -773,14 +409,7 @@ if(cl_language.integer == 1){
 			return;
 		}
 
-	if(cl_language.integer == 0){
-	// we don't know what it was
 	CG_Printf( "%s> %s%s%s died.%s\n",S_COLOR_YELLOW,S_COLOR_WHITE,targetName,S_COLOR_YELLOW,S_COLOR_WHITE);
-	}
-	if(cl_language.integer == 1){
-	// we don't know what it was
-	CG_Printf( "%s> %s%s%s умер.%s\n",S_COLOR_YELLOW,S_COLOR_WHITE,targetName,S_COLOR_YELLOW,S_COLOR_WHITE);
-	}
 }
 
 /*
@@ -804,20 +433,10 @@ static void CG_UseItem( centity_t *cent ) {
 	// print a message if the local player
 	if ( es->number == cg.snap->ps.clientNum ) {
 		if ( !itemNum ) {
-if(cl_language.integer == 0){
 			CG_CenterPrint( "No item to use", SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
-}
-if(cl_language.integer == 1){
-			CG_CenterPrint( "Нет предмета", SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
-}
 		} else {
 			item = BG_FindItemForHoldable( itemNum );
-if(cl_language.integer == 0){
 			CG_CenterPrint( va("Use %s", item->pickup_name), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
-}
-if(cl_language.integer == 1){
-			CG_CenterPrint( va("Использован %s", item->pickup_nameru), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
-}
 		}
 	}
 
