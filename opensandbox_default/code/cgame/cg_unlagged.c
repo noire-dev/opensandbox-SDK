@@ -53,11 +53,6 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 	if ( cent->currentState.number != cg.predictedPlayerState.clientNum ) {
 		return;
 	}
-
-	// if it's not switched on server-side, forget it
-	if ( !cgs.delagHitscan ) {
-		return;
-	}
 	
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	
@@ -78,156 +73,136 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 	// was it a rail attack?
 	if ( weaphack == WP_RAILGUN ) {
 		// do we have it on for the rail gun?
-		if ( cg_delag.integer & 1 || cg_delag.integer & 16 ) {
-			trace_t trace;
-			vec3_t endPoint;
+		trace_t trace;
+		vec3_t endPoint;
 
-			// trace forward
-			VectorMA( muzzlePoint, 8192, forward, endPoint );
+		// trace forward
+		VectorMA( muzzlePoint, 8192, forward, endPoint );
 
-			// find the rail's end point
-			CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID );
+		// find the rail's end point
+		CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID );
 
-			// do the magic-number adjustment
-			VectorMA( muzzlePoint, 4, right, muzzlePoint );
-			VectorMA( muzzlePoint, -1, up, muzzlePoint );
+		// do the magic-number adjustment
+		VectorMA( muzzlePoint, 4, right, muzzlePoint );
+		VectorMA( muzzlePoint, -1, up, muzzlePoint );
 
-            if(!cg.renderingThirdPerson) {
-            	if(cg_drawGun.integer == 2)
-					VectorMA(muzzlePoint, 8, cg.refdef.viewaxis[1], muzzlePoint);
-            	else if(cg_drawGun.integer == 3)
-					VectorMA(muzzlePoint, 4, cg.refdef.viewaxis[1], muzzlePoint);
-            }
+        if(!cg.renderingThirdPerson) {
+        	if(cg_drawGun.integer == 2)
+				VectorMA(muzzlePoint, 8, cg.refdef.viewaxis[1], muzzlePoint);
+        	else if(cg_drawGun.integer == 3)
+				VectorMA(muzzlePoint, 4, cg.refdef.viewaxis[1], muzzlePoint);
+        }
 
-			// draw a rail trail
-			CG_RailTrail( &cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos );
-			//Com_Printf( "Predicted rail trail\n" );
+		// draw a rail trail
+		CG_RailTrail( &cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos );
 
-			// explosion at end if not SURF_NOIMPACT
-			if ( !(trace.surfaceFlags & SURF_NOIMPACT) ) {
-				// predict an explosion
-				CG_MissileHitWall( weaphack, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT );
-			}
+		// explosion at end if not SURF_NOIMPACT
+		if ( !(trace.surfaceFlags & SURF_NOIMPACT) ) {
+			// predict an explosion
+			CG_MissileHitWall( weaphack, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT );
 		}
 	}
 	// was it a shotgun attack?
 	else if ( weaphack == WP_SHOTGUN ) {
-		// do we have it on for the shotgun?
-		if ( cg_delag.integer & 1 || cg_delag.integer & 4 ) {
-			int contents;
-			vec3_t endPoint, v;
-			vec3_t			up;
+		int contents;
+		vec3_t endPoint, v;
+		vec3_t			up;
 
-			// do everything like the server does
+		// do everything like the server does
+		SnapVector( muzzlePoint );
 
-			SnapVector( muzzlePoint );
+		VectorScale( forward, 4096, endPoint );
+		SnapVector( endPoint );
 
-			VectorScale( forward, 4096, endPoint );
-			SnapVector( endPoint );
+		VectorSubtract( endPoint, muzzlePoint, v );
+		VectorNormalize( v );
+		VectorScale( v, 32, v );
+		VectorAdd( muzzlePoint, v, v );
 
-			VectorSubtract( endPoint, muzzlePoint, v );
-			VectorNormalize( v );
-			VectorScale( v, 32, v );
-			VectorAdd( muzzlePoint, v, v );
-
-			contents = trap_CM_PointContents( muzzlePoint, 0 );
-			if ( !( contents & CONTENTS_WATER ) ) {
-				VectorSet( up, 0, 0, 8 );
-				CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
-			}
-
-			// do the shotgun pellets
-			CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum );
-			//Com_Printf( "Predicted shotgun pattern\n" );
+		contents = trap_CM_PointContents( muzzlePoint, 0 );
+		if ( !( contents & CONTENTS_WATER ) ) {
+			VectorSet( up, 0, 0, 8 );
+			CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
 		}
+
+		// do the shotgun pellets
+		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum );
 	}
 	// was it a machinegun attack?
 	else if ( weaphack == WP_MACHINEGUN ) {
-		// do we have it on for the machinegun?
-		if ( cg_delag.integer & 1 || cg_delag.integer & 2 ) {
-			// the server will use this exact time (it'll be serverTime on that end)
-			int seed = cg.oldTime % 256;
-			float r, u;
-			trace_t tr;
-			qboolean flesh;
-			int fleshEntityNum = 0;
-			vec3_t endPoint;
+		int seed = cg.oldTime % 256;
+		float r, u;
+		trace_t tr;
+		qboolean flesh;
+		int fleshEntityNum = 0;
+		vec3_t endPoint;
 
-			// do everything exactly like the server does
+		// do everything exactly like the server does
+		r = Q_random(&seed) * M_PI * 2.0f;
+		u = sin(r) * Q_crandom(&seed) * mod_mgspread * 16;
+		r = cos(r) * Q_crandom(&seed) * mod_mgspread * 16;
 
-			r = Q_random(&seed) * M_PI * 2.0f;
-			u = sin(r) * Q_crandom(&seed) * mod_mgspread * 16;
-			r = cos(r) * Q_crandom(&seed) * mod_mgspread * 16;
+		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
+		VectorMA( endPoint, r, right, endPoint );
+		VectorMA( endPoint, u, up, endPoint );
 
-			VectorMA( muzzlePoint, 8192*16, forward, endPoint );
-			VectorMA( endPoint, r, right, endPoint );
-			VectorMA( endPoint, u, up, endPoint );
+		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
 
-			CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
-
-			if ( tr.surfaceFlags & SURF_NOIMPACT ) {
-				return;
-			}
-
-			// snap the endpos to integers, but nudged towards the line
-			SnapVectorTowards( tr.endpos, muzzlePoint );
-
-			// do bullet impact
-			if ( tr.entityNum < MAX_CLIENTS ) {
-				flesh = qtrue;
-				fleshEntityNum = tr.entityNum;
-			} else {
-				flesh = qfalse;
-			}
-
-			// do the bullet impact
-			CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
-			//Com_Printf( "Predicted bullet\n" );
+		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+			return;
 		}
+
+		// snap the endpos to integers, but nudged towards the line
+		SnapVectorTowards( tr.endpos, muzzlePoint );
+
+		// do bullet impact
+		if ( tr.entityNum < MAX_CLIENTS ) {
+			flesh = qtrue;
+			fleshEntityNum = tr.entityNum;
+		} else {
+			flesh = qfalse;
+		}
+
+		// do the bullet impact
+		CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
 	}
         // was it a chaingun attack?
 	else if ( weaphack == WP_CHAINGUN ) {
-		// do we have it on for the machinegun?
-		if ( cg_delag.integer & 1 || cg_delag.integer & 2 ) {
-			// the server will use this exact time (it'll be serverTime on that end)
-			int seed = cg.oldTime % 256;
-			float r, u;
-			trace_t tr;
-			qboolean flesh;
-			int fleshEntityNum = 0;
-			vec3_t endPoint;
+		int seed = cg.oldTime % 256;
+		float r, u;
+		trace_t tr;
+		qboolean flesh;
+		int fleshEntityNum = 0;
+		vec3_t endPoint;
 
-			// do everything exactly like the server does
+		// do everything exactly like the server does
+		r = Q_random(&seed) * M_PI * 2.0f;
+		u = sin(r) * Q_crandom(&seed) * mod_cgspread * 16;
+		r = cos(r) * Q_crandom(&seed) * mod_cgspread * 16;
 
-			r = Q_random(&seed) * M_PI * 2.0f;
-			u = sin(r) * Q_crandom(&seed) * mod_cgspread * 16;
-			r = cos(r) * Q_crandom(&seed) * mod_cgspread * 16;
+		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
+		VectorMA( endPoint, r, right, endPoint );
+		VectorMA( endPoint, u, up, endPoint );
 
-			VectorMA( muzzlePoint, 8192*16, forward, endPoint );
-			VectorMA( endPoint, r, right, endPoint );
-			VectorMA( endPoint, u, up, endPoint );
+		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
 
-			CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
-
-			if ( tr.surfaceFlags & SURF_NOIMPACT ) {
-				return;
-			}
-
-			// snap the endpos to integers, but nudged towards the line
-			SnapVectorTowards( tr.endpos, muzzlePoint );
-
-			// do bullet impact
-			if ( tr.entityNum < MAX_CLIENTS ) {
-				flesh = qtrue;
-				fleshEntityNum = tr.entityNum;
-			} else {
-				flesh = qfalse;
-			}
-
-			// do the bullet impact
-			CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
-			//Com_Printf( "Predicted bullet\n" );
+		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+			return;
 		}
+
+		// snap the endpos to integers, but nudged towards the line
+		SnapVectorTowards( tr.endpos, muzzlePoint );
+
+		// do bullet impact
+		if ( tr.entityNum < MAX_CLIENTS ) {
+			flesh = qtrue;
+			fleshEntityNum = tr.entityNum;
+		} else {
+			flesh = qfalse;
+		}
+
+		// do the bullet impact
+		CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
 	}
 }
 

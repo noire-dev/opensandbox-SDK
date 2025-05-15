@@ -22,211 +22,67 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-/*
-=======================================================================
-
-SYSTEM CONFIGURATION MENU
-
-=======================================================================
-*/
 
 #include "ui_local.h"
 
-#define ART_BACK0			"menu/assets/back_0"
-#define ART_BACK1			"menu/assets/back_1"
-
-#define ID_GRAPHICS			10
-#define ID_DISPLAY			11
-#define ID_SOUND			12
-#define ID_NETWORK			13
-#define ID_BACK				14
-
-#define VERTICAL_SPACING	34
+#define ID_DEFAULTS 	100
+#define ID_LANGUAGE 	99
 
 typedef struct {
 	menuframework_s	menu;
+	menuelement_s	e[OSUI_MAX_ELEMENTS];
+} options_t;
 
-	menuelement_s		banner;
+static options_t	options;
 
-	menuelement_s		graphics;
-	menuelement_s		display;
-	menuelement_s		sound;
-	menuelement_s		network;
-	menuelement_s	back;
-} optionsmenu_t;
+static void Options_Defaults_Action( qboolean result ) {
+	if( !result ) return;
+	
+	trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n");
+	trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n");
+	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+}
 
-static optionsmenu_t	s_options;
+static void UI_Options_Event( void *ptr, int event ) {
+	if( event != QM_ACTIVATED ) { return; }
 
-
-/*
-=================
-Options_Event
-=================
-*/
-static void Options_Event( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
-		return;
-	}
-
-	switch( ((menucommon_s*)ptr)->id ) {
-	case ID_GRAPHICS:
-		UI_GraphicsOptionsMenu();
+	switch( ((menucommon_s*)ptr)->callid ) {
+	case ID_DEFAULTS:
+		UI_ConfirmMenu( "SET TO DEFAULTS?", Options_Defaults_Action );
 		break;
 
-	case ID_DISPLAY:
-		UI_DisplayOptionsMenu();
-		break;
-
-	case ID_SOUND:
-		UI_SoundOptionsMenu();
-		break;
-
-	case ID_NETWORK:
-		UI_NetworkOptionsMenu();
-		break;
-
-	case ID_BACK:
-		UI_PopMenu();
+	case ID_LANGUAGE:
+		//Make language list
 		break;
 	}
 }
 
-
-/*
-===============
-SystemConfig_Cache
-===============
-*/
-void SystemConfig_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-}
-
-/*
-===============
-Options_MenuInit
-===============
-*/
-void Options_MenuInit( void ) {
+void UI_Options( void ) {
 	int				y;
-	uiClientState_t	cstate;
 
-	memset( &s_options, 0, sizeof(optionsmenu_t) );
+	memset( &options, 0, sizeof(options) );
+	options.menu.native			= qfalse;
+	options.menu.fullscreen 	= qtrue;
 
-	SystemConfig_Cache();
-	s_options.menu.native 	   = qfalse;
+	UI_CText(&options.e[0], OSUI_LOGO_X, OSUI_LOGO_Y+24, "OPTIONS", UI_LEFT, 1.80);
 
-	trap_GetClientState( &cstate );
-	if ( cstate.connState >= CA_CONNECTED ) {
-		s_options.menu.fullscreen = qfalse;
-	}
-	else {
-		s_options.menu.fullscreen = qtrue;
-	}
+	y = OSUI_STANDARD_Y;
+	UI_CButton(&options.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[2], 64 - uis.wideoffset, y, "Model", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	s_options.banner.generic.type	= MTYPE_TEXT;
-	s_options.banner.generic.flags	= QMF_CENTER_JUSTIFY;
-	s_options.banner.generic.x		= 320;
-	s_options.banner.generic.y		= 16;
-	if(cl_language.integer == 0){
-	s_options.banner.string		    = "SYSTEM SETUP";
-	}
-	if(cl_language.integer == 1){
-	s_options.banner.string		    = "СИСТЕМНЫЕ НАСТРОЙКИ";
-	}
-	s_options.banner.color			= color_white;
-	s_options.banner.style			= UI_CENTER;
+	UI_CButton(&options.e[3], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, NULL, NULL, UI_Controls, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[4], 64 - uis.wideoffset, y, "Graphics", UI_LEFT, 1.00, NULL, NULL, UI_GraphicsOptionsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[5], 64 - uis.wideoffset, y, "Game Options", UI_LEFT, 1.00, NULL, NULL, UI_PreferencesMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[6], 64 - uis.wideoffset, y, "Advanced", UI_LEFT, 1.00, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	y = 168;
-	s_options.graphics.generic.type		= MTYPE_PTEXT;
-	s_options.graphics.generic.flags	= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_options.graphics.generic.callback	= Options_Event;
-	s_options.graphics.generic.id		= ID_GRAPHICS;
-	s_options.graphics.generic.x		= 320;
-	s_options.graphics.generic.y		= y;
-	if(cl_language.integer == 0){
-	s_options.graphics.string			= "GRAPHICS";
-	}
-	if(cl_language.integer == 1){
-	s_options.graphics.string			= "ГРАФИКА";
-	}
-	s_options.graphics.color			= color_white;
-	s_options.graphics.style			= UI_CENTER;
+	UI_CButton(&options.e[7], 64 - uis.wideoffset, y, "Load Config", UI_LEFT, 1.00, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[8], 64 - uis.wideoffset, y, "Save Config", UI_LEFT, 1.00, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	y += VERTICAL_SPACING;
-	s_options.display.generic.type		= MTYPE_PTEXT;
-	s_options.display.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_options.display.generic.callback	= Options_Event;
-	s_options.display.generic.id		= ID_DISPLAY;
-	s_options.display.generic.x			= 320;
-	s_options.display.generic.y			= y;
-	if(cl_language.integer == 0){
-	s_options.display.string			= "DISPLAY";
-	}
-	if(cl_language.integer == 1){
-	s_options.display.string			= "ЭКРАН";
-	}
-	s_options.display.color				= color_white;
-	s_options.display.style				= UI_CENTER;
+	UI_CButton(&options.e[ID_DEFAULTS], 64 - uis.wideoffset, y, "Defaults", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Options_Event, ID_DEFAULTS); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[ID_LANGUAGE], 64 - uis.wideoffset, y, "Language", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Options_Event, ID_LANGUAGE); y += OSUI_BIGSPACING_Y;
 
-	y += VERTICAL_SPACING;
-	s_options.sound.generic.type		= MTYPE_PTEXT;
-	s_options.sound.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_options.sound.generic.callback	= Options_Event;
-	s_options.sound.generic.id			= ID_SOUND;
-	s_options.sound.generic.x			= 320;
-	s_options.sound.generic.y			= y;
-	if(cl_language.integer == 0){
-	s_options.sound.string				= "SOUND";
-	}
-	if(cl_language.integer == 1){
-	s_options.sound.string				= "ЗВУК";
-	}
-	s_options.sound.color				= color_white;
-	s_options.sound.style				= UI_CENTER;
+	UI_CButton(&options.e[9], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, UI_PopMenu, NULL, 0);
 
-	y += VERTICAL_SPACING;
-	s_options.network.generic.type		= MTYPE_PTEXT;
-	s_options.network.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_options.network.generic.callback	= Options_Event;
-	s_options.network.generic.id		= ID_NETWORK;
-	s_options.network.generic.x			= 320;
-	s_options.network.generic.y			= y;
-	if(cl_language.integer == 0){
-	s_options.network.string			= "NETWORK";
-	}
-	if(cl_language.integer == 1){
-	s_options.network.string			= "СЕТЬ";
-	}
-	s_options.network.color				= color_white;
-	s_options.network.style				= UI_CENTER;
-
-	s_options.back.generic.type	    = MTYPE_BITMAP;
-	s_options.back.string     = ART_BACK0;
-	s_options.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_options.back.generic.callback = Options_Event;
-	s_options.back.generic.id	    = ID_BACK;
-	s_options.back.generic.x		= 0;
-	s_options.back.generic.y		= 480-64;
-	s_options.back.width  		    = 128;
-	s_options.back.height  		    = 64;
-	s_options.back.focuspic         = ART_BACK1;
-
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.banner );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.graphics );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.display );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.sound );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.network );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.back );
-}
-
-
-/*
-===============
-UI_SystemConfigMenu
-===============
-*/
-void UI_SystemConfigMenu( void ) {
-	Options_MenuInit();
-	UI_PushMenu ( &s_options.menu );
+	UI_CreateUI( &options.menu, options.e);
+	UI_PushMenu( &options.menu );
 }

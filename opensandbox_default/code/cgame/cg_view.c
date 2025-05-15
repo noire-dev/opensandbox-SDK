@@ -272,42 +272,25 @@ static void CG_OffsetFirstPersonView( void ) {
 	// add angles based on weapon kick
 	VectorAdd (angles, cg.kick_angles, angles);
 
-	// add angles based on damage kick 
-	// noire.dev disabled annoying thing
-	/*if ( cg.damageTime && cgs.gametype!=GT_ELIMINATION && cgs.gametype!=GT_CTF_ELIMINATION && cgs.gametype!=GT_LMS) {
-		ratio = cg.time - cg.damageTime;
-		if ( ratio < DAMAGE_DEFLECT_TIME ) {
-			ratio /= DAMAGE_DEFLECT_TIME;
-			angles[PITCH] += ratio * cg.v_dmg_pitch;
-			angles[ROLL] += ratio * cg.v_dmg_roll;
-		} else {
-			ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
-			if ( ratio > 0 ) {
-				angles[PITCH] += ratio * cg.v_dmg_pitch;
-				angles[ROLL] += ratio * cg.v_dmg_roll;
-			}
-		}
-	}*/
-
 	// add angles based on velocity
 	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
 
 	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
-	angles[PITCH] += delta * cg_runpitch.value;
+	angles[PITCH] += delta * 0.002;
 	
 	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
-	angles[ROLL] -= delta * cg_runroll.value;
+	angles[ROLL] -= delta * 0.005;
 
 	// add angles based on bob
 
 	// make sure the bob is visible even at low speeds
 	speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
 
-	delta = cg.bobfracsin * cg_bobpitch.value * speed;
+	delta = cg.bobfracsin * 0.002 * speed;
 	if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
 		delta *= 3;		// crouching
 	angles[PITCH] += delta;
-	delta = cg.bobfracsin * cg_bobroll.value * speed;
+	delta = cg.bobfracsin * 0.002 * speed;
 	if (cg.predictedPlayerState.pm_flags & PMF_DUCKED)
 		delta *= 3;		// crouching accentuates roll
 	if (cg.bobcycle & 1)
@@ -325,7 +308,7 @@ static void CG_OffsetFirstPersonView( void ) {
 	}
 
 	// add bob height
-	bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
+	bob = cg.bobfracsin * cg.xyspeed * 0.005;
 	if (bob > 6) {
 		bob = 6;
 	}
@@ -403,31 +386,20 @@ static void CG_CalcFov( void ) {
 		// if in intermission, use a fixed value
 		fov_x = 90;
 	} else {
-		// user selectable
-		if ( cgs.dmflags & DF_FIXED_FOV ) {
-			// dmflag to prevent wide fov for all clients
-			fov_x = 90;
-		} else {
-			fov_x = cg_fov.value;
-			if ( fov_x < 1 ) {
-				fov_x = 1;
-			} else if ( fov_x > 160 ) {
-				fov_x = 160;
-			}
+		fov_x = cg_fov.value;
+		if ( fov_x < 1 ) {
+			fov_x = 1;
+		} else if ( fov_x > 160 ) {
+			fov_x = 160;
 		}
 
-                if ( cgs.dmflags & DF_FIXED_FOV ) {
-			// dmflag to prevent wide fov for all clients
-			zoomFov = 22.5;
-		} else {
-                        // account for zooms
-                        zoomFov = cg_zoomFov.value;
-                        if ( zoomFov < 1 ) {
-                                zoomFov = 1;
-                        } else if ( zoomFov > 160 ) {
-                                zoomFov = 160;
-                        }
-                }
+        // account for zooms
+        zoomFov = cg_zoomFov.value;
+        if ( zoomFov < 1 ) {
+                zoomFov = 1;
+        } else if ( zoomFov > 160 ) {
+                zoomFov = 160;
+        }
 
 		if ( cg.zoomed ) {
 			f = ( cg.time - cg.zoomTime ) / (float)ZOOM_TIME;
@@ -674,20 +646,6 @@ static void CG_CalcViewValues( void ) {
 	VectorCopy( ps->origin, cg.refdef.vieworg );
 	VectorCopy( ps->viewangles, cg.refdefViewAngles );
 
-	// add error decay
-	if ( cg_errorDecay.value > 0 ) {
-		int		t;
-		float	f;
-
-		t = cg.time - cg.predictedErrorTime;
-		f = ( cg_errorDecay.value - t ) / cg_errorDecay.value;
-		if ( f > 0 && f < 1 ) {
-			VectorMA( cg.refdef.vieworg, f, cg.predictedError, cg.refdef.vieworg );
-		} else {
-			cg.predictedErrorTime = 0;
-		}
-	}
-
 	if ( cg.renderingThirdPerson ) {
 		// back away from character
 		CG_OffsetThirdPersonView();
@@ -873,21 +831,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		}
 		cg.oldTime = cg.time;
 		CG_AddLagometerFrameInfo();
-	}
-	if (cg_timescale.value != cg_timescaleFadeEnd.value) {
-		if (cg_timescale.value < cg_timescaleFadeEnd.value) {
-			cg_timescale.value += cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
-			if (cg_timescale.value > cg_timescaleFadeEnd.value)
-				cg_timescale.value = cg_timescaleFadeEnd.value;
-		}
-		else {
-			cg_timescale.value -= cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
-			if (cg_timescale.value < cg_timescaleFadeEnd.value)
-				cg_timescale.value = cg_timescaleFadeEnd.value;
-		}
-		if (cg_timescaleFadeSpeed.value) {
-			trap_Cvar_Set("timescale", va("%f", cg_timescale.value));
-		}
 	}
 
 	// actually issue the rendering calls

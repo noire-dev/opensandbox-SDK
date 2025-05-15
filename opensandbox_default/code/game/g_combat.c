@@ -85,25 +85,16 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
                     continue; //Don't award dead one
 
                 level.clients[i].ps.persistant[PERS_SCORE] -= score;
-                //ScorePlum(ent, origin, -score, 0);
             }
-        }
-        else {
-            //ScorePlum(ent, origin, score, 0);
-            //
+        } else {
 			if(score == 1){
             ent->client->ps.persistant[PERS_SCORE] += score;
             if ( g_gametype.integer == GT_TEAM ) {
                 int team = ent->client->ps.persistant[PERS_TEAM];
                     level.teamScores[ team ] += score;
-					G_LogPrintf("TeamScore: add 1\n" );
-                    G_LogPrintf("TeamScore: %i %i: Team %d now has %d points\n",
-                        team, level.teamScores[ team ], team, level.teamScores[ team ] );
             }
 			}
         }
-        G_LogPrintf("PlayerScore: %i %i: %s now has %d points\n",
-		ent->s.number, ent->client->ps.persistant[PERS_SCORE], ent->client->pers.netname, ent->client->ps.persistant[PERS_SCORE] );
 	CalculateRanks();
 }
 
@@ -124,11 +115,9 @@ void TossClientItems( gentity_t *self ) {
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
 
-        if(!g_npcdrop.integer){
-		if(self->singlebot >= 1){
+	if(self->singlebot >= 1){
         return;
-		}
-		}
+	}
 
 	//Never drop in elimination or last man standing mode!
 	if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS)
@@ -743,7 +732,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->r.maxs[2] = -8;
 
 	// don't allow respawn until the death anim is done
-	// g_forcerespawn may force spawning at some later time
 	self->client->respawnTime = level.time + g_respawnwait.integer +i;
 		if(self->client->sess.sessionTeam == TEAM_BLUE){
 		self->client->respawnTime = level.time + g_teamblue_respawnwait.integer +i;
@@ -1307,7 +1295,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 			}
             //Remeber the last person to hurt the player
-            if( !g_awardpushing.integer || targ==attacker || OnSameTeam (targ, attacker)) {
+            if( targ==attacker || OnSameTeam (targ, attacker) ) {
                 targ->client->lastSentFlying = -1;
             } else {
                 targ->client->lastSentFlying = attacker->s.number;
@@ -1402,11 +1390,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// save some from armor
 	asave = CheckArmor (targ, take, dflags);
 	take -= asave;
-
-	if ( g_debugDamage.integer ) {
-		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
-			targ->health, take, asave );
-	}
 	
 	if ( client ) {
 		if ( attacker ) {

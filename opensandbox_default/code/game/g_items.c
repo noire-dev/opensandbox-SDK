@@ -811,8 +811,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 				return;
 	}
 
-	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
-
 	predict = qtrue;
 
 	// call the item-specific pickup function
@@ -980,13 +978,13 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_DOUBLE_D)			&& item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
-		dropped->nextthink = level.time + g_autoflagreturn.integer*1000;
+		dropped->nextthink = level.time + 60*1000;
 		Team_CheckDroppedItem( dropped );
 	} else { // auto-remove after 30 seconds
-	if ( item->giType != IT_BACKPACK ) { // auto-remove after 30 seconds if it's not a backpack
-		dropped->think = G_FreeEntity;
-		dropped->nextthink = level.time + g_droppeditemtime.integer*1000;
-}
+		if ( item->giType != IT_BACKPACK ) { // auto-remove after 30 seconds if it's not a backpack
+			dropped->think = G_FreeEntity;
+			dropped->nextthink = level.time + 120*1000;
+		}
 	}
 
 	dropped->flags = FL_DROPPED_ITEM;

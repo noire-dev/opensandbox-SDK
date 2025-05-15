@@ -219,10 +219,6 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps ) {
 				CG_EntityEvent( cent, cent->lerpOrigin );
 
 				cg.predictableEvents[ i & (MAX_PREDICTED_EVENTS-1) ] = event;
-
-				if ( cg_showmiss.integer ) {
-					CG_Printf("WARNING: changed predicted event\n");
-				}
 			}
 		}
 	}

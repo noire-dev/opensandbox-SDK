@@ -294,16 +294,6 @@ qboolean CG_DrawScoreboard( void ) {
 		y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 	}
 
-	if (!localClient) {
-		// draw local client at the bottom
-		for ( i = 0 ; i < cg.numScores ; i++ ) {
-			if ( cg.scores[i].client == cg.snap->ps.clientNum ) {
-				CG_DrawClientScore( y, &cg.scores[i], fadeColor, fade );
-				break;
-			}
-		}
-	}
-
 	return qtrue;
 }
 
@@ -595,7 +585,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 
 	//draw skill level
 	skill = CG_GetSkill();
-	CG_DrawPic(scoreboardX + (512 - 36), scoreboardY + (256 - 30), 24, 24, cgs.media.botSkillShaders[skill - 1]);
+	CG_DrawSmallStringColor( 80, 144 + (SMALLCHAR_HEIGHT * currentLine), va("%i", skill), color);
 
 	return qtrue;
 }

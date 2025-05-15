@@ -95,13 +95,6 @@ vmCvar_t	cg_effectsTime;
 vmCvar_t	cg_effectsLimit;
 vmCvar_t	cg_effectsGibs;
 
-vmCvar_t	cg_gibjump;
-vmCvar_t	cg_gibvelocity;
-
-vmCvar_t	cg_zoomtime;
-vmCvar_t	cg_itemscaletime;
-vmCvar_t	cg_weaponselecttime;
-
 //Noire Set
 vmCvar_t	toolgun_mod1;		//modifier
 vmCvar_t	toolgun_mod2;		//modifier
@@ -142,21 +135,8 @@ vmCvar_t	ns_haveerror;		//Noire.Script error
 
 vmCvar_t	cg_postprocess;
 vmCvar_t	cl_language;
-vmCvar_t	con_notifytime;
-vmCvar_t 	cg_leiChibi;
 vmCvar_t    cl_screenoffset;
-vmCvar_t	cg_itemstyle;
-vmCvar_t	cg_paintballMode;
-vmCvar_t	cg_railTrailTime;
-vmCvar_t	cg_centertime;
-vmCvar_t	cg_drawsubtitles;
-vmCvar_t	cg_drawSyncMessage;
-vmCvar_t	cg_runpitch;
-vmCvar_t	cg_runroll;
-vmCvar_t	cg_bobup;
-vmCvar_t	cg_bobpitch;
-vmCvar_t	cg_bobroll;
-vmCvar_t	cg_swingSpeed;
+vmCvar_t	cg_disableBobbing;
 vmCvar_t	cg_shadows;
 vmCvar_t	cg_gibs;
 vmCvar_t	cg_drawTimer;
@@ -170,26 +150,13 @@ vmCvar_t	cg_crosshairX;
 vmCvar_t	cg_crosshairY;
 vmCvar_t	cg_draw2D;
 vmCvar_t	cg_drawStatus;
-vmCvar_t	cg_animSpeed;
 vmCvar_t	cg_debugAnim;
-vmCvar_t	cg_debugPosition;
 vmCvar_t	cg_debugEvents;
-vmCvar_t	cg_errorDecay;
 vmCvar_t	cg_nopredict;
-vmCvar_t	cg_noPlayerAnims;
-vmCvar_t	cg_showmiss;
 vmCvar_t	cg_footsteps;
 vmCvar_t	cg_addMarks;
-vmCvar_t	cg_brassTime;
 vmCvar_t	cg_viewsize;
 vmCvar_t	cg_drawGun;
-vmCvar_t	cg_gun_x;
-vmCvar_t	cg_gun_y;
-vmCvar_t	cg_gun_z;
-vmCvar_t	cg_tracerChance;
-vmCvar_t	cg_tracerWidth;
-vmCvar_t	cg_tracerLength;
-vmCvar_t	cg_simpleItems;
 vmCvar_t	cg_fov;
 vmCvar_t	cg_zoomFov;
 vmCvar_t	cg_thirdPerson;
@@ -198,7 +165,6 @@ vmCvar_t	cg_thirdPersonAngle;
 vmCvar_t	cg_thirdPersonOffset;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_drawSpeed;
-vmCvar_t	cg_synchronousClients;
 vmCvar_t 	cg_teamChatHeight;
 vmCvar_t 	cg_teamChatScaleX;
 vmCvar_t 	cg_teamChatScaleY;
@@ -210,7 +176,6 @@ vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
 vmCvar_t	cg_teamChatsOnly;
 vmCvar_t 	cg_scorePlum;
-vmCvar_t	cg_newConsole;
 vmCvar_t	cg_chatTime;
 vmCvar_t 	cg_teamChatTime;
 vmCvar_t	cg_consoleTime;
@@ -233,18 +198,11 @@ vmCvar_t	cg_chatLines;
 vmCvar_t	cg_teamChatLines;
 
 vmCvar_t	cg_commonConsole;
-vmCvar_t	pmove_fixed;
-vmCvar_t	pmove_msec;
-vmCvar_t    pmove_float;
-vmCvar_t	cg_pmove_msec;
 vmCvar_t    cg_cameraEyes;
 vmCvar_t	cg_cameraEyes_Fwd;
 vmCvar_t	cg_cameraEyes_Up;
-vmCvar_t	cg_timescaleFadeEnd;
-vmCvar_t	cg_timescaleFadeSpeed;
-vmCvar_t	cg_timescale;
+
 vmCvar_t	cg_noProjectileTrail;
-vmCvar_t	cg_trueLightning;
 vmCvar_t    cg_music;
 
 vmCvar_t	cg_obeliskRespawnDelay;
@@ -252,12 +210,7 @@ vmCvar_t	cg_enableDust;
 vmCvar_t	cg_enableBreath;
 
 //unlagged - client options
-vmCvar_t	cg_delag;
-vmCvar_t	cg_cmdTimeNudge;
 vmCvar_t	sv_fps;
-vmCvar_t	cg_projectileNudge;
-vmCvar_t	cg_optimizePrediction;
-vmCvar_t	cl_timeNudge;
 //unlagged - client options
 
 //elimination addition
@@ -312,8 +265,7 @@ int mod_portalinf;
 int mod_kamikazeinf;
 int mod_invulinf;
 int mod_accelerate;
-int mod_slickmove;
-int mod_overlay;
+int mod_movetype;
 int mod_gravity;
 int mod_fogModel;
 int mod_fogShader;
@@ -360,10 +312,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_effectsTime, "cg_effectsTime", "10", CVAR_ARCHIVE },
 	{ &cg_effectsLimit, "cg_effectsLimit", "4096", CVAR_ARCHIVE },
 	{ &cg_effectsGibs, "cg_effectsGibs", "1", CVAR_ARCHIVE },
-	
-	{ &cg_itemscaletime, "cg_itemscaletime", "5000", CVAR_ARCHIVE },
-	{ &cg_weaponselecttime, "cg_weaponselecttime", "5000", CVAR_ARCHIVE },
-	{ &cg_zoomtime, "cg_zoomtime", "300", CVAR_ARCHIVE },
 
 	//ArenaSandBox Set
 	{ &toolgun_mod1, "toolgun_mod1", "0", 0},
@@ -405,12 +353,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_postprocess, "cg_postprocess", "", 0 },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
-	{ &con_notifytime, "con_notifytime", "3", CVAR_ARCHIVE },
-	{ &cg_leiChibi, "cg_leiChibi", "0", CVAR_ARCHIVE}, // LEILEI
     { &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
-	{ &cg_itemstyle, "cg_itemstyle", "2", CVAR_ARCHIVE },
-	{ &cg_gibjump, "cg_gibjump", "350", CVAR_ARCHIVE },
-	{ &cg_gibvelocity, "cg_gibvelocity", "500", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
@@ -429,36 +372,13 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_crosshairScale, "cg_crosshairScale", "24", CVAR_ARCHIVE },
 	{ &cg_crosshairX, "cg_crosshairX", "0", CVAR_ARCHIVE },
 	{ &cg_crosshairY, "cg_crosshairY", "0", CVAR_ARCHIVE },
-	{ &cg_brassTime, "cg_brassTime", "2500", CVAR_ARCHIVE },
-	{ &cg_simpleItems, "cg_simpleItems", "0", CVAR_ARCHIVE },
 	{ &cg_addMarks, "cg_marks", "1", CVAR_ARCHIVE },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
-	{ &cg_paintballMode, "cg_paintballMode", "0", CVAR_ARCHIVE },
-	{ &cg_railTrailTime, "cg_railTrailTime", "400", CVAR_ARCHIVE  },
-	{ &cg_gun_x, "cg_gunX", "5", CVAR_ARCHIVE },
-	{ &cg_gun_y, "cg_gunY", "-1", CVAR_ARCHIVE },
-	{ &cg_gun_z, "cg_gunZ", "-1", CVAR_ARCHIVE },
-	{ &cg_centertime, "cg_centertime", "6", CVAR_ARCHIVE },
-	{ &cg_drawsubtitles, "cg_drawsubtitles", "1", CVAR_ARCHIVE },
-	{ &cg_drawSyncMessage, "cg_drawsyncmessage", "1", CVAR_ARCHIVE },
-	{ &cg_runpitch, "cg_runpitch", "0.002", CVAR_ARCHIVE},
-	{ &cg_runroll, "cg_runroll", "0.005", CVAR_ARCHIVE },
-	{ &cg_bobup , "cg_bobup", "0.005", CVAR_ARCHIVE },
-	{ &cg_bobpitch, "cg_bobpitch", "0.002", CVAR_ARCHIVE },
-	{ &cg_bobroll, "cg_bobroll", "0.002", CVAR_ARCHIVE },
-	{ &cg_swingSpeed, "cg_swingSpeed", "0.3", CVAR_ARCHIVE },
-	{ &cg_animSpeed, "cg_animspeed", "1", CVAR_CHEAT },
+	{ &cg_disableBobbing, "cg_disableBobbing", "0.002", CVAR_ARCHIVE},
 	{ &cg_debugAnim, "cg_debuganim", "0", CVAR_CHEAT },
-	{ &cg_debugPosition, "cg_debugposition", "0", CVAR_CHEAT },
 	{ &cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT },
-	{ &cg_errorDecay, "cg_errordecay", "100", 0 },
 	{ &cg_nopredict, "cg_nopredict", "0", 0 },
-	{ &cg_noPlayerAnims, "cg_noplayeranims", "0", CVAR_CHEAT },
-	{ &cg_showmiss, "cg_showmiss", "0", 0 },
 	{ &cg_footsteps, "cg_footsteps", "1", CVAR_CHEAT },
-	{ &cg_tracerChance, "cg_tracerchance", "0.4", CVAR_CHEAT },
-	{ &cg_tracerWidth, "cg_tracerwidth", "1", CVAR_CHEAT },
-	{ &cg_tracerLength, "cg_tracerlength", "100", CVAR_CHEAT },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "65", CVAR_ARCHIVE },
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
@@ -477,15 +397,11 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
 	{ &cg_alwaysWeaponBar, "cg_alwaysWeaponBar", "0", CVAR_ARCHIVE},	//Elimination
-	{ &cg_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO },	// communicated by systeminfo
 
 	{ &cg_enableDust, "g_enableDust", "0", CVAR_SERVERINFO},
 	{ &cg_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO},
 	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", 0},
 
-	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
-	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
-	{ &cg_timescale, "timescale", "1", 0},
 	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_ARCHIVE},
 	{ &cg_chatTime ,    "cg_chatTime", "10000", CVAR_ARCHIVE},
 	{ &cg_consoleTime , "cg_consoleTime", "10000", CVAR_ARCHIVE},
@@ -493,8 +409,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_teamChatY, "cg_teamChatY", "180", CVAR_ARCHIVE  },
 	{ &cg_chatY, "cg_chatY", "-230", CVAR_ARCHIVE  },
-
-	{ &cg_newConsole ,  "cg_newConsole", "1", CVAR_ARCHIVE},
 
 	{ &cg_consoleSizeX , "cg_consoleSizeX", "6", CVAR_ARCHIVE},
 	{ &cg_consoleSizeY , "cg_consoleSizeY", "9", CVAR_ARCHIVE},
@@ -513,23 +427,14 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_fontScale , "cg_fontScale", "1.5", CVAR_ARCHIVE},
 	{ &cg_fontShadow , "cg_fontShadow", "1", CVAR_ARCHIVE},
 
-	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO},
-	{ &pmove_msec, "pmove_msec", "11", CVAR_SYSTEMINFO},
-        { &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO},
 	{ &cg_noProjectileTrail, "cg_noProjectileTrail", "0", CVAR_ARCHIVE},
 	{ &cg_cameraEyes, "cg_cameraEyes", "0", CVAR_ARCHIVE},						// LEILEI
 	{ &cg_cameraEyes_Fwd, "cg_cameraEyes_Fwd", "0", CVAR_ARCHIVE},				// LEILEI
 	{ &cg_cameraEyes_Up, "cg_cameraEyes_Up", "7", CVAR_ARCHIVE},				// LEILEI
 	//unlagged - client options
-	{ &cg_delag, "cg_delag", "1", CVAR_ARCHIVE | CVAR_USERINFO },
-	{ &cg_cmdTimeNudge, "cg_cmdTimeNudge", "0", CVAR_ARCHIVE | CVAR_USERINFO },
 	// this will be automagically copied from the server
 	{ &sv_fps, "sv_fps", "60", CVAR_SYSTEMINFO },
-	{ &cg_projectileNudge, "cg_projectileNudge", "0", CVAR_ARCHIVE },
-	{ &cg_optimizePrediction, "cg_optimizePrediction", "1", CVAR_ARCHIVE },
-	{ &cl_timeNudge, "cl_timeNudge", "0", CVAR_ARCHIVE },
 	//unlagged - client options
-	{ &cg_trueLightning, "cg_trueLightning", "0.9", CVAR_ARCHIVE},
     { &cg_music, "cg_music", "", CVAR_ARCHIVE},
 
 	{ &cg_crosshairPulse, "cg_crosshairPulse", "1", CVAR_ARCHIVE},
@@ -578,28 +483,6 @@ void CG_UpdateCvars( void ) {
 	cvarTable_t	*cv;
 
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		//unlagged - client options
-		if ( cv->vmCvar == &cg_cmdTimeNudge ) {
-			CG_Cvar_ClampInt( cv->cvarName, cv->vmCvar, 0, 999 );
-		}
-		else if ( cv->vmCvar == &cl_timeNudge ) {
-			CG_Cvar_ClampInt( cv->cvarName, cv->vmCvar, -50, 50 );
-		}
-		//unlagged - client options
-        else if ( cv->vmCvar == &cg_errorDecay ) {
-			CG_Cvar_ClampInt( cv->cvarName, cv->vmCvar, 0, 250 );
-		}
-		else if ( cv->vmCvar == &con_notifytime ) {
-			if (cg_newConsole.integer ) {
-				if (cv->vmCvar->integer != -1) {
-					Com_sprintf( cv->vmCvar->string, MAX_CVAR_VALUE_STRING, "-1");
-					trap_Cvar_Set( cv->cvarName, cv->vmCvar->string );
-				}
-			} else if (cv->vmCvar->integer <= 0) {
-				Com_sprintf( cv->vmCvar->string, MAX_CVAR_VALUE_STRING, "%s", cv->defaultString);
-				trap_Cvar_Set( cv->cvarName, cv->vmCvar->string );
-			}
-		}
 		trap_Cvar_Update( cv->vmCvar );
 	}
 
@@ -628,14 +511,12 @@ void QDECL CG_PrintfChat( qboolean team, const char *msg, ... ) {
 	Q_vsnprintf (text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
-	if (cg_newConsole.integer) {
-		if (team) {
-			CG_AddToGenericConsole(text, &cgs.teamChat);
-		} else {
-			CG_AddToGenericConsole(text, &cgs.chat);
-		}
-		CG_AddToGenericConsole(text, &cgs.commonConsole);
+	if (team) {
+		CG_AddToGenericConsole(text, &cgs.teamChat);
+	} else {
+		CG_AddToGenericConsole(text, &cgs.chat);
 	}
+	CG_AddToGenericConsole(text, &cgs.commonConsole);
 	trap_Print( text );
 }
 
@@ -647,10 +528,8 @@ void QDECL CG_Printf( const char *msg, ... ) {
 	Q_vsnprintf (text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
-	if (cg_newConsole.integer) {
-		CG_AddToGenericConsole(text, &cgs.console);
-		CG_AddToGenericConsole(text, &cgs.commonConsole);
-	}
+	CG_AddToGenericConsole(text, &cgs.console);
+	CG_AddToGenericConsole(text, &cgs.commonConsole);
 	trap_Print( text );
 }
 
@@ -1033,8 +912,7 @@ void CG_SetDefaultGameCvars(void) {
 	mod_kamikazeinf = 0;
 	mod_invulinf = 0;
 	mod_accelerate = 1;
-	mod_slickmove = 0;
-	mod_overlay = 0;
+	mod_movetype = 0;
 	mod_gravity = 800;
     mod_fogModel = 0;
     mod_fogShader = 0;
@@ -1088,25 +966,15 @@ static void CG_RegisterGraphics( void ) {
 
 	// precache status bar pics
 	if(cl_language.integer == 0){
-	CG_LoadingString( "game media", 0.60 );
+	CG_LoadingString( "game media", 0.70 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игровые ресурсы", 0.60 );
+	CG_LoadingString( "игровые ресурсы", 0.70 );
 	}
 
 	for ( i=0 ; i<11 ; i++) {
 		cgs.media.numberShaders[i] = trap_R_RegisterShader( sb_nums[i] );
 	}
-
-	cgs.media.botSkillShaders[0] = trap_R_RegisterShader( "menu/assets/skill1.tga" );
-	cgs.media.botSkillShaders[1] = trap_R_RegisterShader( "menu/assets/skill2.tga" );
-	cgs.media.botSkillShaders[2] = trap_R_RegisterShader( "menu/assets/skill3.tga" );
-	cgs.media.botSkillShaders[3] = trap_R_RegisterShader( "menu/assets/skill4.tga" );
-	cgs.media.botSkillShaders[4] = trap_R_RegisterShader( "menu/assets/skill5.tga" );
-	cgs.media.botSkillShaders[5] = trap_R_RegisterShader( "menu/assets/skill6.tga" );
-	cgs.media.botSkillShaders[6] = trap_R_RegisterShader( "menu/assets/skill7.tga" );
-	cgs.media.botSkillShaders[7] = trap_R_RegisterShader( "menu/assets/skill8.tga" );
-	cgs.media.botSkillShaders[8] = trap_R_RegisterShader( "menu/assets/skill9.tga" );
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
 
@@ -1483,6 +1351,12 @@ static void CG_ImportModelsOBJ(void) {
         char nameWithoutExt[128];
         Q_snprintf(nameWithoutExt, sizeof(nameWithoutExt), "props/%.*s", (int)(strlen(file) - 4), file);
         trap_ImportOBJ(nameWithoutExt);
+		if(cl_language.integer == 0){
+		CG_LoadingString( va("import OBJ: %s", nameWithoutExt), 0.30 );
+		}
+		if(cl_language.integer == 1){
+		CG_LoadingString( va("импорт OBJ: %s", nameWithoutExt), 0.30 );
+		}
         file += strlen(file) + 1;
     }
 }
@@ -1661,57 +1535,50 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
 
+	CG_ImportModelsOBJ();
+
 	CG_ParseServerinfo();
 
 	// load the new map
 	if(cl_language.integer == 0){
-	CG_LoadingString( "collision map", 0.30 );
+	CG_LoadingString( "collision map", 0.40 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "карта столкновений", 0.30 );
+	CG_LoadingString( "карта столкновений", 0.40 );
 	}
 
 	trap_CM_LoadMap( cgs.mapname );
 
-	cg.loading = qtrue;		// force players to load instead of defer
+	cg.loading = qtrue;
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "sounds", 0.40 );
+	CG_LoadingString( "sounds", 0.50 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "звуки", 0.40 );
+	CG_LoadingString( "звуки", 0.50 );
 	}
 
 	CG_RegisterSounds();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "graphics", 0.50 );
+	CG_LoadingString( "graphics", 0.60 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "графика", 0.50 );
+	CG_LoadingString( "графика", 0.60 );
 	}
 
 	CG_RegisterGraphics();
 
 	if(cl_language.integer == 0){
-	CG_LoadingString( "clients", 0.70 );
+	CG_LoadingString( "clients", 0.80 );
 	}
 	if(cl_language.integer == 1){
-	CG_LoadingString( "игроки", 0.70 );
+	CG_LoadingString( "игроки", 0.80 );
 	}
 
 	CG_RegisterClients();		// if low on memory, some clients will be deferred
 
 	cg.loading = qfalse;	// future players will be deferred
-
-	if(cl_language.integer == 0){
-	CG_LoadingString( "import OBJ", 0.80 );
-	}
-	if(cl_language.integer == 1){
-	CG_LoadingString( "импорт OBJ", 0.80 );
-	}
-
-	CG_ImportModelsOBJ();
 
 	if(cl_language.integer == 0){
 	CG_LoadingString( "entities", 0.90 );
@@ -1734,7 +1601,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_LoadingString( "Loaded!", 1.00 );
 	}
 	
-
 	CG_StartMusic();
 
 	CG_LoadingString( "", 0.0 );

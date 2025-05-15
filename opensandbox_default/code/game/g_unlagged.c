@@ -86,14 +86,6 @@ Returns a vector "frac" times the distance between "start" and "end"
 =============
 */
 static void TimeShiftLerp( float frac, vec3_t start, vec3_t end, vec3_t result ) {
-// From CG_InterpolateEntityPosition in cg_ents.c:
-/*
-	cent->lerpOrigin[0] = current[0] + f * ( next[0] - current[0] );
-	cent->lerpOrigin[1] = current[1] + f * ( next[1] - current[1] );
-	cent->lerpOrigin[2] = current[2] + f * ( next[2] - current[2] );
-*/
-// Making these exactly the same should avoid floating-point error
-
 	result[0] = start[0] + frac * ( end[0] - start[0] );
 	result[1] = start[1] + frac * ( end[1] - start[1] );
 	result[2] = start[2] + frac * ( end[2] - start[2] );
@@ -245,8 +237,7 @@ except for "skip"
 void G_TimeShiftAllClients( int time, gentity_t *skip ) {
 	int			i;
 	gentity_t	*ent;
-	qboolean debug = ( skip != NULL && skip->client && 
-			/*skip->client->pers.debugDelag && */ skip->s.weapon == WP_RAILGUN );
+	qboolean debug = ( skip != NULL && skip->client && skip->s.weapon == WP_RAILGUN );
 
 	// for every client
 	ent = &g_entities[0];
@@ -265,31 +256,24 @@ G_DoTimeShiftFor
 Decide what time to shift everyone back to, and do it
 ================
 */
-void G_DoTimeShiftFor( gentity_t *ent ) {	
-	int wpflags[MAX_WEAPONS] = { 0, 0, 2, 4, 0, 0, 8, 16, 0, 0, 0, 32, 0, 64 };
 
-	int wpflag = wpflags[ent->client->ps.generic2];
+void G_DoTimeShiftFor( gentity_t *ent ) {
 	int time;
+	int lag;
 
-	// don't time shift for mistakes or bots
 	if ( !ent->inuse || !ent->client || (ent->r.svFlags & SVF_BOT) ) {
 		return;
 	}
 
-	// if it's enabled server-side and the client wants it or wants it for this weapon
-	if ( g_delagHitscan.integer && ( ent->client->pers.delag & 1 || ent->client->pers.delag & wpflag ) ) {
-		// do the full lag compensation, except what the client nudges
-		time = ent->client->attackTime + ent->client->pers.cmdTimeNudge;
-        //Give the lightning gun some handicap (lag was part of weapon balance in VQ3)
-        if(ent->client->ps.generic2 == WP_LIGHTNING && g_lagLightning.integer)
-            time+=50;
-	}
-	else {
-		// do just 50ms
-		time = level.previousTime + ent->client->frameOffset;
+	lag = ent->client->ps.ping;
+
+	// ping limit (anti-cheat)
+	if (lag > 500) {
+		lag = 500;
 	}
 
-	G_TimeShiftAllClients( time, ent );
+	time = level.time - lag;
+	G_TimeShiftAllClients(time, ent);
 }
 
 

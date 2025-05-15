@@ -1139,7 +1139,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		// if we are interpolating, we don't need to smooth steps
 		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ||
-			cg_nopredict.integer || cg_synchronousClients.integer ) {
+			cg_nopredict.integer ) {
 			break;
 		}
 		// check for stepping up before a previous step is completed
@@ -1472,85 +1472,43 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_RAILTRAIL:
 		DEBUGNAME("EV_RAILTRAIL");
 		cent->currentState.generic3 = WP_RAILGUN;
-//unlagged - attack prediction #2
-		// if the client is us, unlagged is on server-side, and we've got it client-side
-		if ( es->clientNum == cg.predictedPlayerState.clientNum && 
-				cgs.delagHitscan && (cg_delag.integer & 1 || cg_delag.integer & 16) ) {
+		if ( es->clientNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
-			//Com_Printf("Ignoring rail trail event\n");
-		}
-		else {
-        	if(es->clientNum == cg.snap->ps.clientNum && !cg.renderingThirdPerson){
-        	    if(cg_drawGun.integer == 2)
-					VectorMA(es->origin2, 8, cg.refdef.viewaxis[1], es->origin2);
-        	    else if(cg_drawGun.integer == 3)
-					VectorMA(es->origin2, 4, cg.refdef.viewaxis[1], es->origin2);
-        	}
-
-
-			// draw a rail trail, because it wasn't predicted
+		} else {
 			CG_RailTrail( ci, es->origin2, es->pos.trBase );
-
-			// if the end was on a nomark surface, don't make an explosion
 			if ( es->eventParm != 255 ) {
 				ByteToDir( es->eventParm, dir );
 				CG_MissileHitWall( es->generic3, es->clientNum, position, dir, IMPACTSOUND_DEFAULT );
 			}
-			//Com_Printf("Non-predicted rail trail\n");
 		}
-//unlagged - attack prediction #2
 		break;
 
 	case EV_BULLET_HIT_WALL:
 		DEBUGNAME("EV_BULLET_HIT_WALL");
-//unlagged - attack prediction #2
-		// if the client is us, unlagged is on server-side, and we've got it client-side
-		if ( es->clientNum == cg.predictedPlayerState.clientNum && 
-				cgs.delagHitscan && (cg_delag.integer & 1 || cg_delag.integer & 2) ) {
+		if ( es->clientNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
-			//Com_Printf("Ignoring bullet event\n");
-		}
-		else {
-			// do the bullet, because it wasn't predicted
+		} else {
 			ByteToDir( es->eventParm, dir );
 			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qfalse, ENTITYNUM_WORLD );
-			//Com_Printf("Non-predicted bullet\n");
 		}
-//unlagged - attack prediction #2
 		break;
 
 	case EV_BULLET_HIT_FLESH:
 		DEBUGNAME("EV_BULLET_HIT_FLESH");
-//unlagged - attack prediction #2
-		// if the client is us, unlagged is on server-side, and we've got it client-side
-		if ( es->clientNum == cg.predictedPlayerState.clientNum && 
-				cgs.delagHitscan && (cg_delag.integer & 1 || cg_delag.integer & 2) ) {
+		if ( es->clientNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
-			//Com_Printf("Ignoring bullet event\n");
-		}
-		else {
-			// do the bullet, because it wasn't predicted
+		} else {
 			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm );
-			//Com_Printf("Non-predicted bullet\n");
 		}
-//unlagged - attack prediction #2
 		break;
 
 	case EV_SHOTGUN:
 		DEBUGNAME("EV_SHOTGUN");
-//unlagged - attack prediction #2
-		// if the client is us, unlagged is on server-side, and we've got it client-side
-		if ( es->otherEntityNum == cg.predictedPlayerState.clientNum && 
-				cgs.delagHitscan && (cg_delag.integer & 1 || cg_delag.integer & 4) ) {
+		if ( es->otherEntityNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
-			//Com_Printf("Ignoring shotgun event\n");
-		}
-		else {
-			// do the shotgun pattern, because it wasn't predicted
+		} else {
 			CG_ShotgunFire( es );
-			//Com_Printf("Non-predicted shotgun pattern\n");
 		}
-//unlagged - attack prediction #2
 		break;
 
 	case EV_GENERAL_SOUND:

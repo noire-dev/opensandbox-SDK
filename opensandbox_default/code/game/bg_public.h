@@ -294,8 +294,6 @@ typedef struct {
 	// command (in)
 	usercmd_t	cmd;
 	int			tracemask;			// collide against these types of surfaces
-	int			debugLevel;			// if set, diagnostic output will be printed
-	qboolean	noFootsteps;		// if the game is setup for no footsteps by the server
 	qboolean	gauntletHit;		// true if a gauntlet attack would actually hit something
 
 	int			framecount;
@@ -310,16 +308,6 @@ typedef struct {
 	int			waterlevel;
 
 	float		xyspeed;
-
-	// for fixed msec Pmove
-	int			pmove_fixed;
-	int			pmove_msec;
-
-        //Sago's pmove
-        int                     pmove_float;
-        
-        //Flags effecting movement (see dmflags)
-        int                     pmove_flags;
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame
@@ -895,18 +883,6 @@ gitem_t	*BG_FindItemForBackpack( );
 #define	ITEM_INDEX(x) ((x)-bg_itemlist)
 
 qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps );
-
-
-// g_dmflags->integer flags
-#define	DF_NO_FALLING			8
-#define DF_FIXED_FOV			16
-#define	DF_NO_FOOTSTEPS			32
-#define DF_INSTANT_WEAPON_CHANGE        64
-#define DF_NO_BUNNY                     128
-#define DF_INVIS                        256
-#define DF_LIGHT_VOTING                 512
-#define DF_NO_SELF_DAMAGE               1024
-#define DF_PLAYER_OVERLAY               2048
 
 // g_elimflags->integer
 //This is used to signal the client that it cannot go to free spectator:

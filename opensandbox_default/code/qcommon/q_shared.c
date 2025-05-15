@@ -1182,7 +1182,6 @@ Calculates the player's score
 playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accuracy, float skill) {
 	char			var[MAX_TOKEN_CHARS];
 	int				mutators;
-	qboolean		debugScore;
 	playerscore_t	scores;
 
 	//carnage score
@@ -1208,20 +1207,6 @@ playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accur
 
 	//total score
 	scores.totalScore = scores.carnageScore + scores.accuracyScore + scores.skillScore + scores.secretsScore + scores.deathsScore ;
-
-	//debug scores
-	trap_Cvar_VariableStringBuffer( "g_debugScore", var, sizeof( var ) );
-	debugScore = atoi(var);
-
-	if (debugScore) {
-		Com_Printf("---Score debug info---\n");
-		Com_Printf("Carnage  : %i\n", scores.carnageScore);
-		Com_Printf("Accuracy : %i (%i%%)\n", scores.accuracyScore, scores.accuracy);
-		Com_Printf("Skill    : %i (%1.0f%%)\n", scores.skillScore, scores.skillModifier * 100);
-		Com_Printf("Secrets  : %i (%i)\n", scores.secretsScore, scores.secretsFound);
-		Com_Printf("Deaths   : %i (%ix)\n", scores.deathsScore, scores.deaths);
-		Com_Printf("Total    : %i\n", scores.totalScore);
-	}
 
 	return scores;
 }

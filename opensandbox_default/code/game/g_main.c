@@ -42,11 +42,10 @@ gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
 int				SourceTechEntityList[MAX_GENTITIES];
 
+//OpenSandbox settings
 vmCvar_t	g_physimpact;
 vmCvar_t	g_physimpulse;
 vmCvar_t	g_physdamage;
-
-//OpenSandbox settings
 
 //gh set
 vmCvar_t	g_ghspeed;
@@ -303,14 +302,11 @@ vmCvar_t	g_allownoclip;
 vmCvar_t	g_allowtoolgun;
 vmCvar_t	g_allowphysgun;
 vmCvar_t	g_allowgravitygun;
-vmCvar_t	g_npcdrop;
 vmCvar_t	g_maxEntities;
 vmCvar_t	cl_selectedmod;
 vmCvar_t	cl_language;
 vmCvar_t	g_regenarmor;
-vmCvar_t	g_spectatorspeed;
-vmCvar_t	g_overlay;
-vmCvar_t	g_slickmove;
+vmCvar_t	g_movetype;
 vmCvar_t	g_accelerate;
 vmCvar_t	g_randomItems;
 vmCvar_t	g_kamikazeinf;
@@ -340,8 +336,6 @@ vmCvar_t	g_invulmove;
 vmCvar_t	g_invultime;
 vmCvar_t	g_fasthealthregen;
 vmCvar_t	g_slowhealthregen;
-vmCvar_t	g_droppeditemtime;
-vmCvar_t	g_autoflagreturn;
 vmCvar_t	g_hastefirespeed;
 vmCvar_t	g_medkitmodifier;
 vmCvar_t	g_armorprotect;
@@ -357,7 +351,6 @@ vmCvar_t	g_holdablerespawn;
 vmCvar_t	g_megahealthrespawn;
 vmCvar_t	g_poweruprespawn;
 vmCvar_t	g_gametype;
-vmCvar_t	g_dmflags;
 vmCvar_t	g_elimflags;
 vmCvar_t	g_fraglimit;
 vmCvar_t	g_timelimit;
@@ -373,35 +366,17 @@ vmCvar_t    g_damageModifier;
 vmCvar_t	g_cheats;
 vmCvar_t	g_knockback;
 vmCvar_t	g_quadfactor;
-vmCvar_t	g_forcerespawn;
 vmCvar_t	g_respawntime;
-vmCvar_t	g_inactivity;
-vmCvar_t	g_disableCutscenes;
-vmCvar_t	g_debugMove;
-vmCvar_t	g_debugDamage;
-vmCvar_t	g_debugAlloc;
-vmCvar_t	g_debugCameras;
-vmCvar_t	g_debugScore;
-vmCvar_t	g_debugVariables;
-vmCvar_t	g_debugBotspawns;
-vmCvar_t	g_allowSyncCutscene;
 vmCvar_t	g_weaponRespawn;
 vmCvar_t	g_weaponTeamRespawn;
-vmCvar_t    g_votemaps;
-vmCvar_t	g_synchronousClients;
 vmCvar_t	g_warmup;
 vmCvar_t	g_doWarmup;
 vmCvar_t	g_restarted;
-vmCvar_t	g_logfile;
-vmCvar_t	g_logfileSync;
 vmCvar_t	g_blood;
 vmCvar_t	g_allowVote;
 vmCvar_t	g_teamAutoJoin;
 vmCvar_t	g_teamForceBalance;
 vmCvar_t	g_smoothClients;
-vmCvar_t	pmove_fixed;
-vmCvar_t	pmove_msec;
-vmCvar_t    pmove_float;
 vmCvar_t	g_obeliskHealth;
 vmCvar_t	g_obeliskRegenPeriod;
 vmCvar_t	g_obeliskRegenAmount;
@@ -490,67 +465,59 @@ vmCvar_t	g_regen;
 int	g_ffa_gt; //Are this a FFA gametype even if gametype is high?
 vmCvar_t	g_lms_lives;
 vmCvar_t	g_lms_mode;
-vmCvar_t    g_awardpushing; //The server can decide if players are awarded for pushing people in lave etc.
 
-//unlagged - server options
-vmCvar_t	g_delagHitscan;
-vmCvar_t	g_truePing;
 vmCvar_t	sv_fps;
-vmCvar_t    g_lagLightning; //Adds a little lag to the lightninggun to make it less powerfull
-//unlagged - server options
 
-int mod_jumpheight;
-int mod_ammolimit;
-int	mod_ghtimeout;
-int	mod_gdelay;
-int	mod_mgdelay;
-int	mod_mgspread;
-int	mod_sgdelay;
-int	mod_sgspread;
-int	mod_sgcount;
-int	mod_gldelay;
-int	mod_rldelay;
-int	mod_lgdelay;
-int	mod_lgrange;
-int	mod_pgdelay;
-int	mod_rgdelay;
-int	mod_bfgdelay;
-int	mod_ngdelay;
-int	mod_pldelay;
-int	mod_cgdelay;
-int	mod_cgspread;
-int	mod_ftdelay;
-int	mod_amdelay;
-int	mod_vampire_max_health;
-float mod_hastefirespeed;
-float mod_ammoregenfirespeed;
-float mod_scoutfirespeed;
-int	mod_poweruptime;
-float	mod_guardfirespeed;
-float	mod_doublerfirespeed;
-int	mod_quadtime;
-int	mod_bsuittime;
-int	mod_hastetime;
-int	mod_invistime;
-int	mod_regentime;
-int	mod_flighttime;
-int mod_noplayerclip;
-int	mod_ammolimit;
-int mod_invulmove;
-float mod_teamblue_firespeed;
-float mod_teamred_firespeed;
-int mod_medkitlimit;
-int	mod_medkitinf;
-int	mod_teleporterinf;
-int	mod_portalinf;
-int mod_kamikazeinf;
-int mod_invulinf;
-int mod_teamblue_damage;
-int mod_teamred_damage;
-int	mod_accelerate;
-int	mod_slickmove;
-int	mod_overlay;
-int	mod_gravity;
+int 		mod_jumpheight;
+int 		mod_ammolimit;
+int			mod_ghtimeout;
+int			mod_gdelay;
+int			mod_mgdelay;
+int			mod_mgspread;
+int			mod_sgdelay;
+int			mod_sgspread;
+int			mod_sgcount;
+int			mod_gldelay;
+int			mod_rldelay;
+int			mod_lgdelay;
+int			mod_lgrange;
+int			mod_pgdelay;
+int			mod_rgdelay;
+int			mod_bfgdelay;
+int			mod_ngdelay;
+int			mod_pldelay;
+int			mod_cgdelay;
+int			mod_cgspread;
+int			mod_ftdelay;
+int			mod_amdelay;
+float 		mod_hastefirespeed;
+float 		mod_ammoregenfirespeed;
+float 		mod_scoutfirespeed;
+int			mod_poweruptime;
+float		mod_guardfirespeed;
+float		mod_doublerfirespeed;
+int			mod_quadtime;
+int			mod_bsuittime;
+int			mod_hastetime;
+int			mod_invistime;
+int			mod_regentime;
+int			mod_flighttime;
+int 		mod_noplayerclip;
+int			mod_ammolimit;
+int 		mod_invulmove;
+float 		mod_teamblue_firespeed;
+float 		mod_teamred_firespeed;
+int 		mod_medkitlimit;
+int			mod_medkitinf;
+int			mod_teleporterinf;
+int			mod_portalinf;
+int 		mod_kamikazeinf;
+int 		mod_invulinf;
+int 		mod_teamblue_damage;
+int 		mod_teamred_damage;
+int			mod_accelerate;
+int			mod_movetype;
+int			mod_gravity;
 
 
 // bk001129 - made static to avoid aliasing
@@ -828,14 +795,11 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_allowtoolgun, "g_allowtoolgun", "1", 0, 0, qtrue  },
 	{ &g_allowphysgun, "g_allowphysgun", "1", 0, 0, qtrue  },
 	{ &g_allowgravitygun, "g_allowgravitygun", "1", 0, 0, qtrue  },
-	{ &g_npcdrop, "g_npcdrop", "0", 0, 0, qtrue},
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE, 0, qtrue},
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE, 0, qtrue},
 	{ &g_maxEntities, "g_maxEntities", "1024", 0, 0, qtrue},
 	{ &g_regenarmor, "g_regenarmor", "0", 0, 0, qtrue  },
-	{ &g_spectatorspeed, "g_spectatorspeed", "700", 0, 0, qtrue  },
-	{ &g_overlay, "g_overlay", "0", 0, 0, qtrue  },
-	{ &g_slickmove, "g_slickmove", "0", 0, 0, qtrue  },
+	{ &g_movetype, "g_movetype", "0", 0, 0, qtrue  },
 	{ &g_accelerate, "g_accelerate", "1", 0, 0, qtrue  },
 	{ &g_randomItems, "g_randomItems", "0", 0, 0, qtrue  },
 	{ &g_invulinf, "g_invulinf", "0", 0, 0, qtrue  },
@@ -865,8 +829,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_invultime, "g_invultime", "10", 0, 0, qtrue  },
 	{ &g_fasthealthregen, "g_fasthealthregen", "15", 0, 0, qtrue  },
 	{ &g_slowhealthregen, "g_slowhealthregen", "5", 0, 0, qtrue  },
-	{ &g_droppeditemtime, "g_droppeditemtime", "30", 0, 0, qtrue  },
-	{ &g_autoflagreturn, "g_autoflagreturn", "30", 0, 0, qtrue  },
 	{ &g_hastefirespeed, "g_hastefirespeed", "0.65", 0, 0, qtrue  },
 	{ &g_medkitmodifier, "g_medkitmodifier", "100", 0, 0, qtrue  },
 	{ &g_armorprotect, "g_armorprotect", "0.66", 0, 0, qtrue  },
@@ -881,13 +843,10 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_holdablerespawn, "g_holdablerespawn", "60", 0, 0, qtrue  },
 	{ &g_megahealthrespawn, "g_megahealthrespawn", "35", 0, 0, qtrue  },
 	{ &g_poweruprespawn, "g_poweruprespawn", "120", 0, 0, qtrue  },
-	{ &g_dmflags, "dmflags", "1024", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
     { &g_elimflags, "elimflags", "0", CVAR_SERVERINFO, 0, qfalse  },
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-
-	{ &g_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO, 0, qfalse  },
 
 	{ &g_friendlyFire, "g_friendlyFire", "0", CVAR_ARCHIVE, 0, qtrue  },
 
@@ -896,8 +855,6 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
 	{ &g_doWarmup, "g_doWarmup", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_logfile, "g_log", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_logfileSync, "g_logsync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_password, "g_password", "", CVAR_USERINFO, 0, qfalse  },
 
@@ -911,18 +868,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_quadfactor, "g_quadfactor", "3", 0, 0, qtrue  },
 	{ &g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue  },
 	{ &g_weaponTeamRespawn, "g_weaponTeamRespawn", "30", 0, 0, qtrue },
-	{ &g_forcerespawn, "g_forcerespawn", "0", 0, 0, qtrue },
         { &g_respawntime, "g_respawntime", "0", CVAR_ARCHIVE, 0, qtrue },
-	{ &g_inactivity, "g_inactivity", "0", 0, 0, qtrue },
-	{ &g_disableCutscenes, "g_disableCutscenes", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
-	{ &g_debugMove, "g_debugMove", "0", 0, 0, qfalse },
-	{ &g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse },
-	{ &g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse },
-	{ &g_debugCameras, "g_debugCameras", "0", CVAR_LATCH | CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
-	{ &g_debugScore, "g_debugScore", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
-	{ &g_debugVariables, "g_debugVariables", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
-	{ &g_debugBotspawns, "g_debugBotspawns", "0", CVAR_ARCHIVE | CVAR_CHEAT, 0, qfalse },
-	{ &g_allowSyncCutscene, "g_allowSyncCutscene", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_blood, "com_blood", "1", 0, 0, qfalse },
 
 	{ &g_allowVote, "g_allowVote", "1", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse },
@@ -939,17 +885,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_proxMineTimeout, "g_proxMineTimeout", "180000", 0, 0, qfalse },
 
 	{ &g_smoothClients, "g_smoothClients", "1", 0, 0, qfalse},
-	{ &pmove_fixed, "pmove_fixed", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse},
-	{ &pmove_msec, "pmove_msec", "11", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse},
-	{ &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qtrue},
 
-//unlagged - server options
-	{ &g_delagHitscan, "g_delagHitscan", "0", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },
-	{ &g_truePing, "g_truePing", "0", CVAR_ARCHIVE, 0, qtrue },
-	// it's CVAR_SYSTEMINFO so the client's sv_fps will be automagically set to its value
 	{ &sv_fps, "sv_fps", "60", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse },
-        { &g_lagLightning, "g_lagLightning", "1", CVAR_ARCHIVE, 0, qtrue },
-//unlagged - server options
 
     { &g_music, "g_music", "", 0, 0, qfalse},
     { &g_spawnprotect, "g_spawnprotect", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
@@ -1021,8 +958,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_redspawn_flight, "g_redspawn_flight", "0", CVAR_NORESTART, 0, qtrue },
 
 	{ &g_redspawn_holdable, "g_redspawn_holdable", "0", CVAR_LATCH, 0, qtrue },
-
-    { &g_awardpushing, "g_awardpushing", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 
 	{ &g_vampire, "g_vampire", "0.0", CVAR_NORESTART, 0, qtrue },
 	{ &g_regen, "g_regen", "0", CVAR_NORESTART, 0, qtrue },
@@ -1254,27 +1189,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
-	if ( g_logfile.string[0] ) {
-		if ( g_logfileSync.integer ) {
-			trap_FS_FOpenFile( g_logfile.string, &level.logFile, FS_APPEND_SYNC );
-		} else {
-			trap_FS_FOpenFile( g_logfile.string, &level.logFile, FS_APPEND );
-		}
-		if ( !level.logFile ) {
-			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_logfile.string );
-		} else {
-			char	serverinfo[MAX_INFO_STRING];
-
-			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
-
-			G_LogPrintf("------------------------------------------------------------\n" );
-			G_LogPrintf("InitGame: %s\n", serverinfo );
-            G_LogPrintf("Info: ServerInfo length: %d of %d\n", strlen(serverinfo), MAX_INFO_STRING );
-		}
-	} else {
-		G_Printf( "Not logging to disk.\n" );
-	}
-
 	G_InitWorldSession();
 
 	// initialize all entities for this game
@@ -1367,14 +1281,7 @@ G_ShutdownGame
 void G_ShutdownGame( int restart ) {
 	int i;
 
-        G_Printf ("==== ShutdownGame ====\n");
-
-	if ( level.logFile ) {
-		G_LogPrintf("ShutdownGame:\n" );
-		G_LogPrintf("------------------------------------------------------------\n" );
-		trap_FS_FCloseFile( level.logFile );
-                level.logFile = 0;
-	}
+    G_Printf ("==== ShutdownGame ====\n");
 
 	//drop all bots from game in single player
 	for (i = 0; i < MAX_CLIENTS; i++ ) {
@@ -2025,92 +1932,6 @@ void ExitLevel (void) {
 
 /*
 =================
-G_LogPrintf
-
-Print to the logfile with a time stamp if it is open
-=================
-*/
-void QDECL G_LogPrintf( const char *fmt, ... ) {
-	va_list		argptr;
-	char		string[1024];
-	int			min, tens, sec;
-
-	sec = level.time / 1000;
-
-	min = sec / 60;
-	sec -= min * 60;
-	tens = sec / 10;
-	sec -= tens * 10;
-
-	Com_sprintf( string, sizeof(string), "%3i:%i%i ", min, tens, sec );
-
-	va_start( argptr, fmt );
-	Q_vsnprintf(string + 7, sizeof(string) - 7, fmt, argptr);
-	va_end( argptr );
-
-	if ( g_dedicated.integer ) {
-		G_Printf( "%s", string + 7 );
-	}
-
-	if ( !level.logFile ) {
-		return;
-	}
-
-	trap_FS_Write( string, strlen( string ), level.logFile );
-}
-
-/*
-================
-LogExit
-
-Append information about this game to the log file
-================
-*/
-void LogExit( const char *string ) {
-	int				i, numSorted;
-	gclient_t		*cl;
-	G_LogPrintf( "Exit: %s\n", string );
-
-	level.intermissionQueued = level.time;
-
-	// this will keep the clients from playing any voice sounds
-	// that will get cut off when the queued intermission starts
-	trap_SetConfigstring( CS_INTERMISSION, "1" );
-
-	// don't send more than 32 scores (FIXME?)
-	numSorted = level.numConnectedClients;
-	if ( numSorted > 32 ) {
-		numSorted = 32;
-	}
-
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
-		G_LogPrintf( "red:%i  blue:%i\n",
-			level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE] );
-	}
-
-	for (i=0 ; i < numSorted ; i++) {
-		int		ping;
-
-		cl = &level.clients[level.sortedClients[i]];
-
-		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		if ( cl->pers.connected == CON_CONNECTING ) {
-			continue;
-		}
-
-		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
-
-		G_LogPrintf( "score: %i  ping: %i  client: %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i],	cl->pers.netname );
-	}
-
-
-
-}
-
-/*
-=================
 CheckIntermissionExit
 
 The level will stay at the intermission for a minimum of 5 seconds
@@ -2268,7 +2089,6 @@ void CheckExitRules( void ) {
 	if ( g_timelimit.integer > 0 && !level.warmupTime ) {
 		if ( (level.time - level.startTime)/60000 >= g_timelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
-			LogExit( "Timelimit hit." );
 			return;
 		}
 	}
@@ -2280,13 +2100,11 @@ void CheckExitRules( void ) {
 	if ( (g_gametype.integer < GT_CTF || g_ffa_gt>0 ) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the fraglimit.\n\"" );
-			LogExit( "Fraglimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Blue hit the fraglimit.\n\"" );
-			LogExit( "Fraglimit hit." );
 			return;
 		}
 
@@ -2300,7 +2118,6 @@ void CheckExitRules( void ) {
 			}
 
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
-				LogExit( "Fraglimit hit." );
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the fraglimit.\n\"",
 					cl->pers.netname ) );
 				return;
@@ -2312,13 +2129,11 @@ void CheckExitRules( void ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
-			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
-			LogExit( "Capturelimit hit." );
 			return;
 		}
 	}
@@ -2337,8 +2152,6 @@ void StartLMSRound(void) {
 
 	//If we are enough to start a round:
 	level.roundNumberStarted = level.roundNumber; //Set numbers
-
-        G_LogPrintf( "LMS: %i %i %i: Round %i has started!\n", level.roundNumber, -1, 0, level.roundNumber );
 
 	SendEliminationMessageToAllClients();
 	EnableWeapons();
@@ -2374,11 +2187,7 @@ void StartEliminationRound(void) {
 		Team_ReturnFlag( TEAM_RED );
 		Team_ReturnFlag( TEAM_BLUE );
 	}
-        if(g_gametype.integer == GT_ELIMINATION) {
-            G_LogPrintf( "ELIMINATION: %i %i %i: Round %i has started!\n", level.roundNumber, -1, 0, level.roundNumber );
-        } else if(g_gametype.integer == GT_CTF_ELIMINATION) {
-            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: Round %i has started!\n", level.roundNumber, -1, -1, 4, level.roundNumber );
-        }
+
 	SendEliminationMessageToAllClients();
 	if(g_elimination_ctf_oneway.integer)
 		SendAttackingTeamMessageToAllClients(); //Ensure that evaryone know who should attack.
@@ -2460,7 +2269,6 @@ void CheckDoubleDomination( void ) {
 		//Red scores
 		trap_SendServerCommand( -1, "print \"Red team scores!\n\"");
 		AddTeamScore(level.intermission_origin,TEAM_RED,1);
-                G_LogPrintf( "DD: %i %i %i: %s scores!\n", -1, TEAM_RED, 2, TeamName(TEAM_RED) );
 		Team_ForceGesture(TEAM_RED);
 		Team_DD_bonusAtPoints(TEAM_RED);
 		Team_RemoveDoubleDominationPoints();
@@ -2474,7 +2282,6 @@ void CheckDoubleDomination( void ) {
 		//Blue scores
 		trap_SendServerCommand( -1, "print \"Blue team scores!\n\"");
 		AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                G_LogPrintf( "DD: %i %i %i: %s scores!\n", -1, TEAM_BLUE, 2, TeamName(TEAM_BLUE) );
 		Team_ForceGesture(TEAM_BLUE);
 		Team_DD_bonusAtPoints(TEAM_BLUE);
 		Team_RemoveDoubleDominationPoints();
@@ -2629,11 +2436,6 @@ void CheckElimination(void) {
 				//Blue team has been eliminated!
 				trap_SendServerCommand( -1, "print \"Blue Team eliminated!\n\"");
 				AddTeamScore(level.intermission_origin,TEAM_RED,1);
-                                if(g_gametype.integer == GT_ELIMINATION) {
-                                    G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i by eleminating the enemy team!\n", level.roundNumber, TEAM_RED, 1, TeamName(TEAM_RED), level.roundNumber );
-                                } else {
-                                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i by eleminating the enemy team!\n", level.roundNumber, -1, TEAM_RED, 6, TeamName(TEAM_RED), level.roundNumber );
-                                }
 				EndEliminationRound();
 				Team_ForceGesture(TEAM_RED);
 			}
@@ -2642,11 +2444,6 @@ void CheckElimination(void) {
 				//Red team eliminated!
 				trap_SendServerCommand( -1, "print \"Red Team eliminated!\n\"");
 				AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                                if(g_gametype.integer == GT_ELIMINATION) {
-                                    G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i by eleminating the enemy team!\n", level.roundNumber, TEAM_BLUE, 1, TeamName(TEAM_BLUE), level.roundNumber );
-                                } else {
-                                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i by eleminating the enemy team!\n", level.roundNumber, -1, TEAM_BLUE, 6, TeamName(TEAM_BLUE), level.roundNumber );
-                                }
 				EndEliminationRound();
 				Team_ForceGesture(TEAM_BLUE);
 			}
@@ -2663,12 +2460,10 @@ void CheckElimination(void) {
 					if ( (level.eliminationSides+level.roundNumber)%2 == 0 ) { //Red was attacking
 						trap_SendServerCommand( -1, "print \"Blue team defended the base\n\"");
 						AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                                                G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i by defending the flag!\n", level.roundNumber, -1, TEAM_BLUE, 5, TeamName(TEAM_BLUE), level.roundNumber );
 					}
 					else {
 						trap_SendServerCommand( -1, "print \"Red team defended the base\n\"");
 						AddTeamScore(level.intermission_origin,TEAM_RED,1);
-                                                G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i by defending the flag!\n", level.roundNumber, -1, TEAM_RED, 5, TeamName(TEAM_RED), level.roundNumber );
 					}
 				}
 				else if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)>((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
@@ -2676,52 +2471,26 @@ void CheckElimination(void) {
 					//Red team has higher procentage survivors
 					trap_SendServerCommand( -1, "print \"Red team has most survivers!\n\"");
 					AddTeamScore(level.intermission_origin,TEAM_RED,1);
-                                        if(g_gametype.integer == GT_ELIMINATION) {
-                                            G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i due to more survivors!\n", level.roundNumber, TEAM_RED, 2, TeamName(TEAM_RED), level.roundNumber );
-                                        } else {
-                                            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i due to more survivors!\n", level.roundNumber, -1, TEAM_RED, 7, TeamName(TEAM_RED), level.roundNumber );
-                                        }
 				}
 				else if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)<((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
 				{
 					//Blue team has higher procentage survivors
 					trap_SendServerCommand( -1, "print \"Blue team has most survivers!\n\"");
 					AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                                        if(g_gametype.integer == GT_ELIMINATION) {
-                                            G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i due to more survivors!\n", level.roundNumber, TEAM_BLUE, 2, TeamName(TEAM_BLUE), level.roundNumber );
-                                        } else {
-                                            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i due to more survivors!\n", level.roundNumber, -1, TEAM_BLUE, 7, TeamName(TEAM_BLUE), level.roundNumber );
-                                        }
 				}
 				else if(countsHealth[TEAM_RED]>countsHealth[TEAM_BLUE])
 				{
 					//Red team has more health
 					trap_SendServerCommand( -1, "print \"Red team has more health left!\n\"");
 					AddTeamScore(level.intermission_origin,TEAM_RED,1);
-                                        if(g_gametype.integer == GT_ELIMINATION) {
-                                            G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i due to more health left!\n", level.roundNumber, TEAM_RED, 3, TeamName(TEAM_RED), level.roundNumber );
-                                        } else {
-                                            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i due to more health left!\n", level.roundNumber, -1, TEAM_RED, 8, TeamName(TEAM_RED), level.roundNumber );
-                                        }
 				}
 				else if(countsHealth[TEAM_RED]<countsHealth[TEAM_BLUE])
 				{
 					//Blue team has more health
 					trap_SendServerCommand( -1, "print \"Blue team has more health left!\n\"");
 					AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                                        if(g_gametype.integer == GT_ELIMINATION) {
-                                            G_LogPrintf( "ELIMINATION: %i %i %i: %s wins round %i due to more health left!\n", level.roundNumber, TEAM_BLUE, 3, TeamName(TEAM_BLUE), level.roundNumber );
-                                        } else {
-                                            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s wins round %i due to more health left!\n", level.roundNumber, -1, TEAM_BLUE, 8, TeamName(TEAM_BLUE), level.roundNumber );
-                                        }
 				}
 			}
-                        //Draw
-                        if(g_gametype.integer == GT_ELIMINATION) {
-                            G_LogPrintf( "ELIMINATION: %i %i %i: Round %i ended in a draw!\n", level.roundNumber, -1, 4, level.roundNumber );
-                        } else {
-                            G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: Round %i ended in a draw!\n", level.roundNumber, -1, -1, 9, level.roundNumber );
-                        }
 			EndEliminationRound();
 		}
 
@@ -2796,9 +2565,6 @@ void CheckDomination(void) {
 				AddTeamScore(level.intermission_origin,TEAM_RED,1);
 			if ( level.pointStatusDom[i] == TEAM_BLUE )
 				AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-                        G_LogPrintf( "DOM: %i %i %i %i: %s holds point %s for 1 point!\n",
-                                    -1,i,1,level.pointStatusDom[i],
-                                    TeamName(level.pointStatusDom[i]),level.domination_points_names[i]);
 		}
 		level.dom_scoreGiven++;
 		while(level.time>level.dom_scoreGiven*DOM_SECSPERPOINT*scoreFactor)
@@ -2833,7 +2599,6 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
 			}
 			return;
 		}
@@ -2890,7 +2655,6 @@ void CheckTournament( void ) {
 			if ( level.warmupTime != -1 ) {
 				level.warmupTime = -1;
 				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
 			}
 			return; // still waiting for team members
 		}
@@ -3398,7 +3162,6 @@ mod_cgspread = g_cgspread.integer;
 mod_ftdelay = g_ftdelay.integer;
 mod_amdelay = g_amdelay.integer;
 mod_ghtimeout = g_ghtimeout.integer;
-mod_vampire_max_health = g_vampireMaxHealth.integer;
 mod_ammoregenfirespeed = g_ammoregenfirespeed.value;
 mod_hastefirespeed = g_hastefirespeed.value;
 mod_scoutfirespeed = g_scoutfirespeed.value;
@@ -3423,7 +3186,6 @@ mod_invulinf = g_invulinf.integer;
 mod_teamblue_damage = g_teamblue_damage.value;
 mod_teamred_damage = g_teamred_damage.value;
 mod_accelerate = g_accelerate.value;
-mod_slickmove = g_slickmove.value;
-mod_overlay = g_overlay.value;
+mod_movetype = g_movetype.value;
 mod_gravity = g_gravity.value;
 }

@@ -24,7 +24,7 @@
 // 
 
 #include "ui_local.h"
-
+#if 0
 #define ART_MODEL0			"menu/assets/model_0"
 #define ART_MODEL1			"menu/assets/model_1"
 #define ART_BACK0			"menu/assets/back_0"
@@ -59,225 +59,10 @@ typedef struct {
 
 	menuelement_s		back;
 	menuelement_s		model;
-	menuelement_s		item_null;
-	menuelement_s			modeltype;
-
-	qhandle_t			fxBasePic;
-	qhandle_t			fxPic[7];
-	int					current_fx;
-	modelAnim_t			player;
 
 } playersettings_t;
 
-
 static playersettings_t	s_playersettings;
-
-static int gamecodetoui[] = {4,2,3,0,5,1,6};
-static int uitogamecode[] = {4,6,2,3,1,5,7};
-
-/*
-=================
-PlayerSettings_SetPlayerModelType
-=================
-*/
-static void PlayerSettings_SetPlayerModelType( void )
-{
-	if (drawTeamModel)
-	{
-		if(cl_language.integer == 0){
-		s_playersettings.modeltype.string = "Team Model";
-		}
-		if(cl_language.integer == 1){
-		s_playersettings.modeltype.string = "Командная Модель";
-		}
-	}
-	else
-	{
-		if(cl_language.integer == 0){
-		s_playersettings.modeltype.string = "DM Model";
-		}
-		if(cl_language.integer == 1){
-		s_playersettings.modeltype.string = "Обычная Модель";
-		}
-	}
-
-	PText_Init(&s_playersettings.modeltype);
-}
-
-
-
-/*
-=================
-PlayerSettings_ToggleModelType
-=================
-*/
-static void PlayerSettings_ToggleModelType( void )
-{
-	qboolean type;
-
-	if (drawTeamModel) {
-		type = qfalse;
-	}
-	else {
-		type = qtrue;
-	}
-
-	GUI_PlayerInfo_DrawTeamModel(&s_playersettings.player, type);
-	PlayerSettings_SetPlayerModelType();
-}
-
-
-
-
-/*
-=================
-PlayerSettings_DrawName
-=================
-*/
-static void PlayerSettings_DrawName( void *self ) {
-	menuelement_s		*f;
-	qboolean		focus;
-	int				style;
-	char			*txt;
-	char			c;
-	float			*color;
-	int				n;
-	int				basex, x, y;
-	char			name[32];
-
-	f = (menuelement_s*)self;
-	basex = f->generic.x;
-	y = f->generic.y;
-	focus = (f->generic.parent->cursor == f->generic.menuPosition);
-
-	style = UI_LEFT|UI_SMALLFONT;
-	color = text_color_normal;
-	if( focus ) {
-		style |= UI_PULSE;
-		color = color_highlight;
-	}
-
-if(cl_language.integer == 0){
-	UI_DrawString( basex, y, "Name", style, color );
-}
-if(cl_language.integer == 1){
-	UI_DrawString( basex, y, "Имя", style, color );
-}
-
-	// draw the actual name
-	basex += 64;
-	y += PROP_HEIGHT;
-	txt = f->field.buffer;
-	color = g_color_table[ColorIndex(COLOR_WHITE)];
-	x = basex;
-	while ( (c = *txt) != 0 ) {
-		if ( !focus && Q_IsColorString( txt ) ) {
-			n = ColorIndex( *(txt+1) );
-			if( n == 0 ) {
-				n = 7;
-			}
-			color = g_color_table[n];
-			txt += 2;
-			continue;
-		}
-		UI_DrawChar( x, y, c, style, color );
-		txt++;
-		x += SMALLCHAR_WIDTH;
-	}
-
-	// draw cursor if we have focus
-	if( focus ) {
-		if ( trap_Key_GetOverstrikeMode() ) {
-			c = 11;
-		} else {
-			c = 10;
-		}
-
-		style &= ~UI_PULSE;
-		style |= UI_BLINK;
-
-		UI_DrawChar( basex + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white );
-	}
-
-	// draw at bottom also using proportional font
-	Q_strncpyz( name, f->field.buffer, sizeof(name) );
-	Q_CleanStr( name );
-	UI_DrawString( 320, 440, name, UI_CENTER|UI_BIGFONT, text_color_normal );
-}
-
-/*
-=================
-PlayerSettings_DrawEffects
-=================
-*/
-static void PlayerSettings_DrawEffects( void *self ) {
-	menuelement_s		*item;
-	qboolean		focus;
-	int				style;
-	float			*color;
-	int				textlen;
-
-	item = (menuelement_s *)self;
-	focus = (item->generic.parent->cursor == item->generic.menuPosition);
-
-	style = UI_LEFT|UI_SMALLFONT;
-	color = text_color_normal;
-	if( focus ) {
-		style |= UI_PULSE;
-		color = color_highlight;
-	}
-
-	if(cl_language.integer == 0){
-	if (item->generic.id == ID_EFFECTS) {
-		UI_DrawString( item->generic.x, item->generic.y, "Rail core:", style, color );
-	} else {
-		UI_DrawString( item->generic.x, item->generic.y, "Rail ring:", style, color );
-	}
-	}
-	if(cl_language.integer == 1){
-	if (item->generic.id == ID_EFFECTS) {
-		UI_DrawString( item->generic.x, item->generic.y, "Рэйл луч:", style, color );
-	} else {
-		UI_DrawString( item->generic.x, item->generic.y, "Рейл кольца:", style, color );
-	}
-	}
-
-	if(cl_language.integer == 0){
-		textlen = UI_ProportionalStringWidth("Rail core:", 1.00) * 1.00;
-	}
-	if(cl_language.integer == 1){
-		textlen = UI_ProportionalStringWidth("Рэйл луч:", 1.00) * 1.00;
-	}
-
-	UI_DrawHandlePic( item->generic.x + textlen, item->generic.y + 4, 128, 8, s_playersettings.fxBasePic );
-	UI_DrawHandlePic( item->generic.x + textlen + item->curvalue * 16 + 8, item->generic.y + 2, 16, 12, s_playersettings.fxPic[item->curvalue] );
-}
-
-
-/*
-=================
-PlayerSettings_DrawPlayer
-=================
-*/
-static void PlayerSettings_DrawPlayer( void *self ) {
-	GUI_PlayerInfo_AnimateModel(&s_playersettings.player);
-}
-
-
-/*
-=================
-PlayerSettings_DrawMenu
-=================
-*/
-static void PlayerSettings_MenuDraw(void)
-{
-	if (uis.firstdraw)
-		PlayerSettings_SetPlayerModelType();
-
-	// standard menu drawing
-	Menu_Draw( &s_playersettings.menu );
-}
-
 
 /*
 =================
@@ -370,11 +155,8 @@ static void PlayerSettings_MenuInit( void ) {
 
 	memset(&s_playersettings,0,sizeof(playersettings_t));
 
-	s_playersettings.menu.fullscreen = qtrue;
-	s_playersettings.menu.native 	   = qfalse;
-	s_playersettings.menu.draw = PlayerSettings_MenuDraw;
-
-	PlayerSettings_Cache();
+	s_playersettings.menu.fullscreen	= qtrue;
+	s_playersettings.menu.native		= qfalse;
 
 	s_playersettings.menu.key        = PlayerSettings_MenuKey;
 
@@ -507,15 +289,6 @@ void PlayerSettings_Cache( void ) {
 	trap_R_RegisterShaderNoMip( ART_MODEL1 );
 	trap_R_RegisterShaderNoMip( ART_BACK0 );
 	trap_R_RegisterShaderNoMip( ART_BACK1 );
-
-	s_playersettings.fxBasePic = trap_R_RegisterShaderNoMip( ART_FX_BASE );
-	s_playersettings.fxPic[0] = trap_R_RegisterShaderNoMip( ART_FX_RED );
-	s_playersettings.fxPic[1] = trap_R_RegisterShaderNoMip( ART_FX_YELLOW );
-	s_playersettings.fxPic[2] = trap_R_RegisterShaderNoMip( ART_FX_GREEN );
-	s_playersettings.fxPic[3] = trap_R_RegisterShaderNoMip( ART_FX_TEAL );
-	s_playersettings.fxPic[4] = trap_R_RegisterShaderNoMip( ART_FX_BLUE );
-	s_playersettings.fxPic[5] = trap_R_RegisterShaderNoMip( ART_FX_CYAN );
-	s_playersettings.fxPic[6] = trap_R_RegisterShaderNoMip( ART_FX_WHITE );
 }
 
 
@@ -528,3 +301,4 @@ void UI_PlayerSettingsMenu( void ) {
 	PlayerSettings_MenuInit();
 	UI_PushMenu( &s_playersettings.menu );
 }
+#endif

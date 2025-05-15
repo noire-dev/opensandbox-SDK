@@ -487,58 +487,15 @@ gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) 
 
 /*
 ===========
-SelectInitialSpawnPoint
-
-Try to find a spawn point marked 'initial', where the client
-is allowed to spawn. Otherwise use normal spawn selection.
-It is assumed there's only ONE spawnpoint marked 'initial'
-in the map.
-============
-*/
-gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
-	gentity_t	*spot;
-
-	spot = NULL;
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if ( (spot->spawnflags & 1) && SpawnPointIsActive(spot) ) {
-			break;
-		}
-	}
-
-	if ( !spot || SpotWouldTelefrag( spot ) ) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
-	}
-
-	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (spot->s.angles, angles);
-
-	return spot;
-}
-
-/*
-===========
 SelectSpectatorSpawnPoint
 
 ============
 */
 gentity_t *SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles ) {
-	//gentity_t	*spot;
-
 	FindIntermissionPoint();
 
 	VectorCopy( level.intermission_origin, origin );
 	VectorCopy( level.intermission_angle, angles );
-
-
-
-	//for some reason we need to return an specific point in elimination (this might not be neccecary anymore but to be sure...)
-	//if(g_gametype.integer == GT_ELIMINATION)
-	//	return SelectSpawnPoint( vec3_origin, origin, angles );
-
-	//VectorCopy (origin,spot->s.origin);
-	//spot->s.origin[2] += 9;
-	//VectorCopy (angles, spot->s.angles);
 
 	return NULL;
 }
@@ -1039,12 +996,10 @@ Gives a point to the lucky survivor
 ================
 */
 
-void LMSpoint(void)
-{
+void LMSpoint(void) {
 	int i;
 	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++)
-	{
+	for(i=0;i<level.maxclients;i++) {
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
 			continue;
 		}
@@ -1058,16 +1013,8 @@ void LMSpoint(void)
 		}
 
 		client = g_entities + i;
-		/*
-		Not good in mode 2 & 3
-		if ( client->health <= 0 ){
-			continue;
-		}
-		*/
 
 		client->client->ps.persistant[PERS_SCORE] += 1;
-                        G_LogPrintf("PlayerScore: %i %i: %s now has %d points\n",
-		i, client->client->ps.persistant[PERS_SCORE], client->client->pers.netname, client->client->ps.persistant[PERS_SCORE] );
 	}
 
 	CalculateRanks();
@@ -1246,25 +1193,6 @@ void ClientUserinfoChanged( int clientNum ) {
 		strcpy (userinfo, "\\name\\badinfo");
 	}
 
-	// check for local client
-	s = Info_ValueForKey( userinfo, "ip" );
-	if ( !strcmp( s, "localhost" ) ) {
-		client->pers.localClient = qtrue;
-	}
-
-	//unlagged - client options
-	// see if the player has opted out
-	s = Info_ValueForKey( userinfo, "cg_delag" );
-	if ( !atoi( s ) ) {
-		client->pers.delag = 0;
-	} else {
-		client->pers.delag = atoi( s );
-	}
-
-	// see if the player is nudging his shots
-	s = Info_ValueForKey( userinfo, "cg_cmdTimeNudge" );
-	client->pers.cmdTimeNudge = atoi( s );
-
 	// set name
 	Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey (userinfo, "name");
@@ -1366,8 +1294,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
-
-	G_LogPrintf( "ClientUserinfoChanged: %i %s\\id\\%s\n", clientNum, s, Info_ValueForKey(userinfo, "cl_guid") );
 }
 
 /*
@@ -1408,12 +1334,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
-	value = Info_ValueForKey (userinfo, "ip");
-    //Check for local client
-    if( !strcmp( value, "localhost" ) )
-        client->pers.localClient = qtrue;
-
-	if ( !isBot && (strcmp(value, "localhost") != 0)) {
+	if ( !isBot ) {
 		// check for a password
 		value = Info_ValueForKey (userinfo, "password");
 		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) &&
@@ -1445,11 +1366,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		}
 	}
 
-	//KK-OAX Swapped these in order...seemed to help the connection process.
-	// get and distribute relevent paramters
 	ClientUserinfoChanged( clientNum );
-	G_LogPrintf( "ClientConnect: %i\n", clientNum );
-
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime && ( !ent->singlebot )) {
@@ -1546,7 +1463,6 @@ void ClientBegin( int clientNum ) {
 	if (!IsBot(ent)) {
 		G_Sav_LoadData(ent, 0);
 	}
-	G_LogPrintf( "ClientBegin: %i\n", clientNum );
 
 	//Send domination point names:
 	if(g_gametype.integer == GT_DOMINATION) {
@@ -1617,20 +1533,14 @@ void ClientSpawn(gentity_t *ent) {
 		{
 		if	(client->sess.sessionTeam == TEAM_BLUE) {
 			if(g_elimination_blue_respawn.integer == 0){
-			client->sess.spectatorState = SPECTATOR_FREE;
-			client->isEliminated = qtrue;
-                        if(g_gametype.integer == GT_LMS)
-                                G_LogPrintf( "LMS: %i %i %i: Player \"%s^7\" eliminated!\n", level.roundNumber, index, 1, client->pers.netname );
-			client->ps.pm_type = PM_SPECTATOR;
+				client->sess.spectatorState = SPECTATOR_FREE;
+				client->isEliminated = qtrue;
 			}
 		}
 		if	(client->sess.sessionTeam == TEAM_RED) {
 			if(g_elimination_red_respawn.integer == 0){
-			client->sess.spectatorState = SPECTATOR_FREE;
-			client->isEliminated = qtrue;
-                        if(g_gametype.integer == GT_LMS)
-                                G_LogPrintf( "LMS: %i %i %i: Player \"%s^7\" eliminated!\n", level.roundNumber, index, 1, client->pers.netname );
-			client->ps.pm_type = PM_SPECTATOR;
+				client->sess.spectatorState = SPECTATOR_FREE;
+				client->isEliminated = qtrue;
 			}
 		}
 
@@ -1659,16 +1569,8 @@ void ClientSpawn(gentity_t *ent) {
 						spawn_origin, spawn_angles);
 	} else {
 		do {
-			// the first spawn should be at a good looking spot
-			if ( !client->pers.initialSpawn && client->pers.localClient ) {
-				client->pers.initialSpawn = qtrue;
-				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
-			} else {
-				// don't spawn near existing origin if possible
-				spawnPoint = SelectSpawnPoint (
-					client->ps.origin,
-					spawn_origin, spawn_angles);
-			}
+			// don't spawn near existing origin if possible
+			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
 
 			// Tim needs to prevent bots from spawning at the initial point
 			// on q3dm0...
@@ -1809,7 +1711,6 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.pm_time = 100;
 
 	client->respawnTime = level.time;
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	client->latched_buttons = 0;
 
 	// set default animations
@@ -1877,16 +1778,8 @@ void ClientSpawn(gentity_t *ent) {
 						spawn_origin, spawn_angles);
 	} else {
 		do {
-			// the first spawn should be at a good looking spot
-			if ( !client->pers.initialSpawn && client->pers.localClient ) {
-				client->pers.initialSpawn = qtrue;
-				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
-			} else {
-				// don't spawn near existing origin if possible
-				spawnPoint = SelectSpawnPoint (
-					client->ps.origin,
-					spawn_origin, spawn_angles);
-			}
+			// don't spawn near existing origin if possible
+			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
 
 			// Tim needs to prevent bots from spawning at the initial point
 			// on q3dm0...
@@ -2030,7 +1923,6 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.pm_time = 100;
 
 	client->respawnTime = level.time;
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	client->latched_buttons = 0;
 
 	// set default animations
@@ -2103,7 +1995,6 @@ void ClientSpawn(gentity_t *ent) {
 				client->isEliminated = qtrue;
 				if((g_lms_mode.integer == 2 || g_lms_mode.integer == 3) && level.roundNumber == level.roundNumberStarted)
 					LMSpoint();
-                                G_LogPrintf( "LMS: %i %i %i: Player \"%s^7\" eliminated!\n", level.roundNumber, index, 1, client->pers.netname );
 			}
 			client->ps.pm_type = PM_SPECTATOR;
 			return;
@@ -2138,16 +2029,8 @@ void ClientSpawn(gentity_t *ent) {
 						spawn_origin, spawn_angles);
 	} else {
 		do {
-			// the first spawn should be at a good looking spot
-			if ( !client->pers.initialSpawn && client->pers.localClient ) {
-				client->pers.initialSpawn = qtrue;
-				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
-			} else {
-				// don't spawn near existing origin if possible
-				spawnPoint = SelectSpawnPoint (
-					client->ps.origin,
-					spawn_origin, spawn_angles);
-			}
+			// don't spawn near existing origin if possible
+			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
 
 			// Tim needs to prevent bots from spawning at the initial point
 			// on q3dm0...
@@ -2296,7 +2179,6 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.pm_time = 100;
 
 	client->respawnTime = level.time;
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	client->latched_buttons = 0;
 
 	// set default animations
@@ -2394,8 +2276,6 @@ void ClientDisconnect( int clientNum ) {
 	if ( ent->client->pers.connected == CON_CONNECTED && ent->client->sess.sessionTeam != TEAM_SPECTATOR){
 		PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"),ent->client->ps);
 	}
-
-	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
 
 	// if we are playing in tourney mode and losing, give a win to the other player
 	if ( (g_gametype.integer == GT_TOURNAMENT )

@@ -268,9 +268,6 @@ void PM_StepSlideMove( qboolean gravity ) {
 	// test the player position if they were a stepheight higher
 	pm->trace (&trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask);
 	if ( trace.allsolid ) {
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:bend can't step\n", c_pmove);
-		}
 		return;		// can't step up
 	}
 
@@ -292,18 +289,6 @@ void PM_StepSlideMove( qboolean gravity ) {
 		PM_ClipVelocity( pm->ps->velocity, trace.plane.normal, pm->ps->velocity, OVERCLIP );
 	}
 
-#if 0
-	// if the down trace can trace back to the original position directly, don't step
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, start_o, pm->ps->clientNum, pm->tracemask);
-	if ( trace.fraction == 1.0 ) {
-		// use the original move
-		VectorCopy (down_o, pm->ps->origin);
-		VectorCopy (down_v, pm->ps->velocity);
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:bend\n", c_pmove);
-		}
-	} else 
-#endif
 	{
 		// use the step move
 		float	delta;
@@ -319,9 +304,6 @@ void PM_StepSlideMove( qboolean gravity ) {
 			} else {
 				PM_AddEvent( EV_STEP_16 );
 			}
-		}
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:stepped\n", c_pmove);
 		}
 	}
 }

@@ -674,8 +674,6 @@ void SP_target_gravity (gentity_t *self) {
 }
 
 void target_botspawn_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	if ( g_debugBotspawns.integer ) 
-		G_Printf("\ntime %i\n spawn bot \"%s\"\n botspawn \"%s\" / \"%s\" (%i)\n waypoint \"%s\"\n health %i\n", level.time, self->clientname, self->targetname, self->targetname2, self->s.number, self->target, self->health);
 	G_AddCustomBot( self->clientname, self->s.number, self->target, self->skill, self->type, self->message );
 }
 
@@ -1374,11 +1372,6 @@ void SP_target_playerstats (gentity_t *self) {
 void target_cutscene_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	int i;
 
-	//if cutscenes are disabled, do nothing
-	if ( g_disableCutscenes.integer ) {
-		return;
-	}
-
 	//bots shouldn't be able to activate this entity
 	if ( IsBot( activator ) )
 		return;
@@ -1407,17 +1400,8 @@ void target_cutscene_use (gentity_t *self, gentity_t *other, gentity_t *activato
 	level.player->client->ps.velocity[1] = 0;
 	level.player->client->ps.velocity[2] = 0;
 
-	//set player's orgOrigin so we can move the player back to its original location when the cutscene ends
-	//if (level.player->client->ps.pm_type != PM_CUTSCENE) {
 	VectorCopy(level.player->client->ps.origin, level.player->orgOrigin);
-	//}
 
-	//disable synchronousClients to prevent "CVAR_Update: handle out of range" error. See issue 162.
-	if (g_allowSyncCutscene.integer == 0) {
-		level.player->skill = g_synchronousClients.integer;	//abusing the skill field to temporarily store the sync-clients value
-		trap_Cvar_Set("g_synchronousClients", "0");
-	}
-	
 	//activate the first camera
 	self->nextTrain->use( self->nextTrain, other, level.player);
 }
@@ -1546,40 +1530,29 @@ void script_variable_use (gentity_t *self, gentity_t *other, gentity_t *activato
 	if ( self->spawnflags & 1 || self->spawnflags & 2)
 	{
 		trap_Cvar_VariableStringBuffer(self->key, value, sizeof( value ));
-		if ( g_debugVariables.integer ) {
-			G_Printf("\nDebugvariables: comparing variable \"%s\" to \"%s\"\n", self->key, self->value);
-			G_Printf("In-memory value for variable = \"%s\"\n", value);
-		}
 		
 		if ( (self->spawnflags & 1) && !strcmp(value, self->value) ) {
-			if ( g_debugVariables.integer ) G_Printf("Variable =, targets will be activated\n");
 			G_UseTargets (self, activator);
 		}
 		
 		if ( (self->spawnflags & 2) && strcmp(value, self->value) ) {
-			if ( g_debugVariables.integer ) G_Printf("Variable !=, targets will be activated\n");
 			G_UseTargets (self, activator);
 		}
 		
 		if ( (self->spawnflags & 4) && (atoi(value) <= atoi(self->value)) ) {
-			if ( g_debugVariables.integer ) G_Printf("Variable <=, targets will be activated\n");
 			G_UseTargets (self, activator);
 		}
 		
 		if ( (self->spawnflags & 8) && (atoi(value) >= atoi(self->value)) ) {
-			if ( g_debugVariables.integer ) G_Printf("Variable >=, targets will be activated\n");
 			G_UseTargets (self, activator);
 		}
 		
 		return;
 	}
 	if ( self->spawnflags & 8192 ){
-	trap_SendConsoleCommand( EXEC_APPEND, va("seta %s %s\n", self->key, self->value) );
+		trap_SendConsoleCommand( EXEC_APPEND, va("seta %s %s\n", self->key, self->value) );
 	} else {
-	trap_Cvar_Set( self->key, self->value );
-	}
-	if ( g_debugVariables.integer ) {
-		G_Printf("\nDebugvariables: setting variable \"%s\" to \"%s\"\n", self->key, self->value);
+		trap_Cvar_Set( self->key, self->value );
 	}
 }
 

@@ -39,10 +39,6 @@ static void CG_MachineGunEjectBrass( centity_t *cent ) {
 	float			waterScale = 1.0f;
 	vec3_t			v[3];
 
-	if ( cg_brassTime.integer <= 0 ) {
-		return;
-	}
-
 	le = CG_AllocLocalEntity();
 	re = &le->refEntity;
 
@@ -52,7 +48,7 @@ static void CG_MachineGunEjectBrass( centity_t *cent ) {
 
 	le->leType = LE_FRAGMENT;
 	le->startTime = cg.time;
-	le->endTime = le->startTime + cg_brassTime.integer + ( cg_brassTime.integer / 4 ) * random();
+	le->endTime = le->startTime + 5000 + ( 5000 / 4 ) * random();
 
 	le->pos.trType = TR_GRAVITY;
 	le->pos.trTime = cg.time - (rand()&15);
@@ -111,10 +107,6 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
 	vec3_t			v[3];
 	int				i;
 
-	if ( cg_brassTime.integer <= 0 ) {
-		return;
-	}
-
 	for ( i = 0; i < 2; i++ ) {
 		float	waterScale = 1.0f;
 
@@ -131,7 +123,7 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
 
 		le->leType = LE_FRAGMENT;
 		le->startTime = cg.time;
-		le->endTime = le->startTime + cg_brassTime.integer*3 + cg_brassTime.integer * random();
+		le->endTime = le->startTime + 15000 + 5000 * random();
 
 		le->pos.trType = TR_GRAVITY;
 		le->pos.trTime = cg.time;
@@ -226,7 +218,7 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
  
 	le->leType = LE_FADE_RGB;
 	le->startTime = cg.time;
-	le->endTime = cg.time + cg_railTrailTime.value;
+	le->endTime = cg.time + 400;
 	le->lifeRate = 1.0 / (le->endTime - le->startTime);
  
 	re->shaderTime = cg.time / 1000.0f;
@@ -1006,6 +998,8 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 	VectorCopy( cg.refdef.vieworg, origin );
 	VectorCopy( cg.refdefViewAngles, angles );
 
+	return;
+
 	// on odd legs, invert some angles
 	if ( cg.bobcycle & 1 ) {
 		scale = -cg.xyspeed;
@@ -1065,57 +1059,10 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 
 	memset( &beam, 0, sizeof( beam ) );
 
-//unlagged - attack prediction #1
-	// if the entity is us, unlagged is on server-side, and we've got it on for the lightning gun
-	if ( (cent->currentState.number == cg.predictedPlayerState.clientNum) && cgs.delagHitscan &&
-			( cg_delag.integer & 1 || cg_delag.integer & 8 ) ) {
+	if (cent->currentState.number == cg.predictedPlayerState.clientNum) {
 		// always shoot straight forward from our current position
 		AngleVectors( cg.predictedPlayerState.viewangles, forward, NULL, NULL );
 		VectorCopy( cg.predictedPlayerState.origin, muzzlePoint );
-	}
-	else
-//unlagged - attack prediction #1
-
-	// CPMA  "true" lightning
-    if ((cent->currentState.number == cg.predictedPlayerState.clientNum) && (cg_trueLightning.value != 0)) {
-		vec3_t angle;
-		int i;
-
-//unlagged - true lightning
-		// might as well fix up true lightning while we're at it
-		vec3_t viewangles;
-		VectorCopy( cg.predictedPlayerState.viewangles, viewangles );
-//unlagged - true lightning
-
-		for (i = 0; i < 3; i++) {
-			float a = cent->lerpAngles[i] - cg.refdefViewAngles[i];
-			if (a > 180) {
-				a -= 360;
-			}
-			if (a < -180) {
-				a += 360;
-			}
-
-			angle[i] = cg.refdefViewAngles[i] + a * (1.0 - cg_trueLightning.value);
-			if (angle[i] < 0) {
-				angle[i] += 360;
-			}
-			if (angle[i] > 360) {
-				angle[i] -= 360;
-			}
-		}
-
-		AngleVectors(angle, forward, NULL, NULL );
-//unlagged - true lightning
-//		VectorCopy(cent->lerpOrigin, muzzlePoint );
-//		VectorCopy(cg.refdef.vieworg, muzzlePoint );
-		// *this* is the correct origin for true lightning
-		VectorCopy(cg.predictedPlayerState.origin, muzzlePoint );
-//unlagged - true lightning
-	} else {
-		// !CPMA
-		AngleVectors( cent->lerpAngles, forward, NULL, NULL );
-		VectorCopy(cent->lerpOrigin, muzzlePoint );
 	}
 
 	// FIXME: crouch
@@ -1260,10 +1207,8 @@ CG_AddWeaponWithPowerups
 static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
 	// add powerup effects
 	if ( powerups & ( 1 << PW_INVIS ) ) {
-            if( (cgs.dmflags & DF_INVIS) == 0) {
 		gun->customShader = cgs.media.invisShader;
 		trap_R_AddRefEntityToScene( gun );
-            }
 	} else {
 		trap_R_AddRefEntityToScene( gun );
 
@@ -1532,9 +1477,9 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin );
-	VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
-	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+	VectorMA( hand.origin, 5, cg.refdef.viewaxis[0], hand.origin );
+	VectorMA( hand.origin, -1, cg.refdef.viewaxis[1], hand.origin );
+	VectorMA( hand.origin, (-1+fovOffset), cg.refdef.viewaxis[2], hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 
@@ -1863,13 +1808,11 @@ void CG_FireWeapon( centity_t *cent ) {
 	}
 
 	// do brass ejection
-	if ( weap->ejectBrassFunc && cg_brassTime.integer > 0 ) {
+	if ( weap->ejectBrassFunc ) {
 		weap->ejectBrassFunc( cent );
 	}
 
-//unlagged - attack prediction #1
 	CG_PredictWeaponEffects( cent );
-//unlagged - attack prediction #1
 }
 
 /*
@@ -1927,22 +1870,12 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	case WP_LIGHTNING:
 		// no explosion at LG impact, it is added with the beam
 		r = rand() & 3;
-		if ( !cg_paintballMode.integer ) {
 		if ( r < 2 ) {
 			sfx = cgs.media.sfx_lghit2;
 		} else if ( r == 2 ) {
 			sfx = cgs.media.sfx_lghit1;
 		} else {
 			sfx = cgs.media.sfx_lghit3;
-		}
-		} else {
-			if ( r < 2 ) {
-				sfx = cgs.media.gibBounce1Sound;
-			} else if ( r == 2 ) {
-				sfx = cgs.media.gibBounce2Sound;
-			} else {
-				sfx = cgs.media.gibBounce3Sound;
-			}
 		}
 		mark = cgs.media.holeMarkShader;
 		radius = 12;
@@ -1983,30 +1916,21 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
 		shader = cgs.media.railExplosionShader;
-		if ( !cg_paintballMode.integer )
 		sfx = cgs.media.sfx_plasmaexp;
-		else
-			sfx = cgs.media.gibBounce3Sound;
 		mark = cgs.media.energyMarkShader;
 		radius = 24;
 		break;
 	case WP_PLASMAGUN:
 		mod = cgs.media.ringFlashModel;
 		shader = cgs.media.plasmaExplosionShader;
-		if ( !cg_paintballMode.integer )
 		sfx = cgs.media.sfx_plasmaexp;
-		else
-			sfx = cgs.media.gibBounce3Sound;
 		mark = cgs.media.energyMarkShader;
 		radius = 16;
 		break;
 	case WP_BFG:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.bfgExplosionShader;
-		if ( !cg_paintballMode.integer )
 		sfx = cgs.media.sfx_rockexp;
-		else
-			sfx = cgs.media.gibSound;
 		mark = cgs.media.burnMarkShader;
 		radius = 32;
 		isSprite = qtrue;
@@ -2070,22 +1994,12 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 
 		mark = cgs.media.bulletMarkShader;
 		r = rand() & 3;
-		if ( !cg_paintballMode.integer ) {
-			if ( r == 0 ) {
-				sfx = cgs.media.sfx_ric1;
-			} else if ( r == 1 ) {
-				sfx = cgs.media.sfx_ric2;
-			} else {
-				sfx = cgs.media.sfx_ric3;
-			}
+		if ( r == 0 ) {
+			sfx = cgs.media.sfx_ric1;
+		} else if ( r == 1 ) {
+			sfx = cgs.media.sfx_ric2;
 		} else {
-			if ( r == 0 ) {
-				sfx = cgs.media.gibBounce1Sound;
-			} else if ( r == 1 ) {
-				sfx = cgs.media.gibBounce2Sound;
-			} else {
-				sfx = cgs.media.gibBounce3Sound;
-			}
+			sfx = cgs.media.sfx_ric3;
 		}
 
 		radius = 8;
@@ -2302,7 +2216,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 		return;
 	}
 	begin = 50 + random() * (len - 60);
-	end = begin + cg_tracerLength.value;
+	end = begin + 100;
 	if ( end > len ) {
 		end = len;
 	}
@@ -2316,7 +2230,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	VectorMA( right, -line[0], cg.refdef.viewaxis[2], right );
 	VectorNormalize( right );
 
-	VectorMA( finish, cg_tracerWidth.value, right, verts[0].xyz );
+	VectorMA( finish, 1, right, verts[0].xyz );
 	verts[0].st[0] = 0;
 	verts[0].st[1] = 1;
 	verts[0].modulate[0] = 255;
@@ -2324,7 +2238,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	verts[0].modulate[2] = 255;
 	verts[0].modulate[3] = 255;
 
-	VectorMA( finish, -cg_tracerWidth.value, right, verts[1].xyz );
+	VectorMA( finish, -1, right, verts[1].xyz );
 	verts[1].st[0] = 1;
 	verts[1].st[1] = 0;
 	verts[1].modulate[0] = 255;
@@ -2332,7 +2246,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	verts[1].modulate[2] = 255;
 	verts[1].modulate[3] = 255;
 
-	VectorMA( start, -cg_tracerWidth.value, right, verts[2].xyz );
+	VectorMA( start, -1, right, verts[2].xyz );
 	verts[2].st[0] = 1;
 	verts[2].st[1] = 1;
 	verts[2].modulate[0] = 255;
@@ -2340,7 +2254,7 @@ void CG_Tracer( vec3_t source, vec3_t dest ) {
 	verts[2].modulate[2] = 255;
 	verts[2].modulate[3] = 255;
 
-	VectorMA( start, cg_tracerWidth.value, right, verts[3].xyz );
+	VectorMA( start, 1, right, verts[3].xyz );
 	verts[3].st[0] = 0;
 	verts[3].st[1] = 0;
 	verts[3].modulate[0] = 255;
@@ -2464,7 +2378,7 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 
 	// if the shooter is currently valid, calc a source point and possibly
 	// do trail effects
-	if ( sourceEntityNum >= 0 && cg_tracerChance.value > 0 ) {
+	if ( sourceEntityNum >= 0 ) {
 		if ( CG_CalcMuzzlePoint( sourceEntityNum, start ) ) {
 			sourceContentType = trap_CM_PointContents( start, 0 );
 			destContentType = trap_CM_PointContents( end, 0 );
@@ -2485,7 +2399,7 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 			}
 
 			// draw a tracer
-			if ( random() < cg_tracerChance.value ) {
+			if ( random() < 0.4 ) {
 				CG_Tracer( start, end );
 			}
 		}

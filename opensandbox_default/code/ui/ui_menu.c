@@ -128,10 +128,10 @@ void UI_MainMenu( void ) {
 		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Find Multiplayer Game", UI_LEFT, 1.00, NULL, NULL, UI_ArenaServersMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 	}
 	UI_CButton(&main.e[3], 64 - uis.wideoffset, y, "Workshop", UI_LEFT, 1.00, NULL, NULL, UI_WorkshopMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerSettingsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&main.e[5], 64 - uis.wideoffset, y, "Mods", UI_LEFT, 1.00, NULL, NULL, UI_ModsMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&main.e[6], 64 - uis.wideoffset, y, "Demos", UI_LEFT, 1.00, NULL, NULL, UI_DemosMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
-	UI_CButton(&main.e[7], 64 - uis.wideoffset, y, "Options", UI_LEFT, 1.00, NULL, NULL, UI_Setup, NULL, 0); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&main.e[7], 64 - uis.wideoffset, y, "Options", UI_LEFT, 1.00, NULL, NULL, UI_Options, NULL, 0); y += OSUI_BIGSPACING_Y;
 	if(uis.onmap){
 		UI_CButton(&main.e[8], 64 - uis.wideoffset, y, "Disconnect", UI_LEFT, 1.00, "disconnect \n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
 	}

@@ -172,29 +172,6 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 	AddBots_SetBotIcon();
 }
 
-
-
-/*
-=================
-UI_AddBotsMenu_TeamEvent
-=================
-*/
-static void UI_AddBotsMenu_TeamEvent( void* ptr, int event ) {
-	if (event != QM_ACTIVATED) {
-		return;
-	}
-
-	if (addBotsMenuInfo.gametype < GT_TEAM ||  addBotsMenuInfo.gametype == GT_LMS)
-		return;
-
-	if (addBotsMenuInfo.team.curvalue == 1)
-		addBotsMenuInfo.icon_hilite.focuscolor			= color_blue;
-	else
-		addBotsMenuInfo.icon_hilite.focuscolor			= color_red;
-}
-
-
-
 /*
 =================
 UI_AddBotsMenu_BackEvent
@@ -504,7 +481,6 @@ if(cl_language.integer == 1){
 	y += SMALLCHAR_HEIGHT;
 	addBotsMenuInfo.team.generic.type		= MTYPE_SPINCONTROL;
 	addBotsMenuInfo.team.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	addBotsMenuInfo.team.generic.callback		= UI_AddBotsMenu_TeamEvent;
 	addBotsMenuInfo.team.generic.x			= 320;
 	addBotsMenuInfo.team.generic.y			= y;
 if(cl_language.integer == 0){
@@ -551,7 +527,6 @@ if(cl_language.integer == 1){
 	addBotsMenuInfo.icon_hilite.width				= 128;
 	addBotsMenuInfo.icon_hilite.height				= 128;
 	addBotsMenuInfo.icon_hilite.focuspic			= ART_SELECT;
-	addBotsMenuInfo.icon_hilite.focuscolor			= color_red;
 
 	addBotsMenuInfo.icon.generic.type		= MTYPE_BITMAP;
 	addBotsMenuInfo.icon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_INACTIVE;

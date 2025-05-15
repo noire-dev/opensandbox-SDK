@@ -74,7 +74,6 @@ GAME OPTIONS MENU
 #define ID_ZOOMFOV				147
 #define ID_AMMOWARNING			148
 #define ID_DRAWGUN				149
-#define ID_TRUELIGHTNING		150
 #define ID_COLORRED             151
 #define ID_COLORGREEN           152
 #define ID_COLORBLUE            153
@@ -121,8 +120,6 @@ typedef struct {
 	menuelement_s			teamchatheight;
 	menuelement_s			fov;
 	menuelement_s			zoomfov;
-
-	menuelement_s	truelightning;
 
 	menuelement_s		back;
 
@@ -192,7 +189,6 @@ static menucommon_s* g_object_controls[] = {
 	(menucommon_s*) &s_preferences.brass,
 	(menucommon_s*) &s_preferences.dynamiclights,
 	(menucommon_s*) &s_preferences.gibs,
-	(menucommon_s*) &s_preferences.truelightning,
 	NULL
 };
 
@@ -223,9 +219,7 @@ static void Preferences_SetMenuItems( void ) {
     s_preferences.crosshairColorRed.curvalue        = trap_Cvar_VariableValue( "cg_crosshairColorRed")*255.0f;
     s_preferences.crosshairColorGreen.curvalue      = trap_Cvar_VariableValue( "cg_crosshairColorGreen")*255.0f;
     s_preferences.crosshairColorBlue.curvalue       = trap_Cvar_VariableValue( "cg_crosshairColorBlue")*255.0f;
-	s_preferences.simpleitems.curvalue		= trap_Cvar_VariableValue( "cg_simpleItems" ) != 0;
     s_preferences.alwaysweaponbar.curvalue		= trap_Cvar_VariableValue( "cg_alwaysWeaponBar" ) != 0;
-	s_preferences.brass.curvalue			= trap_Cvar_VariableValue( "cg_brassTime" ) != 0;
 	s_preferences.wallmarks.curvalue		= trap_Cvar_VariableValue( "cg_marks" ) != 0;
 	s_preferences.identifytarget.curvalue	= trap_Cvar_VariableValue( "cg_drawCrosshairNames" ) != 0;
 	s_preferences.dynamiclights.curvalue	= trap_Cvar_VariableValue( "r_dynamiclight" ) != 0;
@@ -239,11 +233,8 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.drawfps.curvalue			= trap_Cvar_VariableValue( "cg_drawFPS" ) != 0;
 	s_preferences.drawtimer.curvalue		= trap_Cvar_VariableValue( "cg_drawTimer" ) != 0;
 	s_preferences.drawlagometer.curvalue	= trap_Cvar_VariableValue( "cg_lagometer" ) != 0;
-	s_preferences.drawgun.curvalue			= trap_Cvar_VariableValue( "cg_paintballMode" ) != 0;
 	s_preferences.predictitems.curvalue		= trap_Cvar_VariableValue( "cg_predictItems" ) != 0;
 	s_preferences.shadows.curvalue			= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_shadows" ) );
-
-	s_preferences.truelightning.curvalue	= trap_Cvar_VariableValue( "cg_truelightning" ) != 0;
 
 
 	trap_Cvar_VariableStringBuffer("com_maxfps", s_preferences.teamchatheight.field.buffer, 4);
@@ -432,9 +423,6 @@ static void Preferences_Event( void* ptr, int notification ) {
                 trap_Cvar_SetValue( "cg_crosshairColorBlue", ((float)s_preferences.crosshairColorBlue.curvalue)/255.f );
                 break;
 
-	case ID_SIMPLEITEMS:
-		trap_Cvar_SetValue( "cg_simpleItems", s_preferences.simpleitems.curvalue );
-		break;
                 
         case ID_WEAPONBAR:
 		trap_Cvar_SetValue( "cg_alwaysWeaponBar", s_preferences.alwaysweaponbar.curvalue );
@@ -442,13 +430,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_HIGHQUALITYSKY:
 		trap_Cvar_SetValue( "r_fastsky", !s_preferences.highqualitysky.curvalue );
-		break;
-
-	case ID_EJECTINGBRASS:
-		if ( s_preferences.brass.curvalue )
-			trap_Cvar_Reset( "cg_brassTime" );
-		else
-			trap_Cvar_SetValue( "cg_brassTime", 0 );
 		break;
 
 	case ID_WALLMARKS:
@@ -496,20 +477,12 @@ static void Preferences_Event( void* ptr, int notification ) {
 		trap_Cvar_SetValue( "cg_lagometer", s_preferences.drawlagometer.curvalue );
 		break;
 
-	case ID_DRAWGUN:
-		trap_Cvar_SetValue( "cg_paintballMode", s_preferences.drawgun.curvalue );
-		break;
-
 	case ID_PREDICTITEMS:
 		trap_Cvar_SetValue( "cg_predictItems", s_preferences.predictitems.curvalue );
 		break;
 
 	case ID_SHADOWS:
 		trap_Cvar_SetValue( "cg_shadows", s_preferences.shadows.curvalue );
-		break;
-
-	case ID_TRUELIGHTNING:
-		trap_Cvar_SetValue( "cg_truelightning", s_preferences.truelightning.curvalue ? 0.9 : 0.0);
 		break;
 
 	case ID_BACK:
@@ -832,11 +805,6 @@ static void Preferences_MenuInit( void )
 	s_preferences.predictitems.generic.statusbar= Preferences_Statusbar;
 	s_preferences.predictitems.generic.id       = ID_PREDICTITEMS;
 
-	s_preferences.truelightning.generic.type     = MTYPE_RADIOBUTTON;
-	s_preferences.truelightning.generic.flags	  = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_preferences.truelightning.generic.callback = Preferences_Event;
-	s_preferences.truelightning.generic.id       = ID_TRUELIGHTNING;
-
 	s_preferences.synceveryframe.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.synceveryframe.generic.flags	  = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_preferences.synceveryframe.generic.callback = Preferences_Event;
@@ -880,7 +848,6 @@ s_preferences.teamchatheight.string       = "FPS Limit:";
 s_preferences.fov.string       = "FOV:";
 s_preferences.zoomfov.string       = "Zoom FOV:";
 s_preferences.predictitems.string	   = "Predict Items:";
-s_preferences.truelightning.string	  = "True lightning:";
 s_preferences.synceveryframe.string	  = "V-Sync:";
 s_preferences.allowdownload.string	   = "Automatic Downloading:";
 s_preferences.botmenu.string	  = "AutoClose Bot Menu:";
@@ -914,7 +881,6 @@ s_preferences.teamchatheight.string       = "Лимит FPS:";
 s_preferences.fov.string       = "Поле зрения:";
 s_preferences.zoomfov.string       = "Увеличение:";
 s_preferences.predictitems.string	   = "Предметы клиент:";
-s_preferences.truelightning.string	  = "Правильный эффект молнии:";
 s_preferences.synceveryframe.string	  = "Вертикальная синхронизация:";
 s_preferences.allowdownload.string	   = "Автоматическое скачивание:";
 s_preferences.botmenu.string	  = "Авто закрытие Бот Меню:";
@@ -954,8 +920,6 @@ s_preferences.shadows.itemnames			= shadow_typesru;
 	Menu_AddItem( &s_preferences.menu, &s_preferences.teamchatheight);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.fov);
 	Menu_AddItem( &s_preferences.menu, &s_preferences.zoomfov);
-
-	Menu_AddItem( &s_preferences.menu, &s_preferences.truelightning);
 
 	Menu_AddItem( &s_preferences.menu, &s_preferences.back );
 

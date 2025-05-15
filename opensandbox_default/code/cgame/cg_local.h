@@ -46,9 +46,9 @@
 #define	STEP_TIME			200
 #define	DUCK_TIME			100
 #define	PAIN_TWITCH_TIME	200
-#define	WEAPON_SELECT_TIME	cg_weaponselecttime.integer
-#define	ITEM_SCALEUP_TIME	cg_itemscaletime.value
-#define	ZOOM_TIME			cg_zoomtime.value
+#define	WEAPON_SELECT_TIME	3000
+#define	ITEM_SCALEUP_TIME	2000
+#define	ZOOM_TIME			200
 #define	ITEM_BLOB_TIME		200
 #define	MUZZLE_FLASH_TIME	75
 #define	SINK_TIME			3000		// time for fragments to sink into ground before going away
@@ -511,10 +511,6 @@ typedef struct {
 
 #define MAX_PREDICTED_EVENTS	16
 
-//unlagged - optimized prediction
-#define NUM_SAVED_STATES (CMD_BACKUP + 2)
-//unlagged - optimized prediction
-
 typedef struct {
 	int			clientFrame;		// incremented each frame
 
@@ -702,13 +698,6 @@ typedef struct {
 	
 	refEntity_t		viewfog[16];
 	refEntity_t		viewsky;
-
-//unlagged - optimized prediction
-	int			lastPredictedCommand;
-	int			lastServerTime;
-	playerState_t savedPmoveStates[NUM_SAVED_STATES];
-	int			stateHead, stateTail;
-//unlagged - optimized prediction
 
     //time that the client will respawn. If 0 = the player is alive.
     int respawnTime;
@@ -906,8 +895,6 @@ typedef struct {
 	qhandle_t	numberShaders[11];
 
 	qhandle_t	shadowMarkShader;
-
-	qhandle_t	botSkillShaders[14];
 
 	// wall mark shaders
 	qhandle_t	wakeMarkShader;
@@ -1211,7 +1198,6 @@ typedef struct {
 
 	// parsed from serverinfo
 	gametype_t		gametype;
-	int				dmflags;
     int				elimflags;
 	int				teamflags;
 	int				fraglimit;
@@ -1308,9 +1294,6 @@ typedef struct {
 	// media
 	cgMedia_t		media;
 
-//unlagged - client options
-	// this will be set to the server's g_delagHitscan
-	int				delagHitscan;
 } cgs_t;
 
 extern	cgs_t			cgs;
@@ -1357,8 +1340,7 @@ extern	int 	mod_portalinf;
 extern	int 	mod_kamikazeinf;
 extern	int 	mod_invulinf;
 extern	int 	mod_accelerate;
-extern	int 	mod_slickmove;
-extern	int 	mod_overlay;
+extern	int 	mod_movetype;
 extern	int 	mod_gravity;
 extern	int 	mod_fogModel;
 extern	int 	mod_fogShader;
@@ -1394,13 +1376,6 @@ extern  vmCvar_t    physB;
 extern	vmCvar_t	cg_effectsTime;
 extern	vmCvar_t	cg_effectsLimit;
 extern	vmCvar_t	cg_effectsGibs;
-
-extern	vmCvar_t	cg_gibjump;
-extern	vmCvar_t	cg_gibvelocity;
-
-extern	vmCvar_t	cg_zoomtime;
-extern	vmCvar_t	cg_itemscaletime;
-extern	vmCvar_t	cg_weaponselecttime;
 
 //Noire Set
 extern	vmCvar_t	toolgun_mod1;
@@ -1442,20 +1417,9 @@ extern	vmCvar_t	ns_haveerror;		//Noire.Script error
 
 extern	vmCvar_t	cg_postprocess;
 extern	vmCvar_t	cl_language;
-extern	vmCvar_t	con_notifytime;
-extern  vmCvar_t 	cg_leiChibi;
 extern  vmCvar_t    cl_screenoffset;
 
-extern	vmCvar_t	cg_itemstyle;
-extern	vmCvar_t		cg_centertime;
-extern	vmCvar_t		cg_drawsubtitles;
-extern	vmCvar_t		cg_drawSyncMessage;
-extern	vmCvar_t		cg_runpitch;
-extern	vmCvar_t		cg_runroll;
-extern	vmCvar_t		cg_bobup;
-extern	vmCvar_t		cg_bobpitch;
-extern	vmCvar_t		cg_bobroll;
-extern	vmCvar_t		cg_swingSpeed;
+extern	vmCvar_t		cg_disableBobbing;
 extern	vmCvar_t		cg_shadows;
 extern	vmCvar_t		cg_gibs;
 extern	vmCvar_t		cg_drawTimer;
@@ -1470,28 +1434,13 @@ extern	vmCvar_t		cg_crosshairY;
 extern	vmCvar_t		cg_crosshairScale;
 extern	vmCvar_t		cg_drawStatus;
 extern	vmCvar_t		cg_draw2D;
-extern	vmCvar_t		cg_animSpeed;
 extern	vmCvar_t		cg_debugAnim;
-extern	vmCvar_t		cg_debugPosition;
 extern	vmCvar_t		cg_debugEvents;
-extern	vmCvar_t		cg_railTrailTime;
-extern	vmCvar_t		cg_paintballMode;
-extern	vmCvar_t		cg_errorDecay;
 extern	vmCvar_t		cg_nopredict;
-extern	vmCvar_t		cg_noPlayerAnims;
-extern	vmCvar_t		cg_showmiss;
 extern	vmCvar_t		cg_footsteps;
 extern	vmCvar_t		cg_addMarks;
-extern	vmCvar_t		cg_brassTime;
-extern	vmCvar_t		cg_gun_x;
-extern	vmCvar_t		cg_gun_y;
-extern	vmCvar_t		cg_gun_z;
 extern	vmCvar_t		cg_drawGun;
 extern	vmCvar_t		cg_viewsize;
-extern	vmCvar_t		cg_tracerChance;
-extern	vmCvar_t		cg_tracerWidth;
-extern	vmCvar_t		cg_tracerLength;
-extern	vmCvar_t		cg_simpleItems;
 extern	vmCvar_t		cg_fov;
 extern	vmCvar_t		cg_zoomFov;
 extern	vmCvar_t		cg_thirdPersonOffset;
@@ -1500,7 +1449,6 @@ extern	vmCvar_t		cg_thirdPersonAngle;
 extern	vmCvar_t		cg_thirdPerson;
 extern	vmCvar_t		cg_lagometer;
 extern	vmCvar_t		cg_drawSpeed;
-extern	vmCvar_t		cg_synchronousClients;
 extern	vmCvar_t		cg_teamChatTime;
 extern	vmCvar_t		cg_teamChatHeight;
 extern 	vmCvar_t 		cg_teamChatY;
@@ -1515,7 +1463,6 @@ extern	vmCvar_t		cg_drawFriend;
 extern	vmCvar_t		cg_teamChatsOnly;
 extern	vmCvar_t		cg_noVoiceText;
 extern  vmCvar_t		cg_scorePlum;
-extern vmCvar_t			cg_newConsole;
 extern vmCvar_t			cg_chatTime;
 extern vmCvar_t			cg_consoleTime;
 
@@ -1535,18 +1482,11 @@ extern vmCvar_t			cg_chatLines;
 extern vmCvar_t			cg_teamChatLines;
 
 extern vmCvar_t			cg_commonConsole;
-extern	vmCvar_t		pmove_fixed;
-extern	vmCvar_t		pmove_msec;
-extern	vmCvar_t		pmove_float;
-extern	vmCvar_t		cg_timescaleFadeEnd;
-extern	vmCvar_t		cg_timescaleFadeSpeed;
-extern	vmCvar_t		cg_timescale;
 extern	vmCvar_t		cg_noProjectileTrail;
 
 extern	vmCvar_t		cg_cameraEyes;
 extern	vmCvar_t		cg_cameraEyes_Fwd;
 extern	vmCvar_t		cg_cameraEyes_Up;
-extern	vmCvar_t		cg_trueLightning;
 extern	vmCvar_t		cg_music;
 //Sago: Moved outside
 extern	vmCvar_t		cg_obeliskRespawnDelay;
@@ -1554,12 +1494,7 @@ extern	vmCvar_t		cg_enableDust;
 extern	vmCvar_t		cg_enableBreath;
 
 //unlagged - client options
-extern	vmCvar_t		cg_delag;
-extern	vmCvar_t		cg_cmdTimeNudge;
 extern	vmCvar_t		sv_fps;
-extern	vmCvar_t		cg_projectileNudge;
-extern	vmCvar_t		cg_optimizePrediction;
-extern	vmCvar_t		cl_timeNudge;
 //unlagged - client options
 
 //extra CVARS elimination

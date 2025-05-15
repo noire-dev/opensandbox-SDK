@@ -263,12 +263,8 @@ typedef struct {
 gui_cvarTable_t gui_cvarTable[] = {
 { "gui_gametype", "0" },
 { "gui_anticheatengine", "0" },
-{ "gui_dynamiclight", "0" },
 { "gui_dedicated", "0" },
-{ "gui_inactivity", "0" },
 { "gui_config_showid", "0" },
-{ "gui_pmove_fixed", "1" },
-{ "gui_pmove_msec", "11" },
 { "gui_smoothclients", "1" },
 { "gui_syncclients", "0" },
 { "gui_allowmaxrate", "0" },
@@ -2846,9 +2842,6 @@ static void StartServer_LoadServerScriptData(void)
 	int value, gametype;
 
 	s_scriptdata.server.anticheatengine = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_anticheatengine" );
-	s_scriptdata.server.dynamiclight = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_dynamiclight" );
-	s_scriptdata.server.pmove_fixed = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_pmove_fixed" );
-	s_scriptdata.server.pmove_msec = GUI_GetSkirmishCvarIntClamp(0, 999, NULL, "gui_pmove_msec" );
 
 	s_scriptdata.server.smoothclients = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_smoothclients" );
 	s_scriptdata.server.syncClients = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_syncclients" );
@@ -2876,20 +2869,9 @@ static void StartServer_LoadServerScriptData(void)
 
 	s_scriptdata.server.preventConfigBug = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_preventConfigBug");
 
-	if (s_scriptdata.multiplayer) {
-		s_scriptdata.server.dedicatedServer = GUI_GetSkirmishCvarIntClamp(0, SRVDED_INTERNET, NULL, "gui_dedicated" );
-		s_scriptdata.server.inactivityTime = GUI_GetSkirmishCvarIntClamp(0, 999, NULL, "gui_inactivity" );
-
-		s_scriptdata.server.strictAuth = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_strictAuth" );
-		s_scriptdata.server.lanForceRate = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_lanForceRate" );
-	}
-	else {
-		s_scriptdata.server.dedicatedServer = SRVDED_OFF;
-		s_scriptdata.server.inactivityTime = 0;
-
-		s_scriptdata.server.strictAuth = 0;
-		s_scriptdata.server.lanForceRate = 0;
-	}
+	s_scriptdata.server.dedicatedServer = GUI_GetSkirmishCvarIntClamp(0, SRVDED_INTERNET, NULL, "gui_dedicated" );
+	s_scriptdata.server.strictAuth = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_strictAuth" );
+	s_scriptdata.server.lanForceRate = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_lanForceRate" );
 	
 //Noire.dev cvars
 s_scriptdata.server.maxEntities = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_maxEntities" );
@@ -3300,10 +3282,7 @@ static void StartServer_SaveServerScriptData(void)
 	int friendly, gametype;
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_anticheatengine", s_scriptdata.server.anticheatengine);
-	GUI_SetSkirmishCvarInt( NULL, "gui_dynamiclight", s_scriptdata.server.dynamiclight);
 
-	GUI_SetSkirmishCvarInt( NULL, "gui_pmove_fixed", s_scriptdata.server.pmove_fixed);
-	GUI_SetSkirmishCvarInt( NULL, "gui_pmove_msec", s_scriptdata.server.pmove_msec);
 	GUI_SetSkirmishCvarInt( NULL, "gui_smoothclients", s_scriptdata.server.smoothclients);
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_syncclients", s_scriptdata.server.syncClients);
@@ -3330,13 +3309,9 @@ static void StartServer_SaveServerScriptData(void)
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_preventConfigBug", s_scriptdata.server.preventConfigBug);
 
-	if (s_scriptdata.multiplayer) {
-		GUI_SetSkirmishCvarInt( NULL, "gui_dedicated", s_scriptdata.server.dedicatedServer);
-		GUI_SetSkirmishCvarInt( NULL, "gui_inactivity", s_scriptdata.server.inactivityTime);
-
-		GUI_SetSkirmishCvarInt( NULL, "gui_strictAuth", s_scriptdata.server.strictAuth);
-		GUI_SetSkirmishCvarInt( NULL, "gui_lanForceRate", s_scriptdata.server.lanForceRate);
-	}
+	GUI_SetSkirmishCvarInt( NULL, "gui_dedicated", s_scriptdata.server.dedicatedServer);
+	GUI_SetSkirmishCvarInt( NULL, "gui_strictAuth", s_scriptdata.server.strictAuth);
+	GUI_SetSkirmishCvarInt( NULL, "gui_lanForceRate", s_scriptdata.server.lanForceRate);
 	
 //Noire.dev cvars
 GUI_SetSkirmishCvarInt( NULL, "gui_maxEntities", s_scriptdata.server.maxEntities);
@@ -3770,7 +3745,6 @@ void StartServer_InitScriptData( void )
 
 	GUI_StartServer_LoadSkirmishCvars();
 
-	s_scriptdata.multiplayer = qtrue;
 	StartServer_LoadScriptDataFromType((int)Com_Clamp( 0, MAX_GAME_TYPE, GUI_GetSkirmishCvarInt( NULL, "gui_gametype" ) ));
 	StartServer_BuildMapDistribution();
 }

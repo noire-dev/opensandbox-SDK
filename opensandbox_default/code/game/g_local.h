@@ -392,9 +392,6 @@ typedef struct {
 typedef struct {
 	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
-	qboolean	localClient;		// true if "ip" info key is "localhost"
-	qboolean	initialSpawn;		// the first spawn should be at a cool location
-	qboolean	pmoveFixed;			//
 	char		netname[MAX_NETNAME];
 	int			maxHealth;			// for handicapping
 	int			enterTime;			// level.time the client entered the game
@@ -406,9 +403,6 @@ typedef struct {
 	//elimination:
 	int		roundReached;			//Only spawn if we are new to this round
 	int		livesLeft;			//lives in LMS
-	int			delag;
-	int			cmdTimeNudge;
-	int			realPing;
 	int			pingsamples[NUM_PING_SAMPLES];
 	int			samplehead;
 	
@@ -475,8 +469,6 @@ struct gclient_s {
 
 	// timers
 	int			respawnTime;		// can respawn when time > this, force after g_forcerespwan
-	int			inactivityTime;		// kick players when time > this
-	qboolean	inactivityWarning;	// qtrue if the five second warning has been given
 	int			rewardTime;			// clear the EF_AWARD_IMPRESSIVE, etc when time > this
 
 	int			airOutTime;
@@ -514,7 +506,6 @@ struct gclient_s {
 
 	// unlagged - backward reconciliation #1
 	// the serverTime the button was pressed
-	// (stored before pmove_fixed changes serverTime)
 	int			attackTime;
 	// the head of the history queue
 	int			historyHead;
@@ -552,8 +543,6 @@ typedef struct {
 	int			num_entities;		// current number, <= MAX_GENTITIES
 
 	int			warmupTime;			// restart match at this time
-
-	fileHandle_t	logFile;
 
 	// store latched cvars here that we want to get at often
 	int			maxclients;
@@ -1087,15 +1076,12 @@ void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
 void AddTournamentQueue(gclient_t *client);
 void ExitLevel( void );
-void QDECL G_LogPrintf( const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void SendEliminationMessageToAllClients( void );
 void SendDDtimetakenMessageToAllClients( void );
 void SendDominationPointsStatusMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... ) __attribute__((noreturn));
-//KK-OAX Made Accessible for g_admin.c
-void LogExit( const char *string );
 void CheckTeamVote( int team );
 void G_LevelLoadComplete(void);
 qboolean G_NpcFactionProp(int prop, gentity_t* ent);
@@ -1277,13 +1263,12 @@ extern 	int			mod_cgdelay;
 extern	int			mod_cgspread;
 extern 	int			mod_ftdelay;
 extern 	int			mod_amdelay;
-extern	int			mod_vampire_max_health;
 extern	float 		mod_hastefirespeed;
 extern	float 		mod_ammoregenfirespeed;
 extern	float 		mod_scoutfirespeed;
 extern	int			mod_poweruptime;
-extern	float			mod_guardfirespeed;
-extern	float			mod_doublerfirespeed;
+extern	float		mod_guardfirespeed;
+extern	float		mod_doublerfirespeed;
 extern	int			mod_quadtime;
 extern	int			mod_bsuittime;
 extern	int			mod_hastetime;
@@ -1293,8 +1278,8 @@ extern	int			mod_flighttime;
 extern	int			mod_noplayerclip;
 extern	int			mod_ammolimit;
 extern	int			mod_invulmove;
-extern	float			mod_teamred_firespeed;
-extern	float			mod_teamblue_firespeed;
+extern	float		mod_teamred_firespeed;
+extern	float		mod_teamblue_firespeed;
 extern	int			mod_medkitlimit;
 extern	int			mod_medkitinf;
 extern	int			mod_teleporterinf;
@@ -1304,15 +1289,13 @@ extern	int			mod_invulinf;
 extern	int 		mod_teamblue_damage;
 extern	int 		mod_teamred_damage;
 extern	int			mod_accelerate;
-extern	int			mod_slickmove;
-extern	int			mod_overlay;
+extern	int			mod_movetype;
 extern	int			mod_gravity;
 
+//OpenSandbox settings
 extern	vmCvar_t	g_physimpact;
 extern	vmCvar_t	g_physimpulse;
 extern	vmCvar_t	g_physdamage;
-
-//OpenSandbox settings
 
 //gh set
 extern	vmCvar_t	g_ghspeed;
@@ -1569,15 +1552,11 @@ extern	vmCvar_t	g_allownoclip;
 extern	vmCvar_t	g_allowtoolgun;
 extern	vmCvar_t	g_allowphysgun;
 extern	vmCvar_t	g_allowgravitygun;
-extern	vmCvar_t	g_npcdrop;
 extern	vmCvar_t	g_maxEntities;
 extern	vmCvar_t	cl_selectedmod;
 extern  vmCvar_t	cl_language;
 extern	vmCvar_t	g_regenarmor;
-extern	vmCvar_t	g_spectatorspeed;
-extern	vmCvar_t	g_lavatowater;
-extern	vmCvar_t	g_overlay;
-extern	vmCvar_t	g_slickmove;
+extern	vmCvar_t	g_movetype;
 extern	vmCvar_t	g_accelerate;
 extern	vmCvar_t	g_randomItems;
 extern	vmCvar_t	g_kamikazeinfinf;
@@ -1603,8 +1582,6 @@ extern	vmCvar_t	g_invulmove;
 extern	vmCvar_t	g_invultime;
 extern	vmCvar_t	g_fasthealthregen;
 extern	vmCvar_t	g_slowhealthregen;
-extern	vmCvar_t	g_droppeditemtime;
-extern	vmCvar_t	g_autoflagreturn;
 extern	vmCvar_t	g_hastefirespeed;
 extern	vmCvar_t	g_medkitmodifier;
 extern	vmCvar_t	g_armorprotect;
@@ -1625,7 +1602,6 @@ extern	vmCvar_t	g_cheats;
 extern	vmCvar_t	g_maxClients;
 extern	vmCvar_t	g_restarted;
 
-extern	vmCvar_t	g_dmflags;
 extern	vmCvar_t	g_elimflags;
 extern	vmCvar_t	g_fraglimit;
 extern	vmCvar_t	g_timelimit;
@@ -1638,22 +1614,9 @@ extern  vmCvar_t    g_damageModifier;
 extern	vmCvar_t	g_speed;
 extern	vmCvar_t	g_knockback;
 extern	vmCvar_t	g_quadfactor;
-extern	vmCvar_t	g_forcerespawn;
 extern	vmCvar_t	g_respawntime;
-extern	vmCvar_t	g_inactivity;
-extern	vmCvar_t	g_disableCutscenes;
-extern	vmCvar_t	g_debugMove;
-extern	vmCvar_t	g_debugAlloc;
-extern	vmCvar_t	g_debugDamage;
-extern	vmCvar_t	g_debugCameras;
-extern	vmCvar_t	g_debugScore;
-extern	vmCvar_t	g_debugVariables;
-extern	vmCvar_t	g_debugBotspawns;
-extern	vmCvar_t	g_allowSyncCutscene;
 extern	vmCvar_t	g_weaponRespawn;
 extern	vmCvar_t	g_weaponTeamRespawn;
-extern	vmCvar_t	g_synchronousClients;
-extern  vmCvar_t    g_votemaps;
 extern	vmCvar_t	g_warmup;
 extern	vmCvar_t	g_doWarmup;
 extern	vmCvar_t	g_blood;
@@ -1666,9 +1629,6 @@ extern	vmCvar_t	g_obeliskRegenAmount;
 extern	vmCvar_t	g_obeliskRespawnDelay;
 extern	vmCvar_t	g_cubeTimeout;
 extern	vmCvar_t	g_smoothClients;
-extern	vmCvar_t	pmove_fixed;
-extern	vmCvar_t	pmove_msec;
-extern	vmCvar_t	pmove_float;
 extern	vmCvar_t	g_enableDust;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_proxMineTimeout;
@@ -1749,23 +1709,14 @@ extern vmCvar_t		g_vampire;
 extern vmCvar_t		g_vampireMaxHealth;
 //new in elimination Beta3
 extern vmCvar_t		g_regen;
-//Free for all gametype
-extern int		g_ffa_gt; //0 = TEAM GAME, 1 = FFA, 2 = TEAM GAME without bases
 
 extern vmCvar_t		g_lms_lives;
 
 extern vmCvar_t		g_lms_mode; //How do we score: 0 = One Survivor get a point, 1 = same but without overtime, 2 = one point for each player killed (+overtime), 3 = same without overtime
 
-extern vmCvar_t         g_awardpushing; //The server can decide if players are awarded for pushing people in lave etc.
-
-//unlagged - server options
-// some new server-side variables
-extern	vmCvar_t	g_delagHitscan;
-extern	vmCvar_t	g_truePing;
-// this is for convenience - using "sv_fps.integer" is nice :)
 extern	vmCvar_t	sv_fps;
-extern  vmCvar_t        g_lagLightning;
-//unlagged - server options
+
+extern int		g_ffa_gt;
 
 #define CMD_CHEAT           0x0001
 #define CMD_CHEAT_TEAM      0x0002 // is a cheat when used on a team

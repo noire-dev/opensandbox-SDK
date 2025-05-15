@@ -43,10 +43,10 @@
 // versions of the browser
 
 static const char* saveparam_list[] = {
-	"gui_gametype", "gui_anticheatengine", "gui_inactivity", "gui_allowmaxrate",
+	"gui_gametype", "gui_anticheatengine", "gui_allowmaxrate",
 	"gui_maxrate", "gui_entitypack","gui_password", "gui_allowvote",
-	"gui_allowdownload", "gui_smoothclients", "gui_pmove_fixed",
-	"gui_pmove_msec", "gui_syncclients", "gui_minPing", "gui_maxPing",
+	"gui_allowdownload", "gui_smoothclients",
+	"gui_syncclients", "gui_minPing", "gui_maxPing",
 	"gui_allowMinPing", "gui_allowMaxPing", "gui_gravity", "gui_jumpheight", "gui_knockback",
 	"gui_quadfactor", "gui_netport", "gui_svfps", "gui_allowprivateclients",
 	"gui_privateclients", "gui_privatepassword", "gui_strictAuth",
@@ -644,16 +644,9 @@ static qboolean StartServer_WriteServerParams( void )
 		AddScript(va("sv_hostname \"%s\"\n", s_scriptdata.server.hostname));
 
 	AddScript(va("sv_anticheatengine %i\n", s_scriptdata.server.anticheatengine));
-	if (s_scriptdata.multiplayer) {
-		AddScript(va("dedicated %i\n", s_scriptdata.server.dedicatedServer));
-		AddScript(va("g_inactivity %i\n", s_scriptdata.server.inactivityTime));
+	AddScript(va("dedicated %i\n", s_scriptdata.server.dedicatedServer));
+    AddScript(va("sv_lanForceRate %i\n", s_scriptdata.server.lanForceRate));
 
-      // LAN force rate
-      AddScript(va("sv_lanForceRate %i\n", s_scriptdata.server.lanForceRate));
-
-	}
-
-	AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forceRespawn));
 	//Noire.dev
 	AddScript(va("set g_maxEntities %i\n", s_scriptdata.server.maxEntities));
 	AddScript(va("set g_spSkill %i\n", s_scriptdata.server.singleskill));
@@ -676,7 +669,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_lms_lives %i\n", s_scriptdata.server.lms_lives));
 	AddScript(va("set g_lms_mode %i\n", s_scriptdata.server.lms_mode));
 	AddScript(va("set g_accelerate %i\n", s_scriptdata.server.accelerate));
-	AddScript(va("set g_spectatorspeed %i\n", s_scriptdata.server.spectatorspeed));
 	AddScript(va("set g_speed %i\n", s_scriptdata.server.speed));
 	AddScript(va("set g_gravity %i\n", s_scriptdata.server.gravity));
 	AddScript(va("set g_gravityModifier  \"%s\"\n", s_scriptdata.server.gravityModifier));
@@ -687,13 +679,10 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_ammolimit %i\n", s_scriptdata.server.ammolimit));
 	AddScript(va("set g_quadfactor  \"%s\"\n", s_scriptdata.server.quadfactor));
 	AddScript(va("set g_respawntime %i\n", s_scriptdata.server.respawntime));
-	AddScript(va("set g_forcerespawn %i\n", s_scriptdata.server.forcerespawn));
 	AddScript(va("set g_vampire  \"%s\"\n", s_scriptdata.server.vampire));
 	AddScript(va("set g_vampire_max_health %i\n", s_scriptdata.server.vampire_max_health));
 	AddScript(va("set g_regen %i\n", s_scriptdata.server.regen));
 	AddScript(va("set g_nextbot_speed %s\n", s_scriptdata.server.nextbot_speed));
-	AddScript(va("set g_droppeditemtime %i\n", s_scriptdata.server.droppeditemtime));
-	AddScript(va("set g_autoflagreturn %i\n", s_scriptdata.server.autoflagreturn));
 	AddScript(va("set g_armorprotect  \"%s\"\n", s_scriptdata.server.armorprotect));
 	AddScript(va("set g_respawnwait %i\n", s_scriptdata.server.respawnwait));
 	AddScript(va("set g_speedfactor  \"%s\"\n", s_scriptdata.server.speedfactor));
@@ -786,12 +775,10 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_redspawn_flight %i\n", s_scriptdata.server.redspawn_flight));
 	AddScript(va("set g_redspawn_holdable %i\n", s_scriptdata.server.redspawn_holdable));
 	AddScript(va("set elimination_items %i\n", s_scriptdata.server.elimination_items));
-	AddScript(va("set g_overlay %i\n", s_scriptdata.server.overlay));
 	AddScript(va("set g_randomItems %i\n", s_scriptdata.server.randomItems));
-	AddScript(va("set g_slickmove %i\n", s_scriptdata.server.slickmove));
+	AddScript(va("set g_movetype %i\n", s_scriptdata.server.slickmove));
 	AddScript(va("set g_spawnprotect %i\n", s_scriptdata.server.spawnprotect));
 	AddScript(va("set elimination_lockspectator %i\n", s_scriptdata.server.elimination_lockspectator));
-	AddScript(va("set g_awardpushing %i\n", s_scriptdata.server.awardpushing));
 	AddScript(va("set g_randomteleport %i\n", s_scriptdata.server.randomteleport));
 	AddScript(va("set g_falldamagesmall %i\n", s_scriptdata.server.falldamagesmall));
 	AddScript(va("set g_falldamagebig %i\n", s_scriptdata.server.falldamagebig));
@@ -1086,18 +1073,8 @@ static qboolean StartServer_WriteServerParams( void )
 
 	AddScript(va("set g_maxClients %i\n",value));
 
-	// pmove
-	value = s_scriptdata.server.pmove_fixed;
-	AddScript(va("set pmove_fixed %i\n", value));
-	if (value) {
-		AddScript(va("set pmove_msec %i\n", s_scriptdata.server.pmove_msec));
-	}
-
 	// smoothclients
 	AddScript(va("set g_smoothClients %i\n", s_scriptdata.server.smoothclients));
-
-	// syncclients
-	AddScript(va("set g_synchronousClients %i\n", s_scriptdata.server.syncClients));
 
 	// ping limits
 	useping = qtrue;

@@ -51,9 +51,7 @@ void PlayerStore_store(char* guid, playerState_t ps) {
     int place2store = -1;
     int lowestAge = 32000;
     int i;
-    if(strlen(guid)<32)
-    {
-        G_LogPrintf("Playerstore: Failed to store player. Invalid guid: %s\n",guid);
+    if(strlen(guid)<32) {
         return;
     }
     for(i=0;i<MAX_CLIENTS;i++) {
@@ -79,14 +77,11 @@ void PlayerStore_store(char* guid, playerState_t ps) {
     memcpy(playerstore[place2store].persistant,ps.persistant,sizeof(int[MAX_PERSISTANT]));
     memcpy(playerstore[place2store].accuracy,level.clients[ps.clientNum].accuracy, sizeof(playerstore[0].accuracy) );
     playerstore[place2store].timePlayed = level.time - level.clients[ps.clientNum].pers.enterTime;
-    G_LogPrintf("Playerstore: Stored player with guid: %s in %u\n", playerstore[place2store].guid,place2store);
 }
 
 void PlayerStore_restore(char* guid, playerState_t *ps)  {
     int i;
-    if(strlen(guid)<32)
-    {
-        G_LogPrintf("Playerstore: Failed to restore player. Invalid guid: %s\n",guid);
+    if(strlen(guid)<32) {
         return;
     }
     for(i=0;i<MAX_CLIENTS;i++) {
@@ -98,9 +93,7 @@ void PlayerStore_restore(char* guid, playerState_t *ps)  {
             if(ps->persistant[PERS_SCORE]<0)
                 ps->persistant[PERS_SCORE]=0;
             playerstore[i].age = -1;
-            G_LogPrintf("Restored player with guid: %s\n",guid);
             return;
         }
     }
-    G_LogPrintf("Playerstore: Nothing to restore. Guid: %s\n",guid);
 }

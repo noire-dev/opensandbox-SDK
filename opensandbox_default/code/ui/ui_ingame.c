@@ -419,9 +419,6 @@ static void IG_Setup_Event( int index )
 	id = DynamicMenu_IdAtIndex(index);
 
 	switch (id) {
-	case IGS_PLAYER:
-		UI_PlayerSettingsMenu();
-		break;
 	case IGS_MODEL:
 		UI_PlayerModelMenu();
 		break;

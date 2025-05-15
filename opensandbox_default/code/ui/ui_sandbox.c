@@ -776,14 +776,14 @@ void SandboxMain_MenuInit( void ) {
 	y += 18;
 	
 	for(i = 0; i < PROPERTIES_NUM; i++){
-	s_sandboxmain.modif[i].generic.type			= MTYPE_FIELD;
-	s_sandboxmain.modif[i].generic.flags		= QMF_SMALLFONT;
-	s_sandboxmain.modif[i].field.widthInChars	= 14;
-	s_sandboxmain.modif[i].field.maxchars		= 64;
-	s_sandboxmain.modif[i].generic.x			= 480 + uis.wideoffset;
-	s_sandboxmain.modif[i].generic.y			= y;
-	s_sandboxmain.modif[i].color				= s_sandboxmain_color1;
-	y += 18;
+		s_sandboxmain.modif[i].generic.type			= MTYPE_FIELD;
+		s_sandboxmain.modif[i].generic.flags		= QMF_SMALLFONT;
+		s_sandboxmain.modif[i].field.widthInChars	= 14;
+		s_sandboxmain.modif[i].field.maxchars		= 64;
+		s_sandboxmain.modif[i].generic.x			= 480 + uis.wideoffset;
+		s_sandboxmain.modif[i].generic.y			= y;
+		s_sandboxmain.modif[i].color				= s_sandboxmain_color1;
+		y += 18;
 	}
 	
 	s_sandboxmain.spawnobject.generic.type     = MTYPE_PTEXT;

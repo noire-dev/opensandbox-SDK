@@ -732,8 +732,6 @@ UI_Cache
 */
 void UI_Cache_f( void ) {
 	ConfirmMenu_Cache();
-	PlayerModel_Cache();
-	PlayerSettings_Cache();
 	Demos_Cache();
 	Preferences_Cache();
 	SpecifyServer_Cache();
@@ -861,16 +859,8 @@ if( Q_stricmp (UI_Argv(0), "ui_network") == 0 ){
 UI_NetworkOptionsMenu();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_options") == 0 ){
-UI_SystemConfigMenu();
-return qtrue;
-}
 if( Q_stricmp (UI_Argv(0), "ui_playermodel") == 0 ){
 UI_PlayerModelMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_playersettings") == 0 ){
-UI_PlayerSettingsMenu();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_preferences") == 0 ){
@@ -905,8 +895,8 @@ if( Q_stricmp (UI_Argv(0), "ui_servers2") == 0 ){
 UI_ArenaServersMenu();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_setup") == 0 ){
-UI_Setup();
+if( Q_stricmp (UI_Argv(0), "ui_options") == 0 ){
+UI_Options();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_sound") == 0 ){

@@ -45,11 +45,10 @@ typedef void (*voidfunc_f)(void);
 
 
 // model screen position
-#define PLAYERMODEL_X 360
-#define PLAYERMODEL_Y  -40-25
-#define PLAYERMODEL_WIDTH 32*10
-#define PLAYERMODEL_HEIGHT 56*10
-#define PLAYERMODEL_TEXTHEIGHT  370-25
+#define PLAYERMODEL_X 385
+#define PLAYERMODEL_Y  32
+#define PLAYERMODEL_WIDTH 32*8
+#define PLAYERMODEL_HEIGHT 56*8
 
 // status bar text buffer
 #define MAX_STATUSBAR_TEXT 120
@@ -80,6 +79,11 @@ typedef void (*voidfunc_f)(void);
 #define AST_MOD 		1001
 #define AST_LINK 		1002
 #define AST_ADDONBTN 	1003
+
+/*#define AST_OSLOGO 		10000
+#define AST_MOD 		10001
+#define AST_LINK 		10002
+#define AST_ARROWSLR 	10003*/
 
 //
 // ui_main.c
@@ -247,7 +251,7 @@ qboolean UI_IsValidCvar(const char* cvar);
 #define RCOLUMN_OFFSET			( BIGCHAR_WIDTH )
 #define LCOLUMN_OFFSET			(-BIGCHAR_WIDTH )
 
-#define SLIDER_RANGE			10
+#define SLIDER_RANGE			8
 #define	MAX_EDIT_LINE			256
 
 #define MAX_MENUDEPTH			8
@@ -380,7 +384,6 @@ typedef struct {
 	qhandle_t		focusshader;
 	int				width;
 	int				height;
-	float*			focuscolor;
 
 	int 			curvalue;
 
@@ -502,9 +505,9 @@ extern void UI_ConfirmMenu_Style( const char *question, int style, void (*action
 extern void UI_SandboxMainMenu(void);
 
 //
-// ui_setup.c
+// ui_options.c
 //
-extern void UI_Setup(void);
+extern void UI_Options(void);
 
 //
 // ui_connect.c
@@ -548,13 +551,6 @@ extern void UI_WorkshopMenu_Cache( void );
 #define LOW_MEMORY			(5 * 1024 * 1024)
 
 extern void UI_PlayerModelMenu( void );
-extern void PlayerModel_Cache( void );
-
-//
-// ui_playersettings.c
-//
-extern void UI_PlayerSettingsMenu( void );
-extern void PlayerSettings_Cache( void );
 
 //
 // ui_preferences.c
@@ -898,16 +894,27 @@ void UI_saveMapEdMenu( void );
 
 void UI_MapCallVote( void );
 
+//SourceTech UI Framework
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
+
 void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+
 void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+
 void UI_CSlider(menuelement_s* e, float x, float y, char* text, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid);
+
 void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, char* var, float mod, void (*callback)( void *self, int event ), int callid);
+
 void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, const char **list, void (*callback)( void *self, int event ), int callid);
+
 void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+
 void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
+
 void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid);
 void UI_FillList(menuelement_s* e, char* location, char* extension, char* names, int namesSize, char** configlist);
+
+void UI_CField(menuelement_s* e, float x, float y, char* text, int w, int maxchars, int style, void (*callback)( void *self, int event ), int callid);
 
 //SYSCALLS
 void			trap_Error( const char *string );

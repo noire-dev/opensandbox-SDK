@@ -540,8 +540,8 @@ CG_GibPlayer
 Generated a bunch of gibs launching out from the bodies location
 ===================
 */
-#define	GIB_VELOCITY	cg_gibvelocity.value
-#define	GIB_JUMP		cg_gibjump.value
+#define	GIB_VELOCITY	500
+#define	GIB_JUMP		350
 void CG_GibPlayer( vec3_t playerOrigin ) {
 	vec3_t	origin, velocity;
 	int	j;

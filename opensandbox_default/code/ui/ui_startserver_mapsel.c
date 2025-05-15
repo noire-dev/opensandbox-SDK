@@ -1031,15 +1031,7 @@ static void MapSelect_DrawMapPic( void *self ) {
 		 (b->generic.flags & QMF_PULSEIFFOCUS && (Menu_ItemAtCursor( b->generic.parent ) == b)) );
 		if (hasfocus)
 		{
-			if (b->focuscolor)
-			{
-			  tempcolor[0] = b->focuscolor[0];
-			  tempcolor[1] = b->focuscolor[1];
-			  tempcolor[2] = b->focuscolor[2];
-			  color        = tempcolor;
-			}
-			else
-			  color = pulsecolor;
+			color = pulsecolor;
 			color[3] = 0.7+0.3*sin(uis.realtime/PULSE_DIVISOR);
 
 			trap_R_SetColor( color );

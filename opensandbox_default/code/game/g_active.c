@@ -361,7 +361,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 
 	if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 		client->ps.pm_type = PM_SPECTATOR;
-		client->ps.speed = g_spectatorspeed.integer;	// faster than normal
+		client->ps.speed = 900;		// faster than normal
 
 		// set up for pmove
 		memset (&pm, 0, sizeof(pm));
@@ -402,38 +402,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
                 }
 		StopFollowing(ent);
 	}
-}
-
-/*
-=================
-ClientInactivityTimer
-
-Returns qfalse if the client is dropped
-=================
-*/
-qboolean ClientInactivityTimer( gclient_t *client ) {
-	if ( ! g_inactivity.integer ) {
-		// give everyone some time, so if the operator sets g_inactivity during
-		// gameplay, everyone isn't kicked
-		client->inactivityTime = level.time + 60 * 1000;
-		client->inactivityWarning = qfalse;
-	} else if ( client->pers.cmd.forwardmove ||
-		client->pers.cmd.rightmove ||
-		client->pers.cmd.upmove ||
-		(client->pers.cmd.buttons & BUTTON_ATTACK) ) {
-		client->inactivityTime = level.time + g_inactivity.integer * 1000;
-		client->inactivityWarning = qfalse;
-	} else if ( !client->pers.localClient ) {
-		if ( level.time > client->inactivityTime ) {
-			trap_DropClient( client - level.clients, "Dropped due to inactivity" );
-			return qfalse;
-		}
-		if ( level.time > client->inactivityTime - 10000 && !client->inactivityWarning ) {
-			client->inactivityWarning = qtrue;
-			trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"" );
-		}
-	}
-	return qtrue;
 }
 
 void MakeUnlimitedAmmo(gentity_t *ent) {
@@ -717,9 +685,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			if ( ent->s.eType != ET_PLAYER ) {
 				break;		// not in the player model
 			}
-			if ( g_dmflags.integer & DF_NO_FALLING ) {
-				break;
-			}
 			if ( event == EV_FALL_FAR ) {
 				damage = g_falldamagebig.integer;
 			} else {
@@ -984,9 +949,6 @@ ClientThink
 
 This will be called once for each client frame, which will
 usually be a couple times for each server frame on fast clients.
-
-If "g_synchronousClients 1" is set, this will be called exactly
-once for each server frame, which makes for smooth demo recording.
 ==============
 */
 void ClientThink_real( gentity_t *ent ) {
@@ -1006,14 +968,12 @@ void ClientThink_real( gentity_t *ent ) {
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->client->pers.cmd;
 
-	// sanity check the command time to prevent speedup cheating
+	// sanity check the command time (anti-cheat)
 	if ( ucmd->serverTime > level.time + 200 ) {
 		ucmd->serverTime = level.time + 200;
-//		G_Printf("serverTime <<<<<\n" );
 	}
 	if ( ucmd->serverTime < level.time - 1000 ) {
 		ucmd->serverTime = level.time - 1000;
-//		G_Printf("serverTime >>>>>\n" );
 	}
 
 	client->frameOffset = trap_Milliseconds() - level.frameStartTime;
@@ -1025,30 +985,10 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( client->pers.samplehead >= NUM_PING_SAMPLES ) {
 		client->pers.samplehead -= NUM_PING_SAMPLES;
 	}
-
-	// initialize the real ping
-	if ( g_truePing.integer ) {
-		int i, sum = 0;
-
-		// get an average of the samples we saved up
-		for ( i = 0; i < NUM_PING_SAMPLES; i++ ) {
-			sum += client->pers.pingsamples[i];
-		}
-
-		client->pers.realPing = sum / NUM_PING_SAMPLES;
-	}
-	else {
-		// if g_truePing is off, use the normal ping
-		client->pers.realPing = client->ps.ping;
-	}
 	
 	client->attackTime = ucmd->serverTime;
 
 	client->lastUpdateFrame = level.framenum;
-
-	if ( client->pers.realPing < 0 ) {
-		client->pers.realPing = 0;
-	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
 	if ( msec < 1 && client->sess.spectatorState != SPECTATOR_FOLLOW ) {
@@ -1056,17 +996,6 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	if ( msec > 200 ) {
 		msec = 200;
-	}
-
-	if ( pmove_msec.integer < 1 ) {
-		trap_Cvar_Set("pmove_msec", "1");
-	}
-	else if (pmove_msec.integer > 125) {
-		trap_Cvar_Set("pmove_msec", "125");
-	}
-
-	if ( pmove_fixed.integer || client->pers.pmoveFixed ) {
-		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 	}
 
 	//
@@ -1086,11 +1015,6 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
-	// check for inactivity timer, but never drop the local client of a non-dedicated server
-	if ( !ClientInactivityTimer( client ) ) {
-		return;
-	}
-
 	// clear the rewards if time
 	if ( level.time > client->rewardTime ) {
 		client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
@@ -1104,7 +1028,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 	// set gravity
-if ( !client->ps.gravity ){
+	if ( !client->ps.gravity ){
 		if(client->sess.sessionTeam == TEAM_FREE){
 			client->ps.gravity = g_gravity.value*g_gravityModifier.value;
 		}
@@ -1114,51 +1038,51 @@ if ( !client->ps.gravity ){
 		if(client->sess.sessionTeam == TEAM_RED){
 			client->ps.gravity = g_gravity.value*g_teamred_gravityModifier.value;
 		}
-}
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-			client->ps.gravity *= g_scoutgravitymodifier.value;
-		}
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-			client->ps.gravity *= g_ammoregengravitymodifier.value;
-		}
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
-			client->ps.gravity *= g_doublergravitymodifier.value;
-		}
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			client->ps.gravity *= g_guardgravitymodifier.value;
-		}
+	}
+	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
+		client->ps.gravity *= g_scoutgravitymodifier.value;
+	}
+	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
+		client->ps.gravity *= g_ammoregengravitymodifier.value;
+	}
+	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
+		client->ps.gravity *= g_doublergravitymodifier.value;
+	}
+	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+		client->ps.gravity *= g_guardgravitymodifier.value;
+	}
 
 
 	// set speed
-if ( !ent->speed ){
-	if ( !ent->client->noclip ) {
-	client->ps.speed = g_speed.value;
-	} else {
-	client->ps.speed = g_speed.value*2.5;	
+	if ( !ent->speed ){
+		if ( !ent->client->noclip ) {
+			client->ps.speed = g_speed.value;
+		} else {
+			client->ps.speed = g_speed.value*2.5;	
+		}
+		if(client->sess.sessionTeam == TEAM_BLUE){
+			client->ps.speed = g_teamblue_speed.integer;
+		}
+		if(client->sess.sessionTeam == TEAM_RED){
+			client->ps.speed = g_teamred_speed.integer;
+		}
 	}
-	if(client->sess.sessionTeam == TEAM_BLUE){
-	client->ps.speed = g_teamblue_speed.integer;
-	}
-	if(client->sess.sessionTeam == TEAM_RED){
-	client->ps.speed = g_teamred_speed.integer;
-	}
-}
 	else if ( ent->speed == -1 )
 		client->ps.speed = 0;
 	else
 		client->ps.speed = ent->speed;			//ent->speed holds a modified speed value that's set by a target_playerspeed
 	
 	if(client->vehiclenum){	//VEHICLE-SYSTEM: setup physics for all
-	if(G_FindEntityForEntityNum(client->vehiclenum)){
-	vehicle = G_FindEntityForEntityNum(client->vehiclenum);
-	client->ps.stats[STAT_VEHICLE] = vehicle->vehicle;
-	if(BG_VehicleCheckClass(vehicle->vehicle)){
-	client->ps.speed = BG_GetVehicleSettings(vehicle->vehicle, VSET_SPEED);
-	client->ps.gravity = (g_gravity.value*g_gravityModifier.value)*BG_GetVehicleSettings(vehicle->vehicle, VSET_GRAVITY);
-	}
-	}
+		if(G_FindEntityForEntityNum(client->vehiclenum)){
+			vehicle = G_FindEntityForEntityNum(client->vehiclenum);
+			client->ps.stats[STAT_VEHICLE] = vehicle->vehicle;
+			if(BG_VehicleCheckClass(vehicle->vehicle)){
+				client->ps.speed = BG_GetVehicleSettings(vehicle->vehicle, VSET_SPEED);
+				client->ps.gravity = (g_gravity.value*g_gravityModifier.value)*BG_GetVehicleSettings(vehicle->vehicle, VSET_GRAVITY);
+			}
+		}
 	} else {
-	client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
+		client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
 	}
 	
 	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
@@ -1241,13 +1165,6 @@ if ( !ent->speed ){
 	}
 	pm.trace = trap_Trace;
 	pm.pointcontents = trap_PointContents;
-	pm.debugLevel = g_debugMove.integer;
-	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
-
-	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
-	pm.pmove_msec = pmove_msec.integer;
-        pm.pmove_float = pmove_float.integer;
-        pm.pmove_flags = g_dmflags.integer;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 	Pmove (&pm);
@@ -1311,20 +1228,7 @@ if ( !ent->speed ){
 
 	// check for respawning
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-		// wait for the attack button to be pressed
-		// forcerespawn is to prevent users from waiting out powerups
-		// In Last man standing, we force a quick respawn, since
-		// the player must be able to loose health
-		// pressing attack or use is the normal respawn method
-		if ( ( level.time > client->respawnTime ) &&
-			( ( ( g_forcerespawn.integer > 0 ) &&
-			( level.time - client->respawnTime  > g_forcerespawn.integer * 1000 ) ) ||
-			( ( ( g_gametype.integer == GT_LMS ) ||
-			( g_gametype.integer == GT_ELIMINATION ) ||
-			( g_gametype.integer == GT_CTF_ELIMINATION ) ) &&
-			( level.time - client->respawnTime > 0 ) ) ||
-			( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) ) ) {
-
+		if ( level.time > client->respawnTime && ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE )) {
 			ClientRespawn( ent );
 		}
 		return;
@@ -1355,14 +1259,14 @@ void ClientThink( int clientNum ) {
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
 
-	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
+	if ( !(ent->r.svFlags & SVF_BOT) ) {
 		ClientThink_real( ent );
 	}
 }
 
 
 void G_RunClient( gentity_t *ent ) {
-	if ( !(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer ) {
+	if ( !(ent->r.svFlags & SVF_BOT) ) {
 		return;
 	}
 	ent->client->pers.cmd.serverTime = level.time;
@@ -1522,14 +1426,6 @@ void ClientEndFrame( gentity_t *ent ) {
 	if ( ent->client->invulnerabilityTime > level.time ) {
 		ent->client->ps.powerups[PW_INVULNERABILITY] = level.time;
 	}
-
-	// save network bandwidth
-#if 0
-	if ( !g_synchronousClients->integer && ent->client->ps.pm_type == PM_NORMAL ) {
-		// FIXME: this must change eventually for non-sync demo recording
-		VectorClear( ent->client->ps.viewangles );
-	}
-#endif
 
 	//
 	// If the end of unit layout is displayed, don't give

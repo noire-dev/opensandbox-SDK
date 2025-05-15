@@ -508,8 +508,6 @@ enum {
 
 typedef struct serverparameters_s {
 	char hostname[MAX_HOSTNAME_LENGTH];
-	int pmove_fixed;
-	int pmove_msec;
 	int smoothclients;
 
 	int allowmaxrate;
@@ -545,7 +543,6 @@ typedef struct serverparameters_s {
 	int preventConfigBug;
 
 	int dedicatedServer;
-	int inactivityTime;
 
 	int allowPrivateClients;
 	int privateClients;
@@ -930,10 +927,7 @@ ALL SCRIPT DATA *****
 typedef struct scriptdata_s {
 	// general date, used by all pages
 	int gametype;	// stored as GT_*
-
-	// controls the setting up some params in a server script 
-	qboolean multiplayer;
-
+	
 	// specific groups of related parameters
 	mapparameters_t map;
 	botparameters_t bot;

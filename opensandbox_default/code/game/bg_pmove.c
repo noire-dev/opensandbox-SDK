@@ -203,7 +203,7 @@ static void PM_Friction( void ) {
 
 	// apply ground friction
 	if ( pm->waterlevel <= 1) {
-		if(mod_slickmove != 1 && !pm->ps->stats[STAT_VEHICLE]){  //VEHICLE-SYSTEM: disable player phys for all
+		if(mod_movetype != 1 && !pm->ps->stats[STAT_VEHICLE]){  //VEHICLE-SYSTEM: disable player phys for all
 			if ( pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK) ) {
 				// if getting knocked back, no friction
 				if ( ! (pm->ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
@@ -928,7 +928,7 @@ static void PM_WalkMove( void ) {
 
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_slickmove == 1 ) {
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_movetype == 1 ) {
 		accelerate = pm_airaccelerate;
 	} else if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) { //VEHICLE-SYSTEM: accelerate for 1
 		accelerate = pm_veh00001accelerate;
@@ -941,7 +941,7 @@ static void PM_WalkMove( void ) {
 	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
 	//Com_Printf("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
 
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_slickmove == 1 || BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) { //VEHICLE-SYSTEM: slick move for 1
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_movetype == 1 || BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) { //VEHICLE-SYSTEM: slick move for 1
 		pm->ps->velocity[2] -= (pm->ps->gravity * pml.frametime);
 	} else {
 		// don't reset the z velocity for slopes
@@ -1112,10 +1112,6 @@ static int PM_CorrectAllSolid( trace_t *trace ) {
 	int			i, j, k;
 	vec3_t		point;
 
-	if ( pm->debugLevel ) {
-		Com_Printf("%i:allsolid\n", c_pmove);
-	}
-
 	// jitter around
 	for (i = -1; i <= 1; i++) {
 		for (j = -1; j <= 1; j++) {
@@ -1158,11 +1154,6 @@ static void PM_GroundTraceMissed( void ) {
 	vec3_t		point;
 
 	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE ) {
-		// we just transitioned into freefall
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:lift\n", c_pmove);
-		}
-
 		// if they aren't in a jumping animation and the ground is a ways away, force into it
 		// if we didn't do the trace, the player would be backflipping down staircases
 		VectorCopy( pm->ps->origin, point );
@@ -1218,9 +1209,6 @@ static void PM_GroundTrace( void ) {
 
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[2] > 0 && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10 ) {
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:kickoff\n", c_pmove);
-		}
 		// go into jump animation
 		if ( pm->cmd.forwardmove >= 0 ) {
 			PM_ForceLegsAnim( LEGS_JUMP );
@@ -1238,9 +1226,6 @@ static void PM_GroundTrace( void ) {
 
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[2] < MIN_WALK_NORMAL ) {
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:steep\n", c_pmove);
-		}
 		// FIXME: if they can't slide down the slope, let them
 		// walk (sharp crevices)
 		pm->ps->groundEntityNum = ENTITYNUM_NONE;
@@ -1260,11 +1245,6 @@ static void PM_GroundTrace( void ) {
 	}
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
-		// just hit the ground
-		if ( pm->debugLevel ) {
-			Com_Printf("%i:Land\n", c_pmove);
-		}
-
 		PM_CrashLand();
 
 		// don't do landing time if we were just going down a slope
@@ -1462,16 +1442,6 @@ static void PM_Footsteps( void ) {
 			PM_ContinueLegsAnim( LEGS_WALKCR );
 		}
 		// ducked characters never play footsteps
-	/*
-	} else 	if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
-			bobmove = 0.4;	// faster speeds bob faster
-			footstep = qtrue;
-		} else {
-			bobmove = 0.3;
-		}
-		PM_ContinueLegsAnim( LEGS_BACK );
-	*/
 	} else {
 		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
 			bobmove = 0.4f;	// faster speeds bob faster
@@ -1500,10 +1470,7 @@ static void PM_Footsteps( void ) {
 	// if we just crossed a cycle boundary, play an apropriate footstep event
 	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 ) {
 		if ( pm->waterlevel == 0 ) {
-			// on ground will only play sounds if running
-			if ( footstep && !pm->noFootsteps ) {
-				PM_AddEvent( PM_FootstepForSurface() );
-			}
+			PM_AddEvent( PM_FootstepForSurface() );
 		} else if ( pm->waterlevel == 1 ) {
 			// splashing
 			PM_AddEvent( EV_FOOTSPLASH );
@@ -1573,12 +1540,10 @@ static void PM_BeginWeaponChange( int weapon ) {
 	return;
 	}
 	pm->ps->weaponstate = WEAPON_DROPPING;
-    if(! (pm->pmove_flags & DF_INSTANT_WEAPON_CHANGE)) {
-        PM_AddEvent( EV_CHANGE_WEAPON );
-        pm->ps->weaponstate = WEAPON_DROPPING;
-        pm->ps->weaponTime += 200;
-        PM_StartTorsoAnim( TORSO_DROP );
-    }
+    PM_AddEvent( EV_CHANGE_WEAPON );
+    pm->ps->weaponstate = WEAPON_DROPPING;
+    pm->ps->weaponTime += 200;
+    PM_StartTorsoAnim( TORSO_DROP );
 	return;
 	}
 }
@@ -1607,10 +1572,8 @@ static void PM_FinishWeaponChange( void ) {
 	}
 	#endif
 	if(pm->ps->weaponstate == WEAPON_RAISING){
-		if(! (pm->pmove_flags & DF_INSTANT_WEAPON_CHANGE)) {
-            pm->ps->weaponTime += 500;
-            PM_StartTorsoAnim( TORSO_RAISE );
-        }
+        pm->ps->weaponTime += 500;
+        PM_StartTorsoAnim( TORSO_RAISE );
 	}
 	return;
 	}
@@ -2389,11 +2352,6 @@ void PmoveSingle (pmove_t *pmove) {
 
 	// entering / leaving water splashes
 	PM_WaterEvents();
-
-	// snap some parts of playerstate to save network bandwidth
-    // But only if pmove_float is not enabled
-    if(!(pm->pmove_float))
-		SnapVector( pm->ps->velocity );
 }
 
 
@@ -2426,15 +2384,10 @@ void Pmove (pmove_t *pmove) {
 
 		msec = finalTime - pmove->ps->commandTime;
 
-		if ( pmove->pmove_fixed ) {
-			if ( msec > pmove->pmove_msec ) {
-				msec = pmove->pmove_msec;
-			}
-		}
-		else {
-			if ( msec > 66 ) {
-				msec = 66;
-			}
+		if (msec < 1) {
+			msec = 1; // ниже — нахер, баги, говно и обосрание
+		} else if (msec > 33) {
+			msec = 33; // выше — значит просадка ниже 30 FPS, режем на 33, чтобы игрок не творил хуйню
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle( pmove );

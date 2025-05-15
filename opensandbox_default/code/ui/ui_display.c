@@ -189,10 +189,6 @@ static void UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
 		trap_Cvar_SetValue( "cg_drawfriend", displayOptionsInfo.friend.curvalue);
 		break;
 
-	case ID_ISTYLE:
-		trap_Cvar_SetValue( "cg_itemstyle", displayOptionsInfo.istyle.curvalue);
-		break;
-
 	case ID_BACK:
 		UI_PopMenu();
 		break;
@@ -518,7 +514,6 @@ displayOptionsInfo.istyle.string	   	= "Стиль предметов:";
 	displayOptionsInfo.friend.curvalue  = trap_Cvar_VariableValue( "cg_drawFriend");
 	displayOptionsInfo.thirdpersonrange.curvalue  = trap_Cvar_VariableValue( "cg_thirdpersonrange");
 	displayOptionsInfo.thirdpersonoffset.curvalue  = trap_Cvar_VariableValue( "cg_thirdpersonoffset");
-	displayOptionsInfo.istyle.curvalue  = trap_Cvar_VariableValue( "cg_itemstyle");
 	displayOptionsInfo.rview.curvalue  = trap_Cvar_VariableValue( "cg_cameraEyes");
 	displayOptionsInfo.rviewf.curvalue  = trap_Cvar_VariableValue( "cg_cameraEyes_Fwd");
 	displayOptionsInfo.rviewu.curvalue  = trap_Cvar_VariableValue( "cg_cameraEyes_Up");

@@ -1321,7 +1321,7 @@ static void CG_DrawGenericConsole( console_t *console, int maxlines, int time, i
 	vec4_t	hcolor;
 	int	chatHeight;
 
-	if (!cg_newConsole.integer || cg.showScores || cg.scoreBoardShowing ) {
+	if ( cg.showScores || cg.scoreBoardShowing ) {
 		return;
 	}
 
@@ -1746,7 +1746,7 @@ static void CG_DrawLagometer( void ) {
 
 	trap_R_SetColor( NULL );
 
-	if ( cg_nopredict.integer || cg_synchronousClients.integer ) {
+	if ( cg_nopredict.integer ) {
 		CG_DrawBigString( ax, ay, "snc", 1.0 );
 	}
 
@@ -1806,7 +1806,7 @@ static void CG_DrawCenterString( void ) {
 	if(cg.centerPrintTimeC >= 1){
 	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg.centerPrintTimeC );
 	} else {
-	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg_centertime.value );	
+	color = CG_FadeColor( cg.centerPrintTime, 1000 * 5 );	
 	}
 	if ( !color ) {
 		return;
@@ -2857,7 +2857,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 		return;
 	}
 
-	if (cg_newConsole.integer && !cg.showScores) {
+	if (!cg.showScores) {
 		float consoleSizeY = CG_ConsoleAdjustSizeY(cg_consoleSizeY.value);
 		float consoleSizeX = CG_ConsoleAdjustSizeX(cg_consoleSizeX.value);
 		float chatSizeY = CG_ConsoleAdjustSizeY(cg_chatSizeY.value);

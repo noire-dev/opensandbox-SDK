@@ -1118,15 +1118,7 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 
 		if ((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS) && (Menu_ItemAtCursor( b->generic.parent ) == b))
 		{
-			if (b->focuscolor)
-			{
-				tempcolor[0] = b->focuscolor[0];
-				tempcolor[1] = b->focuscolor[1];
-				tempcolor[2] = b->focuscolor[2];
-				color        = tempcolor;
-			}
-			else
-				color = pulse_color;
+			color = pulse_color;
 			color[3] = 0.5+0.5*sin(uis.realtime/PULSE_DIVISOR);
 
 			trap_R_SetColor( color );
@@ -1135,14 +1127,7 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 		}
 		else if ((b->generic.flags & QMF_HIGHLIGHT) || ((b->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (Menu_ItemAtCursor( b->generic.parent ) == b)))
 		{
-			if (b->focuscolor)
-			{
-				trap_R_SetColor( b->focuscolor );
-				UI_DrawHandlePic( x, y, w, h, b->focusshader );
-				trap_R_SetColor( NULL );
-			}
-			else
-				UI_DrawHandlePic( x, y, w, h, b->focusshader );
+			UI_DrawHandlePic( x, y, w, h, b->focusshader );
 		}
 	}
 }
@@ -1243,7 +1228,6 @@ static void UI_BotSelect_Init( char *bot , int index) {
 			botSelectInfo.picbuttons[k].width				= 128;
 			botSelectInfo.picbuttons[k].height				= 128;
 			botSelectInfo.picbuttons[k].focuspic			= BOTSELECT_SELECT;
-			botSelectInfo.picbuttons[k].focuscolor			= colorRed;
 
 			x += (64 + 6);
 		}

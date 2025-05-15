@@ -129,7 +129,6 @@ static void RemoveBots_SetBotIcon( void)
 {
 	char	info[MAX_INFO_STRING];
 	int		index;
-	int 	team;
 
 	index = CS_PLAYERS + removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum];
 	trap_GetConfigString( index, info, MAX_INFO_STRING );
@@ -138,17 +137,6 @@ static void RemoveBots_SetBotIcon( void)
    removeBotsMenuInfo.f_skill = atof(Info_ValueForKey(info, "skill"));
 	UI_ServerPlayerIcon( Info_ValueForKey( info, "model" ), removeBotsMenuInfo.boticon, MAX_QPATH );
 	removeBotsMenuInfo.icon.shader = 0;
-
-	if (removeBotsMenuInfo.gametype < GT_TEAM)
-		return;
-
-	team = atoi(Info_ValueForKey(info, "t"));
-	if (team == TEAM_RED)
-		removeBotsMenuInfo.icon_hilite.focuscolor = color_red;
-	else if (team == TEAM_BLUE)
-		removeBotsMenuInfo.icon_hilite.focuscolor = color_blue;
-	else
-		removeBotsMenuInfo.icon_hilite.focuscolor = color_white;
 }
 
 
@@ -505,7 +493,6 @@ if(cl_language.integer == 1){
 	removeBotsMenuInfo.icon_hilite.width				= 128;
 	removeBotsMenuInfo.icon_hilite.height				= 128;
 	removeBotsMenuInfo.icon_hilite.focuspic				= ART_SELECT;
-	removeBotsMenuInfo.icon_hilite.focuscolor			= color_white;
 
 	removeBotsMenuInfo.icon.generic.type		= MTYPE_BITMAP;
 	removeBotsMenuInfo.icon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_INACTIVE;

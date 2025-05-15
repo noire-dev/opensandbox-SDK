@@ -34,11 +34,8 @@
 #define ID_SERVER_TEAMBALANCE 306
 #define ID_SERVER_ANTICHEAT 307
 #define ID_SERVER_DEDICATED 308
-#define ID_SERVER_INACTIVITY 309
 #define ID_SERVER_SAVE 310
 #define ID_SERVER_LOAD 311
-#define ID_SERVER_PMOVEFIXED 312
-#define ID_SERVER_PMOVEMSEC 313
 #define ID_SERVER_SMOOTHCLIENTS 314
 #define ID_SERVER_MAXRATE 315
 #define ID_SERVER_ALLOWDOWNLOAD 316
@@ -259,8 +256,6 @@
 #define CONTROL_POSX (GAMETYPECOLUMN_X + 6*SMALLCHAR_WIDTH)
 
 #define SERVERCOLUMN_X GAMETYPECOLUMN_X
-
-
 
 enum {
 	SRVCTRL_SPIN,
@@ -588,9 +583,6 @@ static controlinit_t srv_admin[] = {
 	{ SRVCTRL_SPIN, 0, ID_SERVER_DEDICATED, ITEM_ALWAYSON,
 		"Dedicated server:", &s_scriptdata.server.dedicatedServer, 0, 0, NULL, 0, 0, dedicated_list },
 
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_INACTIVITY, ITEM_ALWAYSON,
-		"Inactivity timeout:", &s_scriptdata.server.inactivityTime, 0, 999, NULL, 3, 3, NULL },
-
 	{ SRVCTRL_RADIO, 0, ID_SERVER_LANFORCERATE, ITEM_ALWAYSON,
 		"LAN force rate:", &s_scriptdata.server.lanForceRate, 0, 0, NULL, 0, 0, NULL },
 };
@@ -659,10 +651,6 @@ static controlinit_t srv_gamemode[] = {
 
 // physics
 static controlinit_t srv_physics[] = {
-	{ SRVCTRL_RADIO, 0, ID_SERVER_PMOVEFIXED, ITEM_ALWAYSON,
-		"Pmove fixed:", &s_scriptdata.server.pmove_fixed, 0, 0, NULL, 0, 0, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_PMOVEMSEC, ITEM_GRAYIF_PREVOFF|ITEM_HALFGAP,
-		"msec:", &s_scriptdata.server.pmove_msec, 1, 128, NULL, 3, 3, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ACCELERATE, ITEM_ALWAYSON,
 		"Accelerate:", &s_scriptdata.server.accelerate, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPECTATORSPEED, ITEM_ALWAYSON,
@@ -1383,14 +1371,6 @@ static void StartServer_ServerPage_ControlListStatusBar(void* ptr)
 	switch (c->id) {
 	case ID_SERVER_CONFIGBUG:
 		StartServer_ServerPage_SetStatusBar("fixes change of time and frag limits (pre 1.30 only)");
-		return;
-
-	case ID_SERVER_PMOVEMSEC:
-		StartServer_ServerPage_SetStatusBar("pmove step time, minimum 8 (recommended)");
-		return;
-
-	case ID_SERVER_PMOVEFIXED:
-		StartServer_ServerPage_SetStatusBar("on = same movement physics for all players");
 		return;
 
 	case ID_SERVER_RESPAWN:
@@ -2235,10 +2215,8 @@ void StartServer_ServerPage_MenuInit(void)
 
 	// init the tabbed control list for the page
 	s_servercontrols.activePage = 0;
-	if (s_scriptdata.multiplayer) {
-   		s_servercontrols.pageList = srv_multiplayerserver;
-	   	s_servercontrols.pageListSize = ARRAY_COUNT(srv_multiplayerserver);
-	}
+   	s_servercontrols.pageList = srv_multiplayerserver;
+	s_servercontrols.pageListSize = ARRAY_COUNT(srv_multiplayerserver);
 
 	style = UI_RIGHT|UI_MEDIUMFONT;
 	scale = 1.00;

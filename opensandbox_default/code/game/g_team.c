@@ -404,15 +404,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->pers.teamState.fragcarrier++;
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
 			attacker->client->pers.netname, TeamName(team));
-                if(g_gametype.integer == GT_CTF) {
-                    G_LogPrintf( "CTF: %i %i %i: %s fragged %s's flag carrier!\n", attacker->client->ps.clientNum, team, 3, attacker->client->pers.netname, TeamName(team) );
-                } else if(g_gametype.integer == GT_CTF_ELIMINATION) {
-                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s fragged %s's flag carrier!\n", level.roundNumber, attacker->client->ps.clientNum, team, 3, attacker->client->pers.netname, TeamName(team) );
-                } else if(g_gametype.integer == GT_1FCTF) {
-                    G_LogPrintf( "1fCTF: %i %i %i: %s fragged %s's flag carrier!\n", attacker->client->ps.clientNum, team, 3, attacker->client->pers.netname, TeamName(team) );
-                }
                 
-
 		// the target had the flag, clear the hurt carrier
 		// field on the other team
 		for (i = 0; i < MAX_CLIENTS; i++) {
@@ -428,12 +420,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS * tokens * tokens);
 		attacker->client->pers.teamState.fragcarrier++;
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n",
-			attacker->client->pers.netname, TeamName(team));
-
-                G_LogPrintf("HARVESTER: %i %i %i %i %i: %s fragged %s (%s) who had %i skulls.\n",
-                        attacker->client->ps.clientNum, team, 1, targ->client->ps.clientNum, tokens,
-                        attacker->client->pers.netname, targ->client->pers.netname,TeamName(team),tokens);
+		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n", attacker->client->pers.netname, TeamName(team));
 
 		// the target had the flag, clear the hurt carrier
 		// field on the other team
@@ -836,9 +823,6 @@ void Team_Dom_TakePoint( gentity_t *point, int team, int clientnumber ) {
 	G_SpawnItem(point, it);
 	FinishSpawningItem( point );
 	level.pointStatusDom[i] = team;
-        G_LogPrintf( "DOM: %i %i %i %i: %s takes point %s!\n",
-                    clientnumber,i,0,team,
-                    TeamName(team),level.domination_points_names[i]);
 	SendDominationPointsStatusMessageToAllClients();
 }
 
@@ -1001,18 +985,9 @@ void Team_ReturnFlag( int team ) {
 	Team_ReturnFlagSound(Team_ResetFlag(team), team);
 	if( team == TEAM_FREE ) {
 		PrintMsg(NULL, "The flag has returned!\n" );
-                if(g_gametype.integer == GT_1FCTF) {
-                    G_LogPrintf( "1FCTF: %i %i %i: The flag was returned!\n", -1, -1, 2 );
-                }
 	}
 	else {
 		PrintMsg(NULL, "The %s flag has returned!\n", TeamName(team));
-                if(g_gametype.integer == GT_CTF_ELIMINATION) {
-                    G_LogPrintf( "CTF: %i %i %i: The %s flag was returned!\n", -1, team, 2, TeamName(team) );
-                } else
-                if(g_gametype.integer == GT_CTF_ELIMINATION) {
-                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: The %s flag was returned!\n", level.roundNumber, -1, team, 2, TeamName(team) );
-                }
 	}
 }
 
@@ -1141,7 +1116,6 @@ int Team_TouchDoubleDominationPoint( gentity_t *ent, gentity_t *other, int team 
 		level.pointStatusA = clientTeam;
 		PrintMsg( NULL, "%s" S_COLOR_WHITE " (%s) took control of A!\n", cl->pers.netname, TeamName(clientTeam) );
 		Team_DD_makeA2team( ent, clientTeam );
-                G_LogPrintf( "DD: %i %i %i: %s took point A for %s!\n", cl->ps.clientNum, clientTeam, 0, cl->pers.netname, TeamName(clientTeam) );
 		//Give personal score
 		score = DD_POINT_CAPTURE; //Base score for capture
 		if(otherDominating){
@@ -1170,18 +1144,16 @@ int Team_TouchDoubleDominationPoint( gentity_t *ent, gentity_t *other, int team 
 		level.pointStatusB = clientTeam;
 		PrintMsg( NULL, "%s" S_COLOR_WHITE " (%s) took control of B!\n", cl->pers.netname, TeamName(clientTeam) );
 		Team_DD_makeB2team( ent, clientTeam );
-                G_LogPrintf( "DD: %i %i %i: %s took point B for %s!\n", cl->ps.clientNum, clientTeam, 1, cl->pers.netname, TeamName(clientTeam) );
 		//Give personal score
 		score = DD_POINT_CAPTURE; //Base score for capture
-		if(otherDominating){
+		if(otherDominating) {
 			score += DD_POINT_CAPTURE_BREAK;
 			if(isClose)
 				score += DD_POINT_CAPTURE_CLOSE;
 		}
 		AddScore(other, ent->r.currentOrigin, score);
 		//Do we also have point A?
-		if(clientTeam == level.pointStatusA)
-		{
+		if(clientTeam == level.pointStatusA) {
 			//We are dominating!
 			level.timeTaken = level.time; //At this time
 			PrintMsg( NULL, "%s" S_COLOR_WHITE " is dominating!\n", TeamName(clientTeam) );
@@ -1220,11 +1192,6 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 		PrintMsg( NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n", 
 			cl->pers.netname, TeamName(team));
 		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
-                if(g_gametype.integer == GT_CTF) {
-                    G_LogPrintf( "CTF: %i %i %i: %s returned the %s flag!\n", cl->ps.clientNum, team, 2, cl->pers.netname, TeamName(team) );
-                } else if(g_gametype.integer == GT_CTF_ELIMINATION) {
-                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s returned the %s flag!\n", level.roundNumber, cl->ps.clientNum, team, 2, cl->pers.netname, TeamName(team) );
-                }
 		other->client->pers.teamState.flagrecovery++;
 		other->client->pers.teamState.lastreturnedflag = level.time;
 		//ResetFlag will remove this entity!  We must return zero
@@ -1239,14 +1206,9 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 		return 0; // We don't have the flag
 	if( g_gametype.integer == GT_1FCTF ) {
 		PrintMsg( NULL, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname );
-                G_LogPrintf( "1FCTF: %i %i %i: %s captured the flag!\n", cl->ps.clientNum, -1, 1, cl->pers.netname );
 	}
 	else {
-            PrintMsg( NULL, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
-            if(g_gametype.integer == GT_CTF)
-                G_LogPrintf( "CTF: %i %i %i: %s captured the %s flag!\n", cl->ps.clientNum, OtherTeam(team), 1, cl->pers.netname, TeamName(OtherTeam(team)) );
-            if(g_gametype.integer == GT_CTF_ELIMINATION)
-                G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s captured the %s flag!\n", level.roundNumber, cl->ps.clientNum, OtherTeam(team), 1, cl->pers.netname, TeamName(OtherTeam(team)) );
+        PrintMsg( NULL, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
 	}
 
 	cl->ps.powerups[enemy_flag] = 0;
@@ -1323,8 +1285,6 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	if( g_gametype.integer == GT_1FCTF ) {
 		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname );
-
-                G_LogPrintf( "1FCTF: %i %i %i: %s got the flag!\n", cl->ps.clientNum, team, 0, cl->pers.netname);
                 
 		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
 
@@ -1337,13 +1297,7 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 	}
 	else{
 		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
-			other->client->pers.netname, TeamName(team));
-                
-                if(g_gametype.integer == GT_CTF) {
-                    G_LogPrintf( "CTF: %i %i %i: %s got the %s flag!\n", cl->ps.clientNum, team, 0, cl->pers.netname, TeamName(team));
-                } else if(g_gametype.integer == GT_CTF_ELIMINATION) {
-                    G_LogPrintf( "CTF_ELIMINATION: %i %i %i %i: %s got the %s flag!\n", level.roundNumber, cl->ps.clientNum, team, 0, cl->pers.netname, TeamName(team));
-                }
+		other->client->pers.netname, TeamName(team));
 
 		if (team == TEAM_RED)
 			cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire
@@ -1374,14 +1328,7 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 		// the only team items that can be picked up in harvester are the cubes
 		if( ent->spawnflags != cl->sess.sessionTeam ) {
 			cl->ps.generic1 += 1; //Skull pickedup
-                        G_LogPrintf("HARVESTER: %i %i %i %i %i: %s picked up a skull.\n",
-                            cl->ps.clientNum,cl->sess.sessionTeam,3,-1,1,
-                            cl->pers.netname);
-		} else {
-                    G_LogPrintf("HARVESTER: %i %i %i %i %i: %s destroyed a skull.\n,",
-                            cl->ps.clientNum,cl->sess.sessionTeam,2,-1,1,
-                            cl->pers.netname);
-                }
+		}
 		G_FreeEntity( ent ); //Destory skull
 		return 0;
 	}
@@ -1957,9 +1904,6 @@ static void ObeliskDie( gentity_t *self, gentity_t *inflictor, gentity_t *attack
 	attacker->client->ps.eFlags |= EF_AWARD_CAP;
 	attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	attacker->client->ps.persistant[PERS_CAPTURES]++;
-    G_LogPrintf("OBELISK: %i %i %i %i: %s destroyed the enemy obelisk.\n",
-    attacker->client->ps.clientNum,attacker->client->sess.sessionTeam,3,0,
-    attacker->client->pers.netname);
     ObeliskHealthChange(self->spawnflags,self->health);
 	teamgame.redObeliskAttackedTime = 0;
 	teamgame.blueObeliskAttackedTime = 0;
@@ -1981,12 +1925,7 @@ static void ObeliskTouch( gentity_t *self, gentity_t *other, trace_t *trace ) {
 		return;
 	}
 
-	PrintMsg(NULL, "%s" S_COLOR_WHITE " brought in %i skull%s.\n",
-					other->client->pers.netname, tokens, tokens>1 ? "s" : "" );
-
-        G_LogPrintf("HARVESTER: %i %i %i %i %i: %s brought in %i skull%s for %s\n",
-            other->client->ps.clientNum,other->client->sess.sessionTeam,0,-1,tokens,
-            other->client->pers.netname,tokens, tokens>1 ? "s" : "", TeamName(other->client->sess.sessionTeam));
+	PrintMsg(NULL, "%s" S_COLOR_WHITE " brought in %i skull%s.\n", other->client->pers.netname, tokens, tokens>1 ? "s" : "" );
 
 	AddTeamScore(self->s.pos.trBase, other->client->sess.sessionTeam, tokens);
 	Team_ForceGesture(other->client->sess.sessionTeam);
@@ -2015,9 +1954,6 @@ static void ObeliskPain( gentity_t *self, gentity_t *attacker, int damage ) {
 	}
 	self->activator->s.frame = 1;
 	AddScore(attacker, self->r.currentOrigin, actualDamage);
-        G_LogPrintf("OBELISK: %i %i %i %i: %s dealt %i damage to the enemy obelisk.\n",
-                 attacker->client->ps.clientNum,attacker->client->sess.sessionTeam,1,actualDamage,
-                 attacker->client->pers.netname,actualDamage);
 }
 
 gentity_t *SpawnObelisk( vec3_t origin, int team, int spawnflags) {
