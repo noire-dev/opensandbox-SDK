@@ -28,7 +28,8 @@
 
 #include "cg_local.h"
 
-
+#define NET_ERROR_LIMIT 16
+int net_error_count = 0;
 
 /*
 ==================
@@ -58,7 +59,6 @@ CG_TransitionEntity
 cent->nextState is moved to cent->currentState and events are fired
 ===============
 */
-//unlagged - early transitioning
 // used to be static, now needed to transition entities from within cg_ents.c
 void CG_TransitionEntity( centity_t *cent ) {
 	cent->currentState = cent->nextState;
@@ -75,7 +75,6 @@ void CG_TransitionEntity( centity_t *cent ) {
 	// check for events
 	CG_CheckEvents( cent );
 }
-
 
 /*
 ==================
@@ -121,7 +120,6 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 		CG_CheckEvents( cent );
 	}
 }
-
 
 /*
 ===================
@@ -185,14 +183,12 @@ static void CG_TransitionSnapshot( void ) {
 
 		// if we are not doing client side movement prediction for any
 		// reason, then the client events and view changes will be issued now
-		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)
-			|| cg_nopredict.integer ) {
+		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
 			CG_TransitionPlayerState( ps, ops );
 		}
 	}
 
 }
-
 
 /*
 ===================
@@ -250,7 +246,6 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 	CG_BuildSolidList();
 }
 
-
 /*
 ========================
 CG_ReadNextSnapshot
@@ -282,33 +277,26 @@ static snapshot_t *CG_ReadNextSnapshot( void ) {
 		cgs.processedSnapshotNum++;
 		r = trap_GetSnapshot( cgs.processedSnapshotNum, dest );
 
-		// FIXME: why would trap_GetSnapshot return a snapshot with the same server time
-		if ( cg.snap && r && dest->serverTime == cg.snap->serverTime ) {
-			//continue;
-		}
-
 		// if it succeeded, return
 		if ( r ) {
 			CG_AddLagometerSnapshotInfo( dest );
+			net_error_count = 0;
 			return dest;
 		}
 
-		// a GetSnapshot will return failure if the snapshot
-		// never arrived, or  is so old that its entities
-		// have been shoved off the end of the circular
-		// buffer in the client system.
-
 		// record as a dropped packet
 		CG_AddLagometerSnapshotInfo( NULL );
+	}
 
-		// If there are additional snapshots, continue trying to
-		// read them.
+	net_error_count++;
+	if(net_error_count >= NET_ERROR_LIMIT){
+		trap_SendConsoleCommand("neterror");
+		net_error_count = 0;
 	}
 
 	// nothing left to read
 	return NULL;
 }
-
 
 /*
 ============
@@ -405,4 +393,3 @@ void CG_ProcessSnapshots( void ) {
 	}
 
 }
-

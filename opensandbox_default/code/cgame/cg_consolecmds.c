@@ -45,28 +45,6 @@ void CG_PrintClientNumbers( void ) {
     }
 }
 
-/*
-=================
-CG_SizeUp_f
-
-Keybinding command
-=================
-*/
-static void CG_SizeUp_f (void) {
-	trap_Cvar_Set("cg_viewsize", va("%i",(int)(cg_viewsize.integer+10)));
-}
-
-/*
-=================
-CG_SizeDown_f
-
-Keybinding command
-=================
-*/
-static void CG_SizeDown_f (void) {
-	trap_Cvar_Set("cg_viewsize", va("%i",(int)(cg_viewsize.integer-10)));
-}
-
 static void CG_ScoresDown_f( void ) {
 	if ( cg.scoresRequestTime + 2000 < cg.time ) {
 		// the scores are more than two seconds out of data,
@@ -206,8 +184,6 @@ static consoleCommand_t	commands[] = {
 	{ "-scores", CG_ScoresUp_f },
 	{ "+zoom", CG_ZoomDown_f },
 	{ "-zoom", CG_ZoomUp_f },
-	{ "sizeup", CG_SizeUp_f },
-	{ "sizedown", CG_SizeDown_f },
 	{ "weapnext", CG_NextWeapon_f },
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },

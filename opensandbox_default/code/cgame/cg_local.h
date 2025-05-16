@@ -381,7 +381,6 @@ typedef struct {
 	int				armor;
 	int				curWeapon;
 
-	int				handicap;
 	int				wins, losses;	// in tourney mode
 
 	int				teamTask;		// task in teamplay (offence/defence)
@@ -1423,20 +1422,13 @@ extern	vmCvar_t		cg_disableBobbing;
 extern	vmCvar_t		cg_shadows;
 extern	vmCvar_t		cg_drawTimer;
 extern	vmCvar_t		cg_drawFPS;
-extern	vmCvar_t		cg_draw3dIcons;
-extern	vmCvar_t		cg_drawIcons;
 extern	vmCvar_t		cg_drawCrosshair;
 extern	vmCvar_t		cg_drawCrosshairNames;
 extern	vmCvar_t		cg_teamOverlayUserinfo;
-extern	vmCvar_t		cg_crosshairX;
-extern	vmCvar_t		cg_crosshairY;
 extern	vmCvar_t		cg_crosshairScale;
-extern	vmCvar_t		cg_drawStatus;
 extern	vmCvar_t		cg_draw2D;
 extern	vmCvar_t		cg_debugAnim;
 extern	vmCvar_t		cg_debugEvents;
-extern	vmCvar_t		cg_nopredict;
-extern	vmCvar_t		cg_footsteps;
 extern	vmCvar_t		cg_addMarks;
 extern	vmCvar_t		cg_drawGun;
 extern	vmCvar_t		cg_viewsize;
@@ -1444,7 +1436,6 @@ extern	vmCvar_t		cg_fov;
 extern	vmCvar_t		cg_zoomFov;
 extern	vmCvar_t		cg_thirdPersonOffset;
 extern	vmCvar_t		cg_thirdPersonRange;
-extern	vmCvar_t		cg_thirdPersonAngle;
 extern	vmCvar_t		cg_thirdPerson;
 extern	vmCvar_t		cg_lagometer;
 extern	vmCvar_t		cg_drawSpeed;
@@ -1545,7 +1536,7 @@ void CG_ZoomDown_f( void );
 void CG_ZoomUp_f( void );
 void CG_AddBufferedSound( sfxHandle_t sfx);
 
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback );
 
 
 //
@@ -1585,7 +1576,7 @@ void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum );
-void CG_DrawActive( stereoFrame_t stereoView );
+void CG_DrawActive( void );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
 void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style);

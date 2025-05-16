@@ -1062,9 +1062,11 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	memset( &beam, 0, sizeof( beam ) );
 
 	if (cent->currentState.number == cg.predictedPlayerState.clientNum) {
-		// always shoot straight forward from our current position
 		AngleVectors( cg.predictedPlayerState.viewangles, forward, NULL, NULL );
 		VectorCopy( cg.predictedPlayerState.origin, muzzlePoint );
+	} else {
+		AngleVectors( cent->lerpAngles, forward, NULL, NULL );
+		VectorCopy( cent->lerpOrigin, muzzlePoint );
 	}
 
 	// FIXME: crouch
@@ -1522,7 +1524,7 @@ void CG_DrawWeaponSelect( void ) {
 		return;
 	}
 
-	if ( cg_draw2D.integer == 0 ) {
+	if ( !cg_draw2D.integer ) {
 		return;
 	}
 

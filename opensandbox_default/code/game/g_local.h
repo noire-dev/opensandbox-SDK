@@ -393,7 +393,7 @@ typedef struct {
 	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
 	char		netname[MAX_NETNAME];
-	int			maxHealth;			// for handicapping
+	int			maxHealth;
 	int			enterTime;			// level.time the client entered the game
 	playerTeamState_t teamState;	// status in teamplay games
 	int			voteCount;			// to prevent people from constantly calling votes

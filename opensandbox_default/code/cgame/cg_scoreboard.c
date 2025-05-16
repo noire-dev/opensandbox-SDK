@@ -70,7 +70,6 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade 
 	iconx = SB_BOTICON_X + (SB_RATING_WIDTH / 2);
 	headx = SB_HEAD_X + (SB_RATING_WIDTH / 2);
 
-	// draw the handicap or bot skill marker (unless player has flag)
 	if ( ci->powerups & ( 1 << PW_NEUTRALFLAG ) ) {
 		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_FREE );
 	} else if ( ci->powerups & ( 1 << PW_REDFLAG ) ) {

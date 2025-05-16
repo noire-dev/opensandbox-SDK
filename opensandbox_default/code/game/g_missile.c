@@ -545,8 +545,7 @@ void G_RunMissile( gentity_t *ent ) {
 		// make sure the tr.entityNum is set to the entity we're stuck in
 		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask );
 		tr.fraction = 0;
-	}
-	else {
+	} else {
 		VectorCopy( tr.endpos, ent->r.currentOrigin );
 	}
 
@@ -619,13 +618,8 @@ void G_HomingMissile( gentity_t *ent )
 			VectorNormalize( temp_dir );
 			VectorAdd( temp_dir, ent->r.currentAngles, temp_dir );
 
-			//now the longer temp_dir length is the more straight path for the rocket.
-			//if ( VectorLength( temp_dir ) >0.8 ) {
-
-				//if this 1.6 were smaller,the rocket also get to target the enemy on his back.
-				target = blip;
-				VectorCopy( blipdir, dir );
-			//}
+			target = blip;
+			VectorCopy( blipdir, dir );
 		}
 	}
 
@@ -703,8 +697,6 @@ void Guided_Missile_Think( gentity_t *missile )
 	// have come back if player was aiming on a block while the rocket is behind it
 	// as the trace stops on solid blocks
 
-//	dist = VectorLength( muzzle ) + 400;	 //give the range of our muzzle vector + 400 units
-//	VectorScale( forward, dist, forward );
 		if(missile->classname == "plasma"){
      VectorScale( forward, g_pgspeed.integer, forward );
 		}
@@ -735,9 +727,6 @@ void Guided_Missile_Think( gentity_t *missile )
 
 	// Normalize the vector so it's 1 unit long, but keep its direction
 	VectorNormalize( muzzle );
-
-	// Slow the rocket down a bit, so we can handle it
-    // VectorScale( muzzle, 300, forward );
 
 	// Set the rockets's velocity so it'll move toward our new direction
 	VectorCopy( forward, missile->s.pos.trDelta );
@@ -799,10 +788,6 @@ if(g_pgguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_pgdamage.value;
 	bolt->splashDamage = g_pgsdamage.value;
@@ -867,10 +852,6 @@ if(g_glguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_GRENADE_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_gldamage.value;
 	bolt->splashDamage = g_glsdamage.value;
@@ -935,10 +916,6 @@ if(g_bfgguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_BFG;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_bfgdamage.value;
 	bolt->splashDamage = g_bfgsdamage.value;
@@ -1014,10 +991,6 @@ if(!self->mhoming){
 	else
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = self->mdamage;
 	bolt->splashDamage = self->msdamage;
@@ -1085,10 +1058,6 @@ if(g_rlguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_ROCKET_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_rldamage.value;
 	bolt->splashDamage = g_rlsdamage.value;
@@ -1135,28 +1104,19 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 	hook->clipmask = MASK_SHOT;
 	hook->parent = self;
 	hook->target_ent = NULL;
-
-//unlagged - grapple
 	// we might want this later
 	hook->s.otherEntityNum = self->s.number;
 
 	// setting the projectile base time back makes the hook's first
 	// step larger
-
 	if ( self->client ) {
 		hooktime = self->client->pers.cmd.serverTime + 50;
-	}
-	else {
+	} else {
 		hooktime = level.time - MISSILE_PRESTEP_TIME;
 	}
 
 	hook->s.pos.trTime = hooktime;
-//unlagged - grapple
-
 	hook->s.pos.trType = TR_LINEAR;
-//unlagged - grapple
-	//hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
-//unlagged - grapple
 	hook->s.otherEntityNum = self->s.number; // use to match beam in client
 	VectorCopy( start, hook->s.pos.trBase );
 	VectorScale( dir, g_ghspeed.value, hook->s.pos.trDelta );
@@ -1214,10 +1174,6 @@ if(g_ngguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_NAILGUN;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_ngdamage.value;
 	bolt->methodOfDeath = MOD_NAIL;
@@ -1267,10 +1223,6 @@ gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t dir ) {
 	bolt->s.generic3 = WP_PROX_LAUNCHER;
 	bolt->s.eFlags = 0;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_pldamage.value;
 	bolt->splashDamage = g_plsdamage.value;
@@ -1341,10 +1293,6 @@ if(g_ftguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_FLAMETHROWER;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_ftdamage.value;
 	bolt->splashDamage = g_ftsdamage.value;
@@ -1408,10 +1356,6 @@ if(g_amguided.integer == 1){
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_ANTIMATTER;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = g_amdamage.value;
 	bolt->splashDamage = g_amsdamage.value;
@@ -1454,10 +1398,6 @@ gentity_t *fire_thrower( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_NAILGUN;
 	bolt->r.ownerNum = self->s.number;
-	//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-	//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = 25;
 	bolt->methodOfDeath = MOD_SWEP;
@@ -1500,10 +1440,6 @@ gentity_t *fire_bouncer( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_NAILGUN;
 	bolt->r.ownerNum = self->s.number;
-	//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-	//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = 16;
 	bolt->methodOfDeath = MOD_SWEP;
@@ -1545,10 +1481,6 @@ gentity_t *fire_exploder (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_ROCKET_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = 150;
 	bolt->splashDamage = 150;
@@ -1582,10 +1514,6 @@ gentity_t *fire_knocker( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_ANTIMATTER;
 	bolt->r.ownerNum = self->s.number;
-	//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-	//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = 2;
 	bolt->methodOfDeath = MOD_KNOCKER;
@@ -1626,10 +1554,6 @@ gentity_t *fire_regenerator (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.generic3 = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
-//unlagged - projectile nudge
-	// we'll need this for nudging projectiles later
-	bolt->s.otherEntityNum = self->s.number;
-//unlagged - projectile nudge
 	bolt->parent = self;
 	bolt->damage = 2;
 	bolt->splashDamage = 2;

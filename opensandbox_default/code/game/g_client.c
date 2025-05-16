@@ -1180,7 +1180,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	char		oldname[MAX_STRING_CHARS];
 	char        err[MAX_STRING_CHARS];
 	gclient_t	*client;
-	char		c1[MAX_INFO_STRING];
 	char		userinfo[MAX_INFO_STRING];
 
 	ent = g_entities + clientNum;
@@ -1283,14 +1282,14 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(swep_id, va("%i", ent->swep_id));
 
 	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, c1,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses, ent->singlebot,
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\w\\%i\\l\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
+			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum,
+			client->sess.wins, client->sess.losses, ent->singlebot,
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\f\\%i",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum, c1,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader, ent->flashon);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\f\\%i",
+			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum,
+			client->sess.wins, client->sess.losses, teamTask, teamLeader, ent->flashon);
 	}
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );

@@ -42,12 +42,12 @@ static void CG_CalcVrect (void) {
 		size = 100;
 	} else {
 		// bound normal viewsize
-		if (cg_viewsize.integer < 30) {
-			trap_Cvar_Set ("cg_viewsize","30");
-			size = 30;
-		} else if (cg_viewsize.integer > 120) {
-			trap_Cvar_Set ("cg_viewsize","120");
-			size = 120;
+		if (cg_viewsize.integer < 10) {
+			trap_Cvar_Set ("cg_viewsize","10");
+			size = 10;
+		} else if (cg_viewsize.integer > 100) {
+			trap_Cvar_Set ("cg_viewsize","100");
+			size = 100;
 		} else {
 			size = cg_viewsize.integer;
 		}
@@ -188,19 +188,18 @@ static void CG_OffsetThirdPersonView( void ) {
 
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
 
-	forwardScale = cos( cg_thirdPersonAngle.value / 180 * M_PI );
-	sideScale = sin( cg_thirdPersonAngle.value / 180 * M_PI );
+	forwardScale = cos( 0 / 180 * M_PI );
+	sideScale = sin( 0 / 180 * M_PI );
 	if(!BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE])){
-	VectorMA( view, -cg_thirdPersonRange.value * forwardScale, forward, view );
-	VectorMA( view, -cg_thirdPersonRange.value * sideScale, right, view );
+		VectorMA( view, -cg_thirdPersonRange.value * forwardScale, forward, view );
+		VectorMA( view, -cg_thirdPersonRange.value * sideScale, right, view );
 	} else {
-	VectorMA( view, -180 * forwardScale, forward, view );
-	VectorMA( view, -180 * sideScale, right, view );		
+		VectorMA( view, -180 * forwardScale, forward, view );
+		VectorMA( view, -180 * sideScale, right, view );		
 	}
 
 	// trace a ray from the origin to the viewpoint to make sure the view isn't
 	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
-
 	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
 	if ( trace.fraction != 1.0 ) {
 		VectorCopy( trace.endpos, view );
@@ -220,7 +219,7 @@ static void CG_OffsetThirdPersonView( void ) {
 		focusDist = 1;	// should never happen
 	}
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
-	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
+	cg.refdefViewAngles[YAW] -= 0;
 }
 
 
@@ -753,7 +752,7 @@ CG_DrawActiveFrame
 Generates and draws a game scene and status information at the given time.
 =================
 */
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
+void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
@@ -828,23 +827,20 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// update audio positions
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis );
 
-	// make sure the lagometerSample and frame timing isn't done twice when in stereo
-	if ( stereoView != STEREO_RIGHT ) {
-		cg.frametime = cg.time - cg.oldTime;
-		if ( cg.frametime < 0 ) {
-			cg.frametime = 0;
-		}
-		cg.oldTime = cg.time;
-		CG_AddLagometerFrameInfo();
-	}
-
 	// actually issue the rendering calls
-	CG_DrawActive( stereoView );
+	CG_DrawActive();
+
+	// add frames to lagometer
+	cg.frametime = cg.time - cg.oldTime;
+	if ( cg.frametime < 0 ) {
+		cg.frametime = 0;
+	}
+	cg.oldTime = cg.time;
+	CG_AddLagometerFrameInfo();
 
 	if ( cg_stats.integer ) {
 		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
 	}
-
 
 }
 

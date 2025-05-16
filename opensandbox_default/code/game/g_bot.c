@@ -241,10 +241,6 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	Info_SetValueForKey( userinfo, "snaps", "20" );
 	Info_SetValueForKey( userinfo, "skill", va("%1.2f", skill) );
 
-	if ( skill >= 1 && skill < 999 ) {
-		Info_SetValueForKey( userinfo, "handicap", "100" );
-	}
-
 	key = "model";
 	model = Info_ValueForKey( botinfo, key );
 	if ( !*model ) {

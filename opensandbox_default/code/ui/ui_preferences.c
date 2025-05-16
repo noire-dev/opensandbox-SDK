@@ -220,7 +220,6 @@ static void Preferences_SetMenuItems( void ) {
     s_preferences.crosshairColorGreen.curvalue      = trap_Cvar_VariableValue( "cg_crosshairColorGreen")*255.0f;
     s_preferences.crosshairColorBlue.curvalue       = trap_Cvar_VariableValue( "cg_crosshairColorBlue")*255.0f;
     s_preferences.alwaysweaponbar.curvalue		= trap_Cvar_VariableValue( "cg_alwaysWeaponBar" ) != 0;
-	s_preferences.wallmarks.curvalue		= trap_Cvar_VariableValue( "cg_marks" ) != 0;
 	s_preferences.identifytarget.curvalue	= trap_Cvar_VariableValue( "cg_drawCrosshairNames" ) != 0;
 	s_preferences.dynamiclights.curvalue	= trap_Cvar_VariableValue( "r_dynamiclight" ) != 0;
 	s_preferences.highqualitysky.curvalue	= trap_Cvar_VariableValue ( "r_fastsky" ) == 0;
@@ -232,7 +231,6 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.drawfps.curvalue			= trap_Cvar_VariableValue( "cg_drawFPS" ) != 0;
 	s_preferences.drawtimer.curvalue		= trap_Cvar_VariableValue( "cg_drawTimer" ) != 0;
 	s_preferences.drawlagometer.curvalue	= trap_Cvar_VariableValue( "cg_lagometer" ) != 0;
-	s_preferences.predictitems.curvalue		= trap_Cvar_VariableValue( "cg_predictItems" ) != 0;
 	s_preferences.shadows.curvalue			= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_shadows" ) );
 
 
@@ -431,10 +429,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 		trap_Cvar_SetValue( "r_fastsky", !s_preferences.highqualitysky.curvalue );
 		break;
 
-	case ID_WALLMARKS:
-		trap_Cvar_SetValue( "cg_marks", s_preferences.wallmarks.curvalue );
-		break;
-
 	case ID_DYNAMICLIGHTS:
 		trap_Cvar_SetValue( "r_dynamiclight", s_preferences.dynamiclights.curvalue );
 		break;		
@@ -470,10 +464,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_LAGOMETER:
 		trap_Cvar_SetValue( "cg_lagometer", s_preferences.drawlagometer.curvalue );
-		break;
-
-	case ID_PREDICTITEMS:
-		trap_Cvar_SetValue( "cg_predictItems", s_preferences.predictitems.curvalue );
 		break;
 
 	case ID_SHADOWS:

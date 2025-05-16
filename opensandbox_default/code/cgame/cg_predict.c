@@ -47,9 +47,9 @@ efficient collision detection
 ====================
 */
 void CG_BuildSolidList( void ) {
-	int			i;
-	centity_t	*cent;
-	snapshot_t	*snap;
+	int				i;
+	centity_t		*cent;
+	snapshot_t		*snap;
 	entityState_t	*ent;
 
 	cg_numSolidEntities = 0;
@@ -472,16 +472,9 @@ void CG_PredictPlayerState( void ) {
 		cg.predictedPlayerState = cg.snap->ps;
 	}
 
-
 	// demo playback just copies the moves
 	if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
 		CG_InterpolatePlayerState( qfalse );
-		return;
-	}
-
-	// non-predicting local movement will grab the latest angles
-	if ( cg_nopredict.integer ) {
-		CG_InterpolatePlayerState( qtrue );
 		return;
 	}
 

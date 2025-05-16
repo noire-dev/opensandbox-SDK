@@ -806,7 +806,7 @@ CG_DrawUpperRight
 
 =====================
 */
-static void CG_DrawUpperRight(stereoFrame_t stereoFrame)
+static void CG_DrawUpperRight( void )
 {
 	float y;
 
@@ -1450,8 +1450,7 @@ static void CG_DrawObjectivesNotification( void ) {
 	else if ( cg.time > cg.objectivesTime + 2000 && cg.time < cg.objectivesTime + 2500 )
 		draw = qtrue;
 
-	if ( draw )
-	{
+	if ( draw ) {
 		trap_R_SetColor( NULL );
 		CG_DrawPic( 8-cl_screenoffset.value, 8, ICON_SIZE, ICON_SIZE, cgs.media.objectivesUpdated );
 	}
@@ -1517,13 +1516,6 @@ Pass NULL for a dropped packet.
 ==============
 */
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap ) {
-	// dropped packet
-	if ( !snap ) {
-		lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = -1;
-		lagometer.snapshotCount++;
-		return;
-	}
-
 	// add this snapshot's info
 	lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->ping;
 	lagometer.snapshotFlags[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->snapFlags;
@@ -1542,13 +1534,13 @@ static void CG_DrawDisconnect( void ) {
 	int			cmdNum;
 	usercmd_t	cmd;
 	const char	*s;
-	int			w;  // bk010215 - FIXME char message[1024];
+	int			w;
 	int currentViewDistance;
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &cmd );
-	if ( cmd.serverTime <= cg.snap->ps.commandTime || cmd.serverTime > cg.time ) {	// special check for map_restart // bk 0102165 - FIXME
+	if ( cmd.serverTime <= cg.snap->ps.commandTime || cmd.serverTime > cg.time ) {
 		return;
 	}
 
@@ -1579,7 +1571,7 @@ static void CG_DrawLagometer( void ) {
 	int		color;
 	float	vscale;
 
-	if ( !cg_lagometer.integer || cgs.localServer ) {
+	if ( !cg_lagometer.integer ) {
 		CG_DrawDisconnect();
 		return;
 	}
@@ -1643,7 +1635,7 @@ static void CG_DrawLagometer( void ) {
 			if ( lagometer.snapshotFlags[i] & SNAPFLAG_RATE_DELAYED ) {
 				if ( color != 5 ) {
 					color = 5;	// YELLOW for rate delay
-					trap_R_SetColor( g_color_table[ColorIndex(COLOR_YELLOW)] );
+					trap_R_SetColor( g_color_table[ColorIndex(COLOR_MAGENTA)] );
 				}
 			} else {
 				if ( color != 3 ) {
@@ -1666,10 +1658,6 @@ static void CG_DrawLagometer( void ) {
 	}
 
 	trap_R_SetColor( NULL );
-
-	if ( cg_nopredict.integer ) {
-		CG_DrawBigString( ax, ay, "snc", 1.0 );
-	}
 
 	CG_DrawDisconnect();
 }
@@ -1786,8 +1774,7 @@ static void CG_DrawCenter1FctfString( void ) {
     status = cgs.flagStatus;
 
     //Sago: TODO: Find the proper defines instead of hardcoded values.
-    switch(status)
-    {
+    switch(status) {
         case 2:
             line = va("Red has the flag!");
             color = colorRed;
@@ -1898,8 +1885,7 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
-static void CG_DrawCrosshair(void)
-{
+static void CG_DrawCrosshair(void) {
 	float		w, h;
 	qhandle_t	hShader;
 	float		f;
@@ -1941,11 +1927,11 @@ static void CG_DrawCrosshair(void)
 		}
 	}
 	if(cl_screenoffset.value > 0){
-	x = cg_crosshairX.integer - cl_screenoffset.value;
+		x = 0 - cl_screenoffset.value;
 	} else {
-	x = cg_crosshairX.integer;
+		x = 0;
 	}
-	y = cg_crosshairY.integer;
+	y = 0;
 	CG_AdjustFrom640( &x, &y, &w, &h );
 
 	if (ca < 0) {
@@ -1998,10 +1984,6 @@ static void CG_DrawCrosshair3D(void) {
 
 	if (!hShader)
 		hShader = cgs.media.crosshairSh3d[ ca % 10 ];
-
-	// Use a different method rendering the crosshair so players don't see two of them when
-	// focusing their eyes at distant objects with high stereo separation
-	// We are going to trace to the next shootable object and place the crosshair in front of it.
 
 	// first get all the important renderer information
 	trap_Cvar_VariableStringBuffer("r_zProj", rendererinfos, sizeof (rendererinfos));
@@ -2218,9 +2200,9 @@ CG_DrawProxWarning
 static void CG_DrawProxWarning( void ) {
 	char s [64];
 	int			w;
-  static int proxTime;
-  static int proxCounter;
-  static int proxTick;
+  	static int proxTime;
+  	static int proxCounter;
+  	static int proxTick;
 
 	if( !(cg.snap->ps.eFlags & EF_TICKING ) ) {
     proxTime = 0;
@@ -2681,13 +2663,11 @@ static void CG_DrawPostProcess( void ) {
 CG_Draw2D
 =================
 */
-static void CG_Draw2D(stereoFrame_t stereoFrame)
-{
-
+static void CG_Draw2D( void ) {
 	if ( cg.snap->ps.pm_type == PM_CUTSCENE )
 		return;
 	
-	if ( cg_draw2D.integer == 0 ) {
+	if ( !cg_draw2D.integer ) {
 		return;
 	}
 
@@ -2750,17 +2730,15 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	}
 
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		if(stereoFrame == STEREO_CENTER)
-			CG_DrawCrosshair();
+		CG_DrawCrosshair();
 		if(cgs.gametype != GT_SINGLE){
-		CG_DrawCrosshairNames();
+			CG_DrawCrosshairNames();
 		}
 	} else {
 		// don't draw any status if dead or the scoreboard is being explicitly shown
 		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
 			CG_DrawProxWarning();
-			if(stereoFrame == STEREO_CENTER)
-				CG_DrawCrosshair();
+			CG_DrawCrosshair();
 			if(cgs.gametype != GT_SINGLE){
 			CG_DrawCrosshairNames();
 			}
@@ -2772,7 +2750,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	CG_DrawVote();
 	CG_DrawTeamVote();
 
-	CG_DrawUpperRight(stereoFrame);
+	CG_DrawUpperRight();
 
 	CG_DrawLowerRight();
 	CG_DrawLowerLeft();
@@ -2825,7 +2803,8 @@ CG_DrawActive
 Perform all drawing needed to completely fill the screen
 =====================
 */
-void CG_DrawActive( stereoFrame_t stereoView ) {
+void CG_DrawActive( void ) {
+	int pm;
 	// optionally draw the info screen instead
 	if ( !cg.snap ) {
 		CG_DrawInformation();
@@ -2880,25 +2859,16 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
 		//return;
 	} else {
- 	CG_Draw2D(stereoView);
-	if ( cg.snap->ps.pm_type != PM_CUTSCENE ) {
-	if ( cg.snap->ps.pm_type != PM_INTERMISSION ) {
-	if ( cg.snap->ps.pm_type != PM_DEAD ) {
-	if ( cg.snap->ps.pm_type != PM_SPECTATOR ) {
-		CG_DrawLagometer();
-		CG_DrawStatusBar();
-		if(!cg.snap->ps.stats[STAT_VEHICLE]){	//VEHICLE-SYSTEM: disable weapon menu for all
-        CG_DrawWeaponSelect();
-		} else {
-		if(BG_GetVehicleSettings(cg.snap->ps.stats[STAT_VEHICLE], VSET_WEAPON)){
-		CG_DrawWeaponSelect();	
+ 		CG_Draw2D();
+		pm = cg.snap->ps.pm_type;
+		if (pm != PM_CUTSCENE && pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
+			CG_DrawLagometer();
+			CG_DrawStatusBar();
+			if(!cg.snap->ps.stats[STAT_VEHICLE] || BG_GetVehicleSettings(cg.snap->ps.stats[STAT_VEHICLE], VSET_WEAPON)){	//VEHICLE-SYSTEM: disable weapon menu for all
+    	    	CG_DrawWeaponSelect();
+			}
+    	    CG_DrawHoldableItem();
 		}
-		}
-        CG_DrawHoldableItem();
-	}
-	}
-	}
-	}
 	}
 
     CG_FadeLevelStart();

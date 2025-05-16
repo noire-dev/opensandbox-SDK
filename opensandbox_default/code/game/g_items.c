@@ -144,7 +144,6 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 	int		clientNum;
 	char	userinfo[MAX_INFO_STRING];
-	float	handicap;
 	int		max;
 
 	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
@@ -152,18 +151,12 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 
 	clientNum = other->client->ps.clientNum;
 	trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-	handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-	if (!(other->r.svFlags & SVF_BOT)){
-			if( handicap<=0.0f || handicap>100.0f) {
-				handicap = 100.0f;
-			}
-	}
 
 	switch( ent->item->giTag ) {
 	case PW_GUARD:
 		if (g_guardhealthmodifier.value > 0){
 
-		max = (int)(g_guardhealthmodifier.value * handicap * 1);
+		max = (int)(g_guardhealthmodifier.value * 100);
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
@@ -177,7 +170,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 	case PW_SCOUT:
 		if (g_scouthealthmodifier.value > 0){
 
-		max = (int)(g_scouthealthmodifier.value *  handicap * 1);
+		max = (int)(g_scouthealthmodifier.value *  100);
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
@@ -191,7 +184,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 	case PW_DOUBLER:
 		if(g_doublerhealthmodifier.value > 0){
 
-		max = (int)(g_doublerhealthmodifier.value *  handicap * 1);
+		max = (int)(g_doublerhealthmodifier.value *  100);
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
@@ -204,7 +197,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 	case PW_AMMOREGEN:
 		if(g_ammoregenhealthmodifier.value > 0){
 
-		max = (int)(g_ammoregenhealthmodifier.value *  handicap * 1);
+		max = (int)(g_ammoregenhealthmodifier.value *  100);
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
@@ -214,7 +207,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 		}
 
 	default:
-		other->client->pers.maxHealth = handicap;
+		other->client->pers.maxHealth = 100;
 		break;
 	}
 

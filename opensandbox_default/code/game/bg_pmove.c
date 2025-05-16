@@ -547,20 +547,7 @@ static void PM_WaterMove( void ) {
 		PM_WaterJumpMove();
 		return;
 	}
-#if 0
-	// jump = head for surface
-	if ( pm->cmd.upmove >= 10 ) {
-		if (pm->ps->velocity[2] > -300) {
-			if ( pm->watertype == CONTENTS_WATER ) {
-				pm->ps->velocity[2] = 100;
-			} else if (pm->watertype == CONTENTS_SLIME) {
-				pm->ps->velocity[2] = 80;
-			} else {
-				pm->ps->velocity[2] = 50;
-			}
-		}
-	}
-#endif
+
 	PM_Friction ();
 
 	scale = PM_CmdScale( &pm->cmd );
@@ -791,16 +778,6 @@ static void PM_AirMove( void ) {
 		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 	}
-
-#if 0
-	//ZOID:  If we are on the grapple, try stair-stepping
-	//this allows a player to use the grapple to pull himself
-	//over a ledge
-	if (pm->ps->pm_flags & PMF_GRAPPLE_PULL)
-		PM_StepSlideMove ( qtrue );
-	else
-		PM_SlideMove ( qtrue );
-#endif
 
 	PM_StepSlideMove ( qtrue );
 }

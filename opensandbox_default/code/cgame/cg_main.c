@@ -54,7 +54,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 	case CG_CONSOLE_COMMAND:
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
-		CG_DrawActiveFrame( arg0, arg1, arg2 );
+		CG_DrawActiveFrame( arg0, arg1 );
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
@@ -140,19 +140,12 @@ vmCvar_t	cg_disableBobbing;
 vmCvar_t	cg_shadows;
 vmCvar_t	cg_drawTimer;
 vmCvar_t	cg_drawFPS;
-vmCvar_t	cg_draw3dIcons;
-vmCvar_t	cg_drawIcons;
 vmCvar_t	cg_drawCrosshair;
 vmCvar_t	cg_drawCrosshairNames;
 vmCvar_t	cg_crosshairScale;
-vmCvar_t	cg_crosshairX;
-vmCvar_t	cg_crosshairY;
 vmCvar_t	cg_draw2D;
-vmCvar_t	cg_drawStatus;
 vmCvar_t	cg_debugAnim;
 vmCvar_t	cg_debugEvents;
-vmCvar_t	cg_nopredict;
-vmCvar_t	cg_footsteps;
 vmCvar_t	cg_addMarks;
 vmCvar_t	cg_viewsize;
 vmCvar_t	cg_drawGun;
@@ -160,7 +153,6 @@ vmCvar_t	cg_fov;
 vmCvar_t	cg_zoomFov;
 vmCvar_t	cg_thirdPerson;
 vmCvar_t	cg_thirdPersonRange;
-vmCvar_t	cg_thirdPersonAngle;
 vmCvar_t	cg_thirdPersonOffset;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_drawSpeed;
@@ -359,26 +351,18 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_viewsize, "cg_viewsize", "100", 0 },
 	{ &cg_shadows, "cg_shadows", "1", CVAR_ARCHIVE  },
 	{ &cg_draw2D, "cg_draw2D", "1", CVAR_ARCHIVE  },
-	{ &cg_drawStatus, "cg_drawStatus", "1", CVAR_ARCHIVE  },
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
 	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
-	{ &cg_draw3dIcons, "cg_draw3dIcons", "1", CVAR_ARCHIVE  },
-	{ &cg_drawIcons, "cg_drawIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawSpeed, "cg_drawSpeed", "0", CVAR_ARCHIVE  },
 	{ &cg_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE },
 	{ &cg_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
 	{ &cg_crosshairScale, "cg_crosshairScale", "24", CVAR_ARCHIVE },
-	{ &cg_crosshairX, "cg_crosshairX", "0", CVAR_ARCHIVE },
-	{ &cg_crosshairY, "cg_crosshairY", "0", CVAR_ARCHIVE },
-	{ &cg_addMarks, "cg_marks", "1", CVAR_ARCHIVE },
+	{ &cg_addMarks, "cg_addMarks", "1", CVAR_ARCHIVE },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 	{ &cg_disableBobbing, "cg_disableBobbing", "0", CVAR_ARCHIVE},
 	{ &cg_debugAnim, "cg_debuganim", "0", CVAR_CHEAT },
 	{ &cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT },
-	{ &cg_nopredict, "cg_nopredict", "0", 0 },
-	{ &cg_footsteps, "cg_footsteps", "1", CVAR_CHEAT },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "65", CVAR_ARCHIVE },
-	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE},
 	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "1", CVAR_ARCHIVE },

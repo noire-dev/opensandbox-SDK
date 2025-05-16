@@ -142,14 +142,6 @@ static void UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
 		trap_Cvar_SetValue( "cg_thirdpersonoffset", displayOptionsInfo.thirdpersonoffset.curvalue);
 		break;
 
-	case ID_ICONS:
-		trap_Cvar_SetValue( "cg_draw3dIcons", displayOptionsInfo.icons.curvalue);
-		break;
-
-	case ID_STATUS:
-		trap_Cvar_SetValue( "cg_drawstatus", displayOptionsInfo.status.curvalue);
-		break;
-
 	case ID_GUN:
 		if(displayOptionsInfo.gun.curvalue == 0){
 		trap_Cvar_SetValue( "cg_drawGun", 0);
@@ -508,8 +500,6 @@ displayOptionsInfo.istyle.string	   	= "Стиль предметов:";
 	displayOptionsInfo.screensize.curvalue  = trap_Cvar_VariableValue( "cg_viewsize")/10;
 	displayOptionsInfo.crosssize.curvalue  = trap_Cvar_VariableValue( "cg_crosshairScale");
 	displayOptionsInfo.thirdperson.curvalue  = trap_Cvar_VariableValue( "cg_thirdperson");
-	displayOptionsInfo.icons.curvalue  = trap_Cvar_VariableValue( "cg_draw3dIcons");
-	displayOptionsInfo.status.curvalue  = trap_Cvar_VariableValue( "cg_drawStatus");
 	displayOptionsInfo.speed.curvalue  = trap_Cvar_VariableValue( "cg_drawSpeed");
 	displayOptionsInfo.friend.curvalue  = trap_Cvar_VariableValue( "cg_drawFriend");
 	displayOptionsInfo.thirdpersonrange.curvalue  = trap_Cvar_VariableValue( "cg_thirdpersonrange");

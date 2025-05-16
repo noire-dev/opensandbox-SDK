@@ -158,7 +158,6 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 }
 
-
 /*
 ==================
 CG_General
@@ -236,11 +235,6 @@ static void CG_General( centity_t *cent ) {
 		Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex));
 	} else {
 		Com_sprintf(str, sizeof(str), CG_ConfigString(CS_MODELS + s1->modelindex2));
-	}
-
-	// player model
-	if (s1->number == cg.snap->ps.clientNum) {
-		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 	}
 
 	//Weld sync
@@ -1319,30 +1313,23 @@ void CG_AddPacketEntities( void ) {
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ], qfalse );
 
-//unlagged - early transitioning
+	// add each entity sent over by the server
 	if ( cg.nextSnap ) {
-		// pre-add some of the entities sent over by the server
-		// we have data for them and they don't need to interpolate
 		for ( num = 0 ; num < cg.nextSnap->numEntities ; num++ ) {
 			cent = &cg_entities[ cg.nextSnap->entities[ num ].number ];
 			if ( cent->nextState.eType == ET_MISSILE || cent->nextState.eType == ET_GENERAL ) {
-				// transition it immediately and add it
 				CG_TransitionEntity( cent );
 				cent->interpolate = qtrue;
 				CG_AddCEntity( cent );
 			}
 		}
 	}
-//unlagged - early transitioning
 
-	// add each entity sent over by the server
 	for ( num = 0 ; num < cg.snap->numEntities ; num++ ) {
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
-//unlagged - early transitioning
 		if ( !cg.nextSnap || (cent->nextState.eType != ET_MISSILE && cent->nextState.eType != ET_GENERAL) ) {
-//unlagged - early transitioning
 			CG_AddCEntity( cent );
-		} //Also unlagged
+		}
 	}
 }
 

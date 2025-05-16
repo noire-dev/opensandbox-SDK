@@ -639,11 +639,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ ci->footsteps ][rand()&3] );
-			
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ ci->footsteps ][rand()&3] );
 		break;
 	case EV_FOOTSTEP_METAL:
 		DEBUGNAME("EV_FOOTSTEP_METAL");
@@ -652,10 +648,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
 		break;
 	case EV_FOOTSTEP_FLESH:
 		DEBUGNAME("EV_FOOTSTEP_FLESH");
@@ -664,10 +657,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ FOOTSTEP_FLESH ][rand()&3] );
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_FLESH ][rand()&3] );
 		break;
 	case EV_FOOTSPLASH:
 		DEBUGNAME("EV_FOOTSPLASH");
@@ -676,10 +666,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		break;
 	case EV_FOOTWADE:
 		DEBUGNAME("EV_FOOTWADE");
@@ -688,10 +675,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		break;
 	case EV_SWIM:
 		DEBUGNAME("EV_SWIM");
@@ -700,10 +684,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			return;
 		}
 
-		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
-				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
-		}
+		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		break;
 
 
@@ -757,8 +738,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;
 		}
 		// if we are interpolating, we don't need to smooth steps
-		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW) ||
-			cg_nopredict.integer ) {
+		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)) {
 			break;
 		}
 		// check for stepping up before a previous step is completed
