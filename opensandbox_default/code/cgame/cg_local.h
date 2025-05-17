@@ -54,9 +54,6 @@
 #define	SINK_TIME			3000		// time for fragments to sink into ground before going away
 #define BLACKOUT_TIME		100.000		//time for the screen to remain black at start of game
 #define	FADEIN_TIME			1500.000		//amount of time it takes for screen to fade in at start of game
-#define TITLE_TIME			5000		//amount of time the level title stays on screen
-#define TITLE_FADEIN_TIME	2000.000	//amount of time it takes for level title to fade in
-#define TITLE_FADEOUT_TIME	5000.000	//amount of time it takes for level title to fade out
 #define SCOREB_TIME			750			//amount of time between each scoreboard item is displayed
 #define SCOREB_TIME_LAST	250			//amount of EXTRA time between last scoreboard item and total score
 
@@ -76,9 +73,6 @@
 #define	ICON_SIZE			28
 #define	CHAR_WIDTH			19
 #define	CHAR_HEIGHT			28
-
-#define	TEAMCHAT_WIDTH		80
-#define TEAMCHAT_HEIGHT		8
 
 // very large characters.pk
 #define	GIANT_WIDTH			32
@@ -119,7 +113,6 @@ typedef enum {
 
 typedef enum {
 	LFS_LEVELLOADED,		//the level has just been loaded
-	LFS_BLACKOUT,			//busy with the blackout
 	LFS_FADEIN,				//busy with the fade in
 	LFS_IDLE				//not doing any map change related fades
 } levelFadeStatus_t;
@@ -780,8 +773,6 @@ typedef struct {
 
 	qhandle_t	teamStatusBar;
 
-	qhandle_t	deferShader;
-
 	// gib explosions
 	qhandle_t	gibAbdomen;
 	qhandle_t	gibArm;
@@ -1266,12 +1257,6 @@ typedef struct {
 	console_t chat;
 	console_t teamChat;
 
-	// teamchat width is *3 because of embedded color codes
-	char			teamChatMsgs[TEAMCHAT_HEIGHT][TEAMCHAT_WIDTH*3+1];
-	int				teamChatMsgTimes[TEAMCHAT_HEIGHT];
-	int				teamChatPos;
-	int				teamLastChatPos;
-
 	int cursorX;
 	int cursorY;
 	qboolean eventHandling;
@@ -1357,8 +1342,6 @@ extern	int 	mod_skyColorA;
 
 extern	vmCvar_t 	g_gametype;
 
-extern	vmCvar_t	legsmodel;
-extern	vmCvar_t	team_legsmodel;
 extern  vmCvar_t    headR;
 extern  vmCvar_t    headG;
 extern  vmCvar_t    headB;
@@ -1427,11 +1410,9 @@ extern	vmCvar_t		cg_drawCrosshairNames;
 extern	vmCvar_t		cg_teamOverlayUserinfo;
 extern	vmCvar_t		cg_crosshairScale;
 extern	vmCvar_t		cg_draw2D;
-extern	vmCvar_t		cg_debugAnim;
 extern	vmCvar_t		cg_debugEvents;
 extern	vmCvar_t		cg_addMarks;
 extern	vmCvar_t		cg_drawGun;
-extern	vmCvar_t		cg_viewsize;
 extern	vmCvar_t		cg_fov;
 extern	vmCvar_t		cg_zoomFov;
 extern	vmCvar_t		cg_thirdPersonOffset;
@@ -1439,53 +1420,26 @@ extern	vmCvar_t		cg_thirdPersonRange;
 extern	vmCvar_t		cg_thirdPerson;
 extern	vmCvar_t		cg_lagometer;
 extern	vmCvar_t		cg_drawSpeed;
-extern	vmCvar_t		cg_teamChatTime;
-extern	vmCvar_t		cg_teamChatHeight;
-extern 	vmCvar_t 		cg_teamChatY;
-extern 	vmCvar_t 		cg_chatY;
-extern 	vmCvar_t 		cg_teamChatScaleX;
-extern 	vmCvar_t 		cg_teamChatScaleY;
 extern	vmCvar_t		cg_stats;
-extern	vmCvar_t 		cg_buildScript;
 extern	vmCvar_t		cg_paused;
 extern	vmCvar_t		cg_blood;
 extern	vmCvar_t		cg_drawFriend;
-extern	vmCvar_t		cg_teamChatsOnly;
 extern	vmCvar_t		cg_noVoiceText;
 extern  vmCvar_t		cg_scorePlum;
 extern vmCvar_t			cg_chatTime;
-extern vmCvar_t			cg_consoleTime;
 
-extern vmCvar_t			cg_fontScale;
-extern vmCvar_t			cg_fontShadow;
-
-extern vmCvar_t			cg_consoleSizeX;
-extern vmCvar_t			cg_consoleSizeY;
-extern vmCvar_t			cg_chatSizeX;
-extern vmCvar_t			cg_chatSizeY;
-extern vmCvar_t			cg_teamChatSizeX;
-extern vmCvar_t			cg_teamChatSizeY;
-
-extern vmCvar_t			cg_consoleLines;
-extern vmCvar_t			cg_commonConsoleLines;
-extern vmCvar_t			cg_chatLines;
-extern vmCvar_t			cg_teamChatLines;
-
-extern vmCvar_t			cg_commonConsole;
 extern	vmCvar_t		cg_noProjectileTrail;
 
 extern	vmCvar_t		cg_cameraEyes;
 extern	vmCvar_t		cg_cameraEyes_Fwd;
 extern	vmCvar_t		cg_cameraEyes_Up;
 extern	vmCvar_t		cg_music;
-//Sago: Moved outside
+
 extern	vmCvar_t		cg_obeliskRespawnDelay;
 extern	vmCvar_t		cg_enableDust;
 extern	vmCvar_t		cg_enableBreath;
 
-//unlagged - client options
 extern	vmCvar_t		sv_fps;
-//unlagged - client options
 
 //extra CVARS elimination
 extern	vmCvar_t		cg_alwaysWeaponBar;
@@ -1501,10 +1455,7 @@ extern	vmCvar_t       	cg_crosshairColorBlue;
 extern vmCvar_t			cg_chatBeep;
 extern vmCvar_t			cg_teamChatBeep;
 
-//unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );
-qboolean CG_Cvar_ClampInt( const char *name, vmCvar_t *vmCvar, int min, int max );
-//unlagged - cg_unlagged.c
 
 //
 // cg_main.c
@@ -1619,7 +1570,6 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
 void CG_BuildSolidList( void );
 int	CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask );
-void CG_ST_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask );
 void CG_PredictPlayerState( void );
 void CG_ReloadPlayers( void );
 

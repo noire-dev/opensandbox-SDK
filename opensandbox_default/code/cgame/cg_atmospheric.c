@@ -28,8 +28,8 @@
 #define MAX_ATMOSPHERIC_PARTICLES		2048  	// maximum # of particles
 #define MAX_ATMOSPHERIC_DISTANCE		3000  	// maximum distance from refdef origin that particles are visible
 
-#define MAX_ATMOSPHERIC_HEIGHT			524288  	// maximum world height (FIXME: since 1.27 this should be 65536)
-#define MIN_ATMOSPHERIC_HEIGHT			-524288  	// minimum world height (FIXME: since 1.27 this should be -65536)
+#define MAX_ATMOSPHERIC_HEIGHT			524288
+#define MIN_ATMOSPHERIC_HEIGHT			-524288
 
 #define START_SNOW_HEIGHT				256
 

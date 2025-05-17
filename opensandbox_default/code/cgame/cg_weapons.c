@@ -1776,19 +1776,14 @@ void CG_FireWeapon( centity_t *cent ) {
 	}
 	
 	if ( ent->weapon == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR ){
-		if(toolgun_mod19.integer == 0){
-		trap_SendConsoleCommand("vstr toolgun_toolcmd1\n");
-		} else
 		if(toolgun_mod19.integer == 1){
-		trap_SendConsoleCommand("vstr toolgun_toolcmd2\n");
-		} else
-		if(toolgun_mod19.integer == 2){
-		trap_SendConsoleCommand("vstr toolgun_toolcmd3\n");
-		} else
-		if(toolgun_mod19.integer == 3){
-		trap_SendConsoleCommand("vstr toolgun_toolcmd4\n");
+			trap_SendConsoleCommand("vstr toolgun_toolcmd2\n");
+		} else if(toolgun_mod19.integer == 2){
+			trap_SendConsoleCommand("vstr toolgun_toolcmd3\n");
+		} else if(toolgun_mod19.integer == 3){
+			trap_SendConsoleCommand("vstr toolgun_toolcmd4\n");
 		} else {
-		trap_SendConsoleCommand("vstr toolgun_toolcmd1\n");
+			trap_SendConsoleCommand("vstr toolgun_toolcmd1\n");
 		}
 	}
 

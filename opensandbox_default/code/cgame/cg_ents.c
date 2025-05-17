@@ -44,7 +44,6 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
 
-	// FIXME: allow origin offsets along tag?
 	VectorCopy( parent->origin, entity->origin );
 	for ( i = 0 ; i < 3 ; i++ ) {
 		VectorMA( entity->origin, lerped.origin[i], parent->axis[i], entity->origin );
@@ -75,7 +74,6 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
 
-	// FIXME: allow origin offsets along tag?
 	VectorCopy( parent->origin, entity->origin );
 	for ( i = 0 ; i < 3 ; i++ ) {
 		VectorMA( entity->origin, lerped.origin[i], parent->axis[i], entity->origin );
@@ -195,6 +193,7 @@ static void CG_General( centity_t *cent ) {
 
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
+	VectorCopy( s1->angles, cent->lerpAngles);
 
 	if(!s1->modelindex2){
 		ent.hModel = cgs.gameModels[s1->modelindex];
@@ -426,7 +425,7 @@ Speaker entities can automatically play sounds
 ==================
 */
 static void CG_Speaker( centity_t *cent ) {
-	if ( ! cent->currentState.clientNum ) {	// FIXME: use something other than clientNum...
+	if ( !cent->currentState.clientNum ) {	// FIXME: use something other than clientNum...
 		return;		// not auto triggering
 	}
 
@@ -435,9 +434,6 @@ static void CG_Speaker( centity_t *cent ) {
 	}
 
 	trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
-
-	//	ent->s.frame = ent->wait * 10;
-	//	ent->s.clientNum = ent->random * 10;
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
@@ -1056,15 +1052,11 @@ CG_TeamBase
 */
 static void CG_TeamBase( centity_t *cent ) {
 	refEntity_t model;
-
 	vec3_t angles;
 	int t, h;
 	float c;
 
 	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF ) {
-//#else
-//	if ( cgs.gametype == GT_CTF) {
-
 		// show the flag base
 		memset(&model, 0, sizeof(model));
 		model.reType = RT_MODEL;
@@ -1073,11 +1065,9 @@ static void CG_TeamBase( centity_t *cent ) {
 		AnglesToAxis( cent->currentState.angles, model.axis );
 		if ( cent->currentState.modelindex == TEAM_RED ) {
 			model.hModel = cgs.media.redFlagBaseModel;
-		}
-		else if ( cent->currentState.modelindex == TEAM_BLUE ) {
+		} else if ( cent->currentState.modelindex == TEAM_BLUE ) {
 			model.hModel = cgs.media.blueFlagBaseModel;
-		}
-		else {
+		} else {
 			model.hModel = cgs.media.neutralFlagBaseModel;
 		}
 		trap_R_AddRefEntityToScene( &model );
@@ -1118,8 +1108,7 @@ static void CG_TeamBase( centity_t *cent ) {
 				c = (float) (t - h) / h;
 				if (c > 1)
 					c = 1;
-			}
-			else {
+			} else {
 				c = 0;
 			}
 			// show the lights
@@ -1155,11 +1144,7 @@ static void CG_TeamBase( centity_t *cent ) {
 				model.hModel = cgs.media.overloadTargetModel;
 				trap_R_AddRefEntityToScene( &model );
 			}
-			else {
-				//FIXME: show animated smoke
-			}
-		}
-		else {
+		} else {
 			cent->miscTime = 0;
 			cent->muzzleFlashTime = 0;
 			// modelindex2 is the health value of the obelisk
@@ -1176,8 +1161,7 @@ static void CG_TeamBase( centity_t *cent ) {
 			model.hModel = cgs.media.overloadTargetModel;
 			trap_R_AddRefEntityToScene( &model );
 		}
-	}
-	else if ( cgs.gametype == GT_HARVESTER ) {
+	} else if ( cgs.gametype == GT_HARVESTER ) {
 		// show harvester model
 		memset(&model, 0, sizeof(model));
 		model.reType = RT_MODEL;
@@ -1188,12 +1172,10 @@ static void CG_TeamBase( centity_t *cent ) {
 		if ( cent->currentState.modelindex == TEAM_RED ) {
 			model.hModel = cgs.media.harvesterModel;
 			model.customSkin = cgs.media.harvesterRedSkin;
-		}
-		else if ( cent->currentState.modelindex == TEAM_BLUE ) {
+		} else if ( cent->currentState.modelindex == TEAM_BLUE ) {
 			model.hModel = cgs.media.harvesterModel;
 			model.customSkin = cgs.media.harvesterBlueSkin;
-		}
-		else {
+		} else {
 			model.hModel = cgs.media.harvesterNeutralModel;
 			model.customSkin = 0;
 		}

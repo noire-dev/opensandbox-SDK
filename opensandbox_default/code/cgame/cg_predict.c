@@ -103,6 +103,7 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 			continue;
 		}
 
+		//FIXME: AABB colisions is coded to ONE INT, instead two vec3
 		if ( ent->solid == SOLID_BMODEL ) {
 			// special value for bmodel
 			cmodel = trap_CM_InlineModel( ent->modelindex );
@@ -120,17 +121,12 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 			bmaxs[2] = zu;
 
 			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
-			VectorCopy( vec3_origin, angles );
+			VectorCopy( cent->lerpAngles, angles );
 			VectorCopy( cent->lerpOrigin, origin );
 		}
 
-
 		trap_CM_TransformedBoxTrace ( &trace, start, end,
-			mins, maxs, cmodel,  mask, origin, angles);
-
-		if(skip && ent->torsoAnim){
-			continue;
-		}
+			mins, maxs, cmodel, mask, origin, angles);
 
 		if (trace.allsolid || trace.fraction < tr->fraction) {
 			trace.entityNum = ent->number;
@@ -149,7 +145,7 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 CG_Trace
 ================
 */
-void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
+void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
 					 int skipNumber, int mask ) {
 	trace_t	t;
 
@@ -157,18 +153,6 @@ void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t, qfalse);
-
-	*result = t;
-}
-
-void	CG_ST_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
-					 int skipNumber, int mask ) {
-	trace_t	t;
-
-	trap_CM_BoxTrace ( &t, start, end, mins, maxs, 0, mask);
-	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
-	// check all other solid models
-	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t, qtrue);
 
 	*result = t;
 }
@@ -210,7 +194,6 @@ int		CG_PointContents( const vec3_t point, int passEntityNum ) {
 
 	return contents;
 }
-
 
 /*
 ========================
@@ -351,8 +334,7 @@ static void CG_TouchItem( centity_t *cent ) {
 	}
 
 	// grab it
-	if(canBePicked)
-	{
+	if(canBePicked) {
 		BG_AddPredictableEventToPlayerstate( EV_ITEM_PICKUP, cent->currentState.modelindex , &cg.predictedPlayerState);
 
 		// remove it from the frame so it won't be drawn
@@ -362,7 +344,6 @@ static void CG_TouchItem( centity_t *cent ) {
 		cent->miscTime = cg.time;
 	}
 }
-
 
 /*
 =========================
@@ -435,24 +416,6 @@ CG_PredictPlayerState
 
 Generates cg.predictedPlayerState for the current cg.time
 cg.predictedPlayerState is guaranteed to be valid after exiting.
-
-For demo playback, this will be an interpolation between two valid
-playerState_t.
-
-For normal gameplay, it will be the result of predicted usercmd_t on
-top of the most recent playerState_t received from the server.
-
-Each new snapshot will usually have one or more new usercmd over the last,
-but we simulate all unacknowledged commands each time, not just the new ones.
-This means that on an internet connection, quite a few pmoves may be issued
-each frame.
-
-OPTIMIZE: don't re-simulate unless the newly arrived snapshot playerState_t
-differs from the predicted one.  Would require saving all intermediate
-playerState_t during prediction.
-
-We detect prediction errors and allow them to be decayed off over several frames
-to ease the jerk.
 =================
 */
 void CG_PredictPlayerState( void ) {
@@ -480,7 +443,7 @@ void CG_PredictPlayerState( void ) {
 
 	// prepare for pmove
 	cg_pmove.ps = &cg.predictedPlayerState;
-	cg_pmove.trace = CG_ST_Trace;
+	cg_pmove.trace = CG_Trace;
 	cg_pmove.pointcontents = CG_PointContents;
 	if ( cg_pmove.ps->pm_type == PM_DEAD ) {
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
@@ -601,5 +564,3 @@ void CG_PredictPlayerState( void ) {
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );
 }
-
-

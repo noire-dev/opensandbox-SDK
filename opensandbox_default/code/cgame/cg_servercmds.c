@@ -524,80 +524,6 @@ static void CG_ConfigStringModified( void ) {
 
 }
 
-
-/*
-=======================
-CG_AddToTeamChat
-
-=======================
-*/
-static void CG_AddToTeamChat( const char *str ) {
-	int len;
-	char *p, *ls;
-	int lastcolor;
-	int chatHeight;
-
-	if (cg_teamChatHeight.integer < TEAMCHAT_HEIGHT) {
-		chatHeight = cg_teamChatHeight.integer;
-	} else {
-		chatHeight = TEAMCHAT_HEIGHT;
-	}
-
-	if (chatHeight <= 0 || cg_teamChatTime.integer <= 0) {
-		// team chat disabled, dump into normal chat
-		cgs.teamChatPos = cgs.teamLastChatPos = 0;
-		return;
-	}
-
-	len = 0;
-
-	p = cgs.teamChatMsgs[cgs.teamChatPos % chatHeight];
-	*p = 0;
-
-	lastcolor = '7';
-
-	ls = NULL;
-	while (*str) {
-		if (len > TEAMCHAT_WIDTH - 1) {
-			if (ls) {
-				str -= (p - ls);
-				str++;
-				p -= (p - ls);
-			}
-			*p = 0;
-
-			cgs.teamChatMsgTimes[cgs.teamChatPos % chatHeight] = cg.time;
-
-			cgs.teamChatPos++;
-			p = cgs.teamChatMsgs[cgs.teamChatPos % chatHeight];
-			*p = 0;
-			*p++ = Q_COLOR_ESCAPE;
-			*p++ = lastcolor;
-			len = 0;
-			ls = NULL;
-		}
-
-		if ( Q_IsColorString( str ) ) {
-			*p++ = *str++;
-			lastcolor = *str;
-			*p++ = *str++;
-			continue;
-		}
-		if (*str == ' ') {
-			ls = p;
-		}
-		*p++ = *str++;
-		len++;
-	}
-	*p = 0;
-
-	cgs.teamChatMsgTimes[cgs.teamChatPos % chatHeight] = cg.time;
-	cgs.teamChatPos++;
-
-	if (cgs.teamChatPos - cgs.teamLastChatPos > chatHeight)
-		cgs.teamLastChatPos = cgs.teamChatPos - chatHeight;
-}
-
 /*
 ===============
 CG_MapRestart
@@ -770,13 +696,11 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if ( !strcmp( cmd, "chat" ) ) {
-		if ( !cg_teamChatsOnly.integer ) {
-            if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
-                trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
-			Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
-			CG_RemoveChatEscapeChar( text );
-			CG_PrintfChat( qfalse, "%s\n", text );
-		}
+        if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
+            trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
+		CG_RemoveChatEscapeChar( text );
+		CG_PrintfChat( qfalse, "%s\n", text );
 		return;
 	}
 
@@ -785,7 +709,6 @@ static void CG_ServerCommand( void ) {
     	    trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 		CG_RemoveChatEscapeChar( text );
-		CG_AddToTeamChat( text );
 		CG_PrintfChat( qtrue, "%s\n", text );
 		return;
 	}

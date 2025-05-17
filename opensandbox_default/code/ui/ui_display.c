@@ -121,10 +121,6 @@ static void UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
 	case ID_BRIGHTNESS:
 		trap_Cvar_SetValue( "r_gamma", displayOptionsInfo.brightness.curvalue / 10.0f );
 		break;
-	
-	case ID_SCREENSIZE:
-		trap_Cvar_SetValue( "cg_viewsize", displayOptionsInfo.screensize.curvalue * 10 );
-		break;
 
 	case ID_CROSSSIZE:
 		trap_Cvar_SetValue( "cg_crosshairScale", displayOptionsInfo.crosssize.curvalue);
@@ -497,7 +493,6 @@ displayOptionsInfo.istyle.string	   	= "Стиль предметов:";
 	Menu_AddItem( &displayOptionsInfo.menu, ( void * ) &displayOptionsInfo.back );
 
 	displayOptionsInfo.brightness.curvalue  = trap_Cvar_VariableValue("r_gamma") * 10;
-	displayOptionsInfo.screensize.curvalue  = trap_Cvar_VariableValue( "cg_viewsize")/10;
 	displayOptionsInfo.crosssize.curvalue  = trap_Cvar_VariableValue( "cg_crosshairScale");
 	displayOptionsInfo.thirdperson.curvalue  = trap_Cvar_VariableValue( "cg_thirdperson");
 	displayOptionsInfo.speed.curvalue  = trap_Cvar_VariableValue( "cg_drawSpeed");

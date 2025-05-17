@@ -747,9 +747,6 @@ void SP_worldspawn( void ) {
 	G_SpawnString( "objectivesoverlay", "menu/objectives/overlay.tga", &s );
 	trap_SetConfigstring( CS_OBJECTIVESOVERLAY, s );
 
-	G_SpawnString( "message", "", &s );
-	trap_SetConfigstring( CS_MESSAGE, s );				// map specific message
-
 	G_SpawnString( "gravity", "800", &s );
 	trap_Cvar_Set( "g_gravity", s );
 

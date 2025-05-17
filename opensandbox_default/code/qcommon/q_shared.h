@@ -727,14 +727,14 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-3)
 
-#define	MAX_MODELS			4096		// these are sent over the net as 16 bits
-#define	MAX_SOUNDS			4096		// so they cannot be blindly increased
-
-#define	MAX_CONFIGSTRINGS	1024*16
+#define	MAX_MODELS			4096
+#define	MAX_SOUNDS			4096
+#define	MAX_CONFIGSTRINGS	10000
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
 #define	CS_SERVERINFO		0		// an info string with all the serverinfo cvars
+#define	CS_SYSTEMINFO		1
 
 #define	MAX_GAMESTATE_CHARS	16384*16
 typedef struct {

@@ -1706,15 +1706,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		}
 		return qtrue;
 
-        case IT_BAD:
+    case IT_BAD:
 		Com_Printf( "BG_CanItemBeGrabbed: index out of range\n");
-        default:
-#ifndef Q3_VM
-#ifndef NDEBUG // bk0001204
-		Com_Printf( "BG_CanItemBeGrabbed: index out of range\n");
-#endif
-#endif
-         break;
+    default:
+        break;
 	}
 
 	return qfalse;

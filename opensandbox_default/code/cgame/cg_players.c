@@ -43,7 +43,6 @@ char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 };
 
 // leilei - eyes hack
-
 vec3_t headpos;
 vec3_t headang;
 
@@ -856,10 +855,6 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
-
-	if ( cg_debugAnim.integer ) {
-		CG_Printf( "Anim: %i\n", newAnimation );
-	}
 }
 
 /*
@@ -925,9 +920,6 @@ static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation
 		}
 		if ( cg.time > lf->frameTime ) {
 			lf->frameTime = cg.time;
-			if ( cg_debugAnim.integer ) {
-				CG_Printf( "Clamp lf->frameTime\n");
-			}
 		}
 	}
 

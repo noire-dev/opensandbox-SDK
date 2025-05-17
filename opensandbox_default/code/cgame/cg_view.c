@@ -35,28 +35,10 @@ Sets the coordinates of the rendered window
 =================
 */
 static void CG_CalcVrect (void) {
-	int		size;
-
-	// the intermission should allways be full screen
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
-		size = 100;
-	} else {
-		// bound normal viewsize
-		if (cg_viewsize.integer < 10) {
-			trap_Cvar_Set ("cg_viewsize","10");
-			size = 10;
-		} else if (cg_viewsize.integer > 100) {
-			trap_Cvar_Set ("cg_viewsize","100");
-			size = 100;
-		} else {
-			size = cg_viewsize.integer;
-		}
-
-	}
-	cg.refdef.width = cgs.glconfig.vidWidth*size/100;
+	cg.refdef.width = cgs.glconfig.vidWidth;
 	cg.refdef.width &= ~1;
 
-	cg.refdef.height = cgs.glconfig.vidHeight*size/100;
+	cg.refdef.height = cgs.glconfig.vidHeight;
 	cg.refdef.height &= ~1;
 
 	cg.refdef.x = (cgs.glconfig.vidWidth - cg.refdef.width)/2;

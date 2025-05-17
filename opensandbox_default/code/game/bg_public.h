@@ -21,12 +21,7 @@
 // along with this project. If not, see <http://www.gnu.org/licenses/>.
 // 
 // Contact: opensandboxteam@gmail.com
-// 
 //
-// bg_public.h -- definitions shared by both the server game and client game modules
-
-// because games can change separately from the main system version, we need a
-// second version that must match between game and cgame
 
 #if defined(BG_PUBLIC_H)
 #else
@@ -148,88 +143,62 @@
 #define UNDO_PROPSPAWN				1
 #define UNDO_NPCSPAWN				2
 
-//
-// config strings are a general means of communicating variable length strings
-// from the server to all connected clients.
-//
-
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define	CS_MUSIC				2
-#define	CS_MESSAGE				3		// from the map worldspawn's message field
-#define	CS_UNUSED				4		// you can use that
-#define	CS_WARMUP				5		// server time when the match will be restarted
-#define	CS_SCORES1				6
-#define	CS_SCORES2				7
-#define CS_VOTE_TIME			8
-#define CS_VOTE_STRING			9
-#define	CS_VOTE_YES				10
-#define	CS_VOTE_NO				11
-
-#define CS_TEAMVOTE_TIME		12
-#define CS_TEAMVOTE_STRING		14
-#define	CS_TEAMVOTE_YES			16
-#define	CS_TEAMVOTE_NO			18
-
-#define	CS_GAME_VERSION			20
-#define	CS_LEVEL_START_TIME		21		// so the timer only shows the current level
-#define	CS_INTERMISSION			22		// when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
-#define CS_FLAGSTATUS			23		// string indicating flag status in CTF
-#define CS_SHADERSTATE			24
-#define CS_BOTINFO				25
-
-#define	CS_ITEMS				27		// string of 0's and 1's that tell which items are present
-
-#define CS_ATMOSEFFECT  		28  	// Atmospheric effect, if any.
-
-#define	CS_MODELS				32
+#define	CS_WARMUP				3
+#define	CS_SCORES1				4
+#define	CS_SCORES2				5
+#define CS_VOTE_TIME			6
+#define CS_VOTE_STRING			7
+#define	CS_VOTE_YES				8
+#define	CS_VOTE_NO				9
+#define CS_TEAMVOTE_TIME		10 // 2 slots
+#define CS_TEAMVOTE_STRING		12 // 2 slots
+#define	CS_TEAMVOTE_YES			14 // 2 slots
+#define	CS_TEAMVOTE_NO			16 // 2 slots
+#define	CS_GAME_VERSION			18
+#define	CS_LEVEL_START_TIME		19
+#define	CS_INTERMISSION			20
+#define CS_FLAGSTATUS			21
+#define CS_SHADERSTATE			22
+#define CS_BOTINFO				23 // 2 slots
+#define	CS_ITEMS				25
+#define CS_PRIMARYOBJECTIVE		26
+#define CS_SECONDARYOBJECTIVE	27
+#define	CS_OVERLAY				28
+#define CS_SCOREBOARDMUSIC		29
+#define CS_DEATHMUSIC			30
+#define CS_CUTSCENE				31
+#define CS_PLAYERMODEL			32
+#define CS_PLAYERHEADMODEL		33
+#define CS_OBJECTIVESOVERLAY	34
+#define	CS_MODELS				35
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS) 
-
-#define CS_PRIMARYOBJECTIVE		(CS_PARTICLES+MAX_LOCATIONS)
-#define CS_SECONDARYOBJECTIVE	(CS_PRIMARYOBJECTIVE+1)
-#define	CS_OVERLAY				(CS_SECONDARYOBJECTIVE+1)
-#define CS_SCOREBOARDMUSIC		(CS_OVERLAY+1)
-#define CS_DEATHMUSIC			(CS_SCOREBOARDMUSIC+1)
-#define CS_CUTSCENE				(CS_DEATHMUSIC+1)
-#define CS_PLAYERMODEL			(CS_CUTSCENE+1)
-#define CS_PLAYERHEADMODEL		(CS_PLAYERMODEL+1)
-#define CS_OBJECTIVESOVERLAY	(CS_PLAYERHEADMODEL+1)
-
-#define CS_MAX					(CS_OBJECTIVESOVERLAY+1)
+#define CS_MAX					(CS_PLAYERS+MAX_CLIENTS)
 
 #if (CS_MAX) > MAX_CONFIGSTRINGS
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
 #endif
 
 typedef enum {
-	GT_SANDBOX,			// sandbox
-	GT_MAPEDITOR,		// map editor
-	GT_SINGLE,			// single - SHOULD BE 3
-	GT_FFA,				// free for all
-	GT_TOURNAMENT,		// one on one tournament
-
-	//-- team games go after this --
-
-	GT_TEAM,			// team deathmatch
-
-	//-- team games that uses bases go after this
-
-	GT_CTF,				// capture the flag	
+	GT_SANDBOX,
+	GT_MAPEDITOR,
+	GT_SINGLE, //SHOULD BE 3 FOR ENGINE 
+	GT_FFA,
+	GT_TOURNAMENT,
+	GT_TEAM,
+	GT_CTF,
 	GT_1FCTF,
 	GT_OBELISK,
 	GT_HARVESTER,	
-	
-	//-- custom game types, there will be a variable in 
-	
-	GT_ELIMINATION,			// team elimination (custom)
-	GT_CTF_ELIMINATION,		// ctf elimination
-	GT_LMS,				// Last man standing
-	GT_DOUBLE_D,			// Double Domination
-	GT_DOMINATION,			// Standard domination 12
+	GT_ELIMINATION,
+	GT_CTF_ELIMINATION,
+	GT_LMS,
+	GT_DOUBLE_D,
+	GT_DOMINATION,
 	GT_MAX_GAME_TYPE
-	
 } gametype_t;
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;

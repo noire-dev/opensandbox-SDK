@@ -22,14 +22,7 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
 
-// g_public.h -- game module information visible to server
-
-// entity->svFlags
-// the server does not know how to interpret most of the values
-// in entityStates (level eType), so the game must explicitly flag
-// special server behaviors
 #define	SVF_NOCLIENT			0x00000001	// don't send entity to clients, even if it has effects
 #define SVF_BOT					0x00000002	// set if the entity is a bot
 #define	SVF_BROADCAST			0x00000004	// send to all connected clients
@@ -39,6 +32,7 @@
 #define SVF_NOSERVERINFO		0x00000040	// don't send CS_SERVERINFO updates to this client
 #define SVF_NOTSINGLECLIENT		0x00000080	// send entity to everyone but one client
 #define SVF_SELF_PORTAL2		0x00000100  // merge a second pvs at entity->r.s.origin2 into snapshots
+
 typedef struct {
 	entityState_t	s;				// communicated by server to clients
 
@@ -47,8 +41,7 @@ typedef struct {
 
 	int			svFlags;			// SVF_NOCLIENT, SVF_BROADCAST, etc
 
-	// only send to this client when SVF_SINGLECLIENT is set	
-	// if SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
+	// only send to this client when SVF_SINGLECLIENT is set
 	int			singleClient;		
 
 	qboolean	bmodel;				// if false, assume an explicit mins / maxs bounding box

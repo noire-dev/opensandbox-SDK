@@ -107,8 +107,7 @@ typedef struct bsp_trace_s
 #endif	// BSPTRACE
 
 //entity state
-typedef struct bot_entitystate_s
-{
+typedef struct bot_entitystate_s {
 	int		type;			// entity type
 	int		flags;			// entity flags
 	vec3_t	origin;			// origin of the entity
@@ -380,8 +379,7 @@ typedef struct aas_trace_s
 } aas_trace_t;
 
 //entity info
-typedef struct aas_entityinfo_s
-{
+typedef struct aas_entityinfo_s {
 	int		valid;			// true if updated this frame
 	int		type;			// entity type
 	int		flags;			// entity flags

@@ -22,7 +22,7 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
+
 #ifndef __UI_PUBLIC_H__
 #define __UI_PUBLIC_H__
 

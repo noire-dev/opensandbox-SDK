@@ -76,8 +76,6 @@ itemInfo_t			cg_items[MAX_ITEMS];
 
 vmCvar_t	g_gametype;
 
-vmCvar_t	legsmodel;
-vmCvar_t	team_legsmodel;
 vmCvar_t    headR;
 vmCvar_t    headG;
 vmCvar_t    headB;
@@ -144,10 +142,8 @@ vmCvar_t	cg_drawCrosshair;
 vmCvar_t	cg_drawCrosshairNames;
 vmCvar_t	cg_crosshairScale;
 vmCvar_t	cg_draw2D;
-vmCvar_t	cg_debugAnim;
 vmCvar_t	cg_debugEvents;
 vmCvar_t	cg_addMarks;
-vmCvar_t	cg_viewsize;
 vmCvar_t	cg_drawGun;
 vmCvar_t	cg_fov;
 vmCvar_t	cg_zoomFov;
@@ -156,39 +152,13 @@ vmCvar_t	cg_thirdPersonRange;
 vmCvar_t	cg_thirdPersonOffset;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_drawSpeed;
-vmCvar_t 	cg_teamChatHeight;
-vmCvar_t 	cg_teamChatScaleX;
-vmCvar_t 	cg_teamChatScaleY;
 vmCvar_t 	cg_stats;
-vmCvar_t 	cg_buildScript;
 vmCvar_t	cg_paused;
 vmCvar_t	cg_blood;
 vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
-vmCvar_t	cg_teamChatsOnly;
 vmCvar_t 	cg_scorePlum;
-vmCvar_t	cg_chatTime;
-vmCvar_t 	cg_teamChatTime;
-vmCvar_t	cg_consoleTime;
 
-vmCvar_t 	cg_teamChatY;
-vmCvar_t 	cg_chatY;
-vmCvar_t	cg_fontScale;
-vmCvar_t	cg_fontShadow;
-
-vmCvar_t	cg_consoleSizeX;
-vmCvar_t	cg_consoleSizeY;
-vmCvar_t	cg_chatSizeX;
-vmCvar_t	cg_chatSizeY;
-vmCvar_t	cg_teamChatSizeX;
-vmCvar_t	cg_teamChatSizeY;
-
-vmCvar_t	cg_consoleLines;
-vmCvar_t	cg_commonConsoleLines;
-vmCvar_t	cg_chatLines;
-vmCvar_t	cg_teamChatLines;
-
-vmCvar_t	cg_commonConsole;
 vmCvar_t    cg_cameraEyes;
 vmCvar_t	cg_cameraEyes_Fwd;
 vmCvar_t	cg_cameraEyes_Up;
@@ -285,8 +255,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &g_gametype, "g_gametype", "0", 0},
 
-	{ &legsmodel, "legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
-	{ &team_legsmodel, "team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE },
     { &headR, "headR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &headG, "headG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
     { &headB, "headB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
@@ -348,7 +316,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
-	{ &cg_viewsize, "cg_viewsize", "100", 0 },
 	{ &cg_shadows, "cg_shadows", "1", CVAR_ARCHIVE  },
 	{ &cg_draw2D, "cg_draw2D", "1", CVAR_ARCHIVE  },
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
@@ -360,22 +327,14 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_addMarks, "cg_addMarks", "1", CVAR_ARCHIVE },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 	{ &cg_disableBobbing, "cg_disableBobbing", "0", CVAR_ARCHIVE},
-	{ &cg_debugAnim, "cg_debuganim", "0", CVAR_CHEAT },
 	{ &cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "65", CVAR_ARCHIVE },
 	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE},
 	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "1", CVAR_ARCHIVE },
-	{ &cg_teamChatHeight, "cg_teamChatHeight", "8", CVAR_ARCHIVE  },
-	{ &cg_teamChatScaleX, "cg_teamChatScaleX", "0.7", CVAR_ARCHIVE  },
-	{ &cg_teamChatScaleY, "cg_teamChatScaleY", "1", CVAR_ARCHIVE  },
 	{ &cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM | CVAR_USERINFO },
 	{ &cg_stats, "cg_stats", "0", 0 },
 	{ &cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE },
-	{ &cg_teamChatsOnly, "cg_teamChatsOnly", "0", CVAR_ARCHIVE },
-	// the following variables are created in other parts of the system,
-	// but we also reference them here
-	{ &cg_buildScript, "com_buildScript", "0", 0 },	// force loading of all possible data amd error on failures
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
 	{ &cg_alwaysWeaponBar, "cg_alwaysWeaponBar", "0", CVAR_ARCHIVE},	//Elimination
@@ -385,29 +344,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", 0},
 
 	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_ARCHIVE},
-	{ &cg_chatTime ,    "cg_chatTime", "10000", CVAR_ARCHIVE},
-	{ &cg_consoleTime , "cg_consoleTime", "10000", CVAR_ARCHIVE},
-	{ &cg_teamChatTime, "cg_teamChatTime", "10000", CVAR_ARCHIVE  },
-
-	{ &cg_teamChatY, "cg_teamChatY", "180", CVAR_ARCHIVE  },
-	{ &cg_chatY, "cg_chatY", "-230", CVAR_ARCHIVE  },
-
-	{ &cg_consoleSizeX , "cg_consoleSizeX", "6", CVAR_ARCHIVE},
-	{ &cg_consoleSizeY , "cg_consoleSizeY", "9", CVAR_ARCHIVE},
-	{ &cg_chatSizeX , "cg_chatSizeX", "6", CVAR_ARCHIVE},
-	{ &cg_chatSizeY , "cg_chatSizeY", "10", CVAR_ARCHIVE},
-	{ &cg_teamChatSizeX , "cg_teamChatSizeX", "6", CVAR_ARCHIVE},
-	{ &cg_teamChatSizeY , "cg_teamChatSizeY", "10", CVAR_ARCHIVE},
-
-	{ &cg_commonConsole , "cg_commonConsole", "0", CVAR_ARCHIVE},
-
-	{ &cg_consoleLines , "cg_consoleLines", "4", CVAR_ARCHIVE},
-	{ &cg_commonConsoleLines , "cg_commonConsoleLines", "6", CVAR_ARCHIVE},
-	{ &cg_chatLines , "cg_chatLines", "6", CVAR_ARCHIVE},
-	{ &cg_teamChatLines , "cg_teamChatLines", "6", CVAR_ARCHIVE},
-
-	{ &cg_fontScale , "cg_fontScale", "1.5", CVAR_ARCHIVE},
-	{ &cg_fontShadow , "cg_fontShadow", "1", CVAR_ARCHIVE},
 
 	{ &cg_noProjectileTrail, "cg_noProjectileTrail", "0", CVAR_ARCHIVE},
 	{ &cg_cameraEyes, "cg_cameraEyes", "0", CVAR_ARCHIVE},						// LEILEI
@@ -451,8 +387,10 @@ void CG_RegisterCvars( void ) {
 
 	trap_Cvar_Register(NULL, "model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 }
 
 /*
@@ -637,9 +575,7 @@ static void CG_RegisterSounds( void ) {
 	// N_G: Another condition that makes no sense to me, see for
 	// yourself if you really meant this
 	// Sago: Makes perfect sense: Load team game stuff if the gametype is a teamgame and not an exception (like GT_LMS)
-	if ( ( ( cgs.gametype >= GT_TEAM ) && ( cgs.ffa_gt != 1 ) ) ||
-		cg_buildScript.integer ) {
-
+	if (cgs.gametype >= GT_TEAM && cgs.ffa_gt != 1) {
 		cgs.media.captureAwardSound = trap_S_RegisterSound( "sound/teamplay/flagcapture_yourteam.wav", qtrue );
 		cgs.media.redLeadsSound = trap_S_RegisterSound( "sound/feedback/redleads.wav", qtrue );
 		cgs.media.blueLeadsSound = trap_S_RegisterSound( "sound/feedback/blueleads.wav", qtrue );
@@ -658,26 +594,26 @@ static void CG_RegisterSounds( void ) {
 		cgs.media.takenYourTeamSound = trap_S_RegisterSound( "sound/teamplay/flagtaken_yourteam.wav", qtrue );
 		cgs.media.takenOpponentSound = trap_S_RegisterSound( "sound/teamplay/flagtaken_opponent.wav", qtrue );
 
-		if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION|| cg_buildScript.integer ) {
+		if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ) {
 			cgs.media.redFlagReturnedSound = trap_S_RegisterSound( "sound/teamplay/voc_red_returned.wav", qtrue );
 			cgs.media.blueFlagReturnedSound = trap_S_RegisterSound( "sound/teamplay/voc_blue_returned.wav", qtrue );
 			cgs.media.enemyTookYourFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_enemy_flag.wav", qtrue );
 			cgs.media.yourTeamTookEnemyFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_team_flag.wav", qtrue );
 		}
 
-		if ( cgs.gametype == GT_1FCTF || cg_buildScript.integer ) {
+		if ( cgs.gametype == GT_1FCTF ) {
 			// FIXME: get a replacement for this sound ?
 			cgs.media.neutralFlagReturnedSound = trap_S_RegisterSound( "sound/teamplay/flagreturn_opponent.wav", qtrue );
 			cgs.media.yourTeamTookTheFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_team_1flag.wav", qtrue );
 			cgs.media.enemyTookTheFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_enemy_1flag.wav", qtrue );
 		}
 
-		if ( cgs.gametype == GT_1FCTF || cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ||cg_buildScript.integer ) {
+		if ( cgs.gametype == GT_1FCTF || cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ) {
 			cgs.media.youHaveFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_you_flag.wav", qtrue );
 			cgs.media.holyShitSound = trap_S_RegisterSound("sound/feedback/voc_holyshit.wav", qtrue);
 		}
 
-                if ( cgs.gametype == GT_OBELISK || cg_buildScript.integer ) {
+        if ( cgs.gametype == GT_OBELISK ) {
 			cgs.media.yourBaseIsUnderAttackSound = trap_S_RegisterSound( "sound/teamplay/voc_base_attack.wav", qtrue );
 		}
 	}
@@ -955,8 +891,6 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
 
-	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
-
 	cgs.media.objectivesOverlay = trap_R_RegisterShaderNoMip( CG_ConfigString(CS_OBJECTIVESOVERLAY) );
 	cgs.media.objectivesUpdated = trap_R_RegisterShaderNoMip( "menu/objectives/updated.tga" );
 	cgs.media.objectivesUpdatedSound = trap_S_RegisterSound( "sound/misc/objective_update_01.wav", qfalse );
@@ -1008,37 +942,36 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.ptexShader[0]	= trap_R_RegisterShader( "trans" );
 	cgs.media.ptexShader[1]	= trap_R_RegisterShader( "powerups/quad" );
 
-	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION|| cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION|| cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
 		cgs.media.redCubeModel = trap_R_RegisterModel( "models/powerups/orb/r_orb.md3" );
 		cgs.media.blueCubeModel = trap_R_RegisterModel( "models/powerups/orb/b_orb.md3" );
 		cgs.media.redCubeIcon = trap_R_RegisterShader( "icons/skull_red" );
 		cgs.media.blueCubeIcon = trap_R_RegisterShader( "icons/skull_blue" );
 	}
 
-        if( ( cgs.gametype >= GT_TEAM ) && ( cgs.ffa_gt != 1 ) ) {
-                cgs.media.redOverlay = trap_R_RegisterShader( "overlay/red");
-                cgs.media.blueOverlay = trap_R_RegisterShader( "overlay/blue");
-        } else {
-                cgs.media.neutralOverlay = trap_R_RegisterShader( "overlay/neutral");
-        }
+    if( ( cgs.gametype >= GT_TEAM ) && ( cgs.ffa_gt != 1 ) ) {
+        cgs.media.redOverlay = trap_R_RegisterShader( "overlay/red");
+        cgs.media.blueOverlay = trap_R_RegisterShader( "overlay/blue");
+    } else {
+        cgs.media.neutralOverlay = trap_R_RegisterShader( "overlay/neutral");
+    }
 
 //For Double Domination:
 	if ( cgs.gametype == GT_DOUBLE_D ) {
 		cgs.media.ddPointSkinA[TEAM_RED] = trap_R_RegisterShaderNoMip( "icons/icona_red" );
-                cgs.media.ddPointSkinA[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/icona_blue" );
-                cgs.media.ddPointSkinA[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/icona_white" );
-                cgs.media.ddPointSkinA[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
-
-                cgs.media.ddPointSkinB[TEAM_RED] = trap_R_RegisterShaderNoMip( "icons/iconb_red" );
-                cgs.media.ddPointSkinB[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/iconb_blue" );
-                cgs.media.ddPointSkinB[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/iconb_white" );
-                cgs.media.ddPointSkinB[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
+        cgs.media.ddPointSkinA[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/icona_blue" );
+        cgs.media.ddPointSkinA[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/icona_white" );
+        cgs.media.ddPointSkinA[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
+        cgs.media.ddPointSkinB[TEAM_RED] = trap_R_RegisterShaderNoMip( "icons/iconb_red" );
+        cgs.media.ddPointSkinB[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/iconb_blue" );
+        cgs.media.ddPointSkinB[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/iconb_white" );
+        cgs.media.ddPointSkinB[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
 	}
 
-	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
 		cgs.media.redFlagModel = trap_R_RegisterModel( "models/flags/r_flag.md3" );
 		cgs.media.blueFlagModel = trap_R_RegisterModel( "models/flags/b_flag.md3" );
-                cgs.media.neutralFlagModel = trap_R_RegisterModel( "models/flags/n_flag.md3" );
+        cgs.media.neutralFlagModel = trap_R_RegisterModel( "models/flags/n_flag.md3" );
 		cgs.media.redFlagShader[0] = trap_R_RegisterShaderNoMip( "icons/iconf_red1" );
 		cgs.media.redFlagShader[1] = trap_R_RegisterShaderNoMip( "icons/iconf_red2" );
 		cgs.media.redFlagShader[2] = trap_R_RegisterShaderNoMip( "icons/iconf_red3" );
@@ -1057,7 +990,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.neutralFlagBaseModel = trap_R_RegisterModel( "models/mapobjects/flagbase/ntrl_base.md3" );
 	}
 
-	if ( cgs.gametype == GT_1FCTF || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_1FCTF ) {
 		cgs.media.neutralFlagModel = trap_R_RegisterModel( "models/flags/n_flag.md3" );
 		cgs.media.flagShader[0] = trap_R_RegisterShaderNoMip( "icons/iconf_neutral1" );
 		cgs.media.flagShader[1] = trap_R_RegisterShaderNoMip( "icons/iconf_red2" );
@@ -1065,7 +998,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.flagShader[3] = trap_R_RegisterShaderNoMip( "icons/iconf_neutral3" );
 	}
 
-	if ( cgs.gametype == GT_OBELISK || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_OBELISK ) {
 		cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
 		cgs.media.overloadBaseModel = trap_R_RegisterModel( "models/powerups/overload_base.md3" );
 		cgs.media.overloadTargetModel = trap_R_RegisterModel( "models/powerups/overload_target.md3" );
@@ -1073,7 +1006,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.overloadEnergyModel = trap_R_RegisterModel( "models/powerups/overload_energy.md3" );
 	}
 
-	if ( cgs.gametype == GT_HARVESTER || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_HARVESTER ) {
 		cgs.media.harvesterModel = trap_R_RegisterModel( "models/powerups/harvester/harvester.md3" );
 		cgs.media.harvesterRedSkin = trap_R_RegisterSkin( "models/powerups/harvester/red.skin" );
 		cgs.media.harvesterBlueSkin = trap_R_RegisterSkin( "models/powerups/harvester/blue.skin" );
@@ -1083,12 +1016,9 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.redKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikred" );
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff" );
 
-	if ( ( ( cgs.gametype >= GT_TEAM ) && ( cgs.ffa_gt != 1 ) ) ||
-		cg_buildScript.integer ) {
-
+	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt != 1 ) {
 		cgs.media.friendShader = trap_R_RegisterShader( "sprites/foe3" );
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
-		//cgs.media.teamStatusBar = trap_R_RegisterShader( "gfx/2d/colorbar.tga" ); - moved outside, used by accuracy
 		cgs.media.blueKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikblu" );
 	}
 	cgs.media.teamStatusBar = trap_R_RegisterShader( "gfx/2d/colorbar.tga" );

@@ -662,7 +662,6 @@ static float CG_DrawLMSmode( float y ) {
 CG_DrawTeamOverlay
 =================
 */
-
 static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 	int x, w, h, xx;
 	int i, j, len;
@@ -786,11 +785,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			xx += SMALLCHAR_WIDTH * 3;
 
 			if ( cg_weapons[ci->curWeapon].weaponIcon ) {
-				CG_DrawPic( xx, y, SMALLCHAR_HEIGHT, SMALLCHAR_HEIGHT,
-					cg_weapons[ci->curWeapon].weaponIcon );
-			} else {
-				CG_DrawPic( xx, y, SMALLCHAR_HEIGHT, SMALLCHAR_HEIGHT,
-					cgs.media.deferShader );
+				CG_DrawPic( xx, y, SMALLCHAR_HEIGHT, SMALLCHAR_HEIGHT, cg_weapons[ci->curWeapon].weaponIcon );
 			}
 
 			y += SMALLCHAR_HEIGHT;
@@ -1192,41 +1187,6 @@ static void CG_DrawLowerLeft( void ) {
 	y = CG_DrawPickupItem( y );
 }
 
-float CG_FontResAdjust(void) {
-	float f = 1.0;
-	if (cgs.glconfig.vidHeight < 1024) {
-		f *= 1024.0/cgs.glconfig.vidHeight;
-	}
-	return f;
-}
-
-float CG_ConsoleDistortionFactorX(void) {
-	return ((cgs.screenXScale > cgs.screenYScale) ? (cgs.screenYScale / cgs.screenXScale) : 1.0);
-}
-
-float CG_ConsoleDistortionFactorY(void) {
-	return ((cgs.screenYScale > cgs.screenXScale) ? (cgs.screenXScale / cgs.screenYScale) : 1.0);
-}
-
-float CG_ConsoleAdjustSizeX(float sizeX) {
-	return CG_FontResAdjust() * sizeX * CG_ConsoleDistortionFactorX();
-}
-
-float CG_ConsoleAdjustSizeY(float sizeY) {
-	return CG_FontResAdjust() * sizeY * CG_ConsoleDistortionFactorY();
-}
-
-int CG_GetChatHeight(int maxlines) {
-	if (maxlines < CONSOLE_MAXHEIGHT)
-		return maxlines;
-	return CONSOLE_MAXHEIGHT;
-}
-
-int CG_ConsoleChatPositionY(float consoleSizeY, float chatSizeY) {
-	return CG_GetChatHeight(cg_consoleLines.integer) * consoleSizeY + chatSizeY/2;
-}
-
-
 void CG_ConsoleUpdateIdx(console_t *console, int chatHeight) {
 	if (console->insertIdx < console->displayIdx) {
 		console->displayIdx = console->insertIdx;
@@ -1240,18 +1200,12 @@ void CG_ConsoleUpdateIdx(console_t *console, int chatHeight) {
 static void CG_DrawGenericConsole( console_t *console, int maxlines, int time, int x, int y, float sizeX, float sizeY ) {
 	int i, j;
 	vec4_t	hcolor;
-	int	chatHeight;
 
 	if ( cg.showScores || cg.scoreBoardShowing ) {
 		return;
 	}
 
-	chatHeight = CG_GetChatHeight(maxlines);
-
-	if (chatHeight <= 0)
-		return; // disabled
-
-	CG_ConsoleUpdateIdx(console, chatHeight);
+	CG_ConsoleUpdateIdx(console, maxlines);
 
 	hcolor[0] = hcolor[1] = hcolor[2] = hcolor[3] = 1.0f;
 
@@ -1260,7 +1214,7 @@ static void CG_DrawGenericConsole( console_t *console, int maxlines, int time, i
 		if (console->msgTimes[i % CONSOLE_MAXHEIGHT] + time < cg.time) {
 			continue;
 		}
-		CG_DrawStringExt( x + 1, y + j * sizeY, console->msgs[i % CONSOLE_MAXHEIGHT], hcolor, qfalse, cg_fontShadow.integer ? qtrue : qfalse, sizeX, sizeY, 0, 0 );
+		CG_DrawStringExt( x + 1, y + j * sizeY, console->msgs[i % CONSOLE_MAXHEIGHT], hcolor, qfalse, qtrue, sizeX, sizeY, 0, 0 );
 		j++;
 
 	}
@@ -1478,7 +1432,9 @@ LAGOMETER
 ===============================================================================
 */
 
-#define	LAG_SAMPLES		128
+#define	LAG_SAMPLES			128
+#define	MAX_LAGOMETER_PING	900
+#define	MAX_LAGOMETER_RANGE	300
 
 typedef struct {
 	int		frameSamples[LAG_SAMPLES];
@@ -1516,48 +1472,10 @@ Pass NULL for a dropped packet.
 ==============
 */
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap ) {
-	// add this snapshot's info
 	lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->ping;
 	lagometer.snapshotFlags[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->snapFlags;
 	lagometer.snapshotCount++;
 }
-
-/*
-==============
-CG_DrawDisconnect
-
-Should we draw something differnet for long lag vs no packets?
-==============
-*/
-static void CG_DrawDisconnect( void ) {
-	float		x, y;
-	int			cmdNum;
-	usercmd_t	cmd;
-	const char	*s;
-	int			w;
-	int currentViewDistance;
-
-	// draw the phone jack if we are completely past our buffers
-	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
-	trap_GetUserCmd( cmdNum, &cmd );
-	if ( cmd.serverTime <= cg.snap->ps.commandTime || cmd.serverTime > cg.time ) {
-		return;
-	}
-
-	// blink the icon
-	if ( ( cg.time >> 9 ) & 1 ) {
-		return;
-	}
-
-	x = 0;
-	y = 0;
-
-	CG_DrawPic( x-cl_screenoffset.value, y, 16, 16, trap_R_RegisterShader("gfx/2d/net.tga" ) );
-}
-
-
-#define	MAX_LAGOMETER_PING	900
-#define	MAX_LAGOMETER_RANGE	300
 
 /*
 ==============
@@ -1571,8 +1489,7 @@ static void CG_DrawLagometer( void ) {
 	int		color;
 	float	vscale;
 
-	if ( !cg_lagometer.integer ) {
-		CG_DrawDisconnect();
+	if (!cg_lagometer.integer) {
 		return;
 	}
 
@@ -1658,8 +1575,6 @@ static void CG_DrawLagometer( void ) {
 	}
 
 	trap_R_SetColor( NULL );
-
-	CG_DrawDisconnect();
 }
 
 /*
@@ -2497,28 +2412,9 @@ void CG_FadeLevelStart( void ) {
 	vec4_t colorStart;
 	vec4_t colorEnd;
 	int i;
-	const char *s;
 
 	//calculate the fade
 	if ( cg.levelFadeStatus == LFS_LEVELLOADED ) {
-		for (i = 0; i < 4; i++ ) {
-			colorStart[i] = 0;
-		}
-
-		s = CG_ConfigString( CS_MESSAGE );
-
-		if ( strlen(s) == 0 ) {			//there is no message so don't do a blackout
-			cg.levelFadeStatus = LFS_FADEIN;
-			Vector4Copy(colorStart, colorEnd);
-			colorStart[3] = 1;
-			CG_Fade( (FADEIN_TIME / 1000), colorStart, colorEnd );
-		} else {
-			cg.levelFadeStatus = LFS_BLACKOUT;
-			colorStart[3] = 1;
-			Vector4Copy(colorStart, colorEnd);
-			CG_Fade( (BLACKOUT_TIME / 1000), colorStart, colorEnd );
-		}
-	} else if ( cg.levelFadeStatus == LFS_BLACKOUT && cg.fadeStartTime + cg.fadeDuration < cg.time ) {
 		for (i = 0; i < 4; i++ ) {
 			colorStart[i] = 0;
 		}
@@ -2527,41 +2423,6 @@ void CG_FadeLevelStart( void ) {
 		Vector4Copy(colorStart, colorEnd);
 		colorStart[3] = 1;
 		CG_Fade( (FADEIN_TIME / 1000), colorStart, colorEnd );
-	}
-}
-
-/*
-=================
-CG_MessageLevelStart
-
-Draws the level's message to the screen at the start of the level
-=================
-*/
-void CG_MessageLevelStart( void ) {
-	const char *s;
-	vec4_t color;
-
-	if ( cg.time < cg.levelStartTime + TITLE_TIME + TITLE_FADEIN_TIME + TITLE_FADEOUT_TIME) {
-		int len;
-
-		s = CG_ConfigString( CS_MESSAGE );
-		len = strlen( s );
-		if ( len == 0 )
-			return;
-
-		color[0] = 1;
-		color[1] = 1;
-		color[2] = 1;
-		if ( cg.time < cg.levelStartTime + TITLE_FADEIN_TIME ){
-			color[3] = (cg.time - cg.levelStartTime) / TITLE_FADEIN_TIME;
-		}
-		else if ( cg.time < cg.levelStartTime + TITLE_TIME + TITLE_FADEIN_TIME )
-			color[3] = 1;
-		else
-			color[3] = (TITLE_FADEOUT_TIME - ((cg.time - cg.levelStartTime) - (TITLE_FADEIN_TIME + TITLE_TIME))) / TITLE_FADEOUT_TIME;
-
-		len *= BIGCHAR_WIDTH;
-		CG_DrawBigStringColor( 640 - len - 32 + cl_screenoffset.value, 360, s, color );
 	}
 }
 
@@ -2646,7 +2507,6 @@ CG_DrawPostProcess
 =================
 */
 static void CG_DrawPostProcess( void ) {
-
 	if ( strlen(cg_postprocess.string) ) {
 		cgs.media.postProcess = trap_R_RegisterShaderNoMip( cg_postprocess.string );
 	} else {
@@ -2664,109 +2524,45 @@ CG_Draw2D
 =================
 */
 static void CG_Draw2D( void ) {
-	if ( cg.snap->ps.pm_type == PM_CUTSCENE )
+	int catcher = trap_Key_GetCatcher();
+
+	if (cg.snap->ps.pm_type == PM_CUTSCENE || !cg_draw2D.integer)
 		return;
-	
-	if ( !cg_draw2D.integer ) {
-		return;
+
+	if(cgs.gametype != GT_SINGLE && !cg.showScores){
+		if(!(catcher & KEYCATCH_MESSAGE))
+			CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cl_screenoffset.value, 0, 7.5, 9.0);
+		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cl_screenoffset.value, 360, 7.5, 9.0);
+		CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cl_screenoffset.value, 100, 7.5, 9.0);
 	}
 
-	if (!cg.showScores) {
-		float consoleSizeY = CG_ConsoleAdjustSizeY(cg_consoleSizeY.value);
-		float consoleSizeX = CG_ConsoleAdjustSizeX(cg_consoleSizeX.value);
-		float chatSizeY = CG_ConsoleAdjustSizeY(cg_chatSizeY.value);
-		float chatSizeX = CG_ConsoleAdjustSizeX(cg_chatSizeX.value);
-		float teamChatSizeY = CG_ConsoleAdjustSizeY(cg_teamChatSizeY.value);
-		float teamChatSizeX = CG_ConsoleAdjustSizeX(cg_teamChatSizeX.value);
+	CG_DrawCrosshair();
+	if(cgs.gametype != GT_SINGLE)
+		CG_DrawCrosshairNames();
 
-		int consoleLines = CG_GetChatHeight(cg_consoleLines.integer);
-		int commonConsoleLines = CG_GetChatHeight(cg_commonConsoleLines.integer);
-		int chatLines = CG_GetChatHeight(cg_chatLines.integer);
-		int teamChatLines = CG_GetChatHeight(cg_teamChatLines.integer);
-
-		int lowestChatPos = CG_ConsoleChatPositionY(consoleSizeY, chatSizeY) + chatLines * chatSizeY;
-		float f;
-
-		if (lowestChatPos > 90-2) {
-			f = (90-2.0)/lowestChatPos;
-			consoleSizeX *= f;
-			consoleSizeY *= f;
-			chatSizeX *= f;
-			chatSizeY *= f;
-			teamChatSizeX *= f;
-			teamChatSizeY *= f;
-		}
-		f = cg_fontScale.value;
-		consoleSizeX *= f;
-		consoleSizeY *= f;
-		chatSizeX *= f;
-		chatSizeY *= f;
-		teamChatSizeX *= f;
-		teamChatSizeY *= f;
-
-		if(cgs.gametype != GT_SINGLE){
-		CG_DrawGenericConsole(&cgs.console, consoleLines, cg_consoleTime.integer, 
-				0 - cl_screenoffset.value, 0, 
-				consoleSizeX,
-				consoleSizeY
-				);
-		}
-		if(cgs.gametype != GT_SINGLE){
-		CG_DrawGenericConsole(&cgs.chat, chatLines, cg_chatTime.integer, 
-				0 - cl_screenoffset.value, 
-				CG_ConsoleChatPositionY(consoleSizeY, chatSizeY) - cg_chatY.integer,
-				chatSizeX,
-				chatSizeY
-				);
-		}
-		if(cgs.gametype != GT_SINGLE){
-		CG_DrawGenericConsole(&cgs.teamChat, teamChatLines, cg_teamChatTime.integer, 
-				0 - cl_screenoffset.value, 
-				cg_teamChatY.integer - teamChatLines*teamChatSizeY,
-				teamChatSizeX,
-				teamChatSizeY
-			       	);
-		}
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		CG_DrawCrosshair();
-		if(cgs.gametype != GT_SINGLE){
-			CG_DrawCrosshairNames();
-		}
-	} else {
-		// don't draw any status if dead or the scoreboard is being explicitly shown
-		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
-			CG_DrawProxWarning();
-			CG_DrawCrosshair();
-			if(cgs.gametype != GT_SINGLE){
-			CG_DrawCrosshairNames();
-			}
-
-			CG_DrawPersistantPowerup();
-		}
+	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR && !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0) {
+		CG_DrawProxWarning();
+		CG_DrawPersistantPowerup();
 	}
 
 	CG_DrawVote();
 	CG_DrawTeamVote();
-
 	CG_DrawUpperRight();
-
 	CG_DrawLowerRight();
 	CG_DrawLowerLeft();
 
-	if ( !CG_DrawFollow() ) {
+	if (!CG_DrawFollow())
 		CG_DrawWarmup();
-	}
 
-	if ( !cg.scoreBoardShowing) {
+	if (!cg.scoreBoardShowing) {
     	CG_DrawCenterDDString();
     	CG_DrawCenter1FctfString();
 	}
-	if(ns_haveerror.integer){
+
+	if(ns_haveerror.integer)
 		CG_NSErrors();
-	}
-		CG_Notify();
+
+	CG_Notify();
 }
 
 /*
@@ -2804,8 +2600,9 @@ Perform all drawing needed to completely fill the screen
 =====================
 */
 void CG_DrawActive( void ) {
+	int catcher = trap_Key_GetCatcher();
 	int pm;
-	// optionally draw the info screen instead
+
 	if ( !cg.snap ) {
 		CG_DrawInformation();
 		return;
@@ -2856,9 +2653,7 @@ void CG_DrawActive( void ) {
 	
 	CG_DrawPostProcess();
 
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
-		//return;
-	} else {
+	if (catcher != KEYCATCH_UI && !(catcher & KEYCATCH_CONSOLE)) {
  		CG_Draw2D();
 		pm = cg.snap->ps.pm_type;
 		if (pm != PM_CUTSCENE && pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
@@ -2891,9 +2686,6 @@ void CG_DrawActive( void ) {
 		CG_DrawIntermission();
 		return;
 	}
-
-	// draw level message (do it here because we want it done on top of the fade)
-	CG_MessageLevelStart();
 	
 	if ( !cg.scoreBoardShowing) {
 	CG_DrawCenterString();
@@ -2928,4 +2720,3 @@ void CG_DrawActive( void ) {
 	//draw objectives notification
 	CG_DrawObjectivesNotification();
 }
-
