@@ -22,7 +22,7 @@ copy windows_scripts\game.q3asm windows\build\
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -w -DGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\game -I..\..\..\code\qcommon %1
+set cc=lcc -DGAME -DQVM -S -I..\..\..\code\game -I..\..\..\code\qcommon %1
 
 cd windows\build\game
 
@@ -101,7 +101,7 @@ copy windows_scripts\cgame.q3asm windows\build\
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -w -DCGAME -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon %1
+set cc=lcc -DCGAME -DQVM -S -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon %1
 
 cd windows\build\cgame
 
@@ -171,7 +171,7 @@ copy windows_scripts\ui.q3asm windows\build\
 set LIBRARY=
 set INCLUDE=
 
-set cc=lcc -w -DUI -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\..\code\ui -I..\..\..\code\qcommon %1
+set cc=lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon %1
 
 cd windows\build\ui
 

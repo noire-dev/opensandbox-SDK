@@ -26,7 +26,7 @@
 // compiled for the virtual machine
 
 // This file is NOT included on native builds
-#if !defined( BG_LIB_H ) && defined( Q3_VM )
+#if !defined( BG_LIB_H ) && defined( QVM )
 #define BG_LIB_H
 
 #define __attribute__(x)

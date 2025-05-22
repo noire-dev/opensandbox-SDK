@@ -28,8 +28,8 @@
 // Some of the vector functions are static inline in q_shared.h. q3asm
 // doesn't understand static functions though, so we only want them in
 // one file. That's what this is about.
-#ifdef Q3_VM
-#define __Q3_VM_MATH
+#ifdef QVM
+#define __QVM_MATH
 #endif
 
 #include "q_shared.h"
