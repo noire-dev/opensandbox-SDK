@@ -174,7 +174,7 @@ void CG_DrawChar( int x, int y, int width, int height, int ch ) {
 
 /*
 ==================
-CG_DrawStringExt
+CG_DrawString
 
 Draws a multi-colored string with a drop shadow, optionally forcing
 to a fixed color.
@@ -182,7 +182,7 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void CG_DrawStringExt(int x, int y, const char *string, const float *setColor,
+void CG_DrawString(int x, int y, const char *string, const float *setColor,
                       qboolean forceColor, qboolean shadow, int charWidth, 
                       int charHeight, int maxChars, float offset) {
     vec4_t color;
@@ -287,7 +287,7 @@ void CG_DrawBigString( int x, int y, const char *s, float alpha ) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	CG_DrawStringExt( x, y, s, color, qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
+	CG_DrawString( x, y, s, color, qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
 }
 
 void CG_DrawGiantString( int x, int y, const char *s, float alpha ) {
@@ -295,11 +295,7 @@ void CG_DrawGiantString( int x, int y, const char *s, float alpha ) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	CG_DrawStringExt( x, y, s, color, qfalse, qtrue, GIANTCHAR_WIDTH, GIANTCHAR_HEIGHT, 0, 0 );
-}
-
-void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color ) {
-	CG_DrawStringExt( x, y, s, color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
+	CG_DrawString( x, y, s, color, qfalse, qtrue, GIANTCHAR_WIDTH, GIANTCHAR_HEIGHT, 0, 0 );
 }
 
 void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
@@ -307,11 +303,7 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	CG_DrawStringExt( x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0, 0 );
-}
-
-void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color ) {
-	CG_DrawStringExt( x, y, s, color, qtrue, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0, 0 );
+	CG_DrawString( x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0, 0 );
 }
 
 /*

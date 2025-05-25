@@ -422,7 +422,7 @@ void OrthogonalizeMatrix(vec3_t forward, vec3_t right, vec3_t up) {
 }
 
 void VelocityToAxis( const vec3_t velocity, vec3_t axis[3], float lerpFactor ) {
-    vec3_t forward, right, up, targetForward, targetRight, targetUp;
+    vec3_t up, targetForward, targetRight, targetUp;
 	int i;
 
     if (VectorLength(velocity) == 0) {

@@ -129,7 +129,7 @@ static void MessageMenu_Draw( void ) {
 	y = 188;
 	for(i=0; s_confirm.lines[i]; i++)
 	{
-		UI_DrawString( 320, y, s_confirm.lines[i], s_confirm.style, color_white );
+		ST_DrawString( 320, y, s_confirm.lines[i], s_confirm.style, color_white, 1.00 );
 		y += 18;
 	}
 
@@ -147,8 +147,8 @@ ConfirmMenu_Draw
 */
 static void ConfirmMenu_Draw( void ) {
 	UI_DrawNamedPic( 142, 118, 359, 256, ART_CONFIRM_FRAME );
-	UI_DrawString( 320, 204, s_confirm.question, s_confirm.style, color_white );
-	UI_DrawString( s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_white );
+	ST_DrawString( 320, 204, s_confirm.question, s_confirm.style, color_white, 1.00 );
+	ST_DrawString( s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_white, 1.00 );
 
 	Menu_Draw( &s_confirm.menu );
 
@@ -204,7 +204,6 @@ if(cl_language.integer == 1){
 
 	s_confirm.menu.draw       = ConfirmMenu_Draw;
 	s_confirm.menu.key        = ConfirmMenu_Key;
-	s_confirm.menu.native 	  = qfalse;
 
 	trap_GetClientState( &cstate );
 	if ( cstate.connState >= CA_CONNECTED ) {

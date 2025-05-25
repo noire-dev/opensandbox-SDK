@@ -428,7 +428,6 @@ Actions that happen once a second
 void ClientTimerActions( gentity_t *ent, int msec ) {
 	gclient_t	*client;
 	int			maxHealth;
-	int			mins, seconds, tens;
 
 	client = ent->client;
 	client->timeResidual += msec;
@@ -913,7 +912,6 @@ void PhysgunHold(gentity_t *player) {
 void GravitygunHold(gentity_t *player) {
 	gentity_t 	*ent = player->grabbedEntity;
 	gentity_t 	*findent;
-	vec3_t		end;
 	vec3_t		velocity;
 
 	if (!g_allowgravitygun.integer || player->client->ps.generic2 != WP_GRAVITYGUN){

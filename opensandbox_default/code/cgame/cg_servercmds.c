@@ -180,43 +180,6 @@ static void CG_ParseAttackingTeam( void ) {
 		cgs.attackingTeam = TEAM_NONE; //Should never happen.
 }
 
-/*
-=================
-CG_ParseTeamInfo
-
-=================
-*/
-static void CG_ParseTeamInfo( void ) {
-	int		i;
-	int		client;
-
-	numSortedTeamPlayers = atoi( CG_Argv( 1 ) );
-        if( numSortedTeamPlayers < 0 || numSortedTeamPlayers > TEAM_MAXOVERLAY )
-	{
-		CG_Error( "CG_ParseTeamInfo: numSortedTeamPlayers out of range (%d)",
-				numSortedTeamPlayers );
-		return;
-	}
-
-	for ( i = 0 ; i < numSortedTeamPlayers ; i++ ) {
-		client = atoi( CG_Argv( i * 6 + 2 ) );
-                if( client < 0 || client >= MAX_CLIENTS )
-		{
-		  CG_Error( "CG_ParseTeamInfo: bad client number: %d", client );
-		  return;
-		}
-
-
-		sortedTeamPlayers[i] = client;
-
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * 6 + 3 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * 6 + 4 ) );
-		cgs.clientinfo[ client ].armor = atoi( CG_Argv( i * 6 + 5 ) );
-		cgs.clientinfo[ client ].curWeapon = atoi( CG_Argv( i * 6 + 6 ) );
-		cgs.clientinfo[ client ].powerups = atoi( CG_Argv( i * 6 + 7 ) );
-	}
-}
-
 static void CG_ParseGameCvars(void) {
 	mod_sgspread     		= atoi(CG_Argv(1));
 	mod_sgcount     		= atoi(CG_Argv(2));
@@ -593,7 +556,6 @@ static void CG_ServerCommand( void ) {
 	char		text[MAX_SAY_TEXT];
 	int			offset;
 	const char  *arg;
-	int			i;
 
 	cmd = CG_Argv(0);
 
@@ -740,11 +702,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "attackingteam" ) ) {
 		CG_ParseAttackingTeam();
-		return;
-	}
-
-	if ( !strcmp( cmd, "tinfo" ) ) {
-		CG_ParseTeamInfo();
 		return;
 	}
 

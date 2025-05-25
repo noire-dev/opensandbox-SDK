@@ -2881,13 +2881,12 @@ void G_RunCutscene( int levelTime ) {
 	char cutsceneData[MAX_INFO_STRING];
 	float wait;
 	int start_time;
-	vec3_t destOrigin, destAngles;
-	vec3_t newOrigin, newAngles;
+	vec3_t destOrigin;
+	vec3_t newOrigin;
 	int timePassed;
 	float progress;
 	float diff;
 	int doPan;
-	int i;
 	
 	if ( !level.player || level.player->client->ps.pm_type != PM_CUTSCENE )
 		return;
@@ -3117,9 +3116,6 @@ end = trap_Milliseconds();
 
 	// see if it is time to end the level
 	CheckExitRules();
-
-	// update to team status?
-	CheckTeamStatus();
 
 	// cancel vote if timed out
 	CheckVote();

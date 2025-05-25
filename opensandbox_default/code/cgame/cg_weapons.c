@@ -204,10 +204,6 @@ CG_RailTrail
 ==========================
 */
 void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
-	vec3_t axis[36], move, move2, next_move, vec, temp;
-	float  len;
-	int    i, j, skip;
- 
 	localEntity_t *le;
 	refEntity_t   *re;
  
@@ -252,9 +248,6 @@ CG_PhysgunTrail
 ==========================
 */
 void CG_PhysgunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
-	vec3_t move, move2, next_move, vec, temp;
-	float  len;
- 
 	localEntity_t *le;
 	refEntity_t   *re;
  
@@ -294,9 +287,6 @@ CG_GravitygunTrail
 ==========================
 */
 void CG_GravitygunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
-	vec3_t move, move2, next_move, vec, temp;
-	float  len;
- 
 	localEntity_t *le;
 	refEntity_t   *re;
  
@@ -315,9 +305,9 @@ void CG_GravitygunTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	VectorCopy(start, re->origin);
 	VectorCopy(end, re->oldorigin);
  
-	re->shaderRGBA[0] = 120.0f;
-	re->shaderRGBA[1] = 60.0f;
-	re->shaderRGBA[2] = 0.0f;
+	re->shaderRGBA[0] = 120;
+	re->shaderRGBA[1] = 60;
+	re->shaderRGBA[2] = 0;
 	re->shaderRGBA[3] = 255;
 
 	le->color[0] = (120.0f / 255);
@@ -1238,6 +1228,58 @@ sound should only be done on the world model case.
 =============
 */
 
+void CG_PlayerFlashlight(centity_t *cent) {
+    vec3_t forward, right, up;
+    vec3_t start, end;
+    trace_t trace;
+    trace_t traceambient;
+    float distance, lightIntensity, correctedIntensity;
+    float minRadius = 32.0f;      // Minimum radius for focused light
+    float maxRadius = 300.0f;    // Maximum radius for spread-out light
+	float lightRadius = 600.0f;    // Maximum radius for spread-out light
+    float maxBrightness = 0.32f;  // Maximum brightness intensity
+    float minBrightness = 0.01f;  // Minimum brightness intensity
+	float radius;
+
+    AngleVectors(cent->lerpAngles, forward, right, up);
+    VectorCopy(cent->lerpOrigin, start);
+    VectorMA(start, lightRadius, forward, end);
+
+    CG_Trace(&trace, start, NULL, NULL, end, cent->currentState.number, MASK_SHOT);
+    CG_Trace(&traceambient, start, NULL, NULL, end, cent->currentState.number, MASK_SHOT);
+
+    VectorMA(traceambient.endpos, -24, forward, traceambient.endpos);
+    VectorMA(trace.endpos, -8, forward, trace.endpos);
+    distance = VectorDistance(start, traceambient.endpos);
+
+    // Calculate light intensity, clamped between minBrightness and maxBrightness
+    lightIntensity = 1.0f - (distance / lightRadius);
+    if (lightIntensity < 0.0f) {
+        lightIntensity = 0.0f;
+    }
+    lightIntensity = lightIntensity * (maxBrightness - minBrightness) + minBrightness;
+    if (lightIntensity > maxBrightness) {
+        lightIntensity = maxBrightness;
+    } else if (lightIntensity < minBrightness) {
+        lightIntensity = minBrightness;
+    }
+
+    // Calculate radius based on distance, scaling between minRadius and maxRadius
+    radius = minRadius + (distance / lightRadius) * (maxRadius - minRadius);
+    if (radius > maxRadius) {
+        radius = maxRadius;
+    } else if (radius < minRadius) {
+        radius = minRadius;
+    }
+
+    // Scale correctedIntensity with clamped lightIntensity
+    correctedIntensity = (lightIntensity * 0.5f)+0.03;
+
+    // Add light with adjustable radius and intensity limits
+    trap_R_AddLinearLightToScene(start, traceambient.endpos, radius, correctedIntensity, correctedIntensity, correctedIntensity);
+    trap_R_AddLightToScene(trace.endpos, radius*1.25, correctedIntensity, correctedIntensity, correctedIntensity);
+}
+
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, clientInfo_t *ci ) {
 	refEntity_t	gun;
 	refEntity_t	barrel;
@@ -1264,7 +1306,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	// add the weapon
 	memset( &gun, 0, sizeof( gun ) );
 	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
-	gun.shadowPlane = parent->shadowPlane;
 	gun.renderfx = parent->renderfx;
 
 	// set custom shading for railgun refire rate
@@ -1342,7 +1383,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	if ( weapon->barrelModel ) {
 		memset( &barrel, 0, sizeof( barrel ) );
 		VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
-		barrel.shadowPlane = parent->shadowPlane;
 		barrel.renderfx = parent->renderfx;
 
 		barrel.hModel = weapon->barrelModel;
@@ -1380,7 +1420,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	memset( &flash, 0, sizeof( flash ) );
 	VectorCopy( parent->lightingOrigin, flash.lightingOrigin );
-	flash.shadowPlane = parent->shadowPlane;
 	flash.renderfx = parent->renderfx;
 
 	flash.hModel = weapon->flashModel;
@@ -1443,12 +1482,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		return;
 	}
 
-	// no gun if in third person view or a camera is active
-	//if ( cg.renderingThirdPerson || cg.cameraMode) {
-	if ( cg.renderingThirdPerson ) {
-		return;
-	}
-	if (cg.renderingEyesPerson) {
+	if ( cg.renderingThirdPerson || cg.renderingEyesPerson ) {
 		return;
 	}
 
@@ -1509,6 +1543,35 @@ WEAPON SELECTION
 */
 
 /*
+===============
+CG_DrawWeaponBar
+===============
+*/
+void CG_DrawWeaponBar(int count){
+	float scale = 0.60;
+	int y = 380;
+	int x = 320 - count * (20*scale);
+	int i;
+	
+	for ( i = 1; i <= WEAPONS_NUM; i++ ) {
+		if(!cg.swep_listcl[i]){
+		    continue;	
+		}
+		CG_RegisterWeapon( i );
+		CG_DrawPic( x, y, 32*scale, 32*scale, cg_weapons[i].weaponIcon );
+
+		if ( i == cg.weaponSelect ) {
+			CG_DrawPic( x-(4*scale), y-(4*scale), 40*scale, 40*scale, cgs.media.selectShader );
+		}
+
+		if( cg.swep_listcl[i] == 2 ){
+			CG_DrawPic( x, y, 32*scale, 32*scale, cgs.media.noammoShader );
+		}
+		x += 40*scale;
+	}
+}
+
+/*
 ===================
 CG_DrawWeaponSelect
 ===================
@@ -1517,41 +1580,25 @@ void CG_DrawWeaponSelect( void ) {
 	int		i;
 	int		count;
 	float		*color;
-	vec4_t		realColor; 
 	int			swepnum; 
 
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
 		return;
 	}
 
-	if ( !cg_draw2D.integer ) {
-		return;
-	}
-
-	swepnum = cg.snap->ps.generic2;
-	// don't display if dead
 	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
 		return;
 	}
 
-	if ( cg.showScores ){
+	if ( !cg_draw2D.integer || cg.showScores ) {
 		return;
 	}
 
+	swepnum = cg.snap->ps.generic2;
 	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 
-	//Elimination: Always show weapon bar
-	if(cg_alwaysWeaponBar.integer) {
-		realColor[0] = 1.0;
-		realColor[1] = 1.0;
-		realColor[2] = 1.0;
-		realColor[3] = 1.0;
-		color = realColor;
-	}
-
-	if ( !color ) {
+	if (!color)
 		return;
-	}
 	trap_R_SetColor( color );
 
 	count = 0;
@@ -1561,46 +1608,9 @@ void CG_DrawWeaponSelect( void ) {
 		}
 	}
 	
-	CG_DrawWeaponBarNew2(count); //FOR VANILLA WEAPONS WEAPONS_HYPER
+	CG_DrawWeaponBar(count); //FOR VANILLA WEAPONS WEAPONS_HYPER
 	trap_R_SetColor(NULL);
 	return;
-}
-
-/*
-===============
-CG_DrawWeaponBarNew2
-===============
-*/
-
-void CG_DrawWeaponBarNew2(int count){
-	float scale = 0.60;
-	int y = 4;
-	int x = 320 - count * (20*scale);
-	int i;
-	
-	trap_GetGlconfig( &cgs.glconfig );
-	
-	for ( i = 1; i <= WEAPONS_NUM; i++ ) {
-		if(!cg.swep_listcl[i]){
-		    continue;	
-		}
-		CG_RegisterWeapon( i );
-		// draw weapon icon
-		CG_DrawPic( x, y, 32*scale, 32*scale, cg_weapons[i].weaponIcon );
-
-		// draw selection marker
-		if ( i == cg.weaponSelect ) {
-			//CG_DrawPic( x, y, 32*scale, 32*scale, cgs.media.selectShader );
-			CG_DrawPic( x-(4*scale), y-(4*scale), 40*scale, 40*scale, cgs.media.selectShader );
-		}
-
-		// no ammo cross on top
-		if( cg.swep_listcl[i] == 2 ){
-			CG_DrawPic( x, y, 32*scale, 32*scale, cgs.media.noammoShader );
-		}
-
-		x += 40*scale;
-	}
 }
 
 /*
@@ -1834,8 +1844,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	qboolean		alphaFade;
 	qboolean		isSprite;
 	int				duration;
-	vec3_t			sprOrg;
-	vec3_t			sprVel;
 
 	mark = 0;
 	radius = 32;
@@ -2309,58 +2317,6 @@ static qboolean	CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
 
 	return qtrue;
 
-}
-
-void CG_PlayerFlashlight(centity_t *cent) {
-    vec3_t forward, right, up;
-    vec3_t start, end;
-    trace_t trace;
-    trace_t traceambient;
-    float distance, lightIntensity, correctedIntensity;
-    float minRadius = 32.0f;      // Minimum radius for focused light
-    float maxRadius = 300.0f;    // Maximum radius for spread-out light
-	float lightRadius = 600.0f;    // Maximum radius for spread-out light
-    float maxBrightness = 0.32f;  // Maximum brightness intensity
-    float minBrightness = 0.01f;  // Minimum brightness intensity
-	float radius;
-
-    AngleVectors(cent->lerpAngles, forward, right, up);
-    VectorCopy(cent->lerpOrigin, start);
-    VectorMA(start, lightRadius, forward, end);
-
-    CG_Trace(&trace, start, NULL, NULL, end, cent->currentState.number, MASK_SHOT);
-    CG_Trace(&traceambient, start, NULL, NULL, end, cent->currentState.number, MASK_SHOT);
-
-    VectorMA(traceambient.endpos, -24, forward, traceambient.endpos);
-    VectorMA(trace.endpos, -8, forward, trace.endpos);
-    distance = VectorDistance(start, traceambient.endpos);
-
-    // Calculate light intensity, clamped between minBrightness and maxBrightness
-    lightIntensity = 1.0f - (distance / lightRadius);
-    if (lightIntensity < 0.0f) {
-        lightIntensity = 0.0f;
-    }
-    lightIntensity = lightIntensity * (maxBrightness - minBrightness) + minBrightness;
-    if (lightIntensity > maxBrightness) {
-        lightIntensity = maxBrightness;
-    } else if (lightIntensity < minBrightness) {
-        lightIntensity = minBrightness;
-    }
-
-    // Calculate radius based on distance, scaling between minRadius and maxRadius
-    radius = minRadius + (distance / lightRadius) * (maxRadius - minRadius);
-    if (radius > maxRadius) {
-        radius = maxRadius;
-    } else if (radius < minRadius) {
-        radius = minRadius;
-    }
-
-    // Scale correctedIntensity with clamped lightIntensity
-    correctedIntensity = (lightIntensity * 0.5f)+0.03;
-
-    // Add light with adjustable radius and intensity limits
-    trap_R_AddLinearLightToScene(start, traceambient.endpos, radius, correctedIntensity, correctedIntensity, correctedIntensity);
-    trap_R_AddLightToScene(trace.endpos, radius*1.25, correctedIntensity, correctedIntensity, correctedIntensity);
 }
 
 /*

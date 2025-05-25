@@ -49,8 +49,6 @@ int is_operator(const char* token) {
 }
 
 int is_literal(const char* token) {
-    int i;
-
     if (token[0] == '"' || token[0] == '\'') {
         return 1; // Это литерал
     }
@@ -319,8 +317,6 @@ int variable_exists(const char *name) {
 
 // Функции для добавления переменных
 int add_variable(const char *name, VarValue value, VarType type) {
-    int i;
-
     if (name == NULL) {
         return 0; // Имя переменной не может быть NULL
     }
@@ -340,8 +336,6 @@ int add_variable(const char *name, VarValue value, VarType type) {
 }
 
 void create_variable(const char *name, const char *value, VarType type) {
-    int i;
-
     if (name == NULL) {
         return;
     }
@@ -722,6 +716,84 @@ void NS_ArgumentText(const char *input, char *result, int resultSize) {
 }
 
 /*
+Потоки
+*/
+
+// Определяем массив для хранения скриптов
+ScriptLoop threadsLoops[MAX_SCRIPTS];
+int threadsCount = 0;
+
+// Функция для создания потока
+void CreateScriptThread(const char* code, const char* threadName, int interval) {
+    ScriptLoop* script = &threadsLoops[threadsCount]; // Получаем указатель на текущий поток
+    if (threadsCount >= MAX_SCRIPTS) {
+        Com_Printf("Noire.Script Error: Maximum number of threads reached.\n");
+        trap_Cvar_Set("ns_haveerror", "1");
+        return;
+    }
+
+    // Заполняем структуру ScriptLoop
+    strncpy(script->threadName, threadName, MAX_THREAD_NAME - 1);
+    script->threadName[MAX_THREAD_NAME - 1] = '\0'; // Убедимся, что строка завершена
+    strncpy(script->code, code, MAX_NSSCRIPT_SIZE - 1);
+    script->code[MAX_NSSCRIPT_SIZE - 1] = '\0'; // Убедимся, что строка завершена
+    script->interval = interval;
+    script->lastRunTime = 0; // Инициализируем время последнего запуска
+
+    threadsCount++; // Увеличиваем счетчик потоков
+
+    //Com_Printf("Noire.Script Debug: Script loaded in thread %s with interval %i ms\n", threadName, interval);
+}
+
+// Функция для удаления потока по имени
+void RemoveScriptThread(const char* threadName) {
+    int i, j;
+    for (i = 0; i < threadsCount; i++) {
+        if (strcmp(threadsLoops[i].threadName, threadName) == 0) {
+            // Находим поток для удаления
+            //Com_Printf("Noire.Script Debug: Removing thread '%s'.\n", threadName);
+            
+            // Сдвигаем все последующие потоки влево
+            for (j = i; j < threadsCount - 1; j++) {
+                threadsLoops[j] = threadsLoops[j + 1];
+            }
+
+            threadsCount--; // Уменьшаем счетчик потоков
+            return; // Выходим из функции
+        }
+    }
+    Com_Printf("Noire.Script Error: Thread '%s' not found.\n", threadName); // Если поток не найден
+}
+
+// Функция для вывода всех работающих потоков
+void print_threads() {
+    int i;
+
+    if (threadsCount == 0) {
+        Com_Printf("Noire.Script Info: No active threads found.\n");
+        return;
+    }
+
+    Com_Printf("Noire.Script Threads:\n");
+    for (i = 0; i < threadsCount; i++) {
+        Com_Printf(" - Thread Name: '%s', Interval: %d ms, Last Run Time: %d\n",
+                    threadsLoops[i].threadName, threadsLoops[i].interval, threadsLoops[i].lastRunTime);
+    }
+}
+
+// Функция для проверки существования потока по имени
+int thread_exists(const char *threadName) {
+    int i;
+    // Проходим по массиву потоков
+    for (i = 0; i < threadsCount; i++) {
+        if (strcmp(threadsLoops[i].threadName, threadName) == 0) {
+            return 1; // Поток найден
+        }
+    }
+    return 0; // Поток не найден
+}
+
+/*
 ###############
 Функции
 ###############
@@ -885,7 +957,6 @@ void Interpret(char* script) {
     char *pointer = script; // Указатель начала скрипта
     char *token;
     Variable* var;
-    int i;
 
     while ((token = NS_Parse(&pointer)) != NULL) {
         if (token[0] == 0) {
@@ -1088,85 +1159,6 @@ void Interpret(char* script) {
             continue;
         }
     }
-}
-
-/*
-Потоки
-*/
-
-// Определяем массив для хранения скриптов
-ScriptLoop threadsLoops[MAX_SCRIPTS];
-int threadsCount = 0;
-
-// Функция для создания потока
-void CreateScriptThread(const char* code, const char* threadName, int interval) {
-    int i;
-    ScriptLoop* script = &threadsLoops[threadsCount]; // Получаем указатель на текущий поток
-    if (threadsCount >= MAX_SCRIPTS) {
-        Com_Printf("Noire.Script Error: Maximum number of threads reached.\n");
-        trap_Cvar_Set("ns_haveerror", "1");
-        return;
-    }
-
-    // Заполняем структуру ScriptLoop
-    strncpy(script->threadName, threadName, MAX_THREAD_NAME - 1);
-    script->threadName[MAX_THREAD_NAME - 1] = '\0'; // Убедимся, что строка завершена
-    strncpy(script->code, code, MAX_NSSCRIPT_SIZE - 1);
-    script->code[MAX_NSSCRIPT_SIZE - 1] = '\0'; // Убедимся, что строка завершена
-    script->interval = interval;
-    script->lastRunTime = 0; // Инициализируем время последнего запуска
-
-    threadsCount++; // Увеличиваем счетчик потоков
-
-    //Com_Printf("Noire.Script Debug: Script loaded in thread %s with interval %i ms\n", threadName, interval);
-}
-
-// Функция для удаления потока по имени
-void RemoveScriptThread(const char* threadName) {
-    int i, j;
-    for (i = 0; i < threadsCount; i++) {
-        if (strcmp(threadsLoops[i].threadName, threadName) == 0) {
-            // Находим поток для удаления
-            //Com_Printf("Noire.Script Debug: Removing thread '%s'.\n", threadName);
-            
-            // Сдвигаем все последующие потоки влево
-            for (j = i; j < threadsCount - 1; j++) {
-                threadsLoops[j] = threadsLoops[j + 1];
-            }
-
-            threadsCount--; // Уменьшаем счетчик потоков
-            return; // Выходим из функции
-        }
-    }
-    Com_Printf("Noire.Script Error: Thread '%s' not found.\n", threadName); // Если поток не найден
-}
-
-// Функция для вывода всех работающих потоков
-void print_threads() {
-    int i;
-
-    if (threadsCount == 0) {
-        Com_Printf("Noire.Script Info: No active threads found.\n");
-        return;
-    }
-
-    Com_Printf("Noire.Script Threads:\n");
-    for (i = 0; i < threadsCount; i++) {
-        Com_Printf(" - Thread Name: '%s', Interval: %d ms, Last Run Time: %d\n",
-                    threadsLoops[i].threadName, threadsLoops[i].interval, threadsLoops[i].lastRunTime);
-    }
-}
-
-// Функция для проверки существования потока по имени
-int thread_exists(const char *threadName) {
-    int i;
-    // Проходим по массиву потоков
-    for (i = 0; i < threadsCount; i++) {
-        if (strcmp(threadsLoops[i].threadName, threadName) == 0) {
-            return 1; // Поток найден
-        }
-    }
-    return 0; // Поток не найден
 }
 
 /*

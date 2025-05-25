@@ -22,23 +22,20 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
-#define	MAX_ENTITIES		4096		// can't be increased without changing drawsurf bit packing
+#define MAX_VIDEO_HANDLES	16
+#define	MAX_DLIGHTS			1024	// can't be increased, because bit flags are used on surfaces
 
 // renderfx flags
-#define	RF_MINLIGHT			0x0001		// allways have some light (viewmodel, some items)
-#define	RF_THIRD_PERSON		0x0002		// don't draw through eyes, only mirrors (player bodies, chat sprites)
-#define	RF_FIRST_PERSON		0x0004		// only draw through eyes (view weapon, damage blood blob)
-#define	RF_DEPTHHACK		0x0008		// for view weapon Z crunching
-#define RF_CROSSHAIR		0x0010		// This item is a cross hair and will draw over everything similar to
-#define	RF_NOSHADOW			0x0040		// don't add stencil shadows
-#define RF_LIGHTING_ORIGIN	0x0080		// use refEntity->lightingOrigin instead of refEntity->origin for lighting.
-#define	RF_SHADOW_PLANE		0x0100		// use refEntity->shadowPlane
-#define	RF_WRAP_FRAMES		0x0200		// mod the model frames by the maxframes to allow continuous
+#define	RF_THIRD_PERSON		1		// don't draw through eyes, only mirrors (player bodies, chat sprites)
+#define	RF_FIRST_PERSON		2		// only draw through eyes (view weapon, damage blood blob)
+#define	RF_DEPTHHACK		4		// for view weapon Z crunching
+#define RF_LIGHTING_ORIGIN	8		// use refEntity->lightingOrigin instead of refEntity->origin
+#define	RF_WRAP_FRAMES		16		// mod the model frames by the maxframes to allow continuous animation without needing to know the frame count
+#define RF_CROSSHAIR		32		// for 3D crosshair
 
 // refdef flags
-#define RDF_NOWORLDMODEL	0x0001		// used for player configuration screen
-#define RDF_HYPERSPACE		0x0004		// teleportation effect
+#define RDF_NOWORLDMODEL	1		// used for player configuration screen
+#define RDF_HYPERSPACE		2		// teleportation effect
 
 typedef struct {
 	vec3_t		xyz;
@@ -73,7 +70,6 @@ typedef struct {
 
 	// most recent data
 	vec3_t		lightingOrigin;		// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
-	float		shadowPlane;		// projection shadows go here, stencils go slightly lower
 
 	vec3_t		axis[3];			// rotation vectors
 	qboolean	nonNormalizedAxes;	// axis are not normalized, i.e. they have scale
@@ -99,7 +95,7 @@ typedef struct {
 	float		radius;
 	float		rotation;
 	
-	// leilei - eyes
+	// cameraEyes
 	vec3_t		eyepos[2];			// looking from
 	vec3_t		eyelook;			// looking from
 } refEntity_t;

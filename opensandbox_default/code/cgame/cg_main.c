@@ -155,7 +155,6 @@ vmCvar_t	cg_drawSpeed;
 vmCvar_t 	cg_stats;
 vmCvar_t	cg_paused;
 vmCvar_t	cg_blood;
-vmCvar_t	cg_teamOverlayUserinfo;
 vmCvar_t	cg_drawFriend;
 vmCvar_t 	cg_scorePlum;
 
@@ -173,9 +172,6 @@ vmCvar_t	cg_enableBreath;
 //unlagged - client options
 vmCvar_t	sv_fps;
 //unlagged - client options
-
-//elimination addition
-vmCvar_t	cg_alwaysWeaponBar;
 
 // custom variable used in modified atmospheric effects from q3f
 vmCvar_t	cg_atmosphericLevel;
@@ -332,12 +328,10 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE},
 	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "1", CVAR_ARCHIVE },
-	{ &cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM | CVAR_USERINFO },
 	{ &cg_stats, "cg_stats", "0", 0 },
 	{ &cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE },
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
-	{ &cg_alwaysWeaponBar, "cg_alwaysWeaponBar", "0", CVAR_ARCHIVE},	//Elimination
 
 	{ &cg_enableDust, "g_enableDust", "0", CVAR_SERVERINFO},
 	{ &cg_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO},
@@ -405,8 +399,6 @@ void CG_UpdateCvars( void ) {
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
-
-	trap_Cvar_Set( "teamoverlay", "1" );
 }
 
 int CG_CrosshairPlayer( void ) {
@@ -855,7 +847,6 @@ This function may execute for a couple of minutes with a slow disk.
 =================
 */
 static void CG_RegisterGraphics( void ) {
-	gitem_t		*backpack;
 	int			i;
 	char		items[MAX_ITEMS+1];
 	static char		*sb_nums[11] = {
@@ -1365,9 +1356,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
-	cgs.media.defaultFont[0]		= trap_R_RegisterShader( "gfx/2d/default_font" ); //32x32
-	cgs.media.defaultFont[1]		= trap_R_RegisterShader( "gfx/2d/default_font1" ); //64x64
-	cgs.media.defaultFont[2]		= trap_R_RegisterShader( "gfx/2d/default_font2" ); //128x128
+	cgs.media.defaultFont[0]		= trap_R_RegisterShader( "default_font" );  //256
+	cgs.media.defaultFont[1]		= trap_R_RegisterShader( "default_font1" ); //512
+	cgs.media.defaultFont[2]		= trap_R_RegisterShader( "default_font2" ); //1024
 	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
 	cgs.media.corner          	= trap_R_RegisterShader( "menu/corner" );
 
@@ -1392,9 +1383,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	realVidHeight = cgs.glconfig.vidHeight;
 	{
 		float resbias, resbiasy;
-		float rex, rey, rias;
+		float rex, rey;
 		int newresx, newresy;
-		float adjustx, adjusty;
 
 		rex = 640.0f / realVidWidth;
 		rey = 480.0f / realVidHeight;

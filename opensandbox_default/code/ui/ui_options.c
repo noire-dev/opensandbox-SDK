@@ -61,7 +61,6 @@ void UI_Options( void ) {
 	int				y;
 
 	memset( &options, 0, sizeof(options) );
-	options.menu.native			= qfalse;
 	options.menu.fullscreen 	= qtrue;
 
 	UI_CText(&options.e[0], OSUI_LOGO_X, OSUI_LOGO_Y+24, "OPTIONS", UI_LEFT, 1.80);
@@ -73,15 +72,14 @@ void UI_Options( void ) {
 	UI_CButton(&options.e[3], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, NULL, NULL, UI_Controls, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&options.e[4], 64 - uis.wideoffset, y, "Graphics", UI_LEFT, 1.00, NULL, NULL, UI_GraphicsOptionsMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&options.e[5], 64 - uis.wideoffset, y, "Game Options", UI_LEFT, 1.00, NULL, NULL, UI_PreferencesMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&options.e[6], 64 - uis.wideoffset, y, "Advanced", UI_LEFT, 1.00, NULL, NULL, UI_AdvancedMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&options.e[7], 64 - uis.wideoffset, y, "Load Config", UI_LEFT, 1.00, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&options.e[8], 64 - uis.wideoffset, y, "Save Config", UI_LEFT, 1.00, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&options.e[6], 64 - uis.wideoffset, y, "Load Config", UI_LEFT, 1.00, NULL, NULL, UI_LoadConfigMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[7], 64 - uis.wideoffset, y, "Save Config", UI_LEFT, 1.00, NULL, NULL, UI_SaveConfigMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 
 	UI_CButton(&options.e[ID_DEFAULTS], 64 - uis.wideoffset, y, "Defaults", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Options_Event, ID_DEFAULTS); y += OSUI_SPACING_Y;
 	UI_CButton(&options.e[ID_LANGUAGE], 64 - uis.wideoffset, y, "Language", UI_LEFT, 1.00, NULL, NULL, NULL, UI_Options_Event, ID_LANGUAGE); y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&options.e[9], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, UI_PopMenu, NULL, 0);
+	UI_CButton(&options.e[8], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, NULL, NULL, UI_PopMenu, NULL, 0);
 
 	UI_CreateUI( &options.menu, options.e);
 	UI_PushMenu( &options.menu );

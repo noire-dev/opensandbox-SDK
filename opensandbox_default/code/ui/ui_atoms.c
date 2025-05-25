@@ -33,9 +33,6 @@
 uiStatic_t		uis;
 qboolean		m_entersound;		// after a frame, so caching won't disrupt the sound
 
-// these are here so the functions in q_shared.c can link
-#ifndef UI_HARD_LINKED
-
 void QDECL Com_Error( int level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
@@ -55,29 +52,6 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	va_end (argptr);
 
 	trap_Print( va("%s", text) );
-}
-
-#endif
-
-/*
-=================
-UI_ClampCvar
-=================
-*/
-float UI_ClampCvar( float min, float max, float value )
-{
-	if ( value < min ) return min;
-	if ( value > max ) return max;
-	return value;
-}
-
-/*
-=================
-UI_StartDemoLoop
-=================
-*/
-void UI_StartDemoLoop( void ) {
-	trap_Cmd_ExecuteText( EXEC_APPEND, "d1\n" );
 }
 
 /*
@@ -142,8 +116,6 @@ void UI_PushMenu( menuframework_s *menu )
 	
 	// initialize the screen offset
 	UI_ScreenOffset();
-	
-	uis.menuscroll = 0;
 
 	// avoid stacking menus invoked by hotkeys
 	for (i=0 ; i<uis.menusp ; i++)
@@ -198,8 +170,6 @@ void UI_PopMenu (void)
 	trap_S_StartLocalSound( menu_out_sound, CHAN_LOCAL_SOUND );
 
 	uis.menusp--;
-	
-	uis.menuscroll = 0;
 
 	if (uis.menusp < 0)
 		UI_ForceMenuOff ();
@@ -270,300 +240,6 @@ int UI_ProportionalStringWidth( const char* str, float size ) {
 	} else {
 		return width;
 	}
-}
-
-/*
-=================
-UI_DrawString2
-=================
-*/
-static void UI_DrawString2(int x, int y, const char* str, vec4_t color, int charw, int charh, float width)
-{
-	const char* s;
-	char ch;
-	int forceColor = qfalse; //APSFIXME;
-	int prev_unicode = 0;
-	vec4_t tempcolor;
-	float ax;
-	float ay;
-	float aw;
-	float ah;
-	float frow;
-	float fcol;
-	float alignstate = 0;
-	int char_count = 0;
-	int q;
-
-	q = 0;
-	if(charh > 16){
-	q = 1;	
-	}
-	if(charh > 32){
-	q = 2;	
-	}
-
-	// Align states for center and right alignment
-	if (charw < 0) {
-		charw = -charw;
-		alignstate = 0.5; // center_align
-	}
-	if (charh < 0) {
-		charh = -charh;
-		alignstate = 1; // right_align
-	}
-
-	// Set color for the text
-	trap_R_SetColor(color);
-
-	ax = x * uis.scale + uis.bias;
-	ay = y * uis.scale;
-	ay += uis.menuscroll;
-	aw = charw * uis.scale;
-	ah = charh * uis.scale;
-
-	s = str;
-	while (*s)
-	{
-		if ((*s == -48) || (*s == -47)) {
-			ax = ax + aw * alignstate;
-		}
-		s++;
-	}
-
-	s = str;
-	while (*s)
-	{
-		if (Q_IsColorString(s))
-		{
-			memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
-			tempcolor[3] = color[3];
-			trap_R_SetColor(tempcolor);
-			s += 2;
-			continue;
-		}
-
-		if (*s != ' ')
-		{
-			ch = *s & 255;
-
-			// Unicode Russian support
-			if (ch < 0) {
-				if ((ch == -48) || (ch == -47)) {
-					prev_unicode = ch;
-					s++;
-					continue;
-				}
-				if (ch >= -112) {
-					if ((ch == -111) && (prev_unicode == -47)) {
-						ch = ch - 13;
-					} else {
-						ch = ch + 48;
-					}
-				} else {
-					if ((ch == -127) && (prev_unicode == -48)) {
-						// ch = ch +
-					} else {
-						ch = ch + 112; // +64 offset of damn unicode
-					}
-				}
-			}
-
-			frow = (ch >> 4) * 0.0625;
-			fcol = (ch & 15) * 0.0625;
-			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset[q]);
-		}
-
-		ax += aw;
-		char_count++;
-
-		if (char_count >= width) {
-			ax = x * uis.scale + uis.bias;
-			ay += ah + 2;
-			char_count = 0;
-		}
-
-		s++;
-	}
-
-	trap_R_SetColor(NULL);
-}
-
-/*
-=================
-UI_DrawString
-=================
-*/
-void UI_DrawString( int x, int y, const char* str, int style, vec4_t color )
-{
-	int		len;
-	int		charw;
-	int		charh;
-	vec4_t	newcolor;
-	float	*drawcolor;
-	vec4_t	dropcolor;
-
-	if( !str ) {
-		return;
-	}
-
-	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
-		return;
-
-	if (style & UI_SMALLFONT)
-	{
-		charw =	SMALLCHAR_WIDTH;
-		charh =	SMALLCHAR_HEIGHT;
-	}
-	else if (style & UI_TINYFONT)
-	{
-		charw =	TINYCHAR_WIDTH;
-		charh =	TINYCHAR_HEIGHT;
-	}
-	else if (style & UI_GIANTFONT)
-	{
-		charw =	GIANTCHAR_WIDTH;
-		charh =	GIANTCHAR_HEIGHT;
-	}
-	else
-	{
-		charw =	BIGCHAR_WIDTH;
-		charh =	BIGCHAR_HEIGHT;
-	}
-
-	if (style & UI_PULSE)
-	{
-		UI_LerpColor(color,color_highlight,newcolor,0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
-		drawcolor = newcolor;
-	}	
-	else
-		drawcolor = color;
-
-	switch (style & UI_FORMATMASK)
-	{
-		case UI_CENTER:
-			// center justify at x
-			len = strlen(str);
-			x   = x - len*charw/2;
-                        charw = -charw; //Mix3r - sly way to transfer align to drawstring2
-			break;
-
-		case UI_RIGHT:
-			// right justify at x
-			len = strlen(str);
-			x   = x - len*charw;
-                        charw = -charw; //Mix3r - sly way to transfer align to drawstring2
-                        charh = -charh;
-			break;
-
-		default:
-			// left justify at x
-			break;
-	}
-
-	if ( style & UI_DROPSHADOW )
-	{
-		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
-		dropcolor[3] = drawcolor[3];
-		UI_DrawString2(x+1,y+1,str,dropcolor,charw,charh,512);
-	}
-
-	UI_DrawString2(x,y,str,drawcolor,charw,charh,512);
-}
-
-/*
-=================
-UI_DrawStringCustom
-=================
-*/
-void UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float size, float width )
-{
-	int		len;
-	int		charw;
-	int		charh;
-	vec4_t	newcolor;
-	float	*drawcolor;
-	vec4_t	dropcolor;
-
-	if( !str ) {
-		return;
-	}
-
-	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
-		return;
-
-	charw =	SMALLCHAR_WIDTH*size;
-	charh =	SMALLCHAR_HEIGHT*size;
-
-	if (style & UI_PULSE)
-	{
-		UI_LerpColor(color,color_highlight,newcolor,0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
-		drawcolor = newcolor;
-	}	
-	else
-		drawcolor = color;
-
-	switch (style & UI_FORMATMASK)
-	{
-		case UI_CENTER:
-			// center justify at x
-			len = strlen(str);
-			x = x - len*charw/2;
-            charw = -charw; //Mix3r - sly way to transfer align to drawstring2
-			break;
-
-		case UI_RIGHT:
-			// right justify at x
-			len = strlen(str);
-			x = x - len*charw;
-            charw = -charw; //Mix3r - sly way to transfer align to drawstring2
-            charh = -charh;
-			break;
-
-		default:
-			// left justify at x
-			break;
-	}
-
-	x -= charw * UI_ColorEscapes(str);		//Color escapes bypass
-
-	if ( style & UI_DROPSHADOW )
-	{
-		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
-		dropcolor[3] = drawcolor[3];
-		UI_DrawString2(x+1,y+1,str,dropcolor,charw,charh,width);
-	}
-
-	UI_DrawString2(x,y,str,drawcolor,charw,charh,width);
-}
-
-/*
-=================
-UI_DrawChar
-=================
-*/
-void UI_DrawChar( int x, int y, int ch, int style, vec4_t color )
-{
-	char	buff[2];
-
-	buff[0] = ch;
-	buff[1] = '\0';
-
-	UI_DrawString( x, y, buff, style, color );
-}
-
-/*
-=================
-UI_DrawCharCustom
-=================
-*/
-void UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float size )
-{
-	char	buff[2];
-
-	buff[0] = ch;
-	buff[1] = '\0';
-
-	UI_DrawStringCustom( x, y, buff, style, color, size, 512 );
 }
 
 qboolean UI_IsFullscreen( void ) {
@@ -637,68 +313,38 @@ void UI_KeyEvent( int key, int down ) {
 UI_MouseEvent
 =================
 */
-void UI_MouseEvent( int dx, int dy )
-{
+void UI_MouseEvent( int dx, int dy ){
 	int				i;
-	float scrx;
-	float scry;
 	menucommon_s*	m;
 
 	if (!uis.activemenu)
 		return;
-	
-	trap_GetGlconfig( &uis.glconfig );
-	
-	scrx = uis.glconfig.vidWidth;
-	scry = uis.glconfig.vidHeight;
 
 	// update mouse screen position
-	if(uis.activemenu->native > 0){
 	uis.cursorx += dx * sensitivitymenu.value;
-	if (uis.cursorx < 0)
-		uis.cursorx = 0;
-	else if (uis.cursorx > uis.glconfig.vidWidth)
-		uis.cursorx = uis.glconfig.vidWidth;
-
-	uis.cursory += dy * sensitivitymenu.value;
-	if (uis.cursory < 0+uis.activemenu->uplimitscroll)
-		uis.cursory = 0+uis.activemenu->uplimitscroll;
-	else if (uis.cursory > uis.glconfig.vidHeight+uis.activemenu->downlimitscroll)
-		uis.cursory = uis.glconfig.vidHeight+uis.activemenu->downlimitscroll;
-	} else {
-		uis.cursorx += dx * sensitivitymenu.value;
 	if (uis.cursorx < 0-uis.wideoffset)
 		uis.cursorx = 0-uis.wideoffset;
 	else if (uis.cursorx > 640+uis.wideoffset)
 		uis.cursorx = 640+uis.wideoffset;
 
 	uis.cursory += dy * sensitivitymenu.value;
-	if (uis.cursory < 0+uis.activemenu->uplimitscroll)
-		uis.cursory = 0+uis.activemenu->uplimitscroll;
-	else if (uis.cursory > 480+uis.activemenu->downlimitscroll)
-		uis.cursory = 480+uis.activemenu->downlimitscroll;	
-	}
+	if (uis.cursory < 0)
+		uis.cursory = 0;
+	else if (uis.cursory > 480)
+		uis.cursory = 480;	
 
 	// region test the active menu items
-	for (i=0; i<uis.activemenu->nitems; i++)
-	{
+	for (i=0; i<uis.activemenu->nitems; i++) {
 		m = (menucommon_s*)uis.activemenu->items[i];
 
 		if (m->flags & (QMF_GRAYED|QMF_INACTIVE))
 			continue;
 
-		if ((uis.cursorx < m->left) ||
-			(uis.cursorx > m->right) ||
-			(uis.cursory < m->top) ||
-			(uis.cursory > m->bottom))
-		{
-			// cursor out of item bounds
-			continue;
-		}
+		if ((uis.cursorx < m->left) || (uis.cursorx > m->right) || (uis.cursory < m->top) || (uis.cursory > m->bottom))
+			continue; // cursor out of item bounds
 
 		// set focus to item at cursor
-		if (uis.activemenu->cursor != i)
-		{
+		if (uis.activemenu->cursor != i) {
 			Menu_SetCursor( uis.activemenu, i );
 			((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor_prev]))->flags &= ~QMF_HASMOUSEFOCUS;
 
@@ -712,8 +358,7 @@ void UI_MouseEvent( int dx, int dy )
 	}  
 
 	if (uis.activemenu->nitems > 0) {
-		// out of any region
-		((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS;
+		((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS; // out of any region
 	}
 }
 
@@ -809,10 +454,6 @@ UI_ScreenOffset();
 
 if( Q_stricmp (UI_Argv(0), "ui_addbots") == 0 ){
 UI_AddBotsMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_advanced") == 0 ){
-UI_AdvancedMenu();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_savegame") == 0 ){
@@ -915,10 +556,6 @@ if( Q_stricmp (UI_Argv(0), "ui_video") == 0 ){
 UI_GraphicsOptionsMenu();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_workshop") == 0 ){
-UI_WorkshopMenu();
-return qtrue;
-}
 
 	if ( Q_stricmp (UI_Argv(0), "remapShader") == 0 ) {
 		char shader1[MAX_QPATH];
@@ -972,11 +609,6 @@ return qtrue;
 		}
 
 		set_variable_value(UI_Argv(1), UI_Argv(2), atoi(UI_Argv(3)));
-	}
-
-	if ( Q_stricmp (cmd, "workshop") == 0 ) {
-		UI_WorkshopMenu();
-		return qtrue;
 	}
 
 	if ( Q_stricmp (cmd, "reloadgame") == 0 ) {
@@ -1058,7 +690,6 @@ void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	// expect valid pointers
 	*x = *x * uis.scale + uis.bias;
 	*y *= uis.scale;
-	*y += uis.menuscroll;
 	*w *= uis.scale;
 	*h *= uis.scale;
 }
@@ -1159,7 +790,6 @@ void UI_DrawModelElement( float x, float y, float w, float h, const char* model,
 	vec3_t			angles;
 	
 	// setup the refdef
-
 	memset( &refdef, 0, sizeof( refdef ) );
 	refdef.rdflags = RDF_NOWORLDMODEL;
 	AxisClear( refdef.viewaxis );
@@ -1194,7 +824,7 @@ void UI_DrawModelElement( float x, float y, float w, float h, const char* model,
 	ent.shaderRGBA[3] = 255;
 	VectorCopy( origin, ent.origin );
 	VectorCopy( origin, ent.lightingOrigin );
-	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
+	ent.renderfx = RF_LIGHTING_ORIGIN;
 	VectorCopy( ent.origin, ent.oldorigin );
 	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", model, 0));
 
@@ -1302,8 +932,7 @@ void RunScriptThreads(int time) {
 UI_Refresh
 =================
 */
-void UI_Refresh( int realtime )
-{
+void UI_Refresh( int realtime ) {
 	int x;
 	uis.frametime = realtime - uis.realtime;
 	uis.realtime  = realtime;
@@ -1316,10 +945,8 @@ void UI_Refresh( int realtime )
 
 	RunScriptThreads(uis.realtime);		//Noire.Script - run threads
 
-	if ( uis.activemenu )
-	{
-		if (uis.activemenu->fullscreen)
-		{
+	if (uis.activemenu) {
+		if (uis.activemenu->fullscreen) {
 			if(!uis.onmap){
 				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers );
 			}
@@ -1343,51 +970,32 @@ void UI_Refresh( int realtime )
 	
 	trap_GetGlconfig( &uis.glconfig );
 
-	if(uis.activemenu->native > 0){
-		uis.scale = uis.glconfig.vidHeight * (1.0/uis.glconfig.vidHeight);
-		uis.bias = 0;
-	} else {
-		if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
-		// wide screen
+	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) { // wide screen
 		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
 		uis.scale = uis.glconfig.vidHeight * (1.0/480.0);
-		}
-		else {
-		// no wide screen
+	} else { // no wide screen
 		uis.scale = (uis.glconfig.vidWidth * (1.0 / 640.0) < uis.glconfig.vidHeight * (1.0 / 480.0)) ? uis.glconfig.vidWidth * (1.0 / 640.0) : uis.glconfig.vidHeight * (1.0 / 480.0);
 		uis.bias = 0;
-		}
 	}
 
 	// draw cursor
 	if (!uis.hideCursor) {
 		trap_R_SetColor( NULL );
-		if(uis.activemenu->native > 0){
-		UI_DrawHandlePic( uis.cursorx-16*(uis.glconfig.vidWidth/640), uis.cursory-16*(uis.glconfig.vidWidth/640), 32*(uis.glconfig.vidWidth/640), 32*(uis.glconfig.vidWidth/640), uis.cursor);
-		} else {
 		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
-		}
 	}
 
-	if (uis.debug)
-	{
+	if (uis.debug) {
 		// cursor coordinates
-		if(uis.activemenu->native){
-			x = 0;
-		} else {
-			x = 0-uis.wideoffset;
-		}
-		UI_DrawString( x, 0, va("cursor xy: (%d,%d)",uis.cursorx,uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed );
-		UI_DrawString( x, 10, va("native: %i",uis.activemenu->native), UI_LEFT|UI_SMALLFONT, colorRed );
-		UI_DrawString( x, 20, va("screen: %ix%i",uis.glconfig.vidWidth, uis.glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed );
-		UI_DrawString( x, 30, va("map running: %i",uis.onmap), UI_LEFT|UI_SMALLFONT, colorRed );
+		x = 0-uis.wideoffset;
+		ST_DrawString( x, 0, va("cursor xy: (%d,%d)",uis.cursorx,uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
+		ST_DrawString( x, 10, va("screen: %ix%i",uis.glconfig.vidWidth, uis.glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
+		ST_DrawString( x, 20, va("map running: %i",uis.onmap), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
 	}
 
 	// delay playing the enter sound until after the
 	// menu has been drawn, to avoid delay while
 	// caching images
-	if (m_entersound)
-	{
+	if (m_entersound) {
 		trap_S_StartLocalSound( menu_in_sound, CHAN_LOCAL_SOUND );
 		m_entersound = qfalse;
 	}
@@ -1403,18 +1011,4 @@ qboolean UI_CursorInRect (int x, int y, int width, int height)
 		return qfalse;
 
 	return qtrue;
-}
-
-int UI_ColorEscapes(const char *str) {
-    int count = 0;
-    
-    while (*str) {
-        if (*str == '^') {
-            count++;
-            str++;
-        }
-        str++;
-    }
-
-    return count;
 }

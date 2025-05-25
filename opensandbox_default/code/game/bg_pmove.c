@@ -371,7 +371,6 @@ to the facing dir
 ================
 */
 static void PM_SetMovementDir( void ) {
-	char		var[MAX_TOKEN_CHARS];
 	if(!pm->ps->stats[STAT_VEHICLE]) { //VEHICLE-SYSTEM: disable player-move for all
 	if ( pm->cmd.forwardmove || pm->cmd.rightmove ) {
 		if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 ) {
@@ -1118,42 +1117,6 @@ static int PM_CorrectAllSolid( trace_t *trace ) {
 	return qfalse;
 }
 
-
-/*
-=============
-PM_GroundTraceMissed
-
-The ground trace didn't hit a surface, so we are in freefall
-=============
-*/
-static void PM_GroundTraceMissed( void ) {
-	trace_t		trace;
-	vec3_t		point;
-
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE ) {
-		// if they aren't in a jumping animation and the ground is a ways away, force into it
-		// if we didn't do the trace, the player would be backflipping down staircases
-		VectorCopy( pm->ps->origin, point );
-		point[2] -= 64;
-
-		pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-		if ( trace.fraction == 1.0 ) {
-			if ( pm->cmd.forwardmove >= 0 ) {
-				PM_ForceLegsAnim( LEGS_JUMP );
-				pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-			} else {
-				PM_ForceLegsAnim( LEGS_JUMPB );
-				pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-			}
-		}
-	}
-
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-}
-
-
 /*
 =============
 PM_GroundTrace
@@ -1175,14 +1138,6 @@ static void PM_GroundTrace( void ) {
 		if ( !PM_CorrectAllSolid(&trace) )
 			return;
 	}
-
-	// if the trace didn't hit anything, we are in free fall NOIRE.DEV: TURN IT OFF!
-	/*if ( trace.fraction == 1.0 ) {
-		PM_GroundTraceMissed();
-		pml.groundPlane = qfalse;
-		pml.walking = qfalse;
-		return;
-	}*/ 
 
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[2] > 0 && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10 ) {
@@ -1234,12 +1189,8 @@ static void PM_GroundTrace( void ) {
 
 	pm->ps->groundEntityNum = trace.entityNum;
 
-	// don't reset the z velocity for slopes
-//	pm->ps->velocity[2] = 0;
-
 	PM_AddTouchEnt( trace.entityNum );
 }
-
 
 /*
 =============
@@ -1573,7 +1524,6 @@ static void PM_TorsoAnimation( void ) {
 	}
 }
 
-
 /*
 ==============
 PM_Weapon
@@ -1618,72 +1568,22 @@ static void PM_Weapon( void ) {
 				if ( giTag == HI_MEDKIT ){
 					if(mod_medkitinf == 0)
 					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-					if(mod_medkitinf == 2)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
-					if(mod_medkitinf == 3)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
-					if(mod_medkitinf == 4)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
-					if(mod_medkitinf == 5)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
-					if(mod_medkitinf == 6)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 				}
 				else if ( giTag == HI_TELEPORTER ){
 					if(mod_teleporterinf == 0)
 					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-					if(mod_teleporterinf == 2)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
-					if(mod_teleporterinf == 3)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
-					if(mod_teleporterinf == 4)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
-					if(mod_teleporterinf == 5)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
-					if(mod_teleporterinf == 6)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 				}
 				else if ( giTag == HI_PORTAL ){
 					if(mod_portalinf == 0)
 					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-					if(mod_portalinf == 2)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
-					if(mod_portalinf == 3)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
-					if(mod_portalinf == 4)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
-					if(mod_portalinf == 5)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
-					if(mod_portalinf == 6)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 				}
 				else if ( giTag == HI_INVULNERABILITY ){
 					if(mod_invulinf == 0)
 					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-					if(mod_invulinf == 2)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
-					if(mod_invulinf == 3)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
-					if(mod_invulinf == 4)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
-					if(mod_invulinf == 5)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
-					if(mod_invulinf == 6)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 				}
 				else if ( giTag == HI_KAMIKAZE ){
 					if(mod_kamikazeinf == 0)
 					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-					if(mod_kamikazeinf == 2)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
-					if(mod_kamikazeinf == 3)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
-					if(mod_kamikazeinf == 4)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
-					if(mod_kamikazeinf == 5)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
-					if(mod_kamikazeinf == 6)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
 				}
 			}
 			return;

@@ -513,10 +513,10 @@ static void Crosshair_Draw( void *self ) {
 
 	if ( focus ){
 		// draw cursor
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color );
+	ST_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color, 1.00 );
 	if( !s->curvalue ) {
 		return;
 	}
@@ -589,7 +589,7 @@ if(cl_language.integer == 1){
 }
 
 	if (s)
-		UI_DrawString(320, 480 - 64, s, UI_CENTER|UI_SMALLFONT, color_white);
+		ST_DrawString(320, 480 - 64, s, UI_CENTER|UI_SMALLFONT, color_white, 1.00);
 }
 
 static void Preferences_MenuInit( void )
@@ -602,7 +602,6 @@ static void Preferences_MenuInit( void )
 
 	Preferences_Cache();
 
-	s_preferences.menu.native 	   = qfalse;
 	s_preferences.menu.fullscreen = qtrue;
 
 	s_preferences.banner.generic.type  = MTYPE_TEXT;

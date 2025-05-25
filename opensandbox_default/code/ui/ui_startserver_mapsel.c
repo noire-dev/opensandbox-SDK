@@ -1086,12 +1086,12 @@ static void MapSelect_DrawMapPic( void *self ) {
 
 	if (secondline) {
 		offset += LINE_HEIGHT;
-		UI_DrawString( x, y - LINE_HEIGHT, &s_mapselect.mapdrawname[n][secondline],
-			UI_CENTER|UI_SMALLFONT, color);
+		ST_DrawString( x, y - LINE_HEIGHT, &s_mapselect.mapdrawname[n][secondline],
+			UI_CENTER|UI_SMALLFONT, color, 1.00);
 	}
-	UI_DrawString( x, y - offset, s_mapselect.mapdrawname[n], UI_CENTER|UI_SMALLFONT, color);
+	ST_DrawString( x, y - offset, s_mapselect.mapdrawname[n], UI_CENTER|UI_SMALLFONT, color, 1.00);
 
-	UI_DrawString( x, y , s_mapselect.mapinfo[id].mapname, UI_CENTER|UI_SMALLFONT, color );
+	ST_DrawString( x, y , s_mapselect.mapinfo[id].mapname, UI_CENTER|UI_SMALLFONT, color, 1.00 );
 
 
 	// draw multi-select
@@ -1110,7 +1110,7 @@ static void MapSelect_DrawMapPic( void *self ) {
 	if (hasfocus)
 		color[3] = 0.7+0.3*sin(uis.realtime/PULSE_DIVISOR);
 
-	UI_DrawString( x, y , va("%i", multi), UI_CENTER|UI_DROPSHADOW|UI_GIANTFONT, color );
+	ST_DrawString( x, y , va("%i", multi), UI_CENTER|UI_DROPSHADOW|UI_GIANTFONT, color, 1.00 );
 }
 
 
@@ -1228,16 +1228,16 @@ static void MapSelect_ScrollListDraw( void* ptr )
 				if (index < 10)
 					offset += charwidth;
 
-				UI_DrawString(x + offset, y + (lineheight - charheight)/2,
-					va("%i", index), style, color_white);
+				ST_DrawString(x + offset, y + (lineheight - charheight)/2,
+					va("%i", index), style, color_white, 1.00);
 			}
 
-			UI_DrawString(
+			ST_DrawString(
 				x + 3*charwidth,
 				y + (lineheight - charheight)/2,
 				l->itemnames[i],
 				style,
-				color);
+				color, 1.00);
 
 			y += lineheight;
 		}
@@ -1343,8 +1343,8 @@ static void MapSelect_DrawListMapPic(void)
 	StartServer_DrawMapPicture( x + uis.wideoffset, y,
 		MAPPIC_WIDTH, MAPPIC_HEIGHT, &s_mapselect.mapinfo[index], colour);
 
-	UI_DrawString( 320 + uis.wideoffset, y + MAPPIC_HEIGHT + 8, s_mapselect.maplongname[base + index],
-		UI_CENTER|UI_SMALLFONT, colour);
+	ST_DrawString( 320 + uis.wideoffset, y + MAPPIC_HEIGHT + 8, s_mapselect.maplongname[base + index],
+		UI_CENTER|UI_SMALLFONT, colour, 1.00);
 }
 
 
@@ -1365,10 +1365,10 @@ static void MapSelect_MenuDraw(void)
 	if (s_mapselect.nomaps)
 	{
 		if(cl_language.integer == 0){
-		UI_DrawString(320, 240 - 32, "NO MAPS FOUND", UI_CENTER, color_nomap);
+		ST_DrawString(320, 240 - 32, "NO MAPS FOUND", UI_CENTER, color_nomap, 1.00);
 		}
 		if(cl_language.integer == 1){
-		UI_DrawString(320, 240 - 32, "КАРТЫ НЕ НАЙДЕНЫ", UI_CENTER, color_nomap);
+		ST_DrawString(320, 240 - 32, "КАРТЫ НЕ НАЙДЕНЫ", UI_CENTER, color_nomap, 1.00);
 		}
 		return;
 	}
@@ -1563,7 +1563,6 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.index = index;
 
-	s_mapselect.menu.native 	= qfalse;
 	s_mapselect.menu.fullscreen = qtrue;
 	s_mapselect.menu.draw = MapSelect_MenuDraw;
 

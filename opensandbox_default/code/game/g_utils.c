@@ -960,8 +960,6 @@ Marks the entity as free
 =================
 */
 void G_FreeEntity( gentity_t *ed ) {
-	gentity_t *object;
-	int i = 0;
 
 	trap_UnlinkEntity (ed);		// unlink from world
 
@@ -1682,7 +1680,6 @@ gentity_t *G_FindEntityForEntityNum(int entityn) {
 }
 
 gentity_t *G_FindEntityForClientNum(int entityn) {
-    int i;
     gentity_t *ent;
 
 	ent = &g_entities[entityn];

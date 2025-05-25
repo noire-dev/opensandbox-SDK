@@ -217,8 +217,7 @@ static void Demos_MenuDraw(void)
    if (s_demos.demos_found && s_demos.ranged_protocol &&
          s_demos.list.numitems > 0 && s_demos.list.curvalue >= 0) {
       Q_strncpyz(statusbar, va("Protocol %i", s_demos.protocol[s_demos.list.curvalue]), STATUSBAR_SIZE);
-	   UI_DrawString(632 - strlen(statusbar) * SMALLCHAR_WIDTH, 480 - 64 - SMALLCHAR_HEIGHT,
-         statusbar, UI_SMALLFONT, color_grey);
+	   ST_DrawString(632 - strlen(statusbar) * SMALLCHAR_WIDTH, 480 - 64 - SMALLCHAR_HEIGHT, statusbar, UI_SMALLFONT, color_grey, 1.00);
    }
 
    Menu_Draw(&s_demos.menu);
@@ -245,7 +244,6 @@ static void Demos_MenuInit( void ) {
 	Demos_Cache();
 
 	s_demos.menu.fullscreen = qtrue;
-	s_demos.menu.native 	= qfalse;
 
 	s_demos.banner.generic.type		= MTYPE_TEXT;
 	s_demos.banner.generic.x		= 320;

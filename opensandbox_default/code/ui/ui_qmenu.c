@@ -41,30 +41,6 @@ static qhandle_t	sliderBar;
 static qhandle_t	sliderButton_0;
 static qhandle_t	sliderButton_1;
 
-// NEW AND IMPLOVED colors
-vec4_t menu_text_color		= {1.0f, 1.0f, 1.0f, 1.0f};
-vec4_t menu_dim_color   	= {0.0f, 0.0f, 0.0f, 0.75f};
-vec4_t color_black	    	= {0.00f, 0.00f, 0.00f, 1.00f};
-vec4_t color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t color_yellow	    	= {1.00f, 1.00f, 0.00f, 1.00f};
-vec4_t color_blue	    	= {0.00f, 0.00f, 1.00f, 1.00f};
-vec4_t color_grey	    	= {0.30f, 0.45f, 0.58f, 1.00f};
-vec4_t color_red			= {1.00f, 0.00f, 0.00f, 1.00f};
-vec4_t color_dim	    	= {0.00f, 0.00f, 0.00f, 0.30f};
-vec4_t color_dim80	    	= {0.00f, 0.00f, 0.00f, 0.80f};
-vec4_t color_green	    	= {0.00f, 0.99f, 0.00f, 1.00f};
-vec4_t color_emerald    	= {0.50f, 0.85f, 0.00f, 1.00f};
-vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
-vec4_t color_lightyellow 	= {1.00f, 0.90f, 0.45f, 1.00f};
-vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
-
-// current color scheme
-vec4_t pulse_color          = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t text_color_disabled  = {0.10f, 0.10f, 0.20f, 1.00f};
-vec4_t text_color_normal    = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t text_color_status    = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t color_select_bluo    = {0.53f, 0.62f, 0.82f, 0.25f};
-
 // action widget
 static void	Action_Init( menuelement_s *a );
 static void	Action_Draw( menuelement_s *a );
@@ -149,7 +125,7 @@ static void Text_Draw( menuelement_s *t )
 	else
 		color = t->color;
 
-	UI_DrawStringCustom( x, y, t->string, t->style, color, t->size, 512 );
+	ST_DrawString( x, y, t->string, t->style, color, t->size );
 }
 
 /*
@@ -231,7 +207,7 @@ static void PText_Draw( menuelement_s *t )
 		}
 	}
 
-	UI_DrawStringCustom( x, y, t->string, style, color, t->size, 512 );
+	ST_DrawString( x, y, t->string, style, color, t->size );
 }
 
 /*
@@ -503,7 +479,7 @@ void UIObject_Draw( menuelement_s *b ){
 		if(b->type == 6){
 			UI_DrawModelElement( x, y, w, h, b->file, b->corner );
 		}
-		UI_DrawStringCustom( x, y, b->string, b->style, b->color, b->size, 512 );
+		ST_DrawString( x, y, b->string, b->style, b->color, b->size );
 	}
 	if(b->type == 4){
 		x =	b->generic.x;
@@ -547,7 +523,7 @@ void UIObject_Draw( menuelement_s *b ){
 			b->generic.flags |= QMF_HASMOUSEFOCUS;
 		}
 		if ( b->string ) {
-			UI_DrawStringCustom( x - w, y, b->string, style|UI_RIGHT, color, b->size, 512 );
+			ST_DrawString( x - w, y, b->string, style|UI_RIGHT, color, b->size );
 		}
 	}
 
@@ -574,10 +550,10 @@ void UIObject_Draw( menuelement_s *b ){
 		            style |= UI_CENTER;
 		        }
 				if(b->generic.style <= 0){
-					UI_DrawStringCustom(x,y,b->itemnames[i],style,color, b->size, 512 );
+					ST_DrawString(x,y,b->itemnames[i],style,color, b->size );
 				}
 				if(b->generic.style == 1){
-					UI_DrawStringCustom(x+SMALLCHAR_HEIGHT*b->size,y,b->itemnames[i],style,color, b->size, 512 );
+					ST_DrawString(x+SMALLCHAR_HEIGHT*b->size,y,b->itemnames[i],style,color, b->size );
 					b->shader = trap_R_RegisterShaderNoMip( va("%s/%s", b->string, b->itemnames[i]) );
 					if(b->shader){
 						UI_DrawHandlePic( x, y, SMALLCHAR_HEIGHT*b->size, SMALLCHAR_HEIGHT*b->size, trap_R_RegisterShaderNoMip( va("%s/%s", b->string, b->itemnames[i]) ) );
@@ -687,7 +663,7 @@ void UIObject_Draw( menuelement_s *b ){
 			select_x += wordsize;
 			select_y -= wordsize*1.45;
 			UI_DrawRoundedRect(select_x-wordsize, select_y-4, (strlen(b->itemnames[select_i])*(SMALLCHAR_HEIGHT*b->size)+wordsize*2), (SMALLCHAR_HEIGHT*b->size)+8, 5, color_dim80);
-			UI_DrawStringCustom( select_x, select_y, b->itemnames[select_i], style|UI_DROPSHADOW, color_bluo, b->size, 512 );
+			ST_DrawString( select_x, select_y, b->itemnames[select_i], style|UI_DROPSHADOW, color_bluo, b->size );
 		}
 	}
 
@@ -723,17 +699,17 @@ void UIObject_Draw( menuelement_s *b ){
 		}
 
 		if ( b->string )
-			UI_DrawStringCustom( x - SMALLCHAR_WIDTH, y, b->string, UI_RIGHT|UI_SMALLFONT, color, b->size, 512 );
+			ST_DrawString( x - SMALLCHAR_WIDTH, y, b->string, UI_RIGHT|UI_SMALLFONT, color, b->size );
 
 		if ( !b->curvalue )
 		{
 			UI_DrawHandlePic( x + SMALLCHAR_WIDTH*b->size, y + 2, 12*b->size, 12*b->size, uis.rb_off);
-			UI_DrawStringCustom( x + SMALLCHAR_WIDTH*b->size + 12*b->size, y, "off", style, color, b->size, 512 );
+			ST_DrawString( x + SMALLCHAR_WIDTH*b->size + 12*b->size, y, "off", style, color, b->size );
 		}
 		else
 		{
 			UI_DrawHandlePic( x + SMALLCHAR_WIDTH*b->size, y + 2, 12*b->size, 12*b->size, uis.rb_on );
-			UI_DrawStringCustom( x + SMALLCHAR_WIDTH*b->size + 12*b->size, y, "on", style, color, b->size, 512 );
+			ST_DrawString( x + SMALLCHAR_WIDTH*b->size + 12*b->size, y, "on", style, color, b->size );
 		}
 	}
 
@@ -757,8 +733,8 @@ void UIObject_Draw( menuelement_s *b ){
 		}
 	
 		// draw label
-		UI_DrawStringCustom( x - (SMALLCHAR_WIDTH*b->size), y, b->string, UI_RIGHT|style, color, b->size, 512 );
-		UI_DrawStringCustom( x + (SMALLCHAR_WIDTH*b->size)*11, y, va("%i", val), UI_LEFT|style, color, b->size, 512 );
+		ST_DrawString( x - (SMALLCHAR_WIDTH*b->size), y, b->string, UI_RIGHT|style, color, b->size );
+		ST_DrawString( x + (SMALLCHAR_WIDTH*b->size)*11, y, va("%i", val), UI_LEFT|style, color, b->size );
 	
 		// draw slider
 		trap_R_SetColor( color );
@@ -1330,12 +1306,12 @@ static void Action_Draw( menuelement_s *a )
 	x = a->generic.x;
 	y = a->generic.y;
 
-	UI_DrawString( x, y, a->string, UI_LEFT|style, color );
+	ST_DrawString( x, y, a->string, UI_LEFT|style, color, 1.00 );
 
 	if ( a->generic.parent->cursor == a->generic.menuPosition )
 	{
 		// draw cursor
-		UI_DrawChar( x - BIGCHAR_WIDTH, y, 13, UI_LEFT|UI_BLINK, color);
+		ST_DrawChar( x - BIGCHAR_WIDTH, y, 13, UI_LEFT|UI_BLINK, color, 1.00);
 	}
 }
 
@@ -1425,14 +1401,14 @@ static void RadioButton_Draw( menuelement_s *rb ) {
 	}
 
 	if ( rb->string )
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color );
+		ST_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 
 	if ( !rb->curvalue ) {
 		UI_DrawHandlePic( x, y+1, 10, 10, uis.rb_off);
-		UI_DrawString( x + 16, y, "off", style, color );
+		ST_DrawString( x + 16, y, "off", style, color, 1.00 );
 	} else {
 		UI_DrawHandlePic( x, y+1, 10, 10, uis.rb_on );
-		UI_DrawString( x + 16, y, "on", style, color );
+		ST_DrawString( x + 16, y, "on", style, color, 1.00 );
 	}
 }
 
@@ -1552,8 +1528,8 @@ static void Slider_Draw( menuelement_s *s ) {
 	}
 
 	// draw label
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->string, UI_RIGHT|style, color );
-	UI_DrawString( x + (SLIDER_RANGE*SMALLCHAR_WIDTH)+SMALLCHAR_WIDTH, y, va("%i", val), UI_LEFT|style, color );
+	ST_DrawString( x - SMALLCHAR_WIDTH, y, s->string, UI_RIGHT|style, color, 1.00 );
+	ST_DrawString( x + (SLIDER_RANGE*SMALLCHAR_WIDTH)+SMALLCHAR_WIDTH, y, va("%i", val), UI_LEFT|style, color, 1.00 );
 
 	// draw slider
 	trap_R_SetColor( color );
@@ -1704,11 +1680,11 @@ static void SpinControl_Draw( menuelement_s *s )
 	if ( focus )
 	{
 		// draw cursor
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color );
-	UI_DrawString( x + SMALLCHAR_WIDTH, y, s->itemnames[s->curvalue], style|UI_LEFT, color );
+	ST_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color, 1.00 );
+	ST_DrawString( x + SMALLCHAR_WIDTH, y, s->itemnames[s->curvalue], style|UI_LEFT, color, 1.00 );
 }
 
 /*
@@ -2152,11 +2128,11 @@ void ScrollList_Draw( menuelement_s *l )
 	        }
 
 			if(l->generic.style <= 0){
-				UI_DrawStringCustom(x,y,l->itemnames[i],style,color, l->size, 512 );
+				ST_DrawString(x,y,l->itemnames[i],style,color, l->size );
 			}
 
 			if(l->generic.style == 1){
-				UI_DrawStringCustom(x+SMALLCHAR_HEIGHT*l->size,y,l->itemnames[i],style,color, l->size, 512 );
+				ST_DrawString(x+SMALLCHAR_HEIGHT*l->size,y,l->itemnames[i],style,color, l->size );
 				l->generic.shader = trap_R_RegisterShaderNoMip( va("%s/%s", l->string, l->itemnames[i]) );
 				if(l->generic.shader){
 					UI_DrawHandlePic( x, y, SMALLCHAR_HEIGHT*l->size, SMALLCHAR_HEIGHT*l->size, trap_R_RegisterShaderNoMip( va("%s/%s", l->string, l->itemnames[i]) ) );
@@ -2274,7 +2250,7 @@ void ScrollList_Draw( menuelement_s *l )
 			select_x += wordsize;
 			select_y -= wordsize*1.45;
 			UI_DrawRoundedRect(select_x-wordsize, select_y-4, (strlen(l->itemnames[select_i])*(SMALLCHAR_HEIGHT*l->size)+wordsize*2), (SMALLCHAR_HEIGHT*l->size)+8, 5, color_dim80);
-			UI_DrawStringCustom( select_x, select_y, l->itemnames[select_i], style|UI_DROPSHADOW, color_bluo, l->size, 512 );
+			ST_DrawString( select_x, select_y, l->itemnames[select_i], style|UI_DROPSHADOW, color_bluo, l->size );
 		}
 	}
 }
@@ -2683,29 +2659,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	}
 
 	// default handling
-	switch ( key )
-	{
-		case K_PGDN:
-		case K_KP_PGDN:
-		case K_MWHEELDOWN:
-		if(uis.menuscroll - 20 >= -uis.activemenu->downlimitscroll){
-			uis.menuscroll -= 20;
-			uis.cursory += 20*0.666;
-		} else {
-			uis.menuscroll = -uis.activemenu->downlimitscroll;
-		}
-			break;
-		case K_PGUP:
-		case K_KP_PGUP:
-		case K_MWHEELUP:
-		if(uis.menuscroll + 20 <= -uis.activemenu->uplimitscroll){
-			uis.menuscroll += 20;
-			uis.cursory -= 20*0.666;	
-		} else {
-			uis.menuscroll = uis.activemenu->uplimitscroll;
-		}
-			break;
-
+	switch ( key ) {
 		case K_F11:
 			uis.debug ^= 1;
 			break;
@@ -2781,12 +2735,9 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 Menu_Cache
 =================
 */
-void Menu_Cache( void )
-{
+void Menu_Cache( void ) {
 	int i;
-	uis.charset[0]			= trap_R_RegisterShaderNoMip( "gfx/2d/default_font" );
-	uis.charset[1]			= trap_R_RegisterShaderNoMip( "gfx/2d/default_font1" );
-	uis.charset[2]			= trap_R_RegisterShaderNoMip( "gfx/2d/default_font2" );
+	ST_RegisterFont("default");
 	uis.cursor          = trap_R_RegisterShaderNoMip( "menu/assets/3_cursor2" );
 	uis.corner          = trap_R_RegisterShaderNoMip( "menu/corner" );
 	uis.rb_on           = trap_R_RegisterShaderNoMip( "menu/assets/switch_on" );
@@ -2855,7 +2806,7 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float s
 	memcpy( str, edit->buffer + prestep, drawLen );
 	str[ drawLen ] = 0;
 
-	UI_DrawStringCustom( x, y, str, style, color, size, 512 );
+	ST_DrawString( x, y, str, style, color, size );
 
 	// draw the cursor
 	if (!(style & UI_PULSE)) {
@@ -2899,7 +2850,7 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float s
 		x = x - len*charw;
 	}
 	
-	UI_DrawChar( x + ( edit->cursor - prestep ) * charw, y, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color );
+	ST_DrawChar( x + ( edit->cursor - prestep ) * charw, y, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color, 1.00 );
 }
 
 /*
@@ -3153,12 +3104,12 @@ void MenuField_Draw( menuelement_s *f )
 	if ( focus )
 	{
 		// draw cursor
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color);
+		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color, 1.00);
 		f->generic.flags |= QMF_HASMOUSEFOCUS;
 	}
 
 	if ( f->string ) {
-		UI_DrawStringCustom( x - w, y, f->string, style|UI_RIGHT, color, f->size, 512 );
+		ST_DrawString( x - w, y, f->string, style|UI_RIGHT, color, f->size );
 	}
 
 	MField_Draw( &f->field, x + w, y, style, color, f->size );

@@ -27,14 +27,6 @@
 
 #include "cg_local.h"
 
-#define MAX_LOADING_PLAYER_ICONS	64
-#define MAX_LOADING_ITEM_ICONS		256
-
-static int			loadingPlayerIconCount;
-static int			loadingItemIconCount;
-static qhandle_t	loadingPlayerIcons[MAX_LOADING_PLAYER_ICONS];
-static qhandle_t	loadingItemIcons[MAX_LOADING_ITEM_ICONS];
-
 /*
 ======================
 CG_LoadingString
@@ -70,37 +62,9 @@ CG_LoadingClient
 */
 void CG_LoadingClient( int clientNum ) {
 	const char		*info;
-	char			*skin;
 	char			personality[MAX_QPATH];
-	char			model[MAX_QPATH];
-	char			iconName[MAX_QPATH];
 
 	info = CG_ConfigString( CS_PLAYERS + clientNum );
-
-	if ( loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS ) {
-		Q_strncpyz( model, Info_ValueForKey( info, "model" ), sizeof( model ) );
-		skin = strrchr( model, '/' );
-		if ( skin ) {
-			*skin++ = '\0';
-		} else {
-			skin = "default";
-		}
-
-		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin );
-		
-		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
-		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
-			Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin );
-			loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
-		}
-		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
-			Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", DEFAULT_MODEL, "default" );
-			loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
-		}
-		if ( loadingPlayerIcons[loadingPlayerIconCount] ) {
-			loadingPlayerIconCount++;
-		}
-	}
 
 	Q_strncpyz( personality, Info_ValueForKey( info, "n" ), sizeof(personality) );
 	Q_CleanStr( personality );
@@ -149,7 +113,7 @@ void CG_DrawInformation( void ) {
 
 	CG_DrawRoundedRect(410+cl_screenoffset.value, 445, 220, 30, 1, color_lightgrey);
 	CG_DrawProgressBar(415+cl_screenoffset.value, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
-	CG_DrawStringExt( 413+cl_screenoffset.value, 449, cg.infoScreenText, color_whiteblack, qfalse, qfalse, 8, 7, 128, -3.0 );
+	CG_DrawString( 413+cl_screenoffset.value, 449, cg.infoScreenText, color_whiteblack, qfalse, qfalse, 8, 7, 128, -3.0 );
 
 	CG_DrawPic( 320-50, 240-75, 100, 100, logo );
 	CG_DrawPic( 320-24, 320-48, 48, 48, loading );
@@ -224,4 +188,3 @@ void CG_DrawInformation( void ) {
 	}
 	CG_DrawBigString( 110-cl_screenoffset.value, y, s, 1.0F );
 }
-

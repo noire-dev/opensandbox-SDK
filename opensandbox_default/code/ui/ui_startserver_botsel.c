@@ -993,11 +993,11 @@ static void UI_BotSelect_ScrollListDraw( void* ptr )
 			}
 
 			if (index != -1) {
-				UI_DrawString( x + BOTLIST_ICONSIZE/2, y + (lineheight - BIGCHAR_HEIGHT)/2,
-					va("%i", index), UI_CENTER|UI_DROPSHADOW, color_white);
+				ST_DrawString( x + BOTLIST_ICONSIZE/2, y + (lineheight - BIGCHAR_HEIGHT)/2,
+					va("%i", index), UI_CENTER|UI_DROPSHADOW, color_white, 1.00);
 			}
 
-			UI_DrawString( x + BOTLIST_ICONSIZE + 2, y + (lineheight - charheight)/2, l->itemnames[i], style, color);
+			ST_DrawString( x + BOTLIST_ICONSIZE + 2, y + (lineheight - charheight)/2, l->itemnames[i], style, color, 1.00);
 
 			y += lineheight;
 		}
@@ -1056,8 +1056,8 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 			if (botSelectInfo.multiSel[i] != bot)
 				continue;
 
-			UI_DrawString( x + w/2, y + (h - GIANTCHAR_HEIGHT)/2, va("%i", i + 1),
-				UI_CENTER|UI_GIANTFONT|UI_DROPSHADOW, color_white);
+			ST_DrawString( x + w/2, y + (h - GIANTCHAR_HEIGHT)/2, va("%i", i + 1),
+				UI_CENTER|UI_GIANTFONT|UI_DROPSHADOW, color_white, 1.00);
 			break;
 		}
 	}
@@ -1067,7 +1067,7 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 	//
 
 	if (botSelectInfo.botnames[index][0])
-		UI_DrawString( x + 32, y + 64, botSelectInfo.botnames[index], UI_CENTER|UI_SMALLFONT, botSelectInfo.botcolor[index]);
+		ST_DrawString( x + 32, y + 64, botSelectInfo.botnames[index], UI_CENTER|UI_SMALLFONT, botSelectInfo.botcolor[index], 1.00);
 
 	//
 	// draws pulse shader showing mouse over
@@ -1142,8 +1142,6 @@ UI_BotSelect_MenuDraw
 */
 static void UI_BotSelect_MenuDraw(void)
 {
-//	UI_DrawString(0,0,va("%i",botSelectInfo.selectedbot), UI_SMALLFONT, color_white);
-
 	// draw the controls
 	Menu_Draw(&botSelectInfo.menu);
 }
@@ -1162,7 +1160,6 @@ static void UI_BotSelect_Init( char *bot , int index) {
 
 	memset( &botSelectInfo, 0 ,sizeof(botSelectInfo) );
 	botSelectInfo.menu.key = UI_BotSelect_Key;
-	botSelectInfo.menu.native 	= qfalse;
 	botSelectInfo.menu.fullscreen = qtrue;
 	botSelectInfo.menu.draw = UI_BotSelect_MenuDraw;
 

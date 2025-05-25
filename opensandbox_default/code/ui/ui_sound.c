@@ -169,7 +169,6 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	memset( &soundOptionsInfo, 0, sizeof(soundOptionsInfo) );
 
 	UI_SoundOptionsMenu_Cache();
-	soundOptionsInfo.menu.native 	   = qfalse;
 	soundOptionsInfo.menu.fullscreen = qtrue;
 
 	soundOptionsInfo.banner.generic.type		= MTYPE_TEXT;

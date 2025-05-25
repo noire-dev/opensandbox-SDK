@@ -122,7 +122,6 @@ static void loadMapEd_MenuInit( void ) {
 	UI_loadMapEd_Cache();
 
 	memset( &s_loadMapEd, 0 ,sizeof(s_loadMapEd_t) );
-	s_loadMapEd.menu.native 	= qfalse;
 	s_loadMapEd.menu.fullscreen = qfalse;
 
 	s_loadMapEd.banner.generic.type	= MTYPE_TEXT;

@@ -155,12 +155,12 @@ static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event )
 
 	switch (removeBotsMenuInfo.action) {
 	case RBM_KICKBOT:
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("clientkick %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va("kicknum %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
 		break;
 
 	case RBM_CALLVOTEKICK:
 		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote clientkick %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote kicknum %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
 		break;
 
 	case RBM_CALLVOTELEADER:
@@ -343,7 +343,7 @@ static void RemoveBots_MenuDraw(void)
       // write bot skill as float
       x = b->generic.x + b->width - 4 * SMALLCHAR_WIDTH;
       y = b->generic.y + b->height + 2;
-	   UI_DrawString(x, y, va("%4.2f", removeBotsMenuInfo.f_skill), UI_SMALLFONT, color_grey);
+	   ST_DrawString(x, y, va("%4.2f", removeBotsMenuInfo.f_skill), UI_SMALLFONT, color_grey, 1.00);
 	}
 }
 
@@ -364,7 +364,6 @@ static void UI_RemoveBotsMenu_Init( int action) {
 
 	memset( &removeBotsMenuInfo, 0 ,sizeof(removeBotsMenuInfo) );
 	removeBotsMenuInfo.menu.fullscreen = qfalse;
-	removeBotsMenuInfo.menu.native 	   = qfalse;
 	removeBotsMenuInfo.menu.draw = RemoveBots_MenuDraw;
 
 	removeBotsMenuInfo.gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );

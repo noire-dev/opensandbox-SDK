@@ -89,25 +89,25 @@ static void DriverInfo_MenuDraw( void )
 
 	Menu_Draw( &s_driverinfo.menu );
 
-	UI_DrawString( 320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, color_white );
-	UI_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_white );
-	UI_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_white );
+	ST_DrawString( 320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 
-	UI_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal );
+	ST_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
+	ST_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
+	ST_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
+	ST_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
 
 	// double column
 	y = 192+16;
 	for (i=0; i<s_driverinfo.numstrings/2; i++) {
-		UI_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, text_color_normal );
-		UI_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, text_color_normal );
+		ST_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, text_color_normal, 1.00 );
+		ST_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, text_color_normal, 1.00 );
 		y += SMALLCHAR_HEIGHT;
 	}
 
 	if (s_driverinfo.numstrings & 1)
-		UI_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal );
+		ST_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
 }
 
 /*
@@ -541,35 +541,35 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 		trap_Cvar_SetValue( "ui_effectslevel", 1 );
 		trap_Cvar_SetValue( "cg_atmosphericLevel", 1 );
 		trap_Cvar_SetValue( "cg_effectsTime", 30 );
-		trap_Cvar_SetValue( "cg_effectsLimit", 4096 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 5120 );
 		trap_Cvar_SetValue( "cg_effectsGibs", 3 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 2){
 		trap_Cvar_SetValue( "ui_effectslevel", 2 );
 		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
 		trap_Cvar_SetValue( "cg_effectsTime", 60 );
-		trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 6144 );
 		trap_Cvar_SetValue( "cg_effectsGibs", 6 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 3){
 		trap_Cvar_SetValue( "ui_effectslevel", 3 );
 		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
 		trap_Cvar_SetValue( "cg_effectsTime", 90 );
-		trap_Cvar_SetValue( "cg_effectsLimit", 16384 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 7168 );
 		trap_Cvar_SetValue( "cg_effectsGibs", 3 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 4){
 		trap_Cvar_SetValue( "ui_effectslevel", 4 );
 		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
 		trap_Cvar_SetValue( "cg_effectsTime", 300 );
-		trap_Cvar_SetValue( "cg_effectsLimit", 32768 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
 		trap_Cvar_SetValue( "cg_effectsGibs", 9 );
 	}
 	if(s_graphicsoptions.envlevel.curvalue == 5){
 		trap_Cvar_SetValue( "ui_effectslevel", 5 );
 		trap_Cvar_SetValue( "cg_atmosphericLevel", 2 );
 		trap_Cvar_SetValue( "cg_effectsTime", 600 );
-		trap_Cvar_SetValue( "cg_effectsLimit", 65536 );
+		trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
 		trap_Cvar_SetValue( "cg_effectsGibs", 16 );
 	}
 	trap_Cvar_SetValue( "r_postfx", s_graphicsoptions.postfx.curvalue );
@@ -930,7 +930,6 @@ void GraphicsOptions_MenuInit( void )
 
 	GraphicsOptions_Cache();
 
-	s_graphicsoptions.menu.native 	= qfalse;
 	s_graphicsoptions.menu.fullscreen = qtrue;
 	s_graphicsoptions.menu.draw       = GraphicsOptions_MenuDraw;
 

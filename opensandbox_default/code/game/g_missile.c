@@ -665,7 +665,6 @@ void Guided_Missile_Think( gentity_t *missile )
 {
 	vec3_t forward, right, up;
 	vec3_t muzzle;
-	float  dist;
 
 	gentity_t *player = missile->parent;
 

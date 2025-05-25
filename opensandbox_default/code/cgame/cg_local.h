@@ -589,8 +589,6 @@ typedef struct {
 	char		infoScreenText[MAX_STRING_CHARS];
 	float		infoScreenValue;
 
-	qboolean	teamoverlay;
-
 	// scoreboard
 	int			scoresRequestTime;
 	int			numScores;
@@ -1407,7 +1405,6 @@ extern	vmCvar_t		cg_drawTimer;
 extern	vmCvar_t		cg_drawFPS;
 extern	vmCvar_t		cg_drawCrosshair;
 extern	vmCvar_t		cg_drawCrosshairNames;
-extern	vmCvar_t		cg_teamOverlayUserinfo;
 extern	vmCvar_t		cg_crosshairScale;
 extern	vmCvar_t		cg_draw2D;
 extern	vmCvar_t		cg_debugEvents;
@@ -1440,9 +1437,6 @@ extern	vmCvar_t		cg_enableDust;
 extern	vmCvar_t		cg_enableBreath;
 
 extern	vmCvar_t		sv_fps;
-
-//extra CVARS elimination
-extern	vmCvar_t		cg_alwaysWeaponBar;
 
 extern	vmCvar_t		cg_atmosphericLevel;
 
@@ -1499,12 +1493,10 @@ void CG_FillRect2( float x, float y, float width, float height, const float *col
 void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
 void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor);
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars, float offset );
+void CG_DrawString( int x, int y, const char *string, const float *setColor, qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars, float offset );
 void CG_DrawBigString( int x, int y, const char *s, float alpha );
 void CG_DrawGiantString( int x, int y, const char *s, float alpha );
-void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color );
 void CG_DrawSmallString( int x, int y, const char *s, float alpha );
-void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color );
 
 int CG_DrawStrlen( const char *str );
 
@@ -1622,7 +1614,6 @@ void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, clientInfo_t *ci );
 void CG_DrawWeaponSelect( void );
-void CG_DrawWeaponBarNew2(int count);
 
 //
 // cg_marks.c

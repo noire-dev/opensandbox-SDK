@@ -1121,7 +1121,7 @@ void BotMatch_TaskPreference(bot_state_t *bs, bot_match_t *match) {
 	teammate = ClientFromName(teammatename);
 	if (teammate < 0) return;
 
-	preference = BotGetTeamMateTaskPreference(bs, teammate);
+	preference = BotGetTeamMateTaskPreference(teammate);
 	switch(match->subtype)
 	{
 		case ST_DEFENDER:
@@ -1142,7 +1142,7 @@ void BotMatch_TaskPreference(bot_state_t *bs, bot_match_t *match) {
 			break;
 		}
 	}
-	BotSetTeamMateTaskPreference(bs, teammate, preference);
+	BotSetTeamMateTaskPreference(teammate, preference);
 	//
 	EasyClientName(teammate, teammatename, sizeof(teammatename));
 	BotAI_BotInitialChat(bs, "keepinmind", teammatename, NULL);
@@ -1443,18 +1443,12 @@ void BotMatch_StopTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
 BotMatch_WhoIsTeamLeader
 ==================
 */
-void BotMatch_WhoIsTeamLeader(bot_state_t *bs, bot_match_t *match) {
+void BotMatch_WhoIsTeamLeader(bot_state_t *bs) {
 	char netname[MAX_MESSAGE_SIZE];
 
 	if (!TeamPlayIsOn()) return;
 
 	ClientName(bs->client, netname, sizeof(netname));
-	//if this bot IS the team leader
-	/*if (!Q_stricmp(netname, bs->teamleader)) {
-		if(!bs->spbot){
-		trap_EA_SayTeam(bs->client, "I'm the team leader\n");
-		}
-	}*/
 }
 
 /*
@@ -1565,7 +1559,7 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 BotMatch_WhatIsMyCommand
 ==================
 */
-void BotMatch_WhatIsMyCommand(bot_state_t *bs, bot_match_t *match) {
+void BotMatch_WhatIsMyCommand(bot_state_t *bs) {
 	char netname[MAX_NETNAME];
 
 	ClientName(bs->client, netname, sizeof(netname));
@@ -1859,7 +1853,7 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 	}
 }
 
-void BotMatch_EnterGame(bot_state_t *bs, bot_match_t *match) {
+void BotMatch_EnterGame(bot_match_t *match) {
 	int client;
 	char netname[MAX_NETNAME];
 
@@ -1868,9 +1862,6 @@ void BotMatch_EnterGame(bot_state_t *bs, bot_match_t *match) {
 	if (client >= 0) {
 		notleader[client] = qfalse;
 	}
-	//NOTE: eliza chats will catch this
-	//Com_sprintf(buf, sizeof(buf), "heya %s", netname);
-	//EA_Say(bs->client, buf);
 }
 
 void BotMatch_NewLeader(bot_state_t *bs, bot_match_t *match) {
@@ -2027,7 +2018,7 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 		}
 		case MSG_WHOISTEAMLAEDER:
 		{
-			BotMatch_WhoIsTeamLeader(bs, &match);
+			BotMatch_WhoIsTeamLeader(bs);
 			break;
 		}
 		case MSG_WHATAREYOUDOING:		//ask a bot what he/she is doing
@@ -2037,7 +2028,7 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 		}
 		case MSG_WHATISMYCOMMAND:
 		{
-			BotMatch_WhatIsMyCommand(bs, &match);
+			BotMatch_WhatIsMyCommand(bs);
 			break;
 		}
 		case MSG_WHEREAREYOU:
@@ -2057,7 +2048,7 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 		}
 		case MSG_ENTERGAME:				//someone entered the game
 		{
-			BotMatch_EnterGame(bs, &match);
+			BotMatch_EnterGame(&match);
 			break;
 		}
 		case MSG_NEWLEADER:

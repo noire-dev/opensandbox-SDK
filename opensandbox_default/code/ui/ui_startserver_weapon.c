@@ -1406,8 +1406,8 @@ static void StartServer_WeaponPage_DrawStatusBarText( void )
 	color[2] = 1.0;
 	color[3] = fadecol;
 
-	UI_DrawString(320, s_weaponcontrols.statusbar_height,
-		s_weaponcontrols.statusbar_message, UI_CENTER|UI_SMALLFONT, color);
+	ST_DrawString(320, s_weaponcontrols.statusbar_height,
+		s_weaponcontrols.statusbar_message, UI_CENTER|UI_SMALLFONT, color, 1.00);
 }
 
 
@@ -1602,8 +1602,8 @@ static void StartServer_WeaponPage_MenuDraw(void)
 	if (s_weaponcontrols.num_spin == 0 && s_weaponcontrols.num_radio == 0 &&
 		s_weaponcontrols.num_field == 0)
 	{
-		UI_DrawString(CONTROL_POSX, TABCONTROLCENTER_Y - LINE_HEIGHT/2,
-			"<no controls>", UI_RIGHT|UI_SMALLFONT, text_color_disabled);
+		ST_DrawString(CONTROL_POSX, TABCONTROLCENTER_Y - LINE_HEIGHT/2,
+			"<no controls>", UI_RIGHT|UI_SMALLFONT, text_color_disabled, 1.00);
 	}
 
 	StartServer_WeaponPage_DrawStatusBarText();
@@ -1653,7 +1653,6 @@ void StartServer_WeaponPage_MenuInit(void)
 	menuptr = &s_weaponcontrols.menu;
 
 	menuptr->key = StartServer_WeaponPage_MenuKey;
-	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_WeaponPage_MenuDraw;
 

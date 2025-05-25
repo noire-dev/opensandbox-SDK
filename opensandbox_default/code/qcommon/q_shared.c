@@ -26,6 +26,7 @@
 // q_shared.c -- stateless support routines that are included in each code dll
 #include "q_shared.h"
 #include "bg_public.h"
+#include "../renderer/tr_types.h"
 
 float Com_Clamp( float min, float max, float value ) {
 	if ( value < min ) {
@@ -1075,24 +1076,6 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 
 /*
 ==================
-Com_CharIsOneOfCharset
-==================
-*/
-static qboolean Com_CharIsOneOfCharset( char c, char *set )
-{
-	int i;
-
-	for( i = 0; i < strlen( set ); i++ )
-	{
-		if( set[ i ] == c )
-			return qtrue;
-	}
-
-	return qfalse;
-}
-
-/*
-==================
 COM_LoadLevelScores
 Loads the current highscores for a level
 ==================
@@ -1100,7 +1083,6 @@ Loads the current highscores for a level
 
 highscores_t COM_LoadLevelScores( char *levelname ) {
 	highscores_t	highScores;
-	playerscore_t	scores;
 	char			*filename;
 	int				len;
 	int				i;
@@ -1180,8 +1162,6 @@ Calculates the player's score
 ==================
 */
 playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accuracy, float skill) {
-	char			var[MAX_TOKEN_CHARS];
-	int				mutators;
 	playerscore_t	scores;
 
 	//carnage score
@@ -1226,7 +1206,7 @@ float VectorDistance(const vec3_t v1, const vec3_t v2) {
 FS_FileExists
 ==========================
 */
-static qboolean	FS_FileExists(const char *filename) {
+qboolean FS_FileExists(const char *filename) {
 	int len;
 
 	len = trap_FS_FOpenFile( filename, NULL, FS_READ );
@@ -1235,3 +1215,225 @@ static qboolean	FS_FileExists(const char *filename) {
 	}
 	return qfalse;
 }
+
+
+/*
+=====================
+OpenSandbox UI colors
+=====================
+*/
+vec4_t menu_text_color		= {1.0f, 1.0f, 1.0f, 1.0f};
+vec4_t menu_dim_color   	= {0.0f, 0.0f, 0.0f, 0.75f};
+vec4_t color_black	    	= {0.00f, 0.00f, 0.00f, 1.00f};
+vec4_t color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t color_yellow	    	= {1.00f, 1.00f, 0.00f, 1.00f};
+vec4_t color_blue	    	= {0.00f, 0.00f, 1.00f, 1.00f};
+vec4_t color_grey	    	= {0.30f, 0.45f, 0.58f, 1.00f};
+vec4_t color_red			= {1.00f, 0.00f, 0.00f, 1.00f};
+vec4_t color_dim	    	= {0.00f, 0.00f, 0.00f, 0.30f};
+vec4_t color_dim80	    	= {0.00f, 0.00f, 0.00f, 0.80f};
+vec4_t color_green	    	= {0.00f, 0.99f, 0.00f, 1.00f};
+vec4_t color_emerald    	= {0.50f, 0.85f, 0.00f, 1.00f};
+vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
+vec4_t color_lightyellow 	= {1.00f, 0.90f, 0.45f, 1.00f};
+vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
+vec4_t pulse_color          = {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t text_color_disabled  = {0.10f, 0.10f, 0.20f, 1.00f};
+vec4_t text_color_normal    = {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t text_color_status    = {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t color_select_bluo    = {0.53f, 0.62f, 0.82f, 0.25f};
+
+/*
+======================
+SourceTech font system
+======================
+*/
+#ifndef GAME
+qhandle_t defaultFont[5];
+
+static int ST_ColorEscapes(const char *str) {
+    int count = 0;
+    
+    while (*str) {
+        if (*str == '^') {
+            count++;
+            str++;
+        }
+        str++;
+    }
+
+    return count;
+}
+
+static int ST_GetFontRes(float fontSize) {
+	float	fontScale;
+	glconfig_t glconfig;
+
+	trap_GetGlconfig( &glconfig );
+	fontScale = glconfig.vidHeight / 480.0;
+
+    if (fontSize*fontScale > 128) return 4;	//4096
+    if (fontSize*fontScale > 64)  return 3;	//2048
+    if (fontSize*fontScale > 32)  return 2;	//1024
+    if (fontSize*fontScale > 16)  return 1;	//512
+    return 0; //256 default
+}
+
+void ST_RegisterFont(const char* font){
+	defaultFont[0] = trap_R_RegisterShaderNoMip( va("%s_font0", font) );
+	defaultFont[1] = trap_R_RegisterShaderNoMip( va("%s_font1", font) );
+	defaultFont[2] = trap_R_RegisterShaderNoMip( va("%s_font2", font) );
+	defaultFont[3] = trap_R_RegisterShaderNoMip( va("%s_font3", font) );
+	defaultFont[4] = trap_R_RegisterShaderNoMip( va("%s_font4", font) );
+}
+
+static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style) {
+	const char* s;
+	char ch;
+	int prev_unicode = 0;
+	vec4_t tempcolor;
+	float ax;
+	float ay;
+	float aw;
+	float ah;
+	float frow;
+	float fcol;
+	float alignstate = 0;
+	int char_count = 0;
+	int fontRes = ST_GetFontRes(charh);
+
+	if (style & UI_CENTER) {
+		alignstate = 0.5;
+	}
+	if (style & UI_RIGHT) {
+		alignstate = 1;
+	}
+
+	// Set color for the text
+	trap_R_SetColor(color);
+
+	ax = x;
+	ay = y;
+	aw = charw;
+	ah = charh;
+	#ifdef CGAME
+	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
+	#endif
+	#ifdef UI
+	UI_AdjustFrom640( &ax, &ay, &aw, &ah );
+	#endif
+
+	s = str;
+	while (*s) {
+		if ((*s == -48) || (*s == -47)) {
+			ax = ax + aw * alignstate;
+		}
+		s++;
+	}
+
+	s = str;
+	while (*s) {
+		if (Q_IsColorString(s))  {
+			memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
+			tempcolor[3] = color[3];
+			trap_R_SetColor(tempcolor);
+			s += 2;
+			continue;
+		}
+
+		if (*s != ' ') {
+			ch = *s & 255;
+
+			// Unicode Russian support
+			if (ch < 0) {
+				if ((ch == -48) || (ch == -47)) {
+					prev_unicode = ch;
+					s++;
+					continue;
+				}
+				if (ch >= -112) {
+					if ((ch == -111) && (prev_unicode == -47)) {
+						ch = ch - 13;
+					} else {
+						ch = ch + 48;
+					}
+				} else {
+					if ((ch == -127) && (prev_unicode == -48)) {
+						// ch = ch +
+					} else {
+						ch = ch + 112; // +64 offset of damn unicode
+					}
+				}
+			}
+
+			frow = (ch >> 4) * 0.0625;
+			fcol = (ch & 15) * 0.0625;
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, defaultFont[fontRes]);
+		}
+
+		ax += aw;
+		char_count++;
+		s++;
+	}
+
+	trap_R_SetColor(NULL);
+}
+
+void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size) {
+	char	buff[2];
+
+	buff[0] = ch;
+	buff[1] = '\0';
+
+	ST_DrawString( x, y, buff, style, color, size );
+}
+
+void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize) {
+	int		len;
+	int		charw;
+	int		charh;
+	float	*drawcolor;
+	vec4_t	dropcolor;
+
+	if(!str) {
+		return;
+	}
+
+	charw =	SMALLCHAR_WIDTH*fontSize;
+	charh =	SMALLCHAR_HEIGHT*fontSize;
+
+	if (style & UI_PULSE) {
+		drawcolor = color_highlight;
+	} else {
+		drawcolor = color;
+	}
+
+	switch (style & UI_FORMATMASK) {
+		case UI_CENTER:
+			// center justify at x
+			len = strlen(str);
+			x = x - len*charw/2;
+			break;
+
+		case UI_RIGHT:
+			// right justify at x
+			len = strlen(str);
+			x = x - len*charw;
+			break;
+
+		default:
+			// left justify at x
+			break;
+	}
+
+	x -= charw * ST_ColorEscapes(str);		//Color escapes bypass
+
+	if (style & UI_DROPSHADOW) {
+		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
+		dropcolor[3] = drawcolor[3];
+		ST_DrawChars(x+1,y+1,str,dropcolor,charw,charh,style);
+	}
+
+	ST_DrawChars(x,y,str,drawcolor,charw,charh,style);
+}
+#endif

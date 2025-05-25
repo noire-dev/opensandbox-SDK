@@ -131,7 +131,7 @@ int untrap_BotGetLevelItemGoal(int start, char *classname, void /* struct bot_go
     return -1;
 }
 
-void FillWeaponInfo(int weaponstate, int weapon, weaponinfo_t *wi) {
+void FillWeaponInfo(weaponinfo_t *wi) {
     if (!wi) return; // Проверка на NULL
     
     wi->valid = 1;
@@ -728,10 +728,6 @@ void BotCTFSeekGoals(bot_state_t *bs) {
 		}
 		return;
 	}
-	// don't just do something wait for the bot team leader to give orders
-	if (BotTeamLeader(bs)) {
-		return;
-	}
 	// if the bot is ordered to do something
 	if ( bs->lastgoal_ltgtype ) {
 		bs->teamgoal_time += 60;
@@ -1045,10 +1041,6 @@ void Bot1FCTFSeekGoals(bot_state_t *bs) {
 		}
 		return;
 	}
-	// don't just do something wait for the bot team leader to give orders
-	if (BotTeamLeader(bs)) {
-		return;
-	}
 	// if the bot is ordered to do something
 	if ( bs->lastgoal_ltgtype ) {
 		bs->teamgoal_time += 60;
@@ -1166,10 +1158,6 @@ BotObeliskSeekGoals
 void BotObeliskSeekGoals(bot_state_t *bs) {
 	float rnd, l1, l2;
 
-	// don't just do something wait for the bot team leader to give orders
-	if (BotTeamLeader(bs)) {
-		return;
-	}
 	// if the bot is ordered to do something
 	if ( bs->lastgoal_ltgtype ) {
 		bs->teamgoal_time += 60;
@@ -1270,15 +1258,6 @@ void BotGoHarvest(bot_state_t *bs) {
 
 /*
 ==================
-BotObeliskRetreatGoals
-==================
-*/
-void BotObeliskRetreatGoals(bot_state_t *bs) {
-	//nothing special
-}
-
-/*
-==================
 BotHarvesterSeekGoals
 ==================
 */
@@ -1304,10 +1283,7 @@ void BotHarvesterSeekGoals(bot_state_t *bs) {
 		}
 		return;
 	}
-	// don't just do something wait for the bot team leader to give orders
-	if (BotTeamLeader(bs)) {
-		return;
-	}
+	
 	// if the bot decided to follow someone
 	if ( bs->ltgtype == LTG_TEAMACCOMPANY && !bs->ordered ) {
 		// if the team mate being accompanied no longer carries the flag
@@ -1452,9 +1428,6 @@ void BotTeamGoals(bot_state_t *bs, int retreat) {
 		}
 		else if (gametype == GT_1FCTF) {
 			Bot1FCTFRetreatGoals(bs);
-		}
-		else if (gametype == GT_OBELISK) {
-			BotObeliskRetreatGoals(bs);
 		}
 		else if (gametype == GT_HARVESTER) {
 			BotHarvesterRetreatGoals(bs);
@@ -1630,8 +1603,6 @@ EasyClientName
 ==================
 */
 char *EasyClientName(int client, char *buf, int size) {
-	int i;
-	char *str1, *str2, *ptr, c;
 	char name[128];
 
 	ClientName(client, name, sizeof(name));
@@ -1774,53 +1745,9 @@ if(!NpcFactionProp(bs, NP_GOAL, 0)){
 	if (offence >= 0) {
 		leader = ClientFromName(bs->teamleader);
 		if (offence) {
-			if (!(bs->teamtaskpreference & TEAMTP_ATTACKER)) {
-				// if we have a bot team leader
-				if (BotTeamLeader(bs)) {
-					// tell the leader we want to be on offence
-					//BotAI_BotInitialChat(bs, "wantoffence", NULL);
-					//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-				}
-				else if (g_spSkill.integer <= 3) {
-					if ( ( bs->ltgtype != LTG_GETFLAG ) &&
-						( bs->ltgtype != LTG_ATTACKENEMYBASE ) &&
-						( bs->ltgtype != LTG_HARVEST ) &&
-						( ( ( gametype != GT_CTF ) &&
-						( gametype != GT_CTF_ELIMINATION ) ) ||
-						( ( bs->redflagstatus == 0 ) &&
-						( bs->blueflagstatus == 0 ) ) ) &&
-						( ( gametype != GT_1FCTF ) ||
-						( bs->neutralflagstatus == 0 ) ) ) {
-							// tell the leader we want to be on offence
-							//BotAI_BotInitialChat(bs, "wantoffence", NULL);
-							//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-						}
-					bs->teamtaskpreference |= TEAMTP_ATTACKER;
-				}
-			}
 			bs->teamtaskpreference &= ~TEAMTP_DEFENDER;
-		}
-		else {
+		} else {
 			if (!(bs->teamtaskpreference & TEAMTP_DEFENDER)) {
-				// if we have a bot team leader
-				if (BotTeamLeader(bs)) {
-					// tell the leader we want to be on defense
-					//BotAI_BotInitialChat(bs, "wantdefence", NULL);
-					//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-				}
-				else if ( (g_spSkill.integer <= 3) &&
-					( bs->ltgtype != LTG_DEFENDKEYAREA ) &&
-					( ( ( gametype != GT_CTF ) &&
-					( gametype != GT_CTF_ELIMINATION ) ) ||
-					( ( bs->redflagstatus == 0 ) &&
-					( bs->blueflagstatus == 0 ) ) ) &&
-					( ( gametype != GT_1FCTF ) ||
-					( bs->neutralflagstatus == 0 ) ) ) {
-
-					// tell the leader we want to be on defense
-					//BotAI_BotInitialChat(bs, "wantdefence", NULL);
-					//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-				}
 				bs->teamtaskpreference |= TEAMTP_DEFENDER;
 			}
 			bs->teamtaskpreference &= ~TEAMTP_ATTACKER;
@@ -2432,15 +2359,6 @@ int BotWantsToChase(bot_state_t *bs) {
 	if (BotAggression(bs) > 50)
 		return qtrue;
 	return qfalse;
-}
-
-/*
-==================
-BotWantsToHelp
-==================
-*/
-int BotWantsToHelp(bot_state_t *bs) {
-	return qtrue;
 }
 
 /*
@@ -3387,7 +3305,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	}
 
 	//get the weapon information
-	FillWeaponInfo(bs->ws, bs->weaponnum, &wi);
+	FillWeaponInfo(&wi);
 	aim_accuracy = 1.0;		//OpenSandbox SIMPLE
 	aim_skill = 1.0;		//OpenSandbox SIMPLE
 	//
@@ -3668,7 +3586,7 @@ void BotCheckAttack(bot_state_t *bs) {
 		return;
 
 	//get the weapon info
-	FillWeaponInfo(bs->ws, bs->weaponnum, &wi);
+	FillWeaponInfo(&wi);
 	//get the start point shooting from
 	VectorCopy(bs->origin, start);
 	start[2] += bs->cur_ps.viewheight;
@@ -4046,7 +3964,7 @@ int BotFuncDoorActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *act
 BotTriggerMultipleGoal
 ==================
 */
-int BotTriggerMultipleActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *activategoal) {
+int BotTriggerMultipleActivateGoal(int bspent, bot_activategoal_t *activategoal) {
 	int i, areas[10], numareas, modelindex, entitynum;
 	char model[128];
 	vec3_t start, end, mins, maxs, angles;
@@ -4346,7 +4264,7 @@ int BotGetActivateGoal(bot_state_t *bs, int entitynum, bot_activategoal_t *activ
 		// invisible trigger multiple box
 		else if (!strcmp(classname, "trigger_multiple")) {
 			//
-			if (!BotTriggerMultipleActivateGoal(bs, ent, activategoal))
+			if (!BotTriggerMultipleActivateGoal(ent, activategoal))
 				continue;
 			// if the bot tries to activate this trigger already
 			if ( bs->activatestack && bs->activatestack->inuse &&
@@ -5242,7 +5160,7 @@ void BotSetupAlternativeRouteGoals(void) {
 BotDeathmatchAI
 ==================
 */
-void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
+void BotDeathmatchAI(bot_state_t *bs) {
 	char gender[144], name[144], buf[144];
 	char userinfo[MAX_INFO_STRING];
 	int i;

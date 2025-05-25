@@ -992,7 +992,6 @@ static void PlayerModel_MenuInit( void ) {
 	int			i, j, k, x, y;
 
 	memset( &s_playermodel, 0 ,sizeof(playermodel_t) );
-	s_playermodel.menu.native		= qfalse;
 	s_playermodel.menu.fullscreen	= qtrue;
 	s_playermodel.menu.key        	= PlayerModel_MenuKey;
 

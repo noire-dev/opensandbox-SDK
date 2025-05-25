@@ -34,7 +34,7 @@
  *****************************************************************************/
 
 void BotTeamAI(bot_state_t *bs);
-int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate);
-void BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference);
+int BotGetTeamMateTaskPreference(int teammate);
+void BotSetTeamMateTaskPreference(int teammate, int preference);
 
 

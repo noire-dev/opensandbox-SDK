@@ -38,7 +38,7 @@ void BotSetupDeathmatchAI(void);
 //shutdown the deathmatch AI
 void BotShutdownDeathmatchAI(void);
 //let the bot live within it's deathmatch AI net
-void BotDeathmatchAI(bot_state_t *bs, float thinktime);
+void BotDeathmatchAI(bot_state_t *bs);
 //free waypoints
 void BotFreeWaypoints(bot_waypoint_t *wp);
 //choose a weapon
@@ -91,8 +91,6 @@ float BotFeelingBad(bot_state_t *bs);
 int BotWantsToRetreat(bot_state_t *bs);
 //returns true if the bot wants to chase
 int BotWantsToChase(bot_state_t *bs);
-//returns true if the bot wants to help
-int BotWantsToHelp(bot_state_t *bs);
 //returns true if the bot can and wants to rocketjump
 int BotCanAndWantsToRocketJump(bot_state_t *bs);
 // returns true if the bot has a persistant powerup and a weapon
@@ -153,7 +151,6 @@ int BotHarvesterCarryingCubes(bot_state_t *bs);
 void Bot1FCTFSeekGoals(bot_state_t *bs);
 void Bot1FCTFRetreatGoals(bot_state_t *bs);
 void BotObeliskSeekGoals(bot_state_t *bs);
-void BotObeliskRetreatGoals(bot_state_t *bs);
 void BotGoHarvest(bot_state_t *bs);
 void BotHarvesterSeekGoals(bot_state_t *bs);
 void BotHarvesterRetreatGoals(bot_state_t *bs);

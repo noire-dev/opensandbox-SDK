@@ -315,9 +315,6 @@ typedef struct _tag_menuframework {
 	sfxHandle_t (*key) (int key);
 
 	qboolean	fullscreen;
-	qboolean	native;
-	int			uplimitscroll;
-	int			downlimitscroll;
 } menuframework_s;
 
 typedef struct {
@@ -427,36 +424,6 @@ extern sfxHandle_t	menu_out_sound;
 extern sfxHandle_t	menu_buzz_sound;
 extern sfxHandle_t	menu_null_sound;
 extern sfxHandle_t	weaponChangeSound;
-extern vec4_t		menu_text_color;
-extern vec4_t		menu_grayed_color;
-extern vec4_t		menu_dark_color;
-extern vec4_t		menu_highlight_color;
-extern vec4_t		menu_red_color;
-extern vec4_t		menu_black_color;
-extern vec4_t		menu_dim_color;
-
-extern vec4_t		color_black;
-extern vec4_t		color_white;
-extern vec4_t		color_yellow;
-extern vec4_t		color_blue;
-extern vec4_t		color_grey;
-extern vec4_t		color_red;
-extern vec4_t		color_dim;
-extern vec4_t		color_dim80;
-extern vec4_t		color_green;
-extern vec4_t		color_emerald;
-extern vec4_t		color_bluo;
-extern vec4_t		color_lightyellow;
-extern vec4_t		color_highlight;
-
-extern vec4_t		s_sandboxmain_color1;
-
-extern vec4_t		name_color;
-extern vec4_t		list_color;
-extern vec4_t		pulse_color;
-extern vec4_t		text_color_disabled;
-extern vec4_t		text_color_normal;
-extern vec4_t 		color_select_bluo;
 
 extern void PText_Init( menuelement_s *b );
 extern void	ScrollList_Init( menuelement_s *l );
@@ -466,12 +433,6 @@ extern void	SpinControl_Init( menuelement_s *s );
 extern char	*ui_medalNames[];
 extern char	*ui_medalPicNames[];
 extern char	*ui_medalSounds[];
-
-//
-// ui_advanced.c
-//
-extern void UI_AdvancedMenu( void );
-extern void UI_AdvancedMenu_Cache( void );
 
 //
 // ui_mfield.c
@@ -538,12 +499,6 @@ extern void UI_SavesMenu_Cache( void );
 //
 extern void UI_ModsMenu( void );
 extern void UI_ModsMenu_Cache( void );
-
-//
-// ui_workshop.c
-//
-extern void UI_WorkshopMenu( void );
-extern void UI_WorkshopMenu_Cache( void );
 
 //
 // ui_playermodel.c
@@ -745,7 +700,6 @@ typedef struct {
 	qhandle_t			menuBlack;
 	qhandle_t			menuWallpapers;
 	qhandle_t			menuLoadingIcon;
-	qhandle_t			charset[3];
 	qhandle_t			cursor;
 	qhandle_t			corner;
 	qhandle_t			rb_on;
@@ -756,7 +710,6 @@ typedef struct {
 	float				bias;
 	float				sw;
 	float				sh;
-	int					menuscroll;
 	int					sb_tab;
 	int					wideoffset;
 	char				theme;
@@ -774,7 +727,6 @@ extern void			UI_KeyEvent( int key, int down );
 extern void			UI_MouseEvent( int dx, int dy );
 extern void			UI_Refresh( int realtime );
 extern qboolean		UI_ConsoleCommand( int realTime );
-extern float		UI_ClampCvar( float min, float max, float value );
 extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
 extern void 		UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
@@ -783,10 +735,6 @@ extern void			UI_DrawRect( float x, float y, float width, float height, const fl
 extern void			UI_UpdateScreen( void );
 extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern int			UI_ProportionalStringWidth( const char* str, float size );
-extern void			UI_DrawString( int x, int y, const char* str, int style, vec4_t color );
-extern void			UI_DrawStringCustom( int x, int y, const char* str, int style, vec4_t color, float size, float width );
-extern void			UI_DrawChar( int x, int y, int ch, int style, vec4_t color );
-extern void			UI_DrawCharCustom( int x, int y, int ch, int style, vec4_t color, float size );
 extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
 extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
 extern qboolean		UI_IsFullscreen( void );
@@ -797,7 +745,6 @@ extern void			UI_ForceMenuOff (void);
 extern char			*UI_Argv( int arg );
 extern char			*UI_Cvar_VariableString( const char *var_name );
 extern void			UI_Refresh( int time );
-extern void			UI_StartDemoLoop( void );
 extern qboolean		m_entersound;
 extern uiStatic_t	uis;
 

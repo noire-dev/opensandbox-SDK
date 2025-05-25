@@ -215,19 +215,12 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 }
 
 int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
-	int i;
-
-	//other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 	other->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << ent->item->giTag);
 	
 	//set teleportation target if player picks up a personal teleporter with fixed teleporter target
 	if ( ent->item->giTag == HI_TELEPORTER && ent->teleporterTarget ) {
 		other->teleporterTarget = ent->teleporterTarget;
-        }
-
-
-
-	//other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
+    }
 
 	if( ent->item->giTag == HI_KAMIKAZE ) {
 		other->client->ps.eFlags |= EF_KAMIKAZE;
@@ -667,8 +660,6 @@ RespawnItemCtf
 ===============
 */
 void RespawnItemCtf( gentity_t *ent ) {
-	int		spawn_item;
-
 	// randomly select from teamed entities
 	if (ent->team) {
 		gentity_t	*master;
@@ -685,8 +676,7 @@ void RespawnItemCtf( gentity_t *ent ) {
 
 		choice = (count > 0)? rand()%count : 0;
 
-		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++)
-			;
+		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++);
 	}
 
 	ent->r.contents = CONTENTS_TRIGGER;
@@ -1381,8 +1371,6 @@ be on an entity that hasn't spawned yet.
 ============
 */
 void G_SpawnItem (gentity_t *ent, gitem_t *item) {
-	char	buffer[MAX_QPATH];
-	char	*s;
 
 	G_SpawnFloat( "random", "0", &ent->random );
 	G_SpawnFloat( "wait", "0", &ent->wait );

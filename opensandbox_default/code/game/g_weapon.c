@@ -963,9 +963,7 @@ TOOLGUN
 void Weapon_Toolgun( gentity_t *ent ) {
 	trace_t		tr;
 	vec3_t		end;
-	gentity_t	*tent;
 	gentity_t	*traceEnt;
-	int			damage;
 
 	// set aiming directions
 	AngleVectors (ent->client->ps.viewangles, forward, right, up);
@@ -1638,10 +1636,7 @@ void G_StartKamikaze( gentity_t *ent ) {
 }
 
 void CarExplodeDamage( gentity_t *self ) {
-	int i;
 	float t;
-	gentity_t *ent;
-	vec3_t newangles;
 
 	self->count += 100;
 
@@ -1666,10 +1661,7 @@ void CarExplodeDamage( gentity_t *self ) {
 }
 
 void NukeExplodeDamage( gentity_t *self ) {
-	int i;
 	float t;
-	gentity_t *ent;
-	vec3_t newangles;
 
 	self->count += 100;
 

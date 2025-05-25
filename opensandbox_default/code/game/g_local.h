@@ -398,7 +398,6 @@ typedef struct {
 	playerTeamState_t teamState;	// status in teamplay games
 	int			voteCount;			// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
-	qboolean	teamInfo;			// send team overlay updates?
 
 	//elimination:
 	int		roundReached;			//Only spawn if we are new to this round
@@ -671,13 +670,10 @@ typedef struct {
 
 void SP_info_player_start (gentity_t *ent);
 void SP_info_player_deathmatch (gentity_t *ent);
-void SP_info_player_intermission (gentity_t *ent);
 //For Double Domination:
 void SP_info_player_dd (gentity_t *ent);
 void SP_info_player_dd_red (gentity_t *ent);
 void SP_info_player_dd_blue (gentity_t *ent);
-//standard domination:
-void SP_domination_point ( gentity_t *ent);
 
 void SP_info_firstplace(gentity_t *ent);
 void SP_info_secondplace(gentity_t *ent);
@@ -1020,7 +1016,7 @@ void InitClientResp (gclient_t *client);
 void InitBodyQue (void);
 void ClientSpawn( gentity_t *ent );
 void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
-void AddScore( gentity_t *ent, vec3_t origin, int score );
+void AddScore( gentity_t *ent, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
 qboolean SpawnPointIsActive( gentity_t *spot );

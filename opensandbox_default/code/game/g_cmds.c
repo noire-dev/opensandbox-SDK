@@ -574,14 +574,11 @@ argv(0) noclip
 ==================
 */
 void Cmd_Noclip_f( gentity_t *ent ) {
-	char	*msg;
-
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 	if(!g_allownoclip.integer){ return; }
 
 	ent->client->noclip = !ent->client->noclip;
 }
-
 
 /*
 ==================
@@ -605,8 +602,6 @@ void Cmd_TeamTask_f( gentity_t *ent ) {
 	trap_SetUserinfo(client, userinfo);
 	ClientUserinfoChanged(client);
 }
-
-
 
 /*
 =================
@@ -656,10 +651,6 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 void ThrowHoldable( gentity_t *ent ) {
 	gclient_t	*client;
 	usercmd_t	*ucmd;
-	gitem_t		*xr_item;
-	gentity_t	*xr_drop;
-	byte i;
-	int amount;
 
 	client = ent->client;
 	ucmd = &ent->client->pers.cmd;
@@ -1166,32 +1157,6 @@ static void Cmd_Say_f( gentity_t *ent ){
 
 /*
 ==================
-Cmd_PickTarget_f
-Added for OpenSandbox.
-==================
-*/
-static void Cmd_PickTarget_f( gentity_t *ent ){
-	char		*p;
-	char        arg[MAX_TOKEN_CHARS];
-	gentity_t 	*act;
-
-    trap_Argv( 0, arg, sizeof( arg ) );
-
-    if( trap_Argc( ) < 2 )
-        return;
-
-    p = ConcatArgs( 1 );
-	
-	ent->target = p;
-
-	act = G_PickTarget( ent->target );
-	if ( act && act->use ) {
-		act->use( act, ent, ent );
-	}
-}
-
-/*
-==================
 Cmd_SpawnList_Item_f
 Added for OpenSandbox.
 ==================
@@ -1458,37 +1423,6 @@ static void Cmd_PhysgunDist_f( gentity_t *ent ){
 	}
 }
 
-static void Cmd_FlashlightOn_f( gentity_t *ent ){
-	char        arg[MAX_TOKEN_CHARS];
-		
-	ent->flashon = 1;
-
-    trap_Argv( 0, arg, sizeof( arg ) );
-
-	Laser_Gen( ent );//Flashlight toggle
-	
-}
-
-static void Cmd_FlashlightOff_f( gentity_t *ent ){
-	char        arg[MAX_TOKEN_CHARS];
-	
-	ent->flashon = 0;
-
-    trap_Argv( 0, arg, sizeof( arg ) );
-
-if(ent->client->lasersight){
-	G_FreeEntity( ent->client->lasersight );
-	ent->client->lasersight = NULL;	
-	return;
-}
-if(!ent->client->lasersight){
-ent->flashon = 1;
-Cmd_FlashlightOn_f( ent );
-}
-	
-}
-
-
 /*
 ==================
 Cmd_Flashlight_f
@@ -1496,7 +1430,6 @@ Added for OpenSandbox.
 ==================
 */
 static void Cmd_Flashlight_f( gentity_t *ent ){
-	char        arg[MAX_TOKEN_CHARS];
 
 if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
 	return;
@@ -1626,13 +1559,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if ( !Q_stricmp( arg1, "map" ) ) {
 	} else if ( !Q_stricmp( arg1, "g_gametype" ) ) {
 	} else if ( !Q_stricmp( arg1, "kick" ) ) {
-	} else if ( !Q_stricmp( arg1, "clientkick" ) ) {
+	} else if ( !Q_stricmp( arg1, "kicknum" ) ) {
 	} else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) {
 	} else if ( !Q_stricmp( arg1, "timelimit" ) ) {
 	} else if ( !Q_stricmp( arg1, "fraglimit" ) ) {
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, kicknum <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
 		return;
 	}
 

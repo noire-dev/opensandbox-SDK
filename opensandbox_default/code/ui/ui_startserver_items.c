@@ -586,25 +586,25 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 
 	// draw it!
 	if ( rb->string )
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color );
+		ST_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 
 	if ( !rb->curvalue )
 	{
 		gcolor[3] = 0.3;
 		if(cl_language.integer == 0){
-		UI_DrawString( x + 16, y, "off", style, color );
+		ST_DrawString( x + 16, y, "off", style, color, 1.00 );
 		}
 		if(cl_language.integer == 1){
-		UI_DrawString( x + 16, y, "откл", style, color );
+		ST_DrawString( x + 16, y, "откл", style, color, 1.00 );
 		}
 	}
 	else
 	{
 		if(cl_language.integer == 0){
-		UI_DrawString( x + 16, y, "on", style, color );
+		ST_DrawString( x + 16, y, "on", style, color, 1.00 );
 		}
 		if(cl_language.integer == 1){
-		UI_DrawString( x + 16, y, "вкл", style, color );
+		ST_DrawString( x + 16, y, "вкл", style, color, 1.00 );
 		}
 	}
 
@@ -1226,7 +1226,6 @@ static void StartServer_BothItemMenus_MenuInit(qboolean ingame)
 	menuptr = &s_itemcontrols.menu;
 
 	menuptr->key = StartServer_BothItemMenus_MenuKey;
-	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_BothItemMenus_MenuDraw;
 

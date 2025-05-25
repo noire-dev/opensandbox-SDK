@@ -737,7 +737,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 	}
 
 	txt_y = fy + 0.5*(fh - PROP_HEIGHT * MENU_SCALE * 1.00);
-	UI_DrawString( fx, txt_y, t->string, style, color );
+	ST_DrawString( fx, txt_y, t->string, style, color, 1.00 );
 
 
 	// draw the cursor for submenu if needed
@@ -749,7 +749,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 	txt_y = fy + 0.5*(fh - charh); 
 	if (dptr->createSubMenu)
 	{
-		UI_DrawChar( dptr->trueX + dptr->trueW, txt_y, 13, style|UI_RIGHT, color);
+		ST_DrawChar( dptr->trueX + dptr->trueW, txt_y, 13, style|UI_RIGHT, color, 1.00);
 	}
 }
 
@@ -785,8 +785,8 @@ static void DynamicMenu_MenuDraw( void )
     };
 
 	if (uis.debug) {
-		UI_DrawString(0, SMALLCHAR_HEIGHT, va("depth:%i", s_dynamic.depth), UI_SMALLFONT, color_white);
-		UI_DrawString(0, 32 + SMALLCHAR_HEIGHT, va("active: %i %i %i", s_dynamic.active[0], s_dynamic.active[1], s_dynamic.active[2] ), UI_SMALLFONT, color_white);
+		ST_DrawString(0, SMALLCHAR_HEIGHT, va("depth:%i", s_dynamic.depth), UI_SMALLFONT, color_white, 1.00);
+		ST_DrawString(0, 32 + SMALLCHAR_HEIGHT, va("active: %i %i %i", s_dynamic.active[0], s_dynamic.active[1], s_dynamic.active[2] ), UI_SMALLFONT, color_white, 1.00);
 	}
 	y = 5;
 	x = 635 + uis.wideoffset;
@@ -799,53 +799,53 @@ static void DynamicMenu_MenuDraw( void )
 
 		if (strcmp(key, "sv_hostname") == 0) {
 			strcpy(key, "Hostname");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "cl_selectedmod") == 0) {
 			strcpy(key, "Mod");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "mapname") == 0) {
 			strcpy(key, "Map");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "g_gametype") == 0) {
             int gametype = atoi(value);
 			strcpy(key, "Gametype");
             if (gametype >= 0 && gametype < sizeof(gametypes) / sizeof(gametypes[0])) {
-                UI_DrawString(x - 8, y, va("%s: %s", key, gametypes[gametype]), UI_RIGHT | UI_TINYFONT, color_white);
+                ST_DrawString(x - 8, y, va("%s: %s", key, gametypes[gametype]), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
                 y += TINYCHAR_HEIGHT;
             }
         }
 		if (strcmp(key, "fraglimit") == 0) {
 			strcpy(key, "Fraglimit");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "capturelimit") == 0) {
 			strcpy(key, "Capturelimit");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "timelimit") == 0) {
 			strcpy(key, "Timelimit");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "g_maxClients") == 0) {
 			strcpy(key, "Max players");
-            UI_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            ST_DrawString(x - 8, y, va("%s: %s", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			y += TINYCHAR_HEIGHT;
 		}
 		if (strcmp(key, "sv_anticheatengine") == 0) {
 			strcpy(key, "Anti-cheat status");
 			if(atoi(value)){
-            	UI_DrawString(x - 8, y, va("%s: enabled", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+            	ST_DrawString(x - 8, y, va("%s: enabled", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			} else {
-				UI_DrawString(x - 8, y, va("%s: disabled", key, value), UI_RIGHT | UI_TINYFONT, color_white);
+				ST_DrawString(x - 8, y, va("%s: disabled", key, value), UI_RIGHT | UI_TINYFONT, color_white, 1.00);
 			}
 			y += TINYCHAR_HEIGHT;
 		}
@@ -993,9 +993,6 @@ void DynamicMenu_MenuInit( qboolean full )
 
 	s_dynamic.menu.draw = DynamicMenu_MenuDraw;
 	s_dynamic.menu.fullscreen = full;
-	s_dynamic.menu.native = qfalse;
-	s_dynamic.menu.uplimitscroll = -6400;
-	s_dynamic.menu.downlimitscroll = 6400;
 
 	// start up the menu system
 	s_dynamic.depth = 0;

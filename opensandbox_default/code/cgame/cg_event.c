@@ -581,12 +581,8 @@ void CG_PainEvent( centity_t *cent, int health ) {
 }
 
 void CG_PainVehicleEvent( centity_t *cent, int health ) {
-	char	*snd;
-
 	trap_S_StartSound (NULL, cent->currentState.number, CHAN_VOICE, CG_CustomSound(cent->currentState.number, "sound/vehicle/damage50.ogg") );
 }
-
-
 
 /*
 ==============

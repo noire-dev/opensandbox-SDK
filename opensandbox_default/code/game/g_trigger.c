@@ -737,7 +737,6 @@ like an ordinary trigger_multiple
 */
 
 void lock_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
-	vec3_t size;
 	int holdables;
 	qboolean playerHasKeys;
 	

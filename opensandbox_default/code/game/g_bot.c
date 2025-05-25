@@ -113,7 +113,6 @@ G_CheckBotSpawn
 */
 void G_CheckBotSpawn( void ) {
 	int		n;
-	char	userinfo[MAX_INFO_VALUE];
 
 	for( n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++ ) {
 		if( !botSpawnQueue[n].spawnTime ) {
@@ -416,8 +415,7 @@ static void G_LoadBotsFromFile( char *filename ) {
 G_LoadBots
 ===============
 */
-static void G_LoadBots( void ) {
-	vmCvar_t	botsFile;
+void G_LoadBots( void ) {
 	int			numdirs;
 	char		filename[128];
 	char		dirlist[1024];

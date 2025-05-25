@@ -214,24 +214,24 @@ static void Controls_DrawKeyBinding( void *self ){
 
 	if (c){
 		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, color_select_bluo ); 
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight );
-		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight );
+		ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight, 1.00 );
+		ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight, 1.00 );
 
 		if (controls.waitingforkey){
-			UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight);
-			UI_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
+			ST_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight, 1.00);
+			ST_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite, 1.00 );
 		} else {
-			UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight);
-			UI_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
-			UI_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
+			ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight, 1.00);
+			ST_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite, 1.00 );
+			ST_DrawString(SCREEN_WIDTH*0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite, 1.00 );
 		}
 	} else {
 		if (a->generic.flags & QMF_GRAYED){
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
+			ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled, 1.00 );
+			ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled, 1.00 );
 		} else {
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_white );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, color_white );
+			ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_white, 1.00 );
+			ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, color_white, 1.00 );
 		}
 	}
 }
@@ -438,7 +438,6 @@ void UI_Controls( void ){
 	memset( &controls, 0 ,sizeof(controls_t) );
 	controls.menu.key        					= Controls_MenuKey;
 	controls.menu.fullscreen 					= qtrue;
-	controls.menu.native 	   					= qfalse;
 
 	UI_CText(&controls.e[89], OSUI_LOGO_X, OSUI_LOGO_Y+24, "CONTROLS", UI_LEFT, 1.80);
 

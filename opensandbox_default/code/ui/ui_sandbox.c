@@ -29,6 +29,7 @@
 
 #include "../qcommon/ns_local.h"
 
+vec4_t	s_sandboxmain_color1 = {1.00f, 1.00f, 1.00f, 1.00f};
 
 #define SANDBOX_FRAME	"menu/assets/cut_frame"
 
@@ -669,8 +670,6 @@ static void SandboxMain_MenuEvent( void* ptr, int event ) {
 	}
 }
 
-vec4_t	s_sandboxmain_color1 = {1.00f, 1.00f, 1.00f, 1.00f};
-
 /*
 ===============
 SandboxMain_MenuInit
@@ -689,7 +688,6 @@ void SandboxMain_MenuInit( void ) {
 	memset( &s_sandboxmain, 0, sizeof(s_sandboxmain) );
 
 	s_sandboxmain.menu.draw = SandboxMain_MenuDraw;
-	s_sandboxmain.menu.native = qfalse;
 	s_sandboxmain.menu.fullscreen = qfalse;
 	s_sandboxmain.menu.key        = SandboxMain_MenuKey;
 

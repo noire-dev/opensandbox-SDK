@@ -115,10 +115,10 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 		color = colorRed;
 	}
 	if(cl_language.integer == 0){
-	UI_DrawString( 320, 192, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_grey );
+	ST_DrawString( 320, 192, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
 	if(cl_language.integer == 1){
-	UI_DrawString( 320, 192, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey );
+	ST_DrawString( 320, 192, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
 	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
 	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
@@ -134,7 +134,6 @@ static void UI_SaveConfigMenu_Init( void ) {
 	memset( &saveConfig, 0, sizeof(saveConfig) );
 
 	UI_SaveConfigMenu_Cache();
-	saveConfig.menu.native 	   = qfalse;
 	saveConfig.menu.fullscreen = qtrue;
 
 	saveConfig.banner.generic.type		= MTYPE_TEXT;

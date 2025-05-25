@@ -353,7 +353,6 @@ CG_RegisterClientModelname
 static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName, const char *legsModelName, const char *legsSkinName ) {
 	char	filename[MAX_QPATH*2];
 	const char		*headName;
-	char newTeamName[MAX_QPATH*2];
 
 	if ( headModelName[0] == '\0' ) {
 		headName = modelName;
@@ -437,20 +436,16 @@ CG_ReloadClientModelname
 ==========================
 */
 static qboolean CG_ReloadClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName, const char *legsModelName, const char *legsSkinName ) {
-	char	filename[MAX_QPATH*2];
 	const char		*headName;
-	char newTeamName[MAX_QPATH*2];
 
 	if ( headModelName[0] == '\0' ) {
 		headName = modelName;
-	}
-	else {
+	} else {
 		headName = headModelName;
 	}
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName, headName, headSkinName, legsModelName, legsSkinName ) ) {
-		//Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
 		return qfalse;
 	}
 
@@ -459,34 +454,6 @@ static qboolean CG_ReloadClientModelname( clientInfo_t *ci, const char *modelNam
 	}
 
 	return qtrue;
-}
-
-/*
-====================
-CG_ColorFromString
-====================
-*/
-static void CG_ColorFromString( const char *v, vec3_t color ) {
-	int val;
-
-	VectorClear( color );
-
-	val = atoi( v );
-
-	if ( val < 1 || val > 7 ) {
-		VectorSet( color, 1, 1, 1 );
-		return;
-	}
-
-	if ( val & 1 ) {
-		color[2] = 1.0f;
-	}
-	if ( val & 2 ) {
-		color[1] = 1.0f;
-	}
-	if ( val & 4 ) {
-		color[0] = 1.0f;
-	}
 }
 
 /*
@@ -502,7 +469,6 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 	int			i, modelloaded;
 	const char	*s;
 	char		teamname[MAX_QPATH];
-//	char		redTeam[MAX_QPATH];
 
 	teamname[0] = 0;
 
@@ -566,11 +532,8 @@ This will usually be deferred to a safe time
 ===================
 */
 static void CG_ReloadClientInfo( int clientNum, clientInfo_t *ci ) {
-	const char	*dir, *fallback;
-	int			i, modelloaded;
-	const char	*s;
+	int			modelloaded;
 	char		teamname[MAX_QPATH];
-//	char		redTeam[MAX_QPATH];
 
 	teamname[0] = 0;
 
@@ -1607,12 +1570,10 @@ Returns the Z component of the surface being shadowed
 ===============
 */
 #define	SHADOW_DISTANCE		128
-static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
+static qboolean CG_PlayerShadow( centity_t *cent ) {
 	vec3_t		end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
 	trace_t		trace;
 	float		alpha;
-
-	*shadowPlane = 0;
 
 	if ( cg_shadows.integer == 0 ) {
 		return qfalse;
@@ -1634,12 +1595,6 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 		return qfalse;
 	}
 
-	*shadowPlane = trace.endpos[2] + 1;
-
-	if ( cg_shadows.integer != 1 ) {	// no mark for stencil or projection shadows
-		return qtrue;
-	}
-
 	// fade the shadow out with height
 	alpha = 1.0 - trace.fraction;
 
@@ -1649,94 +1604,6 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
 
 	return qtrue;
-}
-
-
-/*
-===============
-CG_PlayerSplash
-
-Draw a mark at the water surface
-===============
-*/
-static void CG_PlayerSplash( centity_t *cent ) {
-	vec3_t		start, end;
-	trace_t		trace;
-	int			contents;
-	polyVert_t	verts[4];
-
-	if ( !cg_shadows.integer ) {
-		return;
-	}
-
-	VectorCopy( cent->lerpOrigin, end );
-	end[2] -= 24;
-
-	// if the feet aren't in liquid, don't make a mark
-	// this won't handle moving water brushes, but they wouldn't draw right anyway...
-	contents = CG_PointContents( end, 0 );
-	if ( !( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) ) {
-		return;
-	}
-
-	VectorCopy( cent->lerpOrigin, start );
-	start[2] += 32;
-
-	// if the head isn't out of liquid, don't make a mark
-	contents = CG_PointContents( start, 0 );
-	if ( contents & ( CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) {
-		return;
-	}
-
-	// trace down to find the surface
-	trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0, ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
-
-	if ( trace.fraction == 1.0 ) {
-		return;
-	}
-
-	// create a mark polygon
-	VectorCopy( trace.endpos, verts[0].xyz );
-	verts[0].xyz[0] -= 32;
-	verts[0].xyz[1] -= 32;
-	verts[0].st[0] = 0;
-	verts[0].st[1] = 0;
-	verts[0].modulate[0] = 255;
-	verts[0].modulate[1] = 255;
-	verts[0].modulate[2] = 255;
-	verts[0].modulate[3] = 255;
-
-	VectorCopy( trace.endpos, verts[1].xyz );
-	verts[1].xyz[0] -= 32;
-	verts[1].xyz[1] += 32;
-	verts[1].st[0] = 0;
-	verts[1].st[1] = 1;
-	verts[1].modulate[0] = 255;
-	verts[1].modulate[1] = 255;
-	verts[1].modulate[2] = 255;
-	verts[1].modulate[3] = 255;
-
-	VectorCopy( trace.endpos, verts[2].xyz );
-	verts[2].xyz[0] += 32;
-	verts[2].xyz[1] += 32;
-	verts[2].st[0] = 1;
-	verts[2].st[1] = 1;
-	verts[2].modulate[0] = 255;
-	verts[2].modulate[1] = 255;
-	verts[2].modulate[2] = 255;
-	verts[2].modulate[3] = 255;
-
-	VectorCopy( trace.endpos, verts[3].xyz );
-	verts[3].xyz[0] += 32;
-	verts[3].xyz[1] -= 32;
-	verts[3].st[0] = 1;
-	verts[3].st[1] = 0;
-	verts[3].modulate[0] = 255;
-	verts[3].modulate[1] = 255;
-	verts[3].modulate[2] = 255;
-	verts[3].modulate[3] = 255;
-
-	trap_R_AddPolyToScene( cgs.media.wakeMarkShader, 4, verts );
 }
 
 /*
@@ -1788,7 +1655,6 @@ void CG_Player( centity_t *cent ) {
 	int				clientNum;
 	int				renderfx;
 	qboolean		shadow;
-	float			shadowPlane;
 	refEntity_t		skull;
 	refEntity_t		powerup;
 	int				t;
@@ -1838,11 +1704,8 @@ void CG_Player( centity_t *cent ) {
 	}
 
 	// add the shadow
-	shadow = CG_PlayerShadow( cent, &shadowPlane );
+	shadow = CG_PlayerShadow( cent );
 
-	if ( cg_shadows.integer == 3 && shadow ) {
-		renderfx |= RF_SHADOW_PLANE;
-	}
 	renderfx |= RF_LIGHTING_ORIGIN;			// use the same origin for all
 	if( cgs.gametype == GT_HARVESTER ) {
 		CG_PlayerTokens( cent, renderfx );
@@ -1870,7 +1733,6 @@ void CG_Player( centity_t *cent ) {
 		VectorScale(legs.axis[2], 0, legs.axis[2]);
 	}
 
-	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
 	VectorCopy (legs.origin, legs.oldorigin);	// don't positionally lerp at all
 
@@ -1906,7 +1768,6 @@ void CG_Player( centity_t *cent ) {
 
 	CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso");
 
-	torso.shadowPlane = shadowPlane;
 	torso.renderfx = renderfx;
 	if (cg.renderingEyesPerson){
 		torso.renderfx &= RF_FIRST_PERSON;
@@ -1920,7 +1781,6 @@ void CG_Player( centity_t *cent ) {
 			memset( &skull, 0, sizeof(skull) );
 
 			VectorCopy( cent->lerpOrigin, skull.lightingOrigin );
-			skull.shadowPlane = shadowPlane;
 			skull.renderfx = renderfx;
 
 			if ( cent->currentState.eFlags & EF_DEAD ) {
@@ -2139,7 +1999,6 @@ void CG_Player( centity_t *cent ) {
 
 	VectorCopy(cent->pe.eyepos, head.eyepos[0]);				// Copy it to our refdef for the renderer
 
-	head.shadowPlane = shadowPlane;
 	head.renderfx = renderfx;
 
 	CG_AddRefEntityWithPowerups( &head, &cent->currentState, ci->team, qfalse );

@@ -917,8 +917,7 @@ static void StartServer_BotPage_DrawStatusBarText( void )
 	color[2] = 1.0;
 	color[3] = fadecol;
 
-	UI_DrawString(320, s_botcontrols.statusbar_height,
-		s_botcontrols.statusbar_message, UI_CENTER|UI_SMALLFONT, color);
+	ST_DrawString(320, s_botcontrols.statusbar_height, s_botcontrols.statusbar_message, UI_CENTER|UI_SMALLFONT, color, 1.00);
 }
 
 
@@ -1078,7 +1077,7 @@ static void StartServer_BotPage_SkillStatusBar(void* self)
 	if(cl_language.integer == 1){
 	StartServer_BotPage_SetStatusBar(skill_itemsru[index]);
 	}
-//	UI_DrawString(320, s_botcontrols.statusbar_height, skill_items[index] , UI_CENTER|UI_SMALLFONT, color_white);
+//	ST_DrawString(320, s_botcontrols.statusbar_height, skill_items[index] , UI_CENTER|UI_SMALLFONT, color_white);
 }
 
 
@@ -1145,8 +1144,8 @@ static void StartServer_BotPage_SkillDraw(void* self)
 			UI_DrawHandlePic(x, shader_y, BOT_ICONX, BOT_ICONY, shader);
 		}
 
-		UI_DrawString(x + BOT_ICONX, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color);
-		UI_DrawString(x + BOT_ICONX + SMALLCHAR_WIDTH, y, "-", UI_LEFT|UI_SMALLFONT, text_color_normal);
+		ST_DrawString(x + BOT_ICONX, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color, 1.00);
+		ST_DrawString(x + BOT_ICONX + SMALLCHAR_WIDTH, y, "-", UI_LEFT|UI_SMALLFONT, text_color_normal, 1.00);
 
 		// setup for second part of skill control
 		skill = s->data->high + 1;
@@ -1188,7 +1187,7 @@ static void StartServer_BotPage_SkillDraw(void* self)
 		UI_DrawHandlePic(x + SMALLCHAR_WIDTH, shader_y, BOT_ICONX, BOT_ICONY, shader);
 	}
 
-	UI_DrawString(x, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color);
+	ST_DrawString(x, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color, 1.00);
 }
 
 
@@ -1342,7 +1341,7 @@ static void StartServer_BotPage_NameDraw(void* self)
 		style |= UI_PULSE;
 
 		UI_FillRect( x, y, t->generic.right - x +1, t->generic.bottom - y + 1, color_select_bluo );
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 	else
 		color = text_color_normal;
@@ -1366,7 +1365,7 @@ static void StartServer_BotPage_NameDraw(void* self)
 	}
 
 	if (string)
-		UI_DrawString( x, y, string, style, color );
+		ST_DrawString( x, y, string, style, color, 1.00 );
 }
 
 
@@ -1677,7 +1676,6 @@ void StartServer_BotPage_MenuInit(void)
 	menuptr = &s_botcontrols.menu;
 
 	menuptr->key = StartServer_BotPage_MenuKey;
-	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_BotPage_MenuDraw;
 

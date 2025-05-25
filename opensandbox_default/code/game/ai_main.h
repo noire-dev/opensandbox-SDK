@@ -313,5 +313,4 @@ void	BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, 
 int		BotAI_GetClientState( int clientNum, playerState_t *state );
 int		BotAI_GetEntityState( int entityNum, entityState_t *state );
 int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );
-int		BotTeamLeader(bot_state_t *bs);
 int		BotSelectOpenSandboxWeapon(bot_state_t *bs);

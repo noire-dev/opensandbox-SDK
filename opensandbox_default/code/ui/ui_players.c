@@ -424,7 +424,7 @@ static void UI_DrawPlayer( float x, float y, float w, float h, modelAnim_t *m, i
 	UI_PlayerAnimation( pi, &legs.oldframe, &legs.frame, &legs.backlerp,
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
 
-	renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
+	renderfx = RF_LIGHTING_ORIGIN;
 
 	//
 	// add the legs
@@ -1120,7 +1120,7 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m) {
 	b = &m->bitmap;
 
 	if( trap_MemoryRemaining() <= LOW_MEMORY ) {
-		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_white );
+		ST_DrawString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_white, 1.00 );
 		return;
 	}
 
@@ -1136,17 +1136,17 @@ void GUI_PlayerInfo_AnimateModel( modelAnim_t* m) {
 	}
 
 	if( m->bUnknownModel ) {
-		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN MODEL", UI_LEFT, color_white );
+		ST_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN MODEL", UI_LEFT, color_white, 1.00 );
 		return;
 	}
 
 	if( m->bUnknownHeadModel ) {
-		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN HEAD", UI_LEFT, color_white );
+		ST_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN HEAD", UI_LEFT, color_white, 1.00 );
 		return;
 	}
 	
 	if( m->bUnknownLegsModel ) {
-		UI_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN LEGS", UI_LEFT, color_white );
+		ST_DrawString( b->generic.x, b->generic.y + b->height / 2, "UNKNOWN LEGS", UI_LEFT, color_white, 1.00 );
 		return;
 	}
 

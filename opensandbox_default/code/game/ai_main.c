@@ -709,20 +709,6 @@ int NumBots(void) {
 
 /*
 ==============
-BotTeamLeader
-==============
-*/
-int BotTeamLeader(bot_state_t *bs) {
-	int leader;
-
-	//leader = ClientFromName(bs->teamleader);
-	//if (leader < 0) return qfalse;
-	//if (!botstates[leader] || !botstates[leader]->inuse) return qfalse;
-	return qtrue;
-}
-
-/*
-==============
 BotChangeViewAngle
 ==============
 */
@@ -1047,7 +1033,7 @@ int BotAI(int client, float thinktime) {
 	//get the area the bot is in
 	bs->areanum = BotPointAreaNum(bs->origin);
 	//the real AI
-	BotDeathmatchAI(bs, thinktime);
+	BotDeathmatchAI(bs);
 	//set the weapon selection every AI frame
 	trap_EA_SelectWeapon(bs->client, bs->weaponnum);
 	

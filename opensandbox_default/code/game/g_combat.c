@@ -53,7 +53,7 @@ AddScore
 Adds score to both the client and his team
 ============
 */
-void AddScore( gentity_t *ent, vec3_t origin, int score ) {
+void AddScore( gentity_t *ent, int score ) {
         int i;
 
 	if ( !ent->client ) {
@@ -537,7 +537,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			anim;
 	int			contents;
 	int			killer;
-	int			i,counter2;
+	int			i;
 	char		*killerName, *obit;
 
 	if ( self->client->ps.pm_type == PM_DEAD ) {
@@ -554,7 +554,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if(g_gametype.integer == GT_SINGLE){
 	if ( self->singlebot == 1 ) {
 		if ( self->botspawn && self->botspawn->health && attacker->client ) {
-			AddScore( attacker, self->r.currentOrigin, self->botspawn->health );
+			AddScore( attacker, self->botspawn->health );
 			self->s.time = level.time;
 		}
 	}		
@@ -629,10 +629,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( attacker == self || OnSameTeam (self, attacker ) ) {
 			if(g_gametype.integer!=GT_LMS && !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime))
             	if( (g_gametype.integer <GT_TEAM && g_ffa_gt!=1 && self->client->ps.persistant[PERS_SCORE]>0) || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
-            	    AddScore( attacker, self->r.currentOrigin, -1 );
+            	    AddScore( attacker, -1 );
 		} else {
 			if(g_gametype.integer != GT_LMS){
-				AddScore( attacker, self->r.currentOrigin, 1 );
+				AddScore( attacker, 1 );
 				attacker->client->pers.oldmoney += 1;
 			}
 
@@ -667,7 +667,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	} else {
 		if(g_gametype.integer!=GT_LMS && !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime))
                     if(self->client->ps.persistant[PERS_SCORE]>0 || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
-			AddScore( self, self->r.currentOrigin, -1 );
+			AddScore( self, -1 );
 	}
 
 	// Add team bonuses
@@ -1000,9 +1000,6 @@ void VehiclePhys( gentity_t *self ) {
 	if (VectorLength(self->parent->client->ps.velocity) > 5) {
 	self->s.apos.trBase[1] = self->parent->s.apos.trBase[1];
 	}
-	/*if(BG_VehicleCheckClass(self->parent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR){ //VEHICLE-SYSTEM: turn vehicle fake phys
-	self->s.apos.trBase[0] = angle45hook(self->parent->client->ps.velocity[2], 0, 900); //900 is car speed
-	}*/
 	if(engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900) <= 10){ //900 is car speed
 	self->s.legsAnim = engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900); //900 is car speed
 	}
@@ -1058,11 +1055,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			take;
 	int			asave = 0;
 	int			knockback;
-	int			max;
-	int			i;
 	vec3_t		bouncedir, impactpoint;
 	gentity_t 	*act;
-	gentity_t 	*vehicle;
 
 	//in entityplus bots cannot harm other bots (unless it's a telefrag)
 	if ( !G_NpcFactionProp(NP_HARM, attacker) && attacker->singlebot >= 1 && targ->singlebot == attacker->singlebot && attacker && mod != MOD_TELEFRAG )

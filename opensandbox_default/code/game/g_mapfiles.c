@@ -50,7 +50,7 @@ typedef struct {
 token_t tokens2[MAX_TOKENNUM];
 
 void G_RelinkEntities( void ) {
-	int i, j, k;
+	int i, j;
 	int entNum, newEntNum;
 
 	for( i = 0; i < MAX_GENTITIES; i++ ) {

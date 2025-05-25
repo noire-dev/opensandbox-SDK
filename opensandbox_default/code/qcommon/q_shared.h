@@ -346,29 +346,29 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
 
 #if defined( __QVM_MATH )
 
-static ID_INLINE int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
+ID_INLINE int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
 	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
 		return 0;
 	}
 	return 1;
 }
 
-static ID_INLINE vec_t VectorLength( const vec3_t v ) {
+ID_INLINE vec_t VectorLength( const vec3_t v ) {
 	return (vec_t)sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
-static ID_INLINE vec_t VectorLengthSquared( const vec3_t v ) {
+ID_INLINE vec_t VectorLengthSquared( const vec3_t v ) {
 	return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
-static ID_INLINE vec_t Distance( const vec3_t p1, const vec3_t p2 ) {
+ID_INLINE vec_t Distance( const vec3_t p1, const vec3_t p2 ) {
 	vec3_t	v;
 
 	VectorSubtract (p2, p1, v);
 	return VectorLength( v );
 }
 
-static ID_INLINE vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
+ID_INLINE vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
 	vec3_t	v;
 
 	VectorSubtract (p2, p1, v);
@@ -377,7 +377,7 @@ static ID_INLINE vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
 
 // fast vector normalize routine that does not check to make sure
 // that length != 0, nor does it return length, uses rsqrt approximation
-static ID_INLINE void VectorNormalizeFast( vec3_t v )
+ID_INLINE void VectorNormalizeFast( vec3_t v )
 {
 	float ilength;
 
@@ -388,13 +388,13 @@ static ID_INLINE void VectorNormalizeFast( vec3_t v )
 	v[2] *= ilength;
 }
 
-static ID_INLINE void VectorInverse( vec3_t v ){
+ID_INLINE void VectorInverse( vec3_t v ){
 	v[0] = -v[0];
 	v[1] = -v[1];
 	v[2] = -v[2];
 }
 
-static ID_INLINE void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
+ID_INLINE void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
 	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
 	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
@@ -1051,5 +1051,43 @@ playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accur
 highscores_t COM_LoadLevelScores( char *levelname );
 
 float VectorDistance(const vec3_t v1, const vec3_t v2);
+
+/*
+=====================
+OpenSandbox UI colors
+=====================
+*/
+extern vec4_t menu_text_color;
+extern vec4_t menu_dim_color;
+extern vec4_t color_black;
+extern vec4_t color_white;
+extern vec4_t color_yellow;
+extern vec4_t color_blue;
+extern vec4_t color_grey;
+extern vec4_t color_red;
+extern vec4_t color_dim;
+extern vec4_t color_dim80;
+extern vec4_t color_green;
+extern vec4_t color_emerald;
+extern vec4_t color_bluo;
+extern vec4_t color_lightyellow;
+extern vec4_t color_highlight;
+extern vec4_t pulse_color;
+extern vec4_t text_color_disabled;
+extern vec4_t text_color_normal;
+extern vec4_t text_color_status;
+extern vec4_t color_select_bluo;
+
+/*
+======================
+SourceTech font system
+======================
+*/
+#ifndef GAME
+extern qhandle_t defaultFont[5];
+void ST_RegisterFont(const char* font);
+void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size);
+void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize);
+#endif
 
 #endif	// __Q_SHARED_H

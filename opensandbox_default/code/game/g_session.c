@@ -273,8 +273,7 @@ G_InitWorldSession
 */
 void G_InitWorldSession( void ) {
 	char	s[MAX_STRING_CHARS];
-	int			gt;
-	char	buf[MAX_INFO_STRING];
+	int		gt;
 
 	//restore session from vQ3 session data
 	trap_Cvar_VariableStringBuffer( "session", s, sizeof(s) );

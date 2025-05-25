@@ -165,14 +165,6 @@ void SP_info_player_dd_blue(gentity_t *ent) {
 	trap_LinkEntity( ent );
 }
 
-//One for Standard Domination, not really a player spawn point
-void SP_domination_point(gentity_t *ent) {
-}
-
-void SP_info_player_intermission( gentity_t *ent ) {
-
-}
-
 /*
 =======================================================================
 
@@ -1157,7 +1149,7 @@ if desired.
 */
 void ClientUserinfoChanged( int clientNum ) {
 	gentity_t *ent;
-	int			teamTask, teamLeader, team, health;
+	int			teamTask, teamLeader, team;
 	int			singlebot;
 	int			botskill;
 	char		*s;
@@ -1178,7 +1170,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	char		physB[16];
 	char		swep_id[16];
 	char		oldname[MAX_STRING_CHARS];
-	char        err[MAX_STRING_CHARS];
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 
@@ -1261,17 +1252,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	else {
 		team = client->sess.sessionTeam;
-	}
-
-	if (g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
-		client->pers.teamInfo = qtrue;
-	} else {
-		s = Info_ValueForKey( userinfo, "teamoverlay" );
-		if ( ! *s || atoi( s ) != 0 ) {
-			client->pers.teamInfo = qtrue;
-		} else {
-			client->pers.teamInfo = qfalse;
-		}
 	}
 
 	// team task (0 = none, 1 = offence, 2 = defence)
@@ -1471,18 +1451,6 @@ void ClientBegin( int clientNum ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 	G_SendGameCvars( ent );
-}
-/*
-===========
-ClientSpawn
-
-Called every time a client is placed fresh in the world:
-after the first ClientBegin, and after each respawn
-Initializes all non-persistant parts of playerState
-============
-*/
-void ClientSelectSpawn(gentity_t *ent) {
-
 }
 
 void ClientSpawn(gentity_t *ent) {

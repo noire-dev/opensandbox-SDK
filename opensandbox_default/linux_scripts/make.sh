@@ -166,7 +166,7 @@ cp linux_scripts/ui.q3asm linux/build/
 LIBRARY=""
 INCLUDE=""
 
-cc="./lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
+cc="./lcc -w -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/ui
 

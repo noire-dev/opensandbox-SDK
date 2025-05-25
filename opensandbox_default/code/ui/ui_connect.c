@@ -92,9 +92,9 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 	if (width > leftWidth) leftWidth = width;
 	leftWidth += 16;
 
-	UI_DrawString( 8, 128, dlText, style, color_white );
-	UI_DrawString( 8, 160, etaText, style, color_white );
-	UI_DrawString( 8, 224, xferText, style, color_white );
+	ST_DrawString( 8, 128, dlText, style, color_white, 1.00 );
+	ST_DrawString( 8, 160, etaText, style, color_white, 1.00 );
+	ST_DrawString( 8, 224, xferText, style, color_white, 1.00 );
 
 	if (downloadSize > 0) {
 		s = va( "%s (%d%%)", downloadName, downloadCount * 100 / downloadSize );
@@ -102,15 +102,14 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 		s = downloadName;
 	}
 
-	UI_DrawString( leftWidth, 128, s, style, color_white );
+	ST_DrawString( leftWidth, 128, s, style, color_white, 1.00 );
 
 	UI_ReadableSize( dlSizeBuf,		sizeof dlSizeBuf,		downloadCount );
 	UI_ReadableSize( totalSizeBuf,	sizeof totalSizeBuf,	downloadSize );
 
 	if (downloadCount < 4096 || !downloadTime) {
-		UI_DrawString( leftWidth, 160, "estimating", style, color_white );
-		UI_DrawString( leftWidth, 192, 
-			va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white );
+		ST_DrawString( leftWidth, 160, "estimating", style, color_white, 1.00 );
+		ST_DrawString( leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white, 1.00 );
 	} else {
 	  // bk010108
 	  //float elapsedTime = (float)(uis.realtime - downloadTime); // current - start (msecs)
@@ -138,25 +137,19 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 			UI_PrintTime ( dlTimeBuf, sizeof dlTimeBuf, n ); // bk010104
 				//(n - (((downloadCount/1024) * n) / (downloadSize/1024))) * 1000);
 
-			UI_DrawString( leftWidth, 160, 
-				dlTimeBuf, style, color_white );
-			UI_DrawString( leftWidth, 192, 
-				va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white );
+			ST_DrawString( leftWidth, 160, dlTimeBuf, style, color_white, 1.00 );
+			ST_DrawString( leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white, 1.00 );
 		} else {
-			UI_DrawString( leftWidth, 160, 
-				"estimating", style, color_white );
+			ST_DrawString( leftWidth, 160, "estimating", style, color_white, 1.00 );
 			if (downloadSize) {
-				UI_DrawString( leftWidth, 192, 
-					va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white );
+				ST_DrawString( leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white, 1.00 );
 			} else {
-				UI_DrawString( leftWidth, 192, 
-					va("(%s copied)", dlSizeBuf), style, color_white );
+				ST_DrawString( leftWidth, 192, va("(%s copied)", dlSizeBuf), style, color_white, 1.00 );
 			}
 		}
 
 		if (xferRate) {
-			UI_DrawString( leftWidth, 224, 
-				va("%s/Sec", xferRateBuf), style, color_white );
+			ST_DrawString( leftWidth, 224, va("%s/Sec", xferRateBuf), style, color_white, 1.00 );
 		}
 	}
 }
@@ -195,7 +188,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	
 	// print any server info (server full, bad version, etc)
 	if ( cstate.connState < CA_CONNECTED ) {
-		UI_DrawString( 2-cl_screenoffset.value, 2, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+		ST_DrawString( 2-cl_screenoffset.value, 2, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color, 1.00 );
 	}
 	if ( lastConnState > cstate.connState ) {
 		lastLoadingText[0] = '\0';
@@ -247,5 +240,5 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	UI_DrawHandlePic( 320-50, 240-75, 100, 100, logo );
 	UI_DrawHandlePic( 320-24, 320-48, 48, 48, loading );
 
-	UI_DrawString( 2-cl_screenoffset.value, 2, s, UI_SMALLFONT|UI_DROPSHADOW, color_white );
+	ST_DrawString( 2-cl_screenoffset.value, 2, s, UI_SMALLFONT|UI_DROPSHADOW, color_white, 1.00 );
 }

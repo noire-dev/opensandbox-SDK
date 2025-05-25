@@ -440,9 +440,6 @@ static void IG_Setup_Event( int index )
 	case IGS_NETWORK:
 		UI_NetworkOptionsMenu();
 		break;
-	case IGS_ADVANCED:
-		UI_AdvancedMenu();
-		break;
 	default:
 		Com_Printf("IG_Setup_Event: unknown id (%i)", id);
 		return;

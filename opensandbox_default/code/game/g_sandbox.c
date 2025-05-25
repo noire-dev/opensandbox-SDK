@@ -143,9 +143,7 @@ char* 		standard_class_spawn[] = {		//classes spawned without sandbox settings
 
 void SB_Shooter_Use( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	vec3_t		dir;
-	float		deg;
 	vec3_t		up, right;
-	gentity_t	*bolt;
 
 	if ( !ent->r.linked )
 		return;
@@ -294,7 +292,6 @@ void setModel(gentity_t *ent, char *modelName) {
 
 void SP_func_prop( gentity_t *ent ) {
 	spawn_t	*s;
-	gitem_t	*item;
 	qboolean spawn_entity = qfalse;
 	
 	// Create entity
@@ -725,12 +722,9 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 
 	if(attacker->tool_id == TL_WELD){
-		vec3_t forward, right, up;
 		vec3_t parentForward, parentRight, parentUp;
 		vec3_t weldForward, weldRight, weldUp;
 		vec3_t relForward, relRight, relUp;
-		int i;
-		gentity_t *object;
 
 		if(entity->client){
 			trap_SendServerCommand( attacker->s.clientNum, "cllp \"This is not prop\n\"" );

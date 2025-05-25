@@ -181,6 +181,133 @@ void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun){
 
 /*
 ================
+Phys_CheckWeldedEntities
+
+Check and calculate welded objects to this object
+================
+*/
+void Phys_CheckWeldedEntities(gentity_t *ent) {
+    gentity_t *object;
+    int i = 0;
+    int j = 0;
+    
+    if (!ent->phys_weldedObjectsNum) {
+        return;
+    }
+
+    for (i = 0; i < MAX_GENTITIES; i++) {
+        object = &g_entities[i];
+        if (ent == object->phys_parent) {
+            trap_UnlinkEntity(object);
+            j++;
+        }
+    }
+
+    ent->phys_weldedObjectsNum = j;
+}
+
+/*
+================
+Phys_RestoreWeldedEntities
+
+Restores welded objects to this object
+================
+*/
+void Phys_RestoreWeldedEntities(gentity_t *ent) {
+	gentity_t *object;
+	int i = 0;
+
+	if(!ent->phys_weldedObjectsNum){
+		return;
+	}
+
+    for (i = 0; i < MAX_GENTITIES; i++) {
+        object = &g_entities[i];
+		if (ent == object->phys_parent) {
+            vec3_t forward, right, up;
+            vec3_t rotatedOffset, finalPos;
+			vec3_t entForward, entRight, entUp;
+			vec3_t relForward, relRight, relUp;
+			vec3_t newForward, newRight, newUp;
+			float matrix[3][3];
+			vec3_t newAngles;
+
+			//
+			// Origin
+			//
+
+            AngleVectors(ent->s.apos.trBase, forward, right, up);
+            rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
+            rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
+            rotatedOffset[2] = forward[2] * object->phys_relativeOrigin[0] + right[2] * object->phys_relativeOrigin[1] + up[2] * object->phys_relativeOrigin[2];
+
+            VectorAdd(ent->r.currentOrigin, rotatedOffset, finalPos);
+			
+            VectorCopy(finalPos, object->s.origin);
+            VectorCopy(finalPos, object->r.currentOrigin);
+            VectorCopy(finalPos, object->s.pos.trBase);
+
+			//
+			// Angles
+			//
+
+			AngleVectors(ent->s.apos.trBase, entForward, entRight, entUp);
+
+			VectorCopy(object->phys_rv_0, relForward);
+			VectorCopy(object->phys_rv_1, relRight);
+			VectorCopy(object->phys_rv_2, relUp);
+
+			newForward[0] = entForward[0]*relForward[0] + entRight[0]*relForward[1] + entUp[0]*relForward[2];
+			newForward[1] = entForward[1]*relForward[0] + entRight[1]*relForward[1] + entUp[1]*relForward[2];
+			newForward[2] = entForward[2]*relForward[0] + entRight[2]*relForward[1] + entUp[2]*relForward[2];
+			
+			newRight[0] = entForward[0]*relRight[0] + entRight[0]*relRight[1] + entUp[0]*relRight[2];
+			newRight[1] = entForward[1]*relRight[0] + entRight[1]*relRight[1] + entUp[1]*relRight[2];
+			newRight[2] = entForward[2]*relRight[0] + entRight[2]*relRight[1] + entUp[2]*relRight[2];
+			
+			newUp[0] = entForward[0]*relUp[0] + entRight[0]*relUp[1] + entUp[0]*relUp[2];
+			newUp[1] = entForward[1]*relUp[0] + entRight[1]*relUp[1] + entUp[1]*relUp[2];
+			newUp[2] = entForward[2]*relUp[0] + entRight[2]*relUp[1] + entUp[2]*relUp[2];
+
+			OrthogonalizeMatrix(newForward, newRight, newUp);
+
+			matrix[0][0] = newForward[0]; // X forward
+			matrix[0][1] = newRight[0];   // X right
+			matrix[0][2] = newUp[0];      // X up
+
+			matrix[1][0] = newForward[1]; // Y forward
+			matrix[1][1] = newRight[1];   // Y right
+			matrix[1][2] = newUp[1];      // Y up
+
+			matrix[2][0] = newForward[2]; // Z forward
+			matrix[2][1] = newRight[2];   // Z right
+			matrix[2][2] = newUp[2];      // Z up
+
+			AxisToAngles(matrix, newAngles);
+
+			newAngles[2] -= 180;	//it's work well
+
+			VectorCopy(newAngles, object->s.angles);
+    		VectorCopy(newAngles, object->s.apos.trBase);
+			VectorCopy(newAngles, object->r.currentAngles);
+
+			//
+			// Disable phys
+			//
+
+			object->s.pos.trType = TR_STATIONARY;
+			object->sb_phys = PHYS_STATIC;
+			object->s.otherEntityNum = ent->s.number;
+			VectorCopy(object->phys_relativeOrigin, object->s.origin2);
+			Phys_Disable(object, object->s.pos.trBase);
+
+			trap_LinkEntity(object);
+		}
+    }
+}
+
+/*
+================
 Phys_HoldFrame
 
 Physics frame for hold entity with physgun or gravitygun
@@ -557,6 +684,50 @@ void Phys_SelectPhysModel(gentity_t *ent) {
 
 /*
 ================
+Phys_Check
+
+Check ground or solid for physic object
+================
+*/
+qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
+    vec3_t start, end;
+    vec3_t checkMins, checkMaxs;
+    float collmodifier = 1.00;
+    trace_t tr;
+
+    VectorCopy(ent->r.currentOrigin, start);
+    VectorCopy(start, end);
+
+    if (checkNum == PHYSCHECK_INAIR) {
+        end[2] -= distance;
+		collmodifier = PHYS_COL_CHECK;
+    }
+
+    VectorCopy(ent->r.mins, checkMins);
+    VectorCopy(ent->r.maxs, checkMaxs);
+    checkMins[0] *= collmodifier;
+    checkMins[1] *= collmodifier;
+    checkMins[2] *= 1.00;
+    checkMaxs[0] *= collmodifier;
+    checkMaxs[1] *= collmodifier;
+	if (checkNum == PHYSCHECK_INAIR) {
+		checkMaxs[2] *= -1.00;
+		checkMaxs[2] += 1.00;
+	} else {
+		checkMaxs[2] *= collmodifier;
+	}
+
+    trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
+
+    if (checkNum != PHYSCHECK_SOLID) {
+        return !(tr.fraction < 1.0f);
+    } else {
+        return tr.startsolid;
+    }
+}
+
+/*
+================
 Phys_UpdateState
 
 Updates state for physic object and turn off physics
@@ -602,50 +773,6 @@ qboolean Phys_UpdateState( gentity_t *ent ) {
 		}
 	}
 	return qtrue;
-}
-
-/*
-================
-Phys_Check
-
-Check ground or solid for physic object
-================
-*/
-qboolean Phys_Check(gentity_t *ent, float distance, int checkNum) {
-    vec3_t start, end;
-    vec3_t checkMins, checkMaxs;
-    float collmodifier = 1.00;
-    trace_t tr;
-
-    VectorCopy(ent->r.currentOrigin, start);
-    VectorCopy(start, end);
-
-    if (checkNum == PHYSCHECK_INAIR) {
-        end[2] -= distance;
-		collmodifier = PHYS_COL_CHECK;
-    }
-
-    VectorCopy(ent->r.mins, checkMins);
-    VectorCopy(ent->r.maxs, checkMaxs);
-    checkMins[0] *= collmodifier;
-    checkMins[1] *= collmodifier;
-    checkMins[2] *= 1.00;
-    checkMaxs[0] *= collmodifier;
-    checkMaxs[1] *= collmodifier;
-	if (checkNum == PHYSCHECK_INAIR) {
-		checkMaxs[2] *= -1.00;
-		checkMaxs[2] += 1.00;
-	} else {
-		checkMaxs[2] *= collmodifier;
-	}
-
-    trap_Trace(&tr, start, checkMins, checkMaxs, end, ent->s.number, MASK_PLAYERSOLID);
-
-    if (checkNum != PHYSCHECK_SOLID) {
-        return !(tr.fraction < 1.0f);
-    } else {
-        return tr.startsolid;
-    }
 }
 
 /*
@@ -765,133 +892,6 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
         }
     }
 
-}
-
-/*
-================
-Phys_CheckWeldedEntities
-
-Check and calculate welded objects to this object
-================
-*/
-void Phys_CheckWeldedEntities(gentity_t *ent) {
-    gentity_t *object;
-    int i = 0;
-    int j = 0;
-    
-    if (!ent->phys_weldedObjectsNum) {
-        return;
-    }
-
-    for (i = 0; i < MAX_GENTITIES; i++) {
-        object = &g_entities[i];
-        if (ent == object->phys_parent) {
-            trap_UnlinkEntity(object);
-            j++;
-        }
-    }
-
-    ent->phys_weldedObjectsNum = j;
-}
-
-/*
-================
-Phys_RestoreWeldedEntities
-
-Restores welded objects to this object
-================
-*/
-void Phys_RestoreWeldedEntities(gentity_t *ent) {
-	gentity_t *object;
-	int i = 0;
-
-	if(!ent->phys_weldedObjectsNum){
-		return;
-	}
-
-    for (i = 0; i < MAX_GENTITIES; i++) {
-        object = &g_entities[i];
-		if (ent == object->phys_parent) {
-            vec3_t forward, right, up;
-            vec3_t rotatedOffset, finalPos;
-			vec3_t entForward, entRight, entUp;
-			vec3_t relForward, relRight, relUp;
-			vec3_t newForward, newRight, newUp;
-			float matrix[3][3];
-			vec3_t newAngles;
-
-			//
-			// Origin
-			//
-
-            AngleVectors(ent->s.apos.trBase, forward, right, up);
-            rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
-            rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
-            rotatedOffset[2] = forward[2] * object->phys_relativeOrigin[0] + right[2] * object->phys_relativeOrigin[1] + up[2] * object->phys_relativeOrigin[2];
-
-            VectorAdd(ent->r.currentOrigin, rotatedOffset, finalPos);
-			
-            VectorCopy(finalPos, object->s.origin);
-            VectorCopy(finalPos, object->r.currentOrigin);
-            VectorCopy(finalPos, object->s.pos.trBase);
-
-			//
-			// Angles
-			//
-
-			AngleVectors(ent->s.apos.trBase, entForward, entRight, entUp);
-
-			VectorCopy(object->phys_rv_0, relForward);
-			VectorCopy(object->phys_rv_1, relRight);
-			VectorCopy(object->phys_rv_2, relUp);
-
-			newForward[0] = entForward[0]*relForward[0] + entRight[0]*relForward[1] + entUp[0]*relForward[2];
-			newForward[1] = entForward[1]*relForward[0] + entRight[1]*relForward[1] + entUp[1]*relForward[2];
-			newForward[2] = entForward[2]*relForward[0] + entRight[2]*relForward[1] + entUp[2]*relForward[2];
-			
-			newRight[0] = entForward[0]*relRight[0] + entRight[0]*relRight[1] + entUp[0]*relRight[2];
-			newRight[1] = entForward[1]*relRight[0] + entRight[1]*relRight[1] + entUp[1]*relRight[2];
-			newRight[2] = entForward[2]*relRight[0] + entRight[2]*relRight[1] + entUp[2]*relRight[2];
-			
-			newUp[0] = entForward[0]*relUp[0] + entRight[0]*relUp[1] + entUp[0]*relUp[2];
-			newUp[1] = entForward[1]*relUp[0] + entRight[1]*relUp[1] + entUp[1]*relUp[2];
-			newUp[2] = entForward[2]*relUp[0] + entRight[2]*relUp[1] + entUp[2]*relUp[2];
-
-			OrthogonalizeMatrix(newForward, newRight, newUp);
-
-			matrix[0][0] = newForward[0]; // X forward
-			matrix[0][1] = newRight[0];   // X right
-			matrix[0][2] = newUp[0];      // X up
-
-			matrix[1][0] = newForward[1]; // Y forward
-			matrix[1][1] = newRight[1];   // Y right
-			matrix[1][2] = newUp[1];      // Y up
-
-			matrix[2][0] = newForward[2]; // Z forward
-			matrix[2][1] = newRight[2];   // Z right
-			matrix[2][2] = newUp[2];      // Z up
-
-			AxisToAngles(matrix, newAngles);
-
-			newAngles[2] -= 180;	//it's work well
-
-			VectorCopy(newAngles, object->s.angles);
-    		VectorCopy(newAngles, object->s.apos.trBase);
-			VectorCopy(newAngles, object->r.currentAngles);
-
-			//
-			// Disable phys
-			//
-
-			object->s.pos.trType = TR_STATIONARY;
-			object->sb_phys = PHYS_STATIC;
-			object->s.otherEntityNum = ent->s.number;
-			VectorCopy(object->phys_relativeOrigin, object->s.origin2);
-			Phys_Disable(object, object->s.pos.trBase);
-
-			trap_LinkEntity(object);
-		}
-    }
 }
 
 /*

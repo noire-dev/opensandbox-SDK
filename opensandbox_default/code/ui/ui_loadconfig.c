@@ -410,10 +410,10 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 	fade[3] = 0.8;
 
 	if(cl_language.integer == 0){
-	UI_DrawString( 320, FILENAME_Y - 36, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_grey );
+	ST_DrawString( 320, FILENAME_Y - 36, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
 	if(cl_language.integer == 1){
-	UI_DrawString( 320, FILENAME_Y - 36, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey );
+	ST_DrawString( 320, FILENAME_Y - 36, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
 	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
 	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
@@ -442,7 +442,7 @@ static void LoadConfig_MenuDraw(void)
 		fadecol[2] = f;
 		fadecol[3] = 1.0;
 
-		UI_DrawString(320, 64, s_configs.status_text, UI_CENTER|UI_SMALLFONT, fadecol);
+		ST_DrawString(320, 64, s_configs.status_text, UI_CENTER|UI_SMALLFONT, fadecol, 1.00);
 	}
 
 	// draw the controls
@@ -465,7 +465,6 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	UI_LoadConfig_Cache();
 
 	memset( &s_configs, 0 ,sizeof(configs_t) );
-	s_configs.menu.native 	  = qfalse;
 	s_configs.menu.fullscreen = qtrue;
 	s_configs.menu.draw = LoadConfig_MenuDraw;
 

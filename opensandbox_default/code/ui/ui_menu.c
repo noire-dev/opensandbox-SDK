@@ -96,12 +96,12 @@ static void Main_MenuDraw( void ) {
 	Menu_Draw( &main.menu );
 
 	if (strlen(main.error)){
-		UI_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color );
+		ST_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color, 1.00 );
 	}
 	if(uis.addonsdraw){
 		UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*SMALLCHAR_HEIGHT*1.25)+4, 10, modlistcolor);
 	}
-	UI_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color );
+	ST_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 }
 
 void UI_MainMenu( void ) {
@@ -111,7 +111,6 @@ void UI_MainMenu( void ) {
 	trap_Cvar_VariableStringBuffer( "com_errorMessage", main.error, sizeof(main.error) );
 	main.menu.draw = Main_MenuDraw;
 	main.menu.fullscreen = qtrue;
-	main.menu.native = qfalse;
 
 	y = OSUI_STANDARD_Y;
 	if(uis.onmap){
@@ -127,19 +126,18 @@ void UI_MainMenu( void ) {
 	} else {
 		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Find Multiplayer Game", UI_LEFT, 1.00, NULL, NULL, UI_ArenaServersMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 	}
-	UI_CButton(&main.e[3], 64 - uis.wideoffset, y, "Workshop", UI_LEFT, 1.00, NULL, NULL, UI_WorkshopMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&main.e[5], 64 - uis.wideoffset, y, "Mods", UI_LEFT, 1.00, NULL, NULL, UI_ModsMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&main.e[6], 64 - uis.wideoffset, y, "Demos", UI_LEFT, 1.00, NULL, NULL, UI_DemosMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
-	UI_CButton(&main.e[7], 64 - uis.wideoffset, y, "Options", UI_LEFT, 1.00, NULL, NULL, UI_Options, NULL, 0); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&main.e[3], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Mods", UI_LEFT, 1.00, NULL, NULL, UI_ModsMenu, NULL, 0); y += OSUI_SPACING_Y;
+	UI_CButton(&main.e[5], 64 - uis.wideoffset, y, "Demos", UI_LEFT, 1.00, NULL, NULL, UI_DemosMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&main.e[6], 64 - uis.wideoffset, y, "Options", UI_LEFT, 1.00, NULL, NULL, UI_Options, NULL, 0); y += OSUI_BIGSPACING_Y;
 	if(uis.onmap){
-		UI_CButton(&main.e[8], 64 - uis.wideoffset, y, "Disconnect", UI_LEFT, 1.00, "disconnect \n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[7], 64 - uis.wideoffset, y, "Disconnect", UI_LEFT, 1.00, "disconnect \n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
 	}
-	UI_CButton(&main.e[9], 64 - uis.wideoffset, y, "Quit", UI_LEFT, 1.00, "quit \n", NULL, NULL, NULL, 0);
+	UI_CButton(&main.e[8], 64 - uis.wideoffset, y, "Quit", UI_LEFT, 1.00, "quit \n", NULL, NULL, NULL, 0);
 
-	UI_CPicture(&main.e[10], OSUI_LOGO_X, OSUI_LOGO_Y, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, NULL, 0);
+	UI_CPicture(&main.e[9], OSUI_LOGO_X, OSUI_LOGO_Y, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, NULL, 0);
 
-	UI_CBitmap(&main.e[11], 315 + 256*0.62 + 5 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_MOD, 0, NULL, NULL, StartServer_ServerPage_Mods, NULL, 0);
+	UI_CBitmap(&main.e[10], 315 + 256*0.62 + 5 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_MOD, 0, NULL, NULL, StartServer_ServerPage_Mods, NULL, 0);
 	UI_CBitmap(&main.e[ID_LINK], 315 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_LINK, 0, NULL, NULL, NULL, Main_MenuEvent, ID_LINK);
 
 	UI_CBitmap(&main.e[ID_ADDONS], 613 + uis.wideoffset, 2, 24, 12, AST_ADDONBTN, 0, NULL, NULL, NULL, Main_MenuEvent, ID_ADDONS);

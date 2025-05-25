@@ -81,6 +81,7 @@ qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out 
 	return present;
 }
 
+void SP_EmptySpawn(gentity_t *ent) {}
 
 //
 // fields are needed for spawning from the entity string
@@ -187,13 +188,13 @@ spawn_t	spawns_table[] = {
 	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
 	{"info_player_deathmatch", SP_info_player_deathmatch},
-	{"info_player_intermission", SP_info_player_intermission},
+	{"info_player_intermission", SP_EmptySpawn},
 //Double Domination player spawn:
 	{"info_player_dd", SP_info_player_dd},
     {"info_player_dd_red", SP_info_player_dd_red},
     {"info_player_dd_blue", SP_info_player_dd_blue},
 //Standard Domination point spawn:
-	{"domination_point", SP_domination_point},
+	{"domination_point", SP_EmptySpawn},
 
 	{"info_null", SP_info_null},
 	{"info_notnull", SP_info_notnull},		// use target_position instead

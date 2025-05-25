@@ -1524,7 +1524,6 @@ static void ArenaServers_MenuInit( void ) {
 	ArenaServers_Cache();
 
 	g_arenaservers.menu.fullscreen = qtrue;
-	g_arenaservers.menu.native 	   = qfalse;
     g_arenaservers.menu.draw       = ArenaServers_MenuDraw;
 	g_arenaservers.menu.key        = ArenaServers_MenuKey;
 

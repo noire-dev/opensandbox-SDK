@@ -223,7 +223,7 @@ int BotSortTeamMatesByRelativeTravelTime2ddA(bot_state_t *bs, int *teammates, in
 BotSetTeamMateTaskPreference
 ==================
 */
-void BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference) {
+void BotSetTeamMateTaskPreference(int teammate, int preference) {
 	char teammatename[MAX_NETNAME];
 
 	ctftaskpreferences[teammate].preference = preference;
@@ -236,7 +236,7 @@ void BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference)
 BotGetTeamMateTaskPreference
 ==================
 */
-int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate) {
+int BotGetTeamMateTaskPreference(int teammate) {
 	char teammatename[MAX_NETNAME];
 
 	if (!ctftaskpreferences[teammate].preference) return 0;
@@ -250,7 +250,7 @@ int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate) {
 BotSortTeamMatesByTaskPreference
 ==================
 */
-int BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numteammates) {
+int BotSortTeamMatesByTaskPreference(int *teammates, int numteammates) {
 	int defenders[MAX_CLIENTS], numdefenders;
 	int attackers[MAX_CLIENTS], numattackers;
 	int roamers[MAX_CLIENTS], numroamers;
@@ -258,7 +258,7 @@ int BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numtea
 
 	numdefenders = numattackers = numroamers = 0;
 	for (i = 0; i < numteammates; i++) {
-		preference = BotGetTeamMateTaskPreference(bs, teammates[i]);
+		preference = BotGetTeamMateTaskPreference(teammates[i]);
 		if (preference & TEAMTP_DEFENDER) {
 			defenders[numdefenders++] = teammates[i];
 		}
@@ -293,7 +293,7 @@ void BotSayTeamOrderAlways(bot_state_t *bs, int toclient) {
 	char buf[MAX_MESSAGE_SIZE];
 	char name[MAX_NETNAME];
 
-        if (bot_nochat.integer>2) return;
+    if (bot_nochat.integer>2) return;
 
 	//if the bot is talking to itself
 	if (bs->client == toclient) {
@@ -302,8 +302,7 @@ void BotSayTeamOrderAlways(bot_state_t *bs, int toclient) {
 		ClientName(bs->client, name, sizeof(name));
 		Com_sprintf(teamchat, sizeof(teamchat), EC"(%s"EC")"EC": %s", name, buf);
 		trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, teamchat);
-	}
-	else {
+	} else {
 		trap_BotEnterChat(bs->cs, toclient, CHAT_TELL);
 	}
 }
@@ -314,13 +313,12 @@ BotSayTeamOrders
 ==================
 */
 void BotSayTeamOrder(bot_state_t *bs, int toclient) {
-	// voice chats only
-	char buf[MAX_MESSAGE_SIZE];
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-	trap_BotGetChatMessage(bs->cs, buf, sizeof(buf));
+	if(bs->spbot){
+	if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
+	    return; // spbot no chat
+	}}
+
+	BotSayTeamOrderAlways(bs, toclient);
 }
 
 /*
@@ -338,7 +336,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
         return; // spbot no chat
 }}
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//different orders based on the number of team mates
 	switch(bs->numteammates) {
 		case 1: break;
@@ -450,7 +448,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
         if (bot_nochat.integer>2) return;
 
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 
 	weAreAttacking = qfalse;
 
@@ -599,7 +597,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
         if (bot_nochat.integer>2) return;
 
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//different orders based on the number of team mates
 	switch(numteammates) {
 		case 1: break;
@@ -744,7 +742,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 
 	weAreAttacking = qfalse;
 
@@ -1032,7 +1030,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1186,7 +1184,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1396,7 +1394,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1550,7 +1548,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1718,7 +1716,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1872,7 +1870,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates

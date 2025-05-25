@@ -113,7 +113,7 @@ static void NSGUI_MenuDraw( void ) {
 	Menu_Draw( &s_nsgui.menu );
 
 	if (uis.debug) {
-	UI_DrawString( 320, 1, "NS Gui v1.0 by Noire.dev", UI_CENTER|UI_SMALLFONT, color1 );
+		ST_DrawString( 320, 1, "NS Gui v1.0 by Noire.dev", UI_CENTER|UI_SMALLFONT, color1, 1.00 );
 	}
 }
 
@@ -253,9 +253,6 @@ void UI_NSGUI( void ) {
 	} else {
 		s_nsgui.menu.fullscreen = qfalse;	
 	}
-	s_nsgui.menu.native = qfalse;
-	s_nsgui.menu.downlimitscroll = get_variable_float("gui_scroll");
-	//s_nsgui.menu.key = NSGUI_Key;
 
 	for ( i = 1; i < MAX_OBJECTS-1; i++ ) {
 	type = get_variable_int(va("gui%i_type", i));

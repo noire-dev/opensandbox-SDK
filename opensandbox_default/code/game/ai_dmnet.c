@@ -1359,8 +1359,6 @@ BotClearPath
 ==================
 */
 void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult) {
-	int i, bestmine;
-	float dist, bestdist;
 	vec3_t target, dir;
 	bsp_trace_t bsptrace;
 	entityState_t state;

@@ -665,7 +665,7 @@ static void StartServer_MapPage_DrawMapName( void *item )
 	{
 		// draw cursor
 		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, color_select_bluo );
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 
 	// draw short name
@@ -685,14 +685,14 @@ static void StartServer_MapPage_DrawMapName( void *item )
 	
 
 	if (string)
-		UI_DrawString( x + SMALLCHAR_WIDTH, y, string, style|UI_LEFT, color );
+		ST_DrawString( x + SMALLCHAR_WIDTH, y, string, style|UI_LEFT, color, 1.00 );
 
 	// draw long name
 	string = 0;
 	if (index < s_scriptdata.map.num_maps)
 		string = s_scriptdata.map.data[index].longName;
 	if (string)
-		UI_DrawString( x + SMALLCHAR_WIDTH + MAPLONGNAME_DX, y, string, style|UI_LEFT, color );
+		ST_DrawString( x + SMALLCHAR_WIDTH + MAPLONGNAME_DX, y, string, style|UI_LEFT, color, 1.00 );
 }
 
 
@@ -1000,10 +1000,10 @@ StartServer_MapPage_LimitStatusbar
 static void StartServer_MapPage_LimitStatusbar(void* self)
 {
 	if(cl_language.integer == 0){
-	UI_DrawString(320, s_mapcontrols.statusbar_height, "0 = Unlimited", UI_CENTER|UI_SMALLFONT, color_white);
+	ST_DrawString(320, s_mapcontrols.statusbar_height, "0 = Unlimited", UI_CENTER|UI_SMALLFONT, color_white, 1.00);
 	}
 	if(cl_language.integer == 1){
-	UI_DrawString(320, s_mapcontrols.statusbar_height, "0 = Бесконечно", UI_CENTER|UI_SMALLFONT, color_white);
+	ST_DrawString(320, s_mapcontrols.statusbar_height, "0 = Бесконечно", UI_CENTER|UI_SMALLFONT, color_white, 1.00);
 	}
 }
 
@@ -1424,7 +1424,7 @@ static void StartServer_MapPage_DrawPageText( void* b )
 		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, color_select_bluo );
 	}
 
-	UI_DrawString( x, y, s->string, style, color );
+	ST_DrawString( x, y, s->string, style, color, 1.00 );
 }
 
 
@@ -1437,7 +1437,7 @@ StartServer_MapPage_DrawStatusBarText
 */
 static void StartServer_MapPage_DrawStatusBarText(void* self)
 {
-	UI_DrawString(320, s_mapcontrols.statusbar_height, s_mapcontrols.statusbar_text, UI_CENTER|UI_SMALLFONT, color_white);
+	ST_DrawString(320, s_mapcontrols.statusbar_height, s_mapcontrols.statusbar_text, UI_CENTER|UI_SMALLFONT, color_white, 1.00);
 }
 
 
@@ -1520,7 +1520,6 @@ void StartServer_MapPage_MenuInit(void)
 
 	menuptr = &s_mapcontrols.menu;
 
-	menuptr->native 	= qfalse;
 	menuptr->fullscreen = qtrue;
 	menuptr->draw = StartServer_MapPage_MenuDraw;
 

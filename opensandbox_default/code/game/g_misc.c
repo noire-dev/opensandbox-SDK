@@ -150,8 +150,6 @@ TELEPORTERS
 Sets player's location without spitting out the player
 ===========*/
 void TeleportPlayerNoKnockback( gentity_t *player, vec3_t origin, vec3_t angles, int angle ) {
-	gentity_t	*tent;
-	vec3_t orgAngles;
 	vec3_t changedvel;
 
 	VectorCopy ( origin, player->client->ps.origin );
@@ -282,7 +280,7 @@ void locateCamera( gentity_t *ent ) {
 
 	owner = G_PickTarget( ent->target );
 	if ( !owner ) {
-                G_Printf( "Couldn't find target for misc_portal_surface\n" );
+        G_Printf( "Couldn't find target for misc_portal_surface\n" );
 		G_FreeEntity( ent );
 		return;
 	}
@@ -361,7 +359,6 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	vec3_t		dir;
 	float		deg;
 	vec3_t		up, right;
-	gentity_t	*bolt;
 
 	if ( !ent->r.linked )
 		return;

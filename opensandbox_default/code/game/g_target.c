@@ -133,7 +133,7 @@ void SP_target_delay( gentity_t *ent ) {
 }
 
 void Use_Target_Score (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	AddScore( activator, ent->r.currentOrigin, ent->count );
+	AddScore( activator, ent->count );
 }
 
 void SP_target_score( gentity_t *ent ) {
@@ -424,7 +424,7 @@ void SP_target_laser (gentity_t *self)
 {
 	char        *sound;
 	vec3_t		color;
-	int			r, g, b, i;
+	int			r, g, b;
 
 	// if the "noise" key is set, use a constant looping sound when moving
 	if (G_SpawnString("noise", "100", &sound)) {
@@ -449,13 +449,6 @@ void SP_target_laser (gentity_t *self)
 	if (b > 255) {
 		b = 255;
 	}
-	/*
-	i = light / 4;
-	if (i > 255) {
-		i = 255;
-	}
-	self->s.constantLight = r | (g << 8) | (b << 16) | (i << 24);
-	*/
 	self->s.constantLight = r | (g << 8) | (b << 16);
 }
 
@@ -910,7 +903,6 @@ void target_effect_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 
 void target_effect_think(gentity_t* self) {
 	gentity_t* tmp;
-	vec3_t		wut;
 	vec3_t		dir;
 
 	if (self->target) {
@@ -1029,7 +1021,6 @@ void target_finish_think(gentity_t* self) {
 
 void target_finish_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	int secretFound, secretCount;
-	playerscore_t highScores;
 	playerscore_t scores;
 
 	// bots should not be able to activate this
@@ -1217,7 +1208,7 @@ void modify_entity ( gentity_t *self, gentity_t *ent ) {
 
 	if ( !strcmp( self->key, "light" ) ) {
 		int		cl;
-		int r, g, b, i;
+		int r, g, b;
 
 		cl = ent->s.constantLight;
 
@@ -1411,12 +1402,6 @@ void target_cutscene_think (gentity_t *self) {
 }
 
 void SP_target_cutscene (gentity_t *self) {
-	/*if ( !self->target && !self->target2 ) {
-		G_Printf("WARNING: %s without a target or target2 at %s\n", self->classname, vtos(self->s.origin));
-		G_FreeEntity( self );
-		return;
-	}*/
-
 	self->nextthink = level.time + FRAMETIME * 3;
 	self->think = target_cutscene_think;
 	self->use = target_cutscene_use;
@@ -1442,7 +1427,6 @@ void target_music_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 
 void SP_target_music (gentity_t *self) {
 	char	*s;
-	char	buffer[MAX_INFO_STRING];
 	G_SpawnString( "music", "", &s );
 	Q_strncpyz( self->music, s, sizeof(self->music) );
 
@@ -1523,8 +1507,6 @@ void SP_rally_weather_snow( gentity_t *ent ){
 }
 
 void script_variable_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	char buf[MAX_INFO_STRING];
-	char variableInfo[MAX_INFO_STRING];
 	char value[128];
 
 	if ( self->spawnflags & 1 || self->spawnflags & 2)
@@ -1584,8 +1566,6 @@ void SP_script_variable (gentity_t *self) {
 }
 
 void script_layer_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	gentity_t	*dest;
-
 	if (!activator->client)
 		return;
 

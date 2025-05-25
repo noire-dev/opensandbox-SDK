@@ -56,7 +56,7 @@ void	CG_InitMarkPolys( void ) {
 	cg_activeMarkPolys.nextMark = &cg_activeMarkPolys;
 	cg_activeMarkPolys.prevMark = &cg_activeMarkPolys;
 	cg_freeMarkPolys = cg_markPolys;
-	for ( i = 0 ; i < cg_effectsLimit.integer*0.25 - 1 ; i++ ) {
+	for ( i = 0 ; i < cg_effectsLimit.integer*2 - 1 ; i++ ) {
 		cg_markPolys[i].nextMark = &cg_markPolys[i+1];
 	}
 }
@@ -233,7 +233,6 @@ void CG_AddMarks( void ) {
 	markPoly_t	*mp, *next;
 	int			t;
 	int			fade;
-	char var[MAX_TOKEN_CHARS];
 
 	if ( !cg_addMarks.integer ) {
 		return;

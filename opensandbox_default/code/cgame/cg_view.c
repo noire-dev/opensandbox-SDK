@@ -91,7 +91,6 @@ static void CG_ViewFog( void ) {
 }
 
 static void CG_ViewSky( void ) {
-	int i;
 	float scale;
 	
 	if(!mod_skyColorA){
@@ -227,7 +226,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	float			*origin;
 	float			*angles;
 	float			bob;
-	float			ratio;
 	float			delta;
 	float			speed;
 	float			f;
@@ -321,31 +319,23 @@ static void CG_OffsetFirstPersonView( void ) {
 }
 
 void CG_ZoomDown_f( void ) {
-	if (cg.scoreBoardShowing){
-		cg.teamoverlay = qtrue;
+	if ( cg.zoomed ) {
+		return;
+	}
+	if ( cg.snap->ps.generic2 != WP_PHYSGUN ){
+	cg.zoomed = qtrue;
+	cg.zoomTime = cg.time;
 	} else {
-		if ( cg.zoomed ) {
-			return;
-		}
-		if ( cg.snap->ps.generic2 != WP_PHYSGUN ){
-		cg.zoomed = qtrue;
-		cg.zoomTime = cg.time;
-		} else {
-		trap_SendConsoleCommand("altfire_physgun\n");
-		}
+	trap_SendConsoleCommand("altfire_physgun\n");
 	}
 }
 
 void CG_ZoomUp_f( void ) { 
-	if (cg.scoreBoardShowing){
-		cg.teamoverlay = qfalse;
-	} else {
-		if ( !cg.zoomed ) {
-			return;
-		}
-		cg.zoomed = qfalse;
-		cg.zoomTime = cg.time;
+	if ( !cg.zoomed ) {
+		return;
 	}
+	cg.zoomed = qfalse;
+	cg.zoomTime = cg.time;
 }
 
 
@@ -503,7 +493,6 @@ static void CG_CalcCutsceneFov(int startFov, int endFov, float progress) {
 
 static void CG_CalcCutsceneViewValues( ) {
 	const char *cutsceneData;
-	char buf[MAX_INFO_STRING];
 	float wait;
 	int start_time;
 	vec3_t destOrigin, destAngles;

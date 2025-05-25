@@ -296,7 +296,7 @@ static void UI_AddBotsMenu_Draw( void ) {
 	int skill;
    float f_skill;
 
-	UI_DrawString( 320, 16, "ADD BOTS", UI_CENTER, color_white );
+	ST_DrawString( 320, 16, "ADD BOTS", UI_CENTER, color_white, 1.00 );
 	UI_DrawNamedPic( 320-233, 240-166, 466, 332, ART_BACKGROUND );
 
 	// standard menu drawing
@@ -331,7 +331,7 @@ static void UI_AddBotsMenu_Draw( void ) {
       x = b->generic.x + b->width - 4 * SMALLCHAR_WIDTH;
       y = b->generic.y + b->height + 2;
       f_skill = addBotsMenuInfo.skill_slider.curvalue + 1;
-	   UI_DrawString(x, y, va("%4.2f", f_skill), UI_SMALLFONT, color_grey);
+	   ST_DrawString(x, y, va("%4.2f", f_skill), UI_SMALLFONT, color_grey, 1.00);
 	}
 }
 
@@ -388,7 +388,6 @@ static void UI_AddBotsMenu_Init( void ) {
 	memset( &addBotsMenuInfo, 0 ,sizeof(addBotsMenuInfo) );
 	addBotsMenuInfo.menu.draw = UI_AddBotsMenu_Draw;
 	addBotsMenuInfo.menu.fullscreen = qfalse;
-	addBotsMenuInfo.menu.native = qfalse;
 	addBotsMenuInfo.delay = 50;
 
 	addBotsMenuInfo.gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );

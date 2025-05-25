@@ -549,7 +549,6 @@ static void CG_Item( centity_t *cent ) {
 		barrel.hModel = wi->barrelModel;
 
 		VectorCopy( ent.lightingOrigin, barrel.lightingOrigin );
-		barrel.shadowPlane = ent.shadowPlane;
 		barrel.renderfx = ent.renderfx;
 
 		CG_PositionRotatedEntityOnTag( &barrel, &ent, wi->weaponModel, "tag_barrel" );
@@ -656,7 +655,7 @@ static void CG_Missile( centity_t *cent ) {
 	// flicker between two skins
 	ent.skinNum = cg.clientFrame & 1;
 	ent.hModel = weapon->missileModel;
-	ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
+	ent.renderfx = weapon->missileRenderfx;
 
 	if ( cent->currentState.generic3 == WP_PROX_LAUNCHER ) {
 		if (s1->generic1 == TEAM_BLUE) {
@@ -721,7 +720,7 @@ static void CG_Grapple( centity_t *cent ) {
 	// flicker between two skins
 	ent.skinNum = cg.clientFrame & 1;
 	ent.hModel = weapon->missileModel;
-	ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
+	ent.renderfx = weapon->missileRenderfx;
 
 	// convert direction of travel into axis
 	if ( VectorNormalize2( s1->pos.trDelta, ent.axis[0] ) == 0 ) {
@@ -764,8 +763,6 @@ static void CG_Mover(centity_t *cent) {
     VectorCopy(cent->lerpOrigin, ent.origin);
     VectorCopy(cent->lerpOrigin, ent.oldorigin);
     AnglesToAxis(cent->lerpAngles, ent.axis);
-
-    ent.renderfx = RF_NOSHADOW;
 
     // get the model, either as a bmodel or a modelindex
     if (s1->solid == SOLID_BMODEL) {
@@ -850,8 +847,6 @@ void CG_Beam( centity_t *cent ) {
 	ent.shaderRGBA[1] = (s1->constantLight >> 8) & 255;
 	ent.shaderRGBA[2] = (s1->constantLight >> 16) & 255;
 	ent.shaderRGBA[3] = 255;
-
-	ent.renderfx = RF_NOSHADOW;
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
