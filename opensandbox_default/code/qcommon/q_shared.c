@@ -1216,32 +1216,25 @@ qboolean FS_FileExists(const char *filename) {
 	return qfalse;
 }
 
-
 /*
 =====================
 OpenSandbox UI colors
 =====================
 */
-vec4_t menu_text_color		= {1.0f, 1.0f, 1.0f, 1.0f};
-vec4_t menu_dim_color   	= {0.0f, 0.0f, 0.0f, 0.75f};
 vec4_t color_black	    	= {0.00f, 0.00f, 0.00f, 1.00f};
 vec4_t color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
 vec4_t color_yellow	    	= {1.00f, 1.00f, 0.00f, 1.00f};
 vec4_t color_blue	    	= {0.00f, 0.00f, 1.00f, 1.00f};
 vec4_t color_grey	    	= {0.30f, 0.45f, 0.58f, 1.00f};
 vec4_t color_red			= {1.00f, 0.00f, 0.00f, 1.00f};
-vec4_t color_dim	    	= {0.00f, 0.00f, 0.00f, 0.30f};
-vec4_t color_dim80	    	= {0.00f, 0.00f, 0.00f, 0.80f};
-vec4_t color_green	    	= {0.00f, 0.99f, 0.00f, 1.00f};
+vec4_t color_dim	    	= {0.00f, 0.00f, 0.00f, 0.40f};
+vec4_t color_green	    	= {0.00f, 1.00f, 0.00f, 1.00f};
 vec4_t color_emerald    	= {0.50f, 0.85f, 0.00f, 1.00f};
-vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
 vec4_t color_lightyellow 	= {1.00f, 0.90f, 0.45f, 1.00f};
-vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
-vec4_t pulse_color          = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t text_color_disabled  = {0.10f, 0.10f, 0.20f, 1.00f};
-vec4_t text_color_normal    = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t text_color_status    = {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t color_disabled  		= {0.10f, 0.10f, 0.20f, 1.00f};
+vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
 vec4_t color_select_bluo    = {0.53f, 0.62f, 0.82f, 0.25f};
+vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
 
 /*
 ======================
@@ -1289,18 +1282,17 @@ void ST_RegisterFont(const char* font){
 
 static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style) {
 	const char* s;
-	char ch;
-	int prev_unicode = 0;
-	vec4_t tempcolor;
-	float ax;
-	float ay;
-	float aw;
-	float ah;
-	float frow;
-	float fcol;
-	float alignstate = 0;
-	int char_count = 0;
-	int fontRes = ST_GetFontRes(charh);
+	char 		ch;
+	int 		prev_unicode = 0;
+	vec4_t 		tempcolor;
+	float 		ax;
+	float 		ay;
+	float 		aw;
+	float 		ah;
+	float 		frow;
+	float 		fcol;
+	float 		alignstate = 0;
+	int 		fontRes = ST_GetFontRes(charh);
 
 	if (style & UI_CENTER) {
 		alignstate = 0.5;
@@ -1371,8 +1363,7 @@ static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw,
 			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, defaultFont[fontRes]);
 		}
 
-		ax += aw;
-		char_count++;
+		ax += aw*FONT_WIDTH;
 		s++;
 	}
 
@@ -1388,19 +1379,47 @@ void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size) {
 	ST_DrawString( x, y, buff, style, color, size );
 }
 
+float ST_StringWidth(const char* str, float size) {
+	const char*		s;
+	int				ch;
+	int				charWidth;
+	float			width;
+
+	s = str;
+	width = 0;
+	while (*s) {
+        if (Q_IsColorString(s)) {
+			s += 2;
+			continue;
+		}
+		ch = *s & 255;
+        charWidth = BASEFONT_WIDTH*size;
+		if (charWidth != -1) {
+			width += charWidth*FONT_WIDTH;
+		}
+		s++;
+	}
+
+	if(ifstrlenru(str)){
+		return width * 0.5;	
+	} else {
+		return width;
+	}
+}
+
 void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize) {
-	int		len;
 	int		charw;
 	int		charh;
 	float	*drawcolor;
 	vec4_t	dropcolor;
+	int 	len = strlen(str);
+	int 	esc = ST_ColorEscapes(str);
 
-	if(!str) {
+	if(!str)
 		return;
-	}
 
-	charw =	SMALLCHAR_WIDTH*fontSize;
-	charh =	SMALLCHAR_HEIGHT*fontSize;
+	charw =	BASEFONT_WIDTH*fontSize;
+	charh =	BASEFONT_HEIGHT*fontSize;
 
 	if (style & UI_PULSE) {
 		drawcolor = color_highlight;
@@ -1410,23 +1429,19 @@ void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float
 
 	switch (style & UI_FORMATMASK) {
 		case UI_CENTER:
-			// center justify at x
-			len = strlen(str);
-			x = x - len*charw/2;
+			x = x - len*(charw*FONT_WIDTH)/2;
+			x += esc*(charw*FONT_WIDTH);
 			break;
 
 		case UI_RIGHT:
-			// right justify at x
-			len = strlen(str);
-			x = x - len*charw;
+			x = x - len*(charw*FONT_WIDTH);
+			x += (esc*2)*(charw*FONT_WIDTH);
 			break;
 
 		default:
-			// left justify at x
+			//nothing to do
 			break;
 	}
-
-	x -= charw * ST_ColorEscapes(str);		//Color escapes bypass
 
 	if (style & UI_DROPSHADOW) {
 		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;

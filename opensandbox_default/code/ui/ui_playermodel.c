@@ -1134,7 +1134,7 @@ static void PlayerModel_MenuInit( void ) {
 	s_playermodel.teamModel.generic.callback		= PlayerModel_MenuEvent;
 	s_playermodel.teamModel.generic.id				= ID_TEAMMODEL;
 	s_playermodel.teamModel.generic.x				= TEAMANDSFX_COLUMN-50;
-	s_playermodel.teamModel.generic.y				= 480 - 50 + 16 + SMALLCHAR_HEIGHT + 2;
+	s_playermodel.teamModel.generic.y				= 480 - 50 + 16 + BASEFONT_HEIGHT + 2;
 	s_playermodel.teamModel.itemnames				= model_dmteam;
 
 	s_playermodel.forceHeadMatch.generic.type			= MTYPE_SPINCONTROL;
@@ -1143,7 +1143,7 @@ static void PlayerModel_MenuInit( void ) {
 	s_playermodel.forceHeadMatch.generic.callback		= PlayerModel_MenuEvent;
 	s_playermodel.forceHeadMatch.generic.id				= ID_FORCEHEADMATCH;
 	s_playermodel.forceHeadMatch.generic.x				= BODYPART_COLUMN-50;
-	s_playermodel.forceHeadMatch.generic.y				= 480 - 50 + 16 + SMALLCHAR_HEIGHT + 2;
+	s_playermodel.forceHeadMatch.generic.y				= 480 - 50 + 16 + BASEFONT_HEIGHT + 2;
 	s_playermodel.forceHeadMatch.itemnames				= model_simplesplit;
 
 	s_playermodel.modelChange.generic.type			= MTYPE_SPINCONTROL;

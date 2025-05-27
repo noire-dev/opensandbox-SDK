@@ -341,7 +341,7 @@ static void RemoveBots_MenuDraw(void)
 		UI_DrawHandlePic( x - 2, y - 2, w, h, hpic);
 
       // write bot skill as float
-      x = b->generic.x + b->width - 4 * SMALLCHAR_WIDTH;
+      x = b->generic.x + b->width - 4 * BASEFONT_INDENT;
       y = b->generic.y + b->height + 2;
 	   ST_DrawString(x, y, va("%4.2f", removeBotsMenuInfo.f_skill), UI_SMALLFONT, color_grey, 1.00);
 	}

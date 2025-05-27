@@ -66,6 +66,7 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 		return UI_IsFullscreen();
 
 	case UI_SET_ACTIVE_MENU:
+		UI_UpdateState();
 		UI_SetActiveMenu( arg0 );
 		return 0;
 
@@ -171,7 +172,6 @@ vmCvar_t	ui_effectslevel;
 vmCvar_t	ui_singlemode;
 vmCvar_t	cl_selectedmod;
 vmCvar_t	cl_language;
-vmCvar_t	cl_screenoffset;
 vmCvar_t	ui_loaded;
 vmCvar_t	sensitivitymenu;
 
@@ -319,7 +319,6 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_loaded, "ui_loaded", "0", 0 },
 	{ &cl_selectedmod, "cl_selectedmod", "default", CVAR_ARCHIVE },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
-	{ &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
 	{ &sensitivitymenu, "sensitivitymenu", "1", CVAR_ARCHIVE },
 
 	{ &ui_spScores1, "g_spScores1", "", CVAR_ARCHIVE | CVAR_ROM },

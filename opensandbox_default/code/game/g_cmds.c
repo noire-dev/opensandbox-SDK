@@ -1906,20 +1906,20 @@ void Cmd_UseTarget_f( gentity_t *ent ) {
 Cmd_ActivateTarget_f
 =================
 */
-void Cmd_ActivateTarget_f( gentity_t *ent ) {
-	char		*p;
-	char        arg[MAX_TOKEN_CHARS];
+void Cmd_ActivateTarget_f(gentity_t *ent) {
+	char	*p;
+	char	arg[MAX_TOKEN_CHARS];
 
     trap_Argv( 0, arg, sizeof( arg ) );
 
-    if( trap_Argc( ) < 2 )
+    if( trap_Argc() < 2 )
         return;
 
-    p = ConcatArgs( 1 );
+    p = ConcatArgs(1);
 	
 	ent->target = va("activate_%i_%s", ent->s.clientNum, p);
 
-	G_PickAllTargets( ent, ent );
+	G_PickAllTargets(ent);
 }
 
 //KK-OAX This is the table that ClientCommands runs the console entry against.

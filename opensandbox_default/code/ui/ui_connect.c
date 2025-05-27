@@ -85,10 +85,10 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 	downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 
-	leftWidth = width = UI_ProportionalStringWidth( dlText, 1.00 ) * 1.00;
-	width = UI_ProportionalStringWidth( etaText, 1.00 ) * 1.00;
+	leftWidth = width = ST_StringWidth( dlText, 1.00 ) * 1.00;
+	width = ST_StringWidth( etaText, 1.00 ) * 1.00;
 	if (width > leftWidth) leftWidth = width;
-	width = UI_ProportionalStringWidth( xferText, 1.00 ) * 1.00;
+	width = ST_StringWidth( xferText, 1.00 ) * 1.00;
 	if (width > leftWidth) leftWidth = width;
 	leftWidth += 16;
 
@@ -171,7 +171,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	qhandle_t	logo;
 	qhandle_t	loading;
 	
-	UI_ScreenOffset();
+	UI_UpdateState();
 	trap_Cvar_Set( "r_fx_blur", "0" );			//blur UI postFX
 	
 	// see what information we should display
@@ -188,7 +188,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	
 	// print any server info (server full, bad version, etc)
 	if ( cstate.connState < CA_CONNECTED ) {
-		ST_DrawString( 2-cl_screenoffset.value, 2, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color, 1.00 );
+		ST_DrawString( 2-uis.wideoffset, 2, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, color_white, 1.00 );
 	}
 	if ( lastConnState > cstate.connState ) {
 		lastLoadingText[0] = '\0';
@@ -240,5 +240,5 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	UI_DrawHandlePic( 320-50, 240-75, 100, 100, logo );
 	UI_DrawHandlePic( 320-24, 320-48, 48, 48, loading );
 
-	ST_DrawString( 2-cl_screenoffset.value, 2, s, UI_SMALLFONT|UI_DROPSHADOW, color_white, 1.00 );
+	ST_DrawString( 2-uis.wideoffset, 2, s, UI_SMALLFONT|UI_DROPSHADOW, color_white, 1.00 );
 }

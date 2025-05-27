@@ -256,7 +256,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.modeltype.generic.id				= ID_MODELTYPE;
 	s_playersettings.modeltype.generic.callback		= PlayerSettings_MenuEvent;
 	s_playersettings.modeltype.string					= "";
-	s_playersettings.modeltype.color					= text_color_normal;
+	s_playersettings.modeltype.color					= color_white;
 	s_playersettings.modeltype.style					= UI_CENTER|UI_DROPSHADOW|UI_SMALLFONT;
 
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.banner );

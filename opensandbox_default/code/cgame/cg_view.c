@@ -717,6 +717,29 @@ static void CG_PlayBufferedSounds( void ) {
 }
 
 /*
+================
+UI_UpdateState
+
+Adjusts HUD for widescreen, etc
+================
+*/
+void UI_UpdateState( void ) {
+	float scrx;
+	float scry;
+	
+	trap_GetGlconfig( &cgs.glconfig );
+	
+	scrx = cgs.glconfig.vidWidth;
+	scry = cgs.glconfig.vidHeight;
+	
+	if((scrx / (scry / 480)-640)/2 >= 0){
+		cgs.wideoffset = (scrx / (scry / 480)-640)/2;
+	} else {
+		cgs.wideoffset = 0;
+	}
+}
+
+/*
 =================
 CG_DrawActiveFrame
 
@@ -729,6 +752,9 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 
 	// update cvars
 	CG_UpdateCvars();
+
+	// update ui
+	UI_UpdateState();
 
 	// if we are only updating the screen as a loading
 	// pacifier, don't even try to read snapshots

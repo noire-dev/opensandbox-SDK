@@ -210,9 +210,6 @@ extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 #define TINYCHAR_WIDTH		6
 #define TINYCHAR_HEIGHT		8
 
-#define SMALLCHAR_WIDTH		9
-#define SMALLCHAR_HEIGHT	11
-
 #define BIGCHAR_WIDTH		12
 #define BIGCHAR_HEIGHT		12
 
@@ -1057,8 +1054,6 @@ float VectorDistance(const vec3_t v1, const vec3_t v2);
 OpenSandbox UI colors
 =====================
 */
-extern vec4_t menu_text_color;
-extern vec4_t menu_dim_color;
 extern vec4_t color_black;
 extern vec4_t color_white;
 extern vec4_t color_yellow;
@@ -1066,17 +1061,13 @@ extern vec4_t color_blue;
 extern vec4_t color_grey;
 extern vec4_t color_red;
 extern vec4_t color_dim;
-extern vec4_t color_dim80;
 extern vec4_t color_green;
 extern vec4_t color_emerald;
-extern vec4_t color_bluo;
 extern vec4_t color_lightyellow;
-extern vec4_t color_highlight;
-extern vec4_t pulse_color;
-extern vec4_t text_color_disabled;
-extern vec4_t text_color_normal;
-extern vec4_t text_color_status;
+extern vec4_t color_disabled;
+extern vec4_t color_bluo;
 extern vec4_t color_select_bluo;
+extern vec4_t color_highlight;
 
 /*
 ======================
@@ -1085,8 +1076,15 @@ SourceTech font system
 */
 #ifndef GAME
 extern qhandle_t defaultFont[5];
+
+#define BASEFONT_WIDTH		9
+#define BASEFONT_HEIGHT		11
+#define FONT_WIDTH 			0.64
+#define BASEFONT_INDENT 	(BASEFONT_WIDTH*FONT_WIDTH)
+
 void ST_RegisterFont(const char* font);
 void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size);
+float ST_StringWidth(const char* str, float size);
 void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize);
 #endif
 

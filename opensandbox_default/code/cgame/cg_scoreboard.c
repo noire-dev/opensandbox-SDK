@@ -27,7 +27,7 @@
 #include "cg_local.h"
 
 
-#define	SCOREBOARD_X		(0-cl_screenoffset.value)
+#define	SCOREBOARD_X		(0-cgs.wideoffset)
 
 #define SB_HEADER			18
 #define SB_TOP				(SB_HEADER+12)
@@ -41,7 +41,7 @@
 #define SB_BOTICON_X		(SCOREBOARD_X+4)
 #define SB_HEAD_X			(SCOREBOARD_X+20)
 
-#define SB_SCORELINE_X		28-cl_screenoffset.value
+#define SB_SCORELINE_X		28-cgs.wideoffset
 
 #define SB_RATING_WIDTH	    (6 * BIGCHAR_WIDTH)
 #define SB_SCORE_X			(SB_SCORELINE_X + 2 * BIGCHAR_WIDTH)
@@ -80,7 +80,7 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 		// draw the wins / losses
 		if ( cgs.gametype == GT_TOURNAMENT ) {
 			Com_sprintf( string, sizeof( string ), "%i/%i", ci->wins, ci->losses );
-			CG_DrawSmallString( iconx - 35, y + SMALLCHAR_HEIGHT/2, string, 1.00f );
+			CG_DrawSmallString( iconx - 35, y + BASEFONT_HEIGHT/2, string, 1.00f );
 		}
 	}
 
@@ -118,7 +118,7 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 		hcolor[2] = cg_crosshairColorBlue.value;
 		hcolor[3] = fade * 0.5;
 
-		CG_FillRect( 90 - cl_screenoffset.value, y, 550 + (cl_screenoffset.value*2), BIGCHAR_HEIGHT+1, hcolor );
+		CG_FillRect( 90 - cgs.wideoffset, y, 550 + (cgs.wideoffset*2), BIGCHAR_HEIGHT+1, hcolor );
 	}
 
 	CG_DrawBigString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, fade );
@@ -214,7 +214,7 @@ qboolean CG_DrawScoreboard( void ) {
 	colorblk[2]=0.0f;
 	colorblk[3]=0.75f;
 	
-	CG_DrawPic( -1 - cl_screenoffset.value, 0, 642+(cl_screenoffset.value*2), 480, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+	CG_DrawPic( -1 - cgs.wideoffset, 0, 642+(cgs.wideoffset*2), 480, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
 
 	// fragged by ... line
 	if ( cg.killerName[0] ) {
@@ -482,7 +482,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 				break;
 			} else {
 				Q_strncpyz(lines[currentLine], &p[prevSpaceIndex], (spaceIndex - prevSpaceIndex) + 1);
-				CG_DrawSmallString( 80, 144 + (SMALLCHAR_HEIGHT * currentLine), lines[currentLine], 1.00f);
+				CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), lines[currentLine], 1.00f);
 			}
 			
 			prevSpaceIndex = spaceIndex;
@@ -502,7 +502,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 	}
 
 	if ( !tooLong ) {
-		CG_DrawSmallString( 80, 144 + (SMALLCHAR_HEIGHT * currentLine), va("%s", &p[prevSpaceIndex]), 1.00f);
+		CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), va("%s", &p[prevSpaceIndex]), 1.00f);
 	}
 
 
@@ -529,7 +529,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 				break;
 			} else {
 				Q_strncpyz(lines[currentLine], &s[prevSpaceIndex], (spaceIndex - prevSpaceIndex) + 1);
-				CG_DrawSmallString( 80, 264 + (SMALLCHAR_HEIGHT * currentLine), lines[currentLine], 1.00f);
+				CG_DrawSmallString( 80, 264 + (BASEFONT_HEIGHT * currentLine), lines[currentLine], 1.00f);
 			}
 			prevSpaceIndex = spaceIndex;
 			prevSpaceIndex++;
@@ -545,7 +545,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 	}
 
 	if ( !tooLong ) {
-		CG_DrawSmallString( 80, 264 + (SMALLCHAR_HEIGHT * currentLine), va("%s", &s[prevSpaceIndex]), 1.00f);
+		CG_DrawSmallString( 80, 264 + (BASEFONT_HEIGHT * currentLine), va("%s", &s[prevSpaceIndex]), 1.00f);
 	}
 
 	//draw deaths counter
@@ -563,7 +563,7 @@ qboolean CG_DrawSinglePlayerObjectives( void ) {
 
 	//draw skill level
 	skill = CG_GetSkill();
-	CG_DrawSmallString( 80, 144 + (SMALLCHAR_HEIGHT * currentLine), va("%i", skill), 1.00f);
+	CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), va("%i", skill), 1.00f);
 
 	return qtrue;
 }

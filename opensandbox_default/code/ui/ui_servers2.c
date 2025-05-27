@@ -1542,7 +1542,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.master.generic.x				= 320;
 	g_arenaservers.master.generic.y				= y;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	g_arenaservers.gametype.generic.type		= MTYPE_SPINCONTROL;
 	g_arenaservers.gametype.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.gametype.generic.callback	= ArenaServers_Event;
@@ -1550,7 +1550,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.gametype.generic.x			= 320;
 	g_arenaservers.gametype.generic.y			= y;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	g_arenaservers.sortkey.generic.type			= MTYPE_SPINCONTROL;
 	g_arenaservers.sortkey.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.sortkey.generic.callback		= ArenaServers_Event;
@@ -1558,7 +1558,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.sortkey.generic.x			= 320;
 	g_arenaservers.sortkey.generic.y			= y;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	g_arenaservers.showfull.generic.type		= MTYPE_RADIOBUTTON;
 	g_arenaservers.showfull.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.showfull.generic.callback	= ArenaServers_Event;
@@ -1566,7 +1566,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.showfull.generic.x			= 320;
 	g_arenaservers.showfull.generic.y			= y;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	g_arenaservers.showempty.generic.type		= MTYPE_RADIOBUTTON;
 	g_arenaservers.showempty.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.showempty.generic.callback	= ArenaServers_Event;
@@ -1574,7 +1574,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.showempty.generic.x			= 320;
 	g_arenaservers.showempty.generic.y			= y;
 	
-	y += SMALLCHAR_HEIGHT+4;
+	y += BASEFONT_HEIGHT+4;
 	g_arenaservers.password.generic.type		= MTYPE_FIELD;
 	g_arenaservers.password.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.password.field.widthInChars	= 32;
@@ -1582,7 +1582,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.password.generic.x			= 320;
 	g_arenaservers.password.generic.y			= y;
 
-	y += 3 * SMALLCHAR_HEIGHT;
+	y += 3 * BASEFONT_HEIGHT;
 	g_arenaservers.list.generic.type			= MTYPE_SCROLLLIST;
 	g_arenaservers.list.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	g_arenaservers.list.generic.id				= ID_LIST;
@@ -1639,15 +1639,15 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.status.generic.y			= y;
 	g_arenaservers.status.string			= statusbuffer;
 	g_arenaservers.status.style				= UI_CENTER|UI_SMALLFONT;
-	g_arenaservers.status.color				= menu_text_color;
+	g_arenaservers.status.color				= color_white;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	g_arenaservers.statusbar.generic.type   = MTYPE_TEXT;
 	g_arenaservers.statusbar.generic.x	    = 320;
 	g_arenaservers.statusbar.generic.y	    = y;
 	g_arenaservers.statusbar.string	        = "";
 	g_arenaservers.statusbar.style	        = UI_CENTER|UI_SMALLFONT;
-	g_arenaservers.statusbar.color	        = text_color_normal;
+	g_arenaservers.statusbar.color	        = color_white;
 
 	g_arenaservers.remove.generic.type		= MTYPE_BITMAP;
 	g_arenaservers.remove.string		= ART_REMOVE0;

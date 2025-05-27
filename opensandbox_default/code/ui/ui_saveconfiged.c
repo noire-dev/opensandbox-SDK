@@ -125,7 +125,7 @@ static void UI_saveMapEdMenu_SavenameDraw( void *self ) {
 	if(cl_language.integer == 1){
 	ST_DrawString( 320, 192, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
-	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
+	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*BASEFONT_INDENT, BASEFONT_HEIGHT, colorBlack );
 	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
 }
 
@@ -170,8 +170,8 @@ static void UI_saveMapEdMenu_Init( void ) {
 	saveMapEd.savename.generic.y			= 155+72;
 	saveMapEd.savename.generic.left		= 240;
 	saveMapEd.savename.generic.top			= 155+72;
-	saveMapEd.savename.generic.right		= 233 + 20*SMALLCHAR_WIDTH;
-	saveMapEd.savename.generic.bottom		= 155+72 + SMALLCHAR_HEIGHT+2;
+	saveMapEd.savename.generic.right		= 233 + 20*BASEFONT_INDENT;
+	saveMapEd.savename.generic.bottom		= 155+72 + BASEFONT_HEIGHT+2;
 
 	saveMapEd.back.generic.type		= MTYPE_BITMAP;
 	saveMapEd.back.string		= ART_BACK0;

@@ -225,7 +225,7 @@
 #define SERVER_LOAD1 "menu/assets/load_1"
 
 
-#define CONTROL_POSX (GAMETYPECOLUMN_X + 6*SMALLCHAR_WIDTH)
+#define CONTROL_POSX (GAMETYPECOLUMN_X + 6*BASEFONT_INDENT)
 
 #define SERVERCOLUMN_X GAMETYPECOLUMN_X
 
@@ -1603,7 +1603,7 @@ static void StartServer_WeaponPage_MenuDraw(void)
 		s_weaponcontrols.num_field == 0)
 	{
 		ST_DrawString(CONTROL_POSX, TABCONTROLCENTER_Y - LINE_HEIGHT/2,
-			"<no controls>", UI_RIGHT|UI_SMALLFONT, text_color_disabled, 1.00);
+			"<no controls>", UI_RIGHT|UI_SMALLFONT, color_disabled, 1.00);
 	}
 
 	StartServer_WeaponPage_DrawStatusBarText();

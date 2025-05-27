@@ -36,14 +36,14 @@ GAME OPTIONS MENU
 #define ART_BACK1				"menu/assets/back_1"
 
 #define PREFERENCES_X_POS		360
-#define PREFERENCES_X_LEFT		(160 + 5*SMALLCHAR_WIDTH)
-#define PREFERENCES_X_RIGHT		(480 + 5*SMALLCHAR_WIDTH)
+#define PREFERENCES_X_LEFT		(160 + 5*BASEFONT_INDENT)
+#define PREFERENCES_X_RIGHT		(480 + 5*BASEFONT_INDENT)
 
 #define LINE_GAP		(BIGCHAR_HEIGHT + 2)
 
 
 #define CONTROL_X (SCREEN_WIDTH/2 + 40)
-#define SMALLCHAR_LINEHEIGHT (SMALLCHAR_HEIGHT + 2)
+#define SMALLCHAR_LINEHEIGHT (BASEFONT_HEIGHT + 2)
 
 
 #define ID_HUD					50
@@ -273,10 +273,10 @@ static void Control_Update( void )
 	{
 		control->x = CONTROL_X;
 		control->y = y;
-		control->left   = CONTROL_X - s_preferences.max_control_text * SMALLCHAR_WIDTH;
-		control->right  = CONTROL_X + 21*SMALLCHAR_WIDTH;
+		control->left   = CONTROL_X - s_preferences.max_control_text * BASEFONT_INDENT;
+		control->right  = CONTROL_X + 21*BASEFONT_INDENT;
 		control->top    = y;
-		control->bottom = y + SMALLCHAR_HEIGHT;
+		control->bottom = y + BASEFONT_HEIGHT;
 	}
 
 	// set correct flags on tab controls
@@ -497,7 +497,7 @@ static void Crosshair_Draw( void *self ) {
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
 	if ( s->generic.flags & QMF_GRAYED )
-		color = text_color_disabled;
+		color = color_disabled;
 	else if ( focus )
 	{
 		color = color_highlight;
@@ -509,14 +509,14 @@ static void Crosshair_Draw( void *self ) {
 		style |= UI_BLINK;
 	}
 	else
-		color = text_color_normal;
+		color = color_white;
 
 	if ( focus ){
 		// draw cursor
 		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 
-	ST_DrawString( x - SMALLCHAR_WIDTH, y, s->string, style|UI_RIGHT, color, 1.00 );
+	ST_DrawString( x - BASEFONT_INDENT, y, s->string, style|UI_RIGHT, color, 1.00 );
 	if( !s->curvalue ) {
 		return;
 	}
@@ -525,7 +525,7 @@ static void Crosshair_Draw( void *self ) {
         color4[2]=((float)s_preferences.crosshairColorBlue.curvalue)/255.f;
         color4[3]=1.0f;
 	trap_R_SetColor( color4 );
-	UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y - 4, 24, 24, s_preferences.crosshairShader[s->curvalue] );
+	UI_DrawHandlePic( x + BASEFONT_INDENT, y - 4, 24, 24, s_preferences.crosshairShader[s->curvalue] );
 }
 
 /*

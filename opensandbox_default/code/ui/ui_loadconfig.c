@@ -415,7 +415,7 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 	if(cl_language.integer == 1){
 	ST_DrawString( 320, FILENAME_Y - 36, "Введите имя файла:", UI_CENTER|UI_SMALLFONT, color_grey, 1.00 );
 	}
-	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
+	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*BASEFONT_INDENT, BASEFONT_HEIGHT, colorBlack );
 	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color, 1.00 );
 }
 
@@ -566,8 +566,8 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.savename.generic.y			= FILENAME_Y;
 	s_configs.savename.generic.left		= 240;
 	s_configs.savename.generic.top			= FILENAME_Y;
-	s_configs.savename.generic.right		= 233 + 20*SMALLCHAR_WIDTH;
-	s_configs.savename.generic.bottom		= FILENAME_Y + SMALLCHAR_HEIGHT+2;
+	s_configs.savename.generic.right		= 233 + 20*BASEFONT_INDENT;
+	s_configs.savename.generic.bottom		= FILENAME_Y + BASEFONT_HEIGHT+2;
 
 	s_configs.showid.generic.type		= MTYPE_RADIOBUTTON;
 	s_configs.showid.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -579,7 +579,7 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.showid.string		= "OpenSandbox файлы:";
 	}
 	s_configs.showid.generic.callback	= LoadConfig_MenuEvent;
-	s_configs.showid.generic.x			= 640 - 8 * SMALLCHAR_WIDTH;
+	s_configs.showid.generic.x			= 640 - 8 * BASEFONT_INDENT;
 	s_configs.showid.generic.y			= 480-64 - 32;
 	s_configs.showid.curvalue 			= trap_Cvar_VariableValue("gui_config_showid");
 
@@ -593,8 +593,8 @@ static void LoadConfig_MenuInit( qboolean load, const char* title,  configCallba
 	s_configs.force_exec.string		= "Принудительный запуск:";
 	}
 	s_configs.force_exec.generic.callback	= LoadConfig_MenuEvent;
-	s_configs.force_exec.generic.x			= 640 - 8 * SMALLCHAR_WIDTH;
-	s_configs.force_exec.generic.y			= 480-64 - 32 + SMALLCHAR_HEIGHT + 2;
+	s_configs.force_exec.generic.x			= 640 - 8 * BASEFONT_INDENT;
+	s_configs.force_exec.generic.y			= 480-64 - 32 + BASEFONT_HEIGHT + 2;
 	s_configs.force_exec.curvalue 			= qfalse;
 
 	// scan for configs

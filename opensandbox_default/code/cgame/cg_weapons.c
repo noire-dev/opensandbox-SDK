@@ -1192,7 +1192,6 @@ static float	CG_MachinegunSpinAngle( centity_t *cent ) {
 	return angle;
 }
 
-
 /*
 ========================
 CG_AddWeaponWithPowerups
@@ -1216,7 +1215,6 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
 		}
 	}
 }
-
 
 /*
 =============

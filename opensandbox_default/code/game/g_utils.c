@@ -188,20 +188,17 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES	32
 
-gentity_t *G_PickTarget (char *targetname)
-{
+gentity_t *G_PickTarget (char *targetname) {
 	gentity_t	*ent = NULL;
 	int		num_choices = 0;
 	gentity_t	*choice[MAXCHOICES];
 
-	if (!targetname)
-	{
-                G_Printf("G_PickTarget called with NULL targetname\n");
+	if (!targetname) {
+        G_Printf("G_PickTarget called with NULL targetname\n");
 		return NULL;
 	}
 
-	while(1)
-	{
+	while(1) {
 		ent = G_Find (ent, FOFS(targetname), targetname);
 		if (!ent)
 			break;
@@ -210,9 +207,8 @@ gentity_t *G_PickTarget (char *targetname)
 			break;
 	}
 
-	if (!num_choices)
-	{
-                G_Printf("G_PickTarget: target %s not found\n", targetname);
+	if (!num_choices) {
+        G_Printf("G_PickTarget: target %s not found\n", targetname);
 		return NULL;
 	}
 
@@ -227,21 +223,16 @@ Selects all entities
 =============
 */
 
-void G_PickAllTargets ( gentity_t *ent, gentity_t *activator )
-{
-	gentity_t		*t;
+void G_PickAllTargets (gentity_t *ent) {
+	gentity_t *t = NULL;
 
-	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
-		if ( t == ent ) {
-			G_Printf ("WARNING: Entity used itself.\n");
-		} else {
-			if ( t->use ) {
-				t->use (t, ent, activator);
-			}
-		}
-		if ( !ent->inuse ) {
-			G_Printf("entity was removed while using targets\n");
-			return;
+	G_Printf("Searching1 for: %s\n", ent->target);
+
+	while ((t = G_Find (t, FOFS(targetname), ent->target)) != NULL) {
+		G_Printf("Searching for: %s\n", ent->target);
+		if (t->use) {
+			G_Printf("Foundedd for: %s\n", ent->target);
+			t->use (t, ent, ent);
 		}
 	}
 }

@@ -217,7 +217,7 @@ static void Demos_MenuDraw(void)
    if (s_demos.demos_found && s_demos.ranged_protocol &&
          s_demos.list.numitems > 0 && s_demos.list.curvalue >= 0) {
       Q_strncpyz(statusbar, va("Protocol %i", s_demos.protocol[s_demos.list.curvalue]), STATUSBAR_SIZE);
-	   ST_DrawString(632 - strlen(statusbar) * SMALLCHAR_WIDTH, 480 - 64 - SMALLCHAR_HEIGHT, statusbar, UI_SMALLFONT, color_grey, 1.00);
+	   ST_DrawString(632 - strlen(statusbar) * BASEFONT_INDENT, 480 - 64 - BASEFONT_HEIGHT, statusbar, UI_SMALLFONT, color_grey, 1.00);
    }
 
    Menu_Draw(&s_demos.menu);
@@ -258,8 +258,8 @@ static void Demos_MenuInit( void ) {
 	s_demos.banner.style			= UI_CENTER;
 
 	s_demos.timedemo.generic.type	= MTYPE_RADIOBUTTON;
-	s_demos.timedemo.generic.x		= 480 - SMALLCHAR_WIDTH;
-	s_demos.timedemo.generic.y		= 480 - 32 - SMALLCHAR_HEIGHT / 2;
+	s_demos.timedemo.generic.x		= 480 - BASEFONT_INDENT;
+	s_demos.timedemo.generic.y		= 480 - 32 - BASEFONT_HEIGHT / 2;
 	if(cl_language.integer == 0){
 	s_demos.timedemo.string 	= "Time demo:";
 	}

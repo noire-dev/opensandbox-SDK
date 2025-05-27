@@ -133,7 +133,6 @@ vmCvar_t	ns_haveerror;		//Noire.Script error
 
 vmCvar_t	cg_postprocess;
 vmCvar_t	cl_language;
-vmCvar_t    cl_screenoffset;
 vmCvar_t	cg_disableBobbing;
 vmCvar_t	cg_shadows;
 vmCvar_t	cg_drawTimer;
@@ -308,7 +307,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_postprocess, "cg_postprocess", "", 0 },
 	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
-    { &cl_screenoffset, "cl_screenoffset", "107", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
@@ -1122,6 +1120,11 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.lsplShader = trap_R_RegisterShader("leisplash" );
 
+	//OpenSandbox UI
+	cgs.media.errIcon = trap_R_RegisterShaderNoMip("menu/erricon");
+    cgs.media.notifyIcon = trap_R_RegisterShaderNoMip("menu/notifyicon");
+    cgs.media.undoIcon = trap_R_RegisterShaderNoMip("menu/undoicon");
+
 
 	memset( cg_items, 0, sizeof( cg_items ) );
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
@@ -1340,6 +1343,9 @@ Will perform callbacks to make the loading info screen update.
 */
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	const char	*s;
+	float resbias, resbiasy;
+	float rex, rey;
+	int newresx, newresy;
 
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
@@ -1356,6 +1362,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
+	ST_RegisterFont("default");
 	cgs.media.defaultFont[0]		= trap_R_RegisterShader( "default_font" );  //256
 	cgs.media.defaultFont[1]		= trap_R_RegisterShader( "default_font1" ); //512
 	cgs.media.defaultFont[2]		= trap_R_RegisterShader( "default_font2" ); //1024
@@ -1376,36 +1383,27 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	// get the rendering configuration from the client system
 	trap_GetGlconfig( &cgs.glconfig );
-	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0;
-	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0;
+	cgs.scale = (cgs.glconfig.vidWidth * (1.0 / 640.0) < cgs.glconfig.vidHeight * (1.0 / 480.0)) ? cgs.glconfig.vidWidth * (1.0 / 640.0) : cgs.glconfig.vidHeight * (1.0 / 480.0);
 
 	realVidWidth = cgs.glconfig.vidWidth;
 	realVidHeight = cgs.glconfig.vidHeight;
-	{
-		float resbias, resbiasy;
-		float rex, rey;
-		int newresx, newresy;
 
-		rex = 640.0f / realVidWidth;
-		rey = 480.0f / realVidHeight;
+	rex = 640.0f / realVidWidth;
+	rey = 480.0f / realVidHeight;
+	newresx = 640.0f * (rex);
+	newresy = 480.0f * (rey);
+	newresx = realVidWidth * rey;
+	newresy = realVidHeight * rey;
+	resbias  = 0.5 * ( newresx -  ( newresy * (640.0/480.0) ) );
+	resbiasy = 0.5 * ( newresy -  ( newresx * (640.0/480.0) ) );
 
-		newresx = 640.0f * (rex);
-		newresy = 480.0f * (rey);
-
-		newresx = realVidWidth * rey;
-		newresy = realVidHeight * rey;
-
-		resbias  = 0.5 * ( newresx -  ( newresy * (640.0/480.0) ) );
-		resbiasy = 0.5 * ( newresy -  ( newresx * (640.0/480.0) ) );
-	}
 	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
 		// wide screen
-		cgs.screenXBias = 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * (640.0/480.0) ) );
-		cgs.screenXScale = cgs.screenYScale;
+		cgs.bias = 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * (640.0/480.0) ) );
 	}
 	else {
 		// no wide screen
-		cgs.screenXBias = 0;
+		cgs.bias = 0;
 	}
 
 	// get the gamestate from the client system

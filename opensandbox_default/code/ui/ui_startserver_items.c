@@ -59,7 +59,7 @@
 #define ID_ITEMINGAME_CANCEL 	430
 #define ID_ITEMINGAME_ACCEPT 	431
 
-#define ITEMCONTROL_X (320 + 4*SMALLCHAR_WIDTH)
+#define ITEMCONTROL_X (320 + 4*BASEFONT_INDENT)
 
 
 
@@ -570,7 +570,7 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 	if ( rb->generic.flags & QMF_GRAYED )
 	{
 		gcolor[3] = 0.3;
-		color = text_color_disabled;
+		color = color_disabled;
 		style = UI_LEFT|UI_SMALLFONT;
 	}
 	else if ( focus )
@@ -580,13 +580,13 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 	}
 	else
 	{
-		color = text_color_normal;
+		color = color_white;
 		style = UI_LEFT|UI_SMALLFONT;
 	}
 
 	// draw it!
 	if ( rb->string )
-		ST_DrawString( x - SMALLCHAR_WIDTH, y, rb->string, UI_RIGHT|UI_SMALLFONT, color, 1.00 );
+		ST_DrawString( x - BASEFONT_INDENT, y, rb->string, UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 
 	if ( !rb->curvalue )
 	{
@@ -610,7 +610,7 @@ static void StartServer_BothItemMenus_DrawItemButton( void* ptr )
 
 	trap_R_SetColor(gcolor);
 	// square image, always
-	UI_DrawHandlePic( x - 5, y, SMALLCHAR_HEIGHT, SMALLCHAR_HEIGHT, icon);
+	UI_DrawHandlePic( x - 5, y, BASEFONT_HEIGHT, BASEFONT_HEIGHT, icon);
 	trap_R_SetColor(NULL);
 }
 
@@ -902,7 +902,7 @@ static void StartServer_BothItemMenus_AddMasterControls(int y)
 
 	for (i = 0 ; i < ITEMGROUP_COUNT; i++)
 	{
-		x = GAMETYPECOLUMN_X + ((i / 2) - 1) * SMALLCHAR_WIDTH * 22;
+		x = GAMETYPECOLUMN_X + ((i / 2) - 1) * BASEFONT_INDENT * 22;
 		dy = (i % 2) * LINE_HEIGHT;
 
 		s_itemcontrols.groupMaster[i].generic.type		= MTYPE_SPINCONTROL;

@@ -34,10 +34,10 @@ Adjusted for resolution and screen aspect ratio
 ================
 */
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h ) {
-	*x = *x * cgs.screenXScale + cgs.screenXBias;
-	*y *= cgs.screenYScale;
-	*w *= cgs.screenXScale;
-	*h *= cgs.screenYScale;
+	*x = *x * cgs.scale + cgs.bias;
+	*y *= cgs.scale;
+	*w *= cgs.scale;
+	*h *= cgs.scale;
 }
 
 /*
@@ -71,7 +71,7 @@ void CG_DrawRoundedRect(float x, float y, float width, float height, float radiu
 	if(radius*2 > height){ radius=height*0.5; }
 	if(radius*2 > width){ radius=width*0.5; }
 	
-	radius *= cgs.screenYScale;
+	radius *= cgs.scale;
 	
 	trap_R_SetColor( color );
     trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, cgs.media.corner);
@@ -90,16 +90,16 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
     int filledSegments;
 	float segmentX;
 	int i;
-	int xy_offset = 2 * cgs.screenYScale;
-	int w_offset = 3 * cgs.screenYScale;
-	int h_offset = 3.75 * cgs.screenYScale;
+	int xy_offset = 2 * cgs.scale;
+	int w_offset = 3 * cgs.scale;
+	int h_offset = 3.75 * cgs.scale;
 
 	if (progress < 0.0f) progress = 0.0f;
     if (progress > 1.0f) progress = 1.0f;
 
     CG_AdjustFrom640(&x, &y, &width, &height);
 
-	segmentWidth *= cgs.screenXScale;
+	segmentWidth *= cgs.scale;
 
     trap_R_SetColor(bgColor);
     trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, cgs.media.whiteShader);
@@ -303,7 +303,7 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
-	CG_DrawString( x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0, 0 );
+	CG_DrawString( x, y, s, color, qfalse, qfalse, BASEFONT_INDENT, BASEFONT_HEIGHT, 0, 0 );
 }
 
 /*

@@ -129,23 +129,23 @@ static void Controls_Update( void ){
 	// position controls
 	y = 80;
 	if(controls.section == C_KEYS){
-		for( j = 0; j <= KEYS_NUM; j++, y += SMALLCHAR_HEIGHT ){
+		for( j = 0; j <= KEYS_NUM; j++, y += BASEFONT_HEIGHT ){
 			controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
 			controls.e[j].generic.y      = y-30;
-			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
-			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
+			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*BASEFONT_INDENT;
+			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*BASEFONT_INDENT;
 			controls.e[j].generic.top    = y-30;
-			controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
+			controls.e[j].generic.bottom = y-30 + BASEFONT_HEIGHT;
 		}
 	}
 	if(controls.section == C_SETTINGS){
-		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++, y += SMALLCHAR_HEIGHT ){
+		for( j = KEYS_NUM+1; j <= SETTINGS_NUM; j++, y += BASEFONT_HEIGHT ){
 			controls.e[j].generic.x      = SCREEN_WIDTH*0.64;
 			controls.e[j].generic.y      = y-30;
-			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*SMALLCHAR_WIDTH;
-			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*SMALLCHAR_WIDTH;
+			controls.e[j].generic.left   = SCREEN_WIDTH*0.64 - 19*BASEFONT_INDENT;
+			controls.e[j].generic.right  = SCREEN_WIDTH*0.64 + 21*BASEFONT_INDENT;
 			controls.e[j].generic.top    = y-30;
-			controls.e[j].generic.bottom = y-30 + SMALLCHAR_HEIGHT;
+			controls.e[j].generic.bottom = y-30 + BASEFONT_HEIGHT;
 		}
 	}
 
@@ -214,8 +214,8 @@ static void Controls_DrawKeyBinding( void *self ){
 
 	if (c){
 		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, color_select_bluo ); 
-		ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight, 1.00 );
-		ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight, 1.00 );
+		ST_DrawString( x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_highlight, 1.00 );
+		ST_DrawString( x + BASEFONT_INDENT, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, color_highlight, 1.00 );
 
 		if (controls.waitingforkey){
 			ST_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, color_highlight, 1.00);
@@ -227,11 +227,11 @@ static void Controls_DrawKeyBinding( void *self ){
 		}
 	} else {
 		if (a->generic.flags & QMF_GRAYED){
-			ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled, 1.00 );
-			ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled, 1.00 );
+			ST_DrawString( x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_disabled, 1.00 );
+			ST_DrawString( x + BASEFONT_INDENT, y, name, UI_LEFT|UI_SMALLFONT, color_disabled, 1.00 );
 		} else {
-			ST_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_white, 1.00 );
-			ST_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, color_white, 1.00 );
+			ST_DrawString( x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, color_white, 1.00 );
+			ST_DrawString( x + BASEFONT_INDENT, y, name, UI_LEFT|UI_SMALLFONT, color_white, 1.00 );
 		}
 	}
 }

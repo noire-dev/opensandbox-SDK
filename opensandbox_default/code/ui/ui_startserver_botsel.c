@@ -754,7 +754,7 @@ static void UI_BotSelect_ScrollList_LineSize( int* charheight, int* charwidth, i
 
 	scale = 1.00;
 
-	*charwidth = scale * UI_ProportionalStringWidth("X", 1.00);
+	*charwidth = scale * ST_StringWidth("X", 1.00);
 	*charheight = scale * PROP_HEIGHT;
 
 	if (*charheight > BOTLIST_ICONSIZE)
@@ -1118,7 +1118,7 @@ static void UI_BotSelect_BotGridDraw( void* ptr )
 
 		if ((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS) && (Menu_ItemAtCursor( b->generic.parent ) == b))
 		{
-			color = pulse_color;
+			color = color_white;
 			color[3] = 0.5+0.5*sin(uis.realtime/PULSE_DIVISOR);
 
 			trap_R_SetColor( color );
@@ -1178,14 +1178,14 @@ static void UI_BotSelect_Init( char *bot , int index) {
 	botSelectInfo.viewlist.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	botSelectInfo.viewlist.generic.id = ID_BOTSELECT_VIEWLIST;
 	botSelectInfo.viewlist.generic.callback = UI_BotSelect_Event;
-	botSelectInfo.viewlist.generic.x = 290 - 13* SMALLCHAR_WIDTH;
+	botSelectInfo.viewlist.generic.x = 290 - 13* BASEFONT_INDENT;
 	botSelectInfo.viewlist.generic.y = 480 - 2*LINE_HEIGHT;
 
 	botSelectInfo.multisel.generic.type = MTYPE_RADIOBUTTON;
 	botSelectInfo.multisel.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	botSelectInfo.multisel.generic.id = ID_BOTSELECT_MULTISEL;
 	botSelectInfo.multisel.generic.callback = UI_BotSelect_Event;
-	botSelectInfo.multisel.generic.x = 290 - 13* SMALLCHAR_WIDTH;
+	botSelectInfo.multisel.generic.x = 290 - 13* BASEFONT_INDENT;
 	botSelectInfo.multisel.generic.y = 480 - 3*LINE_HEIGHT;
 
 	// init based on previous value
@@ -1228,7 +1228,7 @@ static void UI_BotSelect_Init( char *bot , int index) {
 
 			x += (64 + 6);
 		}
-		y += (64 + SMALLCHAR_HEIGHT + 6);
+		y += (64 + BASEFONT_HEIGHT + 6);
 	}
 
 	botSelectInfo.arrows.generic.type		= MTYPE_BITMAP;

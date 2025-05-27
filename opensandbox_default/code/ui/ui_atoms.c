@@ -56,12 +56,12 @@ void QDECL Com_Printf( const char *msg, ... ) {
 
 /*
 ================
-UI_ScreenOffset
+UI_UpdateState
 
-Adjusted for resolution and screen aspect ratio
+Adjusts UI for widescreen, etc
 ================
 */
-void UI_ScreenOffset( void ) {
+void UI_UpdateState( void ) {
 	float scrx;
 	float scry;
 	char  svinfo[MAX_INFO_STRING];
@@ -72,10 +72,8 @@ void UI_ScreenOffset( void ) {
 	scry = uis.glconfig.vidHeight;
 	
 	if((scrx / (scry / 480)-640)/2 >= 0){
-		trap_Cvar_SetValue("cl_screenoffset", (scrx / (scry / 480)-640)/2);
 		uis.wideoffset = (scrx / (scry / 480)-640)/2;
 	} else {
-		trap_Cvar_SetValue("cl_screenoffset", 0);	
 		uis.wideoffset = 0;
 	}
 
@@ -113,9 +111,6 @@ void UI_PushMenu( menuframework_s *menu )
 	} else {
 	trap_Cvar_Set( "r_fx_blur", "0" );			//blur UI postFX		
 	}
-	
-	// initialize the screen offset
-	UI_ScreenOffset();
 
 	// avoid stacking menus invoked by hotkeys
 	for (i=0 ; i<uis.menusp ; i++)
@@ -213,35 +208,6 @@ void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 	}
 }
 
-int UI_ProportionalStringWidth( const char* str, float size ) {
-	const char *	s;
-	int				ch;
-	int				charWidth;
-	int				width;
-
-	s = str;
-	width = 0;
-	while ( *s ) {
-        if ( Q_IsColorString( s ) )
-		{
-			s += 2;
-			continue;
-		}
-		ch = *s & 255;
-        charWidth = SMALLCHAR_WIDTH*size;
-		if ( charWidth != -1 ) {
-			width += charWidth;
-		}
-		s++;
-	}
-
-	if(ifstrlenru(str)){
-		return width * 0.5;	
-	} else {
-		return width;
-	}
-}
-
 qboolean UI_IsFullscreen( void ) {
 	if ( uis.activemenu && ( trap_Key_GetCatcher() & KEYCATCH_UI ) ) {
 		if(!uis.onmap){
@@ -264,7 +230,6 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		UI_ForceMenuOff();
 		return;
 	case UIMENU_MAIN:
-		UI_ScreenOffset();
 		if(strlen(ui_3dmap.string) <= 1){
 		UI_MainMenu();
 		}
@@ -449,8 +414,6 @@ qboolean UI_ConsoleCommand( int realTime ) {
 
 	// ensure minimum menu data is available
 	Menu_Cache();
-
-UI_ScreenOffset();
 
 if( Q_stricmp (UI_Argv(0), "ui_addbots") == 0 ){
 UI_AddBotsMenu();
@@ -651,12 +614,6 @@ void UI_Init( void ) {
 	// cache redundant calulations
 	trap_GetGlconfig( &uis.glconfig );
 	
-	// for native screen
-	uis.sw = uis.glconfig.vidWidth;
-	uis.sh = uis.glconfig.vidHeight;
-	//uis.scale = uis.glconfig.vidHeight * (1.0/uis.glconfig.vidHeight);
-	//uis.bias = 0;
-	// for 640x480 virtualized screen
 	uis.scale = (uis.glconfig.vidWidth * (1.0 / 640.0) < uis.glconfig.vidHeight * (1.0 / 480.0)) ? uis.glconfig.vidWidth * (1.0 / 640.0) : uis.glconfig.vidHeight * (1.0 / 480.0);
 	
 	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
@@ -687,7 +644,6 @@ Adjusted for resolution and screen aspect ratio
 ================
 */
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
-	// expect valid pointers
 	*x = *x * uis.scale + uis.bias;
 	*y *= uis.scale;
 	*w *= uis.scale;
@@ -967,25 +923,14 @@ void UI_Refresh( int realtime ) {
 			uis.firstdraw = qfalse;
 		}
 	}
-	
-	trap_GetGlconfig( &uis.glconfig );
-
-	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) { // wide screen
-		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
-		uis.scale = uis.glconfig.vidHeight * (1.0/480.0);
-	} else { // no wide screen
-		uis.scale = (uis.glconfig.vidWidth * (1.0 / 640.0) < uis.glconfig.vidHeight * (1.0 / 480.0)) ? uis.glconfig.vidWidth * (1.0 / 640.0) : uis.glconfig.vidHeight * (1.0 / 480.0);
-		uis.bias = 0;
-	}
 
 	// draw cursor
-	if (!uis.hideCursor) {
-		trap_R_SetColor( NULL );
-		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
-	}
+	trap_R_SetColor( NULL );
+	UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
 	if (uis.debug) {
 		// cursor coordinates
+		trap_GetGlconfig( &uis.glconfig );
 		x = 0-uis.wideoffset;
 		ST_DrawString( x, 0, va("cursor xy: (%d,%d)",uis.cursorx,uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
 		ST_DrawString( x, 10, va("screen: %ix%i",uis.glconfig.vidWidth, uis.glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );

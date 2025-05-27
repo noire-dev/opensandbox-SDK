@@ -537,7 +537,7 @@ static void MapSelect_LoadMaps(const char* mapname, qboolean cache) {
 		Q_strncpyz( s_mapselect.mapdrawname[s_mapselect.nummaps], s_mapselect.maplongname[s_mapselect.nummaps], MAPNAME_LONGBUFFER);
 		buf = s_mapselect.mapdrawname[s_mapselect.nummaps];
 		buf[MAPNAME_LONGBUFFER - 1] = '\0';
-		nchars = (640 / (SMALLCHAR_WIDTH * MAPGRID_COLUMNS)) - 1;
+		nchars = (640 / (BASEFONT_INDENT * MAPGRID_COLUMNS)) - 1;
 		lastspace = 0;
 		count2 = 0;
 		secondline = 0;
@@ -1146,9 +1146,9 @@ MapSelect_ScrollCharParams
 */
 static void MapSelect_ScrollCharParams( int* height, int* width, int* line)
 {
-	*height = SMALLCHAR_HEIGHT;
-	*width = SMALLCHAR_WIDTH;
-	*line = SMALLCHAR_HEIGHT + 2;
+	*height = BASEFONT_HEIGHT;
+	*width = BASEFONT_INDENT;
+	*line = BASEFONT_HEIGHT + 2;
 }
 
 
@@ -1580,34 +1580,32 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.icona.generic.type  = MTYPE_BITMAP;
 	s_mapselect.icona.generic.flags = QMF_INACTIVE;
-//	s_mapselect.icona.string = "menu/medals/medal_excellent";
-	s_mapselect.icona.generic.x	 = 420  - 32 - SMALLCHAR_WIDTH;
-	s_mapselect.icona.generic.y	 = 8 + (SMALLCHAR_HEIGHT - 32)/2;
+	s_mapselect.icona.generic.x	 = 420  - 32 - BASEFONT_INDENT;
+	s_mapselect.icona.generic.y	 = 8 + (BASEFONT_HEIGHT - 32)/2;
 	s_mapselect.icona.width  	     = 32;
 	s_mapselect.icona.height  	     = 32;
 
 	s_mapselect.iconb.generic.type  = MTYPE_BITMAP;
 	s_mapselect.iconb.generic.flags = QMF_INACTIVE;
-//	s_mapselect.iconb.string = "menu/medals/medal_victory";
-	s_mapselect.iconb.generic.x	 = 420 - 64 - SMALLCHAR_WIDTH;
-	s_mapselect.iconb.generic.y	 = 8 + (SMALLCHAR_HEIGHT - 32)/2;
+	s_mapselect.iconb.generic.x	 = 420 - 64 - BASEFONT_INDENT;
+	s_mapselect.iconb.generic.y	 = 8 + (BASEFONT_HEIGHT - 32)/2;
 	s_mapselect.iconb.width  	     = 32;
 	s_mapselect.iconb.height  	     = 32;
 
 	s_mapselect.filter.generic.type = MTYPE_SPINCONTROL;
-	s_mapselect.filter.generic.x = 420 + 8*SMALLCHAR_WIDTH;
+	s_mapselect.filter.generic.x = 420 + 8*BASEFONT_INDENT;
 	s_mapselect.filter.generic.y = 8;
 	s_mapselect.filter.generic.id  = ID_MAPSELECT_FILTERMAPS;
 	s_mapselect.filter.generic.callback  = MapSelect_MenuEvent;
 
 	s_mapselect.allmaps.generic.type = MTYPE_RADIOBUTTON;
-	s_mapselect.allmaps.generic.x = 480 - 8*SMALLCHAR_WIDTH;
+	s_mapselect.allmaps.generic.x = 480 - 8*BASEFONT_INDENT;
 	s_mapselect.allmaps.generic.y = 8 + LINE_HEIGHT + 8;
 	s_mapselect.allmaps.generic.id  = ID_MAPSELECT_ALLMAPS;
 	s_mapselect.allmaps.generic.callback  = MapSelect_MenuEvent;
 
 	s_mapselect.mapicons.generic.type = MTYPE_SPINCONTROL;
-	s_mapselect.mapicons.generic.x = 480 + 8*SMALLCHAR_WIDTH;
+	s_mapselect.mapicons.generic.x = 480 + 8*BASEFONT_INDENT;
 	s_mapselect.mapicons.generic.y = 8 + LINE_HEIGHT + 8;
 	s_mapselect.mapicons.generic.id  = ID_MAPSELECT_MAPICONS;
 	s_mapselect.mapicons.generic.callback  = MapSelect_MenuEvent;
@@ -1665,7 +1663,7 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 
 	s_mapselect.maplist.generic.type = MTYPE_SCROLLLIST;
 	s_mapselect.maplist.generic.flags = QMF_PULSEIFFOCUS|QMF_NODEFAULTINIT;
-	s_mapselect.maplist.generic.x = 5 * SMALLCHAR_WIDTH;
+	s_mapselect.maplist.generic.x = 5 * BASEFONT_INDENT;
 	s_mapselect.maplist.generic.y = 64;
 	s_mapselect.maplist.generic.ownerdraw = MapSelect_ScrollListDraw;
 	s_mapselect.maplist.columns = MAPLIST_COLUMNS;
@@ -1706,14 +1704,14 @@ static void MapSelect_MenuInit(int gametype, int index, const char* mapname)
 	}
 
 	s_mapselect.multisel.generic.type = MTYPE_RADIOBUTTON;
-	s_mapselect.multisel.generic.x = 128 + 15*SMALLCHAR_WIDTH;
-	s_mapselect.multisel.generic.y = 480 - 3*SMALLCHAR_HEIGHT;
+	s_mapselect.multisel.generic.x = 128 + 15*BASEFONT_INDENT;
+	s_mapselect.multisel.generic.y = 480 - 3*BASEFONT_HEIGHT;
 	s_mapselect.multisel.generic.id  = ID_MAPSELECT_MULTISEL;
 	s_mapselect.multisel.generic.callback  = MapSelect_MenuEvent;
 
 	s_mapselect.listview.generic.type = MTYPE_RADIOBUTTON;
-	s_mapselect.listview.generic.x = 128 + 15*SMALLCHAR_WIDTH;
-	s_mapselect.listview.generic.y = 480 - 2*SMALLCHAR_HEIGHT;
+	s_mapselect.listview.generic.x = 128 + 15*BASEFONT_INDENT;
+	s_mapselect.listview.generic.y = 480 - 2*BASEFONT_HEIGHT;
 	s_mapselect.listview.generic.id  = ID_MAPSELECT_LISTVIEW;
 	s_mapselect.listview.generic.callback  = MapSelect_MenuEvent;
 

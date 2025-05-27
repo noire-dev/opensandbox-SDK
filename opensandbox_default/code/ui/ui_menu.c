@@ -99,7 +99,7 @@ static void Main_MenuDraw( void ) {
 		ST_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color, 1.00 );
 	}
 	if(uis.addonsdraw){
-		UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*SMALLCHAR_HEIGHT*1.25)+4, 10, modlistcolor);
+		UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*BASEFONT_HEIGHT*1.25)+4, 10, modlistcolor);
 	}
 	ST_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 }

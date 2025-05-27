@@ -446,7 +446,7 @@ static void MapVote_MenuInit( void ) {
 	s_mapvote.filter.generic.callback	= MapVote_Event;
 	s_mapvote.filter.generic.id			= ID_FILTER;
 	s_mapvote.filter.generic.x			= 320;
-	s_mapvote.filter.generic.y			= 256 + 64 - SMALLCHAR_HEIGHT;
+	s_mapvote.filter.generic.y			= 256 + 64 - BASEFONT_HEIGHT;
 	if(cl_language.integer == 0){
 	s_mapvote.filter.string		= "Gametype:";
 	s_mapvote.filter.itemnames			= filter_gametype_list;

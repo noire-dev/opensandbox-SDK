@@ -51,15 +51,15 @@
 
 #define BOT_LEFTCTRL COLUMN_LEFT
 #define BOT_RIGHTCTRL COLUMN_RIGHT
-#define BOTCOL_LEFT (2*SMALLCHAR_WIDTH)
-#define BOTCOL_RIGHT (320 + 6*SMALLCHAR_WIDTH)
+#define BOTCOL_LEFT (2*BASEFONT_INDENT)
+#define BOTCOL_RIGHT (320 + 6*BASEFONT_INDENT)
 
 #define BOT_ICONX BOT_ICONY
-#define BOT_ICONY SMALLCHAR_HEIGHT
+#define BOT_ICONY BASEFONT_HEIGHT
 
 #define BOTNAME_LENGTH 16	// chars displayed
-#define BOTNAME_DX (8 * SMALLCHAR_WIDTH)
-#define BOTSKILL_DX (25 * SMALLCHAR_WIDTH)
+#define BOTNAME_DX (8 * BASEFONT_INDENT)
+#define BOTSKILL_DX (25 * BASEFONT_INDENT)
 
 #define BOT_FADETIME 1000
 
@@ -748,14 +748,14 @@ static void StartServer_BotPage_SetTeamTitle(int swapped)
 	sizeScale = 1.00;
 
 	x = red->generic.x;
-	w = UI_ProportionalStringWidth( red->string, 1.00 ) * sizeScale;
+	w = ST_StringWidth( red->string, 1.00 ) * sizeScale;
 	x -= w/2;
 
 	red->generic.left   = x * sizeScale;
 	red->generic.right  = x + w * sizeScale;
 
 	x = blue->generic.x;
-	w = UI_ProportionalStringWidth( blue->string, 1.00 ) * sizeScale;
+	w = ST_StringWidth( blue->string, 1.00 ) * sizeScale;
 	x -= w/2;
 
 	blue->generic.left   = x * sizeScale;
@@ -828,12 +828,12 @@ static void StartServer_BotPage_InitSkillControl(menuelement_s* s)
 	x = s->generic.x;
 	y = s->generic.y;
 	h = BOT_ICONY;
-	if (h < SMALLCHAR_HEIGHT)
-		h = SMALLCHAR_HEIGHT;
+	if (h < BASEFONT_HEIGHT)
+		h = BASEFONT_HEIGHT;
 
 	s->generic.left = x;
 	s->generic.top = y;
-	s->generic.right = x + (2*BOT_ICONX) + (3*SMALLCHAR_WIDTH);
+	s->generic.right = x + (2*BOT_ICONX) + (3*BASEFONT_INDENT);
 	s->generic.bottom = y + h;
 }
 
@@ -1014,10 +1014,10 @@ StartServer_BotPage_SkillOffset
 static int StartServer_BotPage_SkillOffset(qboolean range)
 {
 	if (range) {
-		return (BOT_ICONX + 2*SMALLCHAR_WIDTH);
+		return (BOT_ICONX + 2*BASEFONT_INDENT);
 	}
 
-	 return (BOT_ICONX + 2*SMALLCHAR_WIDTH) / 2;
+	 return (BOT_ICONX + 2*BASEFONT_INDENT) / 2;
 }
 
 /*
@@ -1034,12 +1034,12 @@ static int StartServer_BotPage_OverSkillHotspot(menuelement_s* s)
 	w = s->generic.right - x;
 	h = s->generic.bottom - y;
 
-	if (s->data->range && UI_CursorInRect(x, y, BOT_ICONX + SMALLCHAR_WIDTH, h))
+	if (s->data->range && UI_CursorInRect(x, y, BOT_ICONX + BASEFONT_INDENT, h))
 		return MSKILL_LEFT;
 
 	x += StartServer_BotPage_SkillOffset(s->data->range);
 
-	if (UI_CursorInRect(x, y, BOT_ICONX + SMALLCHAR_WIDTH, h))
+	if (UI_CursorInRect(x, y, BOT_ICONX + BASEFONT_INDENT, h))
 		return MSKILL_RIGHT;
 
 	return MSKILL_NONE;
@@ -1123,16 +1123,16 @@ static void StartServer_BotPage_SkillDraw(void* self)
 		shader = trap_R_RegisterShaderNoMip(va("menu/assets/skill%i", skill));
 
 		if (s->generic.flags & QMF_GRAYED) {
-			color = text_color_disabled;
+			color = color_disabled;
 
-			trap_R_SetColor( menu_dim_color);
+			trap_R_SetColor( color_dim);
 			UI_DrawHandlePic(x, shader_y, BOT_ICONX, BOT_ICONY, shader);
 			trap_R_SetColor( NULL );
 		}
 		else if (cursor == MSKILL_LEFT)
 		{
 			// mouse over control, "pulsing"
-			UI_FillRect(x, y, BOT_ICONX + SMALLCHAR_WIDTH + 1, h + 1, temp_bkcolor);
+			UI_FillRect(x, y, BOT_ICONX + BASEFONT_INDENT + 1, h + 1, temp_bkcolor);
 			color = tempcolor;
 
 			trap_R_SetColor( pulsecolor );
@@ -1140,12 +1140,12 @@ static void StartServer_BotPage_SkillDraw(void* self)
 			trap_R_SetColor( NULL );
 		}
 		else {
-			color = text_color_normal;
+			color = color_white;
 			UI_DrawHandlePic(x, shader_y, BOT_ICONX, BOT_ICONY, shader);
 		}
 
 		ST_DrawString(x + BOT_ICONX, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color, 1.00);
-		ST_DrawString(x + BOT_ICONX + SMALLCHAR_WIDTH, y, "-", UI_LEFT|UI_SMALLFONT, text_color_normal, 1.00);
+		ST_DrawString(x + BOT_ICONX + BASEFONT_INDENT, y, "-", UI_LEFT|UI_SMALLFONT, color_white, 1.00);
 
 		// setup for second part of skill control
 		skill = s->data->high + 1;
@@ -1166,25 +1166,25 @@ static void StartServer_BotPage_SkillDraw(void* self)
 
 	shader = trap_R_RegisterShaderNoMip(va("menu/assets/skill%i", skill));
 	if (s->generic.flags & QMF_GRAYED) {
-		color = text_color_disabled;
+		color = color_disabled;
 
-		trap_R_SetColor( menu_dim_color);
+		trap_R_SetColor( color_dim);
 		UI_DrawHandlePic(x, shader_y, BOT_ICONX, BOT_ICONY, shader);
 		trap_R_SetColor( NULL );
 	}
 	else if (cursor == MSKILL_RIGHT)
 	{
 		// mouse over control, "pulsing"
-		UI_FillRect(x, y, BOT_ICONX + SMALLCHAR_WIDTH + 1, h + 1, temp_bkcolor);
+		UI_FillRect(x, y, BOT_ICONX + BASEFONT_INDENT + 1, h + 1, temp_bkcolor);
 		color = tempcolor;
 
 		trap_R_SetColor( pulsecolor );
-		UI_DrawHandlePic(x + SMALLCHAR_WIDTH, shader_y, BOT_ICONX, BOT_ICONY, shader);
+		UI_DrawHandlePic(x + BASEFONT_INDENT, shader_y, BOT_ICONX, BOT_ICONY, shader);
 		trap_R_SetColor( NULL );
 	}
 	else {
-		color = text_color_normal;
-		UI_DrawHandlePic(x + SMALLCHAR_WIDTH, shader_y, BOT_ICONX, BOT_ICONY, shader);
+		color = color_white;
+		UI_DrawHandlePic(x + BASEFONT_INDENT, shader_y, BOT_ICONX, BOT_ICONY, shader);
 	}
 
 	ST_DrawString(x, y, va("I", skill), UI_LEFT|UI_SMALLFONT, color, 1.00);
@@ -1330,7 +1330,7 @@ static void StartServer_BotPage_NameDraw(void* self)
 	pulse = ((t->generic.flags & QMF_PULSE) || (Menu_ItemAtCursor( t->generic.parent ) == t));
 
 	if (t->generic.flags & QMF_GRAYED)
-		color = text_color_disabled;
+		color = color_disabled;
 	else if (pulse) {
 		tempcolor[0] = color_highlight[0];
 		tempcolor[1] = color_highlight[1];
@@ -1344,7 +1344,7 @@ static void StartServer_BotPage_NameDraw(void* self)
 		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color, 1.00);
 	}
 	else
-		color = text_color_normal;
+		color = color_white;
 
 	string = NULL;
 	if (s_botcontrols.slotType[ t->generic.id ].curvalue == SLOTTYPE_HUMAN)
@@ -1733,7 +1733,7 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.skillValue.generic.ownerdraw = StartServer_BotPage_SkillDraw;
 	s_botcontrols.skillValue.generic.statusbar = StartServer_BotPage_SkillStatusBar;
 	s_botcontrols.skillValue.generic.callback	= StartServer_BotPage_SkillEvent;
-	s_botcontrols.skillValue.generic.x			= BOT_LEFTCTRL + 13*SMALLCHAR_WIDTH + BOT_ICONX;
+	s_botcontrols.skillValue.generic.x			= BOT_LEFTCTRL + 13*BASEFONT_INDENT + BOT_ICONX;
 	s_botcontrols.skillValue.generic.y			= y;
 
 	s_botcontrols.skillValue.data = &s_scriptdata.bot.globalSkill;
@@ -1844,8 +1844,8 @@ void StartServer_BotPage_MenuInit(void)
 		s_botcontrols.slotName[i].generic.y			= list_y;
 		s_botcontrols.slotName[i].generic.left		= s_botcontrols.slotName[i].generic.x;
 		s_botcontrols.slotName[i].generic.top		= list_y;
-		s_botcontrols.slotName[i].generic.right		= s_botcontrols.slotName[i].generic.x + BOTNAME_LENGTH*SMALLCHAR_WIDTH;
-		s_botcontrols.slotName[i].generic.bottom		= list_y + SMALLCHAR_HEIGHT;
+		s_botcontrols.slotName[i].generic.right		= s_botcontrols.slotName[i].generic.x + BOTNAME_LENGTH*BASEFONT_INDENT;
+		s_botcontrols.slotName[i].generic.bottom		= list_y + BASEFONT_HEIGHT;
 		s_botcontrols.slotName[i].string = s_scriptdata.bot.name[i];
 
 		s_botcontrols.slotSelected[i].generic.type  = MTYPE_BITMAP;
@@ -1886,8 +1886,8 @@ void StartServer_BotPage_MenuInit(void)
 	s_botcontrols.actionActivate.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_botcontrols.actionActivate.generic.callback = StartServer_BotPage_Event;
 	s_botcontrols.actionActivate.generic.id	    = ID_BOT_ACTION;
-	s_botcontrols.actionActivate.generic.x		= 240 - 64 - SMALLCHAR_WIDTH;
-	s_botcontrols.actionActivate.generic.y		= y - ( 32 - SMALLCHAR_HEIGHT)/ 2 + 100;
+	s_botcontrols.actionActivate.generic.x		= 240 - 64 - BASEFONT_INDENT;
+	s_botcontrols.actionActivate.generic.y		= y - ( 32 - BASEFONT_HEIGHT)/ 2 + 100;
 	s_botcontrols.actionActivate.width  		    = 64;
 	s_botcontrols.actionActivate.height  		    = 32;
 	s_botcontrols.actionActivate.focuspic         = GAMESERVER_ACTION1;

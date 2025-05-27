@@ -225,21 +225,21 @@ static void CG_DrawToolgun() {
 		}
 	}
 	
-	CG_DrawPic( -1 - cl_screenoffset.value, 40, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
-	CG_DrawGiantString( 0 - cl_screenoffset.value, 42, toolgun_tooltext.string, 1.0F);
+	CG_DrawPic( -1 - cgs.wideoffset, 40, 300, 125, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+	ST_DrawString(0-cgs.wideoffset, 42, toolgun_tooltext.string, UI_LEFT, color_white, 2.50);
 	if(toolgun_mod19.integer == 0){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode1.string, 1.0F);
+		ST_DrawString(0-cgs.wideoffset, 72, toolgun_toolmode1.string, UI_LEFT, color_white, 1.32);
 	} else if(toolgun_mod19.integer == 1){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode2.string, 1.0F);
+		ST_DrawString(0-cgs.wideoffset, 72, toolgun_toolmode2.string, UI_LEFT, color_white, 1.32);
 	} else if(toolgun_mod19.integer == 2){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode3.string, 1.0F);
+		ST_DrawString(0-cgs.wideoffset, 72, toolgun_toolmode3.string, UI_LEFT, color_white, 1.32);
 	} else if(toolgun_mod19.integer == 3){
-		CG_DrawBigString( 0 - cl_screenoffset.value, 72, toolgun_toolmode4.string, 1.0F);
+		ST_DrawString(0-cgs.wideoffset, 72, toolgun_toolmode4.string, UI_LEFT, color_white, 1.32);
 	}
-	y = 90;  CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip1.string, 1.0F);
-	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip2.string, 1.0F);
-	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip3.string, 1.0F);
-	y += 15; CG_DrawBigString( 0 - cl_screenoffset.value, y, toolgun_tooltip4.string, 1.0F);
+	y = 90;  ST_DrawString(0-cgs.wideoffset, y, toolgun_tooltip1.string, UI_LEFT, color_white, 1.32);
+	y += 15; ST_DrawString(0-cgs.wideoffset, y, toolgun_tooltip2.string, UI_LEFT, color_white, 1.32);
+	y += 15; ST_DrawString(0-cgs.wideoffset, y, toolgun_tooltip3.string, UI_LEFT, color_white, 1.32);
+	y += 15; ST_DrawString(0-cgs.wideoffset, y, toolgun_tooltip4.string, UI_LEFT, color_white, 1.32);
 	
 	if(strlen(cg.entityInfo) > 0){
     	SplitStringBySpace(cg.entityInfo, entityInfos);
@@ -258,7 +258,7 @@ static void CG_DrawToolgun() {
 					}
 				}
 			}
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Class: %s", entityInfos[0]), 1.00F);
+			ST_DrawString(x, y+3 + (count * 10), va("Class: %s", entityInfos[0]), UI_LEFT, color_white, 1.00);
 			count++;
     	}
 		
@@ -273,24 +273,24 @@ static void CG_DrawToolgun() {
 				CG_DrawHead( x, y-48, 48, 48, atoi(entityInfos[1]) );
 				count--;
 			} else {
-    	    	CG_DrawSmallString(x, y+3 + (count * 10), va("Model: %s", entityInfos[1]), 1.00F);
+				ST_DrawString(x, y+3 + (count * 10), va("Model: %s", entityInfos[1]), UI_LEFT, color_white, 1.00);
 			}
 			count++;
     	}
 
 		if (strcmp(entityInfos[2], "<NULL>")) {
-    	    CG_DrawSmallString(x, y+3 + (count * 10), va("Material: %s", entityInfos[2]), 1.00F);
+			ST_DrawString(x, y+3 + (count * 10), va("Material: %s", entityInfos[2]), UI_LEFT, color_white, 1.00);
 			count++;
     	}
 
 		if (strcmp(entityInfos[3], "<NULL>")) {
 			if (strcmp(entityInfos[3], "0")) {
-    	    	CG_DrawSmallString(x, y+3 + (count * 10), va("Count: %s", entityInfos[3]), 1.00F);
+				ST_DrawString(x, y+3 + (count * 10), va("Count: %s", entityInfos[3]), UI_LEFT, color_white, 1.00);
 				count++;
 			} else {
 				for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
 					if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
-						CG_DrawSmallString(x, y+3 + (count * 10), va("Count: %i", it->quantity), 1.00F);
+						ST_DrawString(x, y+3 + (count * 10), va("Count: %s", it->quantity), UI_LEFT, color_white, 1.00);
 						count++;
 					}
 				}
@@ -301,62 +301,41 @@ static void CG_DrawToolgun() {
 
 static void CG_DrawStatusElement( float x, float y, int value, const char *text ) {
 	vec4_t         colornorm;
-	vec4_t         colorblk;
 	
 	colornorm[0]=cg_crosshairColorRed.value;
 	colornorm[1]=cg_crosshairColorGreen.value;
 	colornorm[2]=cg_crosshairColorBlue.value;
 	colornorm[3]=1.0f;
 	
-	colorblk[0]=0.0f;
-	colorblk[1]=0.0f;
-	colorblk[2]=0.0f;
-	colorblk[3]=0.40f;
-	
-	CG_DrawRoundedRect(x, y, 110, 32, 6, colorblk);
-	CG_DrawString( x+3, y+20, text, colornorm, qfalse, qfalse, 6, 7, 0, 0 );
-	trap_R_SetColor( colornorm );
-	CG_DrawString( x+50, y+9, va("%i", value), colornorm, qfalse, qfalse, 21, 24, 4, -8 );
+	CG_DrawRoundedRect(x, y, 100, 32, 4, color_dim);
+	ST_DrawString( x+4, y+18, text, UI_LEFT, colornorm, 0.90);
+	ST_DrawString( x+42, y+6, va("%i", value), UI_LEFT, colornorm, 2.32 );
 }
 
-static void CG_DrawStatusElementMini( float x, float y, const char *value, const char *text ) {
+static void CG_DrawCounterElement( float x, float y, const char *value, const char *text ) {
 	vec4_t         colornorm;
-	vec4_t         colorblk;
 	
 	colornorm[0]=cg_crosshairColorRed.value;
 	colornorm[1]=cg_crosshairColorGreen.value;
 	colornorm[2]=cg_crosshairColorBlue.value;
 	colornorm[3]=1.0f;
 	
-	colorblk[0]=0.0f;
-	colorblk[1]=0.0f;
-	colorblk[2]=0.0f;
-	colorblk[3]=0.40f;
-	
-	CG_DrawRoundedRect(x, y, 100, 20, 6, colorblk);
-	CG_DrawString( x+2, y+8, text, colornorm, qfalse, qfalse, 8, 10, 0, 0 );
-	trap_R_SetColor( colornorm );
-	CG_DrawString( x+50, y+4, value, colornorm, qfalse, qfalse, 12, 16, 6, -4 );
+	CG_DrawRoundedRect(x, y, 80, 15, 2, color_dim);
+	ST_DrawString( x+2, y+5, text, UI_LEFT, colornorm, 0.90);
+	ST_DrawString( x+40, y+3, value, UI_LEFT, colornorm, 1.20);
 }
 
-static void CG_DrawStatusElementLong( float x, float y, const char *value, const char *text ) {
+static void CG_DrawDomElement( float x, float y, const char *value, const char *text ) {
 	vec4_t         colornorm;
-	vec4_t         colorblk;
 	
 	colornorm[0]=cg_crosshairColorRed.value;
 	colornorm[1]=cg_crosshairColorGreen.value;
 	colornorm[2]=cg_crosshairColorBlue.value;
 	colornorm[3]=1.0f;
-	
-	colorblk[0]=0.0f;
-	colorblk[1]=0.0f;
-	colorblk[2]=0.0f;
-	colorblk[3]=0.40f;
-	
-	CG_DrawRoundedRect(x, y, 150, 16, 0, colorblk);
-	CG_DrawString( x+2, y+6, text, colornorm, qfalse, qfalse, 6, 8, 0, 0 );
-	trap_R_SetColor( colornorm );
-	CG_DrawString( x+100, y+2, value, colornorm, qfalse, qfalse, 10, 14, 6, -2 );
+
+	CG_DrawRoundedRect(x, y, 150, 16, 0, color_dim);
+	ST_DrawString( x+2, y+6, text, UI_LEFT, colornorm, 0.90);
+	ST_DrawString( x+110, y+2, value, UI_LEFT, colornorm, 1.20);
 }
 
 /*
@@ -394,11 +373,11 @@ static void CG_DrawStatusBar( void ) {
 	}
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_RED );
+		CG_DrawFlagModel( 0 - cgs.wideoffset, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_RED );
 	} else if( cg.predictedPlayerState.powerups[PW_BLUEFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_BLUE );
+		CG_DrawFlagModel( 0 - cgs.wideoffset, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_BLUE );
 	} else if( cg.predictedPlayerState.powerups[PW_NEUTRALFLAG] ) {
-		CG_DrawFlagModel( 0 - cl_screenoffset.value, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_FREE );
+		CG_DrawFlagModel( 0 - cgs.wideoffset, 480 - ICON_SIZE - 38, ICON_SIZE, ICON_SIZE, TEAM_FREE );
 	}
 
 	//
@@ -413,23 +392,23 @@ static void CG_DrawStatusBar( void ) {
 			cg.swep_listcl[ps->generic2] = 1;	
 		}
 		if ( value > -1 ) {
-			CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "AMMO");
+			CG_DrawStatusElement(630+cgs.wideoffset-100, 440, value, "AMMO");
 		}
 	}
 	} else {
 		if ( weaphack ) {
 			value = ps->stats[STAT_SWEPAMMO];
 			if(value <= 0 && value != -1){	// OpenSandbox weapon predict
-			cg.swep_listcl[ps->generic2] = 2;
+				cg.swep_listcl[ps->generic2] = 2;
 			} else {
-			cg.swep_listcl[ps->generic2] = 1;	
+				cg.swep_listcl[ps->generic2] = 1;	
 			}
 			if ( value > -1 ) {
-				CG_DrawStatusElement(628+cl_screenoffset.value-230, 440, value, "AMMO");
+				CG_DrawStatusElement(630+cgs.wideoffset-200, 440, value, "AMMO");
 			}
 		}
 		value = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * 0.20;
-		CG_DrawStatusElement(628+cl_screenoffset.value-110, 440, value, "KM/H");
+		CG_DrawStatusElement(630+cgs.wideoffset-100, 440, value, "KM/H");
 	}
 
 	//
@@ -440,21 +419,21 @@ static void CG_DrawStatusBar( void ) {
 	} else {
 		value = ps->stats[STAT_VEHICLEHP];	
 	}
-	CG_DrawStatusElement(12-cl_screenoffset.value, 440, value, "HEALTH");
+	CG_DrawStatusElement(10-cgs.wideoffset, 440, value, "HEALTH");
 		
 	//
 	// armor
 	//
 	value = ps->stats[STAT_ARMOR];
 	if (value > 0 ) {
-		CG_DrawStatusElement(22-cl_screenoffset.value+110, 440, value, "ARMOR");
+		CG_DrawStatusElement(20-cgs.wideoffset+100, 440, value, "ARMOR");
 	}
 
     //Skulls!
 	if(cgs.gametype == GT_HARVESTER) {
         value = ps->generic1;
         if (value > 0 ) {
-			CG_DrawStatusElement(32-cl_screenoffset.value+220, 440, value, "SKULLS");
+			CG_DrawStatusElement(30-cgs.wideoffset+200, 440, value, "SKULLS");
         }
     }
 }
@@ -521,15 +500,15 @@ static void CG_DrawCounters( void ) {
 		for(i = 0;i < cgs.domination_points_count;i++) {
 			switch(cgs.domination_points_status[i]) {
 				case TEAM_RED:
-					CG_DrawStatusElementLong(640+cl_screenoffset.value-154, y, "^1Red", cgs.domination_points_names[i]);
+					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^1Red", cgs.domination_points_names[i]);
 					y += 16;
 					break;
 				case TEAM_BLUE:
-					CG_DrawStatusElementLong(640+cl_screenoffset.value-154, y, "^4Blue", cgs.domination_points_names[i]);
+					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^4Blue", cgs.domination_points_names[i]);
 					y += 16;
 					break;
 				default:
-					CG_DrawStatusElementLong(640+cl_screenoffset.value-154, y, "^7White", cgs.domination_points_names[i]);
+					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^7White", cgs.domination_points_names[i]);
 					y += 16;
 					break;
 			}
@@ -541,8 +520,8 @@ static void CG_DrawCounters( void ) {
 	//Speed
 	value = sqrt(cg.snap->ps.velocity[0] * cg.snap->ps.velocity[0] + cg.snap->ps.velocity[1] * cg.snap->ps.velocity[1]);
 	if (cg_drawSpeed.integer == 1) {
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", value), "Speed");
-		y += 24;
+		CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i", value), "Speed");
+		y += 20;
 	}
 
 	//FPS
@@ -564,8 +543,8 @@ static void CG_DrawCounters( void ) {
 		value = 1000 * FPS_FRAMES / total;
 	}
 	if (cg_drawFPS.integer == 1) {
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i", value), "FPS");
-		y += 24;
+		CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i", value), "FPS");
+		y += 20;
 	}
 
 	//Timer
@@ -578,8 +557,8 @@ static void CG_DrawCounters( void ) {
 	seconds -= tens * 10;
 
 	if (cg_drawTimer.integer == 1) {
-		CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Time");
-		y += 24;
+		CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i:%i%i", mins, tens, seconds), "Time");
+		y += 20;
 	}
 
 	//Elimination
@@ -601,11 +580,11 @@ static void CG_DrawCounters( void ) {
 			seconds -= tens * 10;
 
 			if(msec>=0){
-				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, va("%i:%i%i", mins, tens, seconds), "Round");
+				CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i:%i%i", mins, tens, seconds), "Round");
 			} else {
-				CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "", "Round");
+				CG_DrawCounterElement(640+cgs.wideoffset-84, y, "", "Round");
 			}
-			y += 24;
+			y += 20;
 		}
 	}
 
@@ -614,11 +593,11 @@ static void CG_DrawCounters( void ) {
 		if( (cgs.elimflags&EF_ONEWAY)==0) {
 		//Nothing
 		} else if(cgs.attackingTeam == TEAM_BLUE) {
-			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^4B", "Attack");
-		y += 24;
+			CG_DrawCounterElement(640+cgs.wideoffset-84, y, "^4Blue", "Attack");
+		y += 20;
 		} else {
-			CG_DrawStatusElementMini(640+cl_screenoffset.value-104, y, "^1R", "Attack");
-		y += 24;
+			CG_DrawCounterElement(640+cgs.wideoffset-84, y, "^1Red", "Attack");
+		y += 20;
 		}
 	}
 	return;
@@ -650,8 +629,8 @@ static void CG_DrawLMSmode( void ) {
 	} else
 		s = va("LMS: Unknown mode");
 
-	w = CG_DrawStrlen( s ) * SMALLCHAR_WIDTH;
-	CG_DrawSmallString( 635 + cl_screenoffset.value - w, y + 2, s, 1.0F);
+	w = CG_DrawStrlen( s ) * BASEFONT_INDENT;
+	CG_DrawSmallString( 635 + cgs.wideoffset - w, y + 2, s, 1.0F);
 
 	return;
 }
@@ -671,16 +650,14 @@ CG_DrawScores
 Draw the small two score display
 =================
 */
-#define SCORES_WIDTH 32
+#define SCORES_WIDTH 	32
+#define SCORES_HEIGHT 	20
 static void CG_DrawScores( void ) {
 	const char	*s;
 	int			s1, s2, score;
 	int			x;
 	int			v;
-	vec4_t		colorb, colorr, colorg, colorbl;
-	float		y1;
-	gitem_t		*item;
-    int 		statusA, statusB;
+	vec4_t		colorb, colorr, colorg, colorgr;
 	float 		y = 0;
 
 	colorb[0] = 0.0f;
@@ -696,144 +673,127 @@ static void CG_DrawScores( void ) {
 	colorg[0] = 0.5f;
 	colorg[1] = 0.5f;
 	colorg[2] = 0.5f;
-	colorg[3] = 0.33f;
+	colorg[3] = 0.30f;
 
-	colorbl[0] = 0.0f;
-	colorbl[1] = 0.0f;
-	colorbl[2] = 0.0f;
-	colorbl[3] = 0.33f;
+	colorgr[0] = 0.0f;
+	colorgr[1] = 1.0f;
+	colorgr[2] = 0.0f;
+	colorgr[3] = 0.30f;
 
-    statusA = cgs.redflag;
-    statusB = cgs.blueflag;
 	s1 = cgs.scores1;
 	s2 = cgs.scores2;
-	y1 = y;
 
 	if(cg.showScores){
 		return;
 	}
 
 	// draw from the right side to left
-	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+	if(cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+		//blue score
 		x = 320;
-		s = va( "%2i", s2 );
-		CG_FillRect( x, y,  SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorb );
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE ) {
-			CG_DrawPic( x, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.selectShader );
-		}
-		CG_DrawBigString( x + 4, y, s, 1.0F);
+		s = va("%i", s2);
+		CG_DrawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorb);
+		ST_DrawString( x+16, y+3, s, UI_CENTER, color_white, 1.20);
 
-		if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION) {
-			// Display flag status
-			item = BG_FindItemForPowerup( PW_BLUEFLAG );
-
-			if (item) {
-				if( cgs.blueflag >= 0 && cgs.blueflag <= 2 ) {
-					CG_DrawPic( x+SCORES_WIDTH, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.blueFlagShader[cgs.blueflag] );
+		//blue flag
+		if(cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION) {
+			if (BG_FindItemForPowerup(PW_BLUEFLAG)) {
+				if(cgs.blueflag >= 0 && cgs.blueflag <= 2) {
+					CG_DrawPic( x+SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, cgs.media.blueFlagShader[cgs.blueflag] );
 				}
 			}
 		}
 
-        if ( cgs.gametype == GT_OBELISK ) {
-            s = va("^4%3i%%",cg.blueObeliskHealth);
-            CG_DrawBigString(x+SCORES_WIDTH, y, s, 1.0F);
+        if(cgs.gametype == GT_OBELISK) {
+            s = va("%i%%",cg.blueObeliskHealth);
+			CG_DrawRoundedRect(x+SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT-4, 0, color_dim);
+			ST_DrawString( x+(SCORES_WIDTH*1.50), y+2, s, UI_CENTER, color_white, 1.20);
         }
 
-        if ( cgs.gametype == GT_DOUBLE_D ) {
-			if( cgs.redflag >= 0 && cgs.redflag <= 3 ) {
-				CG_DrawPic( x, y, SCORES_WIDTH, 32, cgs.media.ddPointSkinB[cgs.blueflag] );
+        if(cgs.gametype == GT_DOUBLE_D) {
+			if(cgs.redflag >= 0 && cgs.redflag <= 3) {
+				CG_DrawPic( x+SCORES_WIDTH, y, SCORES_HEIGHT, SCORES_HEIGHT, cgs.media.ddPointSkinB[cgs.blueflag] );
 			}
 		}
 
-		s = va( "%2i", s1 );
-		x -= SCORES_WIDTH;
-		CG_FillRect( x, y,  SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorr );
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ) {
-			CG_DrawPic( x, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.selectShader );
-		}
-		CG_DrawBigString( x + 4, y, s, 1.0F);
+		//red score
+		s = va( "%i", s1 );
+		x = 320-SCORES_WIDTH;
+		CG_DrawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorr);
+		ST_DrawString( x+16, y+3, s, UI_CENTER, color_white, 1.20);
 
-		if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ) {
-			// Display flag status
-			item = BG_FindItemForPowerup( PW_REDFLAG );
-
-			if (item) {
+		//red flag
+		if (cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION) {
+			if (BG_FindItemForPowerup(PW_REDFLAG)) {
 				if( cgs.redflag >= 0 && cgs.redflag <= 2 ) {
-					CG_DrawPic( x-SCORES_WIDTH, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.redFlagShader[cgs.redflag] );
+					CG_DrawPic( x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, cgs.media.redFlagShader[cgs.redflag] );
 				}
 			}
 		}
 
-        if ( cgs.gametype == GT_OBELISK ) {
-            s = va("^1%3i%%",cg.redObeliskHealth);
-            CG_DrawBigString( x-SCORES_WIDTH, y, s, 1.0F);
+        if (cgs.gametype == GT_OBELISK) {
+            s = va("%i%%",cg.redObeliskHealth);
+			CG_DrawRoundedRect(x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT-4, 0, color_dim);
+			ST_DrawString( x-(SCORES_WIDTH*0.50), y+2, s, UI_CENTER, color_white, 1.20);
         }
 
-        if ( cgs.gametype == GT_DOUBLE_D ) {
-			if( cgs.redflag >= 0 && cgs.redflag <= 3 ) {
-				CG_DrawPic( x, y, SCORES_WIDTH, 32, cgs.media.ddPointSkinA[cgs.redflag] );
+        if (cgs.gametype == GT_DOUBLE_D) {
+			if(cgs.redflag >= 0 && cgs.redflag <= 3) {
+				CG_DrawPic( x-SCORES_HEIGHT, y, SCORES_HEIGHT, SCORES_HEIGHT, cgs.media.ddPointSkinA[cgs.redflag] );
 			}
-
-            //Time till capture:
-            if( ( ( statusB == statusA ) && ( statusA == TEAM_RED ) ) || ( ( statusB == statusA ) && ( statusA == TEAM_BLUE ) ) ) {
-                s = va("%i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-                CG_DrawBigString( x + 32+8-SCORES_WIDTH/2, y-28, s, 1.0F);
-            }
 		}
 
-		if ( cgs.gametype >= GT_CTF && cgs.ffa_gt==0) {
+		// limit
+		if (cgs.gametype >= GT_CTF && cgs.ffa_gt==0) {
 			v = cgs.capturelimit;
 		} else {
 			v = cgs.fraglimit;
 		}
-		if ( v ) {
-			s = va( "%2i", v );
-			x = 320 - SCORES_WIDTH;
-			CG_FillRect( x, BIGCHAR_HEIGHT+8, SCORES_WIDTH*2, BIGCHAR_HEIGHT+8, colorbl );
-			CG_DrawBigString( x + 8, BIGCHAR_HEIGHT+12, s, 1.0F);
+		if (v) {
+			s = va("%i", v);
+			x = 320-32;
+			CG_DrawRoundedRect(x, y+SCORES_HEIGHT, SCORES_WIDTH*2, SCORES_HEIGHT, 0, color_dim);
+			ST_DrawString( x+SCORES_WIDTH, y+23, s, UI_CENTER, color_white, 1.20);
 		}
 
 	} else {
-		qboolean spectator;
-
 		x = 320;
 		score = cg.snap->ps.persistant[PERS_SCORE];
-		spectator = ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR );
 
 		// always show your score in the second box if not in first place
-		if ( s1 != score ) {
+		if(s1 != score) {
 			s2 = score;
 		}
 
-		if ( s2 != SCORE_NOT_PRESENT ) {
-			s = va( "%2i", s2 );
-			if ( !spectator && score == s2 && score != s1 ) {
-				CG_FillRect( x, y,  SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorr );
-				CG_DrawPic( x, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.selectShader );
+		// player place
+		if (s2 != SCORE_NOT_PRESENT) {
+			s = va("%i", s2);
+			if ( s1 != score ) {
+				CG_DrawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr);
 			} else {
-				CG_FillRect( x, y,  SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorg );
+				CG_DrawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);	
 			}
-			CG_DrawBigString( x + 4, y, s, 1.0F);
+			ST_DrawString( x+16, y+3, s, UI_CENTER, color_white, 1.20);
 		}
 
 		// first place
-		if ( s1 != SCORE_NOT_PRESENT ) {
-			s = va( "%2i", s1 );
-			x -= SCORES_WIDTH;
-			if ( !spectator && score == s1 ) {
-				CG_FillRect( x, y,  SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorb );
-				CG_DrawPic( x, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, cgs.media.selectShader );
+		if (s1 != SCORE_NOT_PRESENT) {
+			s = va("%i", s1);
+			if ( s1 == score ) {
+				CG_DrawRoundedRect(x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr);
 			} else {
-				CG_FillRect( x, y, SCORES_WIDTH, BIGCHAR_HEIGHT+8, colorg );
+				CG_DrawRoundedRect(x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);	
 			}
-			CG_DrawBigString( x + 4, y, s, 1.0F);
+			CG_DrawRoundedRect(x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);
+			ST_DrawString((x+16)-SCORES_WIDTH, y+3, s, UI_CENTER, color_white, 1.20);
 		}
 
-		if ( cgs.fraglimit ) {
-			s = va( "%2i", cgs.fraglimit );
-			x = 320 - SCORES_WIDTH;
-			CG_FillRect( x, BIGCHAR_HEIGHT+8, SCORES_WIDTH*2, BIGCHAR_HEIGHT+8, colorbl );
-			CG_DrawBigString( x + 8, BIGCHAR_HEIGHT+12, s, 1.0F);
+		// limit
+		if (cgs.fraglimit) {
+			s = va("%i", cgs.fraglimit);
+			x = 320-32;
+			CG_DrawRoundedRect(x, y+SCORES_HEIGHT, 64, 20, 0, color_dim);
+			ST_DrawString( x+SCORES_WIDTH, y+23, s, UI_CENTER, color_white, 1.20);
 		}
 	}
 }
@@ -848,9 +808,8 @@ CG_DrawPowerups
 static void CG_DrawPowerups( void ) {
 	playerState_t *ps = &cg.snap->ps;
 	gitem_t *item;
-	int i, t;
-	float y = 480 - ICON_SIZE * 1.5f;
-	int x = 640 - 85 + cl_screenoffset.value - PW_ICON_SIZE - CHAR_WIDTH * 0.60f;
+	int 	i, t;
+	float 	y = 150;
 
 	if (ps->stats[STAT_HEALTH] <= 0) {
 		return;
@@ -871,11 +830,11 @@ static void CG_DrawPowerups( void ) {
 			continue;
 		}
 
-		y -= PW_ICON_SIZE;
-		CG_DrawPic( 0 - cl_screenoffset.value, y, PW_ICON_SIZE, PW_ICON_SIZE, trap_R_RegisterShader(item->icon) );
+		y += PW_ICON_SIZE+2;
+		CG_DrawRoundedRect(2-cgs.wideoffset, y, 64, PW_ICON_SIZE, 4, color_dim);
+		CG_DrawPic(3-cgs.wideoffset, y, PW_ICON_SIZE, PW_ICON_SIZE, trap_R_RegisterShader(item->icon));
+		ST_DrawString((4-cgs.wideoffset)+PW_ICON_SIZE, y+3, va("%i", t/1000), UI_LEFT, color_white, 1.25);
 	}
-
-	trap_R_SetColor(NULL);
 }
 
 /*
@@ -899,8 +858,8 @@ static int CG_DrawPickupItem( int y ) {
 		if ( fadeColor ) {
 			CG_RegisterItemVisuals( value );
 			trap_R_SetColor( fadeColor );
-			CG_DrawPic( 8 - cl_screenoffset.value, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			CG_DrawBigString( ICON_SIZE - cl_screenoffset.value + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0] );
+			CG_DrawPic( 8 - cgs.wideoffset, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawBigString( ICON_SIZE - cgs.wideoffset + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0] );
 			trap_R_SetColor( NULL );
 		}
 	}
@@ -1029,7 +988,7 @@ static void CG_DrawHoldableItem( void ) {
 
 	if ( value ) {
 		CG_RegisterItemVisuals( value );
-		CG_DrawPic( 640-ICON_SIZE+(cl_screenoffset.value+1), 1, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+		CG_DrawPic( 640-ICON_SIZE+(cgs.wideoffset+1), 1, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 	}
 	
 	//draw keys
@@ -1045,7 +1004,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_RED);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1055,7 +1014,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_GREEN);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1065,7 +1024,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_BLUE);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1075,7 +1034,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_YELLOW);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1085,7 +1044,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_MASTER);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1095,7 +1054,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_GOLD);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1105,7 +1064,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_SILVER);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1115,7 +1074,7 @@ static void CG_DrawHoldableItem( void ) {
 		value = GetHoldableListIndex(HI_KEY_IRON);
 		if ( value ) {
 			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cl_screenoffset.value+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			yoffset += ICON_SIZE;
 		}
 	}
@@ -1141,7 +1100,7 @@ static void CG_DrawObjectivesNotification( void ) {
 
 	if ( draw ) {
 		trap_R_SetColor( NULL );
-		CG_DrawPic( 8-cl_screenoffset.value, 8, ICON_SIZE, ICON_SIZE, cgs.media.objectivesUpdated );
+		CG_DrawPic( 8-cgs.wideoffset, 8, ICON_SIZE, ICON_SIZE, cgs.media.objectivesUpdated );
 	}
 }
 /*
@@ -1155,7 +1114,7 @@ static void CG_DrawPersistantPowerup( void ) {
 	value = cg.snap->ps.stats[STAT_PERSISTANT_POWERUP];
 	if ( value ) {
 		CG_RegisterItemVisuals( value );
-		CG_DrawPic( 0 - cl_screenoffset.value, (0+SCREEN_HEIGHT / 2) - ICON_SIZE, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+		CG_DrawPic( 0 - cgs.wideoffset, (0+SCREEN_HEIGHT / 2) - ICON_SIZE, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 	}
 }
 
@@ -1235,9 +1194,9 @@ static void CG_DrawLagometer( void ) {
 	y = 480 - 48;
 
 	trap_R_SetColor( NULL );
-	CG_DrawPic( x + cl_screenoffset.value, y, 48, 48, cgs.media.lagometerShader );
+	CG_DrawPic( x + cgs.wideoffset, y, 48, 48, cgs.media.lagometerShader );
 
-	ax = x + cl_screenoffset.value;
+	ax = x + cgs.wideoffset;
 	ay = y;
 	aw = 48;
 	ah = 48;
@@ -1576,8 +1535,8 @@ static void CG_DrawCrosshair(void) {
 			h *= ( 1 + f );
 		}
 	}
-	if(cl_screenoffset.value > 0){
-		x = 0 - cl_screenoffset.value;
+	if(cgs.wideoffset > 0){
+		x = 0 - cgs.wideoffset;
 	} else {
 		x = 0;
 	}
@@ -1707,12 +1666,8 @@ CG_DrawCrosshairNames
 static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	char		*name;
-	float		w;
 
-	if ( !cg_drawCrosshair.integer ) {
-		return;
-	}
-	if ( !cg_drawCrosshairNames.integer ) {
+	if ( !cg_drawCrosshair.integer || !cg_drawCrosshairNames.integer ) {
 		return;
 	}
 
@@ -1720,17 +1675,13 @@ static void CG_DrawCrosshairNames( void ) {
 	CG_ScanForCrosshairEntity();
 
 	// draw the name of the player being looked at
-	color = CG_FadeColor( cg.crosshairClientTime, 1000 );
+	color = CG_FadeColor(cg.crosshairClientTime, 1000);
 	if ( !color ) {
-		trap_R_SetColor( NULL );
 		return;
 	}
+	name = cgs.clientinfo[cg.crosshairClientNum].name;
 
-	name = cgs.clientinfo[ cg.crosshairClientNum ].name;
-
-	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
-	CG_DrawBigString( 320 - w / 2, 170, name, color[3] * 0.5f );
-	trap_R_SetColor( NULL );
+	ST_DrawString(320, 200, name, UI_CENTER, color, 1.25);
 }
 
 /*
@@ -1759,7 +1710,7 @@ static void CG_DrawVote(void) {
 	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.voteString, cgs.voteYes, cgs.voteNo);
 	CG_DrawSmallString( 0, 58, s, 1.0F );
 	s = "or press ESC then click Vote";
-	CG_DrawSmallString( 0, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
+	CG_DrawSmallString( 0, 58 + BASEFONT_HEIGHT + 2, s, 1.0F );
 }
 
 /*
@@ -1845,14 +1796,10 @@ void CG_NSErrors( void ) {
 	vec4_t colord = {0.30f, 0.24f, 0.06f, 1.00f};
 	vec4_t colortex = {0.20f, 0.20f, 0.20f, 1.00f};
 
-	if(!cgs.media.errIcon){
-		cgs.media.errIcon = trap_R_RegisterShaderNoMip( "menu/erricon" );
-	}
-
-	CG_DrawRoundedRect(21-cl_screenoffset.value, 21, 180, 16, 0, colord);
-	CG_DrawRoundedRect(20-cl_screenoffset.value, 20, 180, 16, 0, color);
-	CG_DrawPic( 23-cl_screenoffset.value, 20+3, 10, 10, cgs.media.errIcon );
-	CG_DrawString( 38-cl_screenoffset.value, 20+5, "Something is creating script errors", colortex, qfalse, qfalse, 8, 6, 128, -3.5 );
+	CG_DrawRoundedRect(21-cgs.wideoffset, 21, 180, 16, 0, colord);
+	CG_DrawRoundedRect(20-cgs.wideoffset, 20, 180, 16, 0, color);
+	CG_DrawPic( 23-cgs.wideoffset, 20+3, 10, 10, cgs.media.errIcon );
+	ST_DrawString(38-cgs.wideoffset, 20+4, "Something is creating script errors", UI_LEFT, colortex, 0.80);
 }
 
 void CG_AddNotify(const char *text, int type) {
@@ -1883,7 +1830,7 @@ void CG_Notify(void) {
     float boxHeight = 20.0f;
     float margin = 4.0f;
     float cornerRadius = 6.0f;
-    float startX = 640 + cl_screenoffset.value - 20;
+    float startX = 640 + cgs.wideoffset - 20;
     float startY = 400 - margin;
     int i;
     int timeElapsed;
@@ -1892,13 +1839,6 @@ void CG_Notify(void) {
     float yOffset;
     float boxWidth;
 	int	  typeTime;
-
-    if (!cgs.media.notifyIcon) {
-        cgs.media.notifyIcon = trap_R_RegisterShaderNoMip("menu/notifyicon");
-    }
-	if (!cgs.media.undoIcon) {
-        cgs.media.undoIcon = trap_R_RegisterShaderNoMip("menu/undoicon");
-    }
 
     for (i = 0; i < MAX_NOTIFICATIONS; i++) {
         if (!cg.notifications[i].active) {
@@ -1931,7 +1871,7 @@ void CG_Notify(void) {
         backgroundColor[3] = alpha * 0.30f;
         textColor[3] = alpha;
 
-        boxWidth = 8 * strlenru(cg.notifications[i].text) + 20;
+        boxWidth = BASEFONT_INDENT * strlenru(cg.notifications[i].text) + 16+16;
 
         yOffset = startY - (boxHeight + margin) * i;
 
@@ -1945,7 +1885,7 @@ void CG_Notify(void) {
             CG_DrawPic(startX-boxWidth + offsetX + 5, yOffset + 2.5, 16, 16, cgs.media.undoIcon);
         }
 
-        CG_DrawString(startX-boxWidth + offsetX + (cg.notifications[i].type > 0 ? 25 : 10), yOffset + 5, cg.notifications[i].text, textColor, qfalse, qfalse, 9, 12, 0, -2);
+		ST_DrawString(startX-boxWidth+offsetX+(cg.notifications[i].type > 0 ? 25 : 10), yOffset+5, cg.notifications[i].text, UI_LEFT, textColor, 1.00);
     }
 }
 
@@ -2090,9 +2030,9 @@ static void CG_DrawWarmup( void ) {
 
 static void CG_DrawDeathMessage( void ) {
 	if(((double) cg.respawnTime - (double) cg.time) / 1000.0 <= 0){
-		CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( "Press fire key to respawn" ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Press fire key to respawn", 1.0);
+		CG_DrawSmallString((640 - (BASEFONT_INDENT * strlen( "Press fire key to respawn" ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Press fire key to respawn", 1.0);
 	} else {
-		CG_DrawSmallString((640 - (SMALLCHAR_WIDTH * strlen( va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
+		CG_DrawSmallString((640 - (BASEFONT_INDENT * strlen( va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
 	}
 }
 
@@ -2161,7 +2101,7 @@ void CG_DrawFade( void ) {
 			return;
 
 		//simply draw the end color now
-		CG_FillRect(0 - (cl_screenoffset.value+2), 0, 640 + (cl_screenoffset.value*2)+4, 480, cg.fadeEndColor);
+		CG_FillRect(0 - (cgs.wideoffset+2), 0, 640 + (cgs.wideoffset*2)+4, 480, cg.fadeEndColor);
 		return;
 	}
 
@@ -2178,7 +2118,7 @@ void CG_DrawFade( void ) {
 	Vector4Subtract(cg.fadeStartColor, colorDiff, colorDiff);
 
 	//draw the fade color over the screen
-	CG_FillRect(0 - (cl_screenoffset.value+2), 0, 640 + (cl_screenoffset.value*2)+4, 480, colorDiff);
+	CG_FillRect(0 - (cgs.wideoffset+2), 0, 640 + (cgs.wideoffset*2)+4, 480, colorDiff);
 }
 
 /*
@@ -2192,7 +2132,7 @@ static void CG_DrawOverlay( void ) {
 	// draw overlay set by target_effect
 	overlay = CG_ConfigString( CS_OVERLAY );
 	if ( strlen(overlay) && cgs.media.effectOverlay )
-		CG_DrawPic( 0 - (cl_screenoffset.value+1), 0, SCREEN_WIDTH + (cl_screenoffset.value*2)+2, SCREEN_HEIGHT, cgs.media.effectOverlay );
+		CG_DrawPic( 0 - (cgs.wideoffset+1), 0, SCREEN_WIDTH + (cgs.wideoffset*2)+2, SCREEN_HEIGHT, cgs.media.effectOverlay );
 }
 
 /*
@@ -2208,7 +2148,7 @@ static void CG_DrawPostProcess( void ) {
 	}
 	// draw postprocess
 	if ( strlen(cg_postprocess.string) && cgs.media.postProcess )
-		CG_DrawPic( 0 - (cl_screenoffset.value+1), 0, SCREEN_WIDTH + (cl_screenoffset.value*2)+2, SCREEN_HEIGHT, cgs.media.postProcess );
+		CG_DrawPic( 0 - (cgs.wideoffset+1), 0, SCREEN_WIDTH + (cgs.wideoffset*2)+2, SCREEN_HEIGHT, cgs.media.postProcess );
 }
 
 
@@ -2225,9 +2165,9 @@ static void CG_Draw2D( void ) {
 
 	if(cgs.gametype != GT_SINGLE && !cg.showScores){
 		if(!(catcher & KEYCATCH_MESSAGE))
-			CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cl_screenoffset.value, 0, 7.5, 9.0);
-		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cl_screenoffset.value, 360, 7.5, 9.0);
-		CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cl_screenoffset.value, 100, 7.5, 9.0);
+			CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cgs.wideoffset, 0, 7.5, 9.0);
+		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cgs.wideoffset, 360, 7.5, 9.0);
+		CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cgs.wideoffset, 100, 7.5, 9.0);
 	}
 
 	CG_DrawCrosshair();

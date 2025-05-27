@@ -523,7 +523,7 @@ void DynamicMenu_FinishSubMenuInit( void )
 	count = s_dynamic.end[depth] - start;
 	for ( i = 0; i < count; i++)
 	{
-		width = UI_ProportionalStringWidth(s_dynamic.data[i + start].text, 1.00);
+		width = ST_StringWidth(s_dynamic.data[i + start].text, 1.00);
 		if (width > maxwidth)
 			maxwidth = width;
 
@@ -536,7 +536,7 @@ void DynamicMenu_FinishSubMenuInit( void )
 
 	if (submenu)
 	{
-		maxwidth += UI_ProportionalStringWidth(" \r", 1.00);	// space and submenu pointer
+		maxwidth += ST_StringWidth(" \r", 1.00);	// space and submenu pointer
 	}
 
 	scale = 1.00;
@@ -722,7 +722,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 
 	// draw the text
 	if (t->generic.flags & QMF_GRAYED)
-		color = text_color_disabled;
+		color = color_disabled;
 	else
 		color = t->color;
 
@@ -742,7 +742,7 @@ static void DynamicMenu_MenuItemDraw( void* self )
 
 	// draw the cursor for submenu if needed
 	if (style & UI_SMALLFONT)
-		charh = SMALLCHAR_HEIGHT;
+		charh = BASEFONT_HEIGHT;
 	else
 		charh = BIGCHAR_HEIGHT;	
 
@@ -785,8 +785,8 @@ static void DynamicMenu_MenuDraw( void )
     };
 
 	if (uis.debug) {
-		ST_DrawString(0, SMALLCHAR_HEIGHT, va("depth:%i", s_dynamic.depth), UI_SMALLFONT, color_white, 1.00);
-		ST_DrawString(0, 32 + SMALLCHAR_HEIGHT, va("active: %i %i %i", s_dynamic.active[0], s_dynamic.active[1], s_dynamic.active[2] ), UI_SMALLFONT, color_white, 1.00);
+		ST_DrawString(0, BASEFONT_HEIGHT, va("depth:%i", s_dynamic.depth), UI_SMALLFONT, color_white, 1.00);
+		ST_DrawString(0, 32 + BASEFONT_HEIGHT, va("active: %i %i %i", s_dynamic.active[0], s_dynamic.active[1], s_dynamic.active[2] ), UI_SMALLFONT, color_white, 1.00);
 	}
 	y = 5;
 	x = 635 + uis.wideoffset;

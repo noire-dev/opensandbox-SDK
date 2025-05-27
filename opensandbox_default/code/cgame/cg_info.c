@@ -108,31 +108,31 @@ void CG_DrawInformation( void ) {
 	}
 	trap_R_SetColor( NULL );
 
-	CG_DrawPic( 0-cl_screenoffset.value, 0, 640+(cl_screenoffset.value*2), 480, levelshot );
-	CG_DrawPic( 0-cl_screenoffset.value, 0, 640+(cl_screenoffset.value*2), 480, detail );
+	CG_DrawPic( 0-cgs.wideoffset, 0, 640+(cgs.wideoffset*2), 480, levelshot );
+	CG_DrawPic( 0-cgs.wideoffset, 0, 640+(cgs.wideoffset*2), 480, detail );
 
-	CG_DrawRoundedRect(410+cl_screenoffset.value, 445, 220, 30, 1, color_lightgrey);
-	CG_DrawProgressBar(415+cl_screenoffset.value, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
-	CG_DrawString( 413+cl_screenoffset.value, 449, cg.infoScreenText, color_whiteblack, qfalse, qfalse, 8, 7, 128, -3.0 );
+	CG_DrawRoundedRect(410+cgs.wideoffset, 445, 220, 30, 1, color_lightgrey);
+	CG_DrawProgressBar(415+cgs.wideoffset, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
+	CG_DrawString( 413+cgs.wideoffset, 449, cg.infoScreenText, color_whiteblack, qfalse, qfalse, 8, 7, 128, -3.0 );
 
 	CG_DrawPic( 320-50, 240-75, 100, 100, logo );
 	CG_DrawPic( 320-24, 320-48, 48, 48, loading );
 
-	CG_DrawPic( 0-cl_screenoffset.value, 0, 300, 85, fade );
-	CG_DrawPic( 5-cl_screenoffset.value, 5, 100, 75, levelshot );
+	CG_DrawPic( 0-cgs.wideoffset, 0, 300, 85, fade );
+	CG_DrawPic( 5-cgs.wideoffset, 5, 100, 75, levelshot );
 
 	y = 15;
 
 	// server hostname
 	Q_strncpyz(buf, Info_ValueForKey( info, "sv_hostname" ), 1024);
 	Q_CleanStr(buf);
-	CG_DrawBigString( 110-cl_screenoffset.value, y, buf, 1.0F );
+	CG_DrawBigString( 110-cgs.wideoffset, y, buf, 1.0F );
 	y += PROP_HEIGHT;
 
 	// server mapname
 	Q_strncpyz(buf, Info_ValueForKey( info, "mapname" ), 1024);
 	Q_CleanStr(buf);
-	CG_DrawBigString( 110-cl_screenoffset.value, y, buf, 1.0F );
+	CG_DrawBigString( 110-cgs.wideoffset, y, buf, 1.0F );
 	y += PROP_HEIGHT;
 
 	// game type
@@ -186,5 +186,5 @@ void CG_DrawInformation( void ) {
 		s = "Unknown Gametype";
 		break;
 	}
-	CG_DrawBigString( 110-cl_screenoffset.value, y, s, 1.0F );
+	CG_DrawBigString( 110-cgs.wideoffset, y, s, 1.0F );
 }

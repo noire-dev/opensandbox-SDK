@@ -184,14 +184,14 @@ void UI_ConfirmMenu_Style( const char *question, int style, void (*action)( qboo
 	ConfirmMenu_Cache();
 
 if(cl_language.integer == 0){
-	n1 = UI_ProportionalStringWidth( "YES/NO", 1.00 );
-	n2 = UI_ProportionalStringWidth( "YES", 1.00 );
-	n3 = UI_ProportionalStringWidth( "/", 1.00 );
+	n1 = ST_StringWidth( "YES/NO", 1.00 );
+	n2 = ST_StringWidth( "YES", 1.00 );
+	n3 = ST_StringWidth( "/", 1.00 );
 }
 if(cl_language.integer == 1){
-	n1 = UI_ProportionalStringWidth( "ДА/НЕТ", 1.00 );
-	n2 = UI_ProportionalStringWidth( "ДА", 1.00 );
-	n3 = UI_ProportionalStringWidth( "/", 1.00 );
+	n1 = ST_StringWidth( "ДА/НЕТ", 1.00 );
+	n2 = ST_StringWidth( "ДА", 1.00 );
+	n3 = ST_StringWidth( "/", 1.00 );
 }
 	l1 = 320 - ( n1 / 2 );
 	l2 = l1 + n2;

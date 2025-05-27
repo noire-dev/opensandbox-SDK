@@ -328,7 +328,7 @@ static void UI_AddBotsMenu_Draw( void ) {
 		UI_DrawHandlePic( x - 2, y - 2, w, h, hpic);
 
       // write bot skill as float
-      x = b->generic.x + b->width - 4 * SMALLCHAR_WIDTH;
+      x = b->generic.x + b->width - 4 * BASEFONT_INDENT;
       y = b->generic.y + b->height + 2;
       f_skill = addBotsMenuInfo.skill_slider.curvalue + 1;
 	   ST_DrawString(x, y, va("%4.2f", f_skill), UI_SMALLFONT, color_grey, 1.00);
@@ -457,7 +457,7 @@ if(cl_language.integer == 1){
 	addBotsMenuInfo.skill_slider.maxvalue			= 8.0;
 	addBotsMenuInfo.skill_slider.curvalue			= Com_Clamp( 0, 8, (int)trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
 
-   y += SMALLCHAR_HEIGHT;
+   y += BASEFONT_HEIGHT;
 	addBotsMenuInfo.skill.generic.type		= MTYPE_SPINCONTROL;
 	addBotsMenuInfo.skill.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	addBotsMenuInfo.skill.generic.callback = UI_AddBotsMenu_SkillChangeEvent;
@@ -472,7 +472,7 @@ if(cl_language.integer == 1){
 	}
 	addBotsMenuInfo.skill.curvalue			= (int)addBotsMenuInfo.skill_slider.curvalue;
 
-	y += SMALLCHAR_HEIGHT;
+	y += BASEFONT_HEIGHT;
 	addBotsMenuInfo.team.generic.type		= MTYPE_SPINCONTROL;
 	addBotsMenuInfo.team.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	addBotsMenuInfo.team.generic.x			= 320;

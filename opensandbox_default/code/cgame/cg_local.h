@@ -1175,9 +1175,9 @@ typedef struct {
 typedef struct {
 	gameState_t		gameState;			// gamestate from server
 	glconfig_t		glconfig;			// rendering configuration
-	float			screenXScale;		// derived from glconfig
-	float			screenYScale;
-	float			screenXBias;
+	float			scale;
+	float			bias;
+	float			wideoffset;
 
 	int				serverCommandSequence;	// reliable command stream counter
 	int				processedSnapshotNum;// the number of snapshots cgame has requested
@@ -1397,7 +1397,6 @@ extern	vmCvar_t	ns_haveerror;		//Noire.Script error
 
 extern	vmCvar_t	cg_postprocess;
 extern	vmCvar_t	cl_language;
-extern  vmCvar_t    cl_screenoffset;
 
 extern	vmCvar_t		cg_disableBobbing;
 extern	vmCvar_t		cg_shadows;

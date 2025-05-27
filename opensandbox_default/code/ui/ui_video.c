@@ -93,21 +93,21 @@ static void DriverInfo_MenuDraw( void )
 	ST_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 	ST_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 
-	ST_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
-	ST_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
-	ST_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
-	ST_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
+	ST_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 
 	// double column
 	y = 192+16;
 	for (i=0; i<s_driverinfo.numstrings/2; i++) {
-		ST_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, text_color_normal, 1.00 );
-		ST_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, text_color_normal, 1.00 );
-		y += SMALLCHAR_HEIGHT;
+		ST_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, color_white, 1.00 );
+		ST_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, color_white, 1.00 );
+		y += BASEFONT_HEIGHT;
 	}
 
 	if (s_driverinfo.numstrings & 1)
-		ST_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal, 1.00 );
+		ST_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 }
 
 /*

@@ -48,11 +48,11 @@
 // screen positions
 #define MAPCOLUMN_LEFTX 	COLUMN_LEFT - uis.wideoffset
 #define MAPCOLUMN_RIGHTX 	COLUMN_RIGHT + uis.wideoffset
-#define MAPBUTTONS_X 		(SMALLCHAR_WIDTH ) - uis.wideoffset
-#define MAPARRAYCOLUMN_X 	(SMALLCHAR_WIDTH * 13) - uis.wideoffset
-#define MAPLONGNAME_DX 		(SMALLCHAR_WIDTH * (SHORTMAP_BUFFER + 1))
-#define MAPFRAGS_DX 		(MAPLONGNAME_DX + SMALLCHAR_WIDTH * (LONGMAP_BUFFER + 4))
-#define MAPTIME_DX 			(MAPFRAGS_DX + SMALLCHAR_WIDTH * 8)
+#define MAPBUTTONS_X 		(BASEFONT_INDENT ) - uis.wideoffset
+#define MAPARRAYCOLUMN_X 	(BASEFONT_INDENT * 13) - uis.wideoffset
+#define MAPLONGNAME_DX 		(BASEFONT_INDENT * (SHORTMAP_BUFFER + 1))
+#define MAPFRAGS_DX 		(MAPLONGNAME_DX + BASEFONT_INDENT * (LONGMAP_BUFFER + 4))
+#define MAPTIME_DX 			(MAPFRAGS_DX + BASEFONT_INDENT * 8)
 #define MAPACTIVATE_X 		392
 
 #define GAMESERVER_ARROWWIDTH 64
@@ -647,7 +647,7 @@ static void StartServer_MapPage_DrawMapName( void *item )
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
 	if ( s->generic.flags & QMF_GRAYED )
-		color = text_color_disabled;
+		color = color_disabled;
 	else if ( focus )
 	{
 		color = color_highlight;
@@ -659,7 +659,7 @@ static void StartServer_MapPage_DrawMapName( void *item )
 		style |= UI_BLINK;
 	}
 	else
-		color = text_color_normal;
+		color = color_white;
 
 	if ( focus )
 	{
@@ -685,14 +685,14 @@ static void StartServer_MapPage_DrawMapName( void *item )
 	
 
 	if (string)
-		ST_DrawString( x + SMALLCHAR_WIDTH, y, string, style|UI_LEFT, color, 1.00 );
+		ST_DrawString( x + BASEFONT_INDENT, y, string, style|UI_LEFT, color, 1.00 );
 
 	// draw long name
 	string = 0;
 	if (index < s_scriptdata.map.num_maps)
 		string = s_scriptdata.map.data[index].longName;
 	if (string)
-		ST_DrawString( x + SMALLCHAR_WIDTH + MAPLONGNAME_DX, y, string, style|UI_LEFT, color, 1.00 );
+		ST_DrawString( x + BASEFONT_INDENT + MAPLONGNAME_DX, y, string, style|UI_LEFT, color, 1.00 );
 }
 
 
@@ -750,7 +750,7 @@ static void StartServer_MapPage_InitControlsFromScript(void)
 	c->name = fragcontrol_textru[index];
 	s_mapcontrols.fragsText.string = fragcontrol_textru[index + 1];
 	}
-	c->left = c->x - (strlen(c->name) + 1) * SMALLCHAR_WIDTH;
+	c->left = c->x - (strlen(c->name) + 1) * BASEFONT_INDENT;
 
 	// load type of frag/time value used to start game (none, default, custom)
 	s_mapcontrols.fragLimitType.curvalue = s_scriptdata.map.fragLimitType;
@@ -1366,8 +1366,8 @@ static void StartServer_MapPage_InitPageText( menuelement_s *a )
 		len = 0;
 
 	if (a->generic.flags & QMF_SMALLFONT) {
-		ch = SMALLCHAR_HEIGHT;
-		cw = SMALLCHAR_WIDTH;
+		ch = BASEFONT_HEIGHT;
+		cw = BASEFONT_INDENT;
 	}
 	else {
 		ch = BIGCHAR_HEIGHT;
@@ -1404,7 +1404,7 @@ static void StartServer_MapPage_DrawPageText( void* b )
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
 	if ( s->generic.flags & QMF_GRAYED )
-		color = text_color_disabled;
+		color = color_disabled;
 	else if ( focus )
 	{
 		color = color_highlight;
@@ -1416,7 +1416,7 @@ static void StartServer_MapPage_DrawPageText( void* b )
 		style |= UI_BLINK;
 	}
 	else
-		color = text_color_normal;
+		color = color_white;
 
 	if ( focus )
 	{
@@ -1566,7 +1566,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.timeLimit.generic.type       = MTYPE_FIELD;
 	s_mapcontrols.timeLimit.string       = 0;
 	s_mapcontrols.timeLimit.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
-	s_mapcontrols.timeLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * SMALLCHAR_WIDTH;
+	s_mapcontrols.timeLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * BASEFONT_INDENT;
 	s_mapcontrols.timeLimit.generic.y	        = y;
 	s_mapcontrols.timeLimit.generic.id	        = ID_MAP_TIMECOUNT;
 	s_mapcontrols.timeLimit.generic.callback = StartServer_MapPage_MenuEvent;
@@ -1586,7 +1586,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.mapSourceType.generic.type       = MTYPE_SPINCONTROL;
 	s_mapcontrols.mapSourceType.string       = NULL;
 	s_mapcontrols.mapSourceType.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
-	s_mapcontrols.mapSourceType.generic.x          = MAPCOLUMN_RIGHTX + (4*SMALLCHAR_WIDTH);
+	s_mapcontrols.mapSourceType.generic.x          = MAPCOLUMN_RIGHTX + (4*BASEFONT_INDENT);
 	s_mapcontrols.mapSourceType.generic.y	        = y;
 	s_mapcontrols.mapSourceType.generic.id	        = ID_MAP_SOURCETYPE;
 	s_mapcontrols.mapSourceType.generic.callback = StartServer_MapPage_MenuEvent;
@@ -1606,7 +1606,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.fragLimit.generic.type       = MTYPE_FIELD;
 	s_mapcontrols.fragLimit.string       = 0;
 	s_mapcontrols.fragLimit.generic.flags      = QMF_SMALLFONT|QMF_NUMBERSONLY;
-	s_mapcontrols.fragLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * SMALLCHAR_WIDTH;
+	s_mapcontrols.fragLimit.generic.x          = MAPCOLUMN_LEFTX + 9 * BASEFONT_INDENT;
 	s_mapcontrols.fragLimit.generic.y	        = y;
 	s_mapcontrols.fragLimit.generic.id	        = ID_MAP_FRAGCOUNT;
 	s_mapcontrols.fragLimit.generic.callback = StartServer_MapPage_MenuEvent;
@@ -1635,14 +1635,14 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.nameText.color = color_white;
 
 	s_mapcontrols.fragsText.generic.type  = MTYPE_TEXT;
-	s_mapcontrols.fragsText.generic.x	   = MAPARRAYCOLUMN_X + MAPFRAGS_DX + 2 * SMALLCHAR_WIDTH;
+	s_mapcontrols.fragsText.generic.x	   = MAPARRAYCOLUMN_X + MAPFRAGS_DX + 2 * BASEFONT_INDENT;
 	s_mapcontrols.fragsText.generic.y	   = y;
 	s_mapcontrols.fragsText.style = UI_SMALLFONT|UI_CENTER;
 	s_mapcontrols.fragsText.string = 0;
 	s_mapcontrols.fragsText.color = color_white;
 
 	s_mapcontrols.timeText.generic.type  = MTYPE_TEXT;
-	s_mapcontrols.timeText.generic.x	   = MAPARRAYCOLUMN_X + MAPTIME_DX + 2*SMALLCHAR_WIDTH;
+	s_mapcontrols.timeText.generic.x	   = MAPARRAYCOLUMN_X + MAPTIME_DX + 2*BASEFONT_INDENT;
 	s_mapcontrols.timeText.generic.y	   = y;
 	s_mapcontrols.timeText.style = UI_SMALLFONT|UI_CENTER;
 	s_mapcontrols.timeText.color = color_white;
@@ -1710,10 +1710,10 @@ void StartServer_MapPage_MenuInit(void)
 		s_mapcontrols.displayMapName[n].generic.callback = StartServer_MapPage_ChangeMapEvent;
 		s_mapcontrols.displayMapName[n].generic.ownerdraw = StartServer_MapPage_DrawMapName;
 		s_mapcontrols.displayMapName[n].generic.top	   = y;
-		s_mapcontrols.displayMapName[n].generic.bottom	   = y + SMALLCHAR_HEIGHT;
-		s_mapcontrols.displayMapName[n].generic.left	   = MAPARRAYCOLUMN_X - SMALLCHAR_WIDTH/2;
+		s_mapcontrols.displayMapName[n].generic.bottom	   = y + BASEFONT_HEIGHT;
+		s_mapcontrols.displayMapName[n].generic.left	   = MAPARRAYCOLUMN_X - BASEFONT_INDENT/2;
 		s_mapcontrols.displayMapName[n].generic.right	   =
-			MAPARRAYCOLUMN_X + MAPFRAGS_DX - SMALLCHAR_WIDTH/2;
+			MAPARRAYCOLUMN_X + MAPFRAGS_DX - BASEFONT_INDENT/2;
 		s_mapcontrols.displayMapName[n].style = UI_SMALLFONT;
 		s_mapcontrols.displayMapName[n].color = color_white;
 
@@ -1750,7 +1750,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.mapPage.generic.y	   = y;
 	s_mapcontrols.mapPage.generic.ownerdraw = StartServer_MapPage_DrawPageText;
 	s_mapcontrols.mapPage.string = s_mapcontrols.mappage_text;
-	s_mapcontrols.mapPage.color 		= text_color_normal;
+	s_mapcontrols.mapPage.color 		= color_white;
 	StartServer_MapPage_SetPageText();
 
 	s_mapcontrols.actionSrc.generic.type  = MTYPE_SPINCONTROL;
@@ -1773,7 +1773,7 @@ void StartServer_MapPage_MenuInit(void)
 	s_mapcontrols.actionActivate.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mapcontrols.actionActivate.generic.callback = StartServer_MapPage_MenuEvent;
 	s_mapcontrols.actionActivate.generic.id	    = ID_MAP_ACTION;
-	s_mapcontrols.actionActivate.generic.x		= MAPACTIVATE_X - 64 - 11*SMALLCHAR_WIDTH;
+	s_mapcontrols.actionActivate.generic.x		= MAPACTIVATE_X - 64 - 11*BASEFONT_INDENT;
 	s_mapcontrols.actionActivate.generic.y		= y + 100;
 	s_mapcontrols.actionActivate.width  		    = 64;
 	s_mapcontrols.actionActivate.height  		    = 32;

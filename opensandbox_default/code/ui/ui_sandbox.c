@@ -796,7 +796,7 @@ void SandboxMain_MenuInit( void ) {
 	if(uis.sb_tab == STAB_CREATE){
 	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.list.generic.style	= 2;
-	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.list.string			= "props";
 	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
@@ -813,7 +813,7 @@ void SandboxMain_MenuInit( void ) {
 	
 	s_sandboxmain.texturelist.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.texturelist.generic.style			= 2;
-	s_sandboxmain.texturelist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.texturelist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.texturelist.size				= 1;
 	s_sandboxmain.texturelist.corner			= 65;
 	s_sandboxmain.texturelist.generic.flags		= QMF_PULSEIFFOCUS;
@@ -863,7 +863,7 @@ void SandboxMain_MenuInit( void ) {
 	
 	s_sandboxmain.classlist.generic.type	= MTYPE_SCROLLLIST;
 	s_sandboxmain.classlist.generic.style	= 2;
-	s_sandboxmain.classlist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.classlist.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.classlist.string			= "icons/classes";
 	s_sandboxmain.classlist.size			= 1;
 	s_sandboxmain.classlist.corner			= 40;
@@ -900,7 +900,7 @@ void SandboxMain_MenuInit( void ) {
 	if(uis.sb_tab == STAB_NPC){
 	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.list.generic.style	= 2;
-	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.list.string			= "bots";
 	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
@@ -923,7 +923,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.classlist.generic.id		= ID_CLASSLIST;
 	s_sandboxmain.classlist.generic.x		= 40 - uis.wideoffset;
 	s_sandboxmain.classlist.generic.y		= 215 + 70;
-	s_sandboxmain.classlist.width			= 39+(2*uis.wideoffset/SMALLCHAR_WIDTH);
+	s_sandboxmain.classlist.width			= 39+(2*uis.wideoffset/BASEFONT_INDENT);
 	s_sandboxmain.classlist.height			= 15;
 	s_sandboxmain.classlist.numitems		= 5;
 	s_sandboxmain.classlist.itemnames		= (const char **)s_sandboxmain.classeslist;
@@ -954,7 +954,7 @@ void SandboxMain_MenuInit( void ) {
 	if(uis.sb_tab == STAB_ITEMS){
 	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.list.generic.style	= 2;
-	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.list.string			= "";
 	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
@@ -1006,7 +1006,7 @@ void SandboxMain_MenuInit( void ) {
 	if(uis.sb_tab == STAB_LISTS){
 	s_sandboxmain.classlist.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.classlist.generic.style		= 2;
-	s_sandboxmain.classlist.columns				= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.classlist.columns				= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.classlist.string 				= "spawnlists/icons";
 	s_sandboxmain.classlist.size				= 1;
 	s_sandboxmain.classlist.corner				= 65;
@@ -1026,7 +1026,7 @@ void SandboxMain_MenuInit( void ) {
 		
 	s_sandboxmain.list.generic.type		= MTYPE_SCROLLLIST;
 	s_sandboxmain.list.generic.style	= 2;
-	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*SMALLCHAR_WIDTH-7));
+	s_sandboxmain.list.columns			= 6+((1.75*uis.wideoffset)/((39/6)*BASEFONT_INDENT-7));
 	s_sandboxmain.list.string 			= (char *)UI_Alloc(256);
 	s_sandboxmain.list.size				= 1;
 	s_sandboxmain.list.corner			= 65;
@@ -1068,7 +1068,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.generic.id		= ID_LIST;
 	s_sandboxmain.list.generic.x		= 40 - uis.wideoffset;
 	s_sandboxmain.list.generic.y		= 70;
-	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/SMALLCHAR_WIDTH);
+	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/BASEFONT_INDENT);
 	s_sandboxmain.list.height			= 15+18;
 	s_sandboxmain.list.numitems			= trap_FS_GetFileList( "dscripts", "ns", s_sandboxmain.names, 524288 );
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.configlist;
@@ -1118,7 +1118,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.generic.id		= ID_LIST;
 	s_sandboxmain.list.generic.x		= 40 - uis.wideoffset;
 	s_sandboxmain.list.generic.y		= 70;
-	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/SMALLCHAR_WIDTH);
+	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/BASEFONT_INDENT);
 	s_sandboxmain.list.height			= 15+18;
 	s_sandboxmain.list.numitems			= trap_FS_GetFileList( "tools", "ns", s_sandboxmain.names, 524288 );
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.configlist;
@@ -1169,7 +1169,7 @@ void SandboxMain_MenuInit( void ) {
 	s_sandboxmain.list.generic.id		= ID_LIST;
 	s_sandboxmain.list.generic.x		= 40 - uis.wideoffset;
 	s_sandboxmain.list.generic.y		= 70;
-	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/SMALLCHAR_WIDTH);
+	s_sandboxmain.list.width			= 39+(2*uis.wideoffset/BASEFONT_INDENT);
 	s_sandboxmain.list.height			= 15+18;
 	s_sandboxmain.list.numitems			= trap_FS_GetFileList( "nsgui", "ns", s_sandboxmain.names, 524288 );
 	s_sandboxmain.list.itemnames		= (const char **)s_sandboxmain.configlist;

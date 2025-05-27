@@ -168,7 +168,6 @@ extern vmCvar_t	sensitivitymenu;
 extern vmCvar_t	cl_selectedmod;
 extern vmCvar_t	cl_language;
 extern vmCvar_t	ui_loaded;
-extern vmCvar_t	cl_screenoffset;
 extern vmCvar_t	ui_ffa_fraglimit;
 extern vmCvar_t	ui_ffa_timelimit;
 
@@ -690,7 +689,6 @@ typedef struct {
 	int					realtime;
 	int					cursorx;
 	int					cursory;
-	qboolean 			hideCursor;
 	int					menusp;
 	menuframework_s*	activemenu;
 	menuframework_s*	stack[MAX_MENUDEPTH];
@@ -705,14 +703,9 @@ typedef struct {
 	qhandle_t			rb_on;
 	qhandle_t			rb_off;
 	float				scale;
-	float				xscale;
-	float				yscale;
 	float				bias;
-	float				sw;
-	float				sh;
+	float				wideoffset;
 	int					sb_tab;
-	int					wideoffset;
-	char				theme;
 	int					spawnlist_folder;
 	int					texturelist_folder;
 	qboolean			firstdraw;
@@ -734,7 +727,6 @@ extern void			UI_FillRect( float x, float y, float width, float height, const fl
 extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
 extern void			UI_UpdateScreen( void );
 extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
-extern int			UI_ProportionalStringWidth( const char* str, float size );
 extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
 extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
 extern qboolean		UI_IsFullscreen( void );

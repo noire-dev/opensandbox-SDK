@@ -305,7 +305,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "g_maxClients" ) );
-	cgs.roundtime = atoi( Info_ValueForKey( info, "elimination_roundtime" ) );
+	cgs.roundtime = atoi( Info_ValueForKey( info, "g_elimination_roundtime" ) );
 	cgs.nopickup = atoi( Info_ValueForKey( info, "g_elimination" ) );
 	cgs.lms_mode = atoi( Info_ValueForKey( info, "g_lms_mode" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
@@ -570,12 +570,12 @@ static void CG_ServerCommand( void ) {
 	}
 	
 	if ( !strcmp( cmd, "clp" ) ) {
-		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.75, SMALLCHAR_WIDTH );
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.75, BASEFONT_INDENT );
 		return;
 	}
 
 	if ( !strcmp( cmd, "cllp" ) ) {
-		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.90, SMALLCHAR_WIDTH );
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.90, BASEFONT_INDENT );
 		return;
 	}
 	
@@ -585,7 +585,7 @@ static void CG_ServerCommand( void ) {
 	}
 	
 	if ( !strcmp( cmd, "lp" ) ) {
-		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.75, SMALLCHAR_WIDTH*1.5 );
+		CG_CenterPrint( CG_Argv(1), SCREEN_HEIGHT * 0.75, BASEFONT_INDENT*1.5 );
 		return;
 	}
 
