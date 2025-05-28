@@ -738,8 +738,6 @@ int g_gdamage;
 int g_grange;
 char g_gknockback[32];
 // Автомат
-int g_mgammocount;
-int g_mgweaponcount;
 int g_mgdelay;
 int g_mgdamage;
 int g_mgspread;
@@ -749,8 +747,6 @@ int g_mgsradius;
 int g_mginf;
 char g_mgknockback[32];
 // Дробовик
-int g_sgammocount;
-int g_sgweaponcount;
 int g_sgdelay;
 int g_sgdamage;
 int g_sgspread;
@@ -761,8 +757,6 @@ int g_sgcount;
 int g_sginf;
 char g_sgknockback[32];
 // Гранаты
-int g_glammocount;
-int g_glweaponcount;
 int g_gldelay;
 int g_glspeed;
 int g_glbounce;
@@ -777,8 +771,6 @@ char g_glknockback[32];
 int g_glhoming;
 int g_glguided;
 // Ракеты
-int g_rlammocount;
-int g_rlweaponcount;
 int g_rldelay;
 int g_rlspeed;
 int g_rlbounce;
@@ -793,8 +785,6 @@ char g_rlknockback[32];
 int g_rlhoming;
 int g_rlguided;
 // Молния
-int g_lgammocount;
-int g_lgweaponcount;
 int g_lgrange;
 int g_lgdelay;
 int g_lgdamage;
@@ -804,15 +794,11 @@ int g_lgsradius;
 int g_lginf;
 char g_lgknockback[32];
 // Рэйлган
-int g_rgammocount;
-int g_rgweaponcount;
 int g_rgdelay;
 int g_rgdamage;
 int g_rginf;
 char g_rgknockback[32];
 // Плазмаган
-int g_pgammocount;
-int g_pgweaponcount;
 int g_pgdelay;
 int g_pgspeed;
 int g_pgbounce;
@@ -827,8 +813,6 @@ char g_pgknockback[32];
 int g_pghoming;
 int g_pgguided;
 // Бфг
-int g_bfgammocount;
-int g_bfgweaponcount;
 int g_bfgdelay;
 int g_bfgspeed;
 int g_bfgbounce;
@@ -843,8 +827,6 @@ char g_bfgknockback[32];
 int g_bfghoming;
 int g_bfgguided;
 // Гвоздомёт
-int g_ngammocount;
-int g_ngweaponcount;
 int g_ngdelay;
 int g_ngspeed;
 int g_ngbounce;
@@ -860,8 +842,6 @@ char g_ngknockback[32];
 int g_nghoming;
 int g_ngguided;
 // Мины
-int g_plammocount;
-int g_plweaponcount;
 int g_pldelay;
 int g_plspeed;
 int g_plgravity;
@@ -872,16 +852,12 @@ int g_pldamage;
 int g_plinf;
 char g_plknockback[32];
 // Пулемёт
-int g_cgammocount;
-int g_cgweaponcount;
 int g_cgdelay;
 int g_cgspread;
 int g_cgdamage;
 int g_cginf;
 char g_cgknockback[32];
 // Огнемёт
-int g_ftammocount;
-int g_ftweaponcount;
 int g_ftdelay;
 int g_ftspeed;
 int g_ftbounce;
@@ -896,7 +872,6 @@ char g_ftknockback[32];
 int g_fthoming;
 int g_ftguided;
 // Антиматтер
-int g_amweaponcount;
 int g_amdelay;
 int g_amspeed;
 int g_ambounce;

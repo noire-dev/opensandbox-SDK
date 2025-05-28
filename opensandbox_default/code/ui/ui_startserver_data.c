@@ -472,8 +472,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_grange", "32" },
 { "gui_gknockback", "1" },
 // Автомат
-{ "gui_mgammocount", "-1" },
-{ "gui_mgweaponcount", "-1" },
 { "gui_mgdelay", "100" },
 { "gui_mgdamage", "7" },
 { "gui_mgspread", "200" },
@@ -483,8 +481,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_mginf", "0" },
 { "gui_mgknockback", "1" },
 // Дробовик
-{ "gui_sgammocount", "-1" },
-{ "gui_sgweaponcount", "-1" },
 { "gui_sgdelay", "1000" },
 { "gui_sgdamage", "10" },
 { "gui_sgspread", "700" },
@@ -495,8 +491,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_sginf", "0" },
 { "gui_sgknockback", "1" },
 // Гранаты
-{ "gui_glammocount", "-1" },
-{ "gui_glweaponcount", "-1" },
 { "gui_gldelay", "500" },
 { "gui_glspeed", "1000" },
 { "gui_glbounce", "1" },
@@ -511,8 +505,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_glhoming", "0" },
 { "gui_glguided", "0" },
 // Ракеты
-{ "gui_rlammocount", "-1" },
-{ "gui_rlweaponcount", "-1" },
 { "gui_rldelay", "800" },
 { "gui_rlspeed", "900" },
 { "gui_rlbounce", "0" },
@@ -527,8 +519,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_rlhoming", "0" },
 { "gui_rlguided", "0" },
 // Молния
-{ "gui_lgammocount", "-1" },
-{ "gui_lgweaponcount", "-1" },
 { "gui_lgrange", "768" },
 { "gui_lgdelay", "50" },
 { "gui_lgdamage", "8" },
@@ -538,15 +528,11 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_lginf", "0" },
 { "gui_lgknockback", "1" },
 // Рэйлган
-{ "gui_rgammocount", "-1" },
-{ "gui_rgweaponcount", "-1" },
 { "gui_rgdelay", "1500" },
 { "gui_rgdamage", "100" },
 { "gui_rginf", "0" },
 { "gui_rgknockback", "1" },
 // Плазмаган
-{ "gui_pgammocount", "-1" },
-{ "gui_pgweaponcount", "-1" },
 { "gui_pgdelay", "100" },
 { "gui_pgspeed", "2000" },
 { "gui_pgbounce", "0" },
@@ -561,8 +547,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_pghoming", "0" },
 { "gui_pgguided", "0" },
 // Бфг
-{ "gui_bfgammocount", "-1" },
-{ "gui_bfgweaponcount", "-1" },
 { "gui_bfgdelay", "200" },
 { "gui_bfgspeed", "2000" },
 { "gui_bfgbounce", "0" },
@@ -577,8 +561,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_bfghoming", "0" },
 { "gui_bfgguided", "0" },
 // Гвоздомёт
-{ "gui_ngammocount", "-1" },
-{ "gui_ngweaponcount", "-1" },
 { "gui_ngdelay", "1000" },
 { "gui_ngspeed", "555" },
 { "gui_ngbounce", "0" },
@@ -594,8 +576,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_nghoming", "0" },
 { "gui_ngguided", "0" },
 // Мины
-{ "gui_plammocount", "-1" },
-{ "gui_plweaponcount", "-1" },
 { "gui_pldelay", "800" },
 { "gui_plspeed", "700" },
 { "gui_plgravity", "1" },
@@ -606,16 +586,12 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_plinf", "0" },
 { "gui_plknockback", "1" },
 // Пулемёт
-{ "gui_cgammocount", "-1" },
-{ "gui_cgweaponcount", "-1" },
 { "gui_cgdelay", "30" },
 { "gui_cgspread", "600" },
 { "gui_cgdamage", "7" },
 { "gui_cginf", "0" },
 { "gui_cgknockback", "1" },
 // Огнемёт
-{ "gui_ftammocount", "-1" },
-{ "gui_ftweaponcount", "-1" },
 { "gui_ftdelay", "40" },
 { "gui_ftspeed", "600" },
 { "gui_ftbounce", "1" },
@@ -630,7 +606,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_fthoming", "0" },
 { "gui_ftguided", "0" },
 // Антиматтер
-{ "gui_amweaponcount", "-1" },
 { "gui_amdelay", "40" },
 { "gui_amspeed", "600" },
 { "gui_ambounce", "1" },
@@ -3053,8 +3028,6 @@ s_scriptdata.server.g_gdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NU
 s_scriptdata.server.g_gdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_gdamage" );
 s_scriptdata.server.g_grange = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_grange" );
 // Автомат
-s_scriptdata.server.g_mgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgammocount" );
-s_scriptdata.server.g_mgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgweaponcount" );
 s_scriptdata.server.g_mgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgdelay" );
 s_scriptdata.server.g_mgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgdamage" );
 s_scriptdata.server.g_mgspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgspread" );
@@ -3063,8 +3036,6 @@ s_scriptdata.server.g_mgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_mgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mgsradius" );
 s_scriptdata.server.g_mginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_mginf" );
 // Дробовик
-s_scriptdata.server.g_sgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgammocount" );
-s_scriptdata.server.g_sgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgweaponcount" );
 s_scriptdata.server.g_sgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgdelay" );
 s_scriptdata.server.g_sgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgdamage" );
 s_scriptdata.server.g_sgspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sgspread" );
@@ -3075,8 +3046,6 @@ s_scriptdata.server.g_sgcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, N
 s_scriptdata.server.g_sginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_sginf" );
 
 // Гранаты
-s_scriptdata.server.g_glammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glammocount" );
-s_scriptdata.server.g_glweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glweaponcount" );
 s_scriptdata.server.g_gldelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_gldelay" );
 s_scriptdata.server.g_glspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glspeed" );
 s_scriptdata.server.g_glbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glbounce" );
@@ -3089,8 +3058,6 @@ s_scriptdata.server.g_glinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NUL
 s_scriptdata.server.g_glhoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glhoming" );
 s_scriptdata.server.g_glguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_glguided" );
 // Ракеты
-s_scriptdata.server.g_rlammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlammocount" );
-s_scriptdata.server.g_rlweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlweaponcount" );
 s_scriptdata.server.g_rldelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rldelay" );
 s_scriptdata.server.g_rlspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlspeed" );
 s_scriptdata.server.g_rlbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlbounce" );
@@ -3102,9 +3069,7 @@ s_scriptdata.server.g_rldamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, 
 s_scriptdata.server.g_rlinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlinf" );
 s_scriptdata.server.g_rlhoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlhoming" );
 s_scriptdata.server.g_rlguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rlguided" );
-// Молния
-s_scriptdata.server.g_lgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgammocount" );
-s_scriptdata.server.g_lgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgweaponcount" );
+// Молни
 s_scriptdata.server.g_lgrange = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgrange" );
 s_scriptdata.server.g_lgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgdelay" );
 s_scriptdata.server.g_lgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgdamage" );
@@ -3113,14 +3078,10 @@ s_scriptdata.server.g_lgsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_lgsradius = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lgsradius" );
 s_scriptdata.server.g_lginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lginf" );
 // Рэйлган
-s_scriptdata.server.g_rgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgammocount" );
-s_scriptdata.server.g_rgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgweaponcount" );
 s_scriptdata.server.g_rgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgdelay" );
 s_scriptdata.server.g_rgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rgdamage" );
 s_scriptdata.server.g_rginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_rginf" );
 // Плазмаган
-s_scriptdata.server.g_pgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgammocount" );
-s_scriptdata.server.g_pgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgweaponcount" );
 s_scriptdata.server.g_pgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgdelay" );
 s_scriptdata.server.g_pgspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgspeed" );
 s_scriptdata.server.g_pgbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgbounce" );
@@ -3133,8 +3094,6 @@ s_scriptdata.server.g_pginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NUL
 s_scriptdata.server.g_pghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pghoming" );
 s_scriptdata.server.g_pgguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pgguided" );
 // Бфг
-s_scriptdata.server.g_bfgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgammocount" );
-s_scriptdata.server.g_bfgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgweaponcount" );
 s_scriptdata.server.g_bfgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgdelay" );
 s_scriptdata.server.g_bfgspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgspeed" );
 s_scriptdata.server.g_bfgbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgbounce" );
@@ -3147,8 +3106,6 @@ s_scriptdata.server.g_bfginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NU
 s_scriptdata.server.g_bfghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfghoming" );
 s_scriptdata.server.g_bfgguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bfgguided" );
 // Гвоздомёт
-s_scriptdata.server.g_ngammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngammocount" );
-s_scriptdata.server.g_ngweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngweaponcount" );
 s_scriptdata.server.g_ngdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngdelay" );
 s_scriptdata.server.g_ngspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngspeed" );
 s_scriptdata.server.g_ngbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngbounce" );
@@ -3162,8 +3119,6 @@ s_scriptdata.server.g_nginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NUL
 s_scriptdata.server.g_nghoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_nghoming" );
 s_scriptdata.server.g_ngguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ngguided" );
 // Мины
-s_scriptdata.server.g_plammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plammocount" );
-s_scriptdata.server.g_plweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plweaponcount" );
 s_scriptdata.server.g_pldelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pldelay" );
 s_scriptdata.server.g_plspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plspeed" );
 s_scriptdata.server.g_plgravity = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plgravity" );
@@ -3173,15 +3128,11 @@ s_scriptdata.server.g_plsdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999,
 s_scriptdata.server.g_pldamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_pldamage" );
 s_scriptdata.server.g_plinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_plinf" );
 // Пулемёт
-s_scriptdata.server.g_cgammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgammocount" );
-s_scriptdata.server.g_cgweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgweaponcount" );
 s_scriptdata.server.g_cgdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgdelay" );
 s_scriptdata.server.g_cgspread = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgspread" );
 s_scriptdata.server.g_cgdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cgdamage" );
 s_scriptdata.server.g_cginf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cginf" );
 // Огнемёт
-s_scriptdata.server.g_ftammocount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftammocount" );
-s_scriptdata.server.g_ftweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftweaponcount" );
 s_scriptdata.server.g_ftdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftdelay" );
 s_scriptdata.server.g_ftspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftspeed" );
 s_scriptdata.server.g_ftbounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftbounce" );
@@ -3194,7 +3145,6 @@ s_scriptdata.server.g_ftinf = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NUL
 s_scriptdata.server.g_fthoming = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_fthoming" );
 s_scriptdata.server.g_ftguided = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ftguided" );
 // Антиматтер
-s_scriptdata.server.g_amweaponcount = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amweaponcount" );
 s_scriptdata.server.g_amdelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amdelay" );
 s_scriptdata.server.g_amspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_amspeed" );
 s_scriptdata.server.g_ambounce = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ambounce" );
@@ -3494,8 +3444,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_gdamage", s_scriptdata.server.g_gdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_grange", s_scriptdata.server.g_grange);
 GUI_SetSkirmishCvar( NULL, "gui_gknockback", s_scriptdata.server.g_gknockback);
 // Автомат
-GUI_SetSkirmishCvarInt( NULL, "gui_mgammocount", s_scriptdata.server.g_mgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_mgweaponcount", s_scriptdata.server.g_mgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgdelay", s_scriptdata.server.g_mgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgdamage", s_scriptdata.server.g_mgdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_mgspread", s_scriptdata.server.g_mgspread);
@@ -3505,8 +3453,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_mgsradius", s_scriptdata.server.g_mgsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_mginf", s_scriptdata.server.g_mginf);
 GUI_SetSkirmishCvar( NULL, "gui_mgknockback", s_scriptdata.server.g_mgknockback);
 // Дробовик
-GUI_SetSkirmishCvarInt( NULL, "gui_sgammocount", s_scriptdata.server.g_sgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_sgweaponcount", s_scriptdata.server.g_sgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgdelay", s_scriptdata.server.g_sgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgdamage", s_scriptdata.server.g_sgdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_sgspread", s_scriptdata.server.g_sgspread);
@@ -3517,8 +3463,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_sgcount", s_scriptdata.server.g_sgcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_sginf", s_scriptdata.server.g_sginf);
 GUI_SetSkirmishCvar( NULL, "gui_sgknockback", s_scriptdata.server.g_sgknockback);
 // Гранаты
-GUI_SetSkirmishCvarInt( NULL, "gui_glammocount", s_scriptdata.server.g_glammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_glweaponcount", s_scriptdata.server.g_glweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_gldelay", s_scriptdata.server.g_gldelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_glspeed", s_scriptdata.server.g_glspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_glbounce", s_scriptdata.server.g_glbounce);
@@ -3533,8 +3477,6 @@ GUI_SetSkirmishCvar( NULL, "gui_glknockback", s_scriptdata.server.g_glknockback)
 GUI_SetSkirmishCvarInt( NULL, "gui_glhoming", s_scriptdata.server.g_glhoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_glguided", s_scriptdata.server.g_glguided);
 // Ракеты
-GUI_SetSkirmishCvarInt( NULL, "gui_rlammocount", s_scriptdata.server.g_rlammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_rlweaponcount", s_scriptdata.server.g_rlweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_rldelay", s_scriptdata.server.g_rldelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlspeed", s_scriptdata.server.g_rlspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlbounce", s_scriptdata.server.g_rlbounce);
@@ -3549,8 +3491,6 @@ GUI_SetSkirmishCvar( NULL, "gui_rlknockback", s_scriptdata.server.g_rlknockback)
 GUI_SetSkirmishCvarInt( NULL, "gui_rlhoming", s_scriptdata.server.g_rlhoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_rlguided", s_scriptdata.server.g_rlguided);
 // Молния
-GUI_SetSkirmishCvarInt( NULL, "gui_lgammocount", s_scriptdata.server.g_lgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_lgweaponcount", s_scriptdata.server.g_lgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgrange", s_scriptdata.server.g_lgrange);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgdelay", s_scriptdata.server.g_lgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_lgdamage", s_scriptdata.server.g_lgdamage);
@@ -3560,15 +3500,11 @@ GUI_SetSkirmishCvarInt( NULL, "gui_lgsradius", s_scriptdata.server.g_lgsradius);
 GUI_SetSkirmishCvarInt( NULL, "gui_lginf", s_scriptdata.server.g_lginf);
 GUI_SetSkirmishCvar( NULL, "gui_lgknockback", s_scriptdata.server.g_lgknockback);
 // Рэйлган
-GUI_SetSkirmishCvarInt( NULL, "gui_rgammocount", s_scriptdata.server.g_rgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_rgweaponcount", s_scriptdata.server.g_rgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_rgdelay", s_scriptdata.server.g_rgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_rgdamage", s_scriptdata.server.g_rgdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_rginf", s_scriptdata.server.g_rginf);
 GUI_SetSkirmishCvar( NULL, "gui_rgknockback", s_scriptdata.server.g_rgknockback);
 // Плазмаган
-GUI_SetSkirmishCvarInt( NULL, "gui_pgammocount", s_scriptdata.server.g_pgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_pgweaponcount", s_scriptdata.server.g_pgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgdelay", s_scriptdata.server.g_pgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgspeed", s_scriptdata.server.g_pgspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgbounce", s_scriptdata.server.g_pgbounce);
@@ -3583,8 +3519,6 @@ GUI_SetSkirmishCvar( NULL, "gui_pgknockback", s_scriptdata.server.g_pgknockback)
 GUI_SetSkirmishCvarInt( NULL, "gui_pghoming", s_scriptdata.server.g_pghoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_pgguided", s_scriptdata.server.g_pgguided);
 // Бфг
-GUI_SetSkirmishCvarInt( NULL, "gui_bfgammocount", s_scriptdata.server.g_bfgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_bfgweaponcount", s_scriptdata.server.g_bfgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgdelay", s_scriptdata.server.g_bfgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgspeed", s_scriptdata.server.g_bfgspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgbounce", s_scriptdata.server.g_bfgbounce);
@@ -3599,8 +3533,6 @@ GUI_SetSkirmishCvar( NULL, "gui_bfgknockback", s_scriptdata.server.g_bfgknockbac
 GUI_SetSkirmishCvarInt( NULL, "gui_bfghoming", s_scriptdata.server.g_bfghoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_bfgguided", s_scriptdata.server.g_bfgguided);
 // Гвоздомёт
-GUI_SetSkirmishCvarInt( NULL, "gui_ngammocount", s_scriptdata.server.g_ngammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_ngweaponcount", s_scriptdata.server.g_ngweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngdelay", s_scriptdata.server.g_ngdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngspeed", s_scriptdata.server.g_ngspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngbounce", s_scriptdata.server.g_ngbounce);
@@ -3616,8 +3548,6 @@ GUI_SetSkirmishCvar( NULL, "gui_ngknockback", s_scriptdata.server.g_ngknockback)
 GUI_SetSkirmishCvarInt( NULL, "gui_nghoming", s_scriptdata.server.g_nghoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_ngguided", s_scriptdata.server.g_ngguided);
 // Мины
-GUI_SetSkirmishCvarInt( NULL, "gui_plammocount", s_scriptdata.server.g_plammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_plweaponcount", s_scriptdata.server.g_plweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_pldelay", s_scriptdata.server.g_pldelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_plspeed", s_scriptdata.server.g_plspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_plgravity", s_scriptdata.server.g_plgravity);
@@ -3628,16 +3558,12 @@ GUI_SetSkirmishCvarInt( NULL, "gui_pldamage", s_scriptdata.server.g_pldamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_plinf", s_scriptdata.server.g_plinf);
 GUI_SetSkirmishCvar( NULL, "gui_plknockback", s_scriptdata.server.g_plknockback);
 // Пулемёт
-GUI_SetSkirmishCvarInt( NULL, "gui_cgammocount", s_scriptdata.server.g_cgammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_cgweaponcount", s_scriptdata.server.g_cgweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_cgdelay", s_scriptdata.server.g_cgdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_cgspread", s_scriptdata.server.g_cgspread);
 GUI_SetSkirmishCvarInt( NULL, "gui_cgdamage", s_scriptdata.server.g_cgdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_cginf", s_scriptdata.server.g_cginf);
 GUI_SetSkirmishCvar( NULL, "gui_cgknockback", s_scriptdata.server.g_cgknockback);
 // Огнемёт
-GUI_SetSkirmishCvarInt( NULL, "gui_ftammocount", s_scriptdata.server.g_ftammocount);
-GUI_SetSkirmishCvarInt( NULL, "gui_ftweaponcount", s_scriptdata.server.g_ftweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftdelay", s_scriptdata.server.g_ftdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftspeed", s_scriptdata.server.g_ftspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftbounce", s_scriptdata.server.g_ftbounce);
@@ -3652,7 +3578,6 @@ GUI_SetSkirmishCvar( NULL, "gui_ftknockback", s_scriptdata.server.g_ftknockback)
 GUI_SetSkirmishCvarInt( NULL, "gui_fthoming", s_scriptdata.server.g_fthoming);
 GUI_SetSkirmishCvarInt( NULL, "gui_ftguided", s_scriptdata.server.g_ftguided);
 // Антиматтер
-GUI_SetSkirmishCvarInt( NULL, "gui_amweaponcount", s_scriptdata.server.g_amweaponcount);
 GUI_SetSkirmishCvarInt( NULL, "gui_amdelay", s_scriptdata.server.g_amdelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_amspeed", s_scriptdata.server.g_amspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_ambounce", s_scriptdata.server.g_ambounce);

@@ -1236,6 +1236,8 @@ vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
 vec4_t color_select_bluo    = {0.53f, 0.62f, 0.82f, 0.25f};
 vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
 
+vec4_t customcolor_crosshair = {1.00f, 1.00f, 1.00f, 1.00f};
+
 /*
 ======================
 SourceTech font system
@@ -1243,6 +1245,7 @@ SourceTech font system
 */
 #ifndef GAME
 qhandle_t defaultFont[5];
+glconfig_t glconfig;
 
 static int ST_ColorEscapes(const char *str) {
     int count = 0;
@@ -1260,9 +1263,7 @@ static int ST_ColorEscapes(const char *str) {
 
 static int ST_GetFontRes(float fontSize) {
 	float	fontScale;
-	glconfig_t glconfig;
 
-	trap_GetGlconfig( &glconfig );
 	fontScale = glconfig.vidHeight / 480.0;
 
     if (fontSize*fontScale > 128) return 4;	//4096
@@ -1278,6 +1279,14 @@ void ST_RegisterFont(const char* font){
 	defaultFont[2] = trap_R_RegisterShaderNoMip( va("%s_font2", font) );
 	defaultFont[3] = trap_R_RegisterShaderNoMip( va("%s_font3", font) );
 	defaultFont[4] = trap_R_RegisterShaderNoMip( va("%s_font4", font) );
+}
+
+void ST_UpdateColors(void){
+#ifdef CGAME
+	customcolor_crosshair[0] = cg_crosshairColorRed.value;
+	customcolor_crosshair[1] = cg_crosshairColorGreen.value;
+	customcolor_crosshair[2] = cg_crosshairColorBlue.value;
+#endif
 }
 
 static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style) {
@@ -1308,12 +1317,12 @@ static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw,
 	ay = y;
 	aw = charw;
 	ah = charh;
-	#ifdef CGAME
+#ifdef CGAME
 	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
-	#endif
-	#ifdef UI
+#endif
+#ifdef UI
 	UI_AdjustFrom640( &ax, &ay, &aw, &ah );
-	#endif
+#endif
 
 	s = str;
 	while (*s) {

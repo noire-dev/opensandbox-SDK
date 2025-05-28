@@ -35,14 +35,14 @@ Sets the coordinates of the rendered window
 =================
 */
 static void CG_CalcVrect (void) {
-	cg.refdef.width = cgs.glconfig.vidWidth;
+	cg.refdef.width = glconfig.vidWidth;
 	cg.refdef.width &= ~1;
 
-	cg.refdef.height = cgs.glconfig.vidHeight;
+	cg.refdef.height = glconfig.vidHeight;
 	cg.refdef.height &= ~1;
 
-	cg.refdef.x = (cgs.glconfig.vidWidth - cg.refdef.width)/2;
-	cg.refdef.y = (cgs.glconfig.vidHeight - cg.refdef.height)/2;
+	cg.refdef.x = (glconfig.vidWidth - cg.refdef.width)/2;
+	cg.refdef.y = (glconfig.vidHeight - cg.refdef.height)/2;
 }
 
 // leilei - eyes hack
@@ -727,10 +727,8 @@ void UI_UpdateState( void ) {
 	float scrx;
 	float scry;
 	
-	trap_GetGlconfig( &cgs.glconfig );
-	
-	scrx = cgs.glconfig.vidWidth;
-	scry = cgs.glconfig.vidHeight;
+	scrx = glconfig.vidWidth;
+	scry = glconfig.vidHeight;
 	
 	if((scrx / (scry / 480)-640)/2 >= 0){
 		cgs.wideoffset = (scrx / (scry / 480)-640)/2;
@@ -750,81 +748,53 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	// update cvars
-	CG_UpdateCvars();
-
-	// update ui
+	ST_UpdateCvars();
+	ST_UpdateColors();
 	UI_UpdateState();
 
-	// if we are only updating the screen as a loading
-	// pacifier, don't even try to read snapshots
 	if ( cg.infoScreenText[0] != 0 ) {
 		CG_DrawInformation();
 		return;
 	}
 
-	// any looped sounds will be respecified as entities
-	// are added to the render list
 	trap_S_ClearLoopingSounds(qfalse);
-
-	// clear all the render lists
 	trap_R_ClearScene();
-
-	// set up cg.snap and possibly cg.nextSnap
 	CG_ProcessSnapshots();
 
-	// if we haven't received any snapshots yet, all
-	// we can draw is the information screen
 	if ( !cg.snap || ( cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE ) ) {
 		CG_DrawInformation();
 		return;
 	}
 
-	// let the client system know what our weapon and zoom settings are
 	trap_SetUserCmdValue( cg.weaponSelect, cg.zoomSensitivity );
-
-	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
-
-	// update cg.predictedPlayerState
 	CG_PredictPlayerState();
 
-	// decide on third person view
 	cg.renderingThirdPerson = cg_thirdPerson.integer && cg.snap->ps.pm_type != PM_CUTSCENE && cg.snap->ps.pm_type != PM_SPECTATOR || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.snap->ps.stats[STAT_VEHICLE];
 	cg.renderingEyesPerson = !cg_thirdPerson.integer && cg_cameraEyes.integer && cg.snap->ps.pm_type != PM_CUTSCENE && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
 
-	// build cg.refdef
 	CG_CalcViewValues();
 
-	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson ) {
 		CG_DamageBlendBlob();
 	}
 
 	// build the render lists
 	if ( !cg.hyperspace ) {
-		CG_AddPacketEntities();			// adter calcViewValues, so predicted player state is correct
+		CG_AddPacketEntities();
 		CG_AddMarks();
 		CG_AddLocalEntities();
 		CG_AddAtmosphericEffects();
 		CG_ViewFog();
 		CG_ViewSky();
 	}
+	
 	CG_AddViewWeapon( &cg.predictedPlayerState );
-
-	// add buffered sounds
 	CG_PlayBufferedSounds();
-
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
-
-	// warning sounds when powerup is wearing off
 	CG_PowerupTimerSounds();
-
-	// update audio positions
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis );
-
-	// actually issue the rendering calls
 	CG_DrawActive();
 
 	// add frames to lagometer
@@ -834,10 +804,5 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	}
 	cg.oldTime = cg.time;
 	CG_AddLagometerFrameInfo();
-
-	if ( cg_stats.integer ) {
-		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
-	}
-
 }
 

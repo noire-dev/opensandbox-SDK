@@ -80,169 +80,6 @@ typedef void (*voidfunc_f)(void);
 #define AST_LINK 		1002
 #define AST_ADDONBTN 	1003
 
-/*#define AST_OSLOGO 		10000
-#define AST_MOD 		10001
-#define AST_LINK 		10002
-#define AST_ARROWSLR 	10003*/
-
-//
-// ui_main.c
-//
-
-//OpenSandbox Sandbox
-extern vmCvar_t	sb_private;
-extern vmCvar_t	sb_texture;
-extern vmCvar_t	sb_grid;
-extern vmCvar_t	sb_modelnum;
-extern vmCvar_t	sb_classnum;
-extern vmCvar_t	sb_texturenum;
-extern vmCvar_t	sb_tab;
-extern vmCvar_t	spawn_preset;
-extern vmCvar_t	tool_spawnpreset;
-extern vmCvar_t	tool_modifypreset;
-extern vmCvar_t	tool_modifypreset2;
-extern vmCvar_t	tool_modifypreset3;
-extern vmCvar_t	tool_modifypreset4;
-
-extern vmCvar_t	sb_ctab_1;
-extern vmCvar_t	sb_ctab_2;
-extern vmCvar_t	sb_ctab_3;
-extern vmCvar_t	sb_ctab_4;
-extern vmCvar_t	sb_ctab_5;
-extern vmCvar_t	sb_ctab_6;
-extern vmCvar_t	sb_ctab_7;
-extern vmCvar_t	sb_ctab_8;
-extern vmCvar_t	sb_ctab_9;
-extern vmCvar_t	sb_ctab_10;
-
-extern vmCvar_t	toolgun_toolset1;
-extern vmCvar_t	toolgun_toolset2;
-extern vmCvar_t	toolgun_toolset3;
-extern vmCvar_t	toolgun_toolset4;
-extern vmCvar_t	toolgun_toolset5;
-extern vmCvar_t	toolgun_toolset6;
-extern vmCvar_t	toolgun_toolset7;
-extern vmCvar_t	toolgun_toolset8;
-extern vmCvar_t	toolgun_toolset9;
-extern vmCvar_t	toolgun_toolset10;
-extern vmCvar_t	toolgun_toolset11;
-extern vmCvar_t	toolgun_toolset12;
-extern vmCvar_t	toolgun_toolset13;
-extern vmCvar_t	toolgun_toolset14;
-extern vmCvar_t	toolgun_toolset15;
-extern vmCvar_t	toolgun_toolset16;
-extern vmCvar_t	toolgun_toolset17;
-extern vmCvar_t	toolgun_toolset18;
-
-extern vmCvar_t	toolgun_disabledarg1;
-extern vmCvar_t	toolgun_disabledarg2;
-extern vmCvar_t	toolgun_disabledarg3;
-extern vmCvar_t	toolgun_disabledarg4;
-
-extern vmCvar_t	cl_sprun;
-
-extern vmCvar_t	sbt_color0_0;
-extern vmCvar_t	sbt_color0_1;
-extern vmCvar_t	sbt_color0_2;
-extern vmCvar_t	sbt_color0_3;
-extern vmCvar_t	sbt_color1_0;
-extern vmCvar_t	sbt_color1_1;
-extern vmCvar_t	sbt_color1_2;
-extern vmCvar_t	sbt_color1_3;
-extern vmCvar_t	sbt_color2_0;
-extern vmCvar_t	sbt_color2_1;
-extern vmCvar_t	sbt_color2_2;
-extern vmCvar_t	sbt_color2_3;
-extern vmCvar_t	sbt_color3_0;
-extern vmCvar_t	sbt_color3_1;
-extern vmCvar_t	sbt_color3_2;
-extern vmCvar_t	sbt_color3_3;
-extern vmCvar_t	sbt_wallpaper;
-
-extern vmCvar_t	ui_3dmap;
-
-extern vmCvar_t	ui_effectslevel;
-
-extern vmCvar_t	ui_singlemode;
-extern vmCvar_t	sensitivitymenu;
-extern vmCvar_t	cl_selectedmod;
-extern vmCvar_t	cl_language;
-extern vmCvar_t	ui_loaded;
-extern vmCvar_t	ui_ffa_fraglimit;
-extern vmCvar_t	ui_ffa_timelimit;
-
-extern vmCvar_t	ui_tourney_fraglimit;
-extern vmCvar_t	ui_tourney_timelimit;
-
-extern vmCvar_t	ui_team_fraglimit;
-extern vmCvar_t	ui_team_timelimit;
-extern vmCvar_t	ui_team_friendly;
-
-extern vmCvar_t	ui_ctf_capturelimit;
-extern vmCvar_t	ui_ctf_timelimit;
-extern vmCvar_t	ui_ctf_friendly;
-
-extern vmCvar_t	ui_spScores1;
-extern vmCvar_t	ui_spScores2;
-extern vmCvar_t	ui_spScores3;
-extern vmCvar_t	ui_spScores4;
-extern vmCvar_t	ui_spScores5;
-extern vmCvar_t	ui_spAwards;
-extern vmCvar_t	ui_spVideos;
-extern vmCvar_t	ui_spSkill;
-
-extern vmCvar_t	ui_spSelection;
-
-extern vmCvar_t	ui_browserMaster;
-extern vmCvar_t	ui_browserGameType;
-extern vmCvar_t	ui_browserSortKey;
-extern vmCvar_t	ui_browserShowFull;
-extern vmCvar_t	ui_browserShowEmpty;
-
-extern vmCvar_t	ui_brassTime;
-extern vmCvar_t	ui_drawCrosshair;
-extern vmCvar_t	ui_drawCrosshairNames;
-extern vmCvar_t	ui_marks;
-
-extern vmCvar_t	ui_server1;
-extern vmCvar_t	ui_server2;
-extern vmCvar_t	ui_server3;
-extern vmCvar_t	ui_server4;
-extern vmCvar_t	ui_server5;
-extern vmCvar_t	ui_server6;
-extern vmCvar_t	ui_server7;
-extern vmCvar_t	ui_server8;
-extern vmCvar_t	ui_server9;
-extern vmCvar_t	ui_server10;
-extern vmCvar_t	ui_server11;
-extern vmCvar_t	ui_server12;
-extern vmCvar_t	ui_server13;
-extern vmCvar_t	ui_server14;
-extern vmCvar_t	ui_server15;
-extern vmCvar_t	ui_server16;
-extern vmCvar_t	ui_server17;
-extern vmCvar_t	ui_server18;
-extern vmCvar_t	ui_server19;
-extern vmCvar_t	ui_server20;
-extern vmCvar_t	ui_server21;
-extern vmCvar_t	ui_server22;
-extern vmCvar_t	ui_server23;
-extern vmCvar_t	ui_server24;
-extern vmCvar_t	ui_server25;
-extern vmCvar_t	ui_server26;
-extern vmCvar_t	ui_server27;
-extern vmCvar_t	ui_server28;
-extern vmCvar_t	ui_server29;
-extern vmCvar_t	ui_server30;
-extern vmCvar_t	ui_server31;
-extern vmCvar_t	ui_server32;
-
-extern vmCvar_t	gui_animsfx;
-extern vmCvar_t	gui_mapicons;
-extern vmCvar_t	gui_autoclosebotmenu;
-
-qboolean UI_IsValidCvar(const char* cvar);
-
 //
 // ui_qmenu.c
 //
@@ -692,7 +529,6 @@ typedef struct {
 	int					menusp;
 	menuframework_s*	activemenu;
 	menuframework_s*	stack[MAX_MENUDEPTH];
-	glconfig_t			glconfig;
 	qboolean			debug;
 	qhandle_t			whiteShader;
 	qhandle_t			menuBlack;
@@ -797,8 +633,7 @@ void UI_NetworkOptionsMenu( void );
 //
 extern void UI_MainMenu(void);
 extern void MainMenu_ReloadGame(void);
-extern void UI_RegisterCvars( void );
-extern void UI_UpdateCvars( void );
+extern void UI_CreateCvars( void );
 extern void UI_SetDefaultCvar(const char* cvar, const char* value);
 
 //

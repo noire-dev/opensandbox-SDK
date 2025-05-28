@@ -5,6 +5,7 @@ bg_misc
 bg_lib
 bg_pmove
 bg_slidemove
+q_cvars
 q_math
 q_shared
 ns_main

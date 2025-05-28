@@ -93,10 +93,10 @@ static void DriverInfo_MenuDraw( void )
 	ST_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 	ST_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 
-	ST_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
-	ST_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
-	ST_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
-	ST_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 80+16, glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 96+16, glconfig.version_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 112+16, glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
+	ST_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", glconfig.colorBits, glconfig.depthBits, glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, color_white, 1.00 );
 
 	// double column
 	y = 192+16;
@@ -168,7 +168,7 @@ static void UI_DriverInfo_Menu( void )
   // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=399
   // NOTE: could have pushed the size of stringbuff, but the list is already out of the screen
   // (no matter what your resolution)
-  Q_strncpyz(s_driverinfo.stringbuff, uis.glconfig.extensions_string, 1024);
+  Q_strncpyz(s_driverinfo.stringbuff, glconfig.extensions_string, 1024);
 
 	// build null terminated extension strings
 	eptr = s_driverinfo.stringbuff;

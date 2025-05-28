@@ -59,6 +59,7 @@
 typedef int intptr_t;
 
 #include "q_platform.h"
+#include "q_cvars.h"
 
 typedef unsigned char 		byte;
 
@@ -601,35 +602,6 @@ default values.
 #define CVAR_SERVER_CREATED	2048	// cvar was created by a server the client connected to.
 #define CVAR_NONEXISTENT	0xFFFFFFFF	// Cvar doesn't exist.
 
-// nothing outside the Cvar_*() functions should modify these fields!
-typedef struct cvar_s {
-	char		*name;
-	char		*string;
-	char		*resetString;		// cvar_restart will reset to this value
-	char		*latchedString;		// for CVAR_LATCH vars
-	int			flags;
-	qboolean	modified;			// set each time the cvar is changed
-	int			modificationCount;	// incremented each time the cvar is changed
-	float		value;				// atof( string )
-	int			integer;			// atoi( string )
-	struct cvar_s *next;
-	struct cvar_s *hashNext;
-} cvar_t;
-
-#define	MAX_CVAR_VALUE_STRING	256
-
-typedef int	cvarHandle_t;
-
-// the modules that run in the virtual machine can't access the cvar_t directly,
-// so they must ask for structured updates
-typedef struct {
-	cvarHandle_t	handle;
-	int			modificationCount;
-	float		value;
-	int			integer;
-	char		string[MAX_CVAR_VALUE_STRING];
-} vmCvar_t;
-
 /*
 ==============================================================
 
@@ -1069,9 +1041,11 @@ extern vec4_t color_bluo;
 extern vec4_t color_select_bluo;
 extern vec4_t color_highlight;
 
+extern vec4_t customcolor_crosshair;
+
 /*
 ======================
-SourceTech font system
+SourceTech font and UI system
 ======================
 */
 #ifndef GAME
@@ -1083,6 +1057,7 @@ extern qhandle_t defaultFont[5];
 #define BASEFONT_INDENT 	(BASEFONT_WIDTH*FONT_WIDTH)
 
 void ST_RegisterFont(const char* font);
+void ST_UpdateColors(void);
 void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size);
 float ST_StringWidth(const char* str, float size);
 void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize);

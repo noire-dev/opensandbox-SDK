@@ -24,6 +24,7 @@ bg_slidemove
 bg_pmove
 bg_lib
 bg_misc
+q_cvars
 q_math
 q_shared
 ns_main

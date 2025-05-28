@@ -47,6 +47,7 @@ ui_video
 ui_workshop
 bg_misc
 bg_lib
+q_cvars
 q_math
 q_shared
 ns_main

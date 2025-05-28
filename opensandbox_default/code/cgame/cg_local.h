@@ -1174,7 +1174,6 @@ typedef struct {
 // all clients to begin playing instantly
 typedef struct {
 	gameState_t		gameState;			// gamestate from server
-	glconfig_t		glconfig;			// rendering configuration
 	float			scale;
 	float			bias;
 	float			wideoffset;
@@ -1338,116 +1337,6 @@ extern	int 	mod_skyColorG;
 extern	int 	mod_skyColorB;
 extern	int 	mod_skyColorA;
 
-extern	vmCvar_t 	g_gametype;
-
-extern  vmCvar_t    headR;
-extern  vmCvar_t    headG;
-extern  vmCvar_t    headB;
-extern  vmCvar_t    modelR;
-extern  vmCvar_t    modelG;
-extern  vmCvar_t    modelB;
-extern  vmCvar_t    legsR;
-extern  vmCvar_t    legsG;
-extern  vmCvar_t    legsB;
-extern  vmCvar_t    physR;
-extern  vmCvar_t    physG;
-extern  vmCvar_t    physB;
-
-extern	vmCvar_t	cg_effectsTime;
-extern	vmCvar_t	cg_effectsLimit;
-extern	vmCvar_t	cg_effectsGibs;
-
-//Noire Set
-extern	vmCvar_t	toolgun_mod1;
-extern	vmCvar_t	toolgun_mod2;
-extern	vmCvar_t	toolgun_mod3;
-extern	vmCvar_t	toolgun_mod4;
-extern	vmCvar_t	toolgun_mod5;
-extern	vmCvar_t	toolgun_mod6;
-extern	vmCvar_t	toolgun_mod7;
-extern	vmCvar_t	toolgun_mod8;
-extern	vmCvar_t	toolgun_mod9;
-extern	vmCvar_t	toolgun_mod10;
-extern	vmCvar_t	toolgun_mod11;
-extern	vmCvar_t	toolgun_mod12;
-extern	vmCvar_t	toolgun_mod13;
-extern	vmCvar_t	toolgun_mod14;
-extern	vmCvar_t	toolgun_mod15;
-extern	vmCvar_t	toolgun_mod16;
-extern	vmCvar_t	toolgun_mod17;
-extern	vmCvar_t	toolgun_mod18;
-extern	vmCvar_t	toolgun_mod19;
-extern	vmCvar_t	toolgun_tool;
-extern	vmCvar_t	toolgun_toolcmd1;
-extern	vmCvar_t	toolgun_toolcmd2;
-extern	vmCvar_t	toolgun_toolcmd3;
-extern	vmCvar_t	toolgun_toolcmd4;
-extern	vmCvar_t	toolgun_tooltext;
-extern	vmCvar_t	toolgun_tooltip1;
-extern	vmCvar_t	toolgun_tooltip2;
-extern	vmCvar_t	toolgun_tooltip3;
-extern	vmCvar_t	toolgun_tooltip4;
-extern	vmCvar_t	toolgun_toolmode1;
-extern	vmCvar_t	toolgun_toolmode2;
-extern	vmCvar_t	toolgun_toolmode3;
-extern	vmCvar_t	toolgun_toolmode4;
-extern	vmCvar_t	cg_hide255;
-
-extern	vmCvar_t	ns_haveerror;		//Noire.Script error
-
-extern	vmCvar_t	cg_postprocess;
-extern	vmCvar_t	cl_language;
-
-extern	vmCvar_t		cg_disableBobbing;
-extern	vmCvar_t		cg_shadows;
-extern	vmCvar_t		cg_drawTimer;
-extern	vmCvar_t		cg_drawFPS;
-extern	vmCvar_t		cg_drawCrosshair;
-extern	vmCvar_t		cg_drawCrosshairNames;
-extern	vmCvar_t		cg_crosshairScale;
-extern	vmCvar_t		cg_draw2D;
-extern	vmCvar_t		cg_debugEvents;
-extern	vmCvar_t		cg_addMarks;
-extern	vmCvar_t		cg_drawGun;
-extern	vmCvar_t		cg_fov;
-extern	vmCvar_t		cg_zoomFov;
-extern	vmCvar_t		cg_thirdPersonOffset;
-extern	vmCvar_t		cg_thirdPersonRange;
-extern	vmCvar_t		cg_thirdPerson;
-extern	vmCvar_t		cg_lagometer;
-extern	vmCvar_t		cg_drawSpeed;
-extern	vmCvar_t		cg_stats;
-extern	vmCvar_t		cg_paused;
-extern	vmCvar_t		cg_blood;
-extern	vmCvar_t		cg_drawFriend;
-extern	vmCvar_t		cg_noVoiceText;
-extern  vmCvar_t		cg_scorePlum;
-extern vmCvar_t			cg_chatTime;
-
-extern	vmCvar_t		cg_noProjectileTrail;
-
-extern	vmCvar_t		cg_cameraEyes;
-extern	vmCvar_t		cg_cameraEyes_Fwd;
-extern	vmCvar_t		cg_cameraEyes_Up;
-extern	vmCvar_t		cg_music;
-
-extern	vmCvar_t		cg_obeliskRespawnDelay;
-extern	vmCvar_t		cg_enableDust;
-extern	vmCvar_t		cg_enableBreath;
-
-extern	vmCvar_t		sv_fps;
-
-extern	vmCvar_t		cg_atmosphericLevel;
-
-extern	vmCvar_t		cg_crosshairPulse;
-
-extern	vmCvar_t       	cg_crosshairColorRed;
-extern	vmCvar_t       	cg_crosshairColorGreen;
-extern	vmCvar_t       	cg_crosshairColorBlue;
-
-extern vmCvar_t			cg_chatBeep;
-extern vmCvar_t			cg_teamChatBeep;
-
 void CG_PredictWeaponEffects( centity_t *cent );
 
 //
@@ -1460,8 +1349,6 @@ void QDECL CG_Printf( const char *msg, ... );
 void QDECL CG_Error( const char *msg, ... ) __attribute__((noreturn));
 
 void CG_StartMusic( void );
-
-void CG_UpdateCvars( void );
 
 int CG_CrosshairPlayer( void );
 int CG_LastAttacker( void );

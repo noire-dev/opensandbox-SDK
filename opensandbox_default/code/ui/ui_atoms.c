@@ -66,10 +66,8 @@ void UI_UpdateState( void ) {
 	float scry;
 	char  svinfo[MAX_INFO_STRING];
 	
-	trap_GetGlconfig( &uis.glconfig );
-	
-	scrx = uis.glconfig.vidWidth;
-	scry = uis.glconfig.vidHeight;
+	scrx = glconfig.vidWidth;
+	scry = glconfig.vidHeight;
 	
 	if((scrx / (scry / 480)-640)/2 >= 0){
 		uis.wideoffset = (scrx / (scry / 480)-640)/2;
@@ -90,7 +88,7 @@ void UI_UpdateState( void ) {
 		uis.postfx_status = qfalse;
 	}
 
-	if(uis.glconfig.vidHeight/480.0f > 0){
+	if(glconfig.vidHeight/480.0f > 0){
 		trap_Cvar_SetValue("con_scale", 1.85);
 	}
 	trap_Cvar_Set("cl_conColor", "8 8 8 192");
@@ -607,19 +605,20 @@ UI_Init
 */
 void UI_Init( void ) {
 	
-	UI_RegisterCvars();
-
+	// init cvars and gameinfo
+	UI_CreateCvars();
+	ST_RegisterCvars();
 	UI_InitGameinfo();
 
-	// cache redundant calulations
-	trap_GetGlconfig( &uis.glconfig );
+	// cache glconfig
+	trap_GetGlconfig( &glconfig );
 	
-	uis.scale = (uis.glconfig.vidWidth * (1.0 / 640.0) < uis.glconfig.vidHeight * (1.0 / 480.0)) ? uis.glconfig.vidWidth * (1.0 / 640.0) : uis.glconfig.vidHeight * (1.0 / 480.0);
+	uis.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
 	
-	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
+	if ( glconfig.vidWidth * 480 > glconfig.vidHeight * 640 ) {
 		// wide screen
-		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0 / 480.0) ) );
-	} else if ( uis.glconfig.vidWidth * 480 < uis.glconfig.vidHeight * 640 ) {
+		uis.bias = 0.5 * ( glconfig.vidWidth - ( glconfig.vidHeight * (640.0 / 480.0) ) );
+	} else if ( glconfig.vidWidth * 480 < glconfig.vidHeight * 640 ) {
 		// 5:4 screen
 		uis.bias = 0;
 	} else {
@@ -629,6 +628,8 @@ void UI_Init( void ) {
 
 	// initialize the menu system
 	Menu_Cache();
+	
+	ST_RegisterFont("default");
 
 	uis.activemenu = NULL;
 	uis.menusp     = 0;
@@ -790,7 +791,7 @@ void UI_DrawModelElement( float x, float y, float w, float h, const char* model,
 }
 
 void UI_DrawBackgroundPic( qhandle_t hShader ) {
-	trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, hShader );
+	trap_R_DrawStretchPic( 0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, hShader );
 }
 
 void UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color) {
@@ -897,19 +898,19 @@ void UI_Refresh( int realtime ) {
 		return;
 	}
 
-	UI_UpdateCvars();
-
+	ST_UpdateCvars();
+	ST_UpdateColors();
 	RunScriptThreads(uis.realtime);		//Noire.Script - run threads
 
 	if (uis.activemenu) {
 		if (uis.activemenu->fullscreen) {
 			if(!uis.onmap){
-				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers );
+				trap_R_DrawStretchPic( 0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers );
 			}
 			if(!uis.onmap || !uis.postfx_status){
-				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
+				trap_R_DrawStretchPic( 0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" ) );
 			} else {
-				trap_R_DrawStretchPic( 0.0, 0.0, uis.glconfig.vidWidth, uis.glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans2" ) );
+				trap_R_DrawStretchPic( 0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip( "menu/assets/blacktrans2" ) );
 			}
 		}
 
@@ -929,11 +930,9 @@ void UI_Refresh( int realtime ) {
 	UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
 	if (uis.debug) {
-		// cursor coordinates
-		trap_GetGlconfig( &uis.glconfig );
 		x = 0-uis.wideoffset;
 		ST_DrawString( x, 0, va("cursor xy: (%d,%d)",uis.cursorx,uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
-		ST_DrawString( x, 10, va("screen: %ix%i",uis.glconfig.vidWidth, uis.glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
+		ST_DrawString( x, 10, va("screen: %ix%i",glconfig.vidWidth, glconfig.vidHeight), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
 		ST_DrawString( x, 20, va("map running: %i",uis.onmap), UI_LEFT|UI_SMALLFONT, colorRed, 1.00 );
 	}
 

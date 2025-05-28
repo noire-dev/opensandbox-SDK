@@ -65,6 +65,7 @@ $cc ../../../code/game/g_unlagged.c
 $cc ../../../code/game/g_utils.c
 $cc ../../../code/game/g_weapon.c
 
+$cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
 $cc ../../../code/qcommon/ns_main.c
@@ -133,6 +134,7 @@ $cc ../../../code/game/bg_slidemove.c
 
 cp ../../../code/cgame/cg_syscalls.asm ..
 
+$cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
 
@@ -225,6 +227,7 @@ cp ../../../code/ui/ui_syscalls.asm ..
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 
+$cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
 $cc ../../../code/qcommon/ns_main.c

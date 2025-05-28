@@ -1810,30 +1810,23 @@ Menu_Cache
 */
 void Menu_Cache( void ) {
 	int i;
-	ST_RegisterFont("default");
 	uis.cursor          = trap_R_RegisterShaderNoMip( "menu/assets/3_cursor2" );
 	uis.corner          = trap_R_RegisterShaderNoMip( "menu/corner" );
 	uis.rb_on           = trap_R_RegisterShaderNoMip( "menu/assets/switch_on" );
 	uis.rb_off          = trap_R_RegisterShaderNoMip( "menu/assets/switch_off" );
-
-	uis.whiteShader = trap_R_RegisterShaderNoMip( "white" );
+	uis.whiteShader 	= trap_R_RegisterShaderNoMip( "white" );
 	uis.menuBlack		= trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" );
-	uis.menuWallpapers = trap_R_RegisterShaderNoMip( "menu/animbg" );
-	
+	uis.menuWallpapers 	= trap_R_RegisterShaderNoMip( "menu/animbg" );
 	uis.menuLoadingIcon = trap_R_RegisterShaderNoMip( "menu/assets/loading" );
-
-	menu_in_sound	= trap_S_RegisterSound( "sound/misc/menu1.wav", qfalse );
-	menu_move_sound	= trap_S_RegisterSound( "sound/misc/menu2.wav", qfalse );
-	menu_out_sound	= trap_S_RegisterSound( "sound/misc/menu3.wav", qfalse );
-	menu_buzz_sound	= trap_S_RegisterSound( "sound/misc/menu4.wav", qfalse );
+	menu_in_sound		= trap_S_RegisterSound( "sound/misc/menu1.wav", qfalse );
+	menu_move_sound		= trap_S_RegisterSound( "sound/misc/menu2.wav", qfalse );
+	menu_out_sound		= trap_S_RegisterSound( "sound/misc/menu3.wav", qfalse );
+	menu_buzz_sound		= trap_S_RegisterSound( "sound/misc/menu4.wav", qfalse );
 	weaponChangeSound	= trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
-
-	// need a nonzero sound, make an empty sound for this
-	menu_null_sound = -1;
-
-	sliderBar = trap_R_RegisterShaderNoMip( "menu/assets/slider2" );
-	sliderButton_0 = trap_R_RegisterShaderNoMip( "menu/assets/sliderbutt_0" );
-	sliderButton_1 = trap_R_RegisterShaderNoMip( "menu/assets/sliderbutt_1" );
+	menu_null_sound 	= -1;
+	sliderBar 			= trap_R_RegisterShaderNoMip( "menu/assets/slider2" );
+	sliderButton_0 		= trap_R_RegisterShaderNoMip( "menu/assets/sliderbutt_0" );
+	sliderButton_1 		= trap_R_RegisterShaderNoMip( "menu/assets/sliderbutt_1" );
 }
 
 /*

@@ -233,8 +233,6 @@ static const char* saveparam_list[] = {
 	"gui_grange",
 	"gui_gknockback",
 	// Автомат
-	"gui_mgammocount",
-	"gui_mgweaponcount",
 	"gui_mgdelay",
 	"gui_mgdamage",
 	"gui_mgspread",
@@ -244,8 +242,6 @@ static const char* saveparam_list[] = {
 	"gui_mginf",
 	"gui_mgknockback",
 	// Дробовик
-	"gui_sgammocount",
-	"gui_sgweaponcount",
 	"gui_sgdelay",
 	"gui_sgdamage",
 	"gui_sgspread",
@@ -256,8 +252,6 @@ static const char* saveparam_list[] = {
 	"gui_sginf",
 	"gui_sgknockback",
 	// Гранаты
-	"gui_glammocount",
-	"gui_glweaponcount",
 	"gui_gldelay",
 	"gui_glspeed",
 	"gui_glbounce",
@@ -272,8 +266,6 @@ static const char* saveparam_list[] = {
 	"gui_glhoming",
 	"gui_glguided",
 	// Ракеты
-	"gui_rlammocount",
-	"gui_rlweaponcount",
 	"gui_rldelay",
 	"gui_rlspeed",
 	"gui_rlbounce",
@@ -288,8 +280,6 @@ static const char* saveparam_list[] = {
 	"gui_rlhoming",
 	"gui_rlguided",
 	// Молния
-	"gui_lgammocount",
-	"gui_lgweaponcount",
 	"gui_lgrange",
 	"gui_lgdelay",
 	"gui_lgdamage",
@@ -299,15 +289,11 @@ static const char* saveparam_list[] = {
 	"gui_lginf",
 	"gui_lgknockback",
 	// Рэйлган
-	"gui_rgammocount",
-	"gui_rgweaponcount",
 	"gui_rgdelay",
 	"gui_rgdamage",
 	"gui_rginf",
 	"gui_rgknockback",
 	// Плазмаган
-	"gui_pgammocount",
-	"gui_pgweaponcount",
 	"gui_pgdelay",
 	"gui_pgspeed",
 	"gui_pgbounce",
@@ -322,8 +308,6 @@ static const char* saveparam_list[] = {
 	"gui_pghoming",
 	"gui_pgguided",
 	// Бфг
-	"gui_bfgammocount",
-	"gui_bfgweaponcount",
 	"gui_bfgdelay",
 	"gui_bfgspeed",
 	"gui_bfgbounce",
@@ -338,8 +322,6 @@ static const char* saveparam_list[] = {
 	"gui_bfghoming",
 	"gui_bfgguided",
 	// Гвоздомёт
-	"gui_ngammocount",
-	"gui_ngweaponcount",
 	"gui_ngdelay",
 	"gui_ngspeed",
 	"gui_ngbounce",
@@ -355,8 +337,6 @@ static const char* saveparam_list[] = {
 	"gui_nghoming",
 	"gui_ngguided",
 	// Мины
-	"gui_plammocount",
-	"gui_plweaponcount",
 	"gui_pldelay",
 	"gui_plspeed",
 	"gui_plgravity",
@@ -367,16 +347,12 @@ static const char* saveparam_list[] = {
 	"gui_plinf",
 	"gui_plknockback",
 	// Пулемёт
-	"gui_cgammocount",
-	"gui_cgweaponcount",
 	"gui_cgdelay",
 	"gui_cgspread",
 	"gui_cgdamage",
 	"gui_cginf",
 	"gui_cgknockback",
 	// Огнемёт
-	"gui_ftammocount",
-	"gui_ftweaponcount",
 	"gui_ftdelay",
 	"gui_ftspeed",
 	"gui_ftbounce",
@@ -391,7 +367,6 @@ static const char* saveparam_list[] = {
 	"gui_fthoming",
 	"gui_ftguided",
 	// Антиматтер
-	"gui_amweaponcount",
 	"gui_amdelay",
 	"gui_amspeed",
 	"gui_ambounce",
@@ -822,8 +797,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_grange %i\n", s_scriptdata.server.g_grange));
 	AddScript(va("set g_gknockback  \"%s\"\n", s_scriptdata.server.g_gknockback));
 	// Автомат
-	AddScript(va("set g_mgammocount %i\n", s_scriptdata.server.g_mgammocount));
-	AddScript(va("set g_mgweaponcount %i\n", s_scriptdata.server.g_mgweaponcount));
 	AddScript(va("set g_mgdelay %i\n", s_scriptdata.server.g_mgdelay));
 	AddScript(va("set g_mgdamage %i\n", s_scriptdata.server.g_mgdamage));
 	AddScript(va("set g_mgspread %i\n", s_scriptdata.server.g_mgspread));
@@ -833,8 +806,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_mginf %i\n", s_scriptdata.server.g_mginf));
 	AddScript(va("set g_mgknockback  \"%s\"\n", s_scriptdata.server.g_mgknockback));
 	// Дробовик
-	AddScript(va("set g_sgammocount %i\n", s_scriptdata.server.g_sgammocount));
-	AddScript(va("set g_sgweaponcount %i\n", s_scriptdata.server.g_sgweaponcount));
 	AddScript(va("set g_sgdelay %i\n", s_scriptdata.server.g_sgdelay));
 	AddScript(va("set g_sgdamage %i\n", s_scriptdata.server.g_sgdamage));
 	AddScript(va("set g_sgspread %i\n", s_scriptdata.server.g_sgspread));
@@ -845,8 +816,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_sginf %i\n", s_scriptdata.server.g_sginf));
 	AddScript(va("set g_sgknockback  \"%s\"\n", s_scriptdata.server.g_sgknockback));
 	// Гранаты
-	AddScript(va("set g_glammocount %i\n", s_scriptdata.server.g_glammocount));
-	AddScript(va("set g_glweaponcount %i\n", s_scriptdata.server.g_glweaponcount));
 	AddScript(va("set g_gldelay %i\n", s_scriptdata.server.g_gldelay));
 	AddScript(va("set g_glspeed %i\n", s_scriptdata.server.g_glspeed));
 	AddScript(va("set g_glbounce %i\n", s_scriptdata.server.g_glbounce));
@@ -860,9 +829,7 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_glknockback  \"%s\"\n", s_scriptdata.server.g_glknockback));
 	AddScript(va("set g_glhoming %i\n", s_scriptdata.server.g_glhoming));
 	AddScript(va("set g_glguided %i\n", s_scriptdata.server.g_glguided));
-	// Ракеты
-	AddScript(va("set g_rlammocount %i\n", s_scriptdata.server.g_rlammocount));
-	AddScript(va("set g_rlweaponcount %i\n", s_scriptdata.server.g_rlweaponcount));
+	// Ракет
 	AddScript(va("set g_rldelay %i\n", s_scriptdata.server.g_rldelay));
 	AddScript(va("set g_rlspeed %i\n", s_scriptdata.server.g_rlspeed));
 	AddScript(va("set g_rlbounce %i\n", s_scriptdata.server.g_rlbounce));
@@ -877,8 +844,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_rlhoming %i\n", s_scriptdata.server.g_rlhoming));
 	AddScript(va("set g_rlguided %i\n", s_scriptdata.server.g_rlguided));
 	// Молния
-	AddScript(va("set g_lgammocount %i\n", s_scriptdata.server.g_lgammocount));
-	AddScript(va("set g_lgweaponcount %i\n", s_scriptdata.server.g_lgweaponcount));
 	AddScript(va("set g_lgrange %i\n", s_scriptdata.server.g_lgrange));
 	AddScript(va("set g_lgdelay %i\n", s_scriptdata.server.g_lgdelay));
 	AddScript(va("set g_lgdamage %i\n", s_scriptdata.server.g_lgdamage));
@@ -888,15 +853,11 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_lginf %i\n", s_scriptdata.server.g_lginf));
 	AddScript(va("set g_lgknockback  \"%s\"\n", s_scriptdata.server.g_lgknockback));
 	// Рэйлган
-	AddScript(va("set g_rgammocount %i\n", s_scriptdata.server.g_rgammocount));
-	AddScript(va("set g_rgweaponcount %i\n", s_scriptdata.server.g_rgweaponcount));
 	AddScript(va("set g_rgdelay %i\n", s_scriptdata.server.g_rgdelay));
 	AddScript(va("set g_rgdamage %i\n", s_scriptdata.server.g_rgdamage));
 	AddScript(va("set g_rginf %i\n", s_scriptdata.server.g_rginf));
 	AddScript(va("set g_rgknockback  \"%s\"\n", s_scriptdata.server.g_rgknockback));
 	// Плазмаган
-	AddScript(va("set g_pgammocount %i\n", s_scriptdata.server.g_pgammocount));
-	AddScript(va("set g_pgweaponcount %i\n", s_scriptdata.server.g_pgweaponcount));
 	AddScript(va("set g_pgdelay %i\n", s_scriptdata.server.g_pgdelay));
 	AddScript(va("set g_pgspeed %i\n", s_scriptdata.server.g_pgspeed));
 	AddScript(va("set g_pgbounce %i\n", s_scriptdata.server.g_pgbounce));
@@ -911,8 +872,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_pghoming %i\n", s_scriptdata.server.g_pghoming));
 	AddScript(va("set g_pgguided %i\n", s_scriptdata.server.g_pgguided));
 	// Бфг
-	AddScript(va("set g_bfgammocount %i\n", s_scriptdata.server.g_bfgammocount));
-	AddScript(va("set g_bfgweaponcount %i\n", s_scriptdata.server.g_bfgweaponcount));
 	AddScript(va("set g_bfgdelay %i\n", s_scriptdata.server.g_bfgdelay));
 	AddScript(va("set g_bfgspeed %i\n", s_scriptdata.server.g_bfgspeed));
 	AddScript(va("set g_bfgbounce %i\n", s_scriptdata.server.g_bfgbounce));
@@ -927,8 +886,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_bfghoming %i\n", s_scriptdata.server.g_bfghoming));
 	AddScript(va("set g_bfgguided %i\n", s_scriptdata.server.g_bfgguided));
 	// Гвоздомёт
-	AddScript(va("set g_ngammocount %i\n", s_scriptdata.server.g_ngammocount));
-	AddScript(va("set g_ngweaponcount %i\n", s_scriptdata.server.g_ngweaponcount));
 	AddScript(va("set g_ngdelay %i\n", s_scriptdata.server.g_ngdelay));
 	AddScript(va("set g_ngspeed %i\n", s_scriptdata.server.g_ngspeed));
 	AddScript(va("set g_ngbounce %i\n", s_scriptdata.server.g_ngbounce));
@@ -944,8 +901,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_nghoming %i\n", s_scriptdata.server.g_nghoming));
 	AddScript(va("set g_ngguided %i\n", s_scriptdata.server.g_ngguided));
 	// Мины
-	AddScript(va("set g_plammocount %i\n", s_scriptdata.server.g_plammocount));
-	AddScript(va("set g_plweaponcount %i\n", s_scriptdata.server.g_plweaponcount));
 	AddScript(va("set g_pldelay %i\n", s_scriptdata.server.g_pldelay));
 	AddScript(va("set g_plspeed %i\n", s_scriptdata.server.g_plspeed));
 	AddScript(va("set g_plgravity %i\n", s_scriptdata.server.g_plgravity));
@@ -956,16 +911,12 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_plinf %i\n", s_scriptdata.server.g_plinf));
 	AddScript(va("set g_plknockback  \"%s\"\n", s_scriptdata.server.g_plknockback));
 	// Пулемёт
-	AddScript(va("set g_cgammocount %i\n", s_scriptdata.server.g_cgammocount));
-	AddScript(va("set g_cgweaponcount %i\n", s_scriptdata.server.g_cgweaponcount));
 	AddScript(va("set g_cgdelay %i\n", s_scriptdata.server.g_cgdelay));
 	AddScript(va("set g_cgspread %i\n", s_scriptdata.server.g_cgspread));
 	AddScript(va("set g_cgdamage %i\n", s_scriptdata.server.g_cgdamage));
 	AddScript(va("set g_cginf %i\n", s_scriptdata.server.g_cginf));
 	AddScript(va("set g_cgknockback  \"%s\"\n", s_scriptdata.server.g_cgknockback));
 	// Огнемёт
-	AddScript(va("set g_ftammocount %i\n", s_scriptdata.server.g_ftammocount));
-	AddScript(va("set g_ftweaponcount %i\n", s_scriptdata.server.g_ftweaponcount));
 	AddScript(va("set g_ftdelay %i\n", s_scriptdata.server.g_ftdelay));
 	AddScript(va("set g_ftspeed %i\n", s_scriptdata.server.g_ftspeed));
 	AddScript(va("set g_ftbounce %i\n", s_scriptdata.server.g_ftbounce));
@@ -980,7 +931,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_fthoming %i\n", s_scriptdata.server.g_fthoming));
 	AddScript(va("set g_ftguided %i\n", s_scriptdata.server.g_ftguided));
 	// Антиматтер
-	AddScript(va("set g_amweaponcount %i\n", s_scriptdata.server.g_amweaponcount));
 	AddScript(va("set g_amdelay %i\n", s_scriptdata.server.g_amdelay));
 	AddScript(va("set g_amspeed %i\n", s_scriptdata.server.g_amspeed));
 	AddScript(va("set g_ambounce %i\n", s_scriptdata.server.g_ambounce));

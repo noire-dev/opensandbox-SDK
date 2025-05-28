@@ -226,12 +226,8 @@ Selects all entities
 void G_PickAllTargets (gentity_t *ent) {
 	gentity_t *t = NULL;
 
-	G_Printf("Searching1 for: %s\n", ent->target);
-
 	while ((t = G_Find (t, FOFS(targetname), ent->target)) != NULL) {
-		G_Printf("Searching for: %s\n", ent->target);
 		if (t->use) {
-			G_Printf("Foundedd for: %s\n", ent->target);
 			t->use (t, ent, ent);
 		}
 	}

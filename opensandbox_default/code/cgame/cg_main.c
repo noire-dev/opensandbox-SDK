@@ -24,15 +24,13 @@
 // 
 //
 // cg_main.c -- initialization and primary entry point for cgame
-#include "cg_local.h"
+#include "../qcommon/ns_local.h"
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
 
-
 int realVidWidth;
 int realVidHeight;		// leilei - global video hack
-
 
 /*
 ================
@@ -67,122 +65,11 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 	return -1;
 }
 
-
 cg_t				cg;
 cgs_t				cgs;
 centity_t			cg_entities[MAX_GENTITIES];
 weaponInfo_t		cg_weapons[WEAPONS_NUM];
 itemInfo_t			cg_items[MAX_ITEMS];
-
-vmCvar_t	g_gametype;
-
-vmCvar_t    headR;
-vmCvar_t    headG;
-vmCvar_t    headB;
-vmCvar_t    modelR;
-vmCvar_t    modelG;
-vmCvar_t    modelB;
-vmCvar_t    legsR;
-vmCvar_t    legsG;
-vmCvar_t    legsB;
-vmCvar_t    physR;
-vmCvar_t    physG;
-vmCvar_t    physB;
-
-vmCvar_t	cg_effectsTime;
-vmCvar_t	cg_effectsLimit;
-vmCvar_t	cg_effectsGibs;
-
-//Noire Set
-vmCvar_t	toolgun_mod1;		//modifier
-vmCvar_t	toolgun_mod2;		//modifier
-vmCvar_t	toolgun_mod3;		//modifier
-vmCvar_t	toolgun_mod4;		//modifier
-vmCvar_t	toolgun_mod5;		//modifier
-vmCvar_t	toolgun_mod6;		//modifier
-vmCvar_t	toolgun_mod7;		//modifier
-vmCvar_t	toolgun_mod8;		//modifier
-vmCvar_t	toolgun_mod9;		//modifier
-vmCvar_t	toolgun_mod10;		//modifier
-vmCvar_t	toolgun_mod11;		//modifier
-vmCvar_t	toolgun_mod12;		//modifier
-vmCvar_t	toolgun_mod13;		//modifier
-vmCvar_t	toolgun_mod14;		//modifier
-vmCvar_t	toolgun_mod15;		//modifier
-vmCvar_t	toolgun_mod16;		//modifier
-vmCvar_t	toolgun_mod17;		//modifier
-vmCvar_t	toolgun_mod18;		//modifier
-vmCvar_t	toolgun_mod19;		//modifier
-vmCvar_t	toolgun_tool;		//tool id
-vmCvar_t	toolgun_toolcmd1;	//command
-vmCvar_t	toolgun_toolcmd2;	//command
-vmCvar_t	toolgun_toolcmd3;	//command
-vmCvar_t	toolgun_toolcmd4;	//command
-vmCvar_t	toolgun_tooltext;	//info
-vmCvar_t	toolgun_tooltip1;	//info
-vmCvar_t	toolgun_tooltip2;	//info
-vmCvar_t	toolgun_tooltip3;	//info
-vmCvar_t	toolgun_tooltip4;	//info
-vmCvar_t	toolgun_toolmode1;	//mode
-vmCvar_t	toolgun_toolmode2;	//mode
-vmCvar_t	toolgun_toolmode3;	//mode
-vmCvar_t	toolgun_toolmode4;	//mode
-vmCvar_t	cg_hide255;			//invisible model
-
-vmCvar_t	ns_haveerror;		//Noire.Script error
-
-vmCvar_t	cg_postprocess;
-vmCvar_t	cl_language;
-vmCvar_t	cg_disableBobbing;
-vmCvar_t	cg_shadows;
-vmCvar_t	cg_drawTimer;
-vmCvar_t	cg_drawFPS;
-vmCvar_t	cg_drawCrosshair;
-vmCvar_t	cg_drawCrosshairNames;
-vmCvar_t	cg_crosshairScale;
-vmCvar_t	cg_draw2D;
-vmCvar_t	cg_debugEvents;
-vmCvar_t	cg_addMarks;
-vmCvar_t	cg_drawGun;
-vmCvar_t	cg_fov;
-vmCvar_t	cg_zoomFov;
-vmCvar_t	cg_thirdPerson;
-vmCvar_t	cg_thirdPersonRange;
-vmCvar_t	cg_thirdPersonOffset;
-vmCvar_t	cg_lagometer;
-vmCvar_t	cg_drawSpeed;
-vmCvar_t 	cg_stats;
-vmCvar_t	cg_paused;
-vmCvar_t	cg_blood;
-vmCvar_t	cg_drawFriend;
-vmCvar_t 	cg_scorePlum;
-
-vmCvar_t    cg_cameraEyes;
-vmCvar_t	cg_cameraEyes_Fwd;
-vmCvar_t	cg_cameraEyes_Up;
-
-vmCvar_t	cg_noProjectileTrail;
-vmCvar_t    cg_music;
-
-vmCvar_t	cg_obeliskRespawnDelay;
-vmCvar_t	cg_enableDust;
-vmCvar_t	cg_enableBreath;
-
-//unlagged - client options
-vmCvar_t	sv_fps;
-//unlagged - client options
-
-// custom variable used in modified atmospheric effects from q3f
-vmCvar_t	cg_atmosphericLevel;
-
-vmCvar_t	cg_crosshairPulse;
-
-vmCvar_t	cg_crosshairColorRed;
-vmCvar_t	cg_crosshairColorGreen;
-vmCvar_t	cg_crosshairColorBlue;
-
-vmCvar_t	cg_chatBeep;
-vmCvar_t	cg_teamChatBeep;
 
 int	mod_mgspread;
 int	mod_sgspread;
@@ -237,141 +124,13 @@ int mod_skyColorG;
 int mod_skyColorB;
 int mod_skyColorA;
 
-typedef struct {
-	vmCvar_t	*vmCvar;
-	char		*cvarName;
-	char		*defaultString;
-	int			cvarFlags;
-} cvarTable_t;
-
-
-
-static cvarTable_t cvarTable[] = { // bk001129
-
-	{ &g_gametype, "g_gametype", "0", 0},
-
-    { &headR, "headR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &headG, "headG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &headB, "headB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &modelR, "modelR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &modelG, "modelG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &modelB, "modelB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &legsR, "legsR", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &legsG, "legsG", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &legsB, "legsB", "100", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &physR, "physR", "128", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &physG, "physG", "225", CVAR_USERINFO | CVAR_ARCHIVE },
-    { &physB, "physB", "255", CVAR_USERINFO | CVAR_ARCHIVE },
-
-	{ &cg_effectsTime, "cg_effectsTime", "10", CVAR_ARCHIVE },
-	{ &cg_effectsLimit, "cg_effectsLimit", "4096", CVAR_ARCHIVE },
-	{ &cg_effectsGibs, "cg_effectsGibs", "1", CVAR_ARCHIVE },
-
-	//ArenaSandBox Set
-	{ &toolgun_mod1, "toolgun_mod1", "0", 0},
-	{ &toolgun_mod2, "toolgun_mod2", "0", 0},
-	{ &toolgun_mod3, "toolgun_mod3", "0", 0},
-	{ &toolgun_mod4, "toolgun_mod4", "0", 0},
-	{ &toolgun_mod5, "toolgun_mod5", "0", 0},
-	{ &toolgun_mod6, "toolgun_mod6", "0", 0},
-	{ &toolgun_mod7, "toolgun_mod7", "0", 0},
-	{ &toolgun_mod8, "toolgun_mod8", "0", 0},
-	{ &toolgun_mod9, "toolgun_mod9", "0", 0},
-	{ &toolgun_mod10, "toolgun_mod10", "0", 0},
-	{ &toolgun_mod11, "toolgun_mod11", "0", 0},
-	{ &toolgun_mod12, "toolgun_mod12", "0", 0},
-	{ &toolgun_mod13, "toolgun_mod13", "0", 0},
-	{ &toolgun_mod14, "toolgun_mod14", "0", 0},
-	{ &toolgun_mod15, "toolgun_mod15", "0", 0},
-	{ &toolgun_mod16, "toolgun_mod16", "0", 0},
-	{ &toolgun_mod17, "toolgun_mod17", "0", 0},
-	{ &toolgun_mod18, "toolgun_mod18", "0", 0},
-	{ &toolgun_mod19, "toolgun_mod19", "0", 0},
-	{ &toolgun_tool, "toolgun_tool", "0", CVAR_USERINFO},
-	{ &toolgun_toolcmd1, "toolgun_toolcmd1", "", 0},
-	{ &toolgun_toolcmd2, "toolgun_toolcmd2", "", 0},
-	{ &toolgun_toolcmd3, "toolgun_toolcmd3", "", 0},
-	{ &toolgun_toolcmd4, "toolgun_toolcmd4", "", 0},
-	{ &toolgun_tooltext, "toolgun_tooltext", "", 0},
-	{ &toolgun_tooltip1, "toolgun_tooltip1", "", 0},
-	{ &toolgun_tooltip2, "toolgun_tooltip2", "", 0},
-	{ &toolgun_tooltip3, "toolgun_tooltip3", "", 0},
-	{ &toolgun_tooltip4, "toolgun_tooltip4", "", 0},
-	{ &toolgun_toolmode1, "toolgun_toolmode1", "", 0},
-	{ &toolgun_toolmode2, "toolgun_toolmode2", "", 0},
-	{ &toolgun_toolmode3, "toolgun_toolmode3", "", 0},
-	{ &toolgun_toolmode4, "toolgun_toolmode4", "", 0},
-	{ &cg_hide255, "cg_hide255", "0", 0},
-
-	{ &ns_haveerror, "ns_haveerror", "0", 0},
-
-	{ &cg_postprocess, "cg_postprocess", "", 0 },
-	{ &cl_language, "cl_language", "0", CVAR_ARCHIVE },
-	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
-	{ &cg_zoomFov, "cg_zoomfov", "22", CVAR_ARCHIVE },
-	{ &cg_fov, "cg_fov", "110", CVAR_ARCHIVE },
-	{ &cg_shadows, "cg_shadows", "1", CVAR_ARCHIVE  },
-	{ &cg_draw2D, "cg_draw2D", "1", CVAR_ARCHIVE  },
-	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
-	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
-	{ &cg_drawSpeed, "cg_drawSpeed", "0", CVAR_ARCHIVE  },
-	{ &cg_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE },
-	{ &cg_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
-	{ &cg_crosshairScale, "cg_crosshairScale", "24", CVAR_ARCHIVE },
-	{ &cg_addMarks, "cg_addMarks", "1", CVAR_ARCHIVE },
-	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
-	{ &cg_disableBobbing, "cg_disableBobbing", "0", CVAR_ARCHIVE},
-	{ &cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT },
-	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "65", CVAR_ARCHIVE },
-	{ &cg_thirdPersonOffset, "cg_thirdPersonOffset", "25", CVAR_ARCHIVE },
-	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_ARCHIVE},
-	{ &cg_atmosphericLevel, "cg_atmosphericLevel", "1", CVAR_ARCHIVE },
-	{ &cg_stats, "cg_stats", "0", 0 },
-	{ &cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE },
-	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
-	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
-
-	{ &cg_enableDust, "g_enableDust", "0", CVAR_SERVERINFO},
-	{ &cg_enableBreath, "g_enableBreath", "0", CVAR_SERVERINFO},
-	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", 0},
-
-	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_ARCHIVE},
-
-	{ &cg_noProjectileTrail, "cg_noProjectileTrail", "0", CVAR_ARCHIVE},
-	{ &cg_cameraEyes, "cg_cameraEyes", "0", CVAR_ARCHIVE},						// LEILEI
-	{ &cg_cameraEyes_Fwd, "cg_cameraEyes_Fwd", "0", CVAR_ARCHIVE},				// LEILEI
-	{ &cg_cameraEyes_Up, "cg_cameraEyes_Up", "7", CVAR_ARCHIVE},				// LEILEI
-	//unlagged - client options
-	// this will be automagically copied from the server
-	{ &sv_fps, "sv_fps", "60", CVAR_SYSTEMINFO },
-	//unlagged - client options
-    { &cg_music, "cg_music", "", CVAR_ARCHIVE},
-
-	{ &cg_crosshairPulse, "cg_crosshairPulse", "1", CVAR_ARCHIVE},
-
-	{ &cg_crosshairColorRed, "cg_crosshairColorRed", "0.5", CVAR_ARCHIVE | CVAR_USERINFO},
-    { &cg_crosshairColorGreen, "cg_crosshairColorGreen", "0.75", CVAR_ARCHIVE | CVAR_USERINFO},
-    { &cg_crosshairColorBlue, "cg_crosshairColorBlue", "1.0", CVAR_ARCHIVE | CVAR_USERINFO},
-
-    { &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
-    { &cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE }
-};
-
-static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
 /*
 =================
-CG_RegisterCvars
+CG_CreateCvars
 =================
 */
-void CG_RegisterCvars( void ) {
-	int			i;
-	cvarTable_t	*cv;
+void CG_CreateCvars( void ) {
 	char		var[MAX_TOKEN_CHARS];
-
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-			cv->defaultString, cv->cvarFlags );
-	}
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
@@ -383,20 +142,6 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE );
-}
-
-/*
-=================
-CG_UpdateCvars
-=================
-*/
-void CG_UpdateCvars( void ) {
-	int			i;
-	cvarTable_t	*cv;
-
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		trap_Cvar_Update( cv->vmCvar );
-	}
 }
 
 int CG_CrosshairPlayer( void ) {
@@ -1347,7 +1092,15 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	float rex, rey;
 	int newresx, newresy;
 
-	// clear everything
+	// init cvars and commands
+	ST_RegisterCvars();
+	CG_CreateCvars();
+	CG_InitConsoleCommands();
+
+	// cache glconfig
+	trap_GetGlconfig( &glconfig );
+
+	// clear state
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof(cg_entities) );
@@ -1357,7 +1110,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_LoadingString( "game core", 0.10 );
 
 	cg.clientNum = clientNum;
-
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;
 
@@ -1371,22 +1123,17 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	CG_LoadingString( "noire.script", 0.20 );
 
-	CG_RegisterCvars();
-
-	CG_InitConsoleCommands();
-
 	trap_Cvar_Set("ns_haveerror", "0");
 	NS_OpenScript("nscript/cgame/init.ns", NULL, 0);		//Noire.Script Init in cgame.qvm
 
 	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
 	cgs.flagStatus = -1;
 
-	// get the rendering configuration from the client system
-	trap_GetGlconfig( &cgs.glconfig );
-	cgs.scale = (cgs.glconfig.vidWidth * (1.0 / 640.0) < cgs.glconfig.vidHeight * (1.0 / 480.0)) ? cgs.glconfig.vidWidth * (1.0 / 640.0) : cgs.glconfig.vidHeight * (1.0 / 480.0);
+	// setup screen
+	cgs.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
 
-	realVidWidth = cgs.glconfig.vidWidth;
-	realVidHeight = cgs.glconfig.vidHeight;
+	realVidWidth = glconfig.vidWidth;
+	realVidHeight = glconfig.vidHeight;
 
 	rex = 640.0f / realVidWidth;
 	rey = 480.0f / realVidHeight;
@@ -1397,9 +1144,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	resbias  = 0.5 * ( newresx -  ( newresy * (640.0/480.0) ) );
 	resbiasy = 0.5 * ( newresy -  ( newresx * (640.0/480.0) ) );
 
-	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
+	if ( glconfig.vidWidth * 480 > glconfig.vidHeight * 640 ) {
 		// wide screen
-		cgs.bias = 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * (640.0/480.0) ) );
+		cgs.bias = 0.5 * ( glconfig.vidWidth - ( glconfig.vidHeight * (640.0/480.0) ) );
 	}
 	else {
 		// no wide screen

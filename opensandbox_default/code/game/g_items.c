@@ -244,102 +244,34 @@ int Pickup_Backpack( gentity_t *ent, gentity_t *other) {
 	return -1;
 }
 
-void Set_Weapon (gentity_t *ent, int weapon, int status)
-{
+void Set_Weapon (gentity_t *ent, int weapon, int status) {
 	if(status == 1){
-	ent->swep_list[weapon] = 1;
+		ent->swep_list[weapon] = 1;
 	} else {
-	ent->swep_list[weapon] = 0;
+		ent->swep_list[weapon] = 0;
 	}
 }
 
-void Add_Ammo (gentity_t *ent, int weapon, int count)
-{
+void Add_Ammo (gentity_t *ent, int weapon, int count) {
 	ent->swep_ammo[weapon] += count;
 	if ( ent->swep_ammo[weapon] > mod_ammolimit && count != 9999 ) {
 		ent->swep_ammo[weapon] = mod_ammolimit;
 	}
 }
 
-void Set_Ammo (gentity_t *ent, int weapon, int count)
-{
+void Set_Ammo (gentity_t *ent, int weapon, int count) {
 	ent->swep_ammo[weapon] = count;
 }
 
-int Pickup_Ammo (gentity_t *ent, gentity_t *other)
-{
+int Pickup_Ammo (gentity_t *ent, gentity_t *other) {
 	int		quantity;
 
-	if ( ent->count ) {
+	if (ent->count) {
 		quantity = ent->count;
 	} else {
 		quantity = ent->item->quantity;
+	}
 
-    switch(ent->item->giTag)
-	{
-			case WP_MACHINEGUN:
-					if(g_mgammocount.integer != -1){
-				 	quantity = g_mgammocount.integer;
-					}
-				break;
-			case WP_SHOTGUN:
-					if(g_sgammocount.integer != -1){
-					quantity = g_sgammocount.integer;
-					}
-				break;
-			case WP_GRENADE_LAUNCHER:
-					if(g_glammocount.integer != -1){
-					quantity = g_glammocount.integer;
-					}
-				break;
-			case WP_ROCKET_LAUNCHER:
-					if(g_rlammocount.integer != -1){
-					quantity = g_rlammocount.integer;
-					}
-				break;
-			case WP_PLASMAGUN:
-					if(g_pgammocount.integer != -1){
-					quantity = g_pgammocount.integer;
-					}
-				break;
-			case WP_RAILGUN:
-					if(g_rgammocount.integer != -1){
-					quantity = g_rgammocount.integer;
-					}
-				break;
-			case WP_LIGHTNING:
-					if(g_lgammocount.integer != -1){
-					quantity = g_lgammocount.integer;
-					}
-				break;
-			case WP_BFG:
-					if(g_bfgammocount.integer != -1){
-					quantity = g_bfgammocount.integer;
-					}
-				break;
-			case WP_NAILGUN:
-					if(g_ngammocount.integer != -1){
-					quantity = g_ngammocount.integer;
-					}
-				break;
-			case WP_PROX_LAUNCHER:
-					if(g_plammocount.integer != -1){
-					quantity = g_plammocount.integer;
-					}
-				break;
-			case WP_CHAINGUN:
-					if(g_cgammocount.integer != -1){
-					quantity = g_cgammocount.integer;
-					}
-				break;
-			case WP_FLAMETHROWER:
-					if(g_ftammocount.integer != -1){
-					quantity = g_ftammocount.integer;
-					}
-				break;
-	}
-    //end
-	}
 	Add_Ammo (other, ent->item->giTag, quantity);
 
 	return RESPAWN_AMMO;
@@ -355,78 +287,8 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 			quantity = ent->count;
 		} else {
 			quantity = ent->item->quantity;
-
-
-    switch(ent->item->giTag)
-	{
-			case WP_MACHINEGUN:
-					if(g_mgweaponcount.integer != -1){
-				 	quantity = g_mgweaponcount.integer;
-					}
-				break;
-			case WP_SHOTGUN:
-					if(g_sgweaponcount.integer != -1){
-					quantity = g_sgweaponcount.integer;
-					}
-				break;
-			case WP_GRENADE_LAUNCHER:
-					if(g_glweaponcount.integer != -1){
-					quantity = g_glweaponcount.integer;
-					}
-				break;
-			case WP_ROCKET_LAUNCHER:
-					if(g_rlweaponcount.integer != -1){
-					quantity = g_rlweaponcount.integer;
-					}
-				break;
-			case WP_PLASMAGUN:
-					if(g_pgweaponcount.integer != -1){
-					quantity = g_pgweaponcount.integer;
-					}
-				break;
-			case WP_RAILGUN:
-					if(g_rgweaponcount.integer != -1){
-					quantity = g_rgweaponcount.integer;
-					}
-				break;
-			case WP_LIGHTNING:
-					if(g_lgweaponcount.integer != -1){
-					quantity = g_lgweaponcount.integer;
-					}
-				break;
-			case WP_BFG:
-					if(g_bfgweaponcount.integer != -1){
-					quantity = g_bfgweaponcount.integer;
-					}
-				break;
-			case WP_NAILGUN:
-					if(g_ngweaponcount.integer != -1){
-					quantity = g_ngweaponcount.integer;
-					}
-				break;
-			case WP_PROX_LAUNCHER:
-					if(g_plweaponcount.integer != -1){
-					quantity = g_plweaponcount.integer;
-					}
-				break;
-			case WP_CHAINGUN:
-					if(g_cgweaponcount.integer != -1){
-					quantity = g_cgweaponcount.integer;
-					}
-				break;
-			case WP_FLAMETHROWER:
-					if(g_ftweaponcount.integer != -1){
-					quantity = g_ftweaponcount.integer;
-					}
-				break;
-			case WP_ANTIMATTER:
-					if(g_amweaponcount.integer != -1){
-					quantity = g_amweaponcount.integer;
-					}
-				break;
-	}
-    //end
 		}
+
 		// dropped items and teamplay weapons always have full ammo
 		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
 			// respawning rules
@@ -437,7 +299,6 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 				quantity /= 2;
 			}
 		}
-		
 	}
 
 	// add the weapon
@@ -458,16 +319,13 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 	int			max;
 	int			quantity;
 
-
-        if( !other->client)
-            return RESPAWN_HEALTH;
+    if (!other->client)
+        return RESPAWN_HEALTH;
 
 	// small and mega healths will go over the max
-	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+	if (other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	}
-	else
-	if ( ent->item->quantity != 5 && ent->item->quantity != 100 ) {
+	} else if (ent->item->quantity != 5 && ent->item->quantity != 100) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
 	} else {
 		max = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
@@ -495,9 +353,7 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 
 int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 	int		upperBound;
-
-
-
+	
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
 	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {

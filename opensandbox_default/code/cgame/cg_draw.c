@@ -300,42 +300,21 @@ static void CG_DrawToolgun() {
 }
 
 static void CG_DrawStatusElement( float x, float y, int value, const char *text ) {
-	vec4_t         colornorm;
-	
-	colornorm[0]=cg_crosshairColorRed.value;
-	colornorm[1]=cg_crosshairColorGreen.value;
-	colornorm[2]=cg_crosshairColorBlue.value;
-	colornorm[3]=1.0f;
-	
 	CG_DrawRoundedRect(x, y, 100, 32, 4, color_dim);
-	ST_DrawString( x+4, y+18, text, UI_LEFT, colornorm, 0.90);
-	ST_DrawString( x+42, y+6, va("%i", value), UI_LEFT, colornorm, 2.32 );
+	ST_DrawString( x+4, y+18, text, UI_LEFT, customcolor_crosshair, 0.90);
+	ST_DrawString( x+42, y+6, va("%i", value), UI_LEFT, customcolor_crosshair, 2.32 );
 }
 
 static void CG_DrawCounterElement( float x, float y, const char *value, const char *text ) {
-	vec4_t         colornorm;
-	
-	colornorm[0]=cg_crosshairColorRed.value;
-	colornorm[1]=cg_crosshairColorGreen.value;
-	colornorm[2]=cg_crosshairColorBlue.value;
-	colornorm[3]=1.0f;
-	
 	CG_DrawRoundedRect(x, y, 80, 15, 2, color_dim);
-	ST_DrawString( x+2, y+5, text, UI_LEFT, colornorm, 0.90);
-	ST_DrawString( x+40, y+3, value, UI_LEFT, colornorm, 1.20);
+	ST_DrawString( x+2, y+5, text, UI_LEFT, customcolor_crosshair, 0.90);
+	ST_DrawString( x+40, y+3, value, UI_LEFT, customcolor_crosshair, 1.20);
 }
 
 static void CG_DrawDomElement( float x, float y, const char *value, const char *text ) {
-	vec4_t         colornorm;
-	
-	colornorm[0]=cg_crosshairColorRed.value;
-	colornorm[1]=cg_crosshairColorGreen.value;
-	colornorm[2]=cg_crosshairColorBlue.value;
-	colornorm[3]=1.0f;
-
 	CG_DrawRoundedRect(x, y, 150, 16, 0, color_dim);
-	ST_DrawString( x+2, y+6, text, UI_LEFT, colornorm, 0.90);
-	ST_DrawString( x+110, y+2, value, UI_LEFT, colornorm, 1.20);
+	ST_DrawString( x+2, y+6, text, UI_LEFT, customcolor_crosshair, 0.90);
+	ST_DrawString( x+110, y+2, value, UI_LEFT, customcolor_crosshair, 1.20);
 }
 
 /*
@@ -1499,61 +1478,28 @@ static void CG_DrawCrosshair(void) {
 	qhandle_t	hShader;
 	float		f;
 	float		x, y;
-	int			ca = 0; //only to get rid of the warning(not useful)
-	int 		currentWeapon;
-	vec4_t         color;
 
-	currentWeapon = cg.predictedPlayerState.weapon;
-
-	if ( !cg_drawCrosshair.integer ) {
-		return;
-	}
-	
-	if( cg.renderingThirdPerson ) {
+	if (!cg_drawCrosshair.integer || cg.renderingThirdPerson || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
 		return;
 	}
 
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
-		return;
-	}
-
-    color[0]=cg_crosshairColorRed.value;
-    color[1]=cg_crosshairColorGreen.value;
-    color[2]=cg_crosshairColorBlue.value;
-    color[3]=1.0f;
-	trap_R_SetColor( color );
-
+	trap_R_SetColor( customcolor_crosshair );
 	w = h = cg_crosshairScale.value;
-	ca = cg_drawCrosshair.integer;
-
-	if( cg_crosshairPulse.integer ){
-		// pulse the size of the crosshair when picking up items
-		f = cg.time - cg.itemPickupBlendTime;
-		if ( f > 0 && f < ITEM_BLOB_TIME ) {
-			f /= ITEM_BLOB_TIME;
-			w *= ( 1 + f );
-			h *= ( 1 + f );
-		}
-	}
-	if(cgs.wideoffset > 0){
+	if(cgs.wideoffset > 0) {
 		x = 0 - cgs.wideoffset;
 	} else {
 		x = 0;
 	}
 	y = 0;
 	CG_AdjustFrom640( &x, &y, &w, &h );
+	if(cg_drawCrosshair.integer > 0) {
+		hShader = cgs.media.crosshairShader[ cg_drawCrosshair.integer % NUM_CROSSHAIRS ];
 
-	if (ca < 0) {
-		ca = 0;
+    	if(!hShader)
+    	    hShader = cgs.media.crosshairShader[0];
+
+		trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w), y + cg.refdef.y + 0.5 * (cg.refdef.height - h), w, h, 0, 0, 1, 1, hShader );
 	}
-	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
-
-        if(!hShader)
-            hShader = cgs.media.crosshairShader[ ca % 10 ];
-
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w),
-		y + cg.refdef.y + 0.5 * (cg.refdef.height - h),
-		w, h, 0, 0, 1, 1, hShader );
 }
 
 /*
@@ -1571,17 +1517,11 @@ static void CG_DrawCrosshair3D(void) {
 	char rendererinfos[128];
 	refEntity_t ent;
 
-	if (!cg_drawCrosshair.integer) {
+	if (!cg_drawCrosshair.integer || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
 		return;
-	}
 
-	if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+	if (cg.predictedPlayerState.pm_type == PM_DEAD || cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 		return;
-	}
-
-	if (cg.predictedPlayerState.pm_type == PM_DEAD || cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
-		return;
-	}
 
 	w = h = cg_crosshairScale.value;
 
@@ -1671,16 +1611,12 @@ static void CG_DrawCrosshairNames( void ) {
 		return;
 	}
 
-	// scan the known entities to see if the crosshair is sighted on one
 	CG_ScanForCrosshairEntity();
-
-	// draw the name of the player being looked at
 	color = CG_FadeColor(cg.crosshairClientTime, 1000);
 	if ( !color ) {
 		return;
 	}
 	name = cgs.clientinfo[cg.crosshairClientNum].name;
-
 	ST_DrawString(320, 200, name, UI_CENTER, color, 1.25);
 }
 
@@ -1770,24 +1706,14 @@ CG_DrawFollow
 =================
 */
 static qboolean CG_DrawFollow( void ) {
-	float		x;
-	vec4_t		color;
 	const char	*name;
 
 	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
 		return qfalse;
 	}
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
 
 	name = cgs.clientinfo[ cg.snap->ps.clientNum ].name;
-
-	x = 0.5 * ( 640 - 10 * CG_DrawStrlen( name ) );
-
-	CG_DrawString( x, 10, name, color, qtrue, qtrue, 10, 16, 0, 0 );
-
+	ST_DrawString(320, 10, name, UI_CENTER, color_white, 1.00);
 	return qtrue;
 }
 

@@ -156,3 +156,5 @@ typedef struct {
 
 	qboolean				isFullscreen;
 } glconfig_t;
+
+extern glconfig_t glconfig;
