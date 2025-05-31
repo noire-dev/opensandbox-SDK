@@ -265,7 +265,7 @@ static void CG_Obituary( entityState_t *ent ) {
                     else
 			s = va("You killed %s", targetName );
 		}
-	if(cgs.gametype != GT_SINGLE && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
+	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
 		CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, (int)(BIGCHAR_WIDTH * 0.6) );
 	}
 
@@ -782,7 +782,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*jump1.wav" ) );
 		break;
 	case EV_TAUNT:
-		if(cgs.gametype == GT_SINGLE){ break; }
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
 		break;
@@ -965,14 +964,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	// other events
 	//
 	case EV_PLAYER_TELEPORT_IN:
-		if(cgs.gametype == GT_SINGLE){ break; }
 		DEBUGNAME("EV_PLAYER_TELEPORT_IN");
 		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleInSound );
 		CG_SpawnEffect( position);
 		break;
 
 	case EV_PLAYER_TELEPORT_OUT:
-		if(cgs.gametype == GT_SINGLE){ break; }
 		DEBUGNAME("EV_PLAYER_TELEPORT_OUT");
 		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleOutSound );
 		CG_SpawnEffect(  position);
@@ -1036,11 +1033,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_LIGHTNINGBOLT:
 		DEBUGNAME("EV_LIGHTNINGBOLT");
 		CG_LightningBoltBeam(es->origin2, es->pos.trBase);
-		break;
-	case EV_SCOREPLUM:
-		if(cgs.gametype == GT_SINGLE){ break; }
-		DEBUGNAME("EV_SCOREPLUM");
-		CG_ScorePlum( cent->currentState.otherEntityNum, cent->lerpOrigin, cent->currentState.time );
 		break;
 
 	//

@@ -257,7 +257,6 @@ void CG_InitConsoleCommands( void ) {
 	// cheats
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
-	trap_AddCommand ("notarget");
 	trap_AddCommand ("setviewpos");
 	trap_AddCommand ("noclip");
 

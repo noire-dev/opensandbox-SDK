@@ -212,7 +212,6 @@ typedef struct {
 static gametypeMenu gametypeMenu_data[] = {
 	{ GT_SANDBOX, "Sandbox"},
 	{ GT_MAPEDITOR, "Map Editor"},
-	{ GT_SINGLE, "Single"},
 	{ GT_FFA, "DeathMatch"},
 	{ GT_TOURNAMENT, "Tournament"},
 	{ GT_TEAM, "Team DM"},
@@ -230,7 +229,6 @@ static gametypeMenu gametypeMenu_data[] = {
 static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_SANDBOX, "Песочница"},
 	{ GT_MAPEDITOR, "Редактор Карт"},
-	{ GT_SINGLE, "Одиночная игра"},
 	{ GT_FFA, "Все Против Всех"},
 	{ GT_TOURNAMENT, "Турнир"},
 	{ GT_TEAM, "Командный Бой"},
@@ -553,7 +551,6 @@ static void IG_CallVoteGameType_Event( int index )
 	switch (id) {
 	case GT_SANDBOX:
 	case GT_MAPEDITOR:
-	case GT_SINGLE:
 	case GT_FFA:
 	case GT_TOURNAMENT:
 	case GT_TEAM:

@@ -694,25 +694,12 @@ if(ent->singlebot >= 1){
         CopyToBodyQue (ent); //Unlinks ent
 
 	if(g_gametype.integer==GT_LMS) {
-		if(ent->client->pers.livesLeft>0)
-		{
-			//ent->client->pers.livesLeft--; Coutned down somewhere else
-			ent->client->isEliminated = qfalse;
+		if( ent->client->isEliminated!=qtrue) {
+			ent->client->isEliminated = qtrue;
+			ent->client->sess.spectatorState = PM_SPECTATOR;
+            ClientSpawn(ent);
 		}
-		else //We have used all our lives
-		{
-			if( ent->client->isEliminated!=qtrue) {
-				ent->client->isEliminated = qtrue;
-				if((g_lms_mode.integer == 2 || g_lms_mode.integer == 3) && level.roundNumber == level.roundNumberStarted)
-					LMSpoint();
-                                //Sago: This is really bad
-                                //TODO: Try not to make people spectators here
-				ent->client->sess.spectatorState = PM_SPECTATOR;
-                                //We have to force spawn imidiantly to prevent lag.
-                                ClientSpawn(ent);
-			}
-			return;
-		}
+		return;
 	}
 
 	if((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION || g_gametype.integer==GT_LMS)
@@ -874,7 +861,6 @@ void RespawnAll(void)
 		}
 		client = g_entities + i;
 		client->client->ps.pm_type = PM_NORMAL;
-		client->client->pers.livesLeft = g_lms_lives.integer;
 		respawnRound(client);
 	}
 	return;
@@ -902,15 +888,12 @@ void RespawnDead(void)
                         continue;
                 }
                 client = g_entities + i;
-                client->client->pers.livesLeft = g_lms_lives.integer-1;
 		if ( level.clients[i].isEliminated == qfalse ){
 			continue;
 		}
 		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
 			continue;
 		}
-
-		client->client->pers.livesLeft = g_lms_lives.integer;
 
 		respawnRound(client);
 	}
@@ -1325,10 +1308,8 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
-	if(g_gametype.integer != GT_SINGLE){
 	if ( firstTime || level.newSession ) {
 		G_InitSessionData( client, userinfo );
-	}
 	}
 	G_ReadSessionData( client );
 
@@ -1360,10 +1341,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
-	// for statistics
-	if ( !isBot && !level.player ) {
-		level.player = ent;
-	}
 	return NULL;
 }
 
@@ -1472,10 +1449,8 @@ void ClientSpawn(gentity_t *ent) {
 	index = ent - g_entities;
 	client = ent->client;
 
-	if(g_gametype.integer == GT_SINGLE){
 	if ( !IsBot( ent ) )
 		G_FadeIn( 1.0, ent-g_entities );
-	}
 
 	//In Elimination the player should not spawn if he have already spawned in the round (but not for spectators)
 	// N_G: You've obviously wanted something ELSE
@@ -1953,15 +1928,11 @@ void ClientSpawn(gentity_t *ent) {
             }
         }
 
-	if(g_gametype.integer == GT_LMS && client->sess.sessionTeam != TEAM_SPECTATOR && (!level.intermissiontime || level.warmupTime != 0))
-	{
-		if(level.roundNumber==level.roundNumberStarted /*|| level.time<level.roundStartTime-g_elimination_activewarmup.integer*1000*/ && 1>client->pers.livesLeft)
-		{
+	if(g_gametype.integer == GT_LMS && client->sess.sessionTeam != TEAM_SPECTATOR && (!level.intermissiontime || level.warmupTime != 0)) {
+		if(level.roundNumber==level.roundNumberStarted) {
 			client->sess.spectatorState = SPECTATOR_FREE;
 			if( ent->client->isEliminated!=qtrue) {
 				client->isEliminated = qtrue;
-				if((g_lms_mode.integer == 2 || g_lms_mode.integer == 3) && level.roundNumber == level.roundNumberStarted)
-					LMSpoint();
 			}
 			client->ps.pm_type = PM_SPECTATOR;
 			return;
@@ -1970,8 +1941,6 @@ void ClientSpawn(gentity_t *ent) {
 		client->sess.spectatorState = SPECTATOR_NOT;
 		client->ps.pm_type = PM_NORMAL;
 		client->isEliminated = qfalse;
-		if(client->pers.livesLeft>0)
-			client->pers.livesLeft--;
 	}
 
 	// find a spawn point
@@ -2315,9 +2284,7 @@ void SetupCustomBot( gentity_t *bot ) {
 		G_UseTargets( bot->botspawn, bot);
 	}
 	
-	if(g_gametype.integer != GT_SINGLE){
-		CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
-	}
+	CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
 }
 
 void SetUnlimitedWeapons( gentity_t *ent ) {

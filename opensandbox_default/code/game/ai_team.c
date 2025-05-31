@@ -452,18 +452,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 
 	weAreAttacking = qfalse;
 
-	//In oneway ctf we must all move out of the base (only one strategi, maybe we can also send some to the enemy base  to meet the flag carier?)
-	//We must be defending
-	if(g_elimination_ctf_oneway.integer > 0) {
-		for (i = 0; i < numteammates; i++) {
-			//
-			ClientName(teammates[i], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-			BotSayTeamOrder(bs, teammates[i]);
-		}
-		return;
-	}
-
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -745,29 +733,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	BotSortTeamMatesByTaskPreference(teammates, numteammates);
 
 	weAreAttacking = qfalse;
-
-	if(g_elimination_ctf_oneway.integer > 0) {
-		//See if we are attacking:
-		if( ( (level.eliminationSides+level.roundNumber)%2 == 0 ) && (BotTeam(bs) == TEAM_RED))
-			weAreAttacking = qtrue;
-		
-		if(weAreAttacking) {
-			for (i = 0; i < numteammates; i++) {
-				//
-				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[i]);
-			}
-		} else {
-			for (i = 0; i < numteammates; i++) {
-				//
-				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[i]);
-			}
-		}
-		return; //Sago: Or the leader will make a counter order.
-	}
 
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
@@ -2074,21 +2039,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			break;
 		}
 		case GT_MAPEDITOR:
-		{
-			if (bs->numteammates != numteammates || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
-				BotTeamOrders(bs);
-				//give orders again after 120 seconds
-				bs->teamgiveorders_time = FloatTime() + 120;
-			}
-			break;
-		}
-		case GT_SINGLE:
 		{
 			if (bs->numteammates != numteammates || bs->forceorders) {
 				bs->teamgiveorders_time = FloatTime();

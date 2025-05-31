@@ -265,12 +265,12 @@ int FindEnemyByName(bot_state_t *bs, char *name) {
 	if (!maxclients)
 		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
-		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR && gametype != GT_SINGLE){if (BotSameTeam(bs, i)) continue;}
+		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR){if (BotSameTeam(bs, i)) continue;}
 		ClientName(i, buf, sizeof(buf));
 		if (!Q_stricmp(buf, name)) return i;
 	}
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
-		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR && gametype != GT_SINGLE){if (BotSameTeam(bs, i)) continue;}
+		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR){if (BotSameTeam(bs, i)) continue;}
 		ClientName(i, buf, sizeof(buf));
 		if (Q_strcmp_simple(buf, name)) return i;
 	}

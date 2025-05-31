@@ -47,15 +47,13 @@
 #define	MAX_MAPS_TEXT		8192
 
 // gentity->flags
-#define	FL_GODMODE				0x00000010
-#define	FL_NOTARGET				0x00000020
-#define	FL_TEAMSLAVE			0x00000400	// not the first on the team
-#define FL_NO_KNOCKBACK			0x00000800
-#define FL_DROPPED_ITEM			0x00001000
-#define FL_NO_BOTS				0x00002000	// spawn point not for bot use
-#define FL_NO_HUMANS			0x00004000	// spawn point just for bots
-#define FL_FORCE_GESTURE		0x00008000	// force gesture on client
-#define FL_NO_SPAWN				0x00010000  // spawn point not in use
+#define	FL_GODMODE				1
+#define	FL_TEAMSLAVE			2
+#define FL_NO_KNOCKBACK			4
+#define FL_DROPPED_ITEM			8
+#define FL_NO_BOTS				16
+#define FL_NO_HUMANS			32
+#define FL_NO_SPAWN				64 
 
 // target_debrisemitter and func_breakable debris spawnflags
 #define SF_DEBRIS_LIGHT					1
@@ -263,7 +261,6 @@ struct gentity_s {
 	char		*key;	// key for target_modify to change
 	char		*value; // value for target_modify to change to
 	int			armor; // armor for the target_playerstats entity
-	vec3_t		orgOrigin; // origin of entity (player) when cutscene starts
 	char		*music; //path to music file(s) for target_music
 	vec4_t		rgba1; //start color for target_effect fade
 	vec4_t		rgba2; //end color for target_effect fade
@@ -401,7 +398,6 @@ typedef struct {
 
 	//elimination:
 	int		roundReached;			//Only spawn if we are new to this round
-	int		livesLeft;			//lives in LMS
 	int			pingsamples[NUM_PING_SAMPLES];
 	int			samplehead;
 	
@@ -718,27 +714,16 @@ void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_push (gentity_t *ent);
 void SP_target_logic (gentity_t *ent);
-void SP_target_gravity (gentity_t *ent);
 void SP_target_mapchange (gentity_t *ent);
 void SP_target_botspawn (gentity_t *ent);
 void SP_target_unlink (gentity_t *ent);
-void SP_target_playerspeed (gentity_t *ent);
 void SP_target_debrisemitter (gentity_t *ent);
-void SP_target_objective (gentity_t *ent);
-void SP_target_skill (gentity_t *ent);
-void SP_target_earthquake (gentity_t *ent);
 void SP_target_effect (gentity_t *ent);
-void SP_target_finish (gentity_t *ent);
-void SP_target_modify (gentity_t *ent);
-void SP_target_secret (gentity_t *ent);
-void SP_target_playerstats (gentity_t *ent);
-void SP_target_cutscene (gentity_t *ent);
 void SP_target_botremove (gentity_t *ent);
 void SP_target_music (gentity_t *ent);
 void SP_target_stats (gentity_t *ent);
 
 void SP_script_variable (gentity_t *ent);
-void SP_script_layer (gentity_t *ent);
 void SP_script_cmd (gentity_t *ent);
 void SP_script_menu (gentity_t *ent);
 void SP_script_aicontrol (gentity_t *ent);
@@ -747,7 +732,6 @@ void SP_light (gentity_t *self);
 void SP_info_null (gentity_t *self);
 void SP_info_notnull (gentity_t *self);
 void SP_info_camp (gentity_t *self);
-void SP_info_camera (gentity_t *self);
 void SP_path_corner (gentity_t *self);
 
 void SP_misc_teleporter_dest (gentity_t *self);
@@ -775,10 +759,6 @@ void SP_func_door_rotating( gentity_t *ent );
 void SP_team_blueobelisk( gentity_t *ent );
 void SP_team_redobelisk( gentity_t *ent );
 void SP_team_neutralobelisk( gentity_t *ent );
-
-// weather
-void SP_rally_weather_rain( gentity_t *ent );
-void SP_rally_weather_snow( gentity_t *ent );
 
 extern spawn_t spawns_table[];
 
@@ -845,7 +825,6 @@ char	*G_GetScoringMapName();
 void	G_Fade( float duration, vec4_t startColor, vec4_t endColor, int clientn );
 void	G_FadeOut( float duration, int clientn );
 void	G_FadeIn( float duration, int clientn );
-playerscore_t G_CalculatePlayerScore( gentity_t *ent );
 void botsandbox_check (gentity_t *self);
 void VehiclePhys( gentity_t *self );
 gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
@@ -949,7 +928,6 @@ void Break_Breakable(gentity_t *ent, gentity_t *other);
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace );
 void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 
-
 //
 // g_misc.c
 //
@@ -957,7 +935,6 @@ void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
 void DropPortalSource( gentity_t *ent );
 void DropPortalDestination( gentity_t *ent );
-
 
 //
 // g_weapon.c
@@ -1052,7 +1029,6 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 //
 
 void DoubleDominationScoreTimeMessage( gentity_t *ent );
-void AttackingTeamMessage( gentity_t *ent );
 void ObeliskHealthMessage( void );
 void DeathmatchScoreboardMessage (gentity_t *client);
 void EliminationMessage (gentity_t *client);

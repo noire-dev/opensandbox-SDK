@@ -1457,10 +1457,8 @@ PM_BeginWeaponChange
 */
 static void PM_BeginWeaponChange( int weapon ) {
 	gitem_t	*item;
-	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){ //VEHICLE-SYSTEM: weapon lock for 1
-	if(!BG_GetVehicleSettings(pm->ps->stats[STAT_VEHICLE], VSET_WEAPON)){
-	return;	
-	}
+	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){
+		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
 	item = BG_FindSwep(weapon);
@@ -1486,10 +1484,8 @@ static void PM_FinishWeaponChange( void ) {
 	int		weapon;
 
 	weapon = pm->cmd.weapon;
-	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){ //VEHICLE-SYSTEM: weapon lock for 1
-	if(!BG_GetVehicleSettings(pm->ps->stats[STAT_VEHICLE], VSET_WEAPON)){
-	return;	
-	}
+	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){
+		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
 	item = BG_FindSwep(weapon);
@@ -1634,10 +1630,8 @@ static void PM_Weapon( void ) {
 		return;
 	}
 	
-	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){ //VEHICLE-SYSTEM: weapon lock for 1
-	if(!BG_GetVehicleSettings(pm->ps->stats[STAT_VEHICLE], VSET_WEAPON)){
-	return;	
-	}
+	if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR){
+		return;
 	}
 
 	// start the animation even if out of ammo
@@ -1787,11 +1781,7 @@ PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1);
 		addTime *= mod_teamred_firespeed;
 	}
 
-if(!BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE])){
 	pm->ps->weaponTime += addTime;
-} else {
-	pm->ps->weaponTime += addTime * BG_GetVehicleSettings(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]), VSET_WEAPONRATE);
-}
 }
 
 /*
@@ -1808,17 +1798,10 @@ static void PM_Animate( void ) {
 
 	if ( pm->cmd.buttons & BUTTON_GESTURE && pm->cmd.weapon != WP_PHYSGUN ) {
 		if(!pm->ps->stats[STAT_VEHICLE]){ //VEHICLE-SYSTEM: disable gesture for all
-		if(g_gametype.integer != GT_SINGLE){
 		if ( pm->ps->torsoTimer == 0 ) {
 			PM_StartTorsoAnim( TORSO_GESTURE );
 			pm->ps->torsoTimer = TIMER_GESTURE;
 			PM_AddEvent( EV_TAUNT );
-		}
-		} else {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_ATTACK2 );
-			pm->ps->torsoTimer = 600;
-		}
 		}
 		} 
 		if( BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) { //VEHICLE-SYSTEM: horn for 1
@@ -1909,17 +1892,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 	if(pm->cmd.buttons & BUTTON_GESTURE && pm->cmd.buttons & BUTTON_ATTACK && pm->cmd.weapon == WP_PHYSGUN){
 		return;
 	}
-
-	if ( ps->pm_type == PM_CUTSCENE ) {		//prevent player from looking around
-      // set the delta angle
-      for (i=0 ; i<3 ; i++) {
-         int      cmdAngle;
-
-         cmdAngle = ANGLE2SHORT(pm->ps->viewangles[i]);
-         pm->ps->delta_angles[i] = cmdAngle - pm->cmd.angles[i];
-      }
-      return;
-   }
 
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION) {
 		return;		// no view changes at all
@@ -2072,8 +2044,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// set the firing flag for continuous beam weapons
-	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && pm->ps->pm_type != PM_CUTSCENE
-		&& ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->stats[STAT_SWEPAMMO] ) {
+	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->stats[STAT_SWEPAMMO] ) {
 		pm->ps->eFlags |= EF_FIRING;
 	} else {
 		pm->ps->eFlags &= ~EF_FIRING;
@@ -2158,7 +2129,7 @@ void PmoveSingle (pmove_t *pmove) {
 		return;
 	}
 
-	if (pm->ps->pm_type == PM_FREEZE || pm->ps->pm_type == PM_CUTSCENE) {
+	if (pm->ps->pm_type == PM_FREEZE) {
 		PM_CheckDuck();	//to make the player stand up, otherwise he'll be in a crouched position
 		return;		// no movement at all
 	}

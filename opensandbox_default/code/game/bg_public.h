@@ -185,7 +185,6 @@
 typedef enum {
 	GT_SANDBOX,
 	GT_MAPEDITOR,
-	GT_SINGLE, //SHOULD BE 3 FOR ENGINE 
 	GT_FFA,
 	GT_TOURNAMENT,
 	GT_TEAM,
@@ -221,8 +220,7 @@ typedef enum {
 	PM_DEAD,		// no acceleration or turning, but free falling
 	PM_FREEZE,		// stuck in place with no control
 	PM_INTERMISSION,	// no movement or status bar
-	PM_SPINTERMISSION,	// no movement or status bar
-	PM_CUTSCENE		// stuck in place with no control and fixed view angles
+	PM_SPINTERMISSION	// no movement or status bar
 } pmtype_t;
 
 typedef enum {
@@ -566,7 +564,6 @@ typedef enum {
 	EV_POWERUP_REGEN,
 
 	EV_GIB_PLAYER,			// gib a previously living player
-	EV_SCOREPLUM,			// score plum
 
 	EV_PROXIMITY_MINE_STICK,
 	EV_PROXIMITY_MINE_TRIGGER,
@@ -726,9 +723,7 @@ typedef enum {
 typedef enum {
 	VSET_SPEED,
 	VSET_GRAVITY,
-	VSET_WEAPON,
-	VSET_WEAPONRATE,
-
+	
 	VSET_NUM
 } vehsetting_t;
 
@@ -853,11 +848,6 @@ gitem_t	*BG_FindItemForBackpack( );
 
 qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps );
 
-// g_elimflags->integer
-//This is used to signal the client that it cannot go to free spectator:
-#define EF_ONEWAY                       1
-#define EF_NO_FREESPEC                  2
-
 // content masks
 #define	MASK_ALL				(-1)
 #define	MASK_SOLID				(CONTENTS_SOLID)
@@ -888,7 +878,6 @@ typedef enum {
 	ET_GRAPPLE,				// grapple hooked on wall
 	ET_LASER,				// lasersight entity type
 	ET_TEAM,
-    ET_WEATHER,             // used to specify per area weather
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

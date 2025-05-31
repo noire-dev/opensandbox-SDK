@@ -1460,4 +1460,31 @@ void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float
 
 	ST_DrawChars(x,y,str,drawcolor,charw,charh,style);
 }
+
+stAnim_t weaponSelectIn;
+stAnim_t weaponSelectOut;
+
+int 	anim_weaponSelect;
+
+void ST_AnimStart(stAnim_t *anim, int timeNow, int duration) {
+	anim->startTime = timeNow;
+	anim->duration = duration;
+}
+
+float ST_AnimValue(stAnim_t *anim, int timeNow) {
+	float t;
+	int elapsed;
+
+	elapsed = timeNow - anim->startTime;
+
+	if(elapsed >= anim->duration)
+		return 0.0f;
+
+	if(elapsed < 0)
+		return 1.0f;
+
+	t = (float)elapsed / (float)anim->duration;
+	return 1.0f - t;
+}
+
 #endif

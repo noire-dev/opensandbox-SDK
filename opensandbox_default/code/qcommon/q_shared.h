@@ -909,7 +909,6 @@ typedef struct entityState_s {
 	int		legsAnim;		// mask off ANIM_TOGGLEBIT
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT, object type for props
 
-
 	int		generic1;
 	int		generic2;
 	int		generic3;
@@ -1049,6 +1048,17 @@ SourceTech font and UI system
 ======================
 */
 #ifndef GAME
+
+typedef struct {
+	int startTime;
+	int duration;
+} stAnim_t;
+
+extern stAnim_t weaponSelectIn;
+extern stAnim_t weaponSelectOut;
+
+extern int 		anim_weaponSelect;
+
 extern qhandle_t defaultFont[5];
 
 #define BASEFONT_WIDTH		9
@@ -1061,6 +1071,9 @@ void ST_UpdateColors(void);
 void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size);
 float ST_StringWidth(const char* str, float size);
 void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize);
+
+void ST_AnimStart(stAnim_t *anim, int timeNow, int duration);
+float ST_AnimValue(stAnim_t *anim, int timeNow);
 #endif
 
 #endif	// __Q_SHARED_H

@@ -28,11 +28,6 @@
 #include "../game/bg_public.h"
 #include "cg_public.h"
 
-// The entire cgame module is unloaded and reloaded on each level change,
-// so there is NO persistant data between levels on the client side.
-// If you absolutely need something stored, it can either be kept
-// by the server in the server stored userinfos, or stashed in a cvar.
-
 #define	POWERUP_BLINKS		5
 
 #define	POWERUP_BLINK_TIME	1000
@@ -243,7 +238,6 @@ typedef enum {
 	LE_FALL_SCALE_FADE,
 	LE_FADE_RGB,
 	LE_SCALE_FADE,
-	LE_SCOREPLUM,
 	LE_KAMIKAZE,
 	LE_INVULIMPACT,
 	LE_INVULJUICED,
@@ -319,18 +313,7 @@ typedef struct {
 	int				score;
 	int				ping;
 	int				time;
-	int				scoreFlags;
-	int				powerUps;
-	int				accuracy;
-	int				impressiveCount;
-	int				excellentCount;
-	int				guantletCount;
-	int				defendCount;
-	int				assistCount;
-	int				captures;
-	qboolean	perfect;
-	int				team;
-	int			isDead;
+	qboolean		isDead;
 } score_t;
 
 // each client has an associated clientInfo_t
@@ -368,7 +351,6 @@ typedef struct {
 	int			hetex;
 	int			plradius;
 
-	int				score;			// updated by score servercmds
 	int				location;		// location index for team mode
 	int				health;			// you only get this info about your teammates
 	int				armor;
@@ -426,8 +408,6 @@ typedef struct {
 	animation_t		animations[MAX_TOTALANIMATIONS];
 
 	sfxHandle_t		sounds[MAX_CUSTOM_SOUNDS];
-
-	int				isDead;
 } clientInfo_t;
 
 
@@ -655,10 +635,6 @@ typedef struct {
 	int			itemPickupTime;
 	int			itemPickupBlendTime;	// the pulse around the crosshair is timed seperately
 
-	int			weaponSelectTime;
-	int			weaponAnimation;
-	int			weaponAnimationTime;
-
 	// blend blobs
 	float		damageTime;
 	float		damageX, damageY, damageValue;
@@ -879,8 +855,6 @@ typedef struct {
 
 	qhandle_t	nailPuffShader;
 	qhandle_t	blueProxMine;
-
-	qhandle_t	numberShaders[11];
 
 	qhandle_t	shadowMarkShader;
 
@@ -1185,7 +1159,6 @@ typedef struct {
 
 	// parsed from serverinfo
 	gametype_t		gametype;
-    int				elimflags;
 	int				teamflags;
 	int				fraglimit;
 	int				capturelimit;
@@ -1213,12 +1186,6 @@ typedef struct {
 //Elimination
 	int				roundStartTime;
 	int				roundtime;
-
-//CTF Elimination
-	int				attackingTeam;
-
-//Last Man Standing
-	int				lms_mode;
 
 //instantgib + nexuiz style rocket arena:
 	int				nopickup;
@@ -1499,7 +1466,6 @@ void CG_GravitygunTrail( clientInfo_t *ci, vec3_t start, vec3_t end );
 void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, clientInfo_t *ci );
-void CG_DrawWeaponSelect( void );
 
 //
 // cg_marks.c
@@ -1542,7 +1508,6 @@ void CG_ObeliskPain( vec3_t org );
 void CG_InvulnerabilityImpact( vec3_t org, vec3_t angles );
 void CG_InvulnerabilityJuiced( vec3_t org );
 void CG_LightningBoltBeam( vec3_t start, vec3_t end );
-void CG_ScorePlum( int client, vec3_t org, int score );
 
 void CG_GibPlayer( vec3_t playerOrigin );
 void CG_BigExplode( vec3_t playerOrigin );
@@ -1574,7 +1539,6 @@ void CG_DrawInformation( void );
 // cg_scoreboard.c
 //
 qboolean CG_DrawScoreboard( void );
-void CG_DrawTourneyScoreboard( void );
 
 //
 // cg_consolecmds.c
@@ -1598,12 +1562,6 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 extern float teamcolormodels[TEAM_NUM_TEAMS][3];
 
-
-//
-// cg_atmospheric.c
-//
-void CG_AddAtmosphericEffects( void );
-void CG_Atmospheric_SetParticles( int type, int numParticles, qboolean diableSplashes );
 
 void	CG_LaunchFragment( vec3_t origin, vec3_t velocity, leTrailType_t trailType, qhandle_t hModel );
 

@@ -26,14 +26,10 @@
 // cg_scoreboard -- draw the scoreboard on top of the game screen
 #include "cg_local.h"
 
-
 #define	SCOREBOARD_X		(0-cgs.wideoffset)
 
 #define SB_HEADER			18
 #define SB_TOP				(SB_HEADER+12)
-
-// Where the status bar starts, so we don't overwrite it
-#define SB_STATUSBAR		430
 
 #define SB_INTER_HEIGHT		16 // interleaved height
 
@@ -60,7 +56,7 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 	clientInfo_t	*ci;
 	int iconx, headx;
 
-	if ( score->client < 0 || score->client >= cgs.maxclients ) {
+	if (score->client < 0 || score->client >= cgs.maxclients) {
 		Com_Printf( "Bad score->client: %i\n", score->client );
 		return;
 	}
@@ -78,9 +74,9 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_BLUE );
 	} else {
 		// draw the wins / losses
-		if ( cgs.gametype == GT_TOURNAMENT ) {
+		if (cgs.gametype == GT_TOURNAMENT) {
 			Com_sprintf( string, sizeof( string ), "%i/%i", ci->wins, ci->losses );
-			CG_DrawSmallString( iconx - 35, y + BASEFONT_HEIGHT/2, string, 1.00f );
+			ST_DrawString( iconx - 35, y + BASEFONT_HEIGHT/2, string, UI_LEFT, color_white, 1.00);
 		}
 	}
 
@@ -88,14 +84,11 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 	
 	// draw the score line
 	if ( score->ping == -1 ) {
-		Com_sprintf(string, sizeof(string),
-			" connecting    %s", ci->name);
+		Com_sprintf(string, sizeof(string), " connecting    %s", ci->name);
 	} else if ( ci->team == TEAM_SPECTATOR ) {
-		Com_sprintf(string, sizeof(string),
-			" SPECT %3i %4i %s", score->ping, score->time, ci->name);
+		Com_sprintf(string, sizeof(string), " SPECT %3i %4i %s", score->ping, score->time, ci->name);
 	} else {
-		Com_sprintf(string, sizeof(string),
-			"%5i %4i %4i %s", score->score, score->ping, score->time, ci->name);
+		Com_sprintf(string, sizeof(string), "%5i %4i %4i %s", score->score, score->ping, score->time, ci->name);
 	}
 
 	// highlight your position
@@ -105,10 +98,7 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 
 		localClient = qtrue;
 
-		if ( ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) ||
-			( ( cgs.gametype >= GT_TEAM ) &&
-			( cgs.ffa_gt != 1 ) ) ) {
-			// Sago: I think this means that it doesn't matter if two players are tied in team game - only team score counts
+		if ((cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) || ((cgs.gametype >= GT_TEAM) && (cgs.ffa_gt != 1))) {
 			rank = -1;
 		} else {
 			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
@@ -121,18 +111,14 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 		CG_FillRect( 90 - cgs.wideoffset, y, 550 + (cgs.wideoffset*2), BIGCHAR_HEIGHT+1, hcolor );
 	}
 
-	CG_DrawBigString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, fade );
+	ST_DrawString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, UI_LEFT, color_white, 1.50);
 
 	// add the "ready" marker for intermission exiting
 	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) ) {
 		CG_DrawBigString( iconx, y, "READY", 1.00f );
-	} else
-        if(cgs.gametype == GT_LMS) {
-            CG_DrawBigString( iconx-50, y, va("*%i*",ci->isDead), 1.00f );
-        } else
-        if(ci->isDead) {
-            CG_DrawBigString( iconx-60, y, "D", 1.00f );
-        }
+	} else if(score->isDead) {
+		ST_DrawString( iconx-4, y, "D", UI_LEFT, color_red, 1.50);
+    }
 }
 
 /*
@@ -277,424 +263,4 @@ qboolean CG_DrawScoreboard( void ) {
 	}
 
 	return qtrue;
-}
-
-/*
-=================
-CG_GetSkill
-
-Gets the current g_spskill value
-=================
-*/
-int CG_GetSkill( void ) {
-	char skill[64];
-	
-	trap_Cvar_VariableStringBuffer( "g_spskill", skill, sizeof(skill) );
-	return atoi(skill);
-}
-
-/*
-=================
-CG_GetAccuracy
-
-Gets the current g_spskill value
-=================
-*/
-int CG_GetAccuracy( void ) {
-	int i;
-	for ( i = 0 ; i < cg.numScores ; i++ ) {
-		if ( cg.scores[i].client == cg.snap->ps.clientNum ) {
-			return cg.scores[i].accuracy;
-		}
-	}
-
-	return 0;
-}
-
-/*
-=================
-CG_DrawSinglePlayerIntermission
-
-Draw the single player intermission screen
-=================
-*/
-void CG_DrawSinglePlayerIntermission( void ) {
-	vec4_t color;
-	int y;
-	int index;
-	playerscore_t scores;
-	
-	scores = COM_CalculatePlayerScore( cg.snap->ps.persistant, CG_GetAccuracy(), CG_GetSkill() );
-
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
-
-	//carnage score
-	y = 64;
-	index = 1;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index))
-		CG_DrawString( 64, y, "       Carnage :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.scoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-		CG_DrawString( 64, y, va("       Carnage : %i", scores.carnageScore), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	}
-
-	//accuracy bonus
-	y += BIGCHAR_HEIGHT;
-	index++;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index))
-		CG_DrawString( 64, y, "Accuracy bonus :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.scoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-
-		CG_DrawString( 64, y, va("Accuracy bonus : %i (%i%%)", scores.accuracyScore, scores.accuracy), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	}
-
-	//skill bonus
-	y += BIGCHAR_HEIGHT;
-	index++;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index))
-		CG_DrawString( 64, y, "   Skill bonus :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.scoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-
-		CG_DrawString( 64, y, va("   Skill bonus : %i (%1.0f%%)", scores.skillScore, scores.skillModifier * 100), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	}
-
-	//secrets score
-	y += BIGCHAR_HEIGHT;
-	index++;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index))
-		CG_DrawString( 64, y, "       Secrets :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.scoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-		CG_DrawString( 64, y, va("       Secrets : %i (%i/%i)", scores.secretsScore, scores.secretsFound, scores.secretsCount), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );		
-	}
-
-	//death penalty
-	y += BIGCHAR_HEIGHT;
-	index++;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index))
-		CG_DrawString( 64, y, "        Deaths :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.scoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-		CG_DrawString( 64, y, va("        Deaths : %i (%ix)", scores.deathsScore, scores.deaths), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	}
-
-	//total score
-	y += BIGCHAR_HEIGHT;
-	index++;
-	if (cg.time < cg.intermissionTime + (SCOREB_TIME * index) + SCOREB_TIME_LAST)	//wait slightly longer before showing final score
-		CG_DrawString( 64, y, "         TOTAL :", color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	else {
-		if (cg.scoreSoundsPlayed == index - 1) {
-			trap_S_StartLocalSound( cgs.media.finalScoreShow, CHAN_LOCAL_SOUND );
-			cg.scoreSoundsPlayed++;
-		}
-
-		CG_DrawString( 64, y, va("         TOTAL : %i", scores.totalScore), color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, 0 );
-	}
-}
-
-/*
-=================
-CG_DrawSinglePlayerObjectives
-
-Draw the single player objectives overlay
-=================
-*/
-qboolean CG_DrawSinglePlayerObjectives( void ) {
-	const char *p;
-	const char *s;
-	vec4_t color;
-	vec4_t color_black;
-	int i;
-	int objlen;
-	char lines[5][60];
-	int spaceIndex, prevSpaceIndex = 0;
-	int currentLine = 0;
-	int lineIndex = 0;
-	char c[2];
-	qboolean tooLong = qfalse;	
-	playerscore_t scores;
-	float scoreboardX;
-	float scoreboardY;
-	int skill;
-
-
-	if ( !cg.showScores )
-		return qfalse;
-
-
-	cg.objectivesTime = 0;	//stop objectives notification from showing
-	
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 0.75;
-
-	color_black[0] = 0;
-	color_black[1] = 0;
-	color_black[2] = 0;
-	color_black[3] = 0.6;
-
-	p = CG_ConfigString( CS_PRIMARYOBJECTIVE );
-	s = CG_ConfigString( CS_SECONDARYOBJECTIVE );
-
-	//draw objectives overlay
-	scoreboardX = (SCREEN_WIDTH - 512) / 2;
-	scoreboardY = (SCREEN_HEIGHT - 256) / 2;
-	CG_DrawPic( scoreboardX, scoreboardY, 512, 256, cgs.media.objectivesOverlay );
-	
-	//draw primary objective
-	objlen = strlen(p);
-
-	
-	for ( i = 0; i < objlen; i++) {
-		
-		c[0] = p[i];
-		c[1] = '\0';
-
-		if ( c[0] == ' ' ) {
-			spaceIndex = i;
-		}
-
-		if (lineIndex == 60) {
-			if (spaceIndex - prevSpaceIndex <= 0) {
-				strcat(lines[currentLine-1], &p[prevSpaceIndex-1]);
-				break;
-			} else {
-				Q_strncpyz(lines[currentLine], &p[prevSpaceIndex], (spaceIndex - prevSpaceIndex) + 1);
-				CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), lines[currentLine], 1.00f);
-			}
-			
-			prevSpaceIndex = spaceIndex;
-			prevSpaceIndex++;
-			i = spaceIndex;
-			lineIndex = -1;
-			currentLine++;
-			if (currentLine == 5)
-			{
-				tooLong = qtrue;
-				break;
-			}
-			
-		}
-		lineIndex++;
-		
-	}
-
-	if ( !tooLong ) {
-		CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), va("%s", &p[prevSpaceIndex]), 1.00f);
-	}
-
-
-	//draw secondary objective
-	spaceIndex = 0;
-	prevSpaceIndex = 0;
-	lineIndex = 0;
-	currentLine = 0;
-	tooLong = qfalse;
-
-	objlen = strlen(s);
-
-	for ( i = 0; i < objlen; i++) {
-		c[0] = s[i];
-		c[1] = '\0';
-
-		if ( c[0] == ' ' ) {
-			spaceIndex = i;
-		}
-
-		if (lineIndex == 60) {
-			if (spaceIndex - prevSpaceIndex <= 0) {
-				strcat(lines[currentLine-1], &s[prevSpaceIndex-1]);
-				break;
-			} else {
-				Q_strncpyz(lines[currentLine], &s[prevSpaceIndex], (spaceIndex - prevSpaceIndex) + 1);
-				CG_DrawSmallString( 80, 264 + (BASEFONT_HEIGHT * currentLine), lines[currentLine], 1.00f);
-			}
-			prevSpaceIndex = spaceIndex;
-			prevSpaceIndex++;
-			i = spaceIndex;
-			lineIndex = -1;
-			currentLine++;
-			if (currentLine == 4) {
-				tooLong = qtrue;
-				break;
-			}
-		}
-		lineIndex++;
-	}
-
-	if ( !tooLong ) {
-		CG_DrawSmallString( 80, 264 + (BASEFONT_HEIGHT * currentLine), va("%s", &s[prevSpaceIndex]), 1.00f);
-	}
-
-	//draw deaths counter
-	color[0] = 1;
-	color[1] = 0;
-	color[2] = 0;
-
-	i = strlen(va("%i", cg.snap->ps.persistant[PERS_KILLED]));
-	CG_DrawBigString( 208 - (i * BIGCHAR_WIDTH), 343, va("%i", cg.snap->ps.persistant[PERS_KILLED]), 1.00f );
-
-	//draw level score
-	scores = COM_CalculatePlayerScore( cg.snap->ps.persistant, CG_GetAccuracy(), CG_GetSkill() );
-	i = strlen(va("%i", scores.totalScore));
-	CG_DrawBigString( 496 - (i * BIGCHAR_WIDTH), 343, va("%i", scores.totalScore), 1.00f);	
-
-	//draw skill level
-	skill = CG_GetSkill();
-	CG_DrawSmallString( 80, 144 + (BASEFONT_HEIGHT * currentLine), va("%i", skill), 1.00f);
-
-	return qtrue;
-}
-
-/*
-=================
-CG_DrawScoreboard
-
-Draw the normal in-game scoreboard
-=================
-*/
-qboolean CG_DrawScoreboardObj( void ) {
-	// don't draw amuthing if the menu or console is up
-	if ( cg_paused.integer ) {
-		cg.deferredPlayerLoading = 0;
-		return qfalse;
-	}
-
-	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION )
-	{
-		CG_DrawSinglePlayerIntermission();
-		cg.deferredPlayerLoading = 0;
-		return qfalse;
-	}
-	else 
-	{
-		return CG_DrawSinglePlayerObjectives();	//draw objectives screen instead of scores in SP.
-	}
-}
-
-/*
-================
-CG_CenterGiantLine
-================
-*/
-static void CG_CenterGiantLine( float y, const char *string ) {
-	float		x;
-	vec4_t		color;
-
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
-
-	x = 0.5 * ( 640 - GIANT_WIDTH * CG_DrawStrlen( string ) );
-
-	CG_DrawString( x, y, string, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-}
-
-/*
-=================
-CG_DrawTourneyScoreboard
-
-Draw the oversize scoreboard for tournements
-=================
-*/
-void CG_DrawTourneyScoreboard( void ) {
-	const char		*s;
-	vec4_t			color;
-	int				min, tens, ones;
-	clientInfo_t	*ci;
-	int				y;
-	int				i;
-
-	// request more scores regularly
-	if ( cg.scoresRequestTime + 2000 < cg.time ) {
-		cg.scoresRequestTime = cg.time;
-		trap_SendClientCommand( "score" );
-	}
-
-	// draw the dialog background
-	color[0] = color[1] = color[2] = 0;
-	color[3] = 1;
-	CG_FillRect( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, color );
-
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
-
-	s = "Scoreboard";
-	
-	// print optional title
-	CG_CenterGiantLine( 8, s );
-
-	// print server time
-	ones = cg.time / 1000;
-	min = ones / 60;
-	ones %= 60;
-	tens = ones / 10;
-	ones %= 10;
-	s = va("%i:%i%i", min, tens, ones );
-
-	CG_CenterGiantLine( 64, s );
-
-
-	// print the two scores
-
-	y = 160;
-	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
-		//
-		// teamplay scoreboard
-		//
-		CG_DrawString( 8, y, "Red Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-		s = va("%i", cg.teamScores[0] );
-		CG_DrawString( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-
-		y += 64;
-
-		CG_DrawString( 8, y, "Blue Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-		s = va("%i", cg.teamScores[1] );
-		CG_DrawString( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-	} else {
-		//
-		// free for all scoreboard
-		//
-		for ( i = 0 ; i < MAX_CLIENTS ; i++ ) {
-			ci = &cgs.clientinfo[i];
-			if ( !ci->infoValid ) {
-				continue;
-			}
-			if ( ci->team != TEAM_FREE ) {
-				continue;
-			}
-
-			CG_DrawString( 8, y, ci->name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-			s = va("%i", ci->score );
-			CG_DrawString( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0, 0 );
-			y += 64;
-		}
-	}
-
-
 }

@@ -241,7 +241,7 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	if ( ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS] ) {
 		armor  = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
 		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
-		if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR && cgs.gametype != GT_SINGLE){
+		if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
 				if (health > 100 ) {
 					trap_S_StartLocalSound( cgs.media.hitSoundHighArmor, CHAN_LOCAL_SOUND );
 				} else if (health > 50 ) {
@@ -259,7 +259,6 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 		if ( ps->stats[STAT_HEALTH] > 0 ) {
 			CG_PainEvent( &cg.predictedPlayerEntity, ps->stats[STAT_HEALTH] );
 		}
-        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_HEALTH] - ps->stats[STAT_HEALTH] );
 	}
 
 
@@ -290,7 +289,6 @@ void CG_CheckLocalSoundsVeh( playerState_t *ps, playerState_t *ops ) {
 		if ( ps->stats[STAT_VEHICLEHP] > 0 ) {
 			CG_PainVehicleEvent( &cg.predictedPlayerEntity, ps->stats[STAT_VEHICLEHP] );
 		}
-        CG_ScorePlum( ps->clientNum, ps->origin, ops->stats[STAT_VEHICLEHP] - ps->stats[STAT_VEHICLEHP] );
 	}
 
 

@@ -35,6 +35,10 @@ CG_ParseScores
 
 =================
 */
+
+#define NUM_DATA 5
+#define FIRST_DATA 4
+
 static void CG_ParseScores( void ) {
 	int		i, powerups;
 
@@ -57,36 +61,16 @@ static void CG_ParseScores( void ) {
 
 	memset( cg.scores, 0, sizeof( cg.scores ) );
 
-#define NUM_DATA 15
-#define FIRST_DATA 4
-
 	for ( i = 0 ; i < cg.numScores ; i++ ) {
-		//
 		cg.scores[i].client = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 1 ) );
 		cg.scores[i].score = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 2 ) );
 		cg.scores[i].ping = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 3 ) );
 		cg.scores[i].time = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 4 ) );
-		cg.scores[i].scoreFlags = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 5 ) );
-		powerups = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 6 ) );
-		cg.scores[i].accuracy = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 7));
-		cg.scores[i].impressiveCount = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 8));
-		cg.scores[i].excellentCount = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 9));
-		cg.scores[i].guantletCount = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 10));
-		cg.scores[i].defendCount = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 11));
-		cg.scores[i].assistCount = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 12));
-		cg.scores[i].perfect = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 13));
-		cg.scores[i].captures = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 14));
-		cg.scores[i].isDead = atoi(CG_Argv(i * NUM_DATA + FIRST_DATA + 15));
-		//cgs.roundStartTime =
+		cg.scores[i].isDead = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 5 ) );
 
 		if ( cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS ) {
 			cg.scores[i].client = 0;
 		}
-		cgs.clientinfo[ cg.scores[i].client ].score = cg.scores[i].score;
-		cgs.clientinfo[ cg.scores[i].client ].powerups = powerups;
-		cgs.clientinfo[ cg.scores[i].client ].isDead = cg.scores[i].isDead;
-
-		cg.scores[i].team = cgs.clientinfo[cg.scores[i].client].team;
 	}
 }
 
@@ -161,23 +145,6 @@ static void CG_ParseObeliskHealth( void ) {
  */
 static void CG_ParseRespawnTime( void ) {
     cg.respawnTime = atoi( CG_Argv(1) );
-}
-
-/*
-=================
-CG_ParseAttackingTeam
-
-=================
-*/
-static void CG_ParseAttackingTeam( void ) {
-	int temp;
-	temp = atoi( CG_Argv( 1 ) );
-	if(temp==TEAM_RED)
-		cgs.attackingTeam = TEAM_RED;
-	else if (temp==TEAM_BLUE)
-		cgs.attackingTeam = TEAM_BLUE;
-	else
-		cgs.attackingTeam = TEAM_NONE; //Should never happen.
 }
 
 static void CG_ParseGameCvars(void) {
@@ -299,7 +266,6 @@ void CG_ParseServerinfo( void ) {
 	if(cgs.gametype == GT_LMS)
 		cgs.ffa_gt = 1;
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
-    cgs.elimflags = atoi( Info_ValueForKey( info, "elimflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
@@ -307,7 +273,6 @@ void CG_ParseServerinfo( void ) {
 	cgs.maxclients = atoi( Info_ValueForKey( info, "g_maxClients" ) );
 	cgs.roundtime = atoi( Info_ValueForKey( info, "g_elimination_roundtime" ) );
 	cgs.nopickup = atoi( Info_ValueForKey( info, "g_elimination" ) );
-	cgs.lms_mode = atoi( Info_ValueForKey( info, "g_lms_mode" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
 }
@@ -658,8 +623,7 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if ( !strcmp( cmd, "chat" ) ) {
-        if( cg_chatBeep.integer && cgs.gametype != GT_SINGLE )
-            trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+        trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 		CG_RemoveChatEscapeChar( text );
 		CG_PrintfChat( qfalse, "%s\n", text );
@@ -667,8 +631,7 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if ( !strcmp( cmd, "tchat" ) ) {
-    	if( cg_teamChatBeep.integer && cgs.gametype != GT_SINGLE )
-    	    trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+    	trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 		CG_RemoveChatEscapeChar( text );
 		CG_PrintfChat( qtrue, "%s\n", text );
@@ -697,11 +660,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "elimination" ) ) {
 		CG_ParseElimination();
-		return;
-	}
-
-	if ( !strcmp( cmd, "attackingteam" ) ) {
-		CG_ParseAttackingTeam();
 		return;
 	}
 

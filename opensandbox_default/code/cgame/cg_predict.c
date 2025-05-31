@@ -298,23 +298,14 @@ static void CG_TouchItem( centity_t *cent ) {
 		}
 	}
 	if( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_HARVESTER ) {
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED &&
-			item->giTag == PW_REDFLAG)
+		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED && item->giTag == PW_REDFLAG)
 			return;
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE &&
-			item->giTag == PW_BLUEFLAG)
+		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE && item->giTag == PW_BLUEFLAG)
 			return;
-		//Even in instantgib, we can predict our enemy flag
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED &&
-			item->giTag == PW_BLUEFLAG && (!(cgs.elimflags&EF_ONEWAY) || cgs.attackingTeam == TEAM_RED))
+		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED && item->giTag == PW_BLUEFLAG)
 			canBePicked = qtrue;
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE &&
-			item->giTag == PW_REDFLAG && (!(cgs.elimflags&EF_ONEWAY) || cgs.attackingTeam == TEAM_BLUE))
+		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE && item->giTag == PW_REDFLAG)
 			canBePicked = qtrue;
-		if (item->giTag == WP_RAILGUN)
-			canBePicked = qfalse;
-		if (item->giTag == WP_PLASMAGUN)
-			canBePicked = qfalse;
 	}
 
 	//Currently we don't predict anything in Double Domination because it looks like we take a flag

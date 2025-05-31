@@ -93,7 +93,6 @@ void UI_CreateCvars( void ) {
 	// we also set default values for the disable_* Cvars here
 	// since first usage defines their default value
 	GUI_StartServer_RegisterDisableCvars(qtrue);
-	trap_Cvar_Set( "cl_sprun", "0" );
 	trap_Cmd_ExecuteText( EXEC_APPEND, "exec uiautoexec.cfg\n");
 }
 

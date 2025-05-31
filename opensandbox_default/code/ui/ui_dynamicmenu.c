@@ -768,7 +768,6 @@ static void DynamicMenu_MenuDraw( void )
     const char* gametypes[] = {
 		"Sandbox",
 		"Map Editor",
-		"Single Player",
 		"Free For All",
 		"Tournament",
 		"Team Deathmatch",

@@ -32,28 +32,24 @@ DeathmatchScoreboardMessage
 ==================
 */
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
-	char		entry[1024];
-	char		string[1400];
+	char		entry[64];
+	char		string[1024];
 	int			stringlength;
 	int			i, j;
 	gclient_t	*cl;
-	gentity_t   *clent;
-	int			numSorted, scoreFlags, accuracy, perfect;
+	gentity_t   *client;
 
 	// send the latest information on all clients
 	string[0] = 0;
 	stringlength = 0;
-	scoreFlags = 0;
 
-	numSorted = level.numConnectedClients;
-
-	for (i=0 ; i < numSorted ; i++) {
+	for (i=0 ; i < level.numConnectedClients ; i++) {
 		int		ping;
 
 		cl = &level.clients[level.sortedClients[i]];
-		clent = g_entities + cl->ps.clientNum;
+		client = g_entities + cl->ps.clientNum;
 
-		if (clent->singlebot){
+		if (client->singlebot){
 			continue;
 		}
 
@@ -64,52 +60,15 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 			ping += 1;
 		}
 
-		if( cl->accuracy_shots ) {
-			accuracy = cl->accuracy_hits * 100 / cl->accuracy_shots;
-		}
-		else {
-			accuracy = 0;
-		}
-		perfect = ( cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0 ) ? 1 : 0;
-
-		if(g_gametype.integer == GT_LMS) {
-			Com_sprintf (entry, sizeof(entry),
-				" %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
-				cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000,
-				scoreFlags, g_entities[level.sortedClients[i]].s.powerups, accuracy,
-				cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
-				cl->ps.persistant[PERS_EXCELLENT_COUNT],
-				cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
-				cl->ps.persistant[PERS_DEFEND_COUNT],
-				cl->ps.persistant[PERS_ASSIST_COUNT],
-				perfect,
-				cl->ps.persistant[PERS_CAPTURES],
-				cl->pers.livesLeft + (cl->isEliminated?0:1));
-		}
-		else {
-			Com_sprintf (entry, sizeof(entry),
-				" %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
-				cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000,
-				scoreFlags, g_entities[level.sortedClients[i]].s.powerups, accuracy,
-				cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
-				cl->ps.persistant[PERS_EXCELLENT_COUNT],
-				cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
-				cl->ps.persistant[PERS_DEFEND_COUNT],
-				cl->ps.persistant[PERS_ASSIST_COUNT],
-				perfect,
-				cl->ps.persistant[PERS_CAPTURES],
-				cl->isEliminated);
-		}
+		Com_sprintf(entry, sizeof(entry), " %i %i %i %i %i", level.sortedClients[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000, cl->isEliminated);
 		j = strlen(entry);
-		if (stringlength + j > 1024)
+		if (stringlength + j >= sizeof(string))
 			break;
 		strcpy (string + stringlength, entry);
 		stringlength += j;
 	}
 
-	trap_SendServerCommand( ent-g_entities, va("scores %i %i %i %i%s", i,
-		level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], level.roundStartTime,
-		string ) );
+	trap_SendServerCommand(ent-g_entities, va("scores %i %i %i %i%s", i, level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], level.roundStartTime, string));
 }
 
 void G_SendGameCvars(gentity_t *ent) {
@@ -256,25 +215,6 @@ void DominationPointNamesMessage( gentity_t *ent ) {
 	}
 	trap_SendServerCommand( ent-g_entities, va("dompointnames %i \"%s\"", level.domination_points_count, text));
 }
-
-/*
-==================
-AttackingTeamMessage
-
-==================
-*/
-void AttackingTeamMessage( gentity_t *ent ) {
-	int team;
-	if ( (level.eliminationSides+level.roundNumber)%2 == 0 )
-		team = TEAM_RED;
-	else
-		team = TEAM_BLUE;
-	trap_SendServerCommand( ent-g_entities, va("attackingteam %i", team));
-}
-
-/*
-
- */
 
 void ObeliskHealthMessage() {
     if(level.MustSendObeliskHealth) {
@@ -538,33 +478,6 @@ void Cmd_God_f (gentity_t *ent)
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\"", msg));
 }
-
-
-/*
-==================
-Cmd_Notarget_f
-
-Sets client to notarget
-
-argv(0) notarget
-==================
-*/
-void Cmd_Notarget_f( gentity_t *ent ) {
-	char	*msg;
-
-	if ( !CheatsOk( ent ) ) {
-		return;
-	}
-
-	ent->flags ^= FL_NOTARGET;
-	if (!(ent->flags & FL_NOTARGET) )
-		msg = "notarget OFF\n";
-	else
-		msg = "notarget ON\n";
-
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\"", msg));
-}
-
 
 /*
 ==================
@@ -915,14 +828,11 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		return;
 	}
 
-
 	trap_Argv( 1, arg, sizeof( arg ) );
 	i = ClientNumberFromString( ent, arg );
 	if ( i == -1 ) {
 		return;
 	}
-
-
 
 	// can't follow self
 	if ( &level.clients[ i ] == ent->client ) {
@@ -933,12 +843,6 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	if ( (level.clients[ i ].sess.sessionTeam == TEAM_SPECTATOR) || level.clients[ i ].isEliminated) {
 		return;
 	}
-
-        if ( (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) && g_elimination_lockspectator.integer
-            &&  ((ent->client->sess.sessionTeam == TEAM_RED && level.clients[ i ].sess.sessionTeam == TEAM_BLUE) ||
-                 (ent->client->sess.sessionTeam == TEAM_BLUE && level.clients[ i ].sess.sessionTeam == TEAM_RED) ) ) {
-            return;
-        }
 
 	// if they are playing a tournement game, count as a loss
 	if ( (g_gametype.integer == GT_TOURNAMENT )
@@ -1028,13 +932,6 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 		if ( checkNPC->singlebot ) {
 			continue;
 		}
-
-        //Stop players from spectating players on the enemy team in elimination modes.
-        if ( (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) && g_elimination_lockspectator.integer
-            &&  ((ent->client->sess.sessionTeam == TEAM_RED && level.clients[ clientnum ].sess.sessionTeam == TEAM_BLUE) ||
-                 (ent->client->sess.sessionTeam == TEAM_BLUE && level.clients[ clientnum ].sess.sessionTeam == TEAM_RED) ) ) {
-            continue;
-        }
 
 		// this is good, we can use it
 		ent->client->sess.spectatorClient = clientnum;
@@ -1431,20 +1328,20 @@ Added for OpenSandbox.
 */
 static void Cmd_Flashlight_f( gentity_t *ent ){
 
-if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
-	return;
-}
+	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+		return;
+	}
 
-if(ent->flashon != 1){
-	ent->flashon = 1;
-	ClientUserinfoChanged( ent->s.clientNum );
-	return;
-}
-if(ent->flashon == 1){
-	ent->flashon = 0;
-	ClientUserinfoChanged( ent->s.clientNum );
-	return;
-}
+	if(ent->flashon != 1){
+		ent->flashon = 1;
+		ClientUserinfoChanged( ent->s.clientNum );
+		return;
+	}
+	if(ent->flashon == 1){
+		ent->flashon = 0;
+		ClientUserinfoChanged( ent->s.clientNum );
+		return;
+	}
 	
 }
 
@@ -1463,7 +1360,7 @@ static void Cmd_Undo_f(gentity_t *ent) {
     }
 
     while (Undo_LastElement(ent, &id, &type, &isRemoved)) {
-        if (isRemoved) {
+        if (isRemoved || id == 0) {
             Undo_RemoveElement(ent);
             continue;
         }
@@ -1501,7 +1398,6 @@ void Cmd_Where_f( gentity_t *ent ) {
 static const char *gameNames[] = {
 	"Sandbox",
 	"Map Editor",
-	"Single Player",
 	"Free For All",
 	"Tournament",
 	"Team Deathmatch",
@@ -1578,7 +1474,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	// special case for g_gametype, check for bad values
 	if ( !Q_stricmp( arg1, "g_gametype" ) ) {
 		i = atoi( arg2 );
-		if( i == GT_SINGLE || i < GT_SANDBOX || i >= GT_MAX_GAME_TYPE) {
+		if(i < GT_SANDBOX || i >= GT_MAX_GAME_TYPE) {
 			trap_SendServerCommand( ent-g_entities, "print \"Invalid gametype.\n\"" );
 			return;
 		}
@@ -1839,9 +1735,6 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		level.teamVoteNo[cs_offset]++;
 		trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );	
 	}
-
-	// a majority will be determined in TeamCheckVote, which will also account
-	// for players entering or leaving
 }
 
 
@@ -1851,7 +1744,7 @@ Cmd_SetViewpos_f
 =================
 */
 void Cmd_SetViewpos_f( gentity_t *ent ) {
-	vec3_t		origin, angles;
+	vec3_t		origin;
 	char		buffer[MAX_TOKEN_CHARS];
 	int			i;
 
@@ -1859,21 +1752,17 @@ void Cmd_SetViewpos_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return;
 	}
-	if ( trap_Argc() != 5 ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"usage: setviewpos x y z yaw\n\""));
+	if ( trap_Argc() != 4 ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"usage: setviewpos x y z\n\""));
 		return;
 	}
 
-	VectorClear( angles );
 	for ( i = 0 ; i < 3 ; i++ ) {
 		trap_Argv( i + 1, buffer, sizeof( buffer ) );
 		origin[i] = atof( buffer );
 	}
 
-	trap_Argv( 4, buffer, sizeof( buffer ) );
-	angles[YAW] = atof( buffer );
-
-	TeleportPlayer( ent, origin, angles );
+	TeleportPlayer(ent, origin, ent->client->ps.viewangles);
 }
 
 /*
@@ -1941,7 +1830,6 @@ commands_t cmds[ ] =
   // cheats
   { "give", CMD_LIVING, Cmd_Give_f },
   { "god", CMD_CHEAT|CMD_LIVING, Cmd_God_f },
-  { "notarget", CMD_CHEAT|CMD_LIVING, Cmd_Notarget_f },
   { "setviewpos", CMD_CHEAT, Cmd_SetViewpos_f },
   { "noclip", CMD_LIVING, Cmd_Noclip_f },
 

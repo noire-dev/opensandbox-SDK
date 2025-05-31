@@ -232,7 +232,7 @@ static void CG_OffsetFirstPersonView( void ) {
 	vec3_t			predictedVelocity;
 	int				timeDelta;
 	
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION || cg.snap->ps.pm_type == PM_CUTSCENE ) {
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
 		return;
 	}
 
@@ -461,124 +461,6 @@ static void CG_DamageBlendBlob( void ) {
 	trap_R_AddRefEntityToScene( &ent );
 }
 
-static void CG_CalcCutsceneFov(int startFov, int endFov, float progress) {
-	int diff;
-	float fov_x, fov_y;
-	int x, contents;
-	float phase, v;
-
-	//calculate new FOV
-	diff = endFov - startFov;
-	fov_x = startFov + (diff * progress);
-	
-	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
-	fov_y = atan2( cg.refdef.height, x );
-	fov_y = fov_y * 360 / M_PI;
-
-	// warp if underwater
-	contents = CG_PointContents( cg.refdef.vieworg, -1 );
-	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
-		phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
-		v = WAVE_AMPLITUDE * sin( phase );
-		fov_x += v;
-		fov_y -= v;
-	}
-
-	// set it
-	cg.refdef.fov_x = fov_x;
-	cg.refdef.fov_y = fov_y;
-
-	return;
-}
-
-static void CG_CalcCutsceneViewValues( ) {
-	const char *cutsceneData;
-	float wait;
-	int start_time;
-	vec3_t destOrigin, destAngles;
-	vec3_t newOrigin, newAngles;
-	int timePassed;
-	float progress;
-	float diff;
-	int motion;
-	int newFov, destFov;
-
-	cutsceneData = CG_ConfigString( CS_CUTSCENE );
-
-	motion = atoi(Info_ValueForKey(cutsceneData, "m"));
-	start_time = atoi(Info_ValueForKey(cutsceneData, "t"));
-	wait = atof(Info_ValueForKey(cutsceneData, "w"));
-	newOrigin[0] = atof(Info_ValueForKey(cutsceneData, "o10"));
-	newOrigin[1] = atof(Info_ValueForKey(cutsceneData, "o11"));
-	newOrigin[2] = atof(Info_ValueForKey(cutsceneData, "o12"));
-	newAngles[0] = atof(Info_ValueForKey(cutsceneData, "a10"));
-	newAngles[1] = atof(Info_ValueForKey(cutsceneData, "a11"));
-	newAngles[2] = atof(Info_ValueForKey(cutsceneData, "a12"));
-	newFov = atoi(Info_ValueForKey(cutsceneData, "f1"));
-
-	if ( motion & 1 ) {
-		destOrigin[0] = atof(Info_ValueForKey(cutsceneData, "o20"));
-		destOrigin[1] = atof(Info_ValueForKey(cutsceneData, "o21"));
-		destOrigin[2] = atof(Info_ValueForKey(cutsceneData, "o22"));
-		destAngles[0] = atof(Info_ValueForKey(cutsceneData, "a20"));
-		destAngles[1] = atof(Info_ValueForKey(cutsceneData, "a21"));
-		destAngles[2] = atof(Info_ValueForKey(cutsceneData, "a22"));
-		destFov = atoi(Info_ValueForKey(cutsceneData, "f2"));
-
-		//determine how long the current camera pan has taken
-		timePassed = cg.time - start_time;
-		progress = timePassed / (wait * 1000);
-
-		//calculate new origin
-		diff = destOrigin[0] - newOrigin[0];
-		newOrigin[0] += diff * progress;
-
-		diff = destOrigin[1] - newOrigin[1];
-		newOrigin[1] += diff * progress;
-		
-		diff = destOrigin[2] - newOrigin[2];
-		newOrigin[2] += diff * progress;
-
-		//calculate new angles
-		diff = destAngles[0] - newAngles[0];
-		if ( diff > 180 ) {
-			diff = 0 - (360 - diff);
-		} else if ( diff < -180 ) {
-			diff = 0 - (-360 - diff);
-		}
-		newAngles[0] += diff * progress;
-		
-		diff = destAngles[1] - newAngles[1];
-		if ( diff > 180 ) {
-			diff = 0 - (360 - diff);
-		} else if  ( diff < -180 ) {
-			diff = 0 - (-360 - diff);
-		}
-		newAngles[1] += diff * progress;
-		
-		diff = destAngles[2] - newAngles[2];
-		if ( diff > 180 ) {
-			diff = 0 - (360 - diff);
-		} else if  ( diff < -180 ) {
-			diff = 0 - (-360 - diff);
-		}
-		newAngles[2] += diff * progress;
-
-		VectorCopy( newOrigin, cg.refdef.vieworg );
-		VectorCopy( newAngles, cg.refdefViewAngles );
-
-		CG_CalcCutsceneFov(newFov, destFov, progress);
-	} else {
-		VectorCopy( newOrigin, cg.refdef.vieworg );
-		VectorCopy( newAngles, cg.refdefViewAngles );
-		CG_CalcCutsceneFov(newFov, newFov, progress);
-	}
-
-	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-
-	return;
-}
-
 /*
 ===============
 CG_CalcViewValues
@@ -595,12 +477,6 @@ static void CG_CalcViewValues( void ) {
 	CG_CalcVrect();
 
 	ps = &cg.predictedPlayerState;
-
-	//cutscene view
-	if ( ps->pm_type == PM_CUTSCENE ) {
-		CG_CalcCutsceneViewValues();	//this also calculates fov
-		return;
-	}
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION ) {
@@ -770,8 +646,8 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	cg.clientFrame++;
 	CG_PredictPlayerState();
 
-	cg.renderingThirdPerson = cg_thirdPerson.integer && cg.snap->ps.pm_type != PM_CUTSCENE && cg.snap->ps.pm_type != PM_SPECTATOR || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.snap->ps.stats[STAT_VEHICLE];
-	cg.renderingEyesPerson = !cg_thirdPerson.integer && cg_cameraEyes.integer && cg.snap->ps.pm_type != PM_CUTSCENE && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
+	cg.renderingThirdPerson = cg_thirdPerson.integer && cg.snap->ps.pm_type != PM_SPECTATOR || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.snap->ps.stats[STAT_VEHICLE];
+	cg.renderingEyesPerson = !cg_thirdPerson.integer && cg_cameraEyes.integer && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
 
 	CG_CalcViewValues();
 
@@ -784,7 +660,6 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 		CG_AddPacketEntities();
 		CG_AddMarks();
 		CG_AddLocalEntities();
-		CG_AddAtmosphericEffects();
 		CG_ViewFog();
 		CG_ViewSky();
 	}

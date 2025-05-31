@@ -119,7 +119,6 @@ const char* idmap_list[] = {
 const char *gametype_items[NUM_GAMETYPES + 1] = {
 	"Sandbox",
 	"Map Editor",
-	"Single Player",
 	"Free For All",
 	"Tournament",
 	"Team Deathmatch",
@@ -138,7 +137,6 @@ const char *gametype_items[NUM_GAMETYPES + 1] = {
 const char *gametype_itemsru[NUM_GAMETYPES + 1] = {
 	"Песочница",
 	"Редактор Карт",
-	"Одиночная Игра",
 	"Все Против Всех",
 	"Турнир",
 	"Командный Бой",
@@ -303,13 +301,10 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_cubeTimeout", "30" },
 { "gui_flagrespawn", "-1" },
 { "gui_weaponTeamRespawn", "30" },
-{ "gui_elimination_ctf_oneway", "0" },
 { "gui_elimination_selfdamage", "0" },
 { "gui_elimination_roundtime", "600" },
 { "gui_elimination_warmup", "0" },
 { "gui_elimination_activewarmup", "0" },
-{ "gui_lms_lives", "1" },
-{ "gui_lms_mode", "0" },
 { "gui_accelerate", "1" },
 { "gui_spectatorspeed", "700" },
 { "gui_speed", "320" },
@@ -2862,13 +2857,10 @@ s_scriptdata.server.obeliskRespawnDelay = GUI_GetSkirmishCvarIntClamp(-9999999, 
 s_scriptdata.server.cubeTimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cubeTimeout" );
 s_scriptdata.server.flagrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_flagrespawn" );
 s_scriptdata.server.weaponTeamRespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_weaponTeamRespawn" );
-s_scriptdata.server.elimination_ctf_oneway = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_ctf_oneway" );
 s_scriptdata.server.elimination_selfdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_selfdamage" );
 s_scriptdata.server.elimination_roundtime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_roundtime" );
 s_scriptdata.server.elimination_warmup = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_warmup" );
 s_scriptdata.server.elimination_activewarmup = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_activewarmup" );
-s_scriptdata.server.lms_lives = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lms_lives" );
-s_scriptdata.server.lms_mode = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_lms_mode" );
 s_scriptdata.server.accelerate = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_accelerate" );
 s_scriptdata.server.spectatorspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spectatorspeed" );
 s_scriptdata.server.speed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_speed" );
@@ -3277,13 +3269,10 @@ GUI_SetSkirmishCvarInt( NULL, "gui_obeliskRespawnDelay", s_scriptdata.server.obe
 GUI_SetSkirmishCvarInt( NULL, "gui_cubeTimeout", s_scriptdata.server.cubeTimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_flagrespawn", s_scriptdata.server.flagrespawn);
 GUI_SetSkirmishCvarInt( NULL, "gui_weaponTeamRespawn", s_scriptdata.server.weaponTeamRespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_elimination_ctf_oneway", s_scriptdata.server.elimination_ctf_oneway);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_selfdamage", s_scriptdata.server.elimination_selfdamage);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_roundtime", s_scriptdata.server.elimination_roundtime);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_warmup", s_scriptdata.server.elimination_warmup);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_activewarmup", s_scriptdata.server.elimination_activewarmup);
-GUI_SetSkirmishCvarInt( NULL, "gui_lms_lives", s_scriptdata.server.lms_lives);
-GUI_SetSkirmishCvarInt( NULL, "gui_lms_mode", s_scriptdata.server.lms_mode);
 GUI_SetSkirmishCvarInt( NULL, "gui_accelerate", s_scriptdata.server.accelerate);
 GUI_SetSkirmishCvarInt( NULL, "gui_spectatorspeed", s_scriptdata.server.spectatorspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_speed", s_scriptdata.server.speed);

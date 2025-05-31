@@ -252,7 +252,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	vec3_t		mins, maxs;
 	static vec3_t	range = { 40, 40, 52 };
 
-	if ( !ent->client || ent->client->ps.pm_type == PM_CUTSCENE ) {
+	if ( !ent->client ) {
 		return;
 	}
 
@@ -325,7 +325,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 void G_KillVoid( gentity_t *ent ) {
 	vec3_t		orig;
 
-	if ( !ent->client || ent->client->ps.pm_type == PM_CUTSCENE ) {
+	if ( !ent->client ) {
 		return;
 	}
 
@@ -351,13 +351,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	gclient_t	*client;
 
 	client = ent->client;
-
-        if ( ( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) &&
-                client->sess.spectatorState != SPECTATOR_FOLLOW &&
-                g_elimination_lockspectator.integer>1 &&
-                ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-            Cmd_FollowCycle_f(ent);
-        }
 
 	if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 		client->ps.pm_type = PM_SPECTATOR;
@@ -392,15 +385,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	// attack button cycles through spectators
 	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
 		Cmd_FollowCycle_f( ent );
-	}
-
-	if ( ( client->buttons & BUTTON_USE_HOLDABLE ) && ! ( client->oldbuttons & BUTTON_USE_HOLDABLE ) ) {
-		if ( ( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) &&
-                g_elimination_lockspectator.integer>1 &&
-                ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-                    return;
-                }
-		StopFollowing(ent);
 	}
 }
 
@@ -620,10 +604,7 @@ void SendEntityInfoToClient( gentity_t *ent, int msec ) {
 
 	while ( client->timeEntityInfo >= 100 ) {
 		client->timeEntityInfo -= 100;
-
-		if(g_gametype.integer == GT_SANDBOX	|| g_gametype.integer == GT_MAPEDITOR){
-			Weapon_Toolgun_Info( ent );			//send entity info to client for sync
-		}
+		Weapon_Toolgun_Info( ent );			//send entity info to client for sync
 	}
 }
 
@@ -1022,7 +1003,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		client->ps.pm_type = PM_DEAD;
-	} else if ( client->ps.pm_type != PM_FREEZE && client->ps.pm_type != PM_CUTSCENE ) {
+	} else if ( client->ps.pm_type != PM_FREEZE ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 	// set gravity
@@ -1118,11 +1099,6 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( client->ps.generic2 == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
 		pm.gauntletHit = CheckGauntletAttack( ent );
-	}
-
-	if ( ent->flags & FL_FORCE_GESTURE ) {
-		ent->flags &= ~FL_FORCE_GESTURE;
-		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 
 	// check for invulnerability expansion before doing the Pmove
@@ -1276,7 +1252,7 @@ gentity_t *ent;
 
 ent = g_entities + clientNum;
 
-if(ent->swep_list[wp] == 1){
+if(ent->swep_list[wp] >= 1){
 	if(finish){
 	ent->swep_id = wp;
 	}

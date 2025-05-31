@@ -29,25 +29,6 @@
 
 /*
 ============
-ScorePlum
-============
-*/
-void ScorePlum( gentity_t *ent, vec3_t origin, int score, int dmgf ) {
-	gentity_t *plum;
-	plum = G_TempEntity( origin, EV_SCOREPLUM );
-	plum->r.singleClient = ent->s.number;
-	plum->s.otherEntityNum = ent->s.number;
-        if (dmgf == 10 || dmgf == 11) {
-            plum->r.svFlags |= SVF_BROADCAST;
-        } else {
-            plum->r.svFlags |= SVF_SINGLECLIENT;
-        }
-	plum->s.time = score;
-    plum->s.weapon = dmgf;
-}
-
-/*
-============
 AddScore
 
 Adds score to both the client and his team
@@ -123,7 +104,6 @@ void TossClientItems( gentity_t *self ) {
 		return;
 
 if(!self->singlebot){
-if(g_gametype.integer != GT_SINGLE){
 	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
 	//Nothing!
 	}
@@ -135,12 +115,6 @@ if(g_gametype.integer != GT_SINGLE){
 		// spawn the item
 		Drop_Item( self, item, 0 );
 	}
-}
-if(g_gametype.integer == GT_SINGLE){
-	//the player drops a backpack in single player
-	item = BG_FindItemForBackpack(); 
-	Drop_Item( self, item, 0 );
-}
 }
 if(self->singlebot){
 	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
@@ -175,7 +149,6 @@ if(self->singlebot){
 			}
 		}
 	if(!self->singlebot){
-	if(g_gametype.integer != GT_SINGLE){
 	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_TELEPORTER)) {
 	item = BG_FindItem( "Personal Teleporter" );
 	Drop_Item( self, item, 0 );
@@ -195,7 +168,6 @@ if(self->singlebot){
 	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_PORTAL)) {
 	item = BG_FindItem( "Portal" );
 	Drop_Item( self, item, 0 );
-	}
 	}
 	}
 	if(self->singlebot){
@@ -443,90 +415,6 @@ void Kamikaze_DeathTimer( gentity_t *self ) {
 	ent->activator = self;
 }
 
-
-/*
-==================
-CheckAlmostCapture
-==================
-*/
-void CheckAlmostCapture( gentity_t *self, gentity_t *attacker ) {
-	gentity_t	*ent;
-	vec3_t		dir;
-	char		*classname;
-
-	// if this player was carrying a flag
-	if ( self->client->ps.powerups[PW_REDFLAG] ||
-		self->client->ps.powerups[PW_BLUEFLAG] ||
-		self->client->ps.powerups[PW_NEUTRALFLAG] ) {
-		// get the goal flag this player should have been going for
-		if ( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION) {
-			if ( self->client->sess.sessionTeam == TEAM_BLUE ) {
-				classname = "team_CTF_blueflag";
-			}
-			else {
-				classname = "team_CTF_redflag";
-			}
-		}
-		else {
-			if ( self->client->sess.sessionTeam == TEAM_BLUE ) {
-				classname = "team_CTF_redflag";
-			}
-			else {
-				classname = "team_CTF_blueflag";
-			}
-		}
-		ent = NULL;
-		do
-		{
-			ent = G_Find(ent, FOFS(classname), classname);
-		} while (ent && (ent->flags & FL_DROPPED_ITEM));
-		// if we found the destination flag and it's not picked up
-		if (ent && !(ent->r.svFlags & SVF_NOCLIENT) ) {
-			// if the player was *very* close
-			VectorSubtract( self->client->ps.origin, ent->s.origin, dir );
-			if ( VectorLength(dir) < 200 ) {
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
-				if ( attacker->client ) {
-					attacker->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
-				}
-			}
-		}
-	}
-}
-
-/*
-==================
-CheckAlmostScored
-==================
-*/
-void CheckAlmostScored( gentity_t *self, gentity_t *attacker ) {
-	gentity_t	*ent;
-	vec3_t		dir;
-	char		*classname;
-
-	// if the player was carrying cubes
-	if ( self->client->ps.generic1 ) {
-		if ( self->client->sess.sessionTeam == TEAM_BLUE ) {
-			classname = "team_redobelisk";
-		}
-		else {
-			classname = "team_blueobelisk";
-		}
-		ent = G_Find(NULL, FOFS(classname), classname);
-		// if we found the destination obelisk
-		if ( ent ) {
-			// if the player was *very* close
-			VectorSubtract( self->client->ps.origin, ent->s.origin, dir );
-			if ( VectorLength(dir) < 200 ) {
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
-				if ( attacker->client ) {
-					attacker->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_HOLYSHIT;
-				}
-			}
-		}
-	}
-}
-
 /*
 ==================
 player_die
@@ -549,28 +437,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 	
 	self->client->noclip = 0;
-
-	//if we're in SP mode and player killed a bot, award score for the kill
-	if(g_gametype.integer == GT_SINGLE){
-	if ( self->singlebot == 1 ) {
-		if ( self->botspawn && self->botspawn->health && attacker->client ) {
-			AddScore( attacker, self->botspawn->health );
-			self->s.time = level.time;
-		}
-	}		
-	}
 			
 	self->client->pers.oldmoney = self->client->pers.oldmoney;
 
-	//unlagged - backward reconciliation #2
 	// make sure the body shows up in the client's current position
 	G_UnTimeShiftClient( self );
-	//unlagged - backward reconciliation #2
-
-	// check for an almost capture
-	CheckAlmostCapture( self, attacker );
-	// check for a player that almost brought in cubes
-	CheckAlmostScored( self, attacker );
 
 	if (self->client && self->client->hook) {
 		Weapon_HookFree(self->client->hook);
@@ -670,9 +541,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AddScore( self, -1 );
 	}
 
-	// Add team bonuses
-	Team_FragBonuses(self, inflictor, attacker);
-
 	// if I committed suicide, the flag does not fall, it returns.
 	if (meansOfDeath == MOD_SUICIDE) {
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
@@ -690,7 +558,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
         TossClientPersistantPowerups( self );
         if( g_gametype.integer == GT_HARVESTER ) {
-                TossClientCubes( self );
+            TossClientCubes( self );
         }
 	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
 	TossClientItems( self );
@@ -815,11 +683,6 @@ if(ent->singlebot){
 	if ( self->botspawn ) {
 		G_UseDeathTargets(self->botspawn, self);
 		G_DropLoot(self->botspawn, self);
-	}
-
-	if(g_gametype.integer == GT_SINGLE){
-	if ( !IsBot( self ) )
-		G_FadeOut( 1.0, self-g_entities );
 	}
 }
 
@@ -1404,11 +1267,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	// See if it's the player hurting the emeny flag carrier
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF || g_gametype.integer == GT_CTF_ELIMINATION) {
-		Team_CheckHurtCarrier(targ, attacker);
-	}
-
 	if (targ->client) {
 		// set the last client who damaged the target
 		targ->client->lasthurt_client = attacker->s.number;
@@ -1440,7 +1298,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			    Break_Breakable(targ, attacker);
 			}
 		}
-                ScorePlum(attacker, targ->r.currentOrigin, damage, asave);
 
 		if ( targ->health <= 0 ) {
 			if ( client )

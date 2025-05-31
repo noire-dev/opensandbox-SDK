@@ -201,7 +201,6 @@ spawn_t	spawns_table[] = {
 	{"info_camp", SP_info_camp},
 	{"info_waypoint", SP_info_waypoint},
 	{"info_backpack", SP_info_backpack},
-	{"info_camera", SP_info_camera},
 
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
@@ -249,27 +248,17 @@ spawn_t	spawns_table[] = {
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
 	{"target_logic", SP_target_logic},
-	{"target_gravity", SP_target_gravity},
 	{"target_mapchange", SP_target_mapchange},
 	{"target_botspawn", SP_target_botspawn},
 	{"target_unlink", SP_target_unlink},
 	{"target_disable", SP_target_unlink},
 	{"target_debrisemitter", SP_target_debrisemitter},
-	{"target_objective", SP_target_objective},
-	{"target_skill", SP_target_skill},
-	{"target_earthquake", SP_target_earthquake},
 	{"target_effect", SP_target_effect},
-	{"target_finish", SP_target_finish},
-	{"target_modify", SP_target_modify},
-	{"target_secret", SP_target_secret},
-	{"target_playerstats", SP_target_playerstats},
-	{"target_cutscene", SP_target_cutscene},
 	{"target_botremove", SP_target_botremove},
 	{"target_music", SP_target_music},
 	{"target_stats", SP_target_stats},
 	
 	{"script_variable", SP_script_variable},
-	{"script_layer", SP_script_layer},
 	{"script_cmd", SP_script_cmd},
 	{"script_menu", SP_script_menu},
 	{"script_aicontrol", SP_script_aicontrol},
@@ -304,9 +293,6 @@ spawn_t	spawns_table[] = {
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 
 	{"item_botroam", 0},
-
-	{"environment_rain", SP_rally_weather_rain},
-	{"environment_snow", SP_rally_weather_snow},
 
 	{NULL, 0}
 };
@@ -553,14 +539,6 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		G_ParseField( level.spawnVars[i][0], level.spawnVars[i][1], ent );
 	}
 
-	// check for "notsingle" flag
-	if ( g_gametype.integer == GT_SINGLE ) {
-		G_SpawnInt( "notsingle", "0", &i );
-		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
-			G_FreeEntity( ent );
-			return;
-		}
-	}
 	if ( g_gametype.integer >= GT_TEAM && !g_ffa_gt ) {
 		G_SpawnInt( "notteam", "0", &i );
 		if ( i && g_gametype.integer != GT_MAPEDITOR ) {

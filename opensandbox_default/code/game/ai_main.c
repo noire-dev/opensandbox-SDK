@@ -992,11 +992,7 @@ int BotAI(int client, float thinktime) {
 		//remove color espace sequences from the arguments
 		RemoveColorEscapeSequences( args );
 
-		if (!Q_stricmp(buf, "cp "))
-			{ /*CenterPrintf*/ }
-		else if (!Q_stricmp(buf, "cs"))
-			{ /*ConfigStringModified*/ }
-		else if (!Q_stricmp(buf, "print")) {
+		if (!Q_stricmp(buf, "print")) {
 			//remove first and last quote from the chat message
 			memmove(args, args+1, strlen(args));
 			args[strlen(args)-1] = '\0';
@@ -1014,8 +1010,6 @@ int BotAI(int client, float thinktime) {
 			args[strlen(args)-1] = '\0';
 			trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, args);
 		}
-		else if (!Q_stricmp(buf, "scores"))
-			{ /*FIXME: parse scores?*/ }
 	}
 	//add the delta angles to the bot's current view angles
 	for (j = 0; j < 3; j++) {

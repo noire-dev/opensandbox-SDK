@@ -92,7 +92,6 @@ static vec4_t shadow_color = {0.0, 0.0, 0.0, 1.0 };
 static char* maptype_icon[NUM_GAMETYPES] = {
 	"menu/assets/gt_sandbox",		// GT_SANDBOX
 	"menu/assets/gt_mapeditor",		// GT_MAPEDITOR
-	"menu/assets/gt_single",		// GT_SINGLE
 	"menu/assets/gt_ffa",		// GT_FFA
 	"menu/assets/gt_tourney",		// GT_TOURNAMENT
 	"menu/assets/gt_team",	// GT_TEAM
@@ -136,18 +135,6 @@ int GametypeBits( char *string ) {
 		}
 	
 		if( Q_stricmp( token, "mapeditor" ) == 0 ) {
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-		
-		if( Q_stricmp( token, "entityplus" ) == 0 ) { //entityplus support
-			bits |= 1 << GT_SINGLE;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-		
-		if( Q_stricmp( token, "singleplayer" ) == 0 ) {	//OpenSandbox single mode
-			bits |= 1 << GT_SINGLE;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}

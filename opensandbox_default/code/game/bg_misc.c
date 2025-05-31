@@ -1998,7 +1998,6 @@ char *eventnames[] = {
 	"EV_POWERUP_BATTLESUIT",
 	"EV_POWERUP_REGEN",
 	"EV_GIB_PLAYER",			// gib a previously living player
-	"EV_SCOREPLUM",			// score plum
 	"EV_PROXIMITY_MINE_STICK",
 	"EV_PROXIMITY_MINE_TRIGGER",
 	"EV_KAMIKAZE",			// kamikaze explodes
@@ -2303,8 +2302,7 @@ char *BG_TeamName( team_t team )
   return "<team>";
 }
 
-int rq3_random(int min, int max)
-{
+int rq3_random(int min, int max) {
 	int number;
 	number = (rand() % (max - min + 1)) + (min);
 	return number;
@@ -2367,14 +2365,10 @@ float BG_GetVehicleSettings (int id, int set){
 	if(id == 1){
 		if(set==VSET_SPEED){ return 900; }
 		if(set==VSET_GRAVITY){ return 0.4; }
-		if(set==VSET_WEAPON){ return 0; }
-		if(set==VSET_WEAPONRATE){ return 3; }
 	}
 	if(id == 2){
 		if(set==VSET_SPEED){ return 900; }
 		if(set==VSET_GRAVITY){ return 0.4; }
-		if(set==VSET_WEAPON){ return 1; }
-		if(set==VSET_WEAPONRATE){ return 3; }
 	}
 	
 	return 0;

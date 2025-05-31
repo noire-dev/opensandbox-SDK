@@ -106,7 +106,6 @@ cd linux/build/cgame
 # Files to compile to            сgame.qvm
 # ########################################
 
-$cc ../../../code/cgame/cg_atmospheric.c
 $cc ../../../code/cgame/cg_consolecmds.c
 $cc ../../../code/cgame/cg_draw.c
 $cc ../../../code/cgame/cg_drawtools.c

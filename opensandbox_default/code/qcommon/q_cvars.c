@@ -287,7 +287,6 @@ vmCvar_t    g_holdablerespawn;
 vmCvar_t    g_megahealthrespawn;
 vmCvar_t    g_poweruprespawn;
 vmCvar_t    g_gametype;
-vmCvar_t    g_elimflags;
 vmCvar_t    g_fraglimit;
 vmCvar_t    g_timelimit;
 vmCvar_t    g_capturelimit;
@@ -328,8 +327,6 @@ vmCvar_t    g_elimination_warmup;
 vmCvar_t    g_elimination_activewarmup;
 vmCvar_t    g_elimination;
 vmCvar_t    g_elimination_items;
-vmCvar_t    g_elimination_lockspectator;
-vmCvar_t    g_elimination_ctf_oneway;
 vmCvar_t    g_elimination_red_respawn;
 vmCvar_t    g_elimination_blue_respawn;
 vmCvar_t    g_bluespawn_health;
@@ -383,8 +380,6 @@ vmCvar_t    g_redspawn_holdable;
 vmCvar_t    g_vampire;
 vmCvar_t    g_vampireMaxHealth;
 vmCvar_t    g_regen;
-vmCvar_t    g_lms_lives;
-vmCvar_t    g_lms_mode;
 vmCvar_t    sv_fps;
 
 static cvarTable_t cvarTable[] = {
@@ -646,7 +641,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_holdablerespawn,           "g_holdablerespawn",            "60",           0 },
 	{ &g_megahealthrespawn,         "g_megahealthrespawn",          "35",           0 },
 	{ &g_poweruprespawn,            "g_poweruprespawn",             "120",          0 },
-    { &g_elimflags,                 "elimflags",                    "0",            CVAR_SERVERINFO },
 	{ &g_fraglimit,                 "fraglimit",                    "20",           CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_timelimit,                 "timelimit",                    "0",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_capturelimit,              "capturelimit",                 "8",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
@@ -686,8 +680,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_elimination_activewarmup,  "g_elimination_activewarmup",   "0",            CVAR_NORESTART },
     { &g_elimination,               "g_elimination",                "0",            CVAR_NORESTART },
 	{ &g_elimination_items,         "g_elimination_items",          "0",            CVAR_LATCH },
-	{ &g_elimination_lockspectator, "g_elimination_lockspectator",  "0",            CVAR_NORESTART },
-	{ &g_elimination_ctf_oneway,    "g_elimination_ctf_oneway",     "0",            CVAR_NORESTART },
 	{ &g_elimination_red_respawn,   "g_elimination_red_respawn",    "0",            0 },
 	{ &g_elimination_blue_respawn,  "g_elimination_blue_respawn",   "0",            0 },
 	{ &g_bluespawn_health,          "g_bluespawn_health",           "100",          CVAR_NORESTART },
@@ -740,9 +732,7 @@ static cvarTable_t cvarTable[] = {
 	{ &g_redspawn_holdable,         "g_redspawn_holdable",          "0",            CVAR_LATCH },
 	{ &g_vampire,                   "g_vampire",                    "0.0",          CVAR_NORESTART },
 	{ &g_regen,                     "g_regen",                      "0",            CVAR_NORESTART },
-	{ &g_vampireMaxHealth,          "g_vampire_max_health",         "500",          CVAR_NORESTART },
-	{ &g_lms_lives,                 "g_lms_lives",                  "1",            CVAR_NORESTART },
-	{ &g_lms_mode,                  "g_lms_mode",                   "0",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART }
+	{ &g_vampireMaxHealth,          "g_vampire_max_health",         "500",          CVAR_NORESTART }
 };
 #endif
 
@@ -821,12 +811,10 @@ vmCvar_t    cg_drawSpeed;
 vmCvar_t    cg_paused;
 vmCvar_t    cg_blood;
 vmCvar_t    cg_drawFriend;
-vmCvar_t    cg_scorePlum;
 vmCvar_t    cg_cameraEyes;
 vmCvar_t    cg_cameraEyes_Fwd;
 vmCvar_t    cg_cameraEyes_Up;
 vmCvar_t    cg_noProjectileTrail;
-vmCvar_t    cg_music;
 vmCvar_t    cg_obeliskRespawnDelay;
 vmCvar_t    cg_enableDust;
 vmCvar_t    cg_enableBreath;
@@ -917,13 +905,11 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_enableDust,                   "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &cg_enableBreath,                 "g_enableBreath",               "0",            CVAR_SERVERINFO },
 	{ &cg_obeliskRespawnDelay,          "g_obeliskRespawnDelay",        "10",           0 },
-	{ &cg_scorePlum,                    "cg_scorePlums",                "1",            CVAR_ARCHIVE },
 	{ &cg_noProjectileTrail,            "cg_noProjectileTrail",         "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes,                   "cg_cameraEyes",                "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes_Fwd,               "cg_cameraEyes_Fwd",            "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes_Up,                "cg_cameraEyes_Up",             "7",            CVAR_ARCHIVE },
 	{ &sv_fps,                          "sv_fps",                       "60",           CVAR_SYSTEMINFO },
-    { &cg_music,                        "cg_music",                     "",             CVAR_ARCHIVE },
 	{ &cg_crosshairColorRed,            "cg_crosshairColorRed",         "0.5",          CVAR_ARCHIVE|CVAR_USERINFO },
     { &cg_crosshairColorGreen,          "cg_crosshairColorGreen",       "0.75",         CVAR_ARCHIVE|CVAR_USERINFO },
     { &cg_crosshairColorBlue,           "cg_crosshairColorBlue",        "1.0",          CVAR_ARCHIVE|CVAR_USERINFO },
@@ -978,7 +964,6 @@ vmCvar_t    toolgun_disabledarg1;
 vmCvar_t    toolgun_disabledarg2;
 vmCvar_t    toolgun_disabledarg3;
 vmCvar_t    toolgun_disabledarg4;
-vmCvar_t    cl_sprun;
 vmCvar_t    sbt_color0_0;
 vmCvar_t    sbt_color0_1;
 vmCvar_t    sbt_color0_2;
@@ -1107,7 +1092,6 @@ static cvarTable_t cvarTable[] = {
 	{ &toolgun_disabledarg2,            "toolgun_disabledarg2",         "0",            0 },
 	{ &toolgun_disabledarg3,            "toolgun_disabledarg3",         "0",            0 },
 	{ &toolgun_disabledarg4,            "toolgun_disabledarg4",         "0",            0 },
-	{ &cl_sprun,                        "cl_sprun",                     "0",            0 },
 	{ &sbt_color0_0,                    "sbt_color0_0",                 "0.00", 	    CVAR_ARCHIVE },
 	{ &sbt_color0_1,                    "sbt_color0_1",                 "0.00", 	    CVAR_ARCHIVE },
 	{ &sbt_color0_2,                    "sbt_color0_2",                 "0.00", 	    CVAR_ARCHIVE },

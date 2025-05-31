@@ -143,9 +143,6 @@ void CG_DrawInformation( void ) {
 	case GT_MAPEDITOR:
 		s = "Map Editor";
 		break;
-	case GT_SINGLE:
-		s = "Single Player";
-		break;
 	case GT_FFA:
 		s = "Free For All";
 		break;

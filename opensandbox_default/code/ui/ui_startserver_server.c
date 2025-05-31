@@ -86,13 +86,10 @@
 #define ID_SERVER_CUBETIMEOUT               361
 #define ID_SERVER_FLAGRESPAWN               362
 #define ID_SERVER_WEAPONTEAMRESPAWN         363
-#define ID_SERVER_ELIMINATION_CTF_ONEWAY    364
 #define ID_SERVER_ELIMINATION_SELFDAMAGE     365
 #define ID_SERVER_ELIMINATION_ROUNDTIME      366
 #define ID_SERVER_ELIMINATION_WARMUP         367
 #define ID_SERVER_ELIMINATION_ACTIVEWARMUP   368
-#define ID_SERVER_LMS_LIVES                  369
-#define ID_SERVER_LMS_MODE                   370
 #define ID_SERVER_ACCELERATE                 371
 #define ID_SERVER_SPECTATORSPEED             372
 #define ID_SERVER_SPEED                      373
@@ -628,8 +625,6 @@ static controlinit_t srv_gamemode[] = {
 		"Flag respawn:", &s_scriptdata.server.flagrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_WEAPONTEAMRESPAWN, ITEM_ALWAYSON,
 		"Weapon team respawn:", &s_scriptdata.server.weaponTeamRespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_CTF_ONEWAY, ITEM_ALWAYSON,
-		"Elimination CTF oneway:", &s_scriptdata.server.elimination_ctf_oneway, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_SELFDAMAGE, ITEM_ALWAYSON,
 		"Elimination selfdamage:", &s_scriptdata.server.elimination_selfdamage, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ROUNDTIME, ITEM_ALWAYSON,
@@ -638,10 +633,6 @@ static controlinit_t srv_gamemode[] = {
 		"Elimination warmup:", &s_scriptdata.server.elimination_warmup, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ACTIVEWARMUP, ITEM_ALWAYSON,
 		"Elimination active warmup:", &s_scriptdata.server.elimination_activewarmup, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_LMS_LIVES, ITEM_ALWAYSON,
-		"Elimination LMS lives:", &s_scriptdata.server.lms_lives, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_SPIN, 0, ID_SERVER_LMS_MODE, ITEM_ALWAYSON,
-		"Elimination LMS mode:", &s_scriptdata.server.lms_mode, -999999999, 999999999, NULL, 9, 9, lmsMode_list },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_ITEMS, ITEM_ALWAYSON,
 		"Elimination items:", &s_scriptdata.server.elimination_items, -999999999, 999999999, NULL, 9, 9, NULL },
 

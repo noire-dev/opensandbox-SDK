@@ -31,64 +31,6 @@
 int sortedTeamPlayers[TEAM_MAXOVERLAY];
 int	numSortedTeamPlayers;
 
-static void CG_DrawField (int x, int y, int width, int value, float size) {
-	char	num[16], *ptr;
-	int		l;
-	int		frame;
-
-	if ( width < 1 ) {
-		return;
-	}
-
-	// draw number string
-	if ( width > 6 ) {
-		width = 6;
-	}
-
-	switch ( width ) {
-	case 1:
-		value = value > 9 ? 9 : value;
-		value = value < 0 ? 0 : value;
-		break;
-	case 2:
-		value = value > 99 ? 99 : value;
-		value = value < -9 ? -9 : value;
-		break;
-	case 3:
-		value = value > 999 ? 999 : value;
-		value = value < -99 ? -99 : value;
-		break;
-	case 4:
-		value = value > 9999 ? 9999 : value;
-		value = value < -999 ? -999 : value;
-		break;
-	case 5:
-		value = value > 99999 ? 99999 : value;
-		value = value < -9999 ? -9999 : value;
-		break;
-	}
-
-	Com_sprintf (num, sizeof(num), "%i", value);
-	l = strlen(num);
-	if (l > width)
-		l = width;
-	x += 2 + CHAR_WIDTH*(width - l)*size;
-
-	ptr = num;
-	while (*ptr && l)
-	{
-		if (*ptr == '-')
-			frame = STAT_MINUS;
-		else
-			frame = *ptr -'0';
-
-		CG_DrawPic( x,y, CHAR_WIDTH*size, CHAR_HEIGHT*size, cgs.media.numberShaders[frame] );
-		x += CHAR_WIDTH*size;
-		ptr++;
-		l--;
-	}
-}
-
 void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
@@ -126,10 +68,10 @@ void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model,
 	ent.reType = RT_MODEL;
 	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%s.skin", texlocation, material));
 	if(atoi(material) > 0){		
-	ent.customShader = trap_R_RegisterShader(va("ptex/%s/%s", texlocation, material));
+		ent.customShader = trap_R_RegisterShader(va("ptex/%s/%s", texlocation, material));
 	}		
 	if(atoi(material) == 255){	
-	ent.customShader = cgs.media.ptexShader[1];
+		ent.customShader = cgs.media.ptexShader[1];
 	}
 
 	refdef.x = x;
@@ -200,6 +142,103 @@ void SplitStringBySpace(const char *str, char result[MAX_ENTITYINFO][64]) {
         wordIndex++;
         charIndex = 0;
     }
+}
+
+#define WICON_SIDE 		32*0.60
+#define WICON_SELECT 	32*0.90
+#define WICON_SPACE 	3
+#define WICONS_SIDES 	6
+
+/*
+===================
+CG_DrawWeaponSelect
+===================
+*/
+void CG_DrawWeaponSelect( void ) {
+	float y, x, originalX, originalY;
+	int i, j;
+
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
+		return;
+
+	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 )
+		return;
+
+	if ( !cg_draw2D.integer || cg.showScores )
+		return;
+
+	originalX = (530+cgs.wideoffset) - ((WICON_SIDE+WICON_SPACE)*WICONS_SIDES) - ((WICON_SELECT/2)+WICON_SPACE) - 1.5;
+	originalY = 440;
+
+	if(ST_AnimValue(&weaponSelectIn, cg.time)){
+		originalY += ST_AnimValue(&weaponSelectIn, cg.time)*40;
+	}
+
+	if(cg.time-anim_weaponSelect >= 400+2000 && anim_weaponSelect){
+		if(!ST_AnimValue(&weaponSelectOut, cg.time)){
+			anim_weaponSelect = 0;
+			ST_AnimStart(&weaponSelectOut, cg.time, 600);
+		}
+	}
+
+	if(ST_AnimValue(&weaponSelectOut, cg.time)){
+		originalY += 40;
+		originalY -= ST_AnimValue(&weaponSelectOut, cg.time)*40;
+	} else {
+		if(!anim_weaponSelect)
+			originalY += 40;
+	}
+
+	y = originalY+(WICON_SELECT*0.25);
+	x = originalX+(WICON_SELECT/2)+WICON_SPACE;
+
+	CG_DrawRoundedRect((originalX - WICONS_SIDES) - ((WICON_SIDE+WICON_SPACE)*WICONS_SIDES) - ((WICON_SELECT/2)+WICON_SPACE), originalY, ((WICON_SIDE+WICON_SPACE)*WICONS_SIDES*2) + WICON_SELECT + WICON_SPACE*2 + WICONS_SIDES, WICON_SELECT+WICON_SPACE, 4, color_dim);
+
+	for (i = cg.weaponSelect+1, j = 0; i <= WEAPONS_NUM; i++) {
+		if(j >= WICONS_SIDES){
+		    continue;
+		} else if (i >= WEAPONS_NUM){
+			i = 1;
+		}
+
+		if(!cg.swep_listcl[i])
+		    continue;
+
+		CG_RegisterWeapon(i);
+		CG_DrawPic(x, y, WICON_SIDE, WICON_SIDE, cg_weapons[i].weaponIcon);
+
+		if(cg.swep_listcl[i] == 2)
+			CG_DrawPic(x, y, WICON_SIDE, WICON_SIDE, cgs.media.noammoShader);
+
+		x += WICON_SIDE+WICON_SPACE;
+		j++;
+	}
+
+	x = originalX-(WICON_SELECT/2)-(WICON_SIDE+WICON_SPACE);
+	for (i = cg.weaponSelect-1, j = 0; i >= 0; i--) {
+		if(j >= WICONS_SIDES){
+		    continue;
+		} else if (i <= 0){
+			i = WEAPONS_NUM-1;
+		}
+
+		if(!cg.swep_listcl[i])
+		    continue;
+
+		CG_RegisterWeapon(i);
+		CG_DrawPic(x, y, WICON_SIDE, WICON_SIDE, cg_weapons[i].weaponIcon);
+
+		if(cg.swep_listcl[i] == 2)
+			CG_DrawPic(x, y, WICON_SIDE, WICON_SIDE, cgs.media.noammoShader);
+
+		x -= WICON_SIDE+WICON_SPACE;
+		j++;
+	}
+
+	CG_DrawPic( originalX-WICON_SELECT/2, originalY+2, WICON_SELECT, WICON_SELECT, cg_weapons[cg.weaponSelect].weaponIcon );
+	CG_DrawPic( originalX-WICON_SELECT/2, originalY+2, WICON_SELECT, WICON_SELECT, cgs.media.selectShader );
+	if(cg.swep_listcl[cg.weaponSelect] == 2)
+		CG_DrawPic(originalX-WICON_SELECT/2, originalY+2, WICON_SELECT, WICON_SELECT, cgs.media.noammoShader);
 }
 
 static void CG_DrawToolgun() {
@@ -290,7 +329,7 @@ static void CG_DrawToolgun() {
 			} else {
 				for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
 					if ( !Q_stricmp( it->classname, entityInfos[0] ) ){
-						ST_DrawString(x, y+3 + (count * 10), va("Count: %s", it->quantity), UI_LEFT, color_white, 1.00);
+						ST_DrawString(x, y+3 + (count * 10), va("Count: %i", it->quantity), UI_LEFT, color_white, 1.00);
 						count++;
 					}
 				}
@@ -370,22 +409,11 @@ static void CG_DrawStatusBar( void ) {
 		} else {
 			cg.swep_listcl[ps->generic2] = 1;	
 		}
-		if ( value > -1 ) {
+		CG_DrawWeaponSelect();
+		if (value > -1)
 			CG_DrawStatusElement(630+cgs.wideoffset-100, 440, value, "AMMO");
-		}
 	}
 	} else {
-		if ( weaphack ) {
-			value = ps->stats[STAT_SWEPAMMO];
-			if(value <= 0 && value != -1){	// OpenSandbox weapon predict
-				cg.swep_listcl[ps->generic2] = 2;
-			} else {
-				cg.swep_listcl[ps->generic2] = 1;	
-			}
-			if ( value > -1 ) {
-				CG_DrawStatusElement(630+cgs.wideoffset-200, 440, value, "AMMO");
-			}
-		}
 		value = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * 0.20;
 		CG_DrawStatusElement(630+cgs.wideoffset-100, 440, value, "KM/H");
 	}
@@ -407,14 +435,6 @@ static void CG_DrawStatusBar( void ) {
 	if (value > 0 ) {
 		CG_DrawStatusElement(20-cgs.wideoffset+100, 440, value, "ARMOR");
 	}
-
-    //Skulls!
-	if(cgs.gametype == GT_HARVESTER) {
-        value = ps->generic1;
-        if (value > 0 ) {
-			CG_DrawStatusElement(30-cgs.wideoffset+200, 440, value, "SKULLS");
-        }
-    }
 }
 
 /*
@@ -567,50 +587,13 @@ static void CG_DrawCounters( void ) {
 		}
 	}
 
-	//Elimination CTF
-	if ( cgs.gametype == GT_CTF_ELIMINATION ) {
-		if( (cgs.elimflags&EF_ONEWAY)==0) {
-		//Nothing
-		} else if(cgs.attackingTeam == TEAM_BLUE) {
-			CG_DrawCounterElement(640+cgs.wideoffset-84, y, "^4Blue", "Attack");
-		y += 20;
-		} else {
-			CG_DrawCounterElement(640+cgs.wideoffset-84, y, "^1Red", "Attack");
-		y += 20;
-		}
-	}
-	return;
-}
-
-/*
-=================
-CG_DrawLMSmode
-=================
-*/
-static void CG_DrawLMSmode( void ) {
-	char	*s;
-	int		w;
-	float	y;
-
-	y = 0;
-
-	if(cgs.lms_mode == 0) {
-		s = va("LMS: Point/round + OT");
-	} else
-	if(cgs.lms_mode == 1) {
-		s = va("LMS: Point/round - OT");
-	} else
-	if(cgs.lms_mode == 2) {
-		s = va("LMS: Point/kill + OT");
-	} else
-	if(cgs.lms_mode == 3) {
-		s = va("LMS: Point/kill - OT");
-	} else
-		s = va("LMS: Unknown mode");
-
-	w = CG_DrawStrlen( s ) * BASEFONT_INDENT;
-	CG_DrawSmallString( 635 + cgs.wideoffset - w, y + 2, s, 1.0F);
-
+    //Skulls!
+	if(cgs.gametype == GT_HARVESTER) {
+        value = cg.snap->ps.generic1;
+        if (value > 0 ) {
+			CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i", value), "Skulls");
+        }
+    }
 	return;
 }
 
@@ -1691,13 +1674,7 @@ CG_DrawIntermission
 */
 static void CG_DrawIntermission( void ) {
 	cg.scoreFadeTime = cg.time;
-
-if(cgs.gametype != GT_SINGLE){
 	cg.scoreBoardShowing = CG_DrawScoreboard();
-} else {
-	cg.scoreBoardShowing = CG_DrawScoreboardObj();
-	CG_StartScoreboardMusic();
-}
 }
 
 /*
@@ -1871,8 +1848,6 @@ static void CG_DrawWarmup( void ) {
 			s = "Sandbox";
 		} else if ( cgs.gametype == GT_MAPEDITOR ) {
 			s = "Map Editor";
-		} else if ( cgs.gametype == GT_SINGLE ) {
-			s = "Single Player";
 		} else if ( cgs.gametype == GT_FFA ) {
 			s = "Free For All";
 		} else if ( cgs.gametype == GT_TEAM ) {
@@ -2086,10 +2061,10 @@ CG_Draw2D
 static void CG_Draw2D( void ) {
 	int catcher = trap_Key_GetCatcher();
 
-	if (cg.snap->ps.pm_type == PM_CUTSCENE || !cg_draw2D.integer)
+	if (!cg_draw2D.integer)
 		return;
 
-	if(cgs.gametype != GT_SINGLE && !cg.showScores){
+	if(!cg.showScores){
 		if(!(catcher & KEYCATCH_MESSAGE))
 			CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cgs.wideoffset, 0, 7.5, 9.0);
 		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cgs.wideoffset, 360, 7.5, 9.0);
@@ -2097,8 +2072,7 @@ static void CG_Draw2D( void ) {
 	}
 
 	CG_DrawCrosshair();
-	if(cgs.gametype != GT_SINGLE)
-		CG_DrawCrosshairNames();
+	CG_DrawCrosshairNames();
 
 	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR && !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0) {
 		CG_DrawPersistantPowerup();
@@ -2108,7 +2082,7 @@ static void CG_Draw2D( void ) {
 	CG_DrawTeamVote();
 	CG_DrawCounters();
 	CG_DrawPowerups();
-	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR && cgs.gametype != GT_SINGLE){
+	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
 		CG_DrawScores();
 	}
 	CG_DrawLowerLeft();
@@ -2119,10 +2093,6 @@ static void CG_Draw2D( void ) {
 	if (!cg.scoreBoardShowing) {
     	CG_DrawCenterDDString();
     	CG_DrawCenter1FctfString();
-	} else {
-		if ( cgs.gametype == GT_LMS ) {
-			CG_DrawLMSmode();
-		}
 	}
 
 	if(ns_haveerror.integer)
@@ -2179,13 +2149,6 @@ void CG_DrawActive( void ) {
 		cg.weaponSelect = cg.snap->ps.generic2;
 	}
 
-	// optionally draw the tournement scoreboard instead
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
-		( cg.snap->ps.pm_flags & PMF_SCOREBOARD ) ) {
-		CG_DrawTourneyScoreboard();
-		return;
-	}
-
 	RunScriptThreads(cg.time);		//Noire.Script - run threads
 
 	// clear around the rendered view if sized down
@@ -2218,12 +2181,9 @@ void CG_DrawActive( void ) {
 	if (catcher != KEYCATCH_UI && !(catcher & KEYCATCH_CONSOLE)) {
  		CG_Draw2D();
 		pm = cg.snap->ps.pm_type;
-		if (pm != PM_CUTSCENE && pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
+		if (pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
 			CG_DrawLagometer();
 			CG_DrawStatusBar();
-			if(!cg.snap->ps.stats[STAT_VEHICLE] || BG_GetVehicleSettings(cg.snap->ps.stats[STAT_VEHICLE], VSET_WEAPON)){	//VEHICLE-SYSTEM: disable weapon menu for all
-    	    	CG_DrawWeaponSelect();
-			}
     	    CG_DrawHoldableItem();
 		}
 	}
@@ -2237,12 +2197,7 @@ void CG_DrawActive( void ) {
 		return;
 	}
 	
-	// don't draw center string if scoreboard is up
-	if(cgs.gametype != GT_SINGLE){
-		cg.scoreBoardShowing = CG_DrawScoreboard();
-	} else {
-		cg.scoreBoardShowing = CG_DrawScoreboardObj();
-	}
+	cg.scoreBoardShowing = CG_DrawScoreboard();
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
 		CG_DrawIntermission();
@@ -2261,22 +2216,8 @@ void CG_DrawActive( void ) {
 		}
 	}
 
-	// if player is dead, draw death message
-	if ( cgs.gametype == GT_SINGLE ) {
-		if ( cg.snap->ps.pm_type == PM_DEAD ) {
-			CG_DrawDeathMessage();
-
-			if ( !cg.deathmusicStarted )
-				CG_StartDeathMusic();
-		}
-
-		if ( cg.snap->ps.pm_type != PM_DEAD && cg.deathmusicStarted ) {
-			CG_StopDeathMusic();
-		}
-	} else {
-		if ( cg.snap->ps.pm_type == PM_DEAD ) {
-			CG_DrawDeathMessage();
-		}
+	if ( cg.snap->ps.pm_type == PM_DEAD ) {
+		CG_DrawDeathMessage();
 	}
 
 	//draw objectives notification

@@ -61,83 +61,6 @@ void anglesToVariableInfo(char variableInfo[MAX_INFO_STRING], vec3_t angles) {
 	Info_SetValueForKey(variableInfo, "a12", va("%f", angles[2]));
 }
 
-void Use_Camera (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	char variableInfo[MAX_INFO_STRING];
-
-	//make camera movement info available for client 
-	variableInfo[0] = '\0';
-	Info_SetValueForKey(variableInfo, "w", va("%f", self->wait));
-	Info_SetValueForKey(variableInfo, "t", va("%i", level.time));
-
-	//add origin, viewangles and fov of source camera
-	if (self->armor > 0) {	//armor is abused here to indicate whether or not camera should use player's origin/viewangles or its own
-		//use origin and viewangles of player
-		originToVariableInfo(variableInfo, level.clients[0].ps.origin);
-		anglesToVariableInfo(variableInfo, level.clients[0].ps.viewangles);
-	}
-	else {
-		//use origin and angles of this camera
-		originToVariableInfo(variableInfo, self->s.origin);
-		anglesToVariableInfo(variableInfo, self->s.angles);
-	}
-	Info_SetValueForKey(variableInfo, "f1", va("%i", self->count));
-	
-	if ( self->nextTrain && (self->spawnflags & 1) ) {
-		//add origin and viewangles of target camera
-		Info_SetValueForKey(variableInfo, "m", va("%i", self->spawnflags));
-		Info_SetValueForKey(variableInfo, "o20", va("%f", self->nextTrain->s.origin[0]));
-		Info_SetValueForKey(variableInfo, "o21", va("%f", self->nextTrain->s.origin[1]));
-		Info_SetValueForKey(variableInfo, "o22", va("%f", self->nextTrain->s.origin[2]));
-		Info_SetValueForKey(variableInfo, "a20", va("%f", self->nextTrain->s.angles[0]));
-		Info_SetValueForKey(variableInfo, "a21", va("%f", self->nextTrain->s.angles[1]));
-		Info_SetValueForKey(variableInfo, "a22", va("%f", self->nextTrain->s.angles[2]));
-		Info_SetValueForKey(variableInfo, "f2", va("%i", self->nextTrain->count));
-	} else {
-		Info_SetValueForKey(variableInfo, "m", "0");	//0 means no camera motion
-	}
-	trap_SetConfigstring( CS_CUTSCENE, variableInfo );
-
-	activator->client->ps.pm_type = PM_CUTSCENE;
-	self->activator = activator;
-	self->nextthink = level.time + (self->wait * 1000);
-}
-
-void Think_Camera (gentity_t *self) {
-	int i;
-
-	if ( self->nextTrain ) {
-		//jump to next camera
-		self->nextTrain->use( self->nextTrain, self->activator, self->activator );
-	} else {
-		//cutscene should end so give player normal control
-		self->activator->client->ps.pm_type = PM_NORMAL;
-
-		//move player back to original location
-		VectorCopy(self->activator->orgOrigin, self->activator->client->ps.origin);
-	
-		//give movement control back to bots
-		if ( self->parent->spawnflags & 1 ) {
-			for ( i = 0 ; i < level.maxclients ; i++ ) {
-				if ( level.clients[i].pers.connected != CON_DISCONNECTED && level.clients[i].ps.pm_type != PM_DEAD )
-					level.clients[i].ps.pm_type = PM_NORMAL;
-			}
-		}
-
-		//link the player back into the world
-		trap_LinkEntity( self->activator );
-		self->activator->r.contents += CONTENTS_BODY;
-	}
-}
-
-void SP_info_camera( gentity_t *self ) {	
-	G_SpawnFloat( "wait", "1", &self->wait );
-	G_SpawnInt( "fov", "90", &self->count );	//abusing self->count here to store the FOV for the camera
-
-	self->use = Use_Camera;
-	self->think = Think_Camera;
-	G_SetOrigin( self, self->s.origin );
-}
-
 /*
 =================================================================================
 
@@ -146,57 +69,9 @@ TELEPORTERS
 =================================================================================
 */
 
-/*=========
-Sets player's location without spitting out the player
-===========*/
-void TeleportPlayerNoKnockback( gentity_t *player, vec3_t origin, vec3_t angles, int angle ) {
-	vec3_t changedvel;
-
-	VectorCopy ( origin, player->client->ps.origin );
-
-	// toggle the teleport bit so the client knows to not lerp
-	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
-	
-	VectorCopy( player->client->ps.velocity, changedvel );
-	
-	if(angle == 90){
-	changedvel[0] = player->client->ps.velocity[1];
-	changedvel[1] = -player->client->ps.velocity[0];
-	}
-	if(angle == 180){
-	changedvel[0] = -player->client->ps.velocity[0];
-	changedvel[1] = -player->client->ps.velocity[1];
-	}
-	if(angle == 270){
-	changedvel[0] = -player->client->ps.velocity[1];
-	changedvel[1] = -player->client->ps.velocity[0];
-	}
-	
-	VectorCopy( changedvel, player->client->ps.velocity );
-	
-	SetClientViewAngle( player, angles );
-
-	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
-}
-
-void TeleportPlayerForLayer( gentity_t *player, float level, float curlevel) {
-	float changed2;
-
-	changed2 = curlevel - level;
-
-	player->client->ps.origin[2] += changed2;
-	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
-
-	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
-}
-
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	gentity_t	*tent;
-	qboolean noAngles;
 
-	noAngles = (angles[0] > 999999.0);
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
 	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR && player->client->ps.pm_type != PM_SPECTATOR) {
@@ -213,24 +88,17 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	VectorCopy ( origin, player->client->ps.origin );
 	player->client->ps.origin[2] += 1;
 
-	if (!noAngles) {
-		// spit the player out
-		AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-		VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-		player->client->ps.pm_time = 160;		// hold time
-		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-
-		// set angles
-		SetClientViewAngle(player, angles);
-	}
+	// spit the player out
+	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
+	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
+	player->client->ps.pm_time = 160;		// hold time
+	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 
-//unlagged - backward reconciliation #3
 	// we don't want players being backward-reconciled back through teleporters
 	G_ResetHistory( player );
-//unlagged - backward reconciliation #3
 
 	// kill anything at the destination
 	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR && player->client->ps.pm_type != PM_SPECTATOR ) {
@@ -369,8 +237,8 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 		VectorNormalize( dir );
 	} else if ( ent->spawnflags & 1 ) {
 		
-		if ( !level.player || level.player->client->ps.pm_type == PM_CUTSCENE)
-			return;
+	if ( !level.player)
+		return;
 
 		VectorSubtract( level.player->r.currentOrigin, ent->s.origin, dir );
 		VectorNormalize( dir );
@@ -480,7 +348,6 @@ void SP_shooter_custom( gentity_t *ent ) {
 
 static void PortalDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
 	G_FreeEntity( self );
-	//FIXME do something more interesting
 }
 
 void DropPortalDestination( gentity_t *player ) {

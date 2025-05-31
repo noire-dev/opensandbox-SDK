@@ -103,18 +103,17 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #define GAMES_SANDBOX		1
 #define GAMES_MAPEDITOR		2
 #define GAMES_FFA			3
-#define GAMES_SINGLE		4
-#define GAMES_TEAMPLAY		5
-#define GAMES_TOURNEY		6
-#define GAMES_CTF			7
-#define GAMES_ONEFLAG		8
-#define GAMES_OBELISK		9
-#define GAMES_HARVESTER		10
-#define GAMES_ELIMINATION	11
-#define GAMES_ELIM_CTF		12
-#define GAMES_LMS			13
-#define GAMES_DD			14
-#define GAMES_DOM			15
+#define GAMES_TEAMPLAY		4
+#define GAMES_TOURNEY		5
+#define GAMES_CTF			6
+#define GAMES_ONEFLAG		7
+#define GAMES_OBELISK		8
+#define GAMES_HARVESTER		9
+#define GAMES_ELIMINATION	10
+#define GAMES_ELIM_CTF		11
+#define GAMES_LMS			12
+#define GAMES_DD			13
+#define GAMES_DOM			14
 
 static const char *master_items[] = {
 	"Local",
@@ -127,7 +126,6 @@ static const char *servertype_items[] = {
 	"All",
 	"Sandbox",
 	"Map Editor",
-	"Single Player",
 	"Free For All",
 	"Team Deathmatch",
 	"Tournament",
@@ -569,12 +567,6 @@ static void ArenaServers_UpdateMenu( void ) {
 
 		case GAMES_FFA:
 			if( servernodeptr->gametype != GT_FFA ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_SINGLE:
-			if( servernodeptr->gametype != GT_SINGLE ) {
 				continue;
 			}
 			break;
@@ -1155,10 +1147,6 @@ static void ArenaServers_StartRefresh( void )
 
 		case GAMES_MAPEDITOR:
 			strcpy( myargs, " mapeditor" );
-			break;
-
-		case GAMES_SINGLE:
-			strcpy( myargs, " single" );
 			break;
 
 		case GAMES_FFA:

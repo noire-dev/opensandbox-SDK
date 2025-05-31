@@ -78,9 +78,6 @@ void	Svcmd_EntityList_f (void) {
 		case ET_GRAPPLE:
 			G_Printf("ET_GRAPPLE          ");
 			break;
-		case ET_WEATHER:
-			G_Printf("ET_WEATHER          ");
-			break;
 		default:
 			G_Printf("%3i                 ", check->s.eType);
 			break;

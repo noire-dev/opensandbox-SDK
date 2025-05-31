@@ -453,7 +453,8 @@ static void CG_Item( centity_t *cent ) {
 
 	es = &cent->currentState;
 	if ( es->modelindex >= bg_numItems ) {
-		CG_Error( "Bad item index %i on entity", es->modelindex );
+		//CG_Error( "Bad item index %i on entity", es->modelindex );
+		return;
 	}
 
 	// if set to invisible, skip
@@ -728,19 +729,6 @@ static void CG_Grapple( centity_t *cent ) {
 	}
 
 	trap_R_AddRefEntityToScene( &ent );
-}
-
-/*
-==================
-CG_Weather
-==================
-*/
-static void CG_Weather( centity_t *cent ) {
-	entityState_t		*s1;
-
-	s1 = &cent->currentState;
-
-	CG_Atmospheric_SetParticles( s1->weapon, s1->powerups, s1->legsAnim );
 }
 
 /*
@@ -1235,9 +1223,6 @@ static void CG_AddCEntity( centity_t *cent ) {
 		break;
 	case ET_GRAPPLE:
 		CG_Grapple( cent );
-		break;
-	case ET_WEATHER:
-		CG_Weather( cent );
 		break;
 	case ET_TEAM:
 		CG_TeamBase( cent );

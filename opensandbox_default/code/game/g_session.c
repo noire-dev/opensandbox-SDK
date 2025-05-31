@@ -128,7 +128,6 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 			default:
 			case GT_SANDBOX:
 			case GT_MAPEDITOR:
-			case GT_SINGLE:
 			case GT_FFA:
 			case GT_LMS:
 				sess->sessionTeam = TEAM_FREE;
@@ -160,7 +159,6 @@ Updates session data for a client prior to a map change that's forced by a targe
 ==================
 */
 void G_Sav_SaveData( gentity_t *ent, int slot ) {
-	int secretFound, secretCount;
 	int i;
 	char mapname[64];
 
@@ -179,16 +177,6 @@ void G_Sav_SaveData( gentity_t *ent, int slot ) {
 	}
 
 	NS_createCvar(va("sav_%i_holdable", slot), va("%i", ent->client->ps.stats[STAT_HOLDABLE_ITEM]));
-	NS_createCvar(va("sav_%i_carnage", slot), va("%i", ent->client->ps.persistant[PERS_SCORE]));
-	NS_createCvar(va("sav_%i_deaths", slot), va("%i", ent->client->ps.persistant[PERS_KILLED]));
-
-	secretFound = (ent->client->ps.persistant[PERS_SECRETS] & 0x7F);
-	secretCount = ((ent->client->ps.persistant[PERS_SECRETS] >> 7) & 0x7F) + level.secretCount;
-
-	NS_createCvar(va("sav_%i_secrets", slot), va("%i", secretFound + (secretCount << 7)));
-	NS_createCvar(va("sav_%i_accShots", slot), va("%i", ent->client->accuracy_shots));
-	NS_createCvar(va("sav_%i_accHits", slot), va("%i", ent->client->accuracy_hits));
-
 	NS_createCvar(va("sav_%i_mapName", slot), va("%s", mapname));
 }
 
@@ -211,13 +199,6 @@ void G_Sav_ClearData( gclient_t *client, int slot ) {
 	}
 
 	NS_setCvar(va("sav_%i_holdable", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_carnage", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_deaths", slot), va("%i", 0));
-
-	NS_setCvar(va("sav_%i_secrets", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_accShots", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_accHits", slot), va("%i", 0));
-
 	NS_setCvar(va("sav_%i_mapName", slot), va("%i", 0));
 }
 
@@ -254,12 +235,6 @@ void G_Sav_LoadData( gentity_t *ent, int slot ) {
 	}
 
 	ent->client->ps.stats[STAT_HOLDABLE_ITEM] = get_cvar_int(va("sav_%i_holdable", slot));
-	ent->client->ps.persistant[PERS_SCORE] = get_cvar_int(va("sav_%i_carnage", slot));
-	ent->client->ps.persistant[PERS_KILLED] = get_cvar_int(va("sav_%i_deaths", slot));
-	
-	ent->client->ps.persistant[PERS_SECRETS] = get_cvar_int(va("sav_%i_secrets", slot));
-	ent->client->accuracy_shots = get_cvar_int(va("sav_%i_accShots", slot));
-	ent->client->accuracy_hits = get_cvar_int(va("sav_%i_accHits", slot));
 	
 	// clear map change session data
 	G_Sav_ClearData( ent->client, slot );

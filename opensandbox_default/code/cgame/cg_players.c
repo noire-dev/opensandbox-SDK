@@ -1464,102 +1464,6 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	}
 }
 
-
-/*
-===============
-CG_PlayerFloatSprite
-
-Float a sprite over the player's head
-===============
-*/
-static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader ) {
-	int				rf;
-	refEntity_t		ent;
-
-	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson ) {
-		rf = RF_THIRD_PERSON;		// only show in mirrors
-	} else {
-		rf = 0;
-	}
-
-	memset( &ent, 0, sizeof( ent ) );
-	VectorCopy( cent->lerpOrigin, ent.origin );
-	ent.origin[2] += 48;
-	ent.reType = RT_SPRITE;
-	ent.customShader = shader;
-	ent.radius = 10;
-	ent.renderfx = rf;
-	ent.shaderRGBA[0] = 255;
-	ent.shaderRGBA[1] = 255;
-	ent.shaderRGBA[2] = 255;
-	ent.shaderRGBA[3] = 255;
-	trap_R_AddRefEntityToScene( &ent );
-}
-
-
-
-/*
-===============
-CG_PlayerSprites
-
-Float sprites over the player's head
-===============
-*/
-static void CG_PlayerSprites( centity_t *cent ) {
-	int		team;
-
-	if ( cent->currentState.eFlags & EF_CONNECTION ) {
-		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_TALK ) {
-		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_DEFEND ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalDefend );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_ASSIST ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalAssist );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_CAP ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
-		return;
-	}
-
-	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-	if ( !(cent->currentState.eFlags & EF_DEAD) &&
-		cg.snap->ps.persistant[PERS_TEAM] == team &&
-		team != TEAM_FREE &&
-		cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
-		if (cg_drawFriend.integer) {
-			CG_PlayerFloatSprite( cent, cgs.media.friendShader );
-		}
-		return;
-	}
-}
-
 /*
 ===============
 CG_PlayerShadow
@@ -1694,14 +1598,7 @@ void CG_Player( centity_t *cent ) {
 	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
 
 	// get the animation state (after rotation, to allow feet shuffle)
-	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
-		 &torso.oldframe, &torso.frame, &torso.backlerp );
-
-	// add the talk baloon or disconnect icon
-	if ( cent->currentState.number != cg.snap->ps.clientNum) {
-		if(cgs.gametype != GT_SINGLE)
-		CG_PlayerSprites( cent );
-	}
+	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp, &torso.oldframe, &torso.frame, &torso.backlerp );
 
 	// add the shadow
 	shadow = CG_PlayerShadow( cent );

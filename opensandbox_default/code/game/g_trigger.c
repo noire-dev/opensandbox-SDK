@@ -368,12 +368,7 @@ trigger_teleport
 */
 
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
-	gentity_t	*dest;
-    vec3_t		origin, angles;
-	vec3_t originDiff;
-	vec3_t originDiffto;
-	vec3_t anglesto;
-	vec3_t destRelOrigin;
+	gentity_t *dest;
 
 	if ( !other->client ) {
 		return;
@@ -382,57 +377,13 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	dest = 	G_PickTarget( self->target );
+	dest = G_PickTarget(self->target);
 	if (!dest) {
-                G_Printf ("Couldn't find teleporter destination\n");
+        G_Printf ("Couldn't find teleporter destination\n");
 		return;
 	}
 
-	if (self->spawnflags & 1) {
-		VectorSubtract(self->s.origin, other->client->ps.origin, originDiff);
-		if (self->spawnflags & 2) {
-			VectorCopy(originDiff, originDiffto);
-			originDiff[0] = originDiffto[1];
-			originDiff[1] = originDiffto[0];
-		}
-		if (self->spawnflags & 4) {
-			VectorCopy(originDiff, originDiffto);
-			originDiff[0] = -originDiffto[0];
-			originDiff[1] = -originDiffto[1];
-		}
-		if (self->spawnflags & 8) {
-			VectorCopy(originDiff, originDiffto);
-			originDiff[0] = -originDiffto[1];
-			originDiff[1] = -originDiffto[0];
-		}
-		VectorSubtract(dest->s.origin, originDiff, destRelOrigin);
-
-		if (self->spawnflags & 2) {
-		VectorCopy(other->client->ps.viewangles, anglesto);
-		anglesto[1] += self->playerangle;
-		TeleportPlayerNoKnockback(other, destRelOrigin, anglesto, 90);
-		} else if (self->spawnflags & 4) {
-		VectorCopy(other->client->ps.viewangles, anglesto);
-		anglesto[1] += self->playerangle;
-		TeleportPlayerNoKnockback(other, destRelOrigin, anglesto, 180);
-		} else if (self->spawnflags & 8) {
-		VectorCopy(other->client->ps.viewangles, anglesto);
-		anglesto[1] += self->playerangle;
-		TeleportPlayerNoKnockback(other, destRelOrigin, anglesto, 270);
-		} else {
-		VectorCopy(other->client->ps.viewangles, anglesto);
-		anglesto[1] += self->playerangle;
-		TeleportPlayerNoKnockback(other, destRelOrigin, anglesto, 0);	
-		}
-	} else {
-    if ( g_randomteleport.integer ) {
-        SelectSpawnPoint ( other->client->ps.origin, origin, angles );
-        TeleportPlayer( other, origin, angles );
-	    return;
-	} else {
 	TeleportPlayer( other, dest->s.origin, dest->s.angles );
-	}
-}
 }
 
 void SP_trigger_teleport( gentity_t *self ) {

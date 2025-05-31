@@ -742,7 +742,6 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/nailgun/wnalfire.wav", qfalse );
 		break;
 
-
 	case WP_PLASMAGUN:
 //		weaponInfo->missileModel = cgs.media.invulnerabilityPowerupModel;
 		weaponInfo->missileTrailFunc = CG_PlasmaTrail;
@@ -1288,11 +1287,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	centity_t	*nonPredictedCent;
 	orientation_t	lerped;
 
-	if ( cg.snap->ps.pm_type == PM_CUTSCENE ) {
-		weaponNum = 1;
-	} else {
-		weaponNum = ci->swepid;
-	}
+	weaponNum = ci->swepid;
 
 	if(ci->flashlight == 1){
 		CG_PlayerFlashlight( &cg_entities[cent->currentState.clientNum] );
@@ -1349,11 +1344,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			// lightning gun and guantlet make a different sound when fire is held down
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, weapon->firingSound );
 			cent->pe.lightningFiring = qtrue;
-		} else if ( weapon->readySound && cg.predictedPlayerState.pm_type != PM_CUTSCENE ) {	
-			//note: the pm_cutscene check above makes weapon idle noises stop during cutscenes, but it does so for 
-			//ALL weapons, including those of bots. Unfortunately this method is called without supplying ps for the 
-			//player itself as well. So unfortunately, I cannot differentiate between bots and players which means that
-			//either ALL hums play or NO hums play. I've chosen for the latter option during cutscenes.
+		} else if ( weapon->readySound ) {
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, weapon->readySound );
 		}
 	}
@@ -1476,7 +1467,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		return;
 	}
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_CUTSCENE ) {
+	if ( ps->pm_type == PM_INTERMISSION ) {
 		return;
 	}
 
@@ -1533,130 +1524,44 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 }
 
 /*
-==============================================================================
-
-WEAPON SELECTION
-
-==============================================================================
-*/
-
-/*
-===============
-CG_DrawWeaponBar
-===============
-*/
-void CG_DrawWeaponBar(int count){
-	float scale = 0.60;
-	int y = 380;
-	int x = 320 - count * (20*scale);
-	int i;
-	
-	for ( i = 1; i <= WEAPONS_NUM; i++ ) {
-		if(!cg.swep_listcl[i]){
-		    continue;	
-		}
-		CG_RegisterWeapon( i );
-		CG_DrawPic( x, y, 32*scale, 32*scale, cg_weapons[i].weaponIcon );
-
-		if ( i == cg.weaponSelect ) {
-			CG_DrawPic( x-(4*scale), y-(4*scale), 40*scale, 40*scale, cgs.media.selectShader );
-		}
-
-		if( cg.swep_listcl[i] == 2 ){
-			CG_DrawPic( x, y, 32*scale, 32*scale, cgs.media.noammoShader );
-		}
-		x += 40*scale;
-	}
-}
-
-/*
-===================
-CG_DrawWeaponSelect
-===================
-*/
-void CG_DrawWeaponSelect( void ) {
-	int		i;
-	int		count;
-	float		*color;
-	int			swepnum; 
-
-	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-		return;
-	}
-
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		return;
-	}
-
-	if ( !cg_draw2D.integer || cg.showScores ) {
-		return;
-	}
-
-	swepnum = cg.snap->ps.generic2;
-	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
-
-	if (!color)
-		return;
-	trap_R_SetColor( color );
-
-	count = 0;
-	for ( i = 1; i < WEAPONS_NUM; i++ ) {
-		if(cg.swep_listcl[i] >= 1){
-			count++;
-		}
-	}
-	
-	CG_DrawWeaponBar(count); //FOR VANILLA WEAPONS WEAPONS_HYPER
-	trap_R_SetColor(NULL);
-	return;
-}
-
-/*
 ===============
 CG_NextWeapon_f
 ===============
 */
 void CG_NextWeapon_f( void ) {
-	int		i;
-	int		original;
+	qboolean	weaponFound = qfalse;
+	int			original, i;
 
-	if(BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE])){	//VEHICLE-SYSTEM: weapon lock for 1
-		if(!BG_GetVehicleSettings(cg.snap->ps.stats[STAT_VEHICLE], VSET_WEAPON)){
-			return;	
-		}
-	}
-	if ( !cg.snap ) {
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
-	}
-	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-		return;
-	}
 	
-	if ( cg.snap->ps.generic2 == WP_PHYSGUN ){
-		if( cg.snap->ps.eFlags & EF_FIRING ){
-			trap_SendConsoleCommand("physgun_dist 0\n");
-			return;
-		}
+	if ( cg.snap->ps.generic2 == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
+		trap_SendConsoleCommand("physgun_dist 0\n");
+		return;
 	}
 
-	cg.weaponSelectTime = cg.time;
+	if(cg.time-anim_weaponSelect >= 250+2000){
+		ST_AnimStart(&weaponSelectIn, cg.time, 250);
+		anim_weaponSelect = cg.time;
+	} else {
+		anim_weaponSelect = cg.time+250;
+	}
+
 	original = cg.weaponSelect;
 
-	for ( i = 1; i < WEAPONS_NUM; i++ ) {
-	cg.weaponSelect++;
-	if ( cg.weaponSelect > WEAPONS_NUM ) {
-		cg.weaponSelect = 1;
+	for (i = 1; i < WEAPONS_NUM; i++) {
+		cg.weaponSelect++;
+		if (cg.weaponSelect >= WEAPONS_NUM)
+			cg.weaponSelect = 1;
+
+		if(cg.swep_listcl[cg.weaponSelect]){
+			weaponFound = qtrue;
+			break;
+		}
 	}
-	if(cg.swep_listcl[cg.weaponSelect] == 1){
-		break;
-	}
-	}
-	
-	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
-	trap_Cvar_Set("cg_hide255", "0");
-	} else {
-	trap_Cvar_Set("cg_hide255", "1");
-	}
+
+	if(!weaponFound)
+		cg.weaponSelect = original;
 }
 
 /*
@@ -1665,46 +1570,39 @@ CG_PrevWeapon_f
 ===============
 */
 void CG_PrevWeapon_f( void ) {
-	int		i;
-	int		original;
+	qboolean	weaponFound = qfalse;
+	int			original, i;
 
-	if(BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE])){	//VEHICLE-SYSTEM: weapon lock for 1
-		if(!BG_GetVehicleSettings(cg.snap->ps.stats[STAT_VEHICLE], VSET_WEAPON)){
-			return;	
-		}
-	}
-	if ( !cg.snap ) {
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
-	}
-	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
+
+	if ( cg.snap->ps.generic2 == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
+		trap_SendConsoleCommand("physgun_dist 1\n");
 		return;
 	}
 
-	if ( cg.snap->ps.generic2 == WP_PHYSGUN ){
-		if( cg.snap->ps.eFlags & EF_FIRING ){
-			trap_SendConsoleCommand("physgun_dist 1\n");
-			return;
-		}
+	if(cg.time-anim_weaponSelect >= 250+2000){
+		ST_AnimStart(&weaponSelectIn, cg.time, 250);
+		anim_weaponSelect = cg.time;
+	} else {
+		anim_weaponSelect = cg.time+250;
 	}
 
-	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
 
-	for ( i = 1 ; i < WEAPONS_NUM; i++ ) {
-	cg.weaponSelect--;
-	if ( cg.weaponSelect < 1 ) {
-		cg.weaponSelect = WEAPONS_NUM;
+	for (i = 1 ; i < WEAPONS_NUM; i++) {
+		cg.weaponSelect--;
+		if (cg.weaponSelect <= 0)
+			cg.weaponSelect = WEAPONS_NUM;
+
+		if(cg.swep_listcl[cg.weaponSelect]){
+			weaponFound = qtrue;
+			break;
+		}
 	}
-	if(cg.swep_listcl[cg.weaponSelect] == 1){
-		break;
-	}
-	}
-	
-	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
-	trap_Cvar_Set("cg_hide255", "0");
-	} else {
-	trap_Cvar_Set("cg_hide255", "1");
-	}
+
+	if(!weaponFound)
+		cg.weaponSelect = original;
 }
 
 /*
@@ -1715,27 +1613,23 @@ CG_Weapon_f
 void CG_Weapon_f( void ) {
 	int		num;
 
-	if ( !cg.snap ) {
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
-	}
-	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-		return;
-	}
 
 	num = atoi( CG_Argv( 1 ) );
 
-	cg.weaponSelectTime = cg.time;
+	if(cg.time-anim_weaponSelect >= 250+2000){
+		ST_AnimStart(&weaponSelectIn, cg.time, 250);
+		anim_weaponSelect = cg.time;
+	} else {
+		anim_weaponSelect = cg.time+250;
+	}
+
 	if(!cg.swep_listcl[num]){
 		return;		// don't have the weapon
 	}
 
 	cg.weaponSelect = num;
-	
-	if(cg.weaponSelect == WP_TOOLGUN || cg.weaponSelect == WP_GRAVITYGUN || cg.weaponSelect == WP_PHYSGUN){
-	trap_Cvar_Set("cg_hide255", "0");
-	} else {
-	trap_Cvar_Set("cg_hide255", "1");
-	}
 }
 
 /*

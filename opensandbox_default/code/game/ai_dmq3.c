@@ -2201,7 +2201,7 @@ TeamPlayIsOn
 ==================
 */
 int TeamPlayIsOn(void) {
-	if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR || gametype == GT_SINGLE){ return 1; }
+	if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR){ return 1; }
 	
 	return ( gametype >= GT_TEAM && g_ffa_gt!=1);
 }
@@ -2216,7 +2216,7 @@ float BotAggression(bot_state_t *bs) {
         return 100;
     }
 
-    if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR || gametype == GT_SINGLE){
+    if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR){
         return 100;
     }
 	//if the bot has quad
@@ -2750,7 +2750,7 @@ BotSameTeam
 ==================
 */
 int BotSameTeam(bot_state_t *bs, int entnum) {
-	if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR || gametype == GT_SINGLE){
+	if(gametype == GT_SANDBOX || gametype == GT_MAPEDITOR){
 	if(bs->spbot){
 		return 1; 
 	}
@@ -2977,11 +2977,6 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
 			continue;
 		}
-		//Neil Torontos unlagged
-		//unlagged - misc
-		// this has nothing to do with lag compensation, but it's great for testing
-		if ( g_entities[i].flags & FL_NOTARGET ) continue;
-		//unlagged - misc
 		//if not an easy fragger don't shoot at chatting players
 		if (easyfragger < 0.5 && EntityIsChatting(&entinfo)) continue;
 		//

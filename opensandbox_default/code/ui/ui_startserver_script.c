@@ -63,13 +63,10 @@ static const char* saveparam_list[] = {
 	"gui_cubeTimeout",
 	"gui_flagrespawn",
 	"gui_weaponTeamRespawn",
-	"gui_elimination_ctf_oneway",
 	"gui_elimination_selfdamage",
 	"gui_elimination_roundtime",
 	"gui_elimination_warmup",
 	"gui_elimination_activewarmup",
-	"gui_lms_lives",
-	"gui_lms_mode",
 	"gui_accelerate",
 	"gui_spectatorspeed",
 	"gui_speed",
@@ -636,13 +633,10 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_cubeTimeout %i\n", s_scriptdata.server.cubeTimeout));
 	AddScript(va("set g_flagrespawn %i\n", s_scriptdata.server.flagrespawn));
 	AddScript(va("set g_weaponTeamRespawn %i\n", s_scriptdata.server.weaponTeamRespawn));
-	AddScript(va("set elimination_ctf_oneway %i\n", s_scriptdata.server.elimination_ctf_oneway));
 	AddScript(va("set elimination_selfdamage %i\n", s_scriptdata.server.elimination_selfdamage));
 	AddScript(va("set elimination_roundtime %i\n", s_scriptdata.server.elimination_roundtime));
 	AddScript(va("set elimination_warmup %i\n", s_scriptdata.server.elimination_warmup));
 	AddScript(va("set elimination_activewarmup %i\n", s_scriptdata.server.elimination_activewarmup));
-	AddScript(va("set g_lms_lives %i\n", s_scriptdata.server.lms_lives));
-	AddScript(va("set g_lms_mode %i\n", s_scriptdata.server.lms_mode));
 	AddScript(va("set g_accelerate %i\n", s_scriptdata.server.accelerate));
 	AddScript(va("set g_speed %i\n", s_scriptdata.server.speed));
 	AddScript(va("set g_gravity %i\n", s_scriptdata.server.gravity));
@@ -2120,13 +2114,7 @@ static qboolean StartServer_WriteMapParams( void )
 			mapname = s_scriptdata.map.data[index].shortName;
 		}
 		
-		if (s_scriptdata.gametype != GT_SINGLE){
-		AddScript("set cl_sprun 0; ");
 		AddScript(va("map %s; ", mapname));
-		} else {
-		AddScript("set cl_sprun 1; ");
-		AddScript(va("spmap %s; ", mapname));
-		}
 
 		// sort the bots out
 		AddScript("vstr "SERVER_KICKBOT"; vstr "SERVER_ADDBOT"; ");
@@ -2228,11 +2216,7 @@ static qboolean LoadServer_WriteMapParams( void )
 			mapname = s_scriptdata.map.data[index].shortName;
 		}
 		
-		if (s_scriptdata.gametype != GT_SINGLE){
 		AddScript(va("map %s; ", UI_Cvar_VariableString( "sav_0_mapName" )));
-		} else {
-		AddScript(va("spmap %s; ", UI_Cvar_VariableString( "sav_0_mapName" )));
-		}
 
 		// sort the bots out
 		AddScript("vstr "SERVER_KICKBOT"; vstr "SERVER_ADDBOT"; ");

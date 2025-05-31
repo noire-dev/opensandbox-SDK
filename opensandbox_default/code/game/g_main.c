@@ -733,7 +733,7 @@ void CalculateRanks( void ) {
 				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
 			}
 			score = newScore;
-			if ( g_gametype.integer == GT_SINGLE && level.numPlayingClients == 1 ) {
+			if ( level.numPlayingClients == 1 ) {
 				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
 			}
 		}
@@ -822,23 +822,6 @@ void SendDDtimetakenMessageToAllClients( void ) {
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
 			DoubleDominationScoreTimeMessage( g_entities + i );
-		}
-	}
-}
-
-/*
-========================
-SendAttackingTeamMessageToAllClients
-
-Used for CTF Elimination oneway
-========================
-*/
-void SendAttackingTeamMessageToAllClients( void ) {
-	int		i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
-			AttackingTeamMessage( g_entities + i );
 		}
 	}
 }
@@ -1109,12 +1092,6 @@ qboolean ScoreIsTied( void ) {
 		return qfalse;
 	}
 
-        //Sago: In Elimination and Oneway Flag Capture teams must win by two points.
-        if ( g_gametype.integer == GT_ELIMINATION ||
-                (g_gametype.integer == GT_CTF_ELIMINATION && g_elimination_ctf_oneway.integer)) {
-            return (level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]);
-        }
-
 	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
@@ -1270,8 +1247,6 @@ void StartEliminationRound(void) {
 	}
 
 	SendEliminationMessageToAllClients();
-	if(g_elimination_ctf_oneway.integer)
-		SendAttackingTeamMessageToAllClients(); //Ensure that evaryone know who should attack.
 	EnableWeapons();
 }
 
@@ -1282,10 +1257,8 @@ void EndEliminationRound(void)
 	level.roundNumber++;
 	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
 	SendEliminationMessageToAllClients();
-        CalculateRanks();
+    CalculateRanks();
 	level.roundRespawned = qfalse;
-	if(g_elimination_ctf_oneway.integer)
-		SendAttackingTeamMessageToAllClients();
 }
 
 //Things to do if we don't want to move the roundNumber
@@ -1293,11 +1266,9 @@ void RestartEliminationRound(void) {
 	DisableWeapons();
 	level.roundNumberStarted = level.roundNumber-1;
 	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-        if(!level.intermissiontime)
-            SendEliminationMessageToAllClients();
+    if(!level.intermissiontime)
+        SendEliminationMessageToAllClients();
 	level.roundRespawned = qfalse;
-	if(g_elimination_ctf_oneway.integer)
-		SendAttackingTeamMessageToAllClients();
 }
 
 //Things to do during match warmup
@@ -1307,8 +1278,6 @@ void WarmupEliminationRound(void) {
 	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
 	SendEliminationMessageToAllClients();
 	level.roundRespawned = qfalse;
-	if(g_elimination_ctf_oneway.integer)
-		SendAttackingTeamMessageToAllClients();
 }
 
 /*
@@ -1350,7 +1319,6 @@ void CheckDoubleDomination( void ) {
 		//Red scores
 		trap_SendServerCommand( -1, "print \"Red team scores!\n\"");
 		AddTeamScore(level.intermission_origin,TEAM_RED,1);
-		Team_ForceGesture(TEAM_RED);
 		Team_DD_bonusAtPoints(TEAM_RED);
 		Team_RemoveDoubleDominationPoints();
 		//We start again in 10 seconds:
@@ -1363,7 +1331,6 @@ void CheckDoubleDomination( void ) {
 		//Blue scores
 		trap_SendServerCommand( -1, "print \"Blue team scores!\n\"");
 		AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-		Team_ForceGesture(TEAM_BLUE);
 		Team_DD_bonusAtPoints(TEAM_BLUE);
 		Team_RemoveDoubleDominationPoints();
 		//We start again in 10 seconds:
@@ -1384,13 +1351,9 @@ CheckLMS
 */
 
 void CheckLMS(void) {
-	int mode;
-	mode = g_lms_mode.integer;
 	if ( level.numPlayingClients < 1 ) {
 		return;
 	}
-
-
 
 	//We don't want to do anything in intermission
 	if(level.intermissiontime) {
@@ -1401,30 +1364,22 @@ void CheckLMS(void) {
 		return;
 	}
 
-	if(g_gametype.integer == GT_LMS)
-	{
-		int		countsLiving[TEAM_NUM_TEAMS];
-		//trap_SendServerCommand( -1, "print \"This is LMS!\n\"");
+	if(g_gametype.integer == GT_LMS) {
+		int	countsLiving[TEAM_NUM_TEAMS];
 		countsLiving[TEAM_FREE] = TeamLivingCount( -1, TEAM_FREE );
-		if(countsLiving[TEAM_FREE]==1 && level.roundNumber==level.roundNumberStarted)
-		{
-			if(mode <=1 )
+		if(countsLiving[TEAM_FREE]==1 && level.roundNumber==level.roundNumberStarted) {
 			LMSpoint();
 			trap_SendServerCommand( -1, "print \"We have a winner!\n\"");
 			EndEliminationRound();
-			Team_ForceGesture(TEAM_FREE);
 		}
 
-		if(countsLiving[TEAM_FREE]==0 && level.roundNumber==level.roundNumberStarted)
-		{
+		if(countsLiving[TEAM_FREE]==0 && level.roundNumber==level.roundNumberStarted) {
 			trap_SendServerCommand( -1, "print \"All death... how sad\n\"");
 			EndEliminationRound();
 		}
 
-		if((g_elimination_roundtime.integer) && (level.roundNumber==level.roundNumberStarted)&&(g_lms_mode.integer == 1 || g_lms_mode.integer==3)&&(level.time>=level.roundStartTime+1000*g_elimination_roundtime.integer))
-		{
+		if((g_elimination_roundtime.integer) && (level.roundNumber==level.roundNumberStarted)&&(level.time>=level.roundStartTime+1000*g_elimination_roundtime.integer)) {
 			trap_SendServerCommand( -1, "print \"Time up - Overtime disabled\n\"");
-			if(mode <=1 )
 			LMSpoint();
 			EndEliminationRound();
 		}
@@ -1436,38 +1391,32 @@ void CheckLMS(void) {
 			g_elimination_warmup.integer = g_elimination_activewarmup.integer+1; //Increase warmup
 
 		//Force respawn
-		if(level.roundNumber != level.roundNumberStarted && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer && !level.roundRespawned)
-		{
+		if(level.roundNumber != level.roundNumberStarted && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer && !level.roundRespawned) {
 			level.roundRespawned = qtrue;
 			RespawnAll();
 			DisableWeapons();
 			SendEliminationMessageToAllClients();
 		}
 
-		if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer)
-		{
+		if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer) {
 			RespawnDead();
-			//DisableWeapons();
 		}
 
-		if(level.roundNumber == level.roundNumberStarted)
-		{
+		if(level.roundNumber == level.roundNumberStarted) {
 			EnableWeapons();
 		}
 
 		if((level.roundNumber>level.roundNumberStarted)&&(level.time>=level.roundStartTime))
 			StartLMSRound();
 
-		if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime && level.numPlayingClients < 2)
-		{
+		if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime && level.numPlayingClients < 2) {
 			RespawnDead(); //Allow player to run around anyway
 			WarmupEliminationRound(); //Start over
 			return;
 		}
 
 		if(level.warmupTime != 0) {
-			if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime)
-			{
+			if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime) {
 				RespawnDead();
 				WarmupEliminationRound();
 			}
@@ -1518,7 +1467,6 @@ void CheckElimination(void) {
 				trap_SendServerCommand( -1, "print \"Blue Team eliminated!\n\"");
 				AddTeamScore(level.intermission_origin,TEAM_RED,1);
 				EndEliminationRound();
-				Team_ForceGesture(TEAM_RED);
 			}
 			else if((countsLiving[TEAM_RED]==0)&&(level.roundNumber==level.roundNumberStarted))
 			{
@@ -1526,7 +1474,6 @@ void CheckElimination(void) {
 				trap_SendServerCommand( -1, "print \"Red Team eliminated!\n\"");
 				AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
 				EndEliminationRound();
-				Team_ForceGesture(TEAM_BLUE);
 			}
 		}
 
@@ -1536,18 +1483,7 @@ void CheckElimination(void) {
 			trap_SendServerCommand( -1, "print \"No teams eliminated.\n\"");
 
 			if(level.roundBluePlayers != 0 && level.roundRedPlayers != 0) {//We don't want to divide by zero. (should not be possible)
-				if(g_gametype.integer == GT_CTF_ELIMINATION && g_elimination_ctf_oneway.integer) {
-					//One way CTF, make defensice team the winner.
-					if ( (level.eliminationSides+level.roundNumber)%2 == 0 ) { //Red was attacking
-						trap_SendServerCommand( -1, "print \"Blue team defended the base\n\"");
-						AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-					}
-					else {
-						trap_SendServerCommand( -1, "print \"Red team defended the base\n\"");
-						AddTeamScore(level.intermission_origin,TEAM_RED,1);
-					}
-				}
-				else if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)>((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
+				if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)>((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
 				{
 					//Red team has higher procentage survivors
 					trap_SendServerCommand( -1, "print \"Red team has most survivers!\n\"");
@@ -1938,61 +1874,6 @@ void G_RunThink (gentity_t *ent) {
 }
 
 /*
-=============
-G_RunCutscene
-
-Runs cutscene code for this frame. While the actual camera view is handled client side, the client is moved along serverside as well
-so that the client is in the same VIS area as the camera is.
-=============
-*/
-void G_RunCutscene( int levelTime ) {
-//	gclient_s *client;
-	char cutsceneData[MAX_INFO_STRING];
-	float wait;
-	int start_time;
-	vec3_t destOrigin;
-	vec3_t newOrigin;
-	int timePassed;
-	float progress;
-	float diff;
-	int doPan;
-	
-	if ( !level.player || level.player->client->ps.pm_type != PM_CUTSCENE )
-		return;
-
-	trap_GetConfigstring( CS_CUTSCENE, cutsceneData, sizeof(cutsceneData) );
-
-	doPan = atoi(Info_ValueForKey(cutsceneData, "m"));
-	start_time = atoi(Info_ValueForKey(cutsceneData, "t"));
-	wait = atof(Info_ValueForKey(cutsceneData, "w"));
-	newOrigin[0] = atof(Info_ValueForKey(cutsceneData, "o10"));
-	newOrigin[1] = atof(Info_ValueForKey(cutsceneData, "o11"));
-	newOrigin[2] = atof(Info_ValueForKey(cutsceneData, "o12"));
-
-	if ( doPan ) {
-		destOrigin[0] = atof(Info_ValueForKey(cutsceneData, "o20"));
-		destOrigin[1] = atof(Info_ValueForKey(cutsceneData, "o21"));
-		destOrigin[2] = atof(Info_ValueForKey(cutsceneData, "o22"));
-
-		//determine how long the current camera pan has taken
-		timePassed = levelTime - start_time;
-		progress = timePassed / (wait * 1000);
-
-		//calculate new origin
-		diff = destOrigin[0] - newOrigin[0];
-		newOrigin[0] += diff * progress;
-
-		diff = destOrigin[1] - newOrigin[1];
-		newOrigin[1] += diff * progress;
-		
-		diff = destOrigin[2] - newOrigin[2];
-		newOrigin[2] += diff * progress;
-	}
-	
-	VectorCopy( newOrigin, level.player->client->ps.origin );
-}
-
-/*
 ###############
 Noire.Script API - Threads
 ###############
@@ -2052,22 +1933,6 @@ void G_RunFrame( int levelTime ) {
 	ST_UpdateCvars();
 
 	RunScriptThreads(level.time);	//Noire.Script - run threads
-
-        if( (g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && !(g_elimflags.integer & EF_NO_FREESPEC) && g_elimination_lockspectator.integer>1)
-            trap_Cvar_Set("elimflags",va("%i",g_elimflags.integer|EF_NO_FREESPEC));
-        else
-        if( (g_elimflags.integer & EF_NO_FREESPEC) && g_elimination_lockspectator.integer<2)
-            trap_Cvar_Set("elimflags",va("%i",g_elimflags.integer&(~EF_NO_FREESPEC) ) );
-
-        if( g_elimination_ctf_oneway.integer && !(g_elimflags.integer & EF_ONEWAY) ) {
-            trap_Cvar_Set("elimflags",va("%i",g_elimflags.integer|EF_ONEWAY ) );
-            //If the server admin has enabled it midgame imidiantly braodcast attacking team
-            SendAttackingTeamMessageToAllClients();
-        }
-        else
-        if( !g_elimination_ctf_oneway.integer && (g_elimflags.integer & EF_ONEWAY) ) {
-            trap_Cvar_Set("elimflags",va("%i",g_elimflags.integer&(~EF_ONEWAY) ) );
-        }
 
 	//
 	// go through all allocated objects
@@ -2195,15 +2060,9 @@ end = trap_Milliseconds();
 
 	UpdateGameCvars ();
 
-//unlagged - backward reconciliation #4
-	// record the time at the end of this frame - it should be about
-	// the time the next frame begins - when the server starts
-	// accepting commands from connected clients
 	level.frameStartTime = trap_Milliseconds();
-//unlagged - backward reconciliation #4
-    //cutscene
-	G_RunCutscene( levelTime );
 }
+
 void UpdateGameCvars( void ){
 mod_jumpheight = g_jumpheight.integer;
 mod_ammolimit = g_ammolimit.integer;

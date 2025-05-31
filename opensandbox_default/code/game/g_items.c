@@ -58,36 +58,35 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 			level.time - ( level.time % 1000 );
 	}
 
-	if ( ent->count ) {
+	if (ent->count) {
 		quantity = ent->count;
-	}
-	else {
+	} else {
 		quantity = ent->item->quantity;
 		other->client->ps.powerups[ent->item->giTag] += ent->count * 1000;
 	}
-		if (ent->item->giTag == PW_QUAD){
-		if ( !ent->count )
-	quantity = mod_quadtime;
+	if (ent->item->giTag == PW_QUAD){
+		if (!ent->count)
+			quantity = mod_quadtime;
 	}
-		if (ent->item->giTag == PW_BATTLESUIT){
+	if (ent->item->giTag == PW_BATTLESUIT){
 		if ( !ent->count )
-	quantity = mod_bsuittime;
+			quantity = mod_bsuittime;
 	}
-		if (ent->item->giTag == PW_HASTE){
+	if (ent->item->giTag == PW_HASTE){
 		if ( !ent->count )
-	quantity = mod_hastetime;
+			quantity = mod_hastetime;
 	}
-		if (ent->item->giTag == PW_INVIS){
+	if (ent->item->giTag == PW_INVIS){
 		if ( !ent->count )
-	quantity = mod_invistime;
+			quantity = mod_invistime;
 	}
-		if (ent->item->giTag == PW_REGEN){
+	if (ent->item->giTag == PW_REGEN){
 		if ( !ent->count )
-	quantity = mod_regentime;
+			quantity = mod_regentime;
 	}
-		if (ent->item->giTag == PW_FLIGHT){
+	if (ent->item->giTag == PW_FLIGHT){
 		if ( !ent->count )
-	quantity = mod_flighttime;
+			quantity = mod_flighttime;
 	}
 
 	other->client->ps.powerups[ent->item->giTag] += quantity * 1000;
@@ -112,8 +111,8 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
     // if same team in team game, no sound
     // cannot use OnSameTeam as it expects to g_entities, not clients
-  	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt==0 && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
-      continue;
+  	if (g_gametype.integer >= GT_TEAM && g_ffa_gt==0 && other->client->sess.sessionTeam == client->sess.sessionTeam) {
+    	continue;
     }
 
 		// if too far away, no sound
@@ -280,24 +279,17 @@ int Pickup_Ammo (gentity_t *ent, gentity_t *other) {
 int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	int		quantity;
 	
-	if ( ent->count < 0 ) {
-		quantity = 0; // None for you, sir!
+	if (ent->count) {
+		quantity = ent->count;
 	} else {
-		if ( ent->count ) {
-			quantity = ent->count;
-		} else {
-			quantity = ent->item->quantity;
-		}
+		quantity = ent->item->quantity;
+	}
 
-		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
-			// respawning rules
-			// drop the quantity if the already have over the minimum
-			if ( other->swep_ammo[ent->item->giTag] < quantity ) {
-				quantity = quantity - other->swep_ammo[ent->item->giTag];
-			} else {
-				quantity /= 2;
-			}
+	if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
+		if ( other->swep_ammo[ent->item->giTag] < quantity ) {
+			quantity = quantity - other->swep_ammo[ent->item->giTag];
+		} else {
+			quantity /= 2;
 		}
 	}
 
@@ -618,11 +610,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 	if(g_gametype.integer == GT_CTF_ELIMINATION && level.roundNumber != level.roundNumberStarted)
 		return;
 
-	//Cannot take ctf elimination oneway
-	if(g_gametype.integer == GT_CTF_ELIMINATION && g_elimination_ctf_oneway.integer!=0 && (
-			(other->client->sess.sessionTeam==TEAM_BLUE && (level.eliminationSides+level.roundNumber)%2 == 0 ) ||
-			(other->client->sess.sessionTeam==TEAM_RED && (level.eliminationSides+level.roundNumber)%2 != 0 ) ))
-		return;
 	if (g_elimination_items.integer == 0)
 	if (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS)
 		return;		//nothing to pick up in elimination
@@ -726,11 +713,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 
 	// fire item targets
 	G_UseTargets (ent, other);
-if(g_gametype.integer == GT_SINGLE){
-	// items with no specified respawn will not respawn in entityplus
-	if ( !ent->wait )
-		ent->wait = -1;
-}
 
 	// wait of -1 will not respawn
 	if ( ent->wait == -1 ) {
@@ -835,13 +817,6 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 
 void BackpackThink(gentity_t* self) {
 	gentity_t* ent2;
-	
-	/*(
-	ent2 = G_TempEntity(self->r.currentOrigin, EV_PARTICLES_LINEAR_UP);
-	ent2->s.constantLight = (255 << 8);	//constantLight is used to determine particle color
-	ent2->s.eventParm = 25; //eventParm is used to determine the number of particles
-	ent2->s.generic1 = 50; //generic1 is used to determine the speed of the particles
-	*/
 
 	ent2 = G_TempEntity(self->r.currentOrigin, EV_SMOKEPUFF);
 	ent2->s.constantLight = (255 << 8);
@@ -892,13 +867,6 @@ gentity_t *LaunchBackpack( gitem_t *item, gentity_t *self, vec3_t velocity ) {
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 	dropped->flags = FL_DROPPED_ITEM;
-
-	// emit ligth
-	// dropped->s.constantLight = (255 << 8) | (50 << 24);
-
-	// emit smoke
-	// dropped->nextthink = level.time + 1000;
-	// dropped->think = BackpackThink;
 
 	trap_LinkEntity (dropped);
 
@@ -1253,7 +1221,6 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
         }
 	}
 
-
 	if(g_gametype.integer == GT_DOUBLE_D && (strcmp(ent->classname, "team_CTF_redflag")==0 || strcmp(ent->classname, "team_CTF_blueflag")==0 || strcmp(ent->classname, "team_CTF_neutralflag") == 0 || item->giType == IT_PERSISTANT_POWERUP  ))
 		ent->s.eFlags |= EF_NODRAW; //Don't draw the flag models/persistant powerups
 
@@ -1359,7 +1326,6 @@ void G_RunItem( gentity_t *ent ) {
 	trace_t		tr;
 	int			contents;
 	int			mask;
-
 
 	// if groundentity has been set to -1, it may have been pushed off an edge
 	if ( ent->s.groundEntityNum == -1 ) {

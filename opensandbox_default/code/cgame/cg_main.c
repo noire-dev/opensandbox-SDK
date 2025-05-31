@@ -592,19 +592,6 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void ) {
 	int			i;
 	char		items[MAX_ITEMS+1];
-	static char		*sb_nums[11] = {
-		"gfx/2d/numbers/zero_32b",
-		"gfx/2d/numbers/one_32b",
-		"gfx/2d/numbers/two_32b",
-		"gfx/2d/numbers/three_32b",
-		"gfx/2d/numbers/four_32b",
-		"gfx/2d/numbers/five_32b",
-		"gfx/2d/numbers/six_32b",
-		"gfx/2d/numbers/seven_32b",
-		"gfx/2d/numbers/eight_32b",
-		"gfx/2d/numbers/nine_32b",
-		"gfx/2d/numbers/minus_32b",
-	};
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -618,10 +605,6 @@ static void CG_RegisterGraphics( void ) {
 
 	// precache status bar pics
 	CG_LoadingString( "game media", 0.70 );
-
-	for ( i=0 ; i<11 ; i++) {
-		cgs.media.numberShaders[i] = trap_R_RegisterShader( sb_nums[i] );
-	}
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
 
@@ -1024,58 +1007,10 @@ void CG_StartMusic( void ) {
 	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
 
 	// start the background music
-	if ( *cg_music.string && Q_stricmp( cg_music.string, "none" ) ) {
-		s = (char *)cg_music.string;
-	} else {
-		s = (char *)CG_ConfigString( CS_MUSIC );
+	s = (char *)CG_ConfigString( CS_MUSIC );
 	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
 	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
-
 	trap_S_StartBackgroundTrack( parm1, parm2 );
-        }
-}
-
-void CG_StartScoreboardMusic( void ) {
-	char	var[MAX_TOKEN_CHARS];
-	char	*s;
-	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
-
-	//if music volume is 0, don't start the scoreboard music
-	trap_Cvar_VariableStringBuffer( "s_musicvolume", var, sizeof( var ) );
-	if ( !strcmp(var, "0") )
-		return;
-
-	// start the background music
-	s = (char *)CG_ConfigString( CS_SCOREBOARDMUSIC );
-	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
-	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
-
-	trap_S_StartBackgroundTrack( parm1, parm2 );
-}
-
-void CG_StartDeathMusic( void ) {
-	char	var[MAX_TOKEN_CHARS];
-	char	*s;
-	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
-
-	//if music volume is 0, don't start the scoreboard music
-	trap_Cvar_VariableStringBuffer( "s_musicvolume", var, sizeof( var ) );
-	if ( !strcmp(var, "0") )
-		return;
-
-	// start the background music
-	s = (char *)CG_ConfigString( CS_DEATHMUSIC );
-	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
-	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
-
-	trap_S_StartBackgroundTrack( parm1, parm2 );
-	cg.deathmusicStarted = qtrue;
-}
-
-void CG_StopDeathMusic( void ) {
-	trap_S_StartBackgroundTrack( "", "" );
-	cg.deathmusicStarted = qfalse;
-	CG_StartMusic();
 }
 
 /*
