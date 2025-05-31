@@ -1752,11 +1752,10 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 
 void SP_path_corner( gentity_t *self ) {
 	if ( !self->targetname ) {
-                G_Printf ("path_corner with no targetname at %s\n", vtos(self->s.origin));
+        G_Printf ("path_corner with no targetname at %s\n", vtos(self->s.origin));
 		G_FreeEntity( self );
 		return;
 	}
-	// path corners don't need to be linked in
 }
 
 void Use_Train (gentity_t *ent, gentity_t *other, gentity_t *activator) {

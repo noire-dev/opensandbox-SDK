@@ -297,9 +297,9 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	bot->r.svFlags |= SVF_BOT;
 	bot->inuse = qtrue;
 	if(spawn){
-	spawn->parent = bot;
-	spawn->think = botsandbox_check;
-	spawn->nextthink = level.time + 1;
+		spawn->parent = bot;
+		spawn->think = botsandbox_check;
+		spawn->nextthink = level.time + 1;
 	}
 
 	// set the bot's spawning entity
@@ -473,37 +473,4 @@ char *G_GetBotInfoByName( const char *name ) {
 	}
 
 	return NULL;
-}
-
-/*
-====================
-G_AddSinglePlayerBot
-====================
-*/
-
-void G_AddCustomBot( char *name, int parentEntityNum, char* waypoint, float relSkill, int npcid, char* altname ) {
-	float skill = cvar_VariableValue( "g_spSkill" );
-	int noprint = trap_Cvar_VariableIntegerValue( "cl_noprint" );
-
-	//apply relative skill level to bot's general skill level
-	skill += relSkill;
-	if (skill < 1)
-		skill = 1;
-	if (skill > 14)
-		skill = 14;
-	
-	if(!npcid){
-		npcid = 1;
-	}
-
-	trap_Cvar_Set( "cl_noprint", "1" );
-
-	if(!altname){
-		G_AddBot( name, skill, "free", 0, name, parentEntityNum, waypoint, npcid, NULL );
-	} else {
-		G_AddBot( name, skill, "free", 0, altname, parentEntityNum, waypoint, npcid, NULL );
-	}
-
-	//restore cl_noprint to its former value
-	trap_Cvar_Set( "cl_noprint", va("%i", noprint ) );
 }

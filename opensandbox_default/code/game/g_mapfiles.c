@@ -81,8 +81,8 @@ qboolean SkippedChar ( char in ) {
 qboolean G_ClassnameAllowed( char *input, qboolean danger ){
 	int i;
 	char* 			classes_allowed[] = {
-		"func_prop",
-		"target_botspawn",
+		"sandbox_prop",
+		"sandbox_npc",
 		"info_player_deathmatch",
 		"info_player_dd",
 		"info_player_dd_red",

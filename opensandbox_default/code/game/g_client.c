@@ -2564,7 +2564,7 @@ void LinkBotSpawnEntity( gentity_t *bot, char parentid[] ) {
 
 	t = NULL;
 	bot->botspawn = NULL;
-	while ( (t = G_Find (t, FOFS(classname), "target_botspawn")) != NULL ) {
+	while ( (t = G_Find (t, FOFS(classname), "sandbox_npc")) != NULL ) {
 		if ( t->s.number == entityNum ) {
 			bot->botspawn = t;
 		}

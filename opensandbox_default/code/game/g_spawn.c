@@ -81,7 +81,8 @@ qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out 
 	return present;
 }
 
-void SP_EmptySpawn(gentity_t *ent) {}
+void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin( ent, ent->s.origin ); }
+void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 
 //
 // fields are needed for spawning from the entity string
@@ -184,86 +185,42 @@ field_t fields[] = {
 };
 
 spawn_t	spawns_table[] = {
-	// info entities don't do anything at all, but provide positional
-	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
 	{"info_player_deathmatch", SP_info_player_deathmatch},
 	{"info_player_intermission", SP_EmptySpawn},
-//Double Domination player spawn:
-	{"info_player_dd", SP_info_player_dd},
-    {"info_player_dd_red", SP_info_player_dd_red},
-    {"info_player_dd_blue", SP_info_player_dd_blue},
-//Standard Domination point spawn:
-	{"domination_point", SP_EmptySpawn},
-
-	{"info_null", SP_info_null},
-	{"info_notnull", SP_info_notnull},		// use target_position instead
-	{"info_camp", SP_info_camp},
-	{"info_waypoint", SP_info_waypoint},
-	{"info_backpack", SP_info_backpack},
+	{"info_null", SP_DeleteSpawn},
+	{"info_notnull", SP_EmptySpawn},
+	{"info_camp", SP_EmptySpawn},
 
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
 	{"func_door", SP_func_door},
 	{"func_static", SP_func_static},
-	{"func_prop", SP_func_prop},
 	{"func_rotating", SP_func_rotating},
 	{"func_bobbing", SP_func_bobbing},
 	{"func_pendulum", SP_func_pendulum},
 	{"func_train", SP_func_train},
-	{"func_group", SP_info_null},
-	{"func_timer", SP_func_timer},			// rename trigger_timer?
-	{"func_breakable", SP_func_breakable},
-	{"func_timer", SP_func_timer},			// rename trigger_timer?
+	{"func_group", SP_DeleteSpawn},
 
-	// Triggers are brush objects that cause an effect when contacted
-	// by a living player, usually involving firing targets.
-	// While almost everything could be done with
-	// a single trigger class and different targets, triggered effects
-	// could not be client side predicted (push and teleport).
 	{"trigger_always", SP_trigger_always},
 	{"trigger_multiple", SP_trigger_multiple},
 	{"trigger_push", SP_trigger_push},
 	{"trigger_teleport", SP_trigger_teleport},
 	{"trigger_hurt", SP_trigger_hurt},
-	{"trigger_death", SP_trigger_death},
-	{"trigger_frag", SP_trigger_frag},
-	{"trigger_lock", SP_trigger_lock},
 
-	// targets perform no action by themselves, but must be triggered
-	// by another entity
 	{"target_give", SP_target_give},
-	{"target_remove_powerups", SP_target_remove_powerups},
 	{"target_delay", SP_target_delay},
 	{"target_speaker", SP_target_speaker},
 	{"target_print", SP_target_print},
 	{"target_laser", SP_target_laser},
-	{"target_score", SP_target_score},
-	{"target_clienttarg", SP_target_clienttarg},
-	
 	{"target_teleporter", SP_target_teleporter},
 	{"target_relay", SP_target_relay},
 	{"target_kill", SP_target_kill},
 	{"target_position", SP_target_position},
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
-	{"target_logic", SP_target_logic},
-	{"target_mapchange", SP_target_mapchange},
-	{"target_botspawn", SP_target_botspawn},
-	{"target_unlink", SP_target_unlink},
-	{"target_disable", SP_target_unlink},
-	{"target_debrisemitter", SP_target_debrisemitter},
-	{"target_effect", SP_target_effect},
-	{"target_botremove", SP_target_botremove},
-	{"target_music", SP_target_music},
-	{"target_stats", SP_target_stats},
-	
-	{"script_variable", SP_script_variable},
-	{"script_cmd", SP_script_cmd},
-	{"script_menu", SP_script_menu},
-	{"script_aicontrol", SP_script_aicontrol},
 
-	{"light", SP_light},
+	{"light", SP_DeleteSpawn},
 	{"path_corner", SP_path_corner},
 
 	{"misc_teleporter_dest", SP_misc_teleporter_dest},
@@ -274,25 +231,27 @@ spawn_t	spawns_table[] = {
 	{"shooter_rocket", SP_shooter_rocket},
 	{"shooter_grenade", SP_shooter_grenade},
 	{"shooter_plasma", SP_shooter_plasma},
-	{"shooter_bfg", SP_shooter_bfg},
-	{"shooter_prox", SP_shooter_prox},
-	{"shooter_flame", SP_shooter_flame},
-	{"shooter_antimatter", SP_shooter_antimatter},
-	{"shooter_custom", SP_shooter_custom},
 
 	{"team_CTF_redplayer", SP_team_CTF_redplayer},
 	{"team_CTF_blueplayer", SP_team_CTF_blueplayer},
-
 	{"team_CTF_redspawn", SP_team_CTF_redspawn},
 	{"team_CTF_bluespawn", SP_team_CTF_bluespawn},
-
-	{"func_door_rotating", SP_func_door_rotating},
-
 	{"team_redobelisk", SP_team_redobelisk},
 	{"team_blueobelisk", SP_team_blueobelisk},
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 
-	{"item_botroam", 0},
+	{"info_player_dd", SP_info_player_dd},
+    {"info_player_dd_red", SP_info_player_dd_red},
+    {"info_player_dd_blue", SP_info_player_dd_blue},
+	{"domination_point", SP_EmptySpawn},
+
+	{"script_variable", SP_script_variable},
+	{"script_cmd", SP_script_cmd},
+
+	{"sandbox_prop", SP_sandbox_prop},
+	{"sandbox_npc", SP_sandbox_npc},
+
+	{"item_botroam", SP_EmptySpawn},
 
 	{NULL, 0}
 };

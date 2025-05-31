@@ -1142,7 +1142,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	tent->sb_isnpc = 1;
 	VectorCopy( tr.endpos, tent->s.origin);
 	tent->s.origin[2] += 25;
-	tent->classname = "target_botspawn";
+	tent->classname = "sandbox_npc";
 	CopyAlloc(tent->clientname, arg02);
 	tent->type = NPC_ENEMY;
 	if(!Q_stricmp (arg03, "NPC_Enemy")){

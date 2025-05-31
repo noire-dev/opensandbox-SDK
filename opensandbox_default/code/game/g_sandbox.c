@@ -290,7 +290,11 @@ void setModel(gentity_t *ent, char *modelName) {
 	}
 }
 
-void SP_func_prop( gentity_t *ent ) {
+void SP_sandbox_npc( gentity_t *ent ) {
+	G_AddBot(ent->clientname, ent->skill, "Blue", 0, ent->message, ent->s.number, ent->target, ent->type, ent );
+}
+
+void SP_sandbox_prop( gentity_t *ent ) {
 	spawn_t	*s;
 	qboolean spawn_entity = qfalse;
 	
@@ -360,7 +364,7 @@ void SP_func_prop( gentity_t *ent ) {
 	ent->s.torsoAnim = ent->objectType;
 
 	//Prop class for saving
-	ent->classname = "func_prop";
+	ent->classname = "sandbox_prop";
 
 	if(!spawn_entity){
 		//Type
@@ -538,7 +542,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	}
 
 	//Prop class for saving
-	ent->classname = "func_prop";
+	ent->classname = "sandbox_prop";
 
 	if(!spawn_entity){
 		//Type

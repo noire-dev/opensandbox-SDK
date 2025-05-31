@@ -27,28 +27,6 @@
 
 #include "g_local.h"
 
-void SP_info_camp( gentity_t *self ) {
-	G_SetOrigin( self, self->s.origin );
-}
-
-void SP_info_waypoint( gentity_t *self ) {
-}
-
-void SP_info_backpack( gentity_t *self ) {
-}
-
-void SP_info_null( gentity_t *self ) {
-	G_FreeEntity( self );
-}
-
-void SP_info_notnull( gentity_t *self ){
-	G_SetOrigin( self, self->s.origin );
-}
-
-void SP_light( gentity_t *self ) {
-	G_FreeEntity( self );
-}
-
 void originToVariableInfo( char variableInfo[MAX_INFO_STRING], vec3_t origin ) {
 	Info_SetValueForKey(variableInfo, "o10", va("%f", origin[0]));
 	Info_SetValueForKey(variableInfo, "o11", va("%f", origin[1]));
@@ -324,26 +302,6 @@ void SP_shooter_plasma( gentity_t *ent ) {
 
 void SP_shooter_grenade( gentity_t *ent ) {
 	InitShooter( ent, WP_GRENADE_LAUNCHER);
-}
-
-void SP_shooter_bfg( gentity_t *ent ) {
-	InitShooter( ent, WP_BFG);
-}
-
-void SP_shooter_prox( gentity_t *ent ) {
-	InitShooter( ent, WP_PROX_LAUNCHER);
-}
-
-void SP_shooter_flame( gentity_t *ent ) {
-	InitShooter( ent, WP_FLAMETHROWER);
-}
-
-void SP_shooter_antimatter( gentity_t *ent ) {
-	InitShooter( ent, WP_ANTIMATTER);
-}
-
-void SP_shooter_custom( gentity_t *ent ) {
-	InitShooter( ent, WP_NAILGUN);
 }
 
 static void PortalDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {

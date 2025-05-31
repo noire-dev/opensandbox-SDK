@@ -1586,7 +1586,7 @@ gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t r
 	bolt->sandboxObject = OBJ_SANDBOX;
 	bolt->objectType = OT_BASIC;
 	bolt->s.torsoAnim = OT_BASIC;
-	bolt->classname = "func_prop";
+	bolt->classname = "sandbox_prop";
 	bolt->s.generic2 = random_mt;
 	bolt->sb_material = random_mt;
 	bolt->s.pos.trType = TR_GRAVITY; bolt->s.pos.trTime = level.time; bolt->physicsBounce = 0.65; bolt->sb_phys = PHYS_DYNAMIC;

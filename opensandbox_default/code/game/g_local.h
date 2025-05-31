@@ -664,21 +664,16 @@ typedef struct {
 
 void SP_info_player_start (gentity_t *ent);
 void SP_info_player_deathmatch (gentity_t *ent);
-//For Double Domination:
 void SP_info_player_dd (gentity_t *ent);
 void SP_info_player_dd_red (gentity_t *ent);
 void SP_info_player_dd_blue (gentity_t *ent);
 
-void SP_info_firstplace(gentity_t *ent);
-void SP_info_secondplace(gentity_t *ent);
-void SP_info_thirdplace(gentity_t *ent);
-void SP_info_podium(gentity_t *ent);
 void SP_info_waypoint( gentity_t *self );
-void SP_info_backpack( gentity_t *self );
 
 void SP_func_plat (gentity_t *ent);
 void SP_func_static (gentity_t *ent);
-void SP_func_prop (gentity_t *ent);
+void SP_sandbox_prop (gentity_t *ent);
+void SP_sandbox_npc (gentity_t *ent);
 void SP_func_breakable (gentity_t *ent);
 void SP_func_rotating (gentity_t *ent);
 void SP_func_bobbing (gentity_t *ent);
@@ -686,7 +681,6 @@ void SP_func_pendulum( gentity_t *ent );
 void SP_func_button (gentity_t *ent);
 void SP_func_door (gentity_t *ent);
 void SP_func_train (gentity_t *ent);
-void SP_func_timer (gentity_t *self);
 
 void SP_trigger_always (gentity_t *ent);
 void SP_trigger_multiple (gentity_t *ent);
@@ -698,40 +692,25 @@ void SP_trigger_death (gentity_t *ent);
 void SP_trigger_frag (gentity_t *ent);
 void SP_trigger_lock (gentity_t *ent);
 
-void SP_target_remove_powerups( gentity_t *ent );
 void SP_target_give (gentity_t *ent);
 void SP_target_delay (gentity_t *ent);
 void SP_target_speaker (gentity_t *ent);
 void SP_target_print (gentity_t *ent);
 void SP_target_laser (gentity_t *self);
-void SP_target_character (gentity_t *ent);
-void SP_target_score( gentity_t *ent );
-void SP_target_clienttarg( gentity_t *ent );
 void SP_target_teleporter( gentity_t *ent );
 void SP_target_relay (gentity_t *ent);
 void SP_target_kill (gentity_t *ent);
 void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_push (gentity_t *ent);
-void SP_target_logic (gentity_t *ent);
 void SP_target_mapchange (gentity_t *ent);
-void SP_target_botspawn (gentity_t *ent);
 void SP_target_unlink (gentity_t *ent);
-void SP_target_debrisemitter (gentity_t *ent);
 void SP_target_effect (gentity_t *ent);
 void SP_target_botremove (gentity_t *ent);
-void SP_target_music (gentity_t *ent);
-void SP_target_stats (gentity_t *ent);
 
 void SP_script_variable (gentity_t *ent);
 void SP_script_cmd (gentity_t *ent);
-void SP_script_menu (gentity_t *ent);
-void SP_script_aicontrol (gentity_t *ent);
 
-void SP_light (gentity_t *self);
-void SP_info_null (gentity_t *self);
-void SP_info_notnull (gentity_t *self);
-void SP_info_camp (gentity_t *self);
 void SP_path_corner (gentity_t *self);
 
 void SP_misc_teleporter_dest (gentity_t *self);
@@ -742,11 +721,6 @@ void SP_misc_portal_surface(gentity_t *ent);
 void SP_shooter_rocket( gentity_t *ent );
 void SP_shooter_plasma( gentity_t *ent );
 void SP_shooter_grenade( gentity_t *ent );
-void SP_shooter_bfg( gentity_t *ent );
-void SP_shooter_prox( gentity_t *ent );
-void SP_shooter_flame( gentity_t *ent );
-void SP_shooter_antimatter( gentity_t *ent );
-void SP_shooter_custom( gentity_t *ent );
 
 void SP_team_CTF_redplayer( gentity_t *ent );
 void SP_team_CTF_blueplayer( gentity_t *ent );
