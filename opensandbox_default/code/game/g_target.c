@@ -22,31 +22,25 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
+
 #include "g_local.h"
+
+//==========================================================
 
 void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	gentity_t	*t;
 	trace_t		trace;
 
-	if ( ent->spawnflags & 1 )
-		activator = level.player;
-	
-	if ( !activator->client ) {
+	if ( !activator->client || !ent->target )
 		return;
-	}
-
-	if ( !ent->target ) {
-		return;
-	}
 
 	memset( &trace, 0, sizeof( trace ) );
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
-		if ( !t->item ) {
+		if ( !t->item )
 			continue;
-		}
-		Touch_Item2( t, activator, &trace, qtrue );
+
+		Touch_Item( t, activator, &trace );
 
 		// make sure it isn't going to respawn or show any events
 		t->nextthink = 0;
@@ -58,25 +52,16 @@ void SP_target_give( gentity_t *ent ) {
 	ent->use = Use_Target_Give;
 }
 
-void Think_Target_Delay( gentity_t *ent ) {
-	if (!ent->r.linked)
-		return;
+//==========================================================
 
-	ent->nextthink = 0;
+void Think_Target_Delay( gentity_t *ent ) {
 	G_UseTargets( ent, ent->activator );
 }
 
 void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	if (!ent->r.linked)
-		return;
-
-	if ( ent->nextthink && (ent->spawnflags & 1) ) {
-		ent->nextthink = 0;
-	} else {
 	ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
-	}
 }
 
 void SP_target_delay( gentity_t *ent ) {
@@ -85,31 +70,14 @@ void SP_target_delay( gentity_t *ent ) {
 		G_SpawnFloat( "wait", "1", &ent->wait );
 	}
 
-	if ( !ent->wait ) {
+	if ( !ent->wait )
 		ent->wait = 1;
-	}
 	ent->use = Use_Target_Delay;
-	ent->r.linked = qtrue;
 }
 
-void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-if ( ent->spawnflags & 8 ) {
-	if ( activator->client && ( ent->spawnflags & 4 ) ) {
-		trap_SendServerCommand( activator-g_entities, va("clp \"%s\"", ent->message ));
-		return;
-	}
+//==========================================================
 
-	if ( ent->spawnflags & 3 ) {
-		if ( ent->spawnflags & 1 ) {
-			G_TeamCommand( TEAM_RED, va("clp \"%s\"", ent->message) );
-		}
-		if ( ent->spawnflags & 2 ) {
-			G_TeamCommand( TEAM_BLUE, va("clp \"%s\"", ent->message) );
-		}
-		return;
-	}
-	trap_SendServerCommand( -1, va("clp \"%s\"", ent->message ));
-} else {
+void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if ( activator->client && ( ent->spawnflags & 4 ) ) {
 		trap_SendServerCommand( activator-g_entities, va("cp \"%s\"", ent->message ));
 		return;
@@ -124,15 +92,15 @@ if ( ent->spawnflags & 8 ) {
 		}
 		return;
 	}
+
 	trap_SendServerCommand( -1, va("cp \"%s\"", ent->message ));
-}
 }
 
 void SP_target_print( gentity_t *ent ) {
-	G_SpawnFloat( "wait", "-1", &ent->wait );
-
 	ent->use = Use_Target_Print;
 }
+
+//==========================================================
 
 void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->spawnflags & 3) {	// looping sound toggles
@@ -140,7 +108,7 @@ void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator)
 			ent->s.loopSound = 0;	// turn it off
 		else
 			ent->s.loopSound = ent->noise_index;	// start it
-	}else {	// normal sound
+	} else {	// normal sound
 		if ( ent->spawnflags & 8 ) {
 			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
 		} else if (ent->spawnflags & 4) {
@@ -159,14 +127,13 @@ void SP_target_speaker( gentity_t *ent ) {
 	G_SpawnFloat( "random", "0", &ent->random );
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &s ) ) {
-		//G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
+		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
 	}
 
 	// force all client reletive sounds to be "activator" speakers that
 	// play on the entity that activates it
-	if ( s[0] == '*' ) {
+	if ( s[0] == '*' )
 		ent->spawnflags |= 8;
-	}
 
 	if (!strstr( s, ".wav" )) {
 		Com_sprintf (buffer, sizeof(buffer), "%s.wav", s );
@@ -183,15 +150,13 @@ void SP_target_speaker( gentity_t *ent ) {
 
 
 	// check for prestarted looping sound
-	if ( ent->spawnflags & 1 ) {
+	if ( ent->spawnflags & 1 )
 		ent->s.loopSound = ent->noise_index;
-	}
 
 	ent->use = Use_Target_Speaker;
 
-	if (ent->spawnflags & 4) {
+	if (ent->spawnflags & 4)
 		ent->r.svFlags |= SVF_BROADCAST;
-	}
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
@@ -200,6 +165,8 @@ void SP_target_speaker( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
+//==========================================================
+
 void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	gentity_t	*dest;
 
@@ -207,7 +174,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	dest = 	G_PickTarget( self->target );
 	if (!dest) {
-                G_Printf ("Couldn't find teleporter destination\n");
+		G_Printf ("Couldn't find teleporter destination\n");
 		return;
 	}
 
@@ -216,15 +183,14 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 
 void SP_target_teleporter( gentity_t *self ) {
 	if (!self->targetname)
-            G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
+		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
 	self->use = target_teleporter_use;
 }
 
-void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	if (!self->r.linked)
-		return;
+//==========================================================
 
+void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if ( ( self->spawnflags & 1 ) && activator->client 
 		&& activator->client->sess.sessionTeam != TEAM_RED ) {
 		return;
@@ -240,103 +206,16 @@ void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 		if ( ent && ent->use ) {
 			ent->use( ent, self, activator );
 		}
-
-		if ( self->target2 ) {
-			ent = G_PickTarget( self->target2 );
-			if ( ent && ent->use ) {
-				ent->use( ent, self, activator );
-			}
-		}
 		return;
 	}
-
-	if (!self->count || self->count < 0) {
-		self->count = 1;
-	}
-
-	if (!self->damage)		//damage is used to keep track of the number of times the target_relay was triggered
-		self->damage = 1;
-	else
-		self->damage++;
-
-	if (self->damage == self->count)
-	{
 	G_UseTargets (self, activator);
-		
-		if ( self->spawnflags & 8 )
-			G_FreeEntity( self );
-		else
-			self->damage = 0;
-	}
 }
 
 void SP_target_relay (gentity_t *self) {
 	self->use = target_relay_use;
-	self->r.linked = qtrue;
 }
 
-void target_mapchange_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	self->nextthink = level.time + FADEOUT_TIME;
-	
-	//store session data to persist health/armor/weapons/ammo and variables to next level (only in SP mode)
-	G_Sav_SaveData( activator, 0 );
-	
-	G_FadeOut( FADEOUT_TIME / 1000, -1 );
-}
-
-void target_mapchange_think (gentity_t *self) {
-	char	*cmd;	
-
-	cmd = "map";
-
-	//perform map switch
-	if ( self->mapname )
-		trap_SendConsoleCommand( EXEC_INSERT, va( "%s %s\n", cmd, self->mapname ) ); 
-	else
-		trap_SendConsoleCommand( EXEC_INSERT, "map_restart 0\n" ); //shouldn't happen
-}
-
-void SP_target_mapchange (gentity_t *self) {
-	char info[1024];
-
-	if ( !self->mapname )
-	{
-		trap_GetServerinfo(info, sizeof(info));
-		self->mapname = Info_ValueForKey( info, "mapname" );
-	}
-	self->use = target_mapchange_use;
-	self->think = target_mapchange_think;
-}
-
-void botsandbox_check (gentity_t *self){
-	if(self->parent && self->parent->health <= 0){
-		self->think = 0;
-		self->nextthink = level.time + 1;
-		G_FreeEntity(self);
-	}
-	VectorCopy( self->parent->s.pos.trBase, self->s.origin );
-	self->think = botsandbox_check;
-	self->nextthink = level.time + 1;
-}
-
-void target_unlink_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	G_ToggleTargetsLinked( self );
-}
-
-//used for immediately spawnflag
-void target_unlink_think (gentity_t *self) {
-	self->nextthink = 0;
-	G_ToggleTargetsLinked( self );
-}
-
-void SP_target_unlink (gentity_t *self) {
-	self->use = target_unlink_use;
-	
-	if ( ( self->spawnflags & 16 ) ) {
-		self->nextthink = level.time + FRAMETIME * 3;	//unlink entities next frame so they can spawn first
-		self->think = target_unlink_think;
-	}
-}
+//==========================================================
 
 void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
@@ -346,12 +225,15 @@ void SP_target_kill( gentity_t *self ) {
 	self->use = target_kill_use;
 }
 
+//==========================================================
+
 void SP_target_position( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
 }
 
-static void target_location_linkup(gentity_t *ent)
-{
+//==========================================================
+
+static void target_location_linkup(gentity_t *ent) {
 	int i;
 	int n;
 
@@ -367,7 +249,7 @@ static void target_location_linkup(gentity_t *ent)
 	for (i = 0, ent = g_entities, n = 1;
 			i < level.num_entities;
 			i++, ent++) {
-		if (ent->classname && !Q_stricmp(ent->classname, "target_location") ) {
+		if (ent->classname && !Q_stricmp(ent->classname, "target_location")) {
 			// lets overload some variables!
 			ent->health = n; // use for location marking
 			trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
@@ -376,8 +258,6 @@ static void target_location_linkup(gentity_t *ent)
 			level.locationHead = ent;
 		}
 	}
-
-	// All linked together now
 }
 
 void SP_target_location( gentity_t *self ){
@@ -386,6 +266,8 @@ void SP_target_location( gentity_t *self ){
 
 	G_SetOrigin( self, self->s.origin );
 }
+
+//==========================================================
 
 void script_variable_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
 	char value[128];
@@ -445,6 +327,8 @@ void SP_script_variable (gentity_t *self) {
 		self->think = script_variable_think;
 	}
 }
+
+//==========================================================
 
 void use_script_cmd (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->spawnflags & 1) {

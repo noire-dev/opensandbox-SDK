@@ -298,7 +298,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	bot->inuse = qtrue;
 	if(spawn){
 		spawn->parent = bot;
-		spawn->think = botsandbox_check;
+		spawn->think = G_BotSandboxCheck;
 		spawn->nextthink = level.time + 1;
 	}
 
@@ -473,4 +473,15 @@ char *G_GetBotInfoByName( const char *name ) {
 	}
 
 	return NULL;
+}
+
+void G_BotSandboxCheck (gentity_t *self){
+	if(self->parent && self->parent->health <= 0){
+		self->think = 0;
+		self->nextthink = level.time + 1;
+		G_FreeEntity(self);
+	}
+	VectorCopy( self->parent->s.pos.trBase, self->s.origin );
+	self->think = G_BotSandboxCheck;
+	self->nextthink = level.time + 1;
 }

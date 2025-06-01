@@ -693,8 +693,6 @@ void SP_target_push (gentity_t *ent);
 
 void SP_path_corner (gentity_t *self);
 
-void SP_misc_teleporter_dest (gentity_t *self);
-void SP_misc_model(gentity_t *ent);
 void SP_misc_portal_camera(gentity_t *ent);
 void SP_misc_portal_surface(gentity_t *ent);
 
@@ -785,7 +783,7 @@ char	*G_GetScoringMapName();
 void	G_Fade( float duration, vec4_t startColor, vec4_t endColor, int clientn );
 void	G_FadeOut( float duration, int clientn );
 void	G_FadeIn( float duration, int clientn );
-void botsandbox_check (gentity_t *self);
+void G_BotSandboxCheck (gentity_t *self);
 void VehiclePhys( gentity_t *self );
 gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
 gentity_t *FindEntityForGravitygun( gentity_t *ent, int range );

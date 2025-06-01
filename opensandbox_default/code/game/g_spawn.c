@@ -222,8 +222,8 @@ spawn_t	spawns_table[] = {
 	{"light", SP_DeleteSpawn},
 	{"path_corner", SP_path_corner},
 
-	{"misc_teleporter_dest", SP_misc_teleporter_dest},
-	{"misc_model", SP_misc_model},
+	{"misc_teleporter_dest", SP_EmptySpawn},
+	{"misc_model", SP_DeleteSpawn},
 	{"misc_portal_surface", SP_misc_portal_surface},
 	{"misc_portal_camera", SP_misc_portal_camera},
 
