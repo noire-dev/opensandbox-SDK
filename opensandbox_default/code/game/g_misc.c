@@ -276,15 +276,15 @@ static void PortalTouch( gentity_t *self, gentity_t *other, trace_t *trace) {
 	}
 
 	if ( other->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_NEUTRALFLAG ), 0 );
+		Drop_Item( other, BG_FindItemForPowerup( PW_NEUTRALFLAG ) );
 		other->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 	}
 	else if ( other->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_REDFLAG ), 0 );
+		Drop_Item( other, BG_FindItemForPowerup( PW_REDFLAG ) );
 		other->client->ps.powerups[PW_REDFLAG] = 0;
 	}
 	else if ( other->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_BLUEFLAG ), 0 );
+		Drop_Item( other, BG_FindItemForPowerup( PW_BLUEFLAG ) );
 		other->client->ps.powerups[PW_BLUEFLAG] = 0;
 	}
 
@@ -353,5 +353,4 @@ void DropPortalSource( gentity_t *player ) {
 			break;
 		}
 	}
-
 }

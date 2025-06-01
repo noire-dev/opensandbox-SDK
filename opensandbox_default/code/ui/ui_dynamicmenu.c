@@ -770,6 +770,7 @@ static void DynamicMenu_MenuDraw( void )
 		"Map Editor",
 		"Free For All",
 		"Tournament",
+		"Last Man Standing",
 		"Team Deathmatch",
 		"Capture the Flag",
 		"One Flag Capture",
@@ -777,7 +778,6 @@ static void DynamicMenu_MenuDraw( void )
 		"Harvester",
 		"Elimination",
 		"CTF Elimination",
-		"Last Man Standing",
 		"Double Domination",
 		"Domination",
 		0

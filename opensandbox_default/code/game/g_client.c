@@ -1415,11 +1415,6 @@ void ClientBegin( int clientNum ) {
 		}
 	}
 
-	// set info that persisted after mapchange
-	if (!IsBot(ent)) {
-		G_Sav_LoadData(ent, 0);
-	}
-
 	//Send domination point names:
 	if(g_gametype.integer == GT_DOMINATION) {
 		DominationPointNamesMessage(ent);
@@ -2400,20 +2395,20 @@ void SetCustomWeapons( gentity_t *ent ) {
 			ent->client->ps.powerups[PW_FLIGHT] +=  g_bluespawn_flight.integer * 1000;
 		}
 		if(g_bluespawn_holdable.integer == 1) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
 		}
 		if(g_bluespawn_holdable.integer == 2) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
 		}
 		if(g_bluespawn_holdable.integer == 3) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
 			ent->client->ps.eFlags |= EF_KAMIKAZE;
 		}
 		if(g_bluespawn_holdable.integer == 4) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
 		}
 		if(g_bluespawn_holdable.integer == 5) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
 		}
 
 		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_bluespawn_armor.integer;
@@ -2503,20 +2498,20 @@ void SetCustomWeapons( gentity_t *ent ) {
 			ent->client->ps.powerups[PW_FLIGHT] +=  g_redspawn_flight.integer * 1000;
 		}
 		if(g_redspawn_holdable.integer == 1) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_TELEPORTER);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
 		}
 		if(g_redspawn_holdable.integer == 2) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_MEDKIT);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
 		}
 		if(g_redspawn_holdable.integer == 3) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_KAMIKAZE);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
 			ent->client->ps.eFlags |= EF_KAMIKAZE;
 		}
 		if(g_redspawn_holdable.integer == 4) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_INVULNERABILITY);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
 		}
 		if(g_redspawn_holdable.integer == 5) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << HI_PORTAL);
+			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
 		}
 
 		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_redspawn_armor.integer;

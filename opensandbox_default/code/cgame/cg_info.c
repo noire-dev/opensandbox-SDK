@@ -149,6 +149,9 @@ void CG_DrawInformation( void ) {
 	case GT_TOURNAMENT:
 		s = "Tournament";
 		break;
+	case GT_LMS:
+		s = "Last Man Standing";
+		break;
 	case GT_TEAM:
 		s = "Team Deathmatch";
 		break;
@@ -169,9 +172,6 @@ void CG_DrawInformation( void ) {
 		break;
 	case GT_CTF_ELIMINATION:
 		s = "CTF Elimination";
-		break;
-	case GT_LMS:
-		s = "Last Man Standing";
 		break;
 	case GT_DOUBLE_D:
 		s = "Double Domination";

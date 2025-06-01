@@ -308,28 +308,6 @@ void Svcmd_MessageWrapper( void )
 
 /*
 ============
-SP_Load_f
-Opens sav file
-============
-*/
-void SP_Load_f( void )
-{
-	G_Sav_LoadData( level.player, 0 );
-}
-
-/*
-============
-SP_Save_f
-Write sav file
-============
-*/
-void SP_Save_f( void )
-{
-	G_Sav_SaveData( level.player, 0 );
-}
-
-/*
-============
 Svcmd_NS_OpenScript_f
 Opens Noire.Script file
 ============

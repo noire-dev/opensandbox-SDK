@@ -108,7 +108,7 @@ untrap_BotGetLevelItemGoal
 ==================
  */
 int untrap_BotGetLevelItemGoal(int start, char *classname, void /* struct bot_goal_s */ *goal) {
-    static char *gametypeNames[] = {"sandbox", "mapeditor", "single", "ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "lms", "dd", "dom"};
+    static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "tournament", "lms", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "dd", "dom"};
     char allowedGametypes[MAX_EPAIRKEY];
     char *gametypeName;
 

@@ -1532,7 +1532,6 @@ Make this thing stop during warmup (done)
 */
 static void PM_Weapon( void ) {
 	int		addTime;
-	int		giTag;
 
 	// don't allow attack until all buttons are up
 	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
@@ -1552,42 +1551,20 @@ static void PM_Weapon( void ) {
 
 	// check for item using
 	if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
-
 		if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
-            giTag = GetPlayerHoldable(pm->ps->stats[STAT_HOLDABLE_ITEM]);
-			if ( giTag == HI_MEDKIT
-				&& pm->ps->stats[STAT_HEALTH] >= mod_medkitlimit ) {
+			if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
+				&& pm->ps->stats[STAT_HEALTH] >= (pm->ps->stats[STAT_MAX_HEALTH] + 25) ) {
 				// don't use medkit if at max health
 			} else {
 				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-				PM_AddEvent( EV_USE_ITEM0 + giTag );
-				if ( giTag == HI_MEDKIT ){
-					if(mod_medkitinf == 0)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-				}
-				else if ( giTag == HI_TELEPORTER ){
-					if(mod_teleporterinf == 0)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-				}
-				else if ( giTag == HI_PORTAL ){
-					if(mod_portalinf == 0)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-				}
-				else if ( giTag == HI_INVULNERABILITY ){
-					if(mod_invulinf == 0)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-				}
-				else if ( giTag == HI_KAMIKAZE ){
-					if(mod_kamikazeinf == 0)
-					pm->ps->stats[STAT_HOLDABLE_ITEM] &= ~(1 << giTag);
-				}
+				PM_AddEvent( EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag );
+				pm->ps->stats[STAT_HOLDABLE_ITEM] = 0;
 			}
 			return;
 		}
 	} else {
 		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 	}
-
 
 	// make weapon function
 	if ( pm->ps->weaponTime > 0 ) {

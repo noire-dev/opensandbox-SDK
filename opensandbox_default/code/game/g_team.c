@@ -353,7 +353,7 @@ gentity_t *Team_ResetFlag( int team ) {
 			G_FreeEntity(ent);
 		else {
 			rent = ent;
-			RespawnItemCtf(ent);
+			RespawnItem(ent);
 		}
 	}
 
@@ -362,15 +362,24 @@ gentity_t *Team_ResetFlag( int team ) {
 	return rent;
 }
 
-//Functions for Domination
+void Team_ResetFlags( void ) {
+	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION) {
+		Team_ResetFlag( TEAM_RED );
+		Team_ResetFlag( TEAM_BLUE );
+	}
+	else if( g_gametype.integer == GT_1FCTF ) {
+		Team_ResetFlag( TEAM_FREE );
+	}
+}
 
+//Functions for Domination
 void Team_Dom_SpawnPoints( void ) {
 	char *c;
 	gentity_t *flag;
 	int i;
 	gitem_t			*it;
         
-        flag = NULL;
+    flag = NULL;
 	
 	if(dominationPointsSpawned)
 		return;
@@ -460,8 +469,7 @@ void Team_Dom_TakePoint( gentity_t *point, int team, int clientnumber ) {
 	if(team == TEAM_RED) {
 		it = BG_FindItem ("Red domination point");
 		PrintMsg( NULL, "Red took \'%s\'\n",level.domination_points_names[i]);
-	} else
-	if(team == TEAM_BLUE) {
+	} else if(team == TEAM_BLUE) {
 		it = BG_FindItem ("Blue domination point");
 		PrintMsg( NULL, "Blue took \'%s\'\n",level.domination_points_names[i]);
 	}
@@ -484,7 +492,6 @@ void Team_Dom_TakePoint( gentity_t *point, int team, int clientnumber ) {
 }
 
 //Functions for Double Domination
-
 void Team_DD_RemovePointAgfx( void ) {
 	if(ddA!=NULL) {
 		G_FreeEntity(ddA);
@@ -549,21 +556,11 @@ void Team_DD_makeB2team( gentity_t *target, int team ) {
 	FinishSpawningItem(ddB );
 }
 
-void Team_ResetFlags( void ) {
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION) {
-		Team_ResetFlag( TEAM_RED );
-		Team_ResetFlag( TEAM_BLUE );
-	}
-	else if( g_gametype.integer == GT_1FCTF ) {
-		Team_ResetFlag( TEAM_FREE );
-	}
-}
-
 void Team_ReturnFlagSound( gentity_t *ent, int team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
-                G_Printf ("Warning:  NULL passed to Team_ReturnFlagSound\n");
+        G_Printf ("Warning:  NULL passed to Team_ReturnFlagSound\n");
 		return;
 	}
 
@@ -585,7 +582,7 @@ void Team_TakeFlagSound( gentity_t *ent, int team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
-                G_Printf ("Warning:  NULL passed to Team_TakeFlagSound\n");
+        G_Printf ("Warning:  NULL passed to Team_TakeFlagSound\n");
 		return;
 	}
 
@@ -623,7 +620,7 @@ void Team_CaptureFlagSound( gentity_t *ent, int team ) {
 	gentity_t	*te;
 
 	if (ent == NULL) {
-                G_Printf ("Warning:  NULL passed to Team_CaptureFlagSound\n");
+        G_Printf ("Warning:  NULL passed to Team_CaptureFlagSound\n");
 		return;
 	}
 
@@ -689,9 +686,7 @@ Update DD points
 */
 
 void updateDDpoints(void) {
-	//teamgame.redStatus = -1; // Invalid to force update
 	Team_SetFlagStatus( TEAM_RED, level.pointStatusA );
-	//teamgame.blueStatus = -1; // Invalid to force update
 	Team_SetFlagStatus( TEAM_BLUE, level.pointStatusB );
 }
 

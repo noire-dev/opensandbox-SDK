@@ -183,10 +183,13 @@
 #endif
 
 typedef enum {
+	//FFA GAMEMODES
 	GT_SANDBOX,
 	GT_MAPEDITOR,
 	GT_FFA,
 	GT_TOURNAMENT,
+	GT_LMS,
+	//TEAM GAMEMODES
 	GT_TEAM,
 	GT_CTF,
 	GT_1FCTF,
@@ -194,9 +197,9 @@ typedef enum {
 	GT_HARVESTER,	
 	GT_ELIMINATION,
 	GT_CTF_ELIMINATION,
-	GT_LMS,
 	GT_DOUBLE_D,
 	GT_DOMINATION,
+
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
@@ -593,7 +596,6 @@ typedef enum {
 	EV_EMIT_DEBRIS_GLASS,		// emite shards of glass
 	EV_EMIT_DEBRIS_STONE,		// emit chunks of stone
 
-	EV_EARTHQUAKE,
 	EV_EXPLOSION,
 	EV_PARTICLES_GRAVITY,
 	EV_PARTICLES_LINEAR,
@@ -809,8 +811,7 @@ typedef enum {
 	IT_HOLDABLE,			// single use, holdable item
 							// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
-	IT_TEAM,
-	IT_BACKPACK				// Backpack dropped by player when dying in SP mode
+	IT_TEAM
 } itemType_t;
 
 #define MAX_ITEM_MODELS 4
@@ -843,7 +844,6 @@ gitem_t	*BG_FindSwepAmmo( int id );
 gitem_t	*BG_FindItemForWeapon( weapon_t weapon );
 gitem_t	*BG_FindItemForPowerup( powerup_t pw );
 gitem_t	*BG_FindItemForHoldable( holdable_t pw );
-gitem_t	*BG_FindItemForBackpack( );
 #define	ITEM_INDEX(x) ((x)-bg_itemlist)
 
 qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps );

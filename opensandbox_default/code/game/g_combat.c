@@ -88,7 +88,6 @@ Toss the weapon and powerups for the killed player
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
 	int			weapon;
-	float		angle;
 	int			i;
 	gentity_t	*drop;
 
@@ -103,96 +102,54 @@ void TossClientItems( gentity_t *self ) {
 	if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS)
 		return;
 
-if(!self->singlebot){
 	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
 	//Nothing!
-	}
-	else
-	if ( self->swep_ammo[ weapon ] ) {
-		// find the item type for this weapon
+	} else if ( self->swep_ammo[ weapon ] ) {
 		item = BG_FindItemForWeapon( weapon );
-
-		// spawn the item
-		Drop_Item( self, item, 0 );
+		Drop_Item( self, item );
 	}
-}
-if(self->singlebot){
-	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
-	//Nothing!
-	}
-	else
-	if ( self->swep_ammo[ weapon ] ) {
-		// find the item type for this weapon
-		item = BG_FindItemForWeapon( weapon );
 
-		// spawn the item
-		Drop_Item( self, item, 0 );
-	}
-}
-
-	// drop all the powerups if not in teamplay
-
-		angle = 45;
-		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
-			if ( self->client->ps.powerups[ i ] > level.time ) {
-				item = BG_FindItemForPowerup( i );
-				if ( !item ) {
-					continue;
-				}
-				drop = Drop_Item( self, item, angle );
-				// decide how many seconds it has left
-				drop->count = ( self->client->ps.powerups[ i ] - level.time ) / 1000;
-				if ( drop->count < 1 ) {
-					drop->count = 1;
-				}
-				angle += 45;
+	// drop all weapons
+	for ( i = 1 ; i < WEAPONS_NUM ; i++ ) {
+		if ( self->swep_list[ i ] >= 1 ) {
+			item = BG_FindItemForWeapon( i );
+			if ( !item || i == WP_GAUNTLET )
+				continue;
+			drop = Drop_Item( self, item );
+			drop->count = ( self->swep_ammo[ i ] );
+			if ( drop->count < 1 ) {
+				drop->count = 1;
 			}
 		}
-	if(!self->singlebot){
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_TELEPORTER)) {
-	item = BG_FindItem( "Personal Teleporter" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_MEDKIT)) {
-	item = BG_FindItem( "Medkit" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KAMIKAZE)) {
-	item = BG_FindItem( "Kamikaze" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_INVULNERABILITY)) {
-	item = BG_FindItem( "Invulnerability" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_PORTAL)) {
-	item = BG_FindItem( "Portal" );
-	Drop_Item( self, item, 0 );
-	}
-	}
-	if(self->singlebot){
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_TELEPORTER)) {
-	item = BG_FindItem( "Personal Teleporter" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_MEDKIT)) {
-	item = BG_FindItem( "Medkit" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KAMIKAZE)) {
-	item = BG_FindItem( "Kamikaze" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_INVULNERABILITY)) {
-	item = BG_FindItem( "Invulnerability" );
-	Drop_Item( self, item, 0 );
-	}
-	if(self->client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_PORTAL)) {
-	item = BG_FindItem( "Portal" );
-	Drop_Item( self, item, 0 );
-	}
 	}
 
+	// drop all powerups
+	for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+		if ( self->client->ps.powerups[ i ] > level.time ) {
+			item = BG_FindItemForPowerup( i );
+			if ( !item )
+				continue;
+			drop = Drop_Item( self, item );
+			drop->count = ( self->client->ps.powerups[ i ] - level.time ) / 1000;
+			if ( drop->count < 1 ) {
+				drop->count = 1;
+			}
+		}
+	}
+
+	// drop holdable
+	for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+		if ( self->client->ps.powerups[ i ] > level.time ) {
+			item = BG_FindItemForPowerup( i );
+			if ( !item )
+				continue;
+			drop = Drop_Item( self, item );
+			drop->count = ( self->client->ps.powerups[ i ] - level.time ) / 1000;
+			if ( drop->count < 1 ) {
+				drop->count = 1;
+			}
+		}
+	}
 }
 
 /*

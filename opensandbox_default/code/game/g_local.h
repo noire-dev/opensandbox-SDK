@@ -279,9 +279,6 @@ struct gentity_s {
 	int			swep_list[WEAPONS_NUM];
 	int			swep_ammo[WEAPONS_NUM];
 	int			swep_id;
-	
-	int			backpackContentsList[WEAPONS_NUM];
-	int			backpackContentsAmmo[WEAPONS_NUM];
 
 	//Physgun and Gravitygun
 	gentity_t 	*grabbedEntity;		//physgun object for player
@@ -740,12 +737,10 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText );
 void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
-void RespawnItemCtf( gentity_t *ent );
 void UseHoldableItem( gentity_t *ent );
 void PrecacheItem (gitem_t *it);
-gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle );
+gentity_t *Drop_Item( gentity_t *ent, gitem_t *item );
 gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity );
-gentity_t *LaunchBackpack( gitem_t *item, gentity_t *self, vec3_t velocity );
 void SetRespawn (gentity_t *ent, float delay);
 void G_SpawnItem (gentity_t *ent, gitem_t *item);
 void FinishSpawningItem( gentity_t *ent );
@@ -1247,10 +1242,6 @@ void Svcmd_ReplaceTexture_f( void );
 void Svcmd_DumpUser_f( void );
 void Svcmd_MessageWrapper( void );
 void Svcmd_PropNpc_AS_f( void );
-
-//Save system
-void SP_Load_f( void );
-void SP_Save_f( void );
 
 //Noire.Script
 void Svcmd_NS_OpenScript_f( void );

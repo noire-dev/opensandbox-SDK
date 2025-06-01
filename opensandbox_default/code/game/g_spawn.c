@@ -29,10 +29,8 @@
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;
 
-	if ( !level.spawning ) {
+	if ( !level.spawning )
 		*out = (char *)defaultString;
-		//G_Error( "G_SpawnString() called while not spawning" );
-	}
 
 	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
 		if ( !Q_stricmp( key, level.spawnVars[i][0] ) ) {
@@ -72,15 +70,6 @@ qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out )
 	return present;
 }
 
-qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out ) {
-	char		*s;
-	qboolean	present;
-
-	present = G_SpawnString( key, defaultString, &s );
-	sscanf( s, "%f %f %f %f", &out[0], &out[1], &out[2], &out[3] );
-	return present;
-}
-
 void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin( ent, ent->s.origin ); }
 void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 
@@ -90,14 +79,13 @@ void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 typedef enum {
 	F_INT, 
 	F_FLOAT,
-	F_STRING,			// string on disk, pointer in memory, TAG_LEVEL
+	F_STRING,
 	F_VECTOR,
 	F_ANGLEHACK,
 	F_IGNORE
 } fieldtype_t;
 
-typedef struct
-{
+typedef struct {
 	char	*name;
 	int		ofs;
 	fieldtype_t	type;
@@ -266,77 +254,60 @@ returning qfalse if not found
 qboolean G_CallSpawn( gentity_t *ent ) {
 	spawn_t	*s;
 	gitem_t	*item;
-    char cvarname[128];
-    char itemname[128];
+    char 	itemname[128];
 	
-	if( strcmp(ent->classname, "none") == 0 ) {
-	return qfalse;
+	if( strcmp(ent->classname, "none") == 0 )
+		return qfalse;
+
+    Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
+
+	if( g_gametype.integer == GT_OBELISK ) {
+		if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
+		}
+		if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
+		}
 	}
-
-        //Construct a replace cvar:
-		Com_sprintf(cvarname, sizeof(cvarname), "replace_%s", ent->classname);
-
-        //Look an alternative item up:
-        trap_Cvar_VariableStringBuffer(cvarname,itemname,sizeof(itemname));
-        if(itemname[0]==0) //If nothing found use original
-            Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
-        else
-            G_Printf ("%s replaced by %s\n", ent->classname, itemname);
-
-		if( g_gametype.integer == GT_OBELISK ) {
-			if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
-			}
-			if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
-			}
+	if( g_gametype.integer == GT_HARVESTER ) {
+		if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
 		}
-		if( g_gametype.integer == GT_HARVESTER ) {
-			if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
-			}
-			if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
-			}
-			if( strcmp(itemname, "team_CTF_neutralflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
-			}
-		}	
-		if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM || g_gametype.integer == GT_LMS || g_gametype.integer == GT_DOMINATION ) {
-			if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "holdable_portal");
-			}
-			if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "item_armor_full");
-			}
+		if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
 		}
-		if(g_gametype.integer == GT_DOUBLE_D) {
-			if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-			if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
-				Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-			}
-		}		
-
+		if( strcmp(itemname, "team_CTF_neutralflag") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
+		}
+	}
+	if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM || g_gametype.integer == GT_LMS || g_gametype.integer == GT_DOMINATION ) {
+		if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+	}
+	if(g_gametype.integer == GT_DOUBLE_D) {
+		if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+	}
 
 	if ( itemname[0]==0) {
         G_Printf ("G_CallSpawn: NULL classname\n");
@@ -359,35 +330,8 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 			return qtrue;
 		}
 	}
-        G_Printf ("%s doesn't have a spawn function\n", itemname);
-	return qfalse;
-}
 
-/*
-===============
-G_CanBeSpawned
-
-Finds the spawn function for the entity, 
-returning qfalse if not found
-===============
-*/
-qboolean G_CanBeSpawned( const char *classname ) {
-	spawn_t	*s;
-	gitem_t	*item;
-
-	// check item spawn functions
-	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
-		if ( !strcmp(item->classname, classname) ) {
-			return qtrue;
-		}
-	}
-
-	// check normal spawn functions
-	for ( s=spawns_table ; s->name ; s++ ) {
-		if ( !strcmp(s->name, classname) ) {
-			return qtrue;
-		}
-	}
+    G_Printf ("%s doesn't have a spawn function\n", itemname);
 	return qfalse;
 }
 
@@ -404,9 +348,7 @@ char *G_NewString( const char *string ) {
 	int		i,l;
 	
 	l = strlen(string) + 1;
-    //KK-OAX Changed to Tremulous's BG_Alloc
 	newb = BG_Alloc( l );
-
 	new_p = newb;
 
 	// turn \n into a real linefeed
@@ -488,7 +430,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-	static char *gametypeNames[] = {"sandbox", "mapeditor", "single", "ffa", "tournament", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "lms", "dd", "dom"};
+	static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "tournament", "lms", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "dd", "dom"};
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -546,9 +488,8 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 
 	// if we didn't get a classname, don't bother spawning anything
-	if ( !G_CallSpawn( ent ) ) {
+	if ( !G_CallSpawn( ent ) )
 		G_FreeEntity( ent );
-	}
 }
 
 /*

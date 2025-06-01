@@ -22,29 +22,16 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
+
 #include "g_local.h"
 
-/*
-
-  Items are any object that a player can touch to gain some effect.
-
-  Pickup will return the number of seconds until they should respawn.
-
-  all items should pop when dropped in lava or slime
-
-  Respawnable items don't actually go away when picked up, they are
-  just made invisible and untouchable.  This allows them to ride
-  movers and respawn apropriately.
-*/
-
-
-#define	RESPAWN_ARMOR		g_armorrespawn.value
-#define	RESPAWN_HEALTH		g_healthrespawn.value
-#define	RESPAWN_AMMO		g_ammorespawn.value
-#define	RESPAWN_HOLDABLE	g_holdablerespawn.value
-#define	RESPAWN_MEGAHEALTH	g_megahealthrespawn.value//120
-#define	RESPAWN_POWERUP		g_poweruprespawn.value
+#define	RESPAWN_ARMOR		25
+#define	RESPAWN_HEALTH		35
+#define	RESPAWN_AMMO		40
+#define	RESPAWN_HOLDABLE	60
+#define	RESPAWN_MEGAHEALTH	35
+#define	RESPAWN_POWERUP		120
+#define	RESPAWN_WEAPON		5
 
 int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 	int			quantity;
@@ -52,10 +39,7 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 	gclient_t	*client;
 
 	if ( !other->client->ps.powerups[ent->item->giTag] ) {
-		// round timing to seconds to make multiple powerup timers
-		// count in sync
-		other->client->ps.powerups[ent->item->giTag] =
-			level.time - ( level.time % 1000 );
+		other->client->ps.powerups[ent->item->giTag] = level.time - ( level.time % 1000 );
 	}
 
 	if (ent->count) {
@@ -109,11 +93,11 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 			continue;
 		}
 
-    // if same team in team game, no sound
-    // cannot use OnSameTeam as it expects to g_entities, not clients
-  	if (g_gametype.integer >= GT_TEAM && g_ffa_gt==0 && other->client->sess.sessionTeam == client->sess.sessionTeam) {
-    	continue;
-    }
+    	// if same team in team game, no sound
+    	// cannot use OnSameTeam as it expects to g_entities, not clients
+  		if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam ) {
+    	  continue;
+    	}
 
 		// if too far away, no sound
 		VectorSubtract( ent->s.pos.trBase, client->ps.origin, delta );
@@ -143,70 +127,68 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 	int		clientNum;
 	char	userinfo[MAX_INFO_STRING];
+	float	handicap;
 	int		max;
 
 	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
 	other->client->persistantPowerup = ent;
 
-	clientNum = other->client->ps.clientNum;
-	trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-
 	switch( ent->item->giTag ) {
 	case PW_GUARD:
-		if (g_guardhealthmodifier.value > 0){
-
-		max = (int)(g_guardhealthmodifier.value * 100);
+		clientNum = other->client->ps.clientNum;
+		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
+		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
+		if( handicap<=0.0f || handicap>100.0f) {
+			handicap = 100.0f;
+		}
+		max = (int)(2 *  handicap);
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
 		other->client->ps.stats[STAT_MAX_HEALTH] = max;
 		other->client->ps.stats[STAT_ARMOR] = max;
 		other->client->pers.maxHealth = max;
-		}
 
 		break;
 
 	case PW_SCOUT:
-		if (g_scouthealthmodifier.value > 0){
-
-		max = (int)(g_scouthealthmodifier.value *  100);
-
-		other->health = max;
-		other->client->ps.stats[STAT_HEALTH] = max;
-		other->client->ps.stats[STAT_MAX_HEALTH] = max;
-		other->client->ps.stats[STAT_ARMOR] = max;
-		other->client->pers.maxHealth = max;
+		clientNum = other->client->ps.clientNum;
+		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
+		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
+		if( handicap<=0.0f || handicap>100.0f) {
+			handicap = 100.0f;
 		}
-
+		other->client->pers.maxHealth = handicap;
+		other->client->ps.stats[STAT_ARMOR] = 0;
 		break;
 
 	case PW_DOUBLER:
-		if(g_doublerhealthmodifier.value > 0){
-
-		max = (int)(g_doublerhealthmodifier.value *  100);
-
-		other->health = max;
-		other->client->ps.stats[STAT_HEALTH] = max;
-		other->client->ps.stats[STAT_MAX_HEALTH] = max;
-		other->client->ps.stats[STAT_ARMOR] = max;
-		other->client->pers.maxHealth = max;
+		clientNum = other->client->ps.clientNum;
+		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
+		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
+		if( handicap<=0.0f || handicap>100.0f) {
+			handicap = 100.0f;
 		}
-
+		other->client->pers.maxHealth = handicap;
 		break;
 	case PW_AMMOREGEN:
-		if(g_ammoregenhealthmodifier.value > 0){
-
-		max = (int)(g_ammoregenhealthmodifier.value *  100);
-
-		other->health = max;
-		other->client->ps.stats[STAT_HEALTH] = max;
-		other->client->ps.stats[STAT_MAX_HEALTH] = max;
-		other->client->ps.stats[STAT_ARMOR] = max;
-		other->client->pers.maxHealth = max;
+		clientNum = other->client->ps.clientNum;
+		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
+		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
+		if( handicap<=0.0f || handicap>100.0f) {
+			handicap = 100.0f;
 		}
-
+		other->client->pers.maxHealth = handicap;
+		memset(other->client->ammoTimes, 0, sizeof(other->client->ammoTimes));
+		break;
 	default:
-		other->client->pers.maxHealth = 100;
+		clientNum = other->client->ps.clientNum;
+		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
+		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
+		if( handicap<=0.0f || handicap>100.0f) {
+			handicap = 100.0f;
+		}
+		other->client->pers.maxHealth = handicap;
 		break;
 	}
 
@@ -214,33 +196,14 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 }
 
 int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
-	other->client->ps.stats[STAT_HOLDABLE_ITEM] |= (1 << ent->item->giTag);
-	
-	//set teleportation target if player picks up a personal teleporter with fixed teleporter target
-	if ( ent->item->giTag == HI_TELEPORTER && ent->teleporterTarget ) {
-		other->teleporterTarget = ent->teleporterTarget;
-    }
+
+	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 
 	if( ent->item->giTag == HI_KAMIKAZE ) {
 		other->client->ps.eFlags |= EF_KAMIKAZE;
 	}
 
 	return RESPAWN_HOLDABLE;
-}
-
-int Pickup_Backpack( gentity_t *ent, gentity_t *other) {
-	int i;
-
-	//weapons
-	for(i = 1; i < WEAPONS_NUM; i++){
-		other->swep_list[i] = ent->backpackContentsList[i];
-		other->swep_ammo[i] = ent->backpackContentsAmmo[i];
-	}
-
-	//holdables
-	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->backpackContentsList[0];
-
-	return -1;
 }
 
 void Set_Weapon (gentity_t *ent, int weapon, int status) {
@@ -299,25 +262,17 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 
 	SetUnlimitedWeapons(other);
 
-	// team deathmatch has slow weapon respawns
-	if ( g_gametype.integer == GT_TEAM ) {
-		return g_weaponTeamRespawn.integer;
-	}
-
-	return g_weaponRespawn.integer;
+	return RESPAWN_WEAPON;
 }
 
 int Pickup_Health (gentity_t *ent, gentity_t *other) {
 	int			max;
 	int			quantity;
 
-    if (!other->client)
-        return RESPAWN_HEALTH;
-
 	// small and mega healths will go over the max
-	if (other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
+	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	} else if (ent->item->quantity != 5 && ent->item->quantity != 100) {
+	} else if ( ent->item->quantity != 5 && ent->item->quantity != 100 ) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
 	} else {
 		max = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
@@ -345,7 +300,7 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 
 int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 	int		upperBound;
-	
+
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
 	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
@@ -370,10 +325,10 @@ RespawnItem
 void RespawnItem( gentity_t *ent ) {
 	int		spawn_item;
 	gitem_t	*item;
-	int i = 1;
+	int 	i = 1;
 
-    if(g_randomItems.integer && ent->item->giType != IT_PERSISTANT_POWERUP && ent->item->giType != IT_TEAM && ent->item->giType != IT_BACKPACK) {
-		char* 			randomitem[] = {
+    if(g_randomItems.integer && ent->item->giType != IT_PERSISTANT_POWERUP && ent->item->giType != IT_TEAM) {
+		char* randomitem[] = {
 			"none",
 			"weapon_machinegun",
 			"weapon_shotgun",
@@ -450,13 +405,13 @@ void RespawnItem( gentity_t *ent ) {
 		int choice;
 
 		if ( !ent->teammaster ) {
-			G_Printf( "RespawnItem: bad teammaster");
+			G_Error( "RespawnItem: bad teammaster");
 		}
 		master = ent->teammaster;
 
 		for (count = 0, ent = master; ent; ent = ent->teamchain, count++);
 
-		choice = (count > 0)? rand()%count : 0;
+		choice = rand() % count;
 
 		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++);
 	}
@@ -465,102 +420,6 @@ void RespawnItem( gentity_t *ent ) {
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	trap_LinkEntity (ent);
-
-	if ( ent->item->giType == IT_POWERUP ) {
-		// play powerup spawn sound to all clients
-		gentity_t	*te;
-
-		// if the powerup respawn sound should Not be global
-		if (ent->speed) {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
-		}
-		else {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-		}
-		te->s.eventParm = G_SoundIndex( "sound/items/poweruprespawn.wav" );
-		te->r.svFlags |= SVF_BROADCAST;
-	}
-
-	if ( ent->item->giType == IT_HOLDABLE && ent->item->giTag == HI_KAMIKAZE ) {
-		// play powerup spawn sound to all clients
-		gentity_t	*te;
-
-		// if the powerup respawn sound should Not be global
-		if (ent->speed) {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
-		}
-		else {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-		}
-		te->s.eventParm = G_SoundIndex( "sound/items/kamikazerespawn.wav" );
-		te->r.svFlags |= SVF_BROADCAST;
-	}
-
-	// play the normal respawn sound only to nearby clients
-	G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
-
-	ent->nextthink = 0;
-}
-
-/*
-===============
-RespawnItemCtf
-===============
-*/
-void RespawnItemCtf( gentity_t *ent ) {
-	// randomly select from teamed entities
-	if (ent->team) {
-		gentity_t	*master;
-		int	count;
-		int choice;
-
-		if ( !ent->teammaster ) {
-			G_Printf( "RespawnItem: bad teammaster");
-		}
-		master = ent->teammaster;
-
-		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
-			;
-
-		choice = (count > 0)? rand()%count : 0;
-
-		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++);
-	}
-
-	ent->r.contents = CONTENTS_TRIGGER;
-	ent->s.eFlags &= ~EF_NODRAW;
-	ent->r.svFlags &= ~SVF_NOCLIENT;
-	trap_LinkEntity (ent);
-
-	if ( ent->item->giType == IT_POWERUP ) {
-		// play powerup spawn sound to all clients
-		gentity_t	*te;
-
-		// if the powerup respawn sound should Not be global
-		if (ent->speed) {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
-		}
-		else {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-		}
-		te->s.eventParm = G_SoundIndex( "sound/items/poweruprespawn.wav" );
-		te->r.svFlags |= SVF_BROADCAST;
-	}
-
-	if ( ent->item->giType == IT_HOLDABLE && ent->item->giTag == HI_KAMIKAZE ) {
-		// play powerup spawn sound to all clients
-		gentity_t	*te;
-
-		// if the powerup respawn sound should Not be global
-		if (ent->speed) {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
-		}
-		else {
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-		}
-		te->s.eventParm = G_SoundIndex( "sound/items/kamikazerespawn.wav" );
-		te->r.svFlags |= SVF_BROADCAST;
-	}
 
 	// play the normal respawn sound only to nearby clients
 	G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
@@ -668,9 +527,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 		break;
 	case IT_HOLDABLE:
 		respawn = Pickup_Holdable(ent, other);
-		break;
-	case IT_BACKPACK:
-		respawn = Pickup_Backpack(ent, other);
 		break;
 	default:
 		return;
@@ -802,84 +658,13 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 		dropped->nextthink = level.time + 60*1000;
 		Team_CheckDroppedItem( dropped );
 	} else { // auto-remove after 30 seconds
-		if ( item->giType != IT_BACKPACK ) { // auto-remove after 30 seconds if it's not a backpack
-			dropped->think = G_FreeEntity;
-			dropped->nextthink = level.time + 120*1000;
-		}
+		dropped->think = G_FreeEntity;
+		dropped->nextthink = level.time + 120*1000;
 	}
 
 	dropped->flags = FL_DROPPED_ITEM;
 
 	trap_LinkEntity (dropped);
-
-	return dropped;
-}
-
-void BackpackThink(gentity_t* self) {
-	gentity_t* ent2;
-
-	ent2 = G_TempEntity(self->r.currentOrigin, EV_SMOKEPUFF);
-	ent2->s.constantLight = (255 << 8);
-	ent2->s.eventParm = 10;	//eventParm is used to determine the amount of time the smoke puff exists
-	ent2->s.generic1 = 16;	//generic1 is used to determine the movement speed of the smoke puff
-	ent2->s.otherEntityNum = 1 * 32; //otherEntityNum is used to determine the size of the smokepuff. The default is 32.
-	ent2->s.angles[2] = 1;
-
-	self->nextthink = level.time + 1000;
-}
-
-/*
-================
-LaunchBackpack
-
-Spawns a backpack and tosses it forward
-================
-*/
-gentity_t *LaunchBackpack( gitem_t *item, gentity_t *self, vec3_t velocity ) {
-	gentity_t	*dropped;
-	vec3_t		origin;
-	int			weapons = 0;
-	int			i;
-
-	VectorCopy(self->s.pos.trBase, origin);
-
-	dropped = G_Spawn();
-
-	dropped->s.eType = ET_ITEM;
-	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
-		dropped->sandboxObject = OBJ_EDITOR;
-	}
-	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
-	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
-
-	dropped->classname = item->classname;
-	dropped->item = item;
-	VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS);
-	VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
-	dropped->r.contents = CONTENTS_TRIGGER;
-
-	dropped->touch = Touch_Item;
-
-	G_SetOrigin( dropped, origin );
-	dropped->s.pos.trType = TR_GRAVITY;
-	dropped->s.pos.trTime = level.time;
-	VectorCopy( velocity, dropped->s.pos.trDelta );
-
-	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	dropped->flags = FL_DROPPED_ITEM;
-
-	trap_LinkEntity (dropped);
-
-	//set contents of backpack
-	
-	//holdables
-	dropped->backpackContentsList[0] = self->client->ps.stats[STAT_HOLDABLE_ITEM];
-	
-	//weapons
-	for(i = 1; i < WEAPONS_NUM; i++){
-		dropped->backpackContentsList[i] = self->swep_list[i];
-		dropped->backpackContentsAmmo[i] = self->swep_ammo[i];
-	}
 
 	return dropped;
 }
@@ -891,21 +676,18 @@ Drop_Item
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
+gentity_t *Drop_Item( gentity_t *ent, gitem_t *item ) {
 	vec3_t	velocity;
 	vec3_t	angles;
 
 	VectorCopy( ent->s.apos.trBase, angles );
-	angles[YAW] += angle;
+	angles[YAW] += random() * 360.0f;
 	angles[PITCH] = 0;	// always forward
 
 	AngleVectors( angles, velocity, NULL, NULL );
-	VectorScale( velocity, 150, velocity );
+	VectorScale( velocity, 320, velocity );
 	velocity[2] += 200 + crandom() * 50;
 	
-	if ( item->giType == IT_BACKPACK )
-		return LaunchBackpack( item, ent, velocity );
-	else
 	return LaunchItem( item, ent->s.pos.trBase, velocity );
 }
 
@@ -1276,47 +1058,6 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 
 /*
 ================
-RespawnBackpack
-
-When a backpack falls into a nodrop area, it will be teleported towards the nearest info_backpack entity.
-Returns false if no info_backpack entity to teleport to was found or supplied entity was not a backpack. Otherwise returns true.
-================
-*/
-qboolean TeleportBackpack( gentity_t *backpack ) {
-	gentity_t	*spot;
-	vec3_t		from, delta;
-	float		dist, nearestDist;
-	gentity_t	*nearestSpot;
-
-	if ( backpack->item->giType != IT_BACKPACK )
-		return qfalse;
-
-	VectorCopy(backpack->r.currentOrigin, from);
-
-	nearestDist = 999999;
-	nearestSpot = NULL;
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), "info_backpack")) != NULL) {
-		VectorSubtract( spot->s.origin, from, delta );
-		dist = VectorLength( delta );
-		if ( dist < nearestDist ) {
-			nearestDist = dist;
-			nearestSpot = spot;
-		}
-	}
-
-	if (nearestSpot != NULL) {
-		G_SetOrigin(backpack, nearestSpot->s.origin);
-		backpack->s.pos.trType = TR_GRAVITY;
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-/*
-================
 G_RunItem
 
 ================
@@ -1350,7 +1091,7 @@ void G_RunItem( gentity_t *ent ) {
 	} else {
 		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;//MASK_SOLID;
 	}
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, 
 		ent->r.ownerNum, mask );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
@@ -1374,9 +1115,7 @@ void G_RunItem( gentity_t *ent ) {
 		if (ent->item && ent->item->giType == IT_TEAM) {
 			Team_FreeEntity(ent);
 		} else {
-		if ( !TeleportBackpack( ent ) ) {
 			G_FreeEntity( ent );
-                }
 		}
 		return;
 	}

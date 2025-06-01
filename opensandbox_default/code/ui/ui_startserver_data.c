@@ -121,6 +121,7 @@ const char *gametype_items[NUM_GAMETYPES + 1] = {
 	"Map Editor",
 	"Free For All",
 	"Tournament",
+	"Last Man Standing",
 	"Team Deathmatch",
 	"Capture the Flag",
 	"One Flag Capture",
@@ -128,7 +129,6 @@ const char *gametype_items[NUM_GAMETYPES + 1] = {
 	"Harvester",
 	"Elimination",
 	"CTF Elimination",
-	"Last Man Standing",
 	"Double Domination",
 	"Domination",
 	0
@@ -139,6 +139,7 @@ const char *gametype_itemsru[NUM_GAMETYPES + 1] = {
 	"Редактор Карт",
 	"Все Против Всех",
 	"Турнир",
+	"Последний Оставшийся",
 	"Командный Бой",
 	"Захват Флага",
 	"Один Флаг",
@@ -146,7 +147,6 @@ const char *gametype_itemsru[NUM_GAMETYPES + 1] = {
 	"Жнец",
 	"Устранение",
 	"Устранение: Захват Флага",
-	"Последний Оставшийся",
 	"Двойное Доминирование",
 	"Доминирование",
 	0

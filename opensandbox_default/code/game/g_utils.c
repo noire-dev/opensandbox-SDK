@@ -492,7 +492,7 @@ void G_DropLoot(gentity_t* ent, gentity_t* activator) {
 			if (t->count > 0) {
 			t->item->quantity = t->count;
 			}
-			Drop_Item(activator, t->item, 0);
+			Drop_Item(activator, t->item);
 		}
 		if (!ent->inuse) {
 			G_Printf("entity was removed while using targets\n");
@@ -507,7 +507,7 @@ void G_DropLoot(gentity_t* ent, gentity_t* activator) {
 			G_Printf("WARNING: Target entity is not an item\n");
 		} else {
 			t->item->quantity = t->count;
-			Drop_Item(activator, t->item, 0);
+			Drop_Item(activator, t->item);
 		}
 		if (!ent->inuse) {
 			G_Printf("entity was removed while using targets\n");

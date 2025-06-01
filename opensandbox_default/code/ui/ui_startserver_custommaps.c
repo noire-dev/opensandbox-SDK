@@ -154,6 +154,12 @@ int GametypeBits( char *string ) {
 			continue;
 		}
 
+		if( Q_stricmp( token, "lms" ) == 0 ) {
+			bits |= 1 << GT_LMS;
+			bits |= 1 << GT_MAPEDITOR;
+			continue;
+		}
+
 		if( Q_stricmp( token, "team" ) == 0 ) {
 			bits |= 1 << GT_TEAM;
 			bits |= 1 << GT_ELIMINATION;
@@ -198,13 +204,8 @@ int GametypeBits( char *string ) {
 			bits |= 1 << GT_CTF_ELIMINATION;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
-	}
-
-		if( Q_stricmp( token, "lms" ) == 0 ) {
-			bits |= 1 << GT_LMS;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
 		}
+
 		if( Q_stricmp( token, "dd" ) == 0 ) {
 			bits |= 1 << GT_DOUBLE_D;
 			bits |= 1 << GT_MAPEDITOR;

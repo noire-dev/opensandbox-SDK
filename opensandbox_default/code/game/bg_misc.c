@@ -904,20 +904,6 @@ gitem_t	bg_itemlist[] =
 	},
 
 	{
-		"item_backpack", 
-		"sound/misc/w_pkup.wav",				//TODO: Make dedicated sound?
-        { "models/powerups/backpack/backpack.md3", NULL, NULL, NULL},
-		"icons/icon_backpack",
-		"Backpack",
-		"Рюкзак",	
-		0,
-		IT_BACKPACK,
-		1,
-		"",
-		""
-	},
-
-	{
 		"holdable_key_red", 
 		"sound/items/keycard_03.wav",
         { "models/powerups/keys/keycard-r.md3", NULL, NULL, NULL},
@@ -1486,25 +1472,6 @@ gitem_t	*BG_FindSwepAmmo( int id ) {
 }
 
 /*
-===============
-BG_FindBackpack
-
-===============
-*/
-gitem_t *BG_FindItemForBackpack() {
-	gitem_t	*it;
-	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
-		if ( it->giType == IT_BACKPACK ) {
-			return it;
-		}
-	}
-
-	Com_Error( ERR_DROP, "Couldn't find bg_itemlist definition for backpack" );
-	return NULL;
-}
-
-/*
 ============
 BG_PlayerTouchesItem
 
@@ -1530,8 +1497,6 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 	return qtrue;
 }
 
-
-
 /*
 ================
 BG_CanItemBeGrabbed
@@ -1544,40 +1509,31 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 	gitem_t	*item;
 	int		upperBound;
 
-	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
-		Com_Printf( "BG_CanItemBeGrabbed: index out of range\n");
-		//Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
-	}
+	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems )
+		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
 
 	item = &bg_itemlist[ent->modelindex];
 
 	switch( item->giType ) {
-	case IT_BACKPACK:
-		return qtrue;	// backpack can always be picked up
 	case IT_WEAPON:
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
 		return qtrue;	// weapons are always picked up
 
 	case IT_AMMO:
-		// oatmeal begin
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
-		// oatmeal end
-		if ( ps->stats[STAT_SWEPAMMO] >= mod_ammolimit ) {
+		if ( ps->ammo[ item->giTag ] >= 200 ) {
 			return qfalse;		// can't hold any more
 		}
 		return qtrue;
 
 	case IT_ARMOR:
-		// oatmeal begin
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
-		// oatmeal end
 		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
 			return qfalse;
 		}
 
+		// we also clamp armor to the maxhealth for handicapping
 		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
-		} else {
+		}
+		else {
 			upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
 		}
 
@@ -1587,17 +1543,11 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_HEALTH:
-		// oatmeal begin
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
-		// oatmeal end
-
 		// small and mega healths will go over the max, otherwise
 		// don't pick up if already at max
 		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
-		}
-		else
-		if ( item->quantity == 5 || item->quantity == 100 ) {
+		} else if ( item->quantity == 5 || item->quantity == 100 ) {
 			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
 				return qfalse;
 			}
@@ -1610,16 +1560,9 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_POWERUP:
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
 		return qtrue;	// powerups are always picked up
 
 	case IT_PERSISTANT_POWERUP:
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
-
-		//In Double D we don't want persistant Powerups (or maybe, can be discussed)
-		if(gametype == GT_DOUBLE_D)
-			return qfalse;
-
 		// can only hold one item at a time
 		if ( ps->stats[STAT_PERSISTANT_POWERUP] ) {
 			return qfalse;
@@ -1636,7 +1579,6 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_TEAM: // team items, such as flags	
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
 		if( gametype == GT_1FCTF ) {
 			// neutral flag can always be picked up
 			if( item->giTag == PW_NEUTRALFLAG ) {
@@ -1652,7 +1594,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 				}
 			}
 		}
-		if( gametype == GT_CTF || gametype == GT_CTF_ELIMINATION) {
+		if( gametype == GT_CTF ) {
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
 			// but we can't pick up our flag at base
@@ -1669,47 +1611,22 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 			}
 		}
 
-		if( gametype == GT_DOUBLE_D) {
-			//We can touch both flags
-			if(item->giTag == PW_BLUEFLAG || item->giTag == PW_REDFLAG)
-				return qtrue;
-		}
-
-		if( gametype == GT_DOMINATION ) {
-			if(item->giTag == DOM_POINTWHITE)
-				return qtrue;
-			if (ps->persistant[PERS_TEAM] == TEAM_RED) {
-				if(item->giTag == DOM_POINTBLUE)
-					return qtrue;
-			} else if (ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-				if(item->giTag == DOM_POINTRED)
-					return qtrue;
-			}
-		}
-
 		if( gametype == GT_HARVESTER ) {
 			return qtrue;
 		}
 		return qfalse;
 
 	case IT_HOLDABLE:
-		if(ps->stats[STAT_NO_PICKUP]==1){ return qfalse; }
 		// can only hold one item at a time
-		if ( item->giTag < HI_HOLDABLE_SPLIT && GetPlayerHoldable( ps->stats[STAT_HOLDABLE_ITEM] ) != HI_NONE ) {
-			//player tries to pick up a holdable of which only one can be held while he already has one
+		if ( ps->stats[STAT_HOLDABLE_ITEM] ) {
 			return qfalse;
-		}
-		else {
-			//player tries to pick up a key. Do not allow pickup if that specific key is already in possession
-			if ( ps->stats[STAT_HOLDABLE_ITEM] & (1 << item->giTag) )
-				return qfalse;
 		}
 		return qtrue;
 
-    case IT_BAD:
-		Com_Printf( "BG_CanItemBeGrabbed: index out of range\n");
-    default:
-        break;
+        case IT_BAD:
+            Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
+        default:
+        	break;
 	}
 
 	return qfalse;
@@ -2023,7 +1940,6 @@ char *eventnames[] = {
 	"EV_EMIT_DEBRIS_FLESH",		// emit gibs
 	"EV_EMIT_DEBRIS_GLASS",		// emite shards of glass
 	"EV_EMIT_DEBRIS_STONE",		// emit chunks of stone
-	"EV_EARTHQUAKE",
 	"EV_EXPLOSION",
 	"EV_PARTICLES_GRAVITY",
 	"EV_PARTICLES_LINEAR",

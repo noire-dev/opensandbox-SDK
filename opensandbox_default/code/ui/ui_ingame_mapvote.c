@@ -96,6 +96,7 @@ static const char* filter_gametype_list[] = {
 	"Map Editor",
 	"Free for All",
 	"Tournament",
+	"Last Man Standing",
 	"Team DM",
 	"Capture the Flag",
 	"One Flag Capture",
@@ -103,7 +104,6 @@ static const char* filter_gametype_list[] = {
 	"Harvester",
 	"Elimination",
 	"CTF Elimination",
-	"Last Man Standing",
 	"Double Domination",
 	"Domination",
 	0
@@ -114,6 +114,7 @@ static const char* filter_gametype_listru[] = {
 	"Редактор Карт",
 	"Все Против Всех",
 	"Турнир",
+	"Последний Оставшийся",
 	"Командный Бой",
 	"Захват Флага",
 	"Один Флаг",
@@ -121,7 +122,6 @@ static const char* filter_gametype_listru[] = {
 	"Жнец",
 	"Устранение",
 	"Устранение: Захват Флага",
-	"Последний Оставшийся",
 	"Двойное Доминирование",
 	"Доминирование",
 	0

@@ -196,9 +196,6 @@ struct
   { "clearmap", qfalse, G_ClearMap_f },
   { "clearmap_sandbox", qfalse, G_ClearSandboxMap_f },
   { "loadmap", qfalse, G_LoadMapfile_f },
-
-  { "sp_load", qfalse, SP_Load_f },
-  { "sp_save", qfalse, SP_Save_f },
   
   { "picktarget", qfalse, Svcmd_PickTarget_f },
   { "create", qfalse, Svcmd_PropNpc_AS_f },

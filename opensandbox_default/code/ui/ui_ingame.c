@@ -214,6 +214,7 @@ static gametypeMenu gametypeMenu_data[] = {
 	{ GT_MAPEDITOR, "Map Editor"},
 	{ GT_FFA, "DeathMatch"},
 	{ GT_TOURNAMENT, "Tournament"},
+	{ GT_LMS, "Last Man Standing"},
 	{ GT_TEAM, "Team DM"},
 	{ GT_CTF, "CTF"},
 	{ GT_1FCTF, "One Flag"},
@@ -221,7 +222,6 @@ static gametypeMenu gametypeMenu_data[] = {
 	{ GT_HARVESTER, "Harvester"},
 	{ GT_ELIMINATION, "Elimination"},
 	{ GT_CTF_ELIMINATION, "CTF Elimination"},
-	{ GT_LMS, "Last Man Standing"},
 	{ GT_DOUBLE_D, "2 Domination"},
 	{ GT_DOMINATION, "Domination"},
 };
@@ -231,6 +231,7 @@ static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_MAPEDITOR, "Редактор Карт"},
 	{ GT_FFA, "Все Против Всех"},
 	{ GT_TOURNAMENT, "Турнир"},
+	{ GT_LMS, "Последний Оставшийся"},
 	{ GT_TEAM, "Командный Бой"},
 	{ GT_CTF, "Захват Флага"},
 	{ GT_1FCTF, "Один Флаг"},
@@ -238,7 +239,6 @@ static gametypeMenu gametypeMenu_dataru[] = {
 	{ GT_HARVESTER, "Жнец"},
 	{ GT_ELIMINATION, "Устранение"},
 	{ GT_CTF_ELIMINATION, "CTF Устранение"},
-	{ GT_LMS, "Последний Оставшийся"},
 	{ GT_DOUBLE_D, "2 доминирование"},
 	{ GT_DOMINATION, "Доминирование"},
 };

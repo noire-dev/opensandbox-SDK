@@ -25,16 +25,6 @@
 //
 #include "../qcommon/ns_local.h"
 
-
-/*
-=======================================================================
-SESSION DATA
-
-Session data is the only data that stays persistant across level loads
-and tournament restarts.
-=======================================================================
-*/
-
 /*
 ================
 G_WriteClientSessionData
@@ -95,7 +85,6 @@ void G_ReadSessionData( gclient_t *client ) {
 	client->sess.teamLeader = (qboolean)teamLeader;
 }
 
-
 /*
 ================
 G_InitSessionData
@@ -149,95 +138,6 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	 AddTournamentQueue(client);
 
 	G_WriteClientSessionData( client );
-}
-
-/*
-==================
-G_Sav_SaveData
-
-Updates session data for a client prior to a map change that's forced by a target_mapchange entity
-==================
-*/
-void G_Sav_SaveData( gentity_t *ent, int slot ) {
-	int i;
-	char mapname[64];
-
-	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
-
-	NS_createCvar(va("sav_%i_health", slot), va("%i", ent->client->ps.stats[STAT_HEALTH]));
-	NS_createCvar(va("sav_%i_armor", slot), va("%i", ent->client->ps.stats[STAT_ARMOR]));
-	NS_createCvar(va("sav_%i_weapon", slot), va("%i", ent->client->ps.generic2));
-
-	for (i = 1; i < WEAPONS_NUM; i++){
-		if(ent->swep_list[i] > 0){
-			NS_createCvar(va("sav_%i_weapon%i", slot, i), va("%i", ent->swep_ammo[i]));
-		} else {
-			NS_createCvar(va("sav_%i_weapon%i", slot, i), va("%i", -999));
-		}
-	}
-
-	NS_createCvar(va("sav_%i_holdable", slot), va("%i", ent->client->ps.stats[STAT_HOLDABLE_ITEM]));
-	NS_createCvar(va("sav_%i_mapName", slot), va("%s", mapname));
-}
-
-/*
-==================
-G_Sav_ClearData
-
-Clears session data for map changes so that data does not persist through a hard map change (a map change not caused by target_mapchange) 
-==================
-*/
-void G_Sav_ClearData( gclient_t *client, int slot ) {
-	int i;
-
-	NS_setCvar(va("sav_%i_health", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_armor", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_weapon", slot), va("%i", 0));
-
-	for (i = 1; i < WEAPONS_NUM; i++){
-		NS_setCvar(va("sav_%i_weapon%i", slot, i), va("%i", -999));
-	}
-
-	NS_setCvar(va("sav_%i_holdable", slot), va("%i", 0));
-	NS_setCvar(va("sav_%i_mapName", slot), va("%i", 0));
-}
-
-/*
-==================
-G_Sav_LoadData
-
-Updates a client entity with the data that's stored in that client's session data
-==================
-*/
-void G_Sav_LoadData( gentity_t *ent, int slot ) {
-	int i;
-
-	if ( get_cvar_int(va("sav_%i_health", slot)) <= 0 ) {
-		return;
-	}
-
-	ent->health = ent->client->ps.stats[STAT_HEALTH] = get_cvar_int(va("sav_%i_health", slot));
-	ent->client->ps.stats[STAT_ARMOR] = get_cvar_int(va("sav_%i_armor", slot));
-	ent->client->ps.weapon = get_cvar_int(va("sav_%i_weapon", slot));
-
-	for (i = 1; i < WEAPONS_NUM; i++){
-		if(get_cvar_int(va("sav_%i_weapon%i", slot, i)) != -999){
-			if(get_cvar_int(va("sav_%i_weapon%i", slot, i)) != 0){
-				ent->swep_list[i] = 1;
-				ent->swep_ammo[i] = get_cvar_int(va("sav_%i_weapon%i", slot, i));
-			} else {
-				ent->swep_list[i] = 2;
-				ent->swep_ammo[i] = get_cvar_int(va("sav_%i_weapon%i", slot, i));
-			}
-		} else {
-			ent->swep_list[i] = 0;
-		}
-	}
-
-	ent->client->ps.stats[STAT_HOLDABLE_ITEM] = get_cvar_int(va("sav_%i_holdable", slot));
-	
-	// clear map change session data
-	G_Sav_ClearData( ent->client, slot );
 }
 
 /*

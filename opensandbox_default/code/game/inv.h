@@ -158,17 +158,6 @@
 #define MODELINDEX_ARMORFULL		55
 #define MODELINDEX_ANTIMATTER		56
 
-//EntityPlus
-#define MODELINDEX_BACKPACK		    57
-#define MODELINDEX_HKEYRED	        58
-#define MODELINDEX_HKEYGREEN	    59
-#define MODELINDEX_HKEYBLUE	        60
-#define MODELINDEX_HKEYYELLOW	    61
-#define MODELINDEX_HKEYMASTER	    62
-#define MODELINDEX_HKEYGOLD	        63
-#define MODELINDEX_HKEYSILVER	    64
-#define MODELINDEX_HKEYIRON	        65
-
 //Elimination mod: Double Domination and Standard Domination
 #define MODELINDEX_POINTABLUE		66
 #define MODELINDEX_POINTBBLUE		67

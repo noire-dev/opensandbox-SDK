@@ -940,131 +940,15 @@ CG_DrawHoldableItem
 */
 static void CG_DrawHoldableItem( void ) { 
 	int		value;
-	float	yoffset;
-	float	xoffset;
-	vec4_t	color;
-	int		i;
 
-	//draw usable item
-	value = GetHoldableListIndex(GetPlayerHoldable(cg.snap->ps.stats[STAT_HOLDABLE_ITEM]));
+	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 
 	if ( value ) {
 		CG_RegisterItemVisuals( value );
-		CG_DrawPic( 640-ICON_SIZE+(cgs.wideoffset+1), 1, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-	}
-	
-	//draw keys
-	for ( i = 0; i < 4; i++ )
-		color[i] = 1;
-	trap_R_SetColor( color );		//must do this otherwise colors for key icons are distorted if health drops below 25 (see issue 132)
-
-	yoffset = ICON_SIZE;
-	xoffset = 0;
-
-	//red key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_RED) ) {
-		value = GetHoldableListIndex(HI_KEY_RED);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//green key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_GREEN) ) {
-		value = GetHoldableListIndex(HI_KEY_GREEN);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//blue key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_BLUE) ) {
-		value = GetHoldableListIndex(HI_KEY_BLUE);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-	
-	//yellow key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_YELLOW) ) {
-		value = GetHoldableListIndex(HI_KEY_YELLOW);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//master key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_MASTER) ) {
-		value = GetHoldableListIndex(HI_KEY_MASTER);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//gold key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_GOLD) ) {		
-		value = GetHoldableListIndex(HI_KEY_GOLD);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//silver key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_SILVER) ) {
-		value = GetHoldableListIndex(HI_KEY_SILVER);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-	//iron key
-	if (cg.snap->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KEY_IRON) ) {
-		value = GetHoldableListIndex(HI_KEY_IRON);
-		if ( value ) {
-			CG_RegisterItemVisuals( value );
-			CG_DrawPic( 640-ICON_SIZE+xoffset+(cgs.wideoffset+1), ((SCREEN_HEIGHT-ICON_SIZE)/4)+yoffset, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			yoffset += ICON_SIZE;
-		}
-	}
-
-}
-
-static void CG_DrawObjectivesNotification( void ) {
-	qboolean draw = qfalse;
-	
-	if ( !cg_draw2D.integer )
-		return;
-
-	if ( cg.objectivesTime == 0 || cg.time < cg.objectivesTime )
-		return;
-
-	//icon blinks
-	if ( cg.time < cg.objectivesTime + 500 )
-		draw = qtrue;
-	else if ( cg.time > cg.objectivesTime + 1000 && cg.time < cg.objectivesTime + 1500 )
-		draw = qtrue;
-	else if ( cg.time > cg.objectivesTime + 2000 && cg.time < cg.objectivesTime + 2500 )
-		draw = qtrue;
-
-	if ( draw ) {
-		trap_R_SetColor( NULL );
-		CG_DrawPic( 8-cgs.wideoffset, 8, ICON_SIZE, ICON_SIZE, cgs.media.objectivesUpdated );
+		CG_DrawPic( 640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 	}
 }
+
 /*
 ===================
 CG_DrawPersistantPowerup
@@ -1850,6 +1734,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Map Editor";
 		} else if ( cgs.gametype == GT_FFA ) {
 			s = "Free For All";
+		} else if ( cgs.gametype == GT_LMS ) {
+			s = "Last Man Standing";
 		} else if ( cgs.gametype == GT_TEAM ) {
 			s = "Team Deathmatch";
 		} else if ( cgs.gametype == GT_CTF ) {
@@ -1858,8 +1744,6 @@ static void CG_DrawWarmup( void ) {
 			s = "Elimination";
 		} else if ( cgs.gametype == GT_CTF_ELIMINATION ) {
 			s = "CTF Elimination";
-		} else if ( cgs.gametype == GT_LMS ) {
-			s = "Last Man Standing";
 		} else if ( cgs.gametype == GT_DOUBLE_D ) {
 			s = "Double Domination";
 		} else if ( cgs.gametype == GT_1FCTF ) {
@@ -2156,9 +2040,6 @@ void CG_DrawActive( void ) {
 
 	if(cg.renderingThirdPerson)
 		CG_DrawCrosshair3D();
-
-	// apply earthquake effect
-	CG_Earthquake();
 	
 	CG_ReloadPlayers();
 
@@ -2219,7 +2100,4 @@ void CG_DrawActive( void ) {
 	if ( cg.snap->ps.pm_type == PM_DEAD ) {
 		CG_DrawDeathMessage();
 	}
-
-	//draw objectives notification
-	CG_DrawObjectivesNotification();
 }

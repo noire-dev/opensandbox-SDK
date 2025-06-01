@@ -561,68 +561,6 @@ void BroadcastTeamChange( gclient_t *client, int oldTeam )
 	}
 }
 
-void ThrowHoldable( gentity_t *ent ) {
-	gclient_t	*client;
-	usercmd_t	*ucmd;
-
-	client = ent->client;
-	ucmd = &ent->client->pers.cmd;
-
-	if ( client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_TELEPORTER) ) {
-		Throw_Item( ent, BG_FindItem( "Personal Teleporter" ), 0 );
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_TELEPORTER);
-	}
-	else if ( client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_MEDKIT) ) {
-		Throw_Item( ent, BG_FindItem( "Medkit" ), 0 );
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_MEDKIT);
-	}
-	else if ( client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_KAMIKAZE) ) {
-		Throw_Item( ent, BG_FindItem( "Kamikaze" ), 0 );
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KAMIKAZE);
-	}
-	else if ( client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_INVULNERABILITY) ) {
-		Throw_Item( ent, BG_FindItem( "Invulnerability" ), 0 );
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_INVULNERABILITY);
-	}
-	else if ( client->ps.stats[STAT_HOLDABLE_ITEM] & (1 << HI_PORTAL) ) {
-		Throw_Item( ent, BG_FindItem( "Portal" ), 0 );
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_PORTAL);
-	}
-}
-
-void Cmd_DropHoldable_f( gentity_t *ent ) {
-	ThrowHoldable( ent );
-}
-
-void ThrowWeapon( gentity_t *ent ) {
-	gclient_t	*client;
-	gitem_t		*xr_item;
-	gentity_t	*xr_drop;
-	int amount;
-	int weapon;
-	
-	weapon = ent->swep_id;
-
-	client = ent->client;
-
-	if(weapon == WP_GAUNTLET){ return; }
-	amount = ent->swep_ammo[weapon];
-	if(amount == 0){ return; }
-	ent->swep_ammo[weapon] = 0;
-	Set_Weapon( ent, weapon, 0);
-	client->ps.generic2 = WP_GAUNTLET;
-	ent->swep_id = WP_GAUNTLET;
-	ClientUserinfoChanged( ent->s.clientNum );
-	xr_item = BG_FindSwep( weapon );
-	if(!xr_item->classname){ return; }
-	xr_drop = Throw_Item( ent, xr_item, 0 );
-	xr_drop->count = amount;
-}
-
-void Cmd_DropWeapon_f( gentity_t *ent ) {
-	ThrowWeapon( ent );
-}
-
 /*
 =================
 SetTeam
@@ -1400,6 +1338,7 @@ static const char *gameNames[] = {
 	"Map Editor",
 	"Free For All",
 	"Tournament",
+	"Last Man Standing",
 	"Team Deathmatch",
 	"Capture the Flag",
 	"One Flag Capture",
@@ -1407,7 +1346,6 @@ static const char *gameNames[] = {
 	"Harvester",
 	"Elimination",
 	"CTF Elimination",
-	"Last Man Standing",
 	"Double Domination",
 	"Domination",
 	0
@@ -1842,8 +1780,6 @@ commands_t cmds[ ] =
   { "physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f },	//hidden
   { "flashlight", CMD_LIVING, Cmd_Flashlight_f },
   { "undo", CMD_LIVING, Cmd_Undo_f },
-  { "dropweapon", CMD_TEAM|CMD_LIVING, Cmd_DropWeapon_f },
-  { "dropholdable", CMD_TEAM|CMD_LIVING, Cmd_DropHoldable_f },
   { "usetarget", CMD_LIVING, Cmd_UseTarget_f },
   { "activate", CMD_LIVING, Cmd_ActivateTarget_f }, 
   { "where", 0, Cmd_Where_f },
