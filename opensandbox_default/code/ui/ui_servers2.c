@@ -127,17 +127,11 @@ static const char *servertype_items[] = {
 	"Sandbox",
 	"Map Editor",
 	"Free For All",
-	"Tournament",
-	"Last Man Standing",
 	"Team Deathmatch",
 	"Capture the Flag",
 	"One Flag CTF",
 	"Overload",
 	"Harvester",
-	"Elimination",
-	"CTF Elimination",
-	"Double Domination",
-	"Domination",
 	0
 };
 
@@ -160,16 +154,10 @@ static const char *servertype_itemsru[] = {
 	"Все",
 	"Все Против Всех",
 	"Командный Бой",
-	"Турнир",
 	"Захват Флага",
 	"Один Флаг",
 	"Атака Базы",
 	"Жнец",
-	"Устранение",
-	"Устранение: Захват Флага",
-	"Последний Оставшийся",
-	"Двойное Доминирование",
-	"Доминирование",
 	0
 };
 
@@ -179,23 +167,6 @@ static const char *sortkey_itemsru[] = {
 	"Открытые Слоты",
 	"Режим Игры",
 	"Время Отклика",
-	0
-};
-
-static char* gamenames[] = {
-	"DM ",	// deathmatch
-	"1v1",	// tournament
-	"SP ",	// single player
-	"Team DM",	// team deathmatch
-	"CTF",	// capture the flag
-	"One Flag CTF",		// one flag ctf
-	"OverLoad",				// Overload
-	"Harvester",			// Harvester
-	"Rocket Arena 3",	// Rocket Arena 3
-	"Q3F",						// Q3F
-	"Urban Terror",		// Urban Terror
-	"OSP",						// Orange Smoothie Productions
-	"???",			// unknown
 	0
 };
 
@@ -577,12 +548,6 @@ static void ArenaServers_UpdateMenu( void ) {
 			}
 			break;
 
-		case GAMES_TOURNEY:
-			if( servernodeptr->gametype != GT_TOURNAMENT ) {
-				continue;
-			}
-			break;
-
 		case GAMES_CTF:
 			if( servernodeptr->gametype != GT_CTF ) {
 				continue;
@@ -603,36 +568,6 @@ static void ArenaServers_UpdateMenu( void ) {
 
 		case GAMES_HARVESTER:
 			if( servernodeptr->gametype != GT_HARVESTER ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_ELIMINATION:
-			if( servernodeptr->gametype != GT_ELIMINATION ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_ELIM_CTF:
-			if( servernodeptr->gametype != GT_CTF_ELIMINATION ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_LMS:
-			if( servernodeptr->gametype != GT_LMS ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_DD:
-			if( servernodeptr->gametype != GT_DOUBLE_D ) {
-				continue;
-			}
-			break;
-			
-		case GAMES_DOM:
-			if( servernodeptr->gametype != GT_DOMINATION ) {
 				continue;
 			}
 			break;

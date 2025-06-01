@@ -82,9 +82,6 @@
 #define CTF_RUSHBASE_TIME			120	//2 minutes ctf rush base time
 #define CTF_RETURNFLAG_TIME			180	//3 minutes to return the flag
 #define CTF_ROAM_TIME				60	//1 minute ctf roam time
-//Time for Double Domination tasks
-#define DD_POINTA				600
-#define DD_POINTB				600
 //patrol flags
 #define PATROL_LOOP					1
 #define PATROL_REVERSE				2

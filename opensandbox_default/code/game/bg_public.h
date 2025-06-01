@@ -187,18 +187,12 @@ typedef enum {
 	GT_SANDBOX,
 	GT_MAPEDITOR,
 	GT_FFA,
-	GT_TOURNAMENT,
-	GT_LMS,
 	//TEAM GAMEMODES
 	GT_TEAM,
 	GT_CTF,
 	GT_1FCTF,
 	GT_OBELISK,
 	GT_HARVESTER,	
-	GT_ELIMINATION,
-	GT_CTF_ELIMINATION,
-	GT_DOUBLE_D,
-	GT_DOMINATION,
 
 	GT_MAX_GAME_TYPE
 } gametype_t;
@@ -247,11 +241,8 @@ typedef enum {
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
-//Elimination players cannot fire in warmup
-#define PMF_ELIMWARMUP		32768	//I hope this is more than 16 signed bits! (it's not but it just works anyway...)
-//Don't add anymore, I have already set the sign bit :-(
-#define PMF_FORCE_WALK		65536	// bot always walks 
-#define PMF_ATTACK_RUN		131072	// bot is allowed to run when attacking
+#define PMF_FORCE_WALK		32768	// bot always walks 
+#define PMF_ATTACK_RUN		65536	// bot is allowed to run when attacking
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -407,26 +398,6 @@ typedef enum {
 
 	HI_NUM_HOLDABLE
 } holdable_t;
-
-typedef enum {
-	DD_NONE,
-
-	DD_POINTARED,
-	DD_POINTABLUE,
-	DD_POINTAWHITE,
-	DD_POINTBRED,
-	DD_POINTBBLUE,
-	DD_POINTBWHITE
-} doubled_t;
-
-typedef enum {
-	DOM_NONE,
-
-	DOM_POINTRED,
-	DOM_POINTBLUE,
-	DOM_POINTWHITE,
-} domination_t;
-
 
 typedef enum {
 	WP_NONE,
@@ -613,7 +584,6 @@ typedef enum {
 	EV_CRASH25,
 	EV_OT1_IMPACT,
 	EV_GRAVITYSOUND
-
 } entity_event_t;
 
 

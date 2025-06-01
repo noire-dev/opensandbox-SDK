@@ -62,11 +62,6 @@ static const char* saveparam_list[] = {
 	"gui_obeliskRespawnDelay",
 	"gui_cubeTimeout",
 	"gui_flagrespawn",
-	"gui_weaponTeamRespawn",
-	"gui_elimination_selfdamage",
-	"gui_elimination_roundtime",
-	"gui_elimination_warmup",
-	"gui_elimination_activewarmup",
 	"gui_accelerate",
 	"gui_spectatorspeed",
 	"gui_speed",
@@ -129,55 +124,30 @@ static const char* saveparam_list[] = {
 	"gui_teamblue_pickupitems",
 	"gui_elimination_blue_respawn",
 	"gui_elimination_red_respawn",
-	"gui_bluespawn_health",
-	"gui_bluespawn_armor",
-	"gui_bluespawn_grapple",
-	"gui_bluespawn_gauntlet",
-	"gui_bluespawn_machinegun",
-	"gui_bluespawn_shotgun",
-	"gui_bluespawn_grenade",
-	"gui_bluespawn_rocket",
-	"gui_bluespawn_railgun",
-	"gui_bluespawn_lightning",
-	"gui_bluespawn_plasmagun",
-	"gui_bluespawn_bfg",
-	"gui_bluespawn_chain",
-	"gui_bluespawn_mine",
-	"gui_bluespawn_nail",
-	"gui_bluespawn_flame",
-	"gui_bluespawn_antimatter",
-	"gui_bluespawn_quad",
-	"gui_bluespawn_haste",
-	"gui_bluespawn_bsuit",
-	"gui_bluespawn_invis",
-	"gui_bluespawn_regen",
-	"gui_bluespawn_flight",
-	"gui_bluespawn_items",
-	"gui_bluespawn_holdable",
-	"gui_redspawn_health",
-	"gui_redspawn_armor",
-	"gui_redspawn_grapple",
-	"gui_redspawn_gauntlet",
-	"gui_redspawn_machinegun",
-	"gui_redspawn_shotgun",
-	"gui_redspawn_grenade",
-	"gui_redspawn_rocket",
-	"gui_redspawn_railgun",
-	"gui_redspawn_lightning",
-	"gui_redspawn_plasmagun",
-	"gui_redspawn_bfg",
-	"gui_redspawn_chain",
-	"gui_redspawn_mine",
-	"gui_redspawn_nail",
-	"gui_redspawn_flame",
-	"gui_redspawn_antimatter",
-	"gui_redspawn_quad",
-	"gui_redspawn_haste",
-	"gui_redspawn_bsuit",
-	"gui_redspawn_invis",
-	"gui_redspawn_regen",
-	"gui_redspawn_flight",
-	"gui_redspawn_holdable",
+	"gui_spawn_health",
+	"gui_spawn_armor",
+	"gui_spawn_grapple",
+	"gui_spawn_gauntlet",
+	"gui_spawn_machinegun",
+	"gui_spawn_shotgun",
+	"gui_spawn_grenade",
+	"gui_spawn_rocket",
+	"gui_spawn_railgun",
+	"gui_spawn_lightning",
+	"gui_spawn_plasmagun",
+	"gui_spawn_bfg",
+	"gui_spawn_chain",
+	"gui_spawn_mine",
+	"gui_spawn_nail",
+	"gui_spawn_flame",
+	"gui_spawn_antimatter",
+	"gui_spawn_quad",
+	"gui_spawn_haste",
+	"gui_spawn_bsuit",
+	"gui_spawn_invis",
+	"gui_spawn_regen",
+	"gui_spawn_flight",
+	"gui_spawn_holdable",
 	"gui_elimination_items",
 	"gui_overlay",
 	"gui_randomItems",
@@ -466,7 +436,7 @@ Returns qtrue if the gametype uses capturelimit instead of fraglimit
 */
 static qboolean GUI_IsCaptureLimited(int type)
 {
-	if (type >= GT_CTF && !(type == GT_LMS))
+	if (type >= GT_CTF)
 		return qtrue;
 
 	return qfalse;
@@ -625,18 +595,12 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_extendedsandbox %i\n", s_scriptdata.server.extendedsandbox));
 	AddScript(va("set g_damageModifier  \"%s\"\n", s_scriptdata.server.damageModifier));
 	AddScript(va("set cl_selectedmod  \"%s\"\n", s_scriptdata.server.selectedmod));
-	AddScript(va("set g_elimination %i\n", s_scriptdata.server.elimination));
 	AddScript(va("set g_obeliskHealth %i\n", s_scriptdata.server.obeliskHealth));
 	AddScript(va("set g_obeliskRegenPeriod %i\n", s_scriptdata.server.obeliskRegenPeriod));
 	AddScript(va("set g_obeliskRegenAmount %i\n", s_scriptdata.server.obeliskRegenAmount));
 	AddScript(va("set g_obeliskRespawnDelay %i\n", s_scriptdata.server.obeliskRespawnDelay));
 	AddScript(va("set g_cubeTimeout %i\n", s_scriptdata.server.cubeTimeout));
 	AddScript(va("set g_flagrespawn %i\n", s_scriptdata.server.flagrespawn));
-	AddScript(va("set g_weaponTeamRespawn %i\n", s_scriptdata.server.weaponTeamRespawn));
-	AddScript(va("set elimination_selfdamage %i\n", s_scriptdata.server.elimination_selfdamage));
-	AddScript(va("set elimination_roundtime %i\n", s_scriptdata.server.elimination_roundtime));
-	AddScript(va("set elimination_warmup %i\n", s_scriptdata.server.elimination_warmup));
-	AddScript(va("set elimination_activewarmup %i\n", s_scriptdata.server.elimination_activewarmup));
 	AddScript(va("set g_accelerate %i\n", s_scriptdata.server.accelerate));
 	AddScript(va("set g_speed %i\n", s_scriptdata.server.speed));
 	AddScript(va("set g_gravity %i\n", s_scriptdata.server.gravity));
@@ -693,56 +657,30 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_teamblue_infammo %i\n", s_scriptdata.server.teamblue_infammo));
 	AddScript(va("set g_teamblue_respawnwait %i\n", s_scriptdata.server.teamblue_respawnwait));
 	AddScript(va("set g_teamblue_pickupitems %i\n", s_scriptdata.server.teamblue_pickupitems));
-	AddScript(va("set g_elimination_blue_respawn %i\n", s_scriptdata.server.elimination_blue_respawn));
-	AddScript(va("set g_elimination_red_respawn %i\n", s_scriptdata.server.elimination_red_respawn));
-	AddScript(va("set g_bluespawn_health %i\n", s_scriptdata.server.bluespawn_health));
-	AddScript(va("set g_bluespawn_armor %i\n", s_scriptdata.server.bluespawn_armor));
-	AddScript(va("set g_bluespawn_grapple %i\n", s_scriptdata.server.bluespawn_grapple));
-	AddScript(va("set g_bluespawn_gauntlet %i\n", s_scriptdata.server.bluespawn_gauntlet));
-	AddScript(va("set g_bluespawn_machinegun %i\n", s_scriptdata.server.bluespawn_machinegun));
-	AddScript(va("set g_bluespawn_shotgun %i\n", s_scriptdata.server.bluespawn_shotgun));
-	AddScript(va("set g_bluespawn_grenade %i\n", s_scriptdata.server.bluespawn_grenade));
-	AddScript(va("set g_bluespawn_rocket %i\n", s_scriptdata.server.bluespawn_rocket));
-	AddScript(va("set g_bluespawn_railgun %i\n", s_scriptdata.server.bluespawn_railgun));
-	AddScript(va("set g_bluespawn_lightning %i\n", s_scriptdata.server.bluespawn_lightning));
-	AddScript(va("set g_bluespawn_plasmagun %i\n", s_scriptdata.server.bluespawn_plasmagun));
-	AddScript(va("set g_bluespawn_bfg %i\n", s_scriptdata.server.bluespawn_bfg));
-	AddScript(va("set g_bluespawn_chain %i\n", s_scriptdata.server.bluespawn_chain));
-	AddScript(va("set g_bluespawn_mine %i\n", s_scriptdata.server.bluespawn_mine));
-	AddScript(va("set g_bluespawn_nail %i\n", s_scriptdata.server.bluespawn_nail));
-	AddScript(va("set g_bluespawn_flame %i\n", s_scriptdata.server.bluespawn_flame));
-	AddScript(va("set g_bluespawn_antimatter %i\n", s_scriptdata.server.bluespawn_antimatter));
-	AddScript(va("set g_bluespawn_quad %i\n", s_scriptdata.server.bluespawn_quad));
-	AddScript(va("set g_bluespawn_haste %i\n", s_scriptdata.server.bluespawn_haste));
-	AddScript(va("set g_bluespawn_bsuit %i\n", s_scriptdata.server.bluespawn_bsuit));
-	AddScript(va("set g_bluespawn_invis %i\n", s_scriptdata.server.bluespawn_invis));
-	AddScript(va("set g_bluespawn_regen %i\n", s_scriptdata.server.bluespawn_regen));
-	AddScript(va("set g_bluespawn_flight %i\n", s_scriptdata.server.bluespawn_flight));
-	AddScript(va("set g_bluespawn_holdable %i\n", s_scriptdata.server.bluespawn_holdable));
-	AddScript(va("set g_redspawn_health %i\n", s_scriptdata.server.redspawn_health));
-	AddScript(va("set g_redspawn_armor %i\n", s_scriptdata.server.redspawn_armor));
-	AddScript(va("set g_redspawn_grapple %i\n", s_scriptdata.server.redspawn_grapple));
-	AddScript(va("set g_redspawn_gauntlet %i\n", s_scriptdata.server.redspawn_gauntlet));
-	AddScript(va("set g_redspawn_machinegun %i\n", s_scriptdata.server.redspawn_machinegun));
-	AddScript(va("set g_redspawn_shotgun %i\n", s_scriptdata.server.redspawn_shotgun));
-	AddScript(va("set g_redspawn_grenade %i\n", s_scriptdata.server.redspawn_grenade));
-	AddScript(va("set g_redspawn_rocket %i\n", s_scriptdata.server.redspawn_rocket));
-	AddScript(va("set g_redspawn_railgun %i\n", s_scriptdata.server.redspawn_railgun));
-	AddScript(va("set g_redspawn_lightning %i\n", s_scriptdata.server.redspawn_lightning));
-	AddScript(va("set g_redspawn_plasmagun %i\n", s_scriptdata.server.redspawn_plasmagun));
-	AddScript(va("set g_redspawn_bfg %i\n", s_scriptdata.server.redspawn_bfg));
-	AddScript(va("set g_redspawn_chain %i\n", s_scriptdata.server.redspawn_chain));
-	AddScript(va("set g_redspawn_mine %i\n", s_scriptdata.server.redspawn_mine));
-	AddScript(va("set g_redspawn_nail %i\n", s_scriptdata.server.redspawn_nail));
-	AddScript(va("set g_redspawn_flame %i\n", s_scriptdata.server.redspawn_flame));
-	AddScript(va("set g_redspawn_antimatter %i\n", s_scriptdata.server.redspawn_antimatter));
-	AddScript(va("set g_redspawn_quad %i\n", s_scriptdata.server.redspawn_quad));
-	AddScript(va("set g_redspawn_haste %i\n", s_scriptdata.server.redspawn_haste));
-	AddScript(va("set g_redspawn_bsuit %i\n", s_scriptdata.server.redspawn_bsuit));
-	AddScript(va("set g_redspawn_invis %i\n", s_scriptdata.server.redspawn_invis));
-	AddScript(va("set g_redspawn_regen %i\n", s_scriptdata.server.redspawn_regen));
-	AddScript(va("set g_redspawn_flight %i\n", s_scriptdata.server.redspawn_flight));
-	AddScript(va("set g_redspawn_holdable %i\n", s_scriptdata.server.redspawn_holdable));
+	AddScript(va("set g_spawn_health %i\n", s_scriptdata.server.spawn_health));
+	AddScript(va("set g_spawn_armor %i\n", s_scriptdata.server.spawn_armor));
+	AddScript(va("set g_spawn_grapple %i\n", s_scriptdata.server.spawn_grapple));
+	AddScript(va("set g_spawn_gauntlet %i\n", s_scriptdata.server.spawn_gauntlet));
+	AddScript(va("set g_spawn_machinegun %i\n", s_scriptdata.server.spawn_machinegun));
+	AddScript(va("set g_spawn_shotgun %i\n", s_scriptdata.server.spawn_shotgun));
+	AddScript(va("set g_spawn_grenade %i\n", s_scriptdata.server.spawn_grenade));
+	AddScript(va("set g_spawn_rocket %i\n", s_scriptdata.server.spawn_rocket));
+	AddScript(va("set g_spawn_railgun %i\n", s_scriptdata.server.spawn_railgun));
+	AddScript(va("set g_spawn_lightning %i\n", s_scriptdata.server.spawn_lightning));
+	AddScript(va("set g_spawn_plasmagun %i\n", s_scriptdata.server.spawn_plasmagun));
+	AddScript(va("set g_spawn_bfg %i\n", s_scriptdata.server.spawn_bfg));
+	AddScript(va("set g_spawn_chain %i\n", s_scriptdata.server.spawn_chain));
+	AddScript(va("set g_spawn_mine %i\n", s_scriptdata.server.spawn_mine));
+	AddScript(va("set g_spawn_nail %i\n", s_scriptdata.server.spawn_nail));
+	AddScript(va("set g_spawn_flame %i\n", s_scriptdata.server.spawn_flame));
+	AddScript(va("set g_spawn_antimatter %i\n", s_scriptdata.server.spawn_antimatter));
+	AddScript(va("set g_spawn_quad %i\n", s_scriptdata.server.spawn_quad));
+	AddScript(va("set g_spawn_haste %i\n", s_scriptdata.server.spawn_haste));
+	AddScript(va("set g_spawn_bsuit %i\n", s_scriptdata.server.spawn_bsuit));
+	AddScript(va("set g_spawn_invis %i\n", s_scriptdata.server.spawn_invis));
+	AddScript(va("set g_spawn_regen %i\n", s_scriptdata.server.spawn_regen));
+	AddScript(va("set g_spawn_flight %i\n", s_scriptdata.server.spawn_flight));
+	AddScript(va("set g_spawn_holdable %i\n", s_scriptdata.server.spawn_holdable));
 	AddScript(va("set elimination_items %i\n", s_scriptdata.server.elimination_items));
 	AddScript(va("set g_randomItems %i\n", s_scriptdata.server.randomItems));
 	AddScript(va("set g_movetype %i\n", s_scriptdata.server.slickmove));
@@ -1260,7 +1198,7 @@ static void StartServer_WriteSelectedBotParams( void )
     if (s_scriptdata.bot.skillType >= BOTSKILL_CUSTOMSINGLE)
         custom = qtrue;
 
-    if (s_scriptdata.gametype >= GT_TEAM && s_scriptdata.gametype != GT_LMS) {
+    if (s_scriptdata.gametype >= GT_TEAM) {
         // team game
 
         int playerTeam = StartServer_GetPlayerTeam();
@@ -2510,7 +2448,7 @@ qboolean StartServer_LoadFromConfig( const char* filename)
 
 		// must get gametype before we can process "*cvarName" Cvars
 		if (!Q_stricmp(cvar,"gui_gametype")) {
-			gametype = (int)Com_Clamp(0, MAX_GAME_TYPE - 1, atoi(token));
+			gametype = (int)Com_Clamp(0, GT_MAX_GAME_TYPE - 1, atoi(token));
 		}
 
 	} while (qtrue);
@@ -2697,10 +2635,6 @@ qboolean StartServer_CreateServer(const char* scriptFile)
 			// use %%i so a single %i is generated for player client
 			teamjoin = va("forceteam %%i %s", bot_teamname[StartServer_GetPlayerTeam()]);
 		}
-		else if (s_scriptdata.gametype == GT_TOURNAMENT) {
-			for (i = 0; i < s_serverexec.player_client; i++)
-				AddScript(va("forceteam %i spectator;", i));
-		}
 
 		AddScript(va(teamjoin, s_serverexec.player_client));
 		AddScript("\"\n");
@@ -2797,10 +2731,6 @@ qboolean StartServer_LoadServer(const char* scriptFile)
 		else if (s_scriptdata.gametype >= GT_TEAM) {
 			// use %%i so a single %i is generated for player client
 			teamjoin = va("forceteam %%i %s", bot_teamname[StartServer_GetPlayerTeam()]);
-		}
-		else if (s_scriptdata.gametype == GT_TOURNAMENT) {
-			for (i = 0; i < s_serverexec.player_client; i++)
-				AddScript(va("forceteam %i spectator;", i));
 		}
 
 		AddScript(va(teamjoin, s_serverexec.player_client));

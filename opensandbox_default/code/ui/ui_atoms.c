@@ -437,18 +437,6 @@ if( Q_stricmp (UI_Argv(0), "ui_display") == 0 ){
 UI_DisplayOptionsMenu();
 return qtrue;
 }
-if( Q_stricmp (UI_Argv(0), "ui_ingame_bots") == 0 ){
-UI_BotCommandMenu_f();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_ingame") == 0 ){
-UI_InGameMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_ingame_mapvote") == 0 ){
-UI_MapCallVote();
-return qtrue;
-}
 if( Q_stricmp (UI_Argv(0), "ui_menu") == 0 ){
 UI_MainMenu();
 return qtrue;
@@ -507,10 +495,6 @@ return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_specifyserver") == 0 ){
 UI_SpecifyServerMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_teamorders") == 0 ){
-UI_BotCommandMenu_f();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_video") == 0 ){

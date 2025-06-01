@@ -36,13 +36,11 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
 
-	s = va("%i %i %i %i %i %i %i", 
+	s = va("%i %i %i %i %i", 
 		client->sess.sessionTeam,
 		client->sess.spectatorNum,
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
-		client->sess.wins,
-		client->sess.losses,
 		client->sess.teamLeader
 		);
 
@@ -69,13 +67,11 @@ void G_ReadSessionData( gclient_t *client ) {
 	var = va( "session%i", (int)(client - level.clients) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
 
-	sscanf( s, "%i %i %i %i %i %i %i",
+	sscanf( s, "%i %i %i %i %i",
 		&sessionTeam,                 // bk010221 - format
 		&client->sess.spectatorNum,
 		&spectatorState,              // bk010221 - format
 		&client->sess.spectatorClient,
-		&client->sess.wins,
-		&client->sess.losses,
 		&teamLeader                   // bk010221 - format
 		);
 
@@ -99,7 +95,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	sess = &client->sess;
 
 	// initial team determination
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		if ( g_teamAutoJoin.integer ) {
 			sess->sessionTeam = PickTeam( -1 );
 			BroadcastTeamChange( client, -1 );
@@ -118,24 +114,13 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 			case GT_SANDBOX:
 			case GT_MAPEDITOR:
 			case GT_FFA:
-			case GT_LMS:
 				sess->sessionTeam = TEAM_FREE;
-				break;
-			case GT_TOURNAMENT:
-				// if the game is full, go into a waiting mode
-				if ( level.numNonSpectatorClients >= 2 ) {
-					sess->sessionTeam = TEAM_SPECTATOR;
-				} else {
-					sess->sessionTeam = TEAM_FREE;
-				}
 				break;
 			}
 		}
 	}
 
 	sess->spectatorState = SPECTATOR_FREE;
-	//sess->spectatorNum = level.time;
-	 AddTournamentQueue(client);
 
 	G_WriteClientSessionData( client );
 }

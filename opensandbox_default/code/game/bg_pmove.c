@@ -1525,9 +1525,6 @@ static void PM_TorsoAnimation( void ) {
 PM_Weapon
 
 Generates weapon events and modifes the weapon counter
-
-Elimination TODO:
-Make this thing stop during warmup (done)
 ==============
 */
 static void PM_Weapon( void ) {
@@ -2164,7 +2161,6 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_SetWaterLevel();
 
 	// weapons
-	if(!(pm->ps->pm_flags & PMF_ELIMWARMUP))
 	PM_Weapon();
 
 	// torso animation

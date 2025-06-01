@@ -116,39 +116,27 @@ const char* idmap_list[] = {
 	0
 };
 
-const char *gametype_items[NUM_GAMETYPES + 1] = {
+const char *gametype_items[GT_MAX_GAME_TYPE+1] = {
 	"Sandbox",
 	"Map Editor",
 	"Free For All",
-	"Tournament",
-	"Last Man Standing",
 	"Team Deathmatch",
 	"Capture the Flag",
 	"One Flag Capture",
 	"Overload",
 	"Harvester",
-	"Elimination",
-	"CTF Elimination",
-	"Double Domination",
-	"Domination",
 	0
 };
 
-const char *gametype_itemsru[NUM_GAMETYPES + 1] = {
+const char *gametype_itemsru[GT_MAX_GAME_TYPE+1] = {
 	"Песочница",
 	"Редактор Карт",
 	"Все Против Всех",
-	"Турнир",
-	"Последний Оставшийся",
 	"Командный Бой",
 	"Захват Флага",
 	"Один Флаг",
 	"Атака Базы",
 	"Жнец",
-	"Устранение",
-	"Устранение: Захват Флага",
-	"Двойное Доминирование",
-	"Доминирование",
 	0
 };
 
@@ -300,11 +288,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_obeliskRespawnDelay", "10" },
 { "gui_cubeTimeout", "30" },
 { "gui_flagrespawn", "-1" },
-{ "gui_weaponTeamRespawn", "30" },
-{ "gui_elimination_selfdamage", "0" },
-{ "gui_elimination_roundtime", "600" },
-{ "gui_elimination_warmup", "0" },
-{ "gui_elimination_activewarmup", "0" },
 { "gui_accelerate", "1" },
 { "gui_spectatorspeed", "700" },
 { "gui_speed", "320" },
@@ -367,55 +350,31 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_teamblue_respawnwait", "3000" },
 { "gui_teamblue_pickupitems", "1" },
 { "gui_elimination_blue_respawn", "0" },
-{ "gui_bluespawn_health", "100" },
-{ "gui_bluespawn_armor", "0" },
-{ "gui_bluespawn_grapple", "0" },
-{ "gui_bluespawn_gauntlet", "1" },
-{ "gui_bluespawn_machinegun", "500" },
-{ "gui_bluespawn_shotgun", "0" },
-{ "gui_bluespawn_grenade", "0" },
-{ "gui_bluespawn_rocket", "0" },
-{ "gui_bluespawn_railgun", "0" },
-{ "gui_bluespawn_lightning", "0" },
-{ "gui_bluespawn_plasmagun", "0" },
-{ "gui_bluespawn_bfg", "0" },
-{ "gui_bluespawn_chain", "0" },
-{ "gui_bluespawn_mine", "0" },
-{ "gui_bluespawn_nail", "0" },
-{ "gui_bluespawn_flame", "0" },
-{ "gui_bluespawn_quad", "0" },
-{ "gui_bluespawn_haste", "0" },
-{ "gui_bluespawn_bsuit", "0" },
-{ "gui_bluespawn_invis", "0" },
-{ "gui_bluespawn_regen", "0" },
-{ "gui_bluespawn_flight", "0" },
-{ "gui_bluespawn_items", "0" },
-{ "gui_bluespawn_holdable", "0" },
-{ "gui_redspawn_health", "100" },
-{ "gui_redspawn_armor", "0" },
-{ "gui_redspawn_imatter", "0" },
-{ "gui_redspawn_grapple", "0" },
-{ "gui_redspawn_gauntlet", "1" },
-{ "gui_redspawn_machinegun", "500" },
-{ "gui_redspawn_shotgun", "0" },
-{ "gui_redspawn_grenade", "0" },
-{ "gui_redspawn_rocket", "0" },
-{ "gui_redspawn_railgun", "0" },
-{ "gui_redspawn_lightning", "0" },
-{ "gui_redspawn_plasmagun", "0" },
-{ "gui_redspawn_bfg", "0" },
-{ "gui_redspawn_chain", "0" },
-{ "gui_redspawn_mine", "0" },
-{ "gui_redspawn_nail", "0" },
-{ "gui_redspawn_flame", "0" },
-{ "gui_redspawn_antimatter", "0" },
-{ "gui_redspawn_quad", "0" },
-{ "gui_redspawn_haste", "0" },
-{ "gui_redspawn_bsuit", "0" },
-{ "gui_redspawn_invis", "0" },
-{ "gui_redspawn_regen", "0" },
-{ "gui_redspawn_flight", "0" },
-{ "gui_redspawn_holdable", "0" },
+{ "gui_spawn_health", "100" },
+{ "gui_spawn_armor", "0" },
+{ "gui_spawn_imatter", "0" },
+{ "gui_spawn_grapple", "0" },
+{ "gui_spawn_gauntlet", "1" },
+{ "gui_spawn_machinegun", "500" },
+{ "gui_spawn_shotgun", "0" },
+{ "gui_spawn_grenade", "0" },
+{ "gui_spawn_rocket", "0" },
+{ "gui_spawn_railgun", "0" },
+{ "gui_spawn_lightning", "0" },
+{ "gui_spawn_plasmagun", "0" },
+{ "gui_spawn_bfg", "0" },
+{ "gui_spawn_chain", "0" },
+{ "gui_spawn_mine", "0" },
+{ "gui_spawn_nail", "0" },
+{ "gui_spawn_flame", "0" },
+{ "gui_spawn_antimatter", "0" },
+{ "gui_spawn_quad", "0" },
+{ "gui_spawn_haste", "0" },
+{ "gui_spawn_bsuit", "0" },
+{ "gui_spawn_invis", "0" },
+{ "gui_spawn_regen", "0" },
+{ "gui_spawn_flight", "0" },
+{ "gui_spawn_holdable", "0" },
 { "gui_elimination_items", "0" },
 { "gui_overlay", "0" },
 { "gui_randomItems", "0" },
@@ -1706,7 +1665,7 @@ static void StartServer_BuildMapDistribution(void)
 	int matchbits, gamebits;
 
 	// set zero
-	for (i = 0; i < MAX_GAME_TYPE; i++)
+	for (i = 0; i < GT_MAX_GAME_TYPE; i++)
 		for (j = 0; j < MAX_MAP_GROUP; j++)
 			s_scriptdata.map.TypeCount[i][j] = 0;
 
@@ -1728,7 +1687,7 @@ static void StartServer_BuildMapDistribution(void)
 			maptype = MAP_GROUP_NONID;
 
 		gamebits = GametypeBits( Info_ValueForKey( info, "type") );
-		for (j = 0; j < NUM_GAMETYPES; j++)
+		for (j = 0; j < GT_MAX_GAME_TYPE; j++)
 		{
 			gametype = j;
 			matchbits = 1 << gametype;
@@ -1785,7 +1744,7 @@ static void StartServer_LoadMapScriptData(void)
 
 	s = var_cvar_base;
 
-	if (s_scriptdata.gametype >= GT_CTF && !(s_scriptdata.gametype == GT_LMS)) {
+	if (s_scriptdata.gametype >= GT_CTF) {
 		s_scriptdata.map.fragLimit = GUI_GetSkirmishCvarIntClamp(0, 999, s, "capturelimit");
 		f = "customcapturelimits";
 		f2 = "capturetype";
@@ -1852,7 +1811,7 @@ static void StartServer_SaveMapScriptData(void)
 	f2 = "fragtype";
 
 	GUI_SetSkirmishCvarInt( s, "timelimit", s_scriptdata.map.timeLimit);
-	if (s_scriptdata.gametype >= GT_CTF && !(s_scriptdata.gametype == GT_LMS)) {
+	if (s_scriptdata.gametype >= GT_CTF) {
 		GUI_SetSkirmishCvarInt( s, "capturelimit", s_scriptdata.map.fragLimit);
 		f = "customcapturelimits";
 		f2 = "capturetype";
@@ -2096,7 +2055,7 @@ qboolean StartServer_DeleteBotSlot(int index)
 
 	// number of slots to move
 	count = PLAYER_SLOTS - index - 1;
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS)  && !StartServer_IsRandomBotExclude(s_scriptdata.bot.typeSelect) && index < PLAYER_SLOTS_PERCOL) {
+	if (s_scriptdata.gametype >= GT_TEAM && !StartServer_IsRandomBotExclude(s_scriptdata.bot.typeSelect) && index < PLAYER_SLOTS_PERCOL) {
 		count -= PLAYER_SLOTS_PERCOL;
 	}
 
@@ -2136,7 +2095,7 @@ qboolean StartServer_InsertBotSlot(int index)
 
 	// number of slots to move
 	count = PLAYER_SLOTS - index - 1;
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS)  && index < PLAYER_SLOTS_PERCOL) {
+	if (s_scriptdata.gametype >= GT_TEAM && index < PLAYER_SLOTS_PERCOL) {
 		count -= PLAYER_SLOTS_PERCOL;
 	}
 
@@ -2210,7 +2169,7 @@ int StartServer_SlotTeam(int index)
 	if (index < 0)
 		return SLOTTEAM_INVALID;
 
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS) ) {
+	if (s_scriptdata.gametype >= GT_TEAM ) {
 		if (index < PLAYER_SLOTS_PERCOL)
 			return SLOTTEAM_ONE;
 		if (index < PLAYER_SLOTS)
@@ -2350,7 +2309,7 @@ void StartServer_DoBotAction(int action, int selected)
 				open = 0;
 				count = PLAYER_SLOTS;
 				index = bots_done;
-				if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS)  && !StartServer_IsRandomBotExclude(s_scriptdata.bot.typeSelect)) {
+				if (s_scriptdata.gametype >= GT_TEAM && !StartServer_IsRandomBotExclude(s_scriptdata.bot.typeSelect)) {
 					count = PLAYER_SLOTS_PERCOL;
 				}
 
@@ -2420,7 +2379,7 @@ wraps the bot.typeSelect safely, based on the current gametype
 */
 static void StartServer_AdjustBotSelectionFromGametype(void)
 {
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS)  && StartServer_IsBotArenaScript(s_scriptdata.bot.typeSelect))
+	if (s_scriptdata.gametype >= GT_TEAM && StartServer_IsBotArenaScript(s_scriptdata.bot.typeSelect))
 		s_scriptdata.bot.typeSelect = BOTTYPE_SELECT;
 }
 
@@ -2589,7 +2548,7 @@ void StartServer_LoadBotScriptData(void)
 	s_scriptdata.bot.skillBias = GUI_GetSkirmishCvarIntClamp(0, SKILLBIAS_COUNT, s, "BotSkillBias");
 
 	// swap teams
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS) ) {
+	if (s_scriptdata.gametype >= GT_TEAM) {
 		s_scriptdata.bot.teamSwapped = GUI_GetSkirmishCvarIntClamp(0, 1, s, "TeamSwapped");
 	}
 
@@ -2856,11 +2815,6 @@ s_scriptdata.server.obeliskRegenAmount = GUI_GetSkirmishCvarIntClamp(-9999999, 9
 s_scriptdata.server.obeliskRespawnDelay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_obeliskRespawnDelay" );
 s_scriptdata.server.cubeTimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_cubeTimeout" );
 s_scriptdata.server.flagrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_flagrespawn" );
-s_scriptdata.server.weaponTeamRespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_weaponTeamRespawn" );
-s_scriptdata.server.elimination_selfdamage = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_selfdamage" );
-s_scriptdata.server.elimination_roundtime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_roundtime" );
-s_scriptdata.server.elimination_warmup = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_warmup" );
-s_scriptdata.server.elimination_activewarmup = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_activewarmup" );
 s_scriptdata.server.accelerate = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_accelerate" );
 s_scriptdata.server.spectatorspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spectatorspeed" );
 s_scriptdata.server.speed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_speed" );
@@ -2923,54 +2877,30 @@ s_scriptdata.server.teamblue_respawnwait = GUI_GetSkirmishCvarIntClamp(-9999999,
 s_scriptdata.server.teamblue_pickupitems = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_teamblue_pickupitems" );
 s_scriptdata.server.elimination_blue_respawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_blue_respawn" );
 s_scriptdata.server.elimination_red_respawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_red_respawn" );
-s_scriptdata.server.bluespawn_health = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_health" );
-s_scriptdata.server.bluespawn_armor = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_armor" );
-s_scriptdata.server.bluespawn_grapple = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_grapple" );
-s_scriptdata.server.bluespawn_gauntlet = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_gauntlet" );
-s_scriptdata.server.bluespawn_machinegun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_machinegun" );
-s_scriptdata.server.bluespawn_shotgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_shotgun" );
-s_scriptdata.server.bluespawn_grenade = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_grenade" );
-s_scriptdata.server.bluespawn_rocket = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_rocket" );
-s_scriptdata.server.bluespawn_railgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_railgun" );
-s_scriptdata.server.bluespawn_lightning = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_lightning" );
-s_scriptdata.server.bluespawn_plasmagun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_plasmagun" );
-s_scriptdata.server.bluespawn_bfg = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_bfg" );
-s_scriptdata.server.bluespawn_chain = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_chain" );
-s_scriptdata.server.bluespawn_mine = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_mine" );
-s_scriptdata.server.bluespawn_nail = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_nail" );
-s_scriptdata.server.bluespawn_flame = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_flame" );
-s_scriptdata.server.bluespawn_antimatter = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_antimatter" );
-s_scriptdata.server.bluespawn_quad = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_quad" );
-s_scriptdata.server.bluespawn_haste = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_haste" );
-s_scriptdata.server.bluespawn_bsuit = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_bsuit" );
-s_scriptdata.server.bluespawn_invis = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_invis" );
-s_scriptdata.server.bluespawn_regen = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_regen" );
-s_scriptdata.server.bluespawn_flight = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_flight" );
-s_scriptdata.server.bluespawn_holdable = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_bluespawn_holdable" );
-s_scriptdata.server.redspawn_health = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_health" );
-s_scriptdata.server.redspawn_armor = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_armor" );
-s_scriptdata.server.redspawn_grapple = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_grapple" );
-s_scriptdata.server.redspawn_gauntlet = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_gauntlet" );
-s_scriptdata.server.redspawn_machinegun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_machinegun" );
-s_scriptdata.server.redspawn_shotgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_shotgun" );
-s_scriptdata.server.redspawn_grenade = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_grenade" );
-s_scriptdata.server.redspawn_rocket = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_rocket" );
-s_scriptdata.server.redspawn_railgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_railgun" );
-s_scriptdata.server.redspawn_lightning = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_lightning" );
-s_scriptdata.server.redspawn_plasmagun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_plasmagun" );
-s_scriptdata.server.redspawn_bfg = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_bfg" );
-s_scriptdata.server.redspawn_chain = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_chain" );
-s_scriptdata.server.redspawn_mine = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_mine" );
-s_scriptdata.server.redspawn_nail = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_nail" );
-s_scriptdata.server.redspawn_flame = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_flame" );
-s_scriptdata.server.redspawn_antimatter = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_antimatter" );
-s_scriptdata.server.redspawn_quad = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_quad" );
-s_scriptdata.server.redspawn_haste = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_haste" );
-s_scriptdata.server.redspawn_bsuit = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_bsuit" );
-s_scriptdata.server.redspawn_invis = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_invis" );
-s_scriptdata.server.redspawn_regen = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_regen" );
-s_scriptdata.server.redspawn_flight = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_flight" );
-s_scriptdata.server.redspawn_holdable = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_redspawn_holdable" );
+s_scriptdata.server.spawn_health = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_health" );
+s_scriptdata.server.spawn_armor = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_armor" );
+s_scriptdata.server.spawn_grapple = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_grapple" );
+s_scriptdata.server.spawn_gauntlet = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_gauntlet" );
+s_scriptdata.server.spawn_machinegun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_machinegun" );
+s_scriptdata.server.spawn_shotgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_shotgun" );
+s_scriptdata.server.spawn_grenade = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_grenade" );
+s_scriptdata.server.spawn_rocket = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_rocket" );
+s_scriptdata.server.spawn_railgun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_railgun" );
+s_scriptdata.server.spawn_lightning = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_lightning" );
+s_scriptdata.server.spawn_plasmagun = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_plasmagun" );
+s_scriptdata.server.spawn_bfg = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_bfg" );
+s_scriptdata.server.spawn_chain = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_chain" );
+s_scriptdata.server.spawn_mine = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_mine" );
+s_scriptdata.server.spawn_nail = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_nail" );
+s_scriptdata.server.spawn_flame = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_flame" );
+s_scriptdata.server.spawn_antimatter = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_antimatter" );
+s_scriptdata.server.spawn_quad = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_quad" );
+s_scriptdata.server.spawn_haste = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_haste" );
+s_scriptdata.server.spawn_bsuit = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_bsuit" );
+s_scriptdata.server.spawn_invis = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_invis" );
+s_scriptdata.server.spawn_regen = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_regen" );
+s_scriptdata.server.spawn_flight = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_flight" );
+s_scriptdata.server.spawn_holdable = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_spawn_holdable" );
 s_scriptdata.server.elimination_items = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_elimination_items" );
 s_scriptdata.server.overlay = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_overlay" );
 s_scriptdata.server.randomItems = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_randomItems" );
@@ -3189,7 +3119,7 @@ GUI_GetSkirmishCvar(NULL, "gui_amknockback",s_scriptdata.server.g_amknockback, 3
 	s_scriptdata.server.warmupTime = GUI_GetSkirmishCvarIntClamp(0, 999, s, "WarmUp" );
 	s_scriptdata.server.viewdistance = GUI_GetSkirmishCvarIntClamp(0, 90, s, "viewdistance" );
 
-	if (gametype >= GT_TEAM && !(gametype == GT_LMS) ) {
+	if (gametype >= GT_TEAM) {
 		t = 0;
 		if (gametype == GT_TEAM)
 			t = "ui_team_friendly";
@@ -3268,11 +3198,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_obeliskRegenAmount", s_scriptdata.server.obel
 GUI_SetSkirmishCvarInt( NULL, "gui_obeliskRespawnDelay", s_scriptdata.server.obeliskRespawnDelay);
 GUI_SetSkirmishCvarInt( NULL, "gui_cubeTimeout", s_scriptdata.server.cubeTimeout);
 GUI_SetSkirmishCvarInt( NULL, "gui_flagrespawn", s_scriptdata.server.flagrespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_weaponTeamRespawn", s_scriptdata.server.weaponTeamRespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_elimination_selfdamage", s_scriptdata.server.elimination_selfdamage);
-GUI_SetSkirmishCvarInt( NULL, "gui_elimination_roundtime", s_scriptdata.server.elimination_roundtime);
-GUI_SetSkirmishCvarInt( NULL, "gui_elimination_warmup", s_scriptdata.server.elimination_warmup);
-GUI_SetSkirmishCvarInt( NULL, "gui_elimination_activewarmup", s_scriptdata.server.elimination_activewarmup);
 GUI_SetSkirmishCvarInt( NULL, "gui_accelerate", s_scriptdata.server.accelerate);
 GUI_SetSkirmishCvarInt( NULL, "gui_spectatorspeed", s_scriptdata.server.spectatorspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_speed", s_scriptdata.server.speed);
@@ -3335,54 +3260,30 @@ GUI_SetSkirmishCvarInt( NULL, "gui_teamblue_respawnwait", s_scriptdata.server.te
 GUI_SetSkirmishCvarInt( NULL, "gui_teamblue_pickupitems", s_scriptdata.server.teamblue_pickupitems);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_blue_respawn", s_scriptdata.server.elimination_blue_respawn);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_red_respawn", s_scriptdata.server.elimination_red_respawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_health", s_scriptdata.server.bluespawn_health);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_armor", s_scriptdata.server.bluespawn_armor);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_grapple", s_scriptdata.server.bluespawn_grapple);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_gauntlet", s_scriptdata.server.bluespawn_gauntlet);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_machinegun", s_scriptdata.server.bluespawn_machinegun);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_shotgun", s_scriptdata.server.bluespawn_shotgun);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_grenade", s_scriptdata.server.bluespawn_grenade);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_rocket", s_scriptdata.server.bluespawn_rocket);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_railgun", s_scriptdata.server.bluespawn_railgun);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_lightning", s_scriptdata.server.bluespawn_lightning);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_plasmagun", s_scriptdata.server.bluespawn_plasmagun);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_bfg", s_scriptdata.server.bluespawn_bfg);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_chain", s_scriptdata.server.bluespawn_chain);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_mine", s_scriptdata.server.bluespawn_mine);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_nail", s_scriptdata.server.bluespawn_nail);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_flame", s_scriptdata.server.bluespawn_flame);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_antimatter", s_scriptdata.server.bluespawn_antimatter);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_quad", s_scriptdata.server.bluespawn_quad);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_haste", s_scriptdata.server.bluespawn_haste);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_bsuit", s_scriptdata.server.bluespawn_bsuit);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_invis", s_scriptdata.server.bluespawn_invis);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_regen", s_scriptdata.server.bluespawn_regen);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_flight", s_scriptdata.server.bluespawn_flight);
-GUI_SetSkirmishCvarInt( NULL, "gui_bluespawn_holdable", s_scriptdata.server.bluespawn_holdable);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_health", s_scriptdata.server.redspawn_health);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_armor", s_scriptdata.server.redspawn_armor);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_grapple", s_scriptdata.server.redspawn_grapple);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_gauntlet", s_scriptdata.server.redspawn_gauntlet);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_machinegun", s_scriptdata.server.redspawn_machinegun);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_shotgun", s_scriptdata.server.redspawn_shotgun);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_grenade", s_scriptdata.server.redspawn_grenade);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_rocket", s_scriptdata.server.redspawn_rocket);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_railgun", s_scriptdata.server.redspawn_railgun);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_lightning", s_scriptdata.server.redspawn_lightning);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_plasmagun", s_scriptdata.server.redspawn_plasmagun);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_bfg", s_scriptdata.server.redspawn_bfg);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_chain", s_scriptdata.server.redspawn_chain);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_mine", s_scriptdata.server.redspawn_mine);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_nail", s_scriptdata.server.redspawn_nail);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_flame", s_scriptdata.server.redspawn_flame);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_antimatter", s_scriptdata.server.redspawn_antimatter);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_quad", s_scriptdata.server.redspawn_quad);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_haste", s_scriptdata.server.redspawn_haste);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_bsuit", s_scriptdata.server.redspawn_bsuit);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_invis", s_scriptdata.server.redspawn_invis);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_regen", s_scriptdata.server.redspawn_regen);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_flight", s_scriptdata.server.redspawn_flight);
-GUI_SetSkirmishCvarInt( NULL, "gui_redspawn_holdable", s_scriptdata.server.redspawn_holdable);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_health", s_scriptdata.server.spawn_health);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_armor", s_scriptdata.server.spawn_armor);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_grapple", s_scriptdata.server.spawn_grapple);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_gauntlet", s_scriptdata.server.spawn_gauntlet);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_machinegun", s_scriptdata.server.spawn_machinegun);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_shotgun", s_scriptdata.server.spawn_shotgun);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_grenade", s_scriptdata.server.spawn_grenade);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_rocket", s_scriptdata.server.spawn_rocket);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_railgun", s_scriptdata.server.spawn_railgun);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_lightning", s_scriptdata.server.spawn_lightning);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_plasmagun", s_scriptdata.server.spawn_plasmagun);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_bfg", s_scriptdata.server.spawn_bfg);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_chain", s_scriptdata.server.spawn_chain);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_mine", s_scriptdata.server.spawn_mine);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_nail", s_scriptdata.server.spawn_nail);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_flame", s_scriptdata.server.spawn_flame);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_antimatter", s_scriptdata.server.spawn_antimatter);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_quad", s_scriptdata.server.spawn_quad);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_haste", s_scriptdata.server.spawn_haste);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_bsuit", s_scriptdata.server.spawn_bsuit);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_invis", s_scriptdata.server.spawn_invis);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_regen", s_scriptdata.server.spawn_regen);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_flight", s_scriptdata.server.spawn_flight);
+GUI_SetSkirmishCvarInt( NULL, "gui_spawn_holdable", s_scriptdata.server.spawn_holdable);
 GUI_SetSkirmishCvarInt( NULL, "gui_elimination_items", s_scriptdata.server.elimination_items);
 GUI_SetSkirmishCvarInt( NULL, "gui_overlay", s_scriptdata.server.overlay);
 GUI_SetSkirmishCvarInt( NULL, "gui_randomItems", s_scriptdata.server.randomItems);
@@ -3599,7 +3500,7 @@ GUI_SetSkirmishCvarInt( NULL, "gui_amguided", s_scriptdata.server.g_amguided);
 	GUI_SetSkirmishCvarInt(s, "WarmUp", s_scriptdata.server.warmupTime);
 	GUI_SetSkirmishCvarInt(s, "viewdistance", s_scriptdata.server.viewdistance);
 
-	if (gametype >= GT_TEAM && !(gametype == GT_LMS) ) {
+	if (gametype >= GT_TEAM) {
 		// ff is an existing cvar, so we use the existing cvar 
 		friendly = s_scriptdata.server.friendlyFire;
 		if (gametype == GT_TEAM) {
@@ -3659,7 +3560,7 @@ void StartServer_InitScriptData( void )
 
 	GUI_StartServer_LoadSkirmishCvars();
 
-	StartServer_LoadScriptDataFromType((int)Com_Clamp( 0, MAX_GAME_TYPE, GUI_GetSkirmishCvarInt( NULL, "gui_gametype" ) ));
+	StartServer_LoadScriptDataFromType((int)Com_Clamp( 0, GT_MAX_GAME_TYPE, GUI_GetSkirmishCvarInt( NULL, "gui_gametype" ) ));
 	StartServer_BuildMapDistribution();
 }
 

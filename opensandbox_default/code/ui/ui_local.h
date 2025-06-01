@@ -282,14 +282,6 @@ extern void			MenuField_Draw( menuelement_s *f );
 extern sfxHandle_t	MenuField_Key( menuelement_s* m, int* key );
 
 //
-// ui_ingame.c
-//
-extern int UI_CurrentPlayerTeam( void );
-extern void UI_InGameMenu(void);
-extern void UI_DynamicMenuCache(void);
-extern void UI_BotCommandMenu_f( void );
-
-//
 // ui_confirm.c
 //
 extern void ConfirmMenu_Cache( void );
@@ -661,12 +653,6 @@ void UI_loadMapEdMenu( void );
 //
 void UI_saveMapEdMenu_Cache( void );
 void UI_saveMapEdMenu( void );
-
-//
-// ui_ingame_mapvote.c
-//
-
-void UI_MapCallVote( void );
 
 //SourceTech UI Framework
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);

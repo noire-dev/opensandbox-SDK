@@ -321,62 +321,30 @@ vmCvar_t    g_enableBreath;
 vmCvar_t    g_proxMineTimeout;
 vmCvar_t    g_music;
 vmCvar_t    g_spawnprotect;
-vmCvar_t    g_elimination_selfdamage;
-vmCvar_t    g_elimination_roundtime;
-vmCvar_t    g_elimination_warmup;
-vmCvar_t    g_elimination_activewarmup;
-vmCvar_t    g_elimination;
-vmCvar_t    g_elimination_items;
-vmCvar_t    g_elimination_red_respawn;
-vmCvar_t    g_elimination_blue_respawn;
-vmCvar_t    g_bluespawn_health;
-vmCvar_t    g_bluespawn_armor;
-vmCvar_t    g_bluespawn_gauntlet;
-vmCvar_t    g_bluespawn_machinegun;
-vmCvar_t    g_bluespawn_shotgun;
-vmCvar_t    g_bluespawn_grenade;
-vmCvar_t    g_bluespawn_rocket;
-vmCvar_t    g_bluespawn_lightning;
-vmCvar_t    g_bluespawn_railgun;
-vmCvar_t    g_bluespawn_plasmagun;
-vmCvar_t    g_bluespawn_bfg;
-vmCvar_t    g_bluespawn_grapple;
-vmCvar_t    g_bluespawn_nail;
-vmCvar_t    g_bluespawn_mine;
-vmCvar_t    g_bluespawn_chain;
-vmCvar_t    g_bluespawn_flame;
-vmCvar_t    g_bluespawn_antimatter;
-vmCvar_t    g_bluespawn_quad;
-vmCvar_t    g_bluespawn_haste;
-vmCvar_t    g_bluespawn_bsuit;
-vmCvar_t    g_bluespawn_invis;
-vmCvar_t    g_bluespawn_regen;
-vmCvar_t    g_bluespawn_flight;
-vmCvar_t    g_bluespawn_holdable;
-vmCvar_t    g_redspawn_health;
-vmCvar_t    g_redspawn_armor;
-vmCvar_t    g_redspawn_gauntlet;
-vmCvar_t    g_redspawn_machinegun;
-vmCvar_t    g_redspawn_shotgun;
-vmCvar_t    g_redspawn_grenade;
-vmCvar_t    g_redspawn_rocket;
-vmCvar_t    g_redspawn_lightning;
-vmCvar_t    g_redspawn_railgun;
-vmCvar_t    g_redspawn_plasmagun;
-vmCvar_t    g_redspawn_bfg;
-vmCvar_t    g_redspawn_grapple;
-vmCvar_t    g_redspawn_nail;
-vmCvar_t    g_redspawn_mine;
-vmCvar_t    g_redspawn_chain;
-vmCvar_t    g_redspawn_flame;
-vmCvar_t    g_redspawn_antimatter;
-vmCvar_t    g_redspawn_quad;
-vmCvar_t    g_redspawn_haste;
-vmCvar_t    g_redspawn_bsuit;
-vmCvar_t    g_redspawn_invis;
-vmCvar_t    g_redspawn_regen;
-vmCvar_t    g_redspawn_flight;
-vmCvar_t    g_redspawn_holdable;
+vmCvar_t    g_spawn_health;
+vmCvar_t    g_spawn_armor;
+vmCvar_t    g_spawn_gauntlet;
+vmCvar_t    g_spawn_machinegun;
+vmCvar_t    g_spawn_shotgun;
+vmCvar_t    g_spawn_grenade;
+vmCvar_t    g_spawn_rocket;
+vmCvar_t    g_spawn_lightning;
+vmCvar_t    g_spawn_railgun;
+vmCvar_t    g_spawn_plasmagun;
+vmCvar_t    g_spawn_bfg;
+vmCvar_t    g_spawn_grapple;
+vmCvar_t    g_spawn_nail;
+vmCvar_t    g_spawn_mine;
+vmCvar_t    g_spawn_chain;
+vmCvar_t    g_spawn_flame;
+vmCvar_t    g_spawn_antimatter;
+vmCvar_t    g_spawn_quad;
+vmCvar_t    g_spawn_haste;
+vmCvar_t    g_spawn_bsuit;
+vmCvar_t    g_spawn_invis;
+vmCvar_t    g_spawn_regen;
+vmCvar_t    g_spawn_flight;
+vmCvar_t    g_spawn_holdable;
 vmCvar_t    g_vampire;
 vmCvar_t    g_vampireMaxHealth;
 vmCvar_t    g_regen;
@@ -674,62 +642,30 @@ static cvarTable_t cvarTable[] = {
 	{ &sv_fps,                      "sv_fps",                       "60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE },
     { &g_music,                     "g_music",                      "",             0 },
     { &g_spawnprotect,              "g_spawnprotect",               "500",          CVAR_ARCHIVE|CVAR_NORESTART },
-	{ &g_elimination_selfdamage,    "g_elimination_selfdamage",     "0",            0 },
-	{ &g_elimination_roundtime,     "g_elimination_roundtime",      "600",          CVAR_SERVERINFO|CVAR_NORESTART },
-	{ &g_elimination_warmup,        "g_elimination_warmup",         "0",            CVAR_NORESTART },
-	{ &g_elimination_activewarmup,  "g_elimination_activewarmup",   "0",            CVAR_NORESTART },
-    { &g_elimination,               "g_elimination",                "0",            CVAR_NORESTART },
-	{ &g_elimination_items,         "g_elimination_items",          "0",            CVAR_LATCH },
-	{ &g_elimination_red_respawn,   "g_elimination_red_respawn",    "0",            0 },
-	{ &g_elimination_blue_respawn,  "g_elimination_blue_respawn",   "0",            0 },
-	{ &g_bluespawn_health,          "g_bluespawn_health",           "100",          CVAR_NORESTART },
-	{ &g_bluespawn_armor,           "g_bluespawn_armor",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_gauntlet,        "g_bluespawn_gauntlet",         "1",            CVAR_NORESTART },
-	{ &g_bluespawn_machinegun,      "g_bluespawn_machinegun",       "500",          CVAR_NORESTART },
-	{ &g_bluespawn_shotgun,         "g_bluespawn_shotgun",          "0",            CVAR_NORESTART },
-	{ &g_bluespawn_grenade,         "g_bluespawn_grenade",          "0",            CVAR_NORESTART },
-	{ &g_bluespawn_rocket,          "g_bluespawn_rocket",           "0",            CVAR_NORESTART },
-	{ &g_bluespawn_lightning,       "g_bluespawn_lightning",        "0",            CVAR_NORESTART },
-	{ &g_bluespawn_railgun,         "g_bluespawn_railgun",          "0",            CVAR_NORESTART },
-	{ &g_bluespawn_plasmagun,       "g_bluespawn_plasmagun",        "0",            CVAR_NORESTART },
-	{ &g_bluespawn_bfg,             "g_bluespawn_bfg",              "0",            CVAR_NORESTART },
-    { &g_bluespawn_grapple,         "g_bluespawn_grapple",          "0",            CVAR_NORESTART },
-	{ &g_bluespawn_nail,            "g_bluespawn_nail",             "0",            CVAR_NORESTART },
-	{ &g_bluespawn_mine,            "g_bluespawn_mine",             "0",            CVAR_NORESTART },
-	{ &g_bluespawn_chain,           "g_bluespawn_chain",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_flame,           "g_bluespawn_flame",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_antimatter,      "g_bluespawn_antimatter",       "0",            CVAR_NORESTART },
-	{ &g_bluespawn_quad,            "g_bluespawn_quad",             "0",            CVAR_NORESTART },
-	{ &g_bluespawn_haste,           "g_bluespawn_haste",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_bsuit,           "g_bluespawn_bsuit",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_invis,           "g_bluespawn_invis",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_regen,           "g_bluespawn_regen",            "0",            CVAR_NORESTART },
-	{ &g_bluespawn_flight,          "g_bluespawn_flight",           "0",            CVAR_NORESTART },
-	{ &g_bluespawn_holdable,        "g_bluespawn_holdable",         "0",            CVAR_LATCH },
-	{ &g_redspawn_health,           "g_redspawn_health",            "100",          CVAR_NORESTART },
-	{ &g_redspawn_armor,            "g_redspawn_armor",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_gauntlet,         "g_redspawn_gauntlet",          "1",            CVAR_NORESTART },
-	{ &g_redspawn_machinegun,       "g_redspawn_machinegun",        "500",          CVAR_NORESTART },
-	{ &g_redspawn_shotgun,          "g_redspawn_shotgun",           "0",            CVAR_NORESTART },
-	{ &g_redspawn_grenade,          "g_redspawn_grenade",           "0",            CVAR_NORESTART },
-	{ &g_redspawn_rocket,           "g_redspawn_rocket",            "0",            CVAR_NORESTART },
-	{ &g_redspawn_lightning,        "g_redspawn_lightning",         "0",            CVAR_NORESTART },
-	{ &g_redspawn_railgun,          "g_redspawn_railgun",           "0",            CVAR_NORESTART },
-	{ &g_redspawn_plasmagun,        "g_redspawn_plasmagun",         "0",            CVAR_NORESTART },
-	{ &g_redspawn_bfg,              "g_redspawn_bfg",               "0",            CVAR_NORESTART },
-    { &g_redspawn_grapple,          "g_redspawn_grapple",           "0",            CVAR_NORESTART },
-	{ &g_redspawn_nail,             "g_redspawn_nail",              "0",            CVAR_NORESTART },
-	{ &g_redspawn_mine,             "g_redspawn_mine",              "0",            CVAR_NORESTART },
-	{ &g_redspawn_chain,            "g_redspawn_chain",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_flame,            "g_redspawn_flame",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_antimatter,       "g_redspawn_antimatter",        "0",            CVAR_NORESTART },
-	{ &g_redspawn_quad,             "g_redspawn_quad",              "0",            CVAR_NORESTART },
-	{ &g_redspawn_haste,            "g_redspawn_haste",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_bsuit,            "g_redspawn_bsuit",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_invis,            "g_redspawn_invis",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_regen,            "g_redspawn_regen",             "0",            CVAR_NORESTART },
-	{ &g_redspawn_flight,           "g_redspawn_flight",            "0",            CVAR_NORESTART },
-	{ &g_redspawn_holdable,         "g_redspawn_holdable",          "0",            CVAR_LATCH },
+	{ &g_spawn_health,           	"g_spawn_health",            "100",          CVAR_NORESTART },
+	{ &g_spawn_armor,            	"g_spawn_armor",             "0",            CVAR_NORESTART },
+	{ &g_spawn_gauntlet,         	"g_spawn_gauntlet",          "1",            CVAR_NORESTART },
+	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        "500",          CVAR_NORESTART },
+	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           "0",            CVAR_NORESTART },
+	{ &g_spawn_grenade,          	"g_spawn_grenade",           "0",            CVAR_NORESTART },
+	{ &g_spawn_rocket,           	"g_spawn_rocket",            "0",            CVAR_NORESTART },
+	{ &g_spawn_lightning,        	"g_spawn_lightning",         "0",            CVAR_NORESTART },
+	{ &g_spawn_railgun,          	"g_spawn_railgun",           "0",            CVAR_NORESTART },
+	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         "0",            CVAR_NORESTART },
+	{ &g_spawn_bfg,              	"g_spawn_bfg",               "0",            CVAR_NORESTART },
+    { &g_spawn_grapple,          	"g_spawn_grapple",           "0",            CVAR_NORESTART },
+	{ &g_spawn_nail,             	"g_spawn_nail",              "0",            CVAR_NORESTART },
+	{ &g_spawn_mine,             	"g_spawn_mine",              "0",            CVAR_NORESTART },
+	{ &g_spawn_chain,            	"g_spawn_chain",             "0",            CVAR_NORESTART },
+	{ &g_spawn_flame,            	"g_spawn_flame",             "0",            CVAR_NORESTART },
+	{ &g_spawn_antimatter,       	"g_spawn_antimatter",        "0",            CVAR_NORESTART },
+	{ &g_spawn_quad,             	"g_spawn_quad",              "0",            CVAR_NORESTART },
+	{ &g_spawn_haste,            	"g_spawn_haste",             "0",            CVAR_NORESTART },
+	{ &g_spawn_bsuit,            	"g_spawn_bsuit",             "0",            CVAR_NORESTART },
+	{ &g_spawn_invis,            	"g_spawn_invis",             "0",            CVAR_NORESTART },
+	{ &g_spawn_regen,            	"g_spawn_regen",             "0",            CVAR_NORESTART },
+	{ &g_spawn_flight,           	"g_spawn_flight",            "0",            CVAR_NORESTART },
+	{ &g_spawn_holdable,         	"g_spawn_holdable",          "0",            CVAR_NORESTART },
 	{ &g_vampire,                   "g_vampire",                    "0.0",          CVAR_NORESTART },
 	{ &g_regen,                     "g_regen",                      "0",            CVAR_NORESTART },
 	{ &g_vampireMaxHealth,          "g_vampire_max_health",         "500",          CVAR_NORESTART }

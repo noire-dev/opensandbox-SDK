@@ -44,33 +44,17 @@ teamgame_t teamgame;
 
 gentity_t	*neutralObelisk;
 
-//Some pointers for Double Domination so we don't need GFind (I think it might crash at random times...)
-gentity_t	*ddA;
-gentity_t	*ddB;
-//Pointers for Standard Domination
-gentity_t	*dom_points[MAX_DOMINATION_POINTS];
-
 void Team_SetFlagStatus( int team, flagStatus_t status );
-
-qboolean dominationPointsSpawned;
 
 void Team_InitGame( void ) {
 	memset(&teamgame, 0, sizeof teamgame);
 
 	switch( g_gametype.integer ) {
 	case GT_CTF:
-	case GT_CTF_ELIMINATION:
-	case GT_DOUBLE_D:
-		teamgame.redStatus = -1; // Invalid to force update
+		teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
-		 teamgame.blueStatus = -1; // Invalid to force update
 		Team_SetFlagStatus( TEAM_BLUE, FLAG_ATBASE );
-		ddA = NULL;
-		ddB = NULL;
 		break;
-	case GT_DOMINATION:
-		dominationPointsSpawned = qfalse;
-                break;
 	case GT_1FCTF:
 		teamgame.flagStatus = -1; // Invalid to force update
 		Team_SetFlagStatus( TEAM_FREE, FLAG_ATBASE );
@@ -166,45 +150,6 @@ AddTeamScore
 */
 void AddTeamScore(vec3_t origin, int team, int score) {
 	gentity_t	*te;
-
-
-	if ( g_gametype.integer != GT_DOMINATION ) {
-		te = G_TempEntity(origin, EV_GLOBAL_TEAM_SOUND );
-		te->r.svFlags |= SVF_BROADCAST;
-
-	
-	
-		if ( team == TEAM_RED ) {
-			if ( level.teamScores[ TEAM_RED ] + score == level.teamScores[ TEAM_BLUE ] ) {
-				//teams are tied sound
-				te->s.eventParm = GTS_TEAMS_ARE_TIED;
-			}
-			else if ( level.teamScores[ TEAM_RED ] <= level.teamScores[ TEAM_BLUE ] &&
-						level.teamScores[ TEAM_RED ] + score > level.teamScores[ TEAM_BLUE ]) {
-				// red took the lead sound
-				te->s.eventParm = GTS_REDTEAM_TOOK_LEAD;
-			}
-			else {
-				// red scored sound
-				te->s.eventParm = GTS_REDTEAM_SCORED;
-			}
-		}
-		else {
-			if ( level.teamScores[ TEAM_BLUE ] + score == level.teamScores[ TEAM_RED ] ) {
-				//teams are tied sound
-				te->s.eventParm = GTS_TEAMS_ARE_TIED;
-			}
-			else if ( level.teamScores[ TEAM_BLUE ] <= level.teamScores[ TEAM_RED ] &&
-						level.teamScores[ TEAM_BLUE ] + score > level.teamScores[ TEAM_RED ]) {
-				// blue took the lead sound
-				te->s.eventParm = GTS_BLUETEAM_TOOK_LEAD;
-			}
-			else {
-				// blue scored sound
-				te->s.eventParm = GTS_BLUETEAM_SCORED;
-			}
-		}
-	}
 	level.teamScores[ team ] += score;
 }
 
@@ -218,7 +163,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		return qfalse;
 	}
 
-	if ( g_gametype.integer < GT_TEAM || g_ffa_gt==1) {
+	if ( g_gametype.integer < GT_TEAM ) {
 		return qfalse;
 	}
 
@@ -263,21 +208,8 @@ void Team_SetFlagStatus( int team, flagStatus_t status ) {
 	if( modified ) {
 		char st[4];
 
-		if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION) {
-			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
-			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
-			st[2] = 0;
-		}
-		else if (g_gametype.integer == GT_DOUBLE_D) {
-			st[0] = oneFlagStatusRemap[teamgame.redStatus];
-			st[1] = oneFlagStatusRemap[teamgame.blueStatus];
-			st[2] = 0;
-		}
-		else {		// GT_1FCTF
-			st[0] = oneFlagStatusRemap[teamgame.flagStatus];
-			st[1] = 0;
-		}
-
+		st[0] = oneFlagStatusRemap[teamgame.flagStatus];
+		st[1] = 0;
 		trap_SetConfigstring( CS_FLAGSTATUS, st );
 	}
 }
@@ -291,41 +223,6 @@ void Team_CheckDroppedItem( gentity_t *dropped ) {
 	}
 	else if( dropped->item->giTag == PW_NEUTRALFLAG ) {
 		Team_SetFlagStatus( TEAM_FREE, FLAG_DROPPED );
-	}
-}
-
-/*
-================
-Team_DD_bonusAtPoints
-Adds bonus point to a player if he is close to the point and on the team that scores 
-================
-*/
-
-void Team_DD_bonusAtPoints(int team) {
-	vec3_t v1, v2;
-	int i;
-	gentity_t *player;
-
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		player = &g_entities[i];
-		if (!player->inuse)
-			continue;
-		if (!player->client)
-			continue;
-		
-		if( player->client->sess.sessionTeam != team )
-			return; //player was not on scoring team 
-
-		//See if the player is close to any of the points:
-		VectorSubtract(player->r.currentOrigin, ddA->r.currentOrigin, v1);
-		VectorSubtract(player->r.currentOrigin, ddB->r.currentOrigin, v2);
-		if (!( ( ( VectorLength(v1) < CTF_TARGET_PROTECT_RADIUS &&
-				trap_InPVS(ddA->r.currentOrigin, player->r.currentOrigin ) ) ||
-				( VectorLength(v2) < CTF_TARGET_PROTECT_RADIUS &&
-				trap_InPVS(ddB->r.currentOrigin, player->r.currentOrigin ) ) )))
-					return; //Wasn't close to any of the points
-	
-		AddScore(player, DD_AT_POINT_AT_CAPTURE);
 	}
 }
 
@@ -363,197 +260,12 @@ gentity_t *Team_ResetFlag( int team ) {
 }
 
 void Team_ResetFlags( void ) {
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION) {
+	if( g_gametype.integer == GT_CTF) {
 		Team_ResetFlag( TEAM_RED );
 		Team_ResetFlag( TEAM_BLUE );
-	}
-	else if( g_gametype.integer == GT_1FCTF ) {
+	} else if( g_gametype.integer == GT_1FCTF ) {
 		Team_ResetFlag( TEAM_FREE );
 	}
-}
-
-//Functions for Domination
-void Team_Dom_SpawnPoints( void ) {
-	char *c;
-	gentity_t *flag;
-	int i;
-	gitem_t			*it;
-        
-    flag = NULL;
-	
-	if(dominationPointsSpawned)
-		return;
-	dominationPointsSpawned = qtrue;
-
-	it = NULL;
-	it = BG_FindItem ("Neutral domination point");
-	if(it == NULL) {
-		PrintMsg( NULL, "No domination item\n");
-		return;
-	} else {
-		PrintMsg( NULL, "Domination item found\n");
-	}
-	i = 0;
-	c = "domination_point";
-	
-	//return; Just to test, the lines below crashes game
-	
-	while ((flag = G_Find (flag, FOFS(classname), c)) != NULL) {
-		if(i>=MAX_DOMINATION_POINTS)
-			break;
-		//domination_points_names[i] = flag->message;
-                if(flag->message) {
-                    Q_strncpyz(level.domination_points_names[i],flag->message,MAX_DOMINATION_POINTS_NAMES-1);
-                    PrintMsg( NULL, "Domination point \'%s\' found\n",level.domination_points_names[i]);
-                } else {
-                    Q_strncpyz(level.domination_points_names[i],va("Point %i",i),MAX_DOMINATION_POINTS_NAMES-1);
-                    PrintMsg( NULL, "Domination point \'%s\' found (autonamed)\n",level.domination_points_names[i]);
-                }
-		dom_points[i] = G_Spawn();
-		VectorCopy( flag->r.currentOrigin, dom_points[i]->s.origin );
-		dom_points[i]->classname = it->classname;
-		G_SpawnItem(dom_points[i], it);
-		FinishSpawningItem(dom_points[i] );
-		
-		i++;
-	}
-	if(!i){
-		c = "info_player_deathmatch";
-		while ((flag = G_Find (flag, FOFS(classname), c)) != NULL) {
-		if(i>=MAX_DOMINATION_POINTS)
-			break;
-		//domination_points_names[i] = flag->message;
-                if(flag->message) {
-                    Q_strncpyz(level.domination_points_names[i],flag->message,MAX_DOMINATION_POINTS_NAMES-1);
-                    PrintMsg( NULL, "Domination point \'%s\' found\n",level.domination_points_names[i]);
-                } else {
-                    Q_strncpyz(level.domination_points_names[i],va("Point %i",i),MAX_DOMINATION_POINTS_NAMES-1);
-                    PrintMsg( NULL, "Domination point \'%s\' found (autonamed)\n",level.domination_points_names[i]);
-                }
-		dom_points[i] = G_Spawn();
-		VectorCopy( flag->r.currentOrigin, dom_points[i]->s.origin );
-		dom_points[i]->classname = it->classname;
-		G_SpawnItem(dom_points[i], it);
-		FinishSpawningItem(dom_points[i] );
-		
-		i++;
-	}	
-	}
-	level.domination_points_count = i;
-}
-
-int getDomPointNumber( gentity_t *point ) {
-	int i;
-	for(i=1;i<MAX_DOMINATION_POINTS && i<level.domination_points_count;i++) {
-		if(dom_points[i] == NULL)
-			return 0; //Not found, just return first, so we don't crash
-		if(dom_points[i] == point)
-			return i;
-	}
-	return 0;
-}
-
-void Team_Dom_TakePoint( gentity_t *point, int team, int clientnumber ) {
-	gitem_t			*it;
-	vec3_t			origin;
-	int i;
-	i = getDomPointNumber(point);
-	if(i<0)
-		i = 0;
-	if(i>=MAX_DOMINATION_POINTS)
-		i = MAX_DOMINATION_POINTS - 1;
-
-	it = NULL;
-	VectorCopy( point->r.currentOrigin, origin );
-
-	if(team == TEAM_RED) {
-		it = BG_FindItem ("Red domination point");
-		PrintMsg( NULL, "Red took \'%s\'\n",level.domination_points_names[i]);
-	} else if(team == TEAM_BLUE) {
-		it = BG_FindItem ("Blue domination point");
-		PrintMsg( NULL, "Blue took \'%s\'\n",level.domination_points_names[i]);
-	}
-	if (!it || it == NULL) {
-		PrintMsg( NULL, "No item\n");
-		return;
-	}
-
-	G_FreeEntity(point);
-
-	point = G_Spawn();
-
-	VectorCopy( origin, point->s.origin );
-	point->classname = it->classname;
-	dom_points[i] = point;
-	G_SpawnItem(point, it);
-	FinishSpawningItem( point );
-	level.pointStatusDom[i] = team;
-	SendDominationPointsStatusMessageToAllClients();
-}
-
-//Functions for Double Domination
-void Team_DD_RemovePointAgfx( void ) {
-	if(ddA!=NULL) {
-		G_FreeEntity(ddA);
-		ddA = NULL;
-	}
-}
-
-void Team_DD_RemovePointBgfx( void ) {
-	if(ddB!=NULL) {
-		G_FreeEntity(ddB);
-		ddB = NULL;
-	}
-}
-
-void Team_DD_makeA2team( gentity_t *target, int team ) {
-	gitem_t			*it;
-
-	Team_DD_RemovePointAgfx();
-	it = NULL;
-	if(team == TEAM_NONE)
-		return;
-	if(team == TEAM_RED)
-		it = BG_FindItem ("Point A (Red)");
-	if(team == TEAM_BLUE)
-		it = BG_FindItem ("Point A (Blue)");
-	if(team == TEAM_FREE)
-		it = BG_FindItem ("Point A (White)");
-	if (!it || it == NULL) {
-		PrintMsg( NULL, "No item\n");
-		return;
-	}
-	ddA = G_Spawn();
-	
-	VectorCopy( target->r.currentOrigin, ddA->s.origin );
-	ddA->classname = it->classname;
-	G_SpawnItem(ddA, it);
-	FinishSpawningItem(ddA );
-}
-
-void Team_DD_makeB2team( gentity_t *target, int team ) {
-	gitem_t			*it;
-	
-	Team_DD_RemovePointBgfx();
-        it = NULL;
-	if(team == TEAM_NONE)
-		return;
-	if(team == TEAM_RED)
-		it = BG_FindItem ("Point B (Red)");
-	if(team == TEAM_BLUE)
-		it = BG_FindItem ("Point B (Blue)");
-	if(team == TEAM_FREE)
-		it = BG_FindItem ("Point B (White)");
-	if (!it || it == NULL) {
-		PrintMsg( NULL, "No item\n");
-		return;
-	}
-	ddB = G_Spawn();
-	
-	VectorCopy( target->r.currentOrigin, ddB->s.origin );
-	ddB->classname = it->classname;
-	G_SpawnItem(ddB, it);
-	FinishSpawningItem(ddB );
 }
 
 void Team_ReturnFlagSound( gentity_t *ent, int team ) {
@@ -563,10 +275,6 @@ void Team_ReturnFlagSound( gentity_t *ent, int team ) {
         G_Printf ("Warning:  NULL passed to Team_ReturnFlagSound\n");
 		return;
 	}
-
-	//See if we are during CTF_ELIMINATION warmup
-	if((level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer)&&g_gametype.integer == GT_CTF_ELIMINATION)
-		return;
 
 	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND );
 	if( team == TEAM_BLUE ) {
@@ -591,7 +299,7 @@ void Team_TakeFlagSound( gentity_t *ent, int team ) {
 	switch(team) {
 		case TEAM_RED:
 			if( teamgame.blueStatus != FLAG_ATBASE ) {
-				if (teamgame.blueTakenTime > level.time - 10000 && g_gametype.integer != GT_CTF_ELIMINATION)
+				if (teamgame.blueTakenTime > level.time - 10000)
 					return;
 			}
 			teamgame.blueTakenTime = level.time;
@@ -599,7 +307,7 @@ void Team_TakeFlagSound( gentity_t *ent, int team ) {
 
 		case TEAM_BLUE:	// CTF
 			if( teamgame.redStatus != FLAG_ATBASE ) {
-				if (teamgame.redTakenTime > level.time - 10000 && g_gametype.integer != GT_CTF_ELIMINATION)
+				if (teamgame.redTakenTime > level.time - 10000)
 					return;
 			}
 			teamgame.redTakenTime = level.time;
@@ -682,139 +390,6 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 }
 
 /*
-Update DD points
-*/
-
-void updateDDpoints(void) {
-	Team_SetFlagStatus( TEAM_RED, level.pointStatusA );
-	Team_SetFlagStatus( TEAM_BLUE, level.pointStatusB );
-}
-
-/*
-==============
-Team_SpawnDoubleDominationPoints
-==============
-*/
-
-int Team_SpawnDoubleDominationPoints ( void ) {
-	gentity_t	*ent;
-	level.pointStatusA = TEAM_FREE;
-	level.pointStatusB = TEAM_FREE;
-	updateDDpoints();
-	ent = NULL;
-	if ((ent = G_Find (ent, FOFS(classname), "team_CTF_redflag")) != NULL) {
-		Team_DD_makeA2team( ent, TEAM_FREE );
-	}
-        ent = NULL;
-	if ((ent = G_Find (ent, FOFS(classname), "team_CTF_blueflag")) != NULL) {
-		Team_DD_makeB2team( ent, TEAM_FREE );
-	}
-	return 1;
-}
-
-/*
-==============
-Team_RemoveDoubleDominationPoints
-==============
-*/
-
-int Team_RemoveDoubleDominationPoints ( void ) {
-	level.pointStatusA = TEAM_NONE;
-	level.pointStatusB = TEAM_NONE;
-	updateDDpoints();
-	Team_DD_makeA2team( NULL, TEAM_NONE );
-	Team_DD_makeB2team( NULL, TEAM_NONE );
-	return 1;
-}
-
-/*
-==============
-Team_TouchDoubleDominationPoint
-==============
-*/
-
-//team is the either TEAM_RED(A) or TEAM_BLUE(B)
-int Team_TouchDoubleDominationPoint( gentity_t *ent, gentity_t *other, int team ) {
-	gclient_t	*cl = other->client;
-	qboolean	otherDominating, isClose;
-	int 		clientTeam = cl->sess.sessionTeam;
-	int		otherTeam;
-	int		score; //Used to add the scores together 
-
-	if(clientTeam == TEAM_RED)
-		otherTeam = TEAM_BLUE;
-	else
-		otherTeam = TEAM_RED;
-
-	otherDominating = qfalse;
-	isClose = qfalse;
-
-	if(level.pointStatusA == otherTeam && level.pointStatusB == otherTeam) {
-		otherDominating = qtrue;
-		if(level.time - level.timeTaken > (10-DD_CLOSE)*1000)
-			isClose = qtrue;
-	}	
-	
-
-	if(team == TEAM_RED) {
-		if(TEAM_NONE == level.pointStatusA)
-			return 0; //Haven't spawned yet
-		if(clientTeam == level.pointStatusA)
-			return 0; //If we already have the flag
-		//if we didn't have the point, then we have now!
-		level.pointStatusA = clientTeam;
-		PrintMsg( NULL, "%s" S_COLOR_WHITE " (%s) took control of A!\n", cl->pers.netname, TeamName(clientTeam) );
-		Team_DD_makeA2team( ent, clientTeam );
-		//Give personal score
-		score = DD_POINT_CAPTURE; //Base score for capture
-		if(otherDominating){
-			score += DD_POINT_CAPTURE_BREAK;
-			if(isClose)
-				score += DD_POINT_CAPTURE_CLOSE;
-		}
-		AddScore(other, score);
-		//Do we also have point B?
-		if(clientTeam == level.pointStatusB)
-		{
-			//We are dominating!
-			level.timeTaken = level.time; //At this time
-			PrintMsg( NULL, "%s" S_COLOR_WHITE " is dominating!\n", TeamName(clientTeam) );
-			SendDDtimetakenMessageToAllClients();
-		}
-	}
-
-	if(team == TEAM_BLUE) {
-		if(TEAM_NONE == level.pointStatusB)
-			return 0; //Haven't spawned yet
-		if(clientTeam == level.pointStatusB)
-			return 0; //If we already have the flag
-		//if we didn't have the point, then we have now!
-		level.pointStatusB = clientTeam;
-		PrintMsg( NULL, "%s" S_COLOR_WHITE " (%s) took control of B!\n", cl->pers.netname, TeamName(clientTeam) );
-		Team_DD_makeB2team( ent, clientTeam );
-		//Give personal score
-		score = DD_POINT_CAPTURE; //Base score for capture
-		if(otherDominating) {
-			score += DD_POINT_CAPTURE_BREAK;
-			if(isClose)
-				score += DD_POINT_CAPTURE_CLOSE;
-		}
-		AddScore(other, score);
-		//Do we also have point A?
-		if(clientTeam == level.pointStatusA) {
-			//We are dominating!
-			level.timeTaken = level.time; //At this time
-			PrintMsg( NULL, "%s" S_COLOR_WHITE " is dominating!\n", TeamName(clientTeam) );
-			SendDDtimetakenMessageToAllClients();
-		}
-	}
-
-	updateDDpoints();
-
-	return 0;
-}
-
-/*
 ==============
 Team_TouchOurFlag
 ==============
@@ -866,10 +441,6 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	// Increase the team's score
 	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
-	//If CTF Elimination, stop the round:
-	if(g_gametype.integer==GT_CTF_ELIMINATION) {
-		EndEliminationRound();
-	}
 
 	other->client->pers.teamState.captures++;
 	// add the sprite over the player's head
@@ -979,10 +550,6 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 		G_FreeEntity( ent ); //Destory skull
 		return 0;
 	}
-	if ( g_gametype.integer == GT_DOMINATION ) {
-		Team_Dom_TakePoint(ent, cl->sess.sessionTeam,cl->ps.clientNum);
-		return 0;
-	}
 	// figure out what team this flag is
 	if( strcmp(ent->classname, "team_CTF_redflag") == 0 ) {
 		team = TEAM_RED;
@@ -1005,9 +572,6 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 			return Team_TouchOurFlag( ent, other, cl->sess.sessionTeam );
 		}
 		return 0;
-	}
-	if( g_gametype.integer == GT_DOUBLE_D) {
-		return Team_TouchDoubleDominationPoint( ent, other, team );
 	}
 	// GT_CTF
 	if( team == cl->sess.sessionTeam) {
@@ -1095,15 +659,6 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 	int			selection;
 	gentity_t	*spots[MAX_TEAM_SPAWN_POINTS];
 	char		*classname;
-
-	if(g_gametype.integer == GT_ELIMINATION) { //change sides every round
-		if((level.roundNumber+level.eliminationSides)%2==1){
-			if(team == TEAM_RED)
-				team = TEAM_BLUE;
-			else if(team == TEAM_BLUE)
-				team = TEAM_RED;
-		}
-	}
 
 	if (teamstate == TEAM_BEGIN) {
 		if (team == TEAM_RED)
@@ -1546,7 +1101,7 @@ gentity_t *SpawnObelisk( vec3_t origin, int team, int spawnflags) {
 void SP_team_redobelisk( gentity_t *ent ) {
 	gentity_t *obelisk;
 
-	if ( g_gametype.integer <= GT_TEAM || g_ffa_gt>0) {
+	if ( g_gametype.integer <= GT_TEAM ) {
 		G_FreeEntity(ent);
 		return;
 	}
@@ -1569,7 +1124,7 @@ void SP_team_redobelisk( gentity_t *ent ) {
 void SP_team_blueobelisk( gentity_t *ent ) {
 	gentity_t *obelisk;
 
-	if ( g_gametype.integer <= GT_TEAM || g_ffa_gt>0) {
+	if ( g_gametype.integer <= GT_TEAM ) {
 		G_FreeEntity(ent);
 		return;
 	}

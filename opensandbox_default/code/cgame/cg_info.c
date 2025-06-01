@@ -146,12 +146,6 @@ void CG_DrawInformation( void ) {
 	case GT_FFA:
 		s = "Free For All";
 		break;
-	case GT_TOURNAMENT:
-		s = "Tournament";
-		break;
-	case GT_LMS:
-		s = "Last Man Standing";
-		break;
 	case GT_TEAM:
 		s = "Team Deathmatch";
 		break;
@@ -166,18 +160,6 @@ void CG_DrawInformation( void ) {
 		break;
 	case GT_HARVESTER:
 		s = "Harvester";
-		break;
-	case GT_ELIMINATION:
-		s = "Elimination";
-		break;
-	case GT_CTF_ELIMINATION:
-		s = "CTF Elimination";
-		break;
-	case GT_DOUBLE_D:
-		s = "Double Domination";
-		break;
-        case GT_DOMINATION:
-		s = "Domination";
 		break;
 	default:
 		s = "Unknown Gametype";

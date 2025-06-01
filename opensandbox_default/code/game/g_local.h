@@ -367,12 +367,11 @@ typedef struct {
 // time and reading them back at connection time.  Anything added here
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
-	team_t		sessionTeam;
-	int			spectatorNum;		// for determining next-in-line to play
+	team_t				sessionTeam;
+	int					spectatorNum;		// for determining next-in-line to play
 	spectatorState_t	spectatorState;
-	int			spectatorClient;	// for chasecam and follow mode
-	int			wins, losses;		// tournament stats
-	qboolean	teamLeader;			// true when this client is a team leader
+	int					spectatorClient;	// for chasecam and follow mode
+	qboolean			teamLeader;			// true when this client is a team leader
 } clientSession_t;
 
 #define	MAX_VOTE_COUNT		3
@@ -485,9 +484,6 @@ struct gclient_s {
 	int			invulnerabilityTime;
 
 	char		*areabits;
-
-	// NEW VARIABLES
-	qboolean	isEliminated;			// Has been killed in this round
 	
 	// New vote system. The votes are saved in the client info, so we know who voted on what and can cancel votes on leave.
 	// 0=not voted, 1=voted yes, -1=voted no
@@ -603,32 +599,8 @@ typedef struct {
 	int			bodyQueIndex;			// dead bodies
 	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
 	int			portalSequence;
-	//Added for elimination:
-	int roundStartTime;		//time the current round was started
-	int roundNumber;			//The round number we have reached
-	int roundNumberStarted;			//1 less than roundNumber if we are allowed to spawn
-	int roundRedPlayers;			//How many players was there at start of round
-	int roundBluePlayers;			//used to find winners in a draw.
-	qboolean roundRespawned;		//We have respawned for this round!
-	int eliminationSides;			//Random, change red/blue bases
 
-	//Added for Double Domination
-	//Points get status: TEAM_FREE for not taking, TEAM_RED/TEAM_BLUE for taken and TEAM_NONE for not spawned yet
-	int pointStatusA;			//Status of the RED (A) domination point
-	int pointStatusB;			//Status of the BLUE (B) doimination point
-	int timeTaken;				//Time team started having both points
-	//use roundStartTime for telling, then the points respawn
-
-	//Added for standard domination
-	int pointStatusDom[MAX_DOMINATION_POINTS]; //Holds the owner of all the points
-	int dom_scoreGiven;				//Number of times we have provided scores
-	int domination_points_count;
-	char domination_points_names[MAX_DOMINATION_POINTS][MAX_DOMINATION_POINTS_NAMES];
-
-	//unlagged - backward reconciliation #4
-	// actual time this server frame started
 	int			frameStartTime;
-	//unlagged - backward reconciliation #4
 
     //Obelisk tell
     int healthRedObelisk; //health in percent
@@ -755,10 +727,6 @@ void Touch_Item2(gentity_t *ent, gentity_t *other, trace_t *trace, qboolean allo
 void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
 void SaveRegisteredItems( void );
-
-// oatmeal begin
-gentity_t *Throw_Item( gentity_t *ent, gitem_t *item, float angle );
-// oatmeal end
 
 //
 // g_utils.c
@@ -922,15 +890,6 @@ void G_PredictPlayerMove( gentity_t *ent, float frametime );
 //
 
 team_t TeamCount( int ignoreClientNum, int team );
-team_t TeamLivingCount( int ignoreClientNum, int team ); //Elimination
-team_t TeamHealthCount( int ignoreClientNum, int team ); //Elimination
-void RespawnAll(void); //For round elimination
-void RespawnDead(void);
-void EnableWeapons(void);
-void DisableWeapons(void);
-void EndEliminationRound(void);
-void LMSpoint(void);
-//void wins2score(void);
 int TeamLeader( int team );
 team_t PickTeam( int ignoreClientNum );
 void SetClientViewAngle( gentity_t *ent, vec3_t angle );
@@ -983,7 +942,6 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 void DoubleDominationScoreTimeMessage( gentity_t *ent );
 void ObeliskHealthMessage( void );
 void DeathmatchScoreboardMessage (gentity_t *client);
-void EliminationMessage (gentity_t *client);
 void RespawnTimeMessage(gentity_t *ent, int time);
 void DominationPointNamesMessage (gentity_t *client);
 void DominationPointStatusMessage( gentity_t *ent );
@@ -996,16 +954,11 @@ void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
-void AddTournamentQueue(gclient_t *client);
 void ExitLevel( void );
 void SendScoreboardMessageToAllClients( void );
-void SendEliminationMessageToAllClients( void );
-void SendDDtimetakenMessageToAllClients( void );
-void SendDominationPointsStatusMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... ) __attribute__((noreturn));
 void CheckTeamVote( int team );
-void G_LevelLoadComplete(void);
 qboolean G_NpcFactionProp(int prop, gentity_t* ent);
 
 //
@@ -1018,12 +971,11 @@ void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
 void ClientCommand( int clientNum );
 void DropClientSilently( int clientNum );
-void LinkBotSpawnEntity( gentity_t *bot, char parentid[] );
+void LinkBotSpawn( gentity_t *bot, char parentid[] );
 void SetupCustomBot( gentity_t *bot );
 void SetUnlimitedWeapons( gentity_t *ent );
 void SetSandboxWeapons( gentity_t *ent );
 void SetCustomWeapons( gentity_t *ent );
-void PrecacheBotAssets();
 
 //
 // g_active.c
@@ -1213,8 +1165,6 @@ extern	int 		mod_teamred_damage;
 extern	int			mod_accelerate;
 extern	int			mod_movetype;
 extern	int			mod_gravity;
-
-extern int		g_ffa_gt;
 
 #define CMD_CHEAT           0x0001
 #define CMD_CHEAT_TEAM      0x0002 // is a cheat when used on a team

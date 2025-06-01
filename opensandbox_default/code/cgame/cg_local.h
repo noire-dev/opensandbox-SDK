@@ -313,7 +313,6 @@ typedef struct {
 	int				score;
 	int				ping;
 	int				time;
-	qboolean		isDead;
 } score_t;
 
 // each client has an associated clientInfo_t
@@ -355,8 +354,6 @@ typedef struct {
 	int				health;			// you only get this info about your teammates
 	int				armor;
 	int				curWeapon;
-
-	int				wins, losses;	// in tourney mode
 
 	int				teamTask;		// task in teamplay (offence/defence)
 	qboolean		teamLeader;		// true when this is a team leader
@@ -1180,23 +1177,8 @@ typedef struct {
 
 	int				levelStartTime;
 
-//Forced FFA
-	int			ffa_gt;
-
-//Elimination
-	int				roundStartTime;
-	int				roundtime;
-
 //instantgib + nexuiz style rocket arena:
 	int				nopickup;
-
-//Double Domination DD
-	int 				timetaken;
-
-//Domination
-	int domination_points_count;
-	char domination_points_names[MAX_DOMINATION_POINTS][MAX_DOMINATION_POINTS_NAMES];
-	int domination_points_status[MAX_DOMINATION_POINTS];
 
 	int				scores1, scores2;		// from configstrings
 	int				redflag, blueflag;		// flag status from configstrings

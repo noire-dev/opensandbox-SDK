@@ -85,11 +85,6 @@
 #define ID_SERVER_OBELISKRESPAWNDELAY      360
 #define ID_SERVER_CUBETIMEOUT               361
 #define ID_SERVER_FLAGRESPAWN               362
-#define ID_SERVER_WEAPONTEAMRESPAWN         363
-#define ID_SERVER_ELIMINATION_SELFDAMAGE     365
-#define ID_SERVER_ELIMINATION_ROUNDTIME      366
-#define ID_SERVER_ELIMINATION_WARMUP         367
-#define ID_SERVER_ELIMINATION_ACTIVEWARMUP   368
 #define ID_SERVER_ACCELERATE                 371
 #define ID_SERVER_SPECTATORSPEED             372
 #define ID_SERVER_SPEED                      373
@@ -144,8 +139,6 @@
 #define ID_SERVER_TEAMRED_RESPAWNWAIT       422
 #define ID_SERVER_TEAMRED_PICKUPITEMS        423
 #define ID_SERVER_ELIMINATION_RED_RESPAWN      424
-#define ID_SERVER_REDSPAWN_HEALTH 				425
-#define ID_SERVER_REDSPAWN_ARMOR   				426
 #define ID_SERVER_TEAMBLUE_SPEED              427
 #define ID_SERVER_TEAMBLUE_GRAVITYMODIFIER    428
 #define ID_SERVER_TEAMBLUE_FIRESPEED          429
@@ -154,45 +147,30 @@
 #define ID_SERVER_TEAMBLUE_RESPAWNWAIT       432
 #define ID_SERVER_TEAMBLUE_PICKUPITEMS        433
 #define ID_SERVER_ELIMINATION_BLUE_RESPAWN    434
-#define ID_SERVER_BLUESPAWN_HEALTH      435
-#define ID_SERVER_BLUESPAWN_ARMOR       436
-#define ID_SERVER_REDSPAWN_GRAPPLE      437
-#define ID_SERVER_REDSPAWN_GAUNTLET     438
-#define ID_SERVER_REDSPAWN_MACHINEGUN   439
-#define ID_SERVER_REDSPAWN_SHOTGUN      440
-#define ID_SERVER_REDSPAWN_GRENADE      441
-#define ID_SERVER_REDSPAWN_ROCKET       442
-#define ID_SERVER_REDSPAWN_RAILGUN      443
-#define ID_SERVER_REDSPAWN_LIGHTNING    444
-#define ID_SERVER_REDSPAWN_PLASMAGUN    445
-#define ID_SERVER_REDSPAWN_BFG          446
-#define ID_SERVER_REDSPAWN_CHAIN        447
-#define ID_SERVER_REDSPAWN_MINE         448
-#define ID_SERVER_REDSPAWN_NAIL         449
-#define ID_SERVER_REDSPAWN_FLAME        450
-#define ID_SERVER_REDSPAWN_ANTIMATTER   451
-#define ID_SERVER_BLUESPAWN_GRAPPLE         452
-#define ID_SERVER_BLUESPAWN_GAUNTLET       453
-#define ID_SERVER_BLUESPAWN_MACHINEGUN     454
-#define ID_SERVER_BLUESPAWN_SHOTGUN        455
-#define ID_SERVER_BLUESPAWN_GRENADE        456
-#define ID_SERVER_BLUESPAWN_ROCKET         457
-#define ID_SERVER_BLUESPAWN_RAILGUN        458
-#define ID_SERVER_BLUESPAWN_LIGHTNING      459
-#define ID_SERVER_BLUESPAWN_PLASMAGUN      460
-#define ID_SERVER_BLUESPAWN_BFG            461
-#define ID_SERVER_BLUESPAWN_CHAIN          462
-#define ID_SERVER_BLUESPAWN_MINE           463
-#define ID_SERVER_BLUESPAWN_NAIL           464
-#define ID_SERVER_BLUESPAWN_FLAME          465
-#define ID_SERVER_BLUESPAWN_ANTIMATTER     466
-#define ID_SERVER_REDSPAWN_QUAD        467
-#define ID_SERVER_REDSPAWN_HASTE       468
-#define ID_SERVER_REDSPAWN_BSUIT       469
-#define ID_SERVER_REDSPAWN_INVIS       470
-#define ID_SERVER_REDSPAWN_REGEN       471
-#define ID_SERVER_REDSPAWN_FLIGHT      472
-#define ID_SERVER_REDSPAWN_HOLDABLE    473
+#define ID_SERVER_SPAWN_HEALTH 				425
+#define ID_SERVER_SPAWN_ARMOR   				426
+#define ID_SERVER_SPAWN_GRAPPLE      437
+#define ID_SERVER_SPAWN_GAUNTLET     438
+#define ID_SERVER_SPAWN_MACHINEGUN   439
+#define ID_SERVER_SPAWN_SHOTGUN      440
+#define ID_SERVER_SPAWN_GRENADE      441
+#define ID_SERVER_SPAWN_ROCKET       442
+#define ID_SERVER_SPAWN_RAILGUN      443
+#define ID_SERVER_SPAWN_LIGHTNING    444
+#define ID_SERVER_SPAWN_PLASMAGUN    445
+#define ID_SERVER_SPAWN_BFG          446
+#define ID_SERVER_SPAWN_CHAIN        447
+#define ID_SERVER_SPAWN_MINE         448
+#define ID_SERVER_SPAWN_NAIL         449
+#define ID_SERVER_SPAWN_FLAME        450
+#define ID_SERVER_SPAWN_ANTIMATTER   451
+#define ID_SERVER_SPAWN_QUAD        467
+#define ID_SERVER_SPAWN_HASTE       468
+#define ID_SERVER_SPAWN_BSUIT       469
+#define ID_SERVER_SPAWN_INVIS       470
+#define ID_SERVER_SPAWN_REGEN       471
+#define ID_SERVER_SPAWN_FLIGHT      472
+#define ID_SERVER_SPAWN_HOLDABLE    473
 #define ID_SERVER_BLUESPAWN_QUAD           474
 #define ID_SERVER_BLUESPAWN_HASTE          475
 #define ID_SERVER_BLUESPAWN_BSUIT          476
@@ -623,18 +601,6 @@ static controlinit_t srv_gamemode[] = {
 		"Skull timeout:", &s_scriptdata.server.cubeTimeout, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLAGRESPAWN, ITEM_ALWAYSON,
 		"Flag respawn:", &s_scriptdata.server.flagrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_WEAPONTEAMRESPAWN, ITEM_ALWAYSON,
-		"Weapon team respawn:", &s_scriptdata.server.weaponTeamRespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_SELFDAMAGE, ITEM_ALWAYSON,
-		"Elimination selfdamage:", &s_scriptdata.server.elimination_selfdamage, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ROUNDTIME, ITEM_ALWAYSON,
-		"Elimination roundtime:", &s_scriptdata.server.elimination_roundtime, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_WARMUP, ITEM_ALWAYSON,
-		"Elimination warmup:", &s_scriptdata.server.elimination_warmup, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_ELIMINATION_ACTIVEWARMUP, ITEM_ALWAYSON,
-		"Elimination active warmup:", &s_scriptdata.server.elimination_activewarmup, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_ITEMS, ITEM_ALWAYSON,
-		"Elimination items:", &s_scriptdata.server.elimination_items, -999999999, 999999999, NULL, 9, 9, NULL },
 
 };
 
@@ -696,221 +662,56 @@ static controlinit_t srv_rules[] = {
 
 };
 
-// rune1 controls
-static controlinit_t srv_rune1[] = {
-
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTSPEEDFACTOR, ITEM_ALWAYSON,
-		"Scout rune speed factor(float):", NULL, 0, 0, s_scriptdata.server.scoutspeedfactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTFIRESPEED, ITEM_ALWAYSON,
-		"Scout rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.scoutfirespeed, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTDAMAGEFACTOR, ITEM_ALWAYSON,
-		"Scout rune damage(float):", NULL, 0, 0, s_scriptdata.server.scoutdamagefactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTGRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Scout rune gravity(float):", NULL, 0, 0, s_scriptdata.server.scoutgravitymodifier, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_SCOUT_INFAMMO, ITEM_ALWAYSON,
-		"Scout rune infinity ammo:", &s_scriptdata.server.scout_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_SCOUTHEALTHMODIFIER, ITEM_ALWAYSON|ITEM_HALFGAP,
-		"Scout rune health(float):", NULL, 0, 0, s_scriptdata.server.scouthealthmodifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERFIRESPEED, ITEM_ALWAYSON,
-		"Doubler rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.doublerfirespeed, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERDAMAGEFACTOR, ITEM_ALWAYSON,
-		"Doubler rune damage(float):", NULL, 0, 0, s_scriptdata.server.doublerdamagefactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERSPEEDFACTOR, ITEM_ALWAYSON,
-		"Doubler rune speed factor(float):", NULL, 0, 0, s_scriptdata.server.doublerspeedfactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERSPEEDFACTOR, ITEM_ALWAYSON,
-		"Doubler rune gravity(float):", NULL, 0, 0, s_scriptdata.server.doublergravitymodifier, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_DOUBLER_INFAMMO, ITEM_ALWAYSON,
-		"Doubler rune infinity ammo:", &s_scriptdata.server.doubler_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_DOUBLERHEALTHMODIFIER, ITEM_ALWAYSON,
-		"Doubler rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.doublerhealthmodifier, 9, 9, NULL }
-
-};
-
-// rune2 controls
-static controlinit_t srv_rune2[] = {
-
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_GUARDHEALTHMODIFIER, ITEM_ALWAYSON,
-		"Guard rune health(float):", NULL, 0, 0, s_scriptdata.server.guardhealthmodifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_GUARDFIRESPEED, ITEM_ALWAYSON,
-		"Guard rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.guardfirespeed, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_GUARDDAMAGEFACTOR, ITEM_ALWAYSON,
-		"Guard rune damage(float):", NULL, 0, 0, s_scriptdata.server.guarddamagefactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_GUARDSPEEDFACTOR, ITEM_ALWAYSON,
-		"Guard rune speed factor(float):", NULL, 0, 0, s_scriptdata.server.guardspeedfactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_GUARDGRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Guard rune gravity(float):", NULL, 0, 0, s_scriptdata.server.guardgravitymodifier, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_GUARD_INFAMMO, ITEM_ALWAYSON|ITEM_HALFGAP,
-		"Guard rune Infinity ammo:", &s_scriptdata.server.guard_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENFIRESPEED, ITEM_ALWAYSON,
-		"Ammoregen rune fire speed(float):", NULL, 0, 0, s_scriptdata.server.ammoregenfirespeed, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_AMMOREGEN_INFAMMO, ITEM_ALWAYSON,
-		"Ammoregen rune infinity ammo:", &s_scriptdata.server.ammoregen_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENDAMAGEFACTOR, ITEM_ALWAYSON,
-		"Ammoregen rune damage(float):", NULL, 0, 0, s_scriptdata.server.ammoregendamagefactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENSPEEDFACTOR, ITEM_ALWAYSON,
-		"Ammoregen rune speed factor(float):", NULL, 0, 0, s_scriptdata.server.ammoregenspeedfactor, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENGRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Ammoregen rune gravity(float):", NULL, 0, 0, s_scriptdata.server.ammoregengravitymodifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_AMMOREGENHEALTHMODIFIER, ITEM_ALWAYSON,
-		"Ammoregen rune health(float):", NULL, 0, 0, s_scriptdata.server.ammoregenhealthmodifier, 9, 9, NULL }
-
-};
-
-// redteam controls
-static controlinit_t srv_redteam[] = {
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMRED_SPEED, ITEM_ALWAYSON,
-		"Speed:", &s_scriptdata.server.teamred_speed, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_GRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamred_gravityModifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_FIRESPEED, ITEM_ALWAYSON,
-		"Fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamred_firespeed, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMRED_DAMAGE, ITEM_ALWAYSON,
-		"Damage(float):", NULL, 0, 0, s_scriptdata.server.teamred_damage, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMRED_INFAMMO, ITEM_ALWAYSON,
-		"Unlimited ammo:", &s_scriptdata.server.teamred_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMRED_RESPAWNWAIT, ITEM_ALWAYSON,
-		"Respawn wait:", &s_scriptdata.server.teamred_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMRED_PICKUPITEMS, ITEM_ALWAYSON,
-		"Pickup items:", &s_scriptdata.server.teamred_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_RED_RESPAWN, ITEM_ALWAYSON,
-		"Elimination respawn:", &s_scriptdata.server.elimination_red_respawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_HEALTH, ITEM_ALWAYSON,
-		"Start health:", &s_scriptdata.server.redspawn_health, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ARMOR, ITEM_ALWAYSON,
-		"Start armor:", &s_scriptdata.server.redspawn_armor, -999999999, 999999999, NULL, 9, 9, NULL }
-
-};
-
-// blueteam controls
-static controlinit_t srv_blueteam[] = {
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMBLUE_SPEED, ITEM_ALWAYSON,
-		"Speed:", &s_scriptdata.server.teamblue_speed, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_GRAVITYMODIFIER, ITEM_ALWAYSON,
-		"Gravity modifier(float):", NULL, 0, 0, s_scriptdata.server.teamblue_gravityModifier, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_FIRESPEED, ITEM_ALWAYSON,
-		"Fire speed(float):", NULL, 0, 0, s_scriptdata.server.teamblue_firespeed, 9, 9, NULL },
-	{ SRVCTRL_TEXTFIELD, 0, ID_SERVER_TEAMBLUE_DAMAGE, ITEM_ALWAYSON,
-		"Damage(float):", NULL, 0, 0, s_scriptdata.server.teamblue_damage, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMBLUE_INFAMMO, ITEM_ALWAYSON,
-		"Unlimited ammo:", &s_scriptdata.server.teamblue_infammo, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_TEAMBLUE_RESPAWNWAIT, ITEM_ALWAYSON,
-		"Respawn wait:", &s_scriptdata.server.teamblue_respawnwait, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_TEAMBLUE_PICKUPITEMS, ITEM_ALWAYSON,
-		"Pickup items:", &s_scriptdata.server.teamblue_pickupitems, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_BLUE_RESPAWN, ITEM_ALWAYSON,
-		"Elimination respawn:", &s_scriptdata.server.elimination_blue_respawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_HEALTH, ITEM_ALWAYSON,
-		"Start health:", &s_scriptdata.server.bluespawn_health, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ARMOR, ITEM_ALWAYSON,
-		"Start armor:", &s_scriptdata.server.bluespawn_armor, -999999999, 999999999, NULL, 9, 9, NULL }
-
-};
-
 // redteamweapons controls
 static controlinit_t srv_redteamweapons[] = {
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GRAPPLE, ITEM_ALWAYSON,
-		"Grapple:", &s_scriptdata.server.redspawn_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GAUNTLET, ITEM_ALWAYSON,
-		"Gauntlet:", &s_scriptdata.server.redspawn_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_MACHINEGUN, ITEM_ALWAYSON,
-		"Machinegun:", &s_scriptdata.server.redspawn_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_SHOTGUN, ITEM_ALWAYSON,
-		"Shotgun:", &s_scriptdata.server.redspawn_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_GRENADE, ITEM_ALWAYSON,
-		"Grenade:", &s_scriptdata.server.redspawn_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ROCKET, ITEM_ALWAYSON,
-		"Rocket:", &s_scriptdata.server.redspawn_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_RAILGUN, ITEM_ALWAYSON,
-		"Railgun:", &s_scriptdata.server.redspawn_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_LIGHTNING, ITEM_ALWAYSON,
-		"Lightning:", &s_scriptdata.server.redspawn_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_PLASMAGUN, ITEM_ALWAYSON,
-		"Plasmagun:", &s_scriptdata.server.redspawn_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_BFG, ITEM_ALWAYSON,
-		"BFG10K:", &s_scriptdata.server.redspawn_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_CHAIN, ITEM_ALWAYSON,
-		"Chaingun:", &s_scriptdata.server.redspawn_chain, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_MINE, ITEM_ALWAYSON,
-		"Prox launcher:", &s_scriptdata.server.redspawn_mine, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_NAIL, ITEM_ALWAYSON,
-		"Nailgun:", &s_scriptdata.server.redspawn_nail, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_FLAME, ITEM_ALWAYSON,
-		"Flamethrower:", &s_scriptdata.server.redspawn_flame, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_ANTIMATTER, ITEM_ALWAYSON,
-		"Dark flare:", &s_scriptdata.server.redspawn_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
-
-};
-
-// blueteamweapons controls
-static controlinit_t srv_blueteamweapons[] = {
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GRAPPLE, ITEM_ALWAYSON,
-		"Grapple:", &s_scriptdata.server.bluespawn_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GAUNTLET, ITEM_ALWAYSON,
-		"Gauntlet:", &s_scriptdata.server.bluespawn_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_MACHINEGUN, ITEM_ALWAYSON,
-		"Machinegun:", &s_scriptdata.server.bluespawn_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_SHOTGUN, ITEM_ALWAYSON,
-		"Shotgun:", &s_scriptdata.server.bluespawn_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_GRENADE, ITEM_ALWAYSON,
-		"Grenade:", &s_scriptdata.server.bluespawn_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ROCKET, ITEM_ALWAYSON,
-		"Rocket:", &s_scriptdata.server.bluespawn_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_RAILGUN, ITEM_ALWAYSON,
-		"Railgun:", &s_scriptdata.server.bluespawn_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_LIGHTNING, ITEM_ALWAYSON,
-		"Lightning:", &s_scriptdata.server.bluespawn_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_PLASMAGUN, ITEM_ALWAYSON,
-		"Plasmagun:", &s_scriptdata.server.bluespawn_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_BFG, ITEM_ALWAYSON,
-		"BFG10K:", &s_scriptdata.server.bluespawn_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_CHAIN, ITEM_ALWAYSON,
-		"Chaingun:", &s_scriptdata.server.bluespawn_chain, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_MINE, ITEM_ALWAYSON,
-		"Prox launcher:", &s_scriptdata.server.bluespawn_mine, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_NAIL, ITEM_ALWAYSON,
-		"Nailgun:", &s_scriptdata.server.bluespawn_nail, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_FLAME, ITEM_ALWAYSON,
-		"Flamethrower:", &s_scriptdata.server.bluespawn_flame, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_ANTIMATTER, ITEM_ALWAYSON,
-		"Dark flare:", &s_scriptdata.server.bluespawn_antimatter, -999999999, 999999999, NULL, 9, 9, NULL }
-
-};
-
-// teamother controls
-static controlinit_t srv_teamother[] = {
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_QUAD, ITEM_ALWAYSON,
-		"Team red quad damage:", &s_scriptdata.server.redspawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_HASTE, ITEM_ALWAYSON,
-		"Team red haste:", &s_scriptdata.server.redspawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_BSUIT, ITEM_ALWAYSON,
-		"Team red battle suit:", &s_scriptdata.server.redspawn_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_INVIS, ITEM_ALWAYSON,
-		"Team red invisibility:", &s_scriptdata.server.redspawn_invis, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_REGEN, ITEM_ALWAYSON,
-		"Team red regeneration:", &s_scriptdata.server.redspawn_regen, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REDSPAWN_FLIGHT, ITEM_ALWAYSON,
-		"Team red flight:", &s_scriptdata.server.redspawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_SPIN, 0, ID_SERVER_REDSPAWN_HOLDABLE, ITEM_ALWAYSON|ITEM_HALFGAP,
-		"Team red holdable:", &s_scriptdata.server.redspawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_QUAD, ITEM_ALWAYSON,
-		"Team blue quad damage:", &s_scriptdata.server.bluespawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_HASTE, ITEM_ALWAYSON,
-		"Team blue haste:", &s_scriptdata.server.bluespawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_BSUIT, ITEM_ALWAYSON,
-		"Team blue battle suit:", &s_scriptdata.server.bluespawn_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_INVIS, ITEM_ALWAYSON,
-		"Team blue invisibility:", &s_scriptdata.server.bluespawn_invis, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_REGEN, ITEM_ALWAYSON,
-		"Team blue regeneration:", &s_scriptdata.server.bluespawn_regen, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_BLUESPAWN_FLIGHT, ITEM_ALWAYSON,
-		"Team blue flight:", &s_scriptdata.server.bluespawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_SPIN, 0, ID_SERVER_BLUESPAWN_HOLDABLE, ITEM_ALWAYSON,
-		"Team blue holdable:", &s_scriptdata.server.bluespawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list }
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_HEALTH, ITEM_ALWAYSON,
+		"Health:", &s_scriptdata.server.spawn_health, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_ARMOR, ITEM_ALWAYSON,
+		"Armor:", &s_scriptdata.server.spawn_armor, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_GRAPPLE, ITEM_ALWAYSON,
+		"Grapple:", &s_scriptdata.server.spawn_grapple, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_GAUNTLET, ITEM_ALWAYSON,
+		"Gauntlet:", &s_scriptdata.server.spawn_gauntlet, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_MACHINEGUN, ITEM_ALWAYSON,
+		"Machinegun:", &s_scriptdata.server.spawn_machinegun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_SHOTGUN, ITEM_ALWAYSON,
+		"Shotgun:", &s_scriptdata.server.spawn_shotgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_GRENADE, ITEM_ALWAYSON,
+		"Grenade:", &s_scriptdata.server.spawn_grenade, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_ROCKET, ITEM_ALWAYSON,
+		"Rocket:", &s_scriptdata.server.spawn_rocket, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_RAILGUN, ITEM_ALWAYSON,
+		"Railgun:", &s_scriptdata.server.spawn_railgun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_LIGHTNING, ITEM_ALWAYSON,
+		"Lightning:", &s_scriptdata.server.spawn_lightning, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_PLASMAGUN, ITEM_ALWAYSON,
+		"Plasmagun:", &s_scriptdata.server.spawn_plasmagun, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_BFG, ITEM_ALWAYSON,
+		"BFG10K:", &s_scriptdata.server.spawn_bfg, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_CHAIN, ITEM_ALWAYSON,
+		"Chaingun:", &s_scriptdata.server.spawn_chain, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_MINE, ITEM_ALWAYSON,
+		"Prox launcher:", &s_scriptdata.server.spawn_mine, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_NAIL, ITEM_ALWAYSON,
+		"Nailgun:", &s_scriptdata.server.spawn_nail, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_FLAME, ITEM_ALWAYSON,
+		"Flamethrower:", &s_scriptdata.server.spawn_flame, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_ANTIMATTER, ITEM_ALWAYSON,
+		"Dark flare:", &s_scriptdata.server.spawn_antimatter, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_QUAD, ITEM_ALWAYSON,
+		"Quad damage:", &s_scriptdata.server.spawn_quad, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_HASTE, ITEM_ALWAYSON,
+		"Haste:", &s_scriptdata.server.spawn_haste, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_BSUIT, ITEM_ALWAYSON,
+		"Battle suit:", &s_scriptdata.server.spawn_bsuit, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_INVIS, ITEM_ALWAYSON,
+		"Invisibility:", &s_scriptdata.server.spawn_invis, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_REGEN, ITEM_ALWAYSON,
+		"Regeneration:", &s_scriptdata.server.spawn_regen, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWN_FLIGHT, ITEM_ALWAYSON,
+		"Flight:", &s_scriptdata.server.spawn_flight, -999999999, 999999999, NULL, 9, 9, NULL },
+	{ SRVCTRL_SPIN, 0, ID_SERVER_SPAWN_HOLDABLE, ITEM_ALWAYSON|ITEM_HALFGAP,
+		"Holdable:", &s_scriptdata.server.spawn_holdable, -999999999, 999999999, NULL, 9, 9, holdable_list },
 
 };
 
@@ -1029,13 +830,7 @@ static initlist_t srv_multiplayerserver[] =
 	{ ID_SERVERTAB_GAMEMODE, "GAMEMODE", &s_servercontrols.gamemode, srv_gamemode, ARRAY_COUNT(srv_gamemode) },
 	{ ID_SERVERTAB_PHYSICS, "PHYSICS", &s_servercontrols.physics, srv_physics, ARRAY_COUNT(srv_physics) },
 	{ ID_SERVERTAB_RULES, "RULES", &s_servercontrols.rules, srv_rules, ARRAY_COUNT(srv_rules) },
-	{ ID_SERVERTAB_RUNE1, "RUNE1", &s_servercontrols.rune1, srv_rune1, ARRAY_COUNT(srv_rune1) },
-	{ ID_SERVERTAB_RUNE2, "RUNE2", &s_servercontrols.rune2, srv_rune2, ARRAY_COUNT(srv_rune2) },
-	{ ID_SERVERTAB_REDTEAM, "REDTEAM", &s_servercontrols.redteam, srv_redteam, ARRAY_COUNT(srv_redteam) },
-	{ ID_SERVERTAB_BLUETEAM, "BLUETEAM", &s_servercontrols.blueteam, srv_blueteam, ARRAY_COUNT(srv_blueteam) },
-	{ ID_SERVERTAB_REDTEAMWEAPONS, "REDWEAPONS", &s_servercontrols.redteamweapons, srv_redteamweapons, ARRAY_COUNT(srv_redteamweapons) },
-	{ ID_SERVERTAB_BLUETEAMWEAPONS, "BLUEWEAPONS", &s_servercontrols.blueteamweapons, srv_blueteamweapons, ARRAY_COUNT(srv_blueteamweapons) },
-	{ ID_SERVERTAB_TEAMOTHER, "TEAMOTHER", &s_servercontrols.teamother, srv_teamother, ARRAY_COUNT(srv_teamother) },
+	{ ID_SERVERTAB_REDTEAMWEAPONS, "SPAWN", &s_servercontrols.redteamweapons, srv_redteamweapons, ARRAY_COUNT(srv_redteamweapons) },
 	{ ID_SERVERTAB_OTHER, "OTHER", &s_servercontrols.other, srv_other, ARRAY_COUNT(srv_other) },
 	{ ID_SERVERTAB_ENVIROMENT, "ENVIROMENT", &s_servercontrols.enviroment, srv_enviroment, ARRAY_COUNT(srv_enviroment) },
 	{ ID_SERVERTAB_ITEM, "ITEM", &s_servercontrols.item, srv_item, ARRAY_COUNT(srv_item) },
@@ -1602,7 +1397,7 @@ static void StartServer_ServerPage_InitControlList(initlist_t* il)
 	size = il->count;
 
 	teamGame = qfalse;
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS) )
+	if (s_scriptdata.gametype >= GT_TEAM )
 		teamGame = qtrue;
 
 	offset = 0;	// relative to top of list

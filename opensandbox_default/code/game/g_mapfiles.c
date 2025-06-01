@@ -83,15 +83,6 @@ qboolean G_ClassnameAllowed( char *input, qboolean danger ){
 	char* 			classes_allowed[] = {
 		"sandbox_prop",
 		"sandbox_npc",
-		"info_player_deathmatch",
-		"info_player_dd",
-		"info_player_dd_red",
-		"info_player_dd_blue",
-		"team_CTF_redplayer",
-		"team_CTF_blueplayer",
-		"team_CTF_redspawn",
-		"team_CTF_bluespawn",
-		"misc_teleporter_dest",
 		0
 	};
 

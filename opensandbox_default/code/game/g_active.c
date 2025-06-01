@@ -247,6 +247,7 @@ Spectators will only interact with teleporters.
 */
 void	G_TouchTriggers( gentity_t *ent ) {
 	int			i, num;
+	int			touch[MAX_GENTITIES];
 	gentity_t	*hit;
 	trace_t		trace;
 	vec3_t		mins, maxs;
@@ -256,23 +257,22 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		return;
 	}
 
-	//ELIMINATION LMS
-	// dead clients don't activate triggers! The reason our pm_spectators can't do anything
-	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 && ent->client->ps.pm_type != PM_SPECTATOR) {
+	// dead clients don't activate triggers!
+	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 ) {
 		return;
 	}
 
 	VectorSubtract( ent->client->ps.origin, range, mins );
 	VectorAdd( ent->client->ps.origin, range, maxs );
 
-	num = trap_EntitiesInBox( mins, maxs, SourceTechEntityList, MAX_GENTITIES );
+	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
 	// can't use ent->absmin, because that has a one unit pad
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
 
 	for ( i=0 ; i<num ; i++ ) {
-		hit = &g_entities[SourceTechEntityList[i]];
+		hit = &g_entities[touch[i]];
 
 		if ( !hit->touch && !ent->touch ) {
 			continue;
@@ -282,12 +282,11 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		}
 
 		// ignore most entities if a spectator
-		if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->ps.pm_type == PM_SPECTATOR ) {
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
 				// this is ugly but adding a new ET_? type will
 				// most likely cause network incompatibilities
-				//We need to stop eliminated players from opening doors somewhere else /Sago007 20070814
-				hit->touch != Touch_DoorTrigger ) {
+				hit->touch != Touch_DoorTrigger) {
 				continue;
 			}
 		}
@@ -372,11 +371,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 		G_TouchTriggers( ent );
 		trap_UnlinkEntity( ent );
 	}
-
-	/* Stopped players from going into follow mode in B5, should be fixed in B9
-	if(ent->client->sess.sessionTeam != TEAM_SPECTATOR && g_gametype.integer>=GT_ELIMINATION && g_gametype.integer<=GT_LMS)
-		return;
-	*/
 
 	client->oldbuttons = client->buttons;
 	client->buttons = ucmd->buttons;
@@ -485,10 +479,6 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		MakeUnlimitedAmmo(ent);
 	}
 
-		//Stop in elimination!!!
-		if (client->ps.pm_flags & PMF_ELIMWARMUP)
-			continue;
-
 		// regenerate
 		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
@@ -522,12 +512,6 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			}
 			
 			//Start killing players in LMS, if we are in overtime
-			if(g_elimination_roundtime.integer&&g_gametype.integer==GT_LMS && TeamHealthCount( -1, TEAM_FREE ) != ent->health &&(level.roundNumber==level.roundNumberStarted)&&(level.time>=level.roundStartTime+1000*g_elimination_roundtime.integer)) {
-				ent->damage=5;
-				G_Damage (ent, NULL, NULL, NULL, NULL,
-					ent->damage, DAMAGE_NO_ARMOR, MOD_UNKNOWN);
-			}
-			else
 			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
 				ent->health+=g_regen.integer;
 				if(ent->health>client->ps.stats[STAT_MAX_HEALTH])
@@ -732,10 +716,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 			else
 				
-			if (g_gametype.integer == GT_DOUBLE_D) {
-			SelectDoubleDominationSpawnPoint (ent->client->sess.sessionTeam, origin, angles);
-			TeleportPlayer( ent, origin, angles );
-			} else if (g_gametype.integer >= GT_CTF && g_ffa_gt==0 && g_gametype.integer!= GT_DOMINATION) {
+			if (g_gametype.integer >= GT_CTF) {
 			SelectCTFSpawnPoint ( ent->client->sess.sessionTeam, ent->client->pers.teamState.state, origin, angles);
 			TeleportPlayer( ent, origin, angles );
 			} else {
@@ -986,7 +967,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	// spectators don't do much
-	if ( (client->sess.sessionTeam == TEAM_SPECTATOR) || client->isEliminated ) {
+	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
 			return;
 		}
@@ -1365,12 +1346,9 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 void ClientEndFrame( gentity_t *ent ) {
 	int			i;
 	clientPersistant_t	*pers;
-
-//unlagged - smooth clients #1
 	int frames;
-//unlagged - smooth clients #1
 
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		SpectatorClientEndFrame( ent );
 		return;
 	}

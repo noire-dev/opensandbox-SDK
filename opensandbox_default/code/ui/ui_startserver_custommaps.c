@@ -89,21 +89,15 @@ static vec4_t shadow_color = {0.0, 0.0, 0.0, 1.0 };
 
 
 
-static char* maptype_icon[NUM_GAMETYPES] = {
+static char* maptype_icon[GT_MAX_GAME_TYPE] = {
 	"menu/assets/gt_sandbox",		// GT_SANDBOX
 	"menu/assets/gt_mapeditor",		// GT_MAPEDITOR
-	"menu/assets/gt_ffa",		// GT_FFA
-	"menu/assets/gt_tourney",		// GT_TOURNAMENT
-	"menu/assets/gt_team",	// GT_TEAM
-	"menu/assets/gt_ctf",		// GT_CTF
+	"menu/assets/gt_ffa",			// GT_FFA
+	"menu/assets/gt_team",			// GT_TEAM
+	"menu/assets/gt_ctf",			// GT_CTF
 	"menu/assets/gt_oneflag",		// GT_1FCTF
 	"menu/assets/gt_obelisk",		// GT_OBELISK
 	"menu/assets/gt_harvester",		// GT_HARVESTER
-	"menu/assets/gt_elimination",		// GT_ELIMINATION
-	"menu/assets/gt_eliminationctf",		// GT_CTF_ELIMINATION
-	"menu/assets/gt_lms",		// GT_LMS
-	"menu/assets/gt_doubledom",		// GT_DOUBLE_D
-	"menu/assets/gt_dom"		// GT_DOMINATION
 };
 
 
@@ -141,37 +135,18 @@ int GametypeBits( char *string ) {
 
 		if( Q_stricmp( token, "ffa" ) == 0 ) {
 			bits |= 1 << GT_FFA;
-			bits |= 1 << GT_LMS;
-			bits |= 1 << GT_ELIMINATION;
-			bits |= 1 << GT_DOMINATION;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-
-		if( Q_stricmp( token, "tourney" ) == 0 ) {
-			bits |= 1 << GT_TOURNAMENT;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-
-		if( Q_stricmp( token, "lms" ) == 0 ) {
-			bits |= 1 << GT_LMS;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "team" ) == 0 ) {
 			bits |= 1 << GT_TEAM;
-			bits |= 1 << GT_ELIMINATION;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
 
 		if( Q_stricmp( token, "ctf" ) == 0 ) {
 			bits |= 1 << GT_CTF;
-			bits |= 1 << GT_DOUBLE_D;
-			bits |= 1 << GT_CTF_ELIMINATION;
-			bits |= 1 << GT_ELIMINATION;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
@@ -190,30 +165,6 @@ int GametypeBits( char *string ) {
                 
 		if( Q_stricmp( token, "harvester" ) == 0 ) {
 			bits |= 1 << GT_HARVESTER;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-
-		if( Q_stricmp( token, "elimination" ) == 0 ) {
-			bits |= 1 << GT_ELIMINATION;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-
-		if( Q_stricmp( token, "ctfelimination" ) == 0 ) {
-			bits |= 1 << GT_CTF_ELIMINATION;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-
-		if( Q_stricmp( token, "dd" ) == 0 ) {
-			bits |= 1 << GT_DOUBLE_D;
-			bits |= 1 << GT_MAPEDITOR;
-			continue;
-		}
-                
-		if( Q_stricmp( token, "dom" ) == 0 ) {
-			bits |= 1 << GT_DOMINATION;
 			bits |= 1 << GT_MAPEDITOR;
 			continue;
 		}
@@ -293,7 +244,7 @@ GUI_DefaultIconFromGameType
 */
 char* GUI_DefaultIconFromGameType(int gametype)
 {
-	if (gametype < 0 || gametype > NUM_GAMETYPES) {
+	if (gametype < 0 || gametype > GT_MAX_GAME_TYPE) {
 		trap_Print(va(S_COLOR_RED"Unknown gametype icon: %i\n", gametype));
 		return NULL;
 	}
@@ -789,7 +740,7 @@ void StartServer_DrawMapPicture(int x, int y, int w, int h, mappic_t* mappic, ve
 	icons = gui_mapicons.integer;
 	if (icons == MAPICONS_ALL)
 	{
-		for (i = 0; i < NUM_GAMETYPES; i++)
+		for (i = 0; i < GT_MAX_GAME_TYPE; i++)
 		{
 			mapbits = 1 << i;
 

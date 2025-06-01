@@ -265,15 +265,8 @@ static void CG_TouchItem( centity_t *cent ) {
 	//For instantgib
 	qboolean	canBePicked;
 
-	if(cgs.gametype == GT_ELIMINATION || cgs.gametype == GT_LMS)
-		return; //No weapon pickup in elimination
-
 	//normally we can
 	canBePicked = qtrue;
-
-	//But in instantgib, rocket arena, and CTF_ELIMINATION we normally can't:
-	if(cgs.nopickup || cgs.gametype == GT_CTF_ELIMINATION)
-		canBePicked = qfalse;
 
 	if ( !BG_PlayerTouchesItem( &cg.predictedPlayerState, &cent->currentState, cg.time ) ) {
 		return;
@@ -297,7 +290,7 @@ static void CG_TouchItem( centity_t *cent ) {
 			return;
 		}
 	}
-	if( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_HARVESTER ) {
+	if( cgs.gametype == GT_CTF || cgs.gametype == GT_HARVESTER ) {
 		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED && item->giTag == PW_REDFLAG)
 			return;
 		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE && item->giTag == PW_BLUEFLAG)
@@ -306,22 +299,6 @@ static void CG_TouchItem( centity_t *cent ) {
 			canBePicked = qtrue;
 		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE && item->giTag == PW_REDFLAG)
 			canBePicked = qtrue;
-	}
-
-	//Currently we don't predict anything in Double Domination because it looks like we take a flag
-	if( cgs.gametype == GT_DOUBLE_D ) {
-		if(cgs.redflag == TEAM_NONE)
-			return; //Can never pick if just one flag is NONE (because then the other is too)
-		if(item->giTag == PW_REDFLAG){ //at point A
-			if(cgs.redflag != cg.predictedPlayerState.persistant[PERS_TEAM]) //not already taken
-                            trap_S_StartLocalSound( cgs.media.hitSound , CHAN_ANNOUNCER );
-			return;
-		}	
-		if(item->giTag == PW_BLUEFLAG){ //at point B
-			if(cgs.blueflag != cg.predictedPlayerState.persistant[PERS_TEAM]) //already taken
-                            trap_S_StartLocalSound( cgs.media.hitSound , CHAN_ANNOUNCER );
-			return;
-		}	
 	}
 
 	// grab it

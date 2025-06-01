@@ -273,7 +273,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 
 	// initialize the bot settings
 	if( !team || !*team ) {
-		if( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+		if( g_gametype.integer >= GT_TEAM ) {
 			if( PickTeam(clientNum) == TEAM_RED) {
 				team = "red";
 			}

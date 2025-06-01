@@ -1099,7 +1099,7 @@ static void StartServer_WeaponPage_InitControlList(initlist_t* il)
 	size = il->count;
 
 	teamGame = qfalse;
-	if (s_scriptdata.gametype >= GT_TEAM && !(s_scriptdata.gametype == GT_LMS) )
+	if (s_scriptdata.gametype >= GT_TEAM)
 		teamGame = qtrue;
 
 	offset = 0;	// relative to top of list

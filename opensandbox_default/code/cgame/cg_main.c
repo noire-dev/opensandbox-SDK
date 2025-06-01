@@ -309,8 +309,7 @@ static void CG_RegisterSounds( void ) {
 
 	// N_G: Another condition that makes no sense to me, see for
 	// yourself if you really meant this
-	// Sago: Makes perfect sense: Load team game stuff if the gametype is a teamgame and not an exception (like GT_LMS)
-	if (cgs.gametype >= GT_TEAM && cgs.ffa_gt != 1) {
+	if (cgs.gametype >= GT_TEAM) {
 		cgs.media.captureAwardSound = trap_S_RegisterSound( "sound/teamplay/flagcapture_yourteam.wav", qtrue );
 		cgs.media.redLeadsSound = trap_S_RegisterSound( "sound/feedback/redleads.wav", qtrue );
 		cgs.media.blueLeadsSound = trap_S_RegisterSound( "sound/feedback/blueleads.wav", qtrue );
@@ -329,7 +328,7 @@ static void CG_RegisterSounds( void ) {
 		cgs.media.takenYourTeamSound = trap_S_RegisterSound( "sound/teamplay/flagtaken_yourteam.wav", qtrue );
 		cgs.media.takenOpponentSound = trap_S_RegisterSound( "sound/teamplay/flagtaken_opponent.wav", qtrue );
 
-		if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ) {
+		if ( cgs.gametype == GT_CTF ) {
 			cgs.media.redFlagReturnedSound = trap_S_RegisterSound( "sound/teamplay/voc_red_returned.wav", qtrue );
 			cgs.media.blueFlagReturnedSound = trap_S_RegisterSound( "sound/teamplay/voc_blue_returned.wav", qtrue );
 			cgs.media.enemyTookYourFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_enemy_flag.wav", qtrue );
@@ -343,7 +342,7 @@ static void CG_RegisterSounds( void ) {
 			cgs.media.enemyTookTheFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_enemy_1flag.wav", qtrue );
 		}
 
-		if ( cgs.gametype == GT_1FCTF || cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION ) {
+		if ( cgs.gametype == GT_1FCTF || cgs.gametype == GT_CTF ) {
 			cgs.media.youHaveFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_you_flag.wav", qtrue );
 			cgs.media.holyShitSound = trap_S_RegisterSound("sound/feedback/voc_holyshit.wav", qtrue);
 		}
@@ -659,33 +658,22 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.ptexShader[0]	= trap_R_RegisterShader( "trans" );
 	cgs.media.ptexShader[1]	= trap_R_RegisterShader( "powerups/quad" );
 
-	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION|| cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
+	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
 		cgs.media.redCubeModel = trap_R_RegisterModel( "models/powerups/orb/r_orb.md3" );
 		cgs.media.blueCubeModel = trap_R_RegisterModel( "models/powerups/orb/b_orb.md3" );
 		cgs.media.redCubeIcon = trap_R_RegisterShader( "icons/skull_red" );
 		cgs.media.blueCubeIcon = trap_R_RegisterShader( "icons/skull_blue" );
 	}
 
-    if( ( cgs.gametype >= GT_TEAM ) && ( cgs.ffa_gt != 1 ) ) {
+    if( cgs.gametype >= GT_TEAM ) {
         cgs.media.redOverlay = trap_R_RegisterShader( "overlay/red");
         cgs.media.blueOverlay = trap_R_RegisterShader( "overlay/blue");
     } else {
         cgs.media.neutralOverlay = trap_R_RegisterShader( "overlay/neutral");
     }
 
-//For Double Domination:
-	if ( cgs.gametype == GT_DOUBLE_D ) {
-		cgs.media.ddPointSkinA[TEAM_RED] = trap_R_RegisterShaderNoMip( "icons/icona_red" );
-        cgs.media.ddPointSkinA[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/icona_blue" );
-        cgs.media.ddPointSkinA[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/icona_white" );
-        cgs.media.ddPointSkinA[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
-        cgs.media.ddPointSkinB[TEAM_RED] = trap_R_RegisterShaderNoMip( "icons/iconb_red" );
-        cgs.media.ddPointSkinB[TEAM_BLUE] = trap_R_RegisterShaderNoMip( "icons/iconb_blue" );
-        cgs.media.ddPointSkinB[TEAM_FREE] = trap_R_RegisterShaderNoMip( "icons/iconb_white" );
-        cgs.media.ddPointSkinB[TEAM_NONE] = trap_R_RegisterShaderNoMip( "icons/noammo" );
-	}
-
-	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
+	//For Double Domination:
+	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER ) {
 		cgs.media.redFlagModel = trap_R_RegisterModel( "models/flags/r_flag.md3" );
 		cgs.media.blueFlagModel = trap_R_RegisterModel( "models/flags/b_flag.md3" );
         cgs.media.neutralFlagModel = trap_R_RegisterModel( "models/flags/n_flag.md3" );
@@ -733,7 +721,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.redKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikred" );
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff" );
 
-	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt != 1 ) {
+	if ( cgs.gametype >= GT_TEAM ) {
 		cgs.media.friendShader = trap_R_RegisterShader( "sprites/foe3" );
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
 		cgs.media.blueKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikblu" );

@@ -736,7 +736,7 @@ static void StartServer_MapPage_InitControlsFromScript(void)
 	Com_sprintf( s_mapcontrols.timeLimit.field.buffer, 4, "%i", s_scriptdata.map.timeLimit );
 
 	index = 0;
-	if (s_scriptdata.gametype >= GT_CTF && !(s_scriptdata.gametype == GT_LMS))
+	if (s_scriptdata.gametype >= GT_CTF)
 		index = 2;
 
 	// set "frag" or "capture" control text

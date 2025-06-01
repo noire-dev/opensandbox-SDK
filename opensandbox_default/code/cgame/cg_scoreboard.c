@@ -72,12 +72,6 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_RED );
 	} else if ( ci->powerups & ( 1 << PW_BLUEFLAG ) ) {
 		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_BLUE );
-	} else {
-		// draw the wins / losses
-		if (cgs.gametype == GT_TOURNAMENT) {
-			Com_sprintf( string, sizeof( string ), "%i/%i", ci->wins, ci->losses );
-			ST_DrawString( iconx - 35, y + BASEFONT_HEIGHT/2, string, UI_LEFT, color_white, 1.00);
-		}
 	}
 
 	CG_DrawHead( headx, y, 16, 16, score->client );
@@ -98,7 +92,7 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 
 		localClient = qtrue;
 
-		if ((cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) || ((cgs.gametype >= GT_TEAM) && (cgs.ffa_gt != 1))) {
+		if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cgs.gametype >= GT_TEAM) {
 			rank = -1;
 		} else {
 			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
@@ -112,13 +106,6 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 	}
 
 	ST_DrawString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, UI_LEFT, color_white, 1.50);
-
-	// add the "ready" marker for intermission exiting
-	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) ) {
-		CG_DrawBigString( iconx, y, "READY", 1.00f );
-	} else if(score->isDead) {
-		ST_DrawString( iconx-4, y, "D", UI_LEFT, color_red, 1.50);
-    }
 }
 
 /*
@@ -228,7 +215,7 @@ qboolean CG_DrawScoreboard( void ) {
 
 	localClient = qfalse;
 
-	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+	if ( cgs.gametype >= GT_TEAM ) {
 		//
 		// teamplay scoreboard
 		//

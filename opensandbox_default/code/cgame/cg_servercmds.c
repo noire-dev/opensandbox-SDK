@@ -29,15 +29,8 @@
 
 #include "cg_local.h"
 
-/*
-=================
-CG_ParseScores
-
-=================
-*/
-
-#define NUM_DATA 5
-#define FIRST_DATA 4
+#define NUM_DATA 4
+#define FIRST_DATA 3
 
 static void CG_ParseScores( void ) {
 	int		i, powerups;
@@ -50,15 +43,6 @@ static void CG_ParseScores( void ) {
 	cg.teamScores[0] = atoi( CG_Argv( 2 ) );
 	cg.teamScores[1] = atoi( CG_Argv( 3 ) );
 
-	cgs.roundStartTime = atoi( CG_Argv( 4 ) );
-
-	//Update thing in lower-right corner
-	if(cgs.gametype == GT_ELIMINATION || cgs.gametype == GT_CTF_ELIMINATION)
-	{
-		cgs.scores1 = cg.teamScores[0];
-		cgs.scores2 = cg.teamScores[1];
-	}
-
 	memset( cg.scores, 0, sizeof( cg.scores ) );
 
 	for ( i = 0 ; i < cg.numScores ; i++ ) {
@@ -66,72 +50,10 @@ static void CG_ParseScores( void ) {
 		cg.scores[i].score = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 2 ) );
 		cg.scores[i].ping = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 3 ) );
 		cg.scores[i].time = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 4 ) );
-		cg.scores[i].isDead = atoi( CG_Argv( i * NUM_DATA + FIRST_DATA + 5 ) );
 
 		if ( cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS ) {
 			cg.scores[i].client = 0;
 		}
-	}
-}
-
-/*
-=================
-CG_ParseElimination
-
-=================
-*/
-static void CG_ParseElimination( void ) {
-	if(cgs.gametype == GT_ELIMINATION || cgs.gametype == GT_CTF_ELIMINATION)
-	{
-		cgs.scores1 = atoi( CG_Argv( 1 ) );
-		cgs.scores2 = atoi( CG_Argv( 2 ) );
-	}
-	cgs.roundStartTime = atoi( CG_Argv( 3 ) );
-}
-
-/*
-=================
-CG_ParseDDtimetaken
-
-=================
-*/
-static void CG_ParseDDtimetaken( void ) {
-	cgs.timetaken = atoi( CG_Argv( 1 ) );
-}
-
-/*
-=================
-CG_ParseDomPointNames
-=================
-*/
-
-static void CG_ParseDomPointNames( void ) {
-	int i,j;
-	cgs.domination_points_count = atoi( CG_Argv( 1 ) );
-	if(cgs.domination_points_count>=MAX_DOMINATION_POINTS)
-		cgs.domination_points_count = MAX_DOMINATION_POINTS;
-	for(i = 0;i<cgs.domination_points_count;i++) {
-		Q_strncpyz(cgs.domination_points_names[i],CG_Argv(2)+i*MAX_DOMINATION_POINTS_NAMES,MAX_DOMINATION_POINTS_NAMES-1);
-		for(j=MAX_DOMINATION_POINTS_NAMES-1; cgs.domination_points_names[i][j] < '0' && j>0; j--) {
-			cgs.domination_points_names[i][j] = 0;
-		}
-	}
-}
-
-/*
-=================
-CG_ParseDomScores
-=================
-*/
-
-static void CG_ParseDomStatus( void ) {
-	int i;
-	if( cgs.domination_points_count!=atoi( CG_Argv(1) ) ) {
-		cgs.domination_points_count = 0;
-		return;
-	}
-	for(i = 0;i<cgs.domination_points_count;i++) {
-		cgs.domination_points_status[i] = atoi( CG_Argv(2+i) );
 	}
 }
 
@@ -140,9 +62,6 @@ static void CG_ParseObeliskHealth( void ) {
     cg.blueObeliskHealth = atoi( CG_Argv(2) );
 }
 
-/**
- * Sets the respawn counter for the client.
- */
 static void CG_ParseRespawnTime( void ) {
     cg.respawnTime = atoi( CG_Argv(1) );
 }
@@ -260,19 +179,12 @@ void CG_ParseServerinfo( void ) {
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	//By default do as normal:
-	cgs.ffa_gt = 0;
-	//See if ffa gametype
-	if(cgs.gametype == GT_LMS)
-		cgs.ffa_gt = 1;
 	trap_Cvar_Set("g_gametype", va("%i", cgs.gametype));
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "g_maxClients" ) );
-	cgs.roundtime = atoi( Info_ValueForKey( info, "g_elimination_roundtime" ) );
-	cgs.nopickup = atoi( Info_ValueForKey( info, "g_elimination" ) );
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
 }
@@ -315,7 +227,7 @@ void CG_SetConfigValues( void ) {
 	cgs.scores1 = atoi( CG_ConfigString( CS_SCORES1 ) );
 	cgs.scores2 = atoi( CG_ConfigString( CS_SCORES2 ) );
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
-	if( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_DOUBLE_D) {
+	if( cgs.gametype == GT_CTF ) {
 		s = CG_ConfigString( CS_FLAGSTATUS );
 		cgs.redflag = s[0] - '0';
 		cgs.blueflag = s[1] - '0';
@@ -437,7 +349,7 @@ static void CG_ConfigStringModified( void ) {
 		CG_NewClientInfo( num - CS_PLAYERS );
 		CG_BuildSpectatorString();
 	} else if ( num == CS_FLAGSTATUS ) {
-		if( cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype == GT_DOUBLE_D) {
+		if( cgs.gametype == GT_CTF ) {
 			// format is rb where its red/blue, 0 is at base, 1 is taken, 2 is dropped
 			cgs.redflag = str[0] - '0';
 			cgs.blueflag = str[1] - '0';
@@ -487,7 +399,6 @@ static void CG_MapRestart( void ) {
 	// play the "fight" sound if this is a restart without warmup
 	if ( cg.warmup == 0 && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR ) {
 		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
-		//CG_CenterPrint( "FIGHT!", 120, GIANTCHAR_WIDTH*2 );
 	}
 }
 
@@ -589,14 +500,12 @@ static void CG_ServerCommand( void ) {
 		color1[2] = atof( CG_Argv(8) );
 		color1[3] = atof( CG_Argv(9) );
 		CG_Fade( duration, color0, color1 );
-		//Com_Printf("%f %f %f\n%f %f %f\n%f %f %f", duration, r0, g0, b0, a0, r1, g1, b1, a1);
 		return;
 	}
 
 	if ( !strcmp( cmd, "ou" ) ) {
-		//objectives are updated
 		cg.objectivesSoundPlayed = qfalse;
-		if ( cg.time < cg.levelStartTime + BLACKOUT_TIME + FADEIN_TIME ) //if we're in fade-in, delay notification until fade-in is done. 
+		if ( cg.time < cg.levelStartTime + BLACKOUT_TIME + FADEIN_TIME )
 			cg.objectivesTime = cg.levelStartTime + BLACKOUT_TIME + FADEIN_TIME;
 		else
 			cg.objectivesTime = cg.time;
@@ -611,9 +520,8 @@ static void CG_ServerCommand( void ) {
 			return;
 		
 		CG_Printf( "%s", CG_Argv(1) );
-		cmd = CG_Argv(1);			// yes, this is obviously a hack, but so is the way we hear about
-									// votes passing or failing
-		//if the message to print is about a client being dropped after a silent drop, suppress the drop message
+		cmd = CG_Argv(1);
+
 		if ( !Q_stricmpn( cmd, "vote failed", 11 ) || !Q_stricmpn( cmd, "team vote failed", 16 )) {
 			trap_S_StartLocalSound( cgs.media.voteFailed, CHAN_ANNOUNCER );
 		} else if ( !Q_stricmpn( cmd, "vote passed", 11 ) || !Q_stricmpn( cmd, "team vote passed", 16 ) ) {
@@ -640,26 +548,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "scores" ) ) {
 		CG_ParseScores();
-		return;
-	}
-
-	if ( !strcmp( cmd, "ddtaken" ) ) {
-		CG_ParseDDtimetaken();
-		return;
-	}
-
-	if ( !strcmp( cmd, "dompointnames" ) ) {
-		CG_ParseDomPointNames();
-		return;
-	}
-
-	if ( !strcmp( cmd, "domStatus" ) ) {
-		CG_ParseDomStatus();
-		return;
-	}
-
-	if ( !strcmp( cmd, "elimination" ) ) {
-		CG_ParseElimination();
 		return;
 	}
 

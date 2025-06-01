@@ -53,28 +53,25 @@ void AddScore( gentity_t *ent, int score ) {
             return;
         }
 	// show score plum
-        if( level.numNonSpectatorClients<3 && score < 0 && (g_gametype.integer<GT_TEAM || g_ffa_gt==1)) {
-            for ( i = 0 ; i < level.maxclients ; i++ ) {
-                if ( level.clients[ i ].pers.connected != CON_CONNECTED )
-                    continue; //Client was not connected
-
-                if (level.clients[i].sess.sessionTeam == TEAM_SPECTATOR)
-                    continue; //Don't give anything to spectators
-
-                if (g_entities+i == ent)
-                    continue; //Don't award dead one
-
-                level.clients[i].ps.persistant[PERS_SCORE] -= score;
-            }
-        } else {
-			if(score == 1){
-            ent->client->ps.persistant[PERS_SCORE] += score;
-            if ( g_gametype.integer == GT_TEAM ) {
-                int team = ent->client->ps.persistant[PERS_TEAM];
-                    level.teamScores[ team ] += score;
-            }
-			}
+    if( level.numNonSpectatorClients<3 && score < 0 && g_gametype.integer<GT_TEAM) {
+        for ( i = 0 ; i < level.maxclients ; i++ ) {
+            if ( level.clients[ i ].pers.connected != CON_CONNECTED )
+                continue; //Client was not connected
+            if (level.clients[i].sess.sessionTeam == TEAM_SPECTATOR)
+                continue; //Don't give anything to spectators
+            if (g_entities+i == ent)
+                continue; //Don't award dead one
+            level.clients[i].ps.persistant[PERS_SCORE] -= score;
         }
+    } else {
+		if(score == 1){
+        ent->client->ps.persistant[PERS_SCORE] += score;
+        if ( g_gametype.integer == GT_TEAM ) {
+            int team = ent->client->ps.persistant[PERS_TEAM];
+                level.teamScores[ team ] += score;
+        }
+		}
+    }
 	CalculateRanks();
 }
 
@@ -96,17 +93,6 @@ void TossClientItems( gentity_t *self ) {
 
 	if(self->singlebot >= 1){
         return;
-	}
-
-	//Never drop in elimination or last man standing mode!
-	if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS)
-		return;
-
-	if (g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer || weapon == WP_GAUNTLET){
-	//Nothing!
-	} else if ( self->swep_ammo[ weapon ] ) {
-		item = BG_FindItemForWeapon( weapon );
-		Drop_Item( self, item );
 	}
 
 	// drop all weapons
@@ -385,20 +371,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			i;
 	char		*killerName, *obit;
 
-	if ( self->client->ps.pm_type == PM_DEAD ) {
+	if ( self->client->ps.pm_type == PM_DEAD || level.intermissiontime ) {
 		return;
 	}
-
-	if ( level.intermissiontime ) {
-		return;
-	}
-	
-	self->client->noclip = 0;
-			
-	self->client->pers.oldmoney = self->client->pers.oldmoney;
-
-	// make sure the body shows up in the client's current position
-	G_UnTimeShiftClient( self );
 
 	if (self->client && self->client->hook) {
 		Weapon_HookFree(self->client->hook);
@@ -430,43 +405,29 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
 		obit = "<bad obituary>";
 	} else {
-		obit = modNames[meansOfDeath];
+		obit = modNames[ meansOfDeath ];
 	}
-
-	//G_Printf("Kill: %i %i %i: %s killed %s by %s\n", killer, self->s.number, meansOfDeath, killerName, self->client->pers.netname, obit );
 
 	// broadcast the death event to everyone
 	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
-    //Sago: Hmmm... generic? Can I transmit anything I like? Like if it is a team kill? Let's try
-    ent->s.generic1 = OnSameTeam (self, attacker);
-    if( !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime) )
-        ent->r.svFlags = SVF_BROADCAST;	// send to everyone (if not an elimination gametype during active warmup)
-    else
-        ent->r.svFlags = SVF_NOCLIENT;
+	ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
 	self->enemy = attacker;
 
 	self->client->ps.persistant[PERS_KILLED]++;
 
-	if (attacker) {
+	if (attacker && attacker->client) {
 		attacker->client->lastkilled_client = self->s.number;
 
 		if ( attacker == self || OnSameTeam (self, attacker ) ) {
-			if(g_gametype.integer!=GT_LMS && !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime))
-            	if( (g_gametype.integer <GT_TEAM && g_ffa_gt!=1 && self->client->ps.persistant[PERS_SCORE]>0) || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
-            	    AddScore( attacker, -1 );
+			AddScore( attacker, -1 );
 		} else {
-			if(g_gametype.integer != GT_LMS){
-				AddScore( attacker, 1 );
-				attacker->client->pers.oldmoney += 1;
-			}
+			AddScore( attacker, 1 );
 
 			if( meansOfDeath == MOD_GAUNTLET ) {
-
-				attacker->client->pers.oldmoney += 1;
 				
 				// play humiliation on player
 				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
@@ -483,43 +444,41 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			// check for two kills in a short amount of time
 			// if this is close enough to the last kill, give a reward sound
 			if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
+				// play excellent on player
 				attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
-				attacker->client->pers.oldmoney += 1;
+
 				// add the sprite over the player's head
 				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
 				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 			}
 			attacker->client->lastKillTime = level.time;
+
 		}
 	} else {
-		if(g_gametype.integer!=GT_LMS && !((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION) && level.time < level.roundStartTime))
-                    if(self->client->ps.persistant[PERS_SCORE]>0 || level.numNonSpectatorClients<3) //Cannot get negative scores by suicide
-			AddScore( self, -1 );
+		AddScore( self, -1 );
 	}
 
-	// if I committed suicide, the flag does not fall, it returns.
-	if (meansOfDeath == MOD_SUICIDE) {
+	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
+	contents = trap_PointContents( self->r.currentOrigin, -1 );
+	if ( !( contents & CONTENTS_NODROP )) {
+		TossClientItems( self );
+	} else {
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
-			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 		}
 		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
 			Team_ReturnFlag( TEAM_RED );
-			self->client->ps.powerups[PW_REDFLAG] = 0;
 		}
 		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
 			Team_ReturnFlag( TEAM_BLUE );
-			self->client->ps.powerups[PW_BLUEFLAG] = 0;
 		}
 	}
-        TossClientPersistantPowerups( self );
-        if( g_gametype.integer == GT_HARVESTER ) {
-            TossClientCubes( self );
-        }
-	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
-	TossClientItems( self );
 
+	TossClientPersistantPowerups( self );
+	if( g_gametype.integer == GT_HARVESTER ) {
+		TossClientCubes( self );
+	}
 
 	Cmd_Score_f( self );		// show scores
 	// send updated scores to any clients that are following this one,
@@ -556,37 +515,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->r.maxs[2] = -8;
 
 	// don't allow respawn until the death anim is done
-	self->client->respawnTime = level.time + g_respawnwait.integer +i;
-		if(self->client->sess.sessionTeam == TEAM_BLUE){
-		self->client->respawnTime = level.time + g_teamblue_respawnwait.integer +i;
-		}
-		if(self->client->sess.sessionTeam == TEAM_RED){
-		self->client->respawnTime = level.time + g_teamred_respawnwait.integer +i;
-		}
-        if(g_respawntime.integer>0) {
-            for(i=0; self->client->respawnTime > i*g_respawntime.integer*1000;i++);
-
-            self->client->respawnTime = i*g_respawntime.integer*1000;
-if(ent->singlebot){
-	self->client->respawnTime = level.time + 5000;	//keep bot bodies around slightly longer
-}
-        }
-        //For testing:
-        //G_Printf("Respawntime: %i\n",self->client->respawnTime);
-	//However during warm up, we should respawn quicker!
-	if(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS)
-		if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer)
-			self->client->respawnTime = level.time + rand()%800;
-
-        RespawnTimeMessage(self, self->client->respawnTime);
-
+	// g_forcerespawn may force spawning at some later time
+	self->client->respawnTime = level.time + 1700;
 
 	// remove powerups
 	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
 
 	// never gib in a nodrop
-	contents = trap_PointContents( self->r.currentOrigin, -1 );
-
 	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE) {
 		// gib death
 		GibEntity( self, killer );
@@ -613,9 +548,9 @@ if(ent->singlebot){
 			self->health = GIB_HEALTH+1;
 		}
 
-		self->client->ps.legsAnim =
+		self->client->ps.legsAnim = 
 			( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-		self->client->ps.torsoAnim =
+		self->client->ps.torsoAnim = 
 			( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
 		G_AddEvent( self, EV_DEATH1 + i, killer );
@@ -632,15 +567,6 @@ if(ent->singlebot){
 	}
 
 	trap_LinkEntity (self);
-
-	// Fire trigger_death and trigger_frag target entities and the deathtarget for the related target_botspawn 
-	G_UseTriggerFragAndDeathEntities ( self, attacker );
-	
-	// Trigger deathtarget and drop loot
-	if ( self->botspawn ) {
-		G_UseDeathTargets(self->botspawn, self);
-		G_DropLoot(self->botspawn, self);
-	}
 }
 
 
@@ -755,40 +681,11 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 	}
 }
 
-/*
-============
-T_Damage
-
-targ		entity that is being damaged
-inflictor	entity that is causing the damage
-attacker	entity that caused the inflictor to damage targ
-	example: targ=monster, inflictor=rocket, attacker=player
-
-dir			direction of the attack for knockback
-point		point at which the damage is being inflicted, used for headshots
-damage		amount of damage being inflicted
-knockback	force to be applied against targ as a result of the damage
-
-inflictor, attacker, dir, and point can be NULL for environmental effects
-
-dflags		these flags are used to control how T_Damage works
-	DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
-	DAMAGE_NO_ARMOR			armor does not protect from this damage
-	DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
-	DAMAGE_NO_PROTECTION	kills godmode, armor, everything
-============
-*/
-
-double angle45hook(double value, double src_min, double src_max) {
-    return -(90.0 * (value - src_min) / (src_max - src_min));
-}
-
 int engine10hook(int value, int src_min, int src_max) {
     return 10 * (value - src_min) / (src_max - src_min);
 }
 
 void VehiclePhys( gentity_t *self ) {
-	
 	if(!self->parent || !self || !self->parent->client->vehiclenum || self->parent->health <= 0 || self->health <= 0){
 	self->think = 0;
 	self->nextthink = 0;
@@ -831,7 +728,6 @@ void VehiclePhys( gentity_t *self ) {
 	
 	self->think = VehiclePhys;
 	self->nextthink = level.time + 1;
-	
 }
 
 qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
@@ -869,29 +765,36 @@ qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
     return qtrue;
 }
 
+void G_ExitVehicle (int num){
+	Cmd_VehicleExit_f( G_FindEntityForClientNum(num));
+}
+
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
 	int			take;
-	int			asave = 0;
+	int			save;
+	int			asave;
 	int			knockback;
+	int			max;
 	vec3_t		bouncedir, impactpoint;
 	gentity_t 	*act;
 
-	//in entityplus bots cannot harm other bots (unless it's a telefrag)
-	if ( !G_NpcFactionProp(NP_HARM, attacker) && attacker->singlebot >= 1 && targ->singlebot == attacker->singlebot && attacker && mod != MOD_TELEFRAG )
+	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->singlebot >= 1 && targ->singlebot == attacker->singlebot)
 		return;
 
-	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
-		if(mod == MOD_TOOLGUN){
-			return;
-		}
+	if(mod == MOD_TOOLGUN){
+		return;
+	}
+
+	if (!targ->takedamage && !targ->sandboxObject) {
+		return;
 	}
 
 	if(mod == MOD_GAUNTLET && attacker->health <= 0){
 		return;
 	}
-	
+
 	if (mod == MOD_GAUNTLET) {
 		if (targ->vehicle) {
 			if(G_EnterInCar(attacker, targ)){
@@ -900,27 +803,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	//damage car
+	if (targ->client && targ->client->vehiclenum){ //VEHICLE-SYSTEM: damage vehicle instead player
+ 		targ = G_FindEntityForEntityNum(targ->client->vehiclenum);
+	}
+
 	if(mod == MOD_REGENERATOR && targ->client){
 		if (!targ->client->ps.powerups[PW_REGEN]) {
 			targ->client->ps.powerups[PW_REGEN] = level.time - ( level.time % 1000 );
 		}
 		targ->client->ps.powerups[PW_REGEN] += 5 * 1000;
-	}
-	
-	if (targ->damagetarget){
-	act = G_PickTarget( targ->damagetarget );
-	if ( act && act->use ) {
-		act->use( act, attacker, attacker );
-	}
-	}
-
-	if (!targ->takedamage && !targ->sandboxObject) {
-		return;
-	}
-	
-	//damage car
-	if (targ->client && targ->client->vehiclenum){ //VEHICLE-SYSTEM: damage vehicle instead player
- 		targ = G_FindEntityForEntityNum(targ->client->vehiclenum);
 	}
 
 	// the intermission has allready been qualified for, so don't
@@ -928,7 +820,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( level.intermissionQueued ) {
 		return;
 	}
-
 	if ( targ->client && mod != MOD_JUICED) {
 		if ( targ->client->invulnerabilityTime > level.time) {
 			if ( dir && point ) {
@@ -937,20 +828,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			return;
 		}
 	}
-
-    //Sago: This was moved up
-    client = targ->client;
-    //Sago: See if the client was sent flying
-    //Check if damage is by somebody who is not a player!
-    if( (!attacker || attacker->s.eType != ET_PLAYER) && client && client->lastSentFlying>-1 && ( mod==MOD_FALLING || mod==MOD_LAVA || mod==MOD_SLIME || mod==MOD_TRIGGER_HURT || mod==MOD_SUICIDE ) )  {
-        if( client->lastSentFlyingTime+10000<level.time) {
-            client->lastSentFlying = -1; //More than 5 seconds, not a kill!
-        } else {
-            //G_Printf("LastSentFlying %i\n",client->lastSentFlying);
-            attacker = &g_entities[client->lastSentFlying];
-        }
-    }
-
 	if ( !inflictor ) {
 		inflictor = &g_entities[ENTITYNUM_WORLD];
 	}
@@ -959,40 +836,31 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// shootable doors / buttons don't actually have any health
-	if ( targ->s.eType == ET_MOVER) {
-		if (strcmp(targ->classname, "func_breakable") && targ->use && (targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1)) {
-			targ->use(targ, inflictor, attacker);
+	if ( targ->s.eType == ET_MOVER ) {
+		if ( targ->use && targ->moverState == MOVER_POS1 ) {
+			targ->use( targ, inflictor, attacker );
 		}
-		if (!strcmp(targ->classname, "func_train") && targ->health > 0) {
-			G_UseTargets(targ, attacker);
-		} else {	// entity is a func_breakable
-			if ( (targ->spawnflags & 1024) && attacker == attacker )
-			return;
-			if ( (targ->spawnflags & 2048) && IsBot(attacker) )
-				return;
-			if ( (targ->spawnflags & 4096) && strstr(attacker->classname, "shooter_") )
-				return;
-			
-		}
+		return;
 	}
 	if( g_gametype.integer == GT_OBELISK && CheckObeliskAttack( targ, attacker ) ) {
 		return;
 	}
+	// reduce damage by the attacker's handicap value
+	// unless they are rocket jumping
+	if ( attacker->client && attacker != targ ) {
+		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
+		if( bg_itemlist[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+			max /= 2;
+		}
+		damage = damage * max / 100;
+	}
 
-	if ( attacker && attacker->singlebot){
-			float skill = cvar_VariableValue( "g_spSkill" );
-			int orgdmg = damage;
-	
-			if ( attacker->botspawn && attacker->botspawn->skill )
-				skill += attacker->botspawn->skill;
-			
-			if (skill < 1)
-				skill = 1;	//relative skill level should not drop below 1 but is allowed to rise above 5
-			
-			damage *= ( ( 0.1 * skill  ) - 0.05 ); //damage is always rounded down.
-			
-			if ( damage < 1 )
-				damage = 1;	//make sure bot does at least -some- damage
+	client = targ->client;
+
+	if ( client ) {
+		if ( client->noclip ) {
+			return;
+		}
 	}
 
 	if ( !dir ) {
@@ -1001,56 +869,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		VectorNormalize(dir);
 	}
 
-	knockback = damage+1;
+	knockback = damage;
 
-	if ( mod == MOD_CAR )
-	knockback *= 1.00;
-	if ( mod == MOD_PROP )
-	knockback *= 1.00;
 	if ( mod == MOD_NUKE )
 	knockback *= 3.00;
-	if ( mod == MOD_GAUNTLET )
-	knockback *= g_gknockback.value;
-	if ( mod == MOD_MACHINEGUN )
-	knockback *= g_mgknockback.value;
-	if ( mod == MOD_SHOTGUN )
-	knockback *= g_sgknockback.value;
-	if ( mod == MOD_GRENADE )
-	knockback *= g_glknockback.value;
-	if ( mod == MOD_GRENADE_SPLASH )
-	knockback *= g_glknockback.value;
-	if ( mod == MOD_ROCKET )
-	knockback *= g_rlknockback.value;
-	if ( mod == MOD_ROCKET_SPLASH )
-	knockback *= g_rlknockback.value;
-	if ( mod == MOD_PLASMA )
-	knockback *= g_pgknockback.value;
-	if ( mod == MOD_PLASMA_SPLASH )
-	knockback *= g_pgknockback.value;
-	if ( mod == MOD_RAILGUN )
-	knockback *= g_rgknockback.value;
-	if ( mod == MOD_LIGHTNING )
-	knockback *= g_lgknockback.value;
-	if ( mod == MOD_BFG )
-	knockback *= g_bfgknockback.value;
-	if ( mod == MOD_BFG_SPLASH )
-	knockback *= g_bfgknockback.value;
-	if ( mod == MOD_NAIL )
-	knockback *= g_ngknockback.value;
-	if ( mod == MOD_CHAINGUN )
-	knockback *= g_cgknockback.value;
-	if ( mod == MOD_PROXIMITY_MINE )
-	knockback *= g_plknockback.value;
-	if ( mod == MOD_FLAME )
-	knockback *= g_ftknockback.value;
-	if ( mod == MOD_FLAME_SPLASH )
-	knockback *= g_ftknockback.value;
-	if ( mod == MOD_ANTIMATTER )
-	knockback *= g_amknockback.value;
-	if ( mod == MOD_ANTIMATTER_SPLASH )
-	knockback *= g_amknockback.value;
-	if ( mod == MOD_TARGET_LASER )
-	knockback = attacker->msdamage;
 	if ( mod == MOD_KNOCKER )
 	knockback *= 200;
 
@@ -1096,7 +918,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if(!targ->sandboxObject){
 			if ( !targ->client->ps.pm_time ) {
 				int		t;
-
+			
 				t = knockback * 2;
 				if ( t < 50 ) {
 					t = 50;
@@ -1107,16 +929,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->client->ps.pm_time = t;
 				targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 			}
-            //Remeber the last person to hurt the player
-            if( targ==attacker || OnSameTeam (targ, attacker) ) {
-                targ->client->lastSentFlying = -1;
-            } else {
-                targ->client->lastSentFlying = attacker->s.number;
-                targ->client->lastSentFlyingTime = level.time;
-            }
+        	//Remeber the last person to hurt the player
+        	if( targ==attacker || OnSameTeam (targ, attacker) ) {
+        	    targ->client->lastSentFlying = -1;
+        	} else {
+        	    targ->client->lastSentFlying = attacker->s.number;
+        	    targ->client->lastSentFlyingTime = level.time;
+        	}
 		}
 	}
-	
+
 	if (targ->sandboxObject && targ->health == -1) {
 		return;
 	}
@@ -1127,11 +949,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
-
 		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
 		// if the attacker was on the same team
-		if ( mod != MOD_JUICED && mod != MOD_CRUSH && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam (targ, attacker)  ) {
-			if ( ( !g_friendlyFire.integer && g_gametype.integer != GT_ELIMINATION && g_gametype.integer != GT_CTF_ELIMINATION ) || ( g_elimination_selfdamage.integer<2 &&	(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) ) ) {
+		if ( mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam (targ, attacker)  ) {
+			if ( !g_friendlyFire.integer ) {
 				return;
 			}
 		}
@@ -1148,14 +969,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->flags & FL_GODMODE ) {
 			return;
 		}
-
-    	if(targ->client && targ->client->spawnprotected) {
-    	   if(level.time>targ->client->respawnTime+g_spawnprotect.integer)
-    	       targ->client->spawnprotected = qfalse;
-    	   else
-    	       if( (mod > MOD_UNKNOWN && mod < MOD_WATER) || mod == MOD_TELEFRAG || mod>MOD_TRIGGER_HURT)
-    	       return;
-    	}
 	}
 
 	// battlesuit protects from all radius damage (but takes knockback)
@@ -1169,7 +982,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// add to the attacker's hit counter (if the target isn't a general entity like a prox mine)
-	if ( attacker->client && client && targ != attacker && targ->health > 0 && targ->s.eType != ET_MISSILE && targ->s.eType != ET_GENERAL) {
+	if ( attacker->client && targ != attacker && targ->health > 0
+			&& targ->s.eType != ET_MISSILE
+			&& targ->s.eType != ET_GENERAL) {
 		if ( OnSameTeam( targ, attacker ) ) {
 			attacker->client->ps.persistant[PERS_HITS]--;
 		} else {
@@ -1188,28 +1003,23 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         damage *= g_damageModifier.value;
     }
 
-	if ((g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS || g_elimination.integer)
-				&& g_elimination_selfdamage.integer<1 && ( targ == attacker ||  mod == MOD_FALLING )) {
-		damage = 0;
+	if ( damage < 1 ) {
+		damage = 1;
 	}
-
-	//So people can be telefragged!
-	if ((g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) && level.time < level.roundStartTime && ((mod == MOD_LAVA) || (mod == MOD_SLIME)) ) {
-		damage = 1000;
-	}
-
 	take = damage;
+	save = 0;
 
 	// save some from armor
 	asave = CheckArmor (targ, take, dflags);
 	take -= asave;
-	
+
+	// add to the damage inflicted on a player this frame
+	// the total will be turned into screen blends and view angle kicks
+	// at the end of the frame
 	if ( client ) {
 		if ( attacker ) {
 			client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
-                } else if(client->lastSentFlying) {
-                        client->ps.persistant[PERS_ATTACKER] = client->lastSentFlying;
-                } else {
+		} else {
 			client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
 		}
 		client->damage_armor += asave;
@@ -1230,25 +1040,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->client->lasthurt_mod = mod;
 	}
 
-	//If vampire is enabled, gain health but not from self or teammate, cannot steal more than targ has
-	if( g_vampire.value>0.0 && (targ != attacker) && take > 0 &&
-                !(OnSameTeam(targ, attacker)) && attacker->health > 0 && targ->health > 0 )
-	{
-		if(take<targ->health)
-			attacker->health += (int)(((float)take)*g_vampire.value);
-		else
-			attacker->health += (int)(((float)targ->health)*g_vampire.value);
-		if(attacker->health>g_vampireMaxHealth.integer)
-			attacker->health = g_vampireMaxHealth.integer;
-	}
-	
 	// do the damage
 	if (take) {
 		targ->health = targ->health - take;
 		if ( targ->client ) {
 			targ->client->ps.stats[STAT_HEALTH] = targ->health;
 		}
-
+			
 		if ( targ->health <= 0 ) {
 			if ( client )
 				targ->flags |= FL_NO_KNOCKBACK;
@@ -1264,11 +1062,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 }
-
-void G_ExitVehicle (int num){
-	Cmd_VehicleExit_f( G_FindEntityForClientNum(num));
-}
-
 
 /*
 ============
@@ -1293,7 +1086,7 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	if (tr.fraction == 1.0 || tr.entityNum == targ->s.number)
 		return qtrue;
 
-	// this should probably check in the plane of projection,
+	// this should probably check in the plane of projection, 
 	// rather than in world coordinate, and also include Z
 	VectorCopy (midpoint, dest);
 	dest[0] += 15.0;
@@ -1326,7 +1119,6 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 
 	return qfalse;
 }
-
 
 /*
 ============

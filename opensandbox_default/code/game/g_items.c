@@ -432,71 +432,24 @@ void RespawnItem( gentity_t *ent ) {
 Touch_Item
 ===============
 */
-void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
-	Touch_Item2(ent, other, trace, qfalse);
-}
-
-void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean allowBot ) {
+void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	int			respawn;
 	qboolean	predict;
-
-		if(ent->singlebot){
-		if(!G_NpcFactionProp(NP_PICKUP, ent)){
-		return;		// npc can't pickup
-		}
-		}
-		
-		if(other->client->sess.sessionTeam == TEAM_BLUE){
-		if(g_teamblue_pickupitems.integer == 0){
-		return;
-		}
-		}
-		
-		if(other->client->sess.sessionTeam == TEAM_RED){
-		if(g_teamred_pickupitems.integer == 0){
-		return;
-		}
-		}
-	
-	//instant gib
-	if (g_elimination_items.integer == 0){
-	if ((g_gametype.integer == GT_CTF_ELIMINATION || g_elimination.integer)
-                && ent->item->giType != IT_TEAM)
-		return;
-	}
-
-	//Cannot touch flag before round starts
-	if(g_gametype.integer == GT_CTF_ELIMINATION && level.roundNumber != level.roundNumberStarted)
-		return;
-
-	if (g_elimination_items.integer == 0)
-	if (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS)
-		return;		//nothing to pick up in elimination
 
 	if (!other->client)
 		return;
 	if (other->health < 1)
 		return;		// dead people can't pickup
 
-	/*if ( !allowBot && IsBot(other) )
-		return;		// bots don't pick up items in entityplus*/
+	if(ent->singlebot){
+		if(!G_NpcFactionProp(NP_PICKUP, ent))
+		return;		// npc can't pickup
+	}
 
 	// the same pickup rules are used for client side and server side
 	if ( !BG_CanItemBeGrabbed( g_gametype.integer, &ent->s, &other->client->ps ) ) {
 		return;
 	}
-
-	//In double DD we cannot "pick up" a flag we already got
-	if(g_gametype.integer == GT_DOUBLE_D) {
-		if( strcmp(ent->classname, "team_CTF_redflag") == 0 )
-			if(other->client->sess.sessionTeam == level.pointStatusA)
-				return;
-		if( strcmp(ent->classname, "team_CTF_blueflag") == 0 )
-			if(other->client->sess.sessionTeam == level.pointStatusB)
-				return;
-	}
-
-	predict = qtrue;
 
 	// call the item-specific pickup function
 	switch( ent->item->giType ) {
@@ -521,9 +474,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 		break;
 	case IT_TEAM:
 		respawn = Pickup_Team(ent, other);
-                //If touching a team item remove spawnprotection
-                if(other->client->spawnprotected)
-                    other->client->spawnprotected = qfalse;
 		break;
 	case IT_HOLDABLE:
 		respawn = Pickup_Holdable(ent, other);
@@ -537,35 +487,31 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 	}
 
 	// play the normal pickup sound
-	if (!(ent->spawnflags & 2)) {
-		if (predict) {
-			G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-		} else {
-			G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-		}
-
-		// powerup pickups are global broadcasts
-		if ( (ent->item->giType == IT_POWERUP && g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) || ent->item->giType == IT_TEAM) {	//disabled powerup sound for all cuz it annoying
-			// if we want the global sound to play
-			if (!ent->speed) {
-				gentity_t	*te;
-
-				te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-				te->s.eventParm = ent->s.modelindex;
-				te->r.svFlags |= SVF_BROADCAST;
-			} else {
-				gentity_t	*te;
-
-				te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-				te->s.eventParm = ent->s.modelindex;
-				// only send this temp entity to a single client
-				te->r.svFlags |= SVF_SINGLECLIENT;
-				te->r.singleClient = other->s.number;
-			}
-		}
+	if (predict) {
+		G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
+	} else {
+		G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
 	}
 
-	
+	// powerup pickups are global broadcasts
+	if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
+		// if we want the global sound to play
+		if (!ent->speed) {
+			gentity_t	*te;
+
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+			te->s.eventParm = ent->s.modelindex;
+			te->r.svFlags |= SVF_BROADCAST;
+		} else {
+			gentity_t	*te;
+
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+			te->s.eventParm = ent->s.modelindex;
+			// only send this temp entity to a single client
+			te->r.svFlags |= SVF_SINGLECLIENT;
+			te->r.singleClient = other->s.number;
+		}
+	}
 
 	// fire item targets
 	G_UseTargets (ent, other);
@@ -576,8 +522,6 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
 		ent->unlinkAfterEvent = qtrue;
-
-		G_FreeEntity( ent );	//completely free the entity. It no longer serves a purpose.
 		return;
 	}
 
@@ -599,17 +543,10 @@ void Touch_Item2 (gentity_t *ent, gentity_t *other, trace_t *trace, qboolean all
 		ent->freeAfterEvent = qtrue;
 	}
 
-	// picked up items still stay around, they just don't
-	// draw anything.  This allows respawnable items
-	// to be placed on movers.
 	ent->r.svFlags |= SVF_NOCLIENT;
 	ent->s.eFlags |= EF_NODRAW;
 	ent->r.contents = 0;
 
-	// ZOID
-	// A negative respawn times means to never respawn this item (but don't
-	// delete it).  This is used by items that are respawned by third party
-	// events such as ctf flags
 	if ( respawn <= 0 ) {
 		ent->nextthink = 0;
 		ent->think = 0;
@@ -633,9 +570,6 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	dropped = G_Spawn();
 
 	dropped->s.eType = ET_ITEM;
-	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
-		dropped->sandboxObject = OBJ_EDITOR;
-	}
 	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
 	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
 
@@ -653,13 +587,13 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	VectorCopy( velocity, dropped->s.pos.trDelta );
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_DOUBLE_D)			&& item->giType == IT_TEAM) { // Special case for CTF flags
+	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF)			&& item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
-		dropped->nextthink = level.time + 60*1000;
+		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem( dropped );
 	} else { // auto-remove after 30 seconds
 		dropped->think = G_FreeEntity;
-		dropped->nextthink = level.time + 120*1000;
+		dropped->nextthink = level.time + 30000;
 	}
 
 	dropped->flags = FL_DROPPED_ITEM;
@@ -691,28 +625,6 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item ) {
 	return LaunchItem( item, ent->s.pos.trBase, velocity );
 }
 
-// oatmeal begin
-
-gentity_t *Throw_Item( gentity_t *ent, gitem_t *item, float angle ) {
-	vec3_t	velocity;
-	vec3_t	angles;
-
-	VectorCopy( ent->s.apos.trBase, angles );
-	angles[YAW] += angle;
-	angles[PITCH] = 0;	// always forward
-
-	AngleVectors( angles, velocity, NULL, NULL );
-	VectorScale( velocity, 300, velocity );
-	velocity[2] += 300 + crandom() * 50;
-
-	ent->wait_to_pickup = level.time + 1000;
-	ent->client->ps.stats[STAT_NO_PICKUP] = 1;
-
-	return LaunchItem( item, ent->s.pos.trBase, velocity );
-}
-
-// oatmeal end
-
 /*
 ================
 Use_Item
@@ -740,9 +652,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
 	ent->s.eType = ET_ITEM;
-	if(g_gametype.integer == GT_MAPEDITOR || g_extendedsandbox.integer){
-		ent->sandboxObject = OBJ_EDITOR;
-	}
 	ent->s.modelindex = ent->item - bg_itemlist;		// store item number in modelindex
 	ent->s.modelindex2 = 0; // zero indicates this isn't a dropped item
 
@@ -777,14 +686,11 @@ void FinishSpawningItem( gentity_t *ent ) {
 		return;
 	}
 
-
-	// powerups don't spawn in for a while (but not in elimination)
-	if(g_gametype.integer != GT_ELIMINATION && g_gametype.integer != GT_CTF_ELIMINATION && g_gametype.integer != GT_LMS
-                && !g_elimination.integer)
+	// powerups don't spawn in for a while
 	if ( ent->item->giType == IT_POWERUP ) {
 		float	respawn;
 
-		respawn = 1;
+		respawn = 45 + crandom() * 15;
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
 		ent->nextthink = level.time + respawn * 1000;
@@ -795,7 +701,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 	trap_LinkEntity (ent);
 }
-
 
 qboolean	itemRegistered[MAX_ITEMS];
 
@@ -809,7 +714,7 @@ void G_CheckTeamItems( void ) {
 	// Set up team stuff
 	Team_InitGame();
 
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_DOUBLE_D) {
+	if( g_gametype.integer == GT_CTF ) {
 		gitem_t	*item;
 
 		// check for the two flags
@@ -893,21 +798,6 @@ void ClearRegisteredItems( void ) {
 		RegisterItem( BG_FindItem( "Red Cube" ) );
 		RegisterItem( BG_FindItem( "Blue Cube" ) );
 	}
-
-	if(g_gametype.integer == GT_DOUBLE_D ) {
-		RegisterItem( BG_FindItem( "Point A (Blue)" ) );
-		RegisterItem( BG_FindItem( "Point A (Red)" ) );
-		RegisterItem( BG_FindItem( "Point A (White)" ) );
-		RegisterItem( BG_FindItem( "Point B (Blue)" ) );
-		RegisterItem( BG_FindItem( "Point B (Red)" ) );
-		RegisterItem( BG_FindItem( "Point B (White)" ) );
-	}
-
-	if(g_gametype.integer == GT_DOMINATION ) {
-		RegisterItem( BG_FindItem( "Neutral domination point" ) );
-		RegisterItem( BG_FindItem( "Red domination point" ) );
-		RegisterItem( BG_FindItem( "Blue domination point" ) );
-	}
 }
 
 /*
@@ -977,16 +867,12 @@ be on an entity that hasn't spawned yet.
 ============
 */
 void G_SpawnItem (gentity_t *ent, gitem_t *item) {
-
 	G_SpawnFloat( "random", "0", &ent->random );
 	G_SpawnFloat( "wait", "0", &ent->wait );
-	
-	ent->s.generic1 = ent->spawnflags;	//we want to know spawnflags for muting predicted pickup sounds client-side.
-
-	if ( G_ItemDisabled(item) )
-		return;
 
 	RegisterItem( item );
+	if ( G_ItemDisabled(item) )
+		return;
 
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item
@@ -995,22 +881,7 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	ent->think = FinishSpawningItem;
 
 	ent->physicsBounce = 0.50;		// items are bouncy
-	if (g_elimination_items.integer == 0) {
-	if (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_LMS ||
-			( item->giType != IT_TEAM && (g_elimination.integer || g_gametype.integer==GT_CTF_ELIMINATION) ) ) {
-		ent->s.eFlags |= EF_NODRAW; //Invisible in elimination
-                ent->r.svFlags |= SVF_NOCLIENT;  //Don't broadcast
-        }
-	}
 
-	if(g_gametype.integer == GT_DOUBLE_D && (strcmp(ent->classname, "team_CTF_redflag")==0 || strcmp(ent->classname, "team_CTF_blueflag")==0 || strcmp(ent->classname, "team_CTF_neutralflag") == 0 || item->giType == IT_PERSISTANT_POWERUP  ))
-		ent->s.eFlags |= EF_NODRAW; //Don't draw the flag models/persistant powerups
-
-	if( g_gametype.integer != GT_1FCTF && strcmp(ent->classname, "team_CTF_neutralflag") == 0)
-		ent->s.eFlags |= EF_NODRAW; // Don't draw the flag in CTF_elimination
-
-    if(strcmp(ent->classname, "domination_point") == 0)
-        ent->s.eFlags |= EF_NODRAW; // Don't draw domination_point. It is just a pointer to where the Domination points should be placed
 	if ( item->giType == IT_POWERUP ) {
 		G_SoundIndex( "sound/items/poweruprespawn.wav" );
 		G_SpawnFloat( "noglobalsound", "0", &ent->speed);
@@ -1122,4 +993,3 @@ void G_RunItem( gentity_t *ent ) {
 
 	G_BounceItem( ent, &tr );
 }
-

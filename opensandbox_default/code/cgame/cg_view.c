@@ -144,7 +144,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
 	// if dead, look at killer
-	if ( (cg.predictedPlayerState.stats[STAT_HEALTH] <= 0) && (cg.snap->ps.pm_type != PM_SPECTATOR) && (cgs.gametype !=GT_ELIMINATION && cgs.gametype !=GT_CTF_ELIMINATION && cgs.gametype !=GT_LMS) ) {
+	if ( (cg.predictedPlayerState.stats[STAT_HEALTH] <= 0) && (cg.snap->ps.pm_type != PM_SPECTATOR) ) {
 		focusAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
 		cg.refdefViewAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
 	}

@@ -557,23 +557,19 @@ void CopyToBodyQue( gentity_t *ent ) {
 
 	// if client is in a nodrop area, don't leave the body
 	contents = trap_PointContents( ent->s.origin, -1 );
-	if ( (contents & CONTENTS_NODROP) && !(ent->s.eFlags & EF_KAMIKAZE) ) { //the check for kamikaze is a workaround for ctf4ish
-            return;
+	if ( contents & CONTENTS_NODROP ) {
+		return;
 	}
 
 	// grab a body que and cycle to the next one
 	body = level.bodyQue[ level.bodyQueIndex ];
 	level.bodyQueIndex = (level.bodyQueIndex + 1) % BODY_QUEUE_SIZE;
 
-        //Check if the next body has the kamikaze, in that case skip it.
-        for(i=0;(level.bodyQue[ level.bodyQueIndex ]->s.eFlags & EF_KAMIKAZE) && (i<10);i++) {
-            level.bodyQueIndex = (level.bodyQueIndex + 1) % BODY_QUEUE_SIZE;
-        }
+	trap_UnlinkEntity (body);
 
 	body->s = ent->s;
 	body->s.eFlags = EF_DEAD;		// clear EF_TALK, etc
 	if ( ent->s.eFlags & EF_KAMIKAZE ) {
-                ent->s.eFlags &= ~EF_KAMIKAZE;
 		body->s.eFlags |= EF_KAMIKAZE;
 
 		// check if there is a kamikaze timer around for this owner
@@ -671,70 +667,23 @@ void SetClientViewAngle( gentity_t *ent, vec3_t angle ) {
 
 /*
 ================
-respawn
+ClientRespawn
 ================
 */
 void ClientRespawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-if(ent->singlebot >= 1){
-	//kick fragged bots from game
-	DropClientSilently( ent->client->ps.clientNum );
-	return;
-}
-
-	if((g_gametype.integer!=GT_ELIMINATION && g_gametype.integer!=GT_CTF_ELIMINATION && g_gametype.integer !=GT_LMS) && !ent->client->isEliminated)
-	{
-		ent->client->isEliminated = qtrue; //must not be true in warmup
-		//Tried moving CopyToBodyQue
-	} else {
-                //Must always be false in other gametypes
-                ent->client->isEliminated = qfalse;
-        }
-        CopyToBodyQue (ent); //Unlinks ent
-
-	if(g_gametype.integer==GT_LMS) {
-		if( ent->client->isEliminated!=qtrue) {
-			ent->client->isEliminated = qtrue;
-			ent->client->sess.spectatorState = PM_SPECTATOR;
-            ClientSpawn(ent);
-		}
+	if(ent->singlebot >= 1){
+		DropClientSilently( ent->client->ps.clientNum );
 		return;
 	}
 
-	if((g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION || g_gametype.integer==GT_LMS)
-			&& ent->client->ps.pm_type == PM_SPECTATOR && ent->client->ps.stats[STAT_HEALTH] > 0)
-		return;
-		ClientSpawn(ent);
-
-		// add a teleportation effect
-		if(g_gametype.integer!=GT_ELIMINATION && g_gametype.integer!=GT_CTF_ELIMINATION && g_gametype.integer!=GT_LMS)
-		{
-			tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-			tent->s.clientNum = ent->s.clientNum;
-		}
-}
-
-/*
-================
-respawnRound
-================
-*/
-void respawnRound( gentity_t *ent ) {
-	gentity_t	*tent;
-        if(ent->client->hook)
-                Weapon_HookFree(ent->client->hook);
-
-        trap_UnlinkEntity (ent);
-
+	CopyToBodyQue (ent);
 	ClientSpawn(ent);
 
-        // add a teleportation effect
-        if(g_gametype.integer!=GT_ELIMINATION && g_gametype.integer!=GT_CTF_ELIMINATION && g_gametype.integer!=GT_LMS)
-        {
-                tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-                tent->s.clientNum = ent->s.clientNum;
-        }
+	// add a teleportation effect
+	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
+	tent->s.clientNum = ent->s.clientNum;
 }
 
 /*
@@ -770,234 +719,6 @@ team_t TeamCount( int ignoreClientNum, int team ) {
 
 /*
 ================
-TeamLivingCount
-
-Returns number of living players on a team
-================
-*/
-team_t TeamLivingCount( int ignoreClientNum, int team ) {
-	int		i;
-	int		count = 0;
-	qboolean	LMS = (g_gametype.integer==GT_LMS);
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( i == ignoreClientNum ) {
-			continue;
-		}
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-
-                if ( level.clients[i].pers.connected == CON_CONNECTING) {
-                        continue;
-                }
-		//crash if g_gametype.integer is used here, why?
-		if ( level.clients[i].sess.sessionTeam == team && (level.clients[i].ps.stats[STAT_HEALTH]>0 || LMS) && !(level.clients[i].isEliminated)) {
-			count++;
-		}
-	}
-
-	return count;
-}
-
-/*
-================
-TeamHealthCount
-
-Count total number of healthpoints on teh teams used for draws in Elimination
-================
-*/
-
-team_t TeamHealthCount(int ignoreClientNum, int team ) {
-	int 		i;
-	int 		count = 0;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( i == ignoreClientNum ) {
-			continue;
-		}
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-
-                if ( level.clients[i].pers.connected == CON_CONNECTING) {
-                        continue;
-                }
-
-		//only count clients with positive health
-		if ( level.clients[i].sess.sessionTeam == team && (level.clients[i].ps.stats[STAT_HEALTH]>0)&& !(level.clients[i].isEliminated)) {
-			count+=level.clients[i].ps.stats[STAT_HEALTH];
-		}
-	}
-
-	return count;
-}
-
-
-/*
-================
-RespawnAll
-
-Forces all clients to respawn.
-================
-*/
-
-void RespawnAll(void)
-{
-	int i;
-	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++)
-	{
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-
-                if ( level.clients[i].pers.connected == CON_CONNECTING) {
-                        continue;
-                }
-
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		client = g_entities + i;
-		client->client->ps.pm_type = PM_NORMAL;
-		respawnRound(client);
-	}
-	return;
-}
-
-/*
-================
-RespawnDead
-
-Forces all *DEAD* clients to respawn.
-================
-*/
-
-void RespawnDead(void)
-{
-	int i;
-	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++)
-	{
-
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-                if ( level.clients[i].pers.connected == CON_CONNECTING) {
-                        continue;
-                }
-                client = g_entities + i;
-		if ( level.clients[i].isEliminated == qfalse ){
-			continue;
-		}
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-
-		respawnRound(client);
-	}
-	return;
-}
-
-/*
-================
-DisableWeapons
-
-disables all weapons
-================
-*/
-
-void DisableWeapons(void)
-{
-	int i;
-	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++)
-	{
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-                if ( level.clients[i].pers.connected == CON_CONNECTING) {
-                        continue;
-                }
-
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		client = g_entities + i;
-		client->client->ps.pm_flags |= PMF_ELIMWARMUP;
-	}
-        ProximityMine_RemoveAll(); //Remove all the prox mines
-	return;
-}
-
-/*
-================
-EnableWeapons
-
-enables all weapons
-================
-*/
-
-void EnableWeapons(void)
-{
-	int i;
-	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++)
-	{
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-
-		/*if ( level.clients[i].isEliminated == qtrue ){
-			continue;
-		}*/
-
-		client = g_entities + i;
-		client->client->ps.pm_flags &= ~PMF_ELIMWARMUP;
-	}
-	return;
-}
-
-/*
-================
-LMSpoint
-
-Gives a point to the lucky survivor
-================
-*/
-
-void LMSpoint(void) {
-	int i;
-	gentity_t	*client;
-	for(i=0;i<level.maxclients;i++) {
-		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-
-		if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-
-		if ( level.clients[i].isEliminated ){
-			continue;
-		}
-
-		client = g_entities + i;
-
-		client->client->ps.persistant[PERS_SCORE] += 1;
-	}
-
-	CalculateRanks();
-	return;
-}
-
-/*
-================
 TeamLeader
 
 Returns the client number of the team leader
@@ -1019,7 +740,6 @@ int TeamLeader( int team ) {
 	return -1;
 }
 
-
 /*
 ================
 PickTeam
@@ -1032,21 +752,17 @@ team_t PickTeam( int ignoreClientNum ) {
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
 
-	if ( ( counts[TEAM_BLUE] > counts[TEAM_RED] ) ) {
+	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
 		return TEAM_RED;
 	}
-	if ( ( counts[TEAM_RED] > counts[TEAM_BLUE] ) ) {
+	if ( counts[TEAM_RED] > counts[TEAM_BLUE] ) {
 		return TEAM_BLUE;
 	}
 	// equal team count, so join the team with the lowest score
-	if ( ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] ) ) {
+	if ( level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED] ) {
 		return TEAM_RED;
 	}
-	if ( ( level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE] ) ) {
-	    return TEAM_BLUE;
-    }
-
-    return TEAM_BLUE;
+	return TEAM_BLUE;
 }
 
 /*
@@ -1054,69 +770,81 @@ team_t PickTeam( int ignoreClientNum ) {
 ClientCheckName
 ============
 */
-static void ClientCleanName(const char *in, char *out, int outSize, int clientNum)
-{
-    int outpos = 0, colorlessLen = 0, spaces = 0, notblack=0;
-    qboolean black = qfalse;
+static void ClientCleanName( const char *in, char *out, int outSize ) {
+	int		len, colorlessLen;
+	char	ch;
+	char	*p;
+	int		spaces;
 
-    // discard leading spaces
-    for(; *in == ' '; in++);
+	//save room for trailing null byte
+	outSize--;
 
-    for(; *in && outpos < outSize - 1; in++)
-    {
-        out[outpos] = *in;
+	len = 0;
+	colorlessLen = 0;
+	p = out;
+	*p = 0;
+	spaces = 0;
 
-        if(*in == ' ')
-        {
-            // don't allow too many consecutive spaces
-            if(spaces > 2)
-                continue;
+	while( 1 ) {
+		ch = *in++;
+		if( !ch ) {
+			break;
+		}
 
-            spaces++;
-        }
-        else if(outpos > 0 && out[outpos - 1] == Q_COLOR_ESCAPE)
-        {
-            if(Q_IsColorString(&out[outpos - 1]))
-            {
-                colorlessLen--;
+		// don't allow leading spaces
+		if( !*p && ch == ' ' ) {
+			continue;
+		}
 
-                if(ColorIndex(*in) == 0)
-                {
-                    // Disallow color black in names to prevent players
-                    // from getting advantage playing in front of black backgrounds
-                    //outpos--;
-                    //continue;
-                    black = qtrue;
-                }
-                else
-                    black = qfalse;
-            }
-            else
-            {
-                spaces = 0;
-                colorlessLen++;
-            }
-        }
-        else
-        {
-            spaces = 0;
-            colorlessLen++;
-            if(!black && (Q_isalpha(*in) || (*in>='0' && *in<='9') ) )
-                notblack++;
-        }
+		// check colors
+		if( ch == Q_COLOR_ESCAPE ) {
+			// solo trailing carat is not a color prefix
+			if( !*in ) {
+				break;
+			}
 
-        outpos++;
-    }
+			// don't allow black in a name, period
+			if( ColorIndex(*in) == 0 ) {
+				in++;
+				continue;
+			}
 
-    out[outpos] = '\0';
+			// make sure room in dest for both chars
+			if( len > outSize - 2 ) {
+				break;
+			}
 
-    //There was none not-black alphanum chars. Remove all colors
-    if(notblack<1)
-        Q_CleanStr(out);
+			*out++ = ch;
+			*out++ = *in++;
+			len += 2;
+			continue;
+		}
 
-    // don't allow empty names
-    if( *out == '\0' || colorlessLen == 0)
-        Q_strncpyz(out, va("Nameless%i",clientNum), outSize );
+		// don't allow too many consecutive spaces
+		if( ch == ' ' ) {
+			spaces++;
+			if( spaces > 3 ) {
+				continue;
+			}
+		}
+		else {
+			spaces = 0;
+		}
+
+		if( len > outSize - 1 ) {
+			break;
+		}
+
+		*out++ = ch;
+		colorlessLen++;
+		len++;
+	}
+	*out = 0;
+
+	// don't allow empty names
+	if( *p == 0 || colorlessLen == 0 ) {
+		Q_strncpyz( p, "noname", outSize );
+	}
 }
 
 /*
@@ -1169,7 +897,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	// set name
 	Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey (userinfo, "name");
-	ClientCleanName( s, client->pers.netname, sizeof(client->pers.netname), clientNum );
+	ClientCleanName( s, client->pers.netname, sizeof(client->pers.netname) );
 
 	ent->tool_id = atoi( Info_ValueForKey( userinfo, "toolgun_tool" ) );
 	ent->tool_entity = NULL;
@@ -1182,7 +910,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 
 	// set model
-	if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0) {
+	if( g_gametype.integer >= GT_TEAM ) {
 		Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
 		Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
 		Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "team_legsmodel"), sizeof( legsModel ) );
@@ -1193,7 +921,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	
 	if ( ent->r.svFlags & SVF_BOT ) {
-		if( g_gametype.integer >= GT_TEAM && g_ffa_gt==0) {
+		if( g_gametype.integer >= GT_TEAM ) {
 			Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "team_model"), sizeof( legsModel ) );
 		} else {
 			Q_strncpyz( legsModel, Info_ValueForKey (userinfo, "model"), sizeof( legsModel ) );
@@ -1219,7 +947,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(physB, Info_ValueForKey( userinfo, "physB" ));
 
 	// set team
-	if (g_gametype.integer >= GT_TEAM && g_ffa_gt==0 && g_entities[clientNum].r.svFlags & SVF_BOT) {
+	if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
 		s = Info_ValueForKey( userinfo, "team" );
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
 			team = TEAM_RED;
@@ -1245,14 +973,11 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(swep_id, va("%i", ent->swep_id));
 
 	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\w\\%i\\l\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum,
-			client->sess.wins, client->sess.losses, ent->singlebot,
-			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
+			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, ent->singlebot, Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d\\f\\%i",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum,
-			client->sess.wins, client->sess.losses, teamTask, teamLeader, ent->flashon);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\tt\\%d\\tl\\%d\\f\\%i",
+			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum, teamTask, teamLeader, ent->flashon);
 	}
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
@@ -1288,11 +1013,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		return "Server is full, increase g_maxClients.";
 	}
 
-    //KK-OAX I moved these up so userinfo could be assigned/used.
-	ent = &g_entities[ clientNum ];
-	client = &level.clients[ clientNum ];
-	ent->client = client;
-	memset( client, 0, sizeof(*client) );
+    ent = &g_entities[ clientNum ];
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -1304,6 +1025,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			return "Invalid password";
 		}
 	}
+
+	// they can connect
+	ent->client = level.clients + clientNum;
+	client = ent->client;
+
+	memset( client, 0, sizeof(*client) );
 
 	client->pers.connected = CON_CONNECTING;
 
@@ -1322,7 +1049,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 		//link the bot to the target_botspawn entity. For this we abuse the parent property.
 		if(ent){
-		LinkBotSpawnEntity( ent, Info_ValueForKey (userinfo, "parentid") );
+			LinkBotSpawn( ent, Info_ValueForKey (userinfo, "parentid") );
 		}
 	}
 
@@ -1356,19 +1083,15 @@ and on transition between teams, but doesn't happen on respawns
 void ClientBegin( int clientNum ) {
 	gentity_t	*ent;
 	gclient_t	*client;
-	gentity_t       *tent;
+	gentity_t	*tent;
 	int			flags;
-    char		userinfo[MAX_INFO_STRING];
-
-    trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
 	ent = g_entities + clientNum;
 
 	client = level.clients + clientNum;
 
-	if ( ent->r.linked ) {
+	if ( ent->r.linked )
 		trap_UnlinkEntity( ent );
-	}
 	G_InitGentity( ent );
 	ent->touch = 0;
 	ent->pain = 0;
@@ -1378,51 +1101,23 @@ void ClientBegin( int clientNum ) {
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
 
-	//Elimination:
-	client->pers.roundReached = 0; //We will spawn in next round
-	if(g_gametype.integer == GT_LMS) {
-		client->isEliminated = qtrue; //So player does not give a point in gamemode 2 and 3
-	}
-
-	// save eflags around this, because changing teams will
-	// cause this to happen with a valid entity, and we
-	// want to make sure the teleport bit is set right
-	// so the viewpoint doesn't interpolate through the
-	// world to the new position
 	flags = client->ps.eFlags;
 	memset( &client->ps, 0, sizeof( client->ps ) );
-
-    if( client->sess.sessionTeam != TEAM_SPECTATOR )
-        PlayerStore_restore(Info_ValueForKey(userinfo,"cl_guid"),&(client->ps));
-
 	client->ps.eFlags = flags;
 
 	// locate ent at a spawn point
 	ClientSpawn( ent );
 
-	if( ( client->sess.sessionTeam != TEAM_SPECTATOR ) &&
-		( ( !( client->isEliminated ) /*&&
-		( ( !client->ps.pm_type ) == PM_SPECTATOR ) */ ) || //Sago: Yes, it made no sense
-		( ( g_gametype.integer != GT_ELIMINATION || level.intermissiontime) &&
-		( g_gametype.integer != GT_CTF_ELIMINATION || level.intermissiontime) &&
-		( g_gametype.integer != GT_LMS || level.intermissiontime ) ) ) ) {
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// send event
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 		tent->s.clientNum = ent->s.clientNum;
 
-		if ( g_gametype.integer != GT_TOURNAMENT && !ent->singlebot ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " entered the game\n\"", client->pers.netname) );
-		}
+		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " entered the game\n\"", client->pers.netname) );
 	}
 
-	//Send domination point names:
-	if(g_gametype.integer == GT_DOMINATION) {
-		DominationPointNamesMessage(ent);
-		DominationPointStatusMessage(ent);
-	}
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-	G_SendGameCvars( ent );
 }
 
 void ClientSpawn(gentity_t *ent) {
@@ -1435,548 +1130,29 @@ void ClientSpawn(gentity_t *ent) {
 	int		persistant[MAX_PERSISTANT];
 	gentity_t	*spawnPoint;
 	int		flags;
-	int		health;
 	int		savedPing;
-	int		accuracy_hits, accuracy_shots,vote;
+	int		accuracy_hits, accuracy_shots;
 	int		eventSequence;
 	char	userinfo[MAX_INFO_STRING];
 
 	index = ent - g_entities;
 	client = ent->client;
 
-	if ( !IsBot( ent ) )
-		G_FadeIn( 1.0, ent-g_entities );
-
-	//In Elimination the player should not spawn if he have already spawned in the round (but not for spectators)
-	// N_G: You've obviously wanted something ELSE
-	//Sago: Yes, the !level.intermissiontime is currently redundant but it might still be the bast place to make the test, CheckElimination in g_main makes sure the next if will fail and the rest of the things this block does might not affect if in Intermission (I'll just test that)
-	if(
-	(
-		(
-			g_gametype.integer == GT_ELIMINATION ||
-			g_gametype.integer == GT_CTF_ELIMINATION || (g_gametype.integer == GT_LMS && client->isEliminated)) &&
-			(!level.intermissiontime || level.warmupTime != 0)
-		) &&
-		( client->sess.sessionTeam != TEAM_SPECTATOR )
-	)
-	{
-		// N_G: Another condition that makes no sense to me, see for
-		// yourself if you really meant this
-		// Sago: I beleive the TeamCount is to make sure people can join even if the game can't start
-		if( ( level.roundNumber == level.roundNumberStarted ) ||
-			( (level.time < level.roundStartTime - g_elimination_activewarmup.integer*1000 ) &&
-			TeamCount( -1, TEAM_BLUE ) &&
-			TeamCount( -1, TEAM_RED )  ) )
-		{
-		if	(client->sess.sessionTeam == TEAM_BLUE) {
-			if(g_elimination_blue_respawn.integer == 0){
-				client->sess.spectatorState = SPECTATOR_FREE;
-				client->isEliminated = qtrue;
-			}
-		}
-		if	(client->sess.sessionTeam == TEAM_RED) {
-			if(g_elimination_red_respawn.integer == 0){
-				client->sess.spectatorState = SPECTATOR_FREE;
-				client->isEliminated = qtrue;
-			}
-		}
-
-
-			if	(client->sess.sessionTeam == TEAM_BLUE) {
-			if(g_elimination_blue_respawn.integer == 1){
-				// find a spawn point
-	// do it before setting health back up, so farthest
-	// ranging doesn't count this client
-	if ( ent->botspawn ) {
-		spawnPoint = ent->botspawn;
-		VectorCopy( spawnPoint->s.origin, spawn_origin );
-		VectorCopy(  spawnPoint->s.angles, spawn_angles );
-	} else {
-	if ((client->sess.sessionTeam == TEAM_SPECTATOR)
-			|| ( (client->ps.pm_type == PM_SPECTATOR || client->isEliminated )  && (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) ) ) {
-		spawnPoint = SelectSpectatorSpawnPoint ( spawn_origin, spawn_angles);
-	} else if (g_gametype.integer == GT_DOUBLE_D) {
-		//Double Domination uses special spawn points:
-		spawnPoint = SelectDoubleDominationSpawnPoint (client->sess.sessionTeam, spawn_origin, spawn_angles);
-	} else if (g_gametype.integer >= GT_CTF && g_ffa_gt==0 && g_gametype.integer!= GT_DOMINATION) {
-		// all base oriented team games use the CTF spawn points
-		spawnPoint = SelectCTFSpawnPoint (
-						client->sess.sessionTeam,
-						client->pers.teamState.state,
-						spawn_origin, spawn_angles);
-	} else {
-		do {
-			// don't spawn near existing origin if possible
-			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
-
-			// Tim needs to prevent bots from spawning at the initial point
-			// on q3dm0...
-			if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-                            //Sago: The game has a tendency to select the furtest spawn point
-                            //This is a problem if the fursest spawnpoint keeps being NO_BOTS and it does!
-                            //This is a hot fix that seeks a spawn point faraway from the the currently found one
-                            vec3_t old_origin;
-                            VectorCopy(spawn_origin,old_origin);
-                            spawnPoint = SelectSpawnPoint (old_origin, spawn_origin, spawn_angles);
-                            if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-                            }
-			}
-			// just to be symetric, we have a nohumans option...
-			if ( ( spawnPoint->flags & FL_NO_HUMANS ) && !( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-			}
-
-			break;
-
-		} while ( 1 );
-	}
-	}
-	client->pers.teamState.state = TEAM_ACTIVE;
-
-	// always clear the kamikaze flag
-	ent->s.eFlags &= ~EF_KAMIKAZE;
-
-	// toggle the teleport bit so the client knows to not lerp
-	// and never clear the voted flag
-	flags = ent->client->ps.eFlags & (EF_TELEPORT_BIT | EF_VOTED | EF_TEAMVOTED);
-	flags ^= EF_TELEPORT_BIT;
-
-//unlagged - backward reconciliation #3
-	// we don't want players being backward-reconciled to the place they died
-	G_ResetHistory( ent );
-	// and this is as good a time as any to clear the saved state
-	ent->client->saved.leveltime = 0;
-//unlagged - backward reconciliation #3
-
-	// clear everything but the persistant data
-
-	saved = client->pers;
-	savedSess = client->sess;
-	savedPing = client->ps.ping;
-	vote = client->vote;
-	accuracy_hits = client->accuracy_hits;
-	accuracy_shots = client->accuracy_shots;
-
-    memcpy(persistant,client->ps.persistant,MAX_PERSISTANT*sizeof(int));
-	eventSequence = client->ps.eventSequence;
-
-	Com_Memset (client, 0, sizeof(*client));
-
-	client->pers = saved;
-	client->sess = savedSess;
-	client->ps.ping = savedPing;
-	client->vote = vote;
-	client->accuracy_hits = accuracy_hits;
-	client->accuracy_shots = accuracy_shots;
-
-	client->lastkilled_client = -1;
-
-	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
-		client->ps.persistant[i] = persistant[i];
-	}
-	client->ps.eventSequence = eventSequence;
-	// increment the spawncount so the client will detect the respawn
-	client->ps.persistant[PERS_SPAWN_COUNT]++;
-	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
-
-	client->airOutTime = level.time + 12000;
-
-	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
-	// set max health
-	health = 100;
-	client->pers.maxHealth = health;
-	if (!(ent->r.svFlags & SVF_BOT)){
-		if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-			client->pers.maxHealth = 100;
-		}
-	}
-
-	// clear entity values
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
-	client->ps.eFlags = flags;
-
-	ent->s.groundEntityNum = ENTITYNUM_NONE;
-	ent->client = &level.clients[index];
-	ent->takedamage = qtrue;
-	ent->inuse = qtrue;
-	ent->classname = "player";
-	ent->r.contents = CONTENTS_BODY;
-	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
-	ent->waterlevel = 0;
-	ent->watertype = 0;
-	ent->flags = 0;
-
-    //Sago: No one has hit the client yet!
-    client->lastSentFlying = -1;
-	VectorCopy (playerMins, ent->r.mins);
-	VectorCopy (playerMaxs, ent->r.maxs);
-
-	client->ps.clientNum = index;
-
-	G_SetOrigin( ent, spawn_origin );
-	VectorCopy( spawn_origin, client->ps.origin );
-
-	// the respawned flag will be cleared after the attack and jump keys come up
-	client->ps.pm_flags |= PMF_RESPAWNED;
-	if(g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION || g_gametype.integer==GT_LMS)
-		client->ps.pm_flags &= ~PMF_ELIMWARMUP;
-
-	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
-	SetClientViewAngle( ent, spawn_angles );
-
-	if ( !ent->botspawn ) { G_KillBox( ent );}
-	trap_LinkEntity (ent);
-
-	client->ps.weaponstate = WEAPON_READY;
-	for(i = 1 ; i < WEAPONS_NUM; i++){
-		ent->swep_list[i] = 0;
-		ent->swep_ammo[i] = 0;
-	}
-	SetUnlimitedWeapons(ent);
-	SetSandboxWeapons(ent);
-	if ( ent->botspawn ) {
-		SetupCustomBot( ent );
-	} else {
-		SetCustomWeapons( ent );
-	}
-	ent->client->isEliminated = qfalse;
-
-	// don't allow full run speed for a bit
-	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	client->ps.pm_time = 100;
-
-	client->respawnTime = level.time;
-	client->latched_buttons = 0;
-
-	// set default animations
-	client->ps.torsoAnim = TORSO_STAND;
-	client->ps.legsAnim = LEGS_IDLE;
-
-	if ( level.intermissiontime ) {
-		MoveClientToIntermission( ent );
-	} else {
-		// fire the targets of the spawn point
-		G_UseTargets( spawnPoint, ent );
-	}
-
-	// run a client frame to drop exactly to the floor,
-	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
-	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink( ent-g_entities );
-
-	// positively link the client, even if the command times are weird
-	if ( (ent->client->sess.sessionTeam != TEAM_SPECTATOR) || ( (!client->isEliminated || client->ps.pm_type != PM_SPECTATOR)&&
-		(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) ) ) {
-		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
-		trap_LinkEntity( ent );
-	}
-
-	// run the presend to set anything else
-	ClientEndFrame( ent );
-
-	// clear entity state values
-	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-
-    if(g_spawnprotect.integer)
-        client->spawnprotected = qtrue;
-
-    RespawnTimeMessage(ent,0);
-
-		client->ps.weaponstate = WEAPON_READY;
-		ent->client->isEliminated = qfalse;
-		return;
-			}
-			}
-			if	(client->sess.sessionTeam == TEAM_RED) {
-			if(g_elimination_red_respawn.integer == 1){
-				// find a spawn point
-	// do it before setting health back up, so farthest
-	// ranging doesn't count this client
-	if ( ent->botspawn ) {
-		spawnPoint = ent->botspawn;
-		VectorCopy( spawnPoint->s.origin, spawn_origin );
-		VectorCopy(  spawnPoint->s.angles, spawn_angles );
-	} else {
-	if ((client->sess.sessionTeam == TEAM_SPECTATOR)
-			|| ( (client->ps.pm_type == PM_SPECTATOR || client->isEliminated )  && (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) ) ) {
-		spawnPoint = SelectSpectatorSpawnPoint ( spawn_origin, spawn_angles);
-	} else if (g_gametype.integer == GT_DOUBLE_D) {
-		//Double Domination uses special spawn points:
-		spawnPoint = SelectDoubleDominationSpawnPoint (client->sess.sessionTeam, spawn_origin, spawn_angles);
-	} else if (g_gametype.integer >= GT_CTF && g_ffa_gt==0 && g_gametype.integer!= GT_DOMINATION) {
-		// all base oriented team games use the CTF spawn points
-		spawnPoint = SelectCTFSpawnPoint (
-						client->sess.sessionTeam,
-						client->pers.teamState.state,
-						spawn_origin, spawn_angles);
-	} else {
-		do {
-			// don't spawn near existing origin if possible
-			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
-
-			// Tim needs to prevent bots from spawning at the initial point
-			// on q3dm0...
-			if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-                            //Sago: The game has a tendency to select the furtest spawn point
-                            //This is a problem if the fursest spawnpoint keeps being NO_BOTS and it does!
-                            //This is a hot fix that seeks a spawn point faraway from the the currently found one
-                            vec3_t old_origin;
-                            VectorCopy(spawn_origin,old_origin);
-                            spawnPoint = SelectSpawnPoint (old_origin, spawn_origin, spawn_angles);
-                            if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-                            }
-			}
-			// just to be symetric, we have a nohumans option...
-			if ( ( spawnPoint->flags & FL_NO_HUMANS ) && !( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-			}
-
-			break;
-
-		} while ( 1 );
-	}
-	}
-	client->pers.teamState.state = TEAM_ACTIVE;
-
-	// always clear the kamikaze flag
-	ent->s.eFlags &= ~EF_KAMIKAZE;
-
-	// toggle the teleport bit so the client knows to not lerp
-	// and never clear the voted flag
-	flags = ent->client->ps.eFlags & (EF_TELEPORT_BIT | EF_VOTED | EF_TEAMVOTED);
-	flags ^= EF_TELEPORT_BIT;
-
-//unlagged - backward reconciliation #3
-	// we don't want players being backward-reconciled to the place they died
-	G_ResetHistory( ent );
-	// and this is as good a time as any to clear the saved state
-	ent->client->saved.leveltime = 0;
-//unlagged - backward reconciliation #3
-
-	// clear everything but the persistant data
-
-	saved = client->pers;
-	savedSess = client->sess;
-	savedPing = client->ps.ping;
-	vote = client->vote;
-//	savedAreaBits = client->areabits;
-	accuracy_hits = client->accuracy_hits;
-	accuracy_shots = client->accuracy_shots;
-
-    memcpy(persistant,client->ps.persistant,MAX_PERSISTANT*sizeof(int));
-	eventSequence = client->ps.eventSequence;
-
-	Com_Memset (client, 0, sizeof(*client));
-
-	client->pers = saved;
-	client->sess = savedSess;
-	client->ps.ping = savedPing;
-	client->vote = vote;
-//	client->areabits = savedAreaBits;
-	client->accuracy_hits = accuracy_hits;
-	client->accuracy_shots = accuracy_shots;
-
-	client->lastkilled_client = -1;
-
-	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
-		client->ps.persistant[i] = persistant[i];
-	}
-	client->ps.eventSequence = eventSequence;
-	// increment the spawncount so the client will detect the respawn
-	client->ps.persistant[PERS_SPAWN_COUNT]++;
-	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
-
-	client->airOutTime = level.time + 12000;
-
-	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
-	// set max health
-	health = 100;
-	client->pers.maxHealth = health;
-	if (!(ent->r.svFlags & SVF_BOT)){
-		if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-			client->pers.maxHealth = 100;
-		}
-	}
-
-	// clear entity values
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
-	client->ps.eFlags = flags;
-
-	ent->s.groundEntityNum = ENTITYNUM_NONE;
-	ent->client = &level.clients[index];
-	ent->takedamage = qtrue;
-	ent->inuse = qtrue;
-	ent->classname = "player";
-	ent->r.contents = CONTENTS_BODY;
-	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
-	ent->waterlevel = 0;
-	ent->watertype = 0;
-	ent->flags = 0;
-
-    //Sago: No one has hit the client yet!
-    client->lastSentFlying = -1;
-
-	VectorCopy (playerMins, ent->r.mins);
-	VectorCopy (playerMaxs, ent->r.maxs);
-
-	client->ps.clientNum = index;
-
-	G_SetOrigin( ent, spawn_origin );
-	VectorCopy( spawn_origin, client->ps.origin );
-
-	// the respawned flag will be cleared after the attack and jump keys come up
-	client->ps.pm_flags |= PMF_RESPAWNED;
-	if(g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION || g_gametype.integer==GT_LMS)
-		client->ps.pm_flags &= ~PMF_ELIMWARMUP;
-
-	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
-	SetClientViewAngle( ent, spawn_angles );
-
-	if ( !ent->botspawn ) { G_KillBox( ent );}
-	trap_LinkEntity (ent);
-
-	client->ps.weaponstate = WEAPON_READY;
-	for(i = 1 ; i < WEAPONS_NUM; i++){
-		ent->swep_list[i] = 0;
-		ent->swep_ammo[i] = 0;
-	}
-	SetUnlimitedWeapons(ent);
-	SetSandboxWeapons(ent);
-	if ( ent->botspawn ) {
-		SetupCustomBot( ent );
-	} else {
-		SetCustomWeapons( ent );
-	}
-	ent->client->isEliminated = qfalse;
-
-	// don't allow full run speed for a bit
-	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	client->ps.pm_time = 100;
-
-	client->respawnTime = level.time;
-	client->latched_buttons = 0;
-
-	// set default animations
-	client->ps.torsoAnim = TORSO_STAND;
-	client->ps.legsAnim = LEGS_IDLE;
-
-	if ( level.intermissiontime ) {
-		MoveClientToIntermission( ent );
-	} else {
-		// fire the targets of the spawn point
-		G_UseTargets( spawnPoint, ent );
-	}
-
-	// run a client frame to drop exactly to the floor,
-	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
-	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink( ent-g_entities );
-
-	// positively link the client, even if the command times are weird
-	if ( (ent->client->sess.sessionTeam != TEAM_SPECTATOR) || ( (!client->isEliminated || client->ps.pm_type != PM_SPECTATOR)&&
-		(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) ) ) {
-		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
-		trap_LinkEntity( ent );
-	}
-
-	// run the presend to set anything else
-	ClientEndFrame( ent );
-
-	// clear entity state values
-	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-
-    if(g_spawnprotect.integer)
-        client->spawnprotected = qtrue;
-
-    RespawnTimeMessage(ent,0);
-
-		client->ps.weaponstate = WEAPON_READY;
-		ent->client->isEliminated = qfalse;
-		return;
-			}
-			}
-
-                        CalculateRanks();
-			return;
-		}
-		else
-		{
-			client->pers.roundReached = level.roundNumber+1;
-			client->sess.spectatorState = SPECTATOR_NOT;
-			client->ps.pm_type = PM_NORMAL;
-			client->isEliminated = qfalse;
-                        CalculateRanks();
-		}
-	} else {
-            //Force false.
-            if(client->isEliminated) {
-                client->isEliminated = qfalse;
-                CalculateRanks();
-            }
-        }
-
-	if(g_gametype.integer == GT_LMS && client->sess.sessionTeam != TEAM_SPECTATOR && (!level.intermissiontime || level.warmupTime != 0)) {
-		if(level.roundNumber==level.roundNumberStarted) {
-			client->sess.spectatorState = SPECTATOR_FREE;
-			if( ent->client->isEliminated!=qtrue) {
-				client->isEliminated = qtrue;
-			}
-			client->ps.pm_type = PM_SPECTATOR;
-			return;
-		}
-
-		client->sess.spectatorState = SPECTATOR_NOT;
-		client->ps.pm_type = PM_NORMAL;
-		client->isEliminated = qfalse;
-	}
-
 	// find a spawn point
-	// do it before setting health back up, so farthest
-	// ranging doesn't count this client
-	if ( ent->botspawn ) {
-		spawnPoint = ent->botspawn;
-		VectorCopy( spawnPoint->s.origin, spawn_origin );
-		VectorCopy(  spawnPoint->s.angles, spawn_angles );
-	} else {
-	if ((client->sess.sessionTeam == TEAM_SPECTATOR)
-			|| ( (client->ps.pm_type == PM_SPECTATOR || client->isEliminated )  && (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) ) ) {
+	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		spawnPoint = SelectSpectatorSpawnPoint ( spawn_origin, spawn_angles);
-	} else if (g_gametype.integer == GT_DOUBLE_D) {
-		//Double Domination uses special spawn points:
-		spawnPoint = SelectDoubleDominationSpawnPoint (client->sess.sessionTeam, spawn_origin, spawn_angles);
-	} else if (g_gametype.integer >= GT_CTF && g_ffa_gt==0 && g_gametype.integer!= GT_DOMINATION) {
+	} else if (g_gametype.integer >= GT_CTF ) {
 		// all base oriented team games use the CTF spawn points
-		spawnPoint = SelectCTFSpawnPoint (
-						client->sess.sessionTeam,
-						client->pers.teamState.state,
-						spawn_origin, spawn_angles);
+		spawnPoint = SelectCTFSpawnPoint ( client->sess.sessionTeam, client->pers.teamState.state, spawn_origin, spawn_angles);
 	} else {
 		do {
 			// don't spawn near existing origin if possible
 			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
 
-			// Tim needs to prevent bots from spawning at the initial point
-			// on q3dm0...
 			if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-                            //Sago: The game has a tendency to select the furtest spawn point
-                            //This is a problem if the fursest spawnpoint keeps being NO_BOTS and it does!
-                            //This is a hot fix that seeks a spawn point faraway from the the currently found one
-                            vec3_t old_origin;
-                            VectorCopy(spawn_origin,old_origin);
-                            spawnPoint = SelectSpawnPoint (old_origin, spawn_origin, spawn_angles);
-                            if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
 				continue;	// try again
-                            }
 			}
-			// just to be symetric, we have a nohumans option...
+
 			if ( ( spawnPoint->flags & FL_NO_HUMANS ) && !( ent->r.svFlags & SVF_BOT ) ) {
 				continue;	// try again
 			}
@@ -1984,7 +1160,6 @@ void ClientSpawn(gentity_t *ent) {
 			break;
 
 		} while ( 1 );
-	}
 	}
 	client->pers.teamState.state = TEAM_ACTIVE;
 
@@ -1996,36 +1171,26 @@ void ClientSpawn(gentity_t *ent) {
 	flags = ent->client->ps.eFlags & (EF_TELEPORT_BIT | EF_VOTED | EF_TEAMVOTED);
 	flags ^= EF_TELEPORT_BIT;
 
-//unlagged - backward reconciliation #3
-	// we don't want players being backward-reconciled to the place they died
-	G_ResetHistory( ent );
-	// and this is as good a time as any to clear the saved state
-	ent->client->saved.leveltime = 0;
-//unlagged - backward reconciliation #3
-
 	// clear everything but the persistant data
+	G_ResetHistory(ent);
 
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
-	vote = client->vote;
-//	savedAreaBits = client->areabits;
 	accuracy_hits = client->accuracy_hits;
 	accuracy_shots = client->accuracy_shots;
-
-    memcpy(persistant,client->ps.persistant,MAX_PERSISTANT*sizeof(int));
+	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
+		persistant[i] = client->ps.persistant[i];
+	}
 	eventSequence = client->ps.eventSequence;
 
-	Com_Memset (client, 0, sizeof(*client));
+	memset (client, 0, sizeof(*client));
 
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
-	client->vote = vote;
-//	client->areabits = savedAreaBits;
 	client->accuracy_hits = accuracy_hits;
 	client->accuracy_shots = accuracy_shots;
-
 	client->lastkilled_client = -1;
 
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
@@ -2040,14 +1205,10 @@ void ClientSpawn(gentity_t *ent) {
 
 	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 	// set max health
-	health = 100;
-	client->pers.maxHealth = health;
-	if (!(ent->r.svFlags & SVF_BOT)){
-		if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
-			client->pers.maxHealth = 100;
-		}
+	client->pers.maxHealth = atoi( Info_ValueForKey( userinfo, "handicap" ) );
+	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
+		client->pers.maxHealth = 100;
 	}
-
 	// clear entity values
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	client->ps.eFlags = flags;
@@ -2063,31 +1224,26 @@ void ClientSpawn(gentity_t *ent) {
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
-
-	//Sago: No one has hit the client yet!
-	client->lastSentFlying = -1;
-
+	
 	VectorCopy (playerMins, ent->r.mins);
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
+
+	// health will count down towards max_health
+	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
 
 	// the respawned flag will be cleared after the attack and jump keys come up
 	client->ps.pm_flags |= PMF_RESPAWNED;
-	if(g_gametype.integer==GT_ELIMINATION || g_gametype.integer==GT_CTF_ELIMINATION || g_gametype.integer==GT_LMS)
-		client->ps.pm_flags |= PMF_ELIMWARMUP;
 
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	SetClientViewAngle( ent, spawn_angles );
 
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ((client->ps.pm_type == PM_SPECTATOR || client->isEliminated) &&
-		(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) ) ) {
-
-	} else {
-		if ( !ent->botspawn ) { G_KillBox( ent );}
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		G_KillBox( ent );
 		trap_LinkEntity (ent);
 
 		client->ps.weaponstate = WEAPON_READY;
@@ -2102,7 +1258,6 @@ void ClientSpawn(gentity_t *ent) {
 		} else {
 			SetCustomWeapons( ent );
 		}
-
 	}
 
 	// don't allow full run speed for a bit
@@ -2130,26 +1285,17 @@ void ClientSpawn(gentity_t *ent) {
 	ClientThink( ent-g_entities );
 
 	// positively link the client, even if the command times are weird
-	if ( (ent->client->sess.sessionTeam != TEAM_SPECTATOR) || ( (!client->isEliminated || client->ps.pm_type != PM_SPECTATOR)&&
-		(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION || g_gametype.integer == GT_LMS) ) ) {
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
 	}
-
-	//Send spawnbuffer for remember by client
-	G_SendSpawnSwepWeapons( ent );
 
 	// run the presend to set anything else
 	ClientEndFrame( ent );
 
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-
-    if(g_spawnprotect.integer)
-        client->spawnprotected = qtrue;
-
-    RespawnTimeMessage(ent,0);
 }
 
 /*
@@ -2168,7 +1314,6 @@ void ClientDisconnect( int clientNum ) {
 	gentity_t	*ent;
 	gentity_t	*tent;
 	int			i;
-	char		userinfo[MAX_INFO_STRING];
 
 	// cleanup if we are kicking a bot that
 	// hasn't spawned yet
@@ -2202,18 +1347,6 @@ void ClientDisconnect( int clientNum ) {
 			TossClientCubes( ent );
 		}
 
-	}
-
-	if ( ent->client->pers.connected == CON_CONNECTED && ent->client->sess.sessionTeam != TEAM_SPECTATOR){
-		PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"),ent->client->ps);
-	}
-
-	// if we are playing in tourney mode and losing, give a win to the other player
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& !level.intermissiontime
-		&& !level.warmupTime && level.sortedClients[1] == clientNum ) {
-		level.clients[ level.sortedClients[0] ].sess.wins++;
-		ClientUserinfoChanged( level.sortedClients[0] );
 	}
 
 	trap_UnlinkEntity (ent);
@@ -2282,6 +1415,34 @@ void SetupCustomBot( gentity_t *bot ) {
 	CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
 }
 
+/*
+===========
+LinkBotSpawn
+
+Links a bot to the entity that spawned it
+============
+*/
+void LinkBotSpawn( gentity_t *bot, char parentid[] ) {
+	gentity_t	*t;
+	int			entityNum;
+	
+	if ( !bot )
+		return;
+
+	if ( !parentid || !strcmp(parentid, "") )
+		return;
+
+	entityNum = atoi(parentid);
+
+	t = NULL;
+	bot->botspawn = NULL;
+	while ( (t = G_Find (t, FOFS(classname), "sandbox_npc")) != NULL ) {
+		if ( t->s.number == entityNum ) {
+			bot->botspawn = t;
+		}
+	}
+}
+
 void SetUnlimitedWeapons( gentity_t *ent ) {
 	Set_Ammo(ent, WP_GAUNTLET, -1);
 	Set_Ammo(ent, WP_GRAPPLING_HOOK, -1);
@@ -2311,212 +1472,107 @@ void SetCustomWeapons( gentity_t *ent ) {
 	Set_Ammo(ent, WP_TOOLGUN, -1);
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
-	if (ent->client->sess.sessionTeam == TEAM_FREE || ent->client->sess.sessionTeam == TEAM_BLUE) {
-		if (g_bluespawn_gauntlet.integer) {
-			Set_Weapon(ent, WP_GAUNTLET, 1);
-		}
-		if (g_bluespawn_machinegun.integer > 0) {
-			Set_Weapon(ent, WP_MACHINEGUN, 1);
-			Set_Ammo(ent, WP_MACHINEGUN, g_bluespawn_machinegun.integer);
-		}
-		if (g_bluespawn_shotgun.integer > 0) {
-			Set_Weapon(ent, WP_SHOTGUN, 1);
-			Set_Ammo(ent, WP_SHOTGUN, g_bluespawn_shotgun.integer);
-		}
-		if (g_bluespawn_grenade.integer > 0) {
-			Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
-			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_bluespawn_grenade.integer);
-		}
-		if (g_bluespawn_rocket.integer > 0) {
-			Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
-			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_bluespawn_rocket.integer);
-		}
-		if (g_bluespawn_lightning.integer > 0) {
-			Set_Weapon(ent, WP_LIGHTNING, 1);
-			Set_Ammo(ent, WP_LIGHTNING, g_bluespawn_lightning.integer);
-		}
-		if (g_bluespawn_railgun.integer > 0) {
-			Set_Weapon(ent, WP_RAILGUN, 1);
-			Set_Ammo(ent, WP_RAILGUN, g_bluespawn_railgun.integer);
-		}
-		if (g_bluespawn_plasmagun.integer > 0) {
-			Set_Weapon(ent, WP_PLASMAGUN, 1);
-			Set_Ammo(ent, WP_PLASMAGUN, g_bluespawn_plasmagun.integer);
-		}
-		if (g_bluespawn_bfg.integer > 0) {
-			Set_Weapon(ent, WP_BFG, 1);
-			Set_Ammo(ent, WP_BFG, g_bluespawn_bfg.integer);
-		}
-		if (g_bluespawn_grapple.integer) {
-			Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
-		}
-		if (g_bluespawn_nail.integer > 0) {
-			Set_Weapon(ent, WP_NAILGUN, 1);
-			Set_Ammo(ent, WP_NAILGUN, g_bluespawn_nail.integer);
-		}
-		if (g_bluespawn_mine.integer > 0) {
-			Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
-			Set_Ammo(ent, WP_PROX_LAUNCHER, g_bluespawn_mine.integer);
-		}
-		if (g_bluespawn_chain.integer > 0) {
-			Set_Weapon(ent, WP_CHAINGUN, 1);
-			Set_Ammo(ent, WP_CHAINGUN, g_bluespawn_chain.integer);
-		}
-		if (g_bluespawn_flame.integer > 0) {
-			Set_Weapon(ent, WP_FLAMETHROWER, 1);
-			Set_Ammo(ent, WP_FLAMETHROWER, g_bluespawn_flame.integer);
-		}
-		if (g_bluespawn_antimatter.integer > 0) {
-			Set_Weapon(ent, WP_ANTIMATTER, 1);
-			Set_Ammo(ent, WP_ANTIMATTER, g_bluespawn_antimatter.integer);
-		}
-		if(g_bluespawn_quad.integer) {
-			ent->client->ps.powerups[PW_QUAD] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_QUAD] +=  g_bluespawn_quad.integer * 1000;
-		}
-		if(g_bluespawn_regen.integer) {
-			ent->client->ps.powerups[PW_REGEN] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_REGEN] +=  g_bluespawn_regen.integer * 1000;
-		}
-		if(g_bluespawn_haste.integer) {
-			ent->client->ps.powerups[PW_HASTE] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_HASTE] +=  g_bluespawn_haste.integer * 1000;
-		}
-		if(g_bluespawn_bsuit.integer) {
-			ent->client->ps.powerups[PW_BATTLESUIT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_bluespawn_bsuit.integer * 1000;
-		}
-		if(g_bluespawn_invis.integer) {
-			ent->client->ps.powerups[PW_INVIS] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_INVIS] +=  g_bluespawn_invis.integer * 1000;
-		}
-		if(g_bluespawn_flight.integer) {
-			ent->client->ps.powerups[PW_FLIGHT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_FLIGHT] +=  g_bluespawn_flight.integer * 1000;
-		}
-		if(g_bluespawn_holdable.integer == 1) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
-		}
-		if(g_bluespawn_holdable.integer == 2) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
-		}
-		if(g_bluespawn_holdable.integer == 3) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
-			ent->client->ps.eFlags |= EF_KAMIKAZE;
-		}
-		if(g_bluespawn_holdable.integer == 4) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
-		}
-		if(g_bluespawn_holdable.integer == 5) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
-		}
-
-		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_bluespawn_armor.integer;
-		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_bluespawn_health.integer;
+	if (g_spawn_gauntlet.integer) {
+		Set_Weapon(ent, WP_GAUNTLET, 1);
 	}
-	if (ent->client->sess.sessionTeam == TEAM_RED) {
-		if (g_redspawn_gauntlet.integer) {
-			Set_Weapon(ent, WP_GAUNTLET, 1);
-		}
-		if (g_redspawn_machinegun.integer > 0) {
-			Set_Weapon(ent, WP_MACHINEGUN, 1);
-			Set_Ammo(ent, WP_MACHINEGUN, g_redspawn_machinegun.integer);
-		}
-		if (g_redspawn_shotgun.integer > 0) {
-			Set_Weapon(ent, WP_SHOTGUN, 1);
-			Set_Ammo(ent, WP_SHOTGUN, g_redspawn_shotgun.integer);
-		}
-		if (g_redspawn_grenade.integer > 0) {
-			Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
-			Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_redspawn_grenade.integer);
-		}
-		if (g_redspawn_rocket.integer > 0) {
-			Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
-			Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_redspawn_rocket.integer);
-		}
-		if (g_redspawn_lightning.integer > 0) {
-			Set_Weapon(ent, WP_LIGHTNING, 1);
-			Set_Ammo(ent, WP_LIGHTNING, g_redspawn_lightning.integer);
-		}
-		if (g_redspawn_railgun.integer > 0) {
-			Set_Weapon(ent, WP_RAILGUN, 1);
-			Set_Ammo(ent, WP_RAILGUN, g_redspawn_railgun.integer);
-		}
-		if (g_redspawn_plasmagun.integer > 0) {
-			Set_Weapon(ent, WP_PLASMAGUN, 1);
-			Set_Ammo(ent, WP_PLASMAGUN, g_redspawn_plasmagun.integer);
-		}
-		if (g_redspawn_bfg.integer > 0) {
-			Set_Weapon(ent, WP_BFG, 1);
-			Set_Ammo(ent, WP_BFG, g_redspawn_bfg.integer);
-		}
-		if (g_redspawn_grapple.integer) {
-			Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
-		}
-		if (g_redspawn_nail.integer > 0) {
-			Set_Weapon(ent, WP_NAILGUN, 1);
-			Set_Ammo(ent, WP_NAILGUN, g_redspawn_nail.integer);
-		}
-		if (g_redspawn_mine.integer > 0) {
-			Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
-			Set_Ammo(ent, WP_PROX_LAUNCHER, g_redspawn_mine.integer);
-		}
-		if (g_redspawn_chain.integer > 0) {
-			Set_Weapon(ent, WP_CHAINGUN, 1);
-			Set_Ammo(ent, WP_CHAINGUN, g_redspawn_chain.integer);
-		}
-		if (g_redspawn_flame.integer > 0) {
-			Set_Weapon(ent, WP_FLAMETHROWER, 1);
-			Set_Ammo(ent, WP_FLAMETHROWER, g_redspawn_flame.integer);
-		}
-		if (g_redspawn_antimatter.integer > 0) {
-			Set_Weapon(ent, WP_ANTIMATTER, 1);
-			Set_Ammo(ent, WP_ANTIMATTER, g_redspawn_antimatter.integer);
-		}
-		if(g_redspawn_quad.integer) {
-			ent->client->ps.powerups[PW_QUAD] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_QUAD] +=  g_redspawn_quad.integer * 1000;
-		}
-		if(g_redspawn_regen.integer) {
-			ent->client->ps.powerups[PW_REGEN] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_REGEN] +=  g_redspawn_regen.integer * 1000;
-		}
-		if(g_redspawn_haste.integer) {
-			ent->client->ps.powerups[PW_HASTE] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_HASTE] +=  g_redspawn_haste.integer * 1000;
-		}
-		if(g_redspawn_bsuit.integer) {
-			ent->client->ps.powerups[PW_BATTLESUIT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_BATTLESUIT] +=  g_redspawn_bsuit.integer * 1000;
-		}
-		if(g_redspawn_invis.integer) {
-			ent->client->ps.powerups[PW_INVIS] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_INVIS] +=  g_redspawn_invis.integer * 1000;
-		}
-		if(g_redspawn_flight.integer) {
-			ent->client->ps.powerups[PW_FLIGHT] =  level.time - ( level.time % 1000 );
-			ent->client->ps.powerups[PW_FLIGHT] +=  g_redspawn_flight.integer * 1000;
-		}
-		if(g_redspawn_holdable.integer == 1) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
-		}
-		if(g_redspawn_holdable.integer == 2) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
-		}
-		if(g_redspawn_holdable.integer == 3) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
-			ent->client->ps.eFlags |= EF_KAMIKAZE;
-		}
-		if(g_redspawn_holdable.integer == 4) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
-		}
-		if(g_redspawn_holdable.integer == 5) {
-			ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
-		}
-
-		ent->health = ent->client->ps.stats[STAT_ARMOR] = g_redspawn_armor.integer;
-		ent->health = ent->client->ps.stats[STAT_HEALTH] = g_redspawn_health.integer;
+	if (g_spawn_machinegun.integer > 0) {
+		Set_Weapon(ent, WP_MACHINEGUN, 1);
+		Set_Ammo(ent, WP_MACHINEGUN, g_spawn_machinegun.integer);
 	}
+	if (g_spawn_shotgun.integer > 0) {
+		Set_Weapon(ent, WP_SHOTGUN, 1);
+		Set_Ammo(ent, WP_SHOTGUN, g_spawn_shotgun.integer);
+	}
+	if (g_spawn_grenade.integer > 0) {
+		Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
+		Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_spawn_grenade.integer);
+	}
+	if (g_spawn_rocket.integer > 0) {
+		Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
+		Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_spawn_rocket.integer);
+	}
+	if (g_spawn_lightning.integer > 0) {
+		Set_Weapon(ent, WP_LIGHTNING, 1);
+		Set_Ammo(ent, WP_LIGHTNING, g_spawn_lightning.integer);
+	}
+	if (g_spawn_railgun.integer > 0) {
+		Set_Weapon(ent, WP_RAILGUN, 1);
+		Set_Ammo(ent, WP_RAILGUN, g_spawn_railgun.integer);
+	}
+	if (g_spawn_plasmagun.integer > 0) {
+		Set_Weapon(ent, WP_PLASMAGUN, 1);
+		Set_Ammo(ent, WP_PLASMAGUN, g_spawn_plasmagun.integer);
+	}
+	if (g_spawn_bfg.integer > 0) {
+		Set_Weapon(ent, WP_BFG, 1);
+		Set_Ammo(ent, WP_BFG, g_spawn_bfg.integer);
+	}
+	if (g_spawn_grapple.integer) {
+		Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
+	}
+	if (g_spawn_nail.integer > 0) {
+		Set_Weapon(ent, WP_NAILGUN, 1);
+		Set_Ammo(ent, WP_NAILGUN, g_spawn_nail.integer);
+	}
+	if (g_spawn_mine.integer > 0) {
+		Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
+		Set_Ammo(ent, WP_PROX_LAUNCHER, g_spawn_mine.integer);
+	}
+	if (g_spawn_chain.integer > 0) {
+		Set_Weapon(ent, WP_CHAINGUN, 1);
+		Set_Ammo(ent, WP_CHAINGUN, g_spawn_chain.integer);
+	}
+	if (g_spawn_flame.integer > 0) {
+		Set_Weapon(ent, WP_FLAMETHROWER, 1);
+		Set_Ammo(ent, WP_FLAMETHROWER, g_spawn_flame.integer);
+	}
+	if (g_spawn_antimatter.integer > 0) {
+		Set_Weapon(ent, WP_ANTIMATTER, 1);
+		Set_Ammo(ent, WP_ANTIMATTER, g_spawn_antimatter.integer);
+	}
+	if(g_spawn_quad.integer) {
+		ent->client->ps.powerups[PW_QUAD] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_QUAD] +=  g_spawn_quad.integer * 1000;
+	}
+	if(g_spawn_regen.integer) {
+		ent->client->ps.powerups[PW_REGEN] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_REGEN] +=  g_spawn_regen.integer * 1000;
+	}
+	if(g_spawn_haste.integer) {
+		ent->client->ps.powerups[PW_HASTE] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_HASTE] +=  g_spawn_haste.integer * 1000;
+	}
+	if(g_spawn_bsuit.integer) {
+		ent->client->ps.powerups[PW_BATTLESUIT] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_BATTLESUIT] +=  g_spawn_bsuit.integer * 1000;
+	}
+	if(g_spawn_invis.integer) {
+		ent->client->ps.powerups[PW_INVIS] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_INVIS] +=  g_spawn_invis.integer * 1000;
+	}
+	if(g_spawn_flight.integer) {
+		ent->client->ps.powerups[PW_FLIGHT] =  level.time - ( level.time % 1000 );
+		ent->client->ps.powerups[PW_FLIGHT] +=  g_spawn_flight.integer * 1000;
+	}
+	if(g_spawn_holdable.integer == 1) {
+		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
+	}
+	if(g_spawn_holdable.integer == 2) {
+		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
+	}
+	if(g_spawn_holdable.integer == 3) {
+		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
+		ent->client->ps.eFlags |= EF_KAMIKAZE;
+	}
+	if(g_spawn_holdable.integer == 4) {
+		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
+	}
+	if(g_spawn_holdable.integer == 5) {
+		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
+	}
+
+	ent->health = ent->client->ps.stats[STAT_ARMOR] = g_spawn_armor.integer;
+	ent->health = ent->client->ps.stats[STAT_HEALTH] = g_spawn_health.integer;
 	//Set spawnweapon
 	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		ent->swep_id = WP_PHYSGUN;
@@ -2535,33 +1591,5 @@ void SetCustomWeapons( gentity_t *ent ) {
 		ent->swep_id = 1;
 		ent->client->ps.generic2 = 1;
 		ClientUserinfoChanged( ent->s.clientNum );
-	}
-}
-
-/*
-===========
-LinkBotSpawnEntity
-
-Links a bot to the entity that spawned it
-============
-*/
-void LinkBotSpawnEntity( gentity_t *bot, char parentid[] ) {
-	gentity_t	*t;
-	int			entityNum;
-	
-	if ( !bot )
-		return;
-
-	if ( !parentid || !strcmp(parentid, "") )
-		return;
-
-	entityNum = atoi(parentid);
-
-	t = NULL;
-	bot->botspawn = NULL;
-	while ( (t = G_Find (t, FOFS(classname), "sandbox_npc")) != NULL ) {
-		if ( t->s.number == entityNum ) {
-			bot->botspawn = t;
-		}
 	}
 }

@@ -494,26 +494,6 @@ static void CG_DrawCounters( void ) {
 		return;
 	}
 
-	//Domination
-	if ( cgs.gametype == GT_DOMINATION ) {
-		for(i = 0;i < cgs.domination_points_count;i++) {
-			switch(cgs.domination_points_status[i]) {
-				case TEAM_RED:
-					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^1Red", cgs.domination_points_names[i]);
-					y += 16;
-					break;
-				case TEAM_BLUE:
-					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^4Blue", cgs.domination_points_names[i]);
-					y += 16;
-					break;
-				default:
-					CG_DrawDomElement(640+cgs.wideoffset-154, y, "^7White", cgs.domination_points_names[i]);
-					y += 16;
-					break;
-			}
-		}
-	}
-
 	y += 4;
 
 	//Speed
@@ -558,33 +538,6 @@ static void CG_DrawCounters( void ) {
 	if (cg_drawTimer.integer == 1) {
 		CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i:%i%i", mins, tens, seconds), "Time");
 		y += 20;
-	}
-
-	//Elimination
-	if (cgs.gametype==GT_ELIMINATION || cgs.gametype == GT_CTF_ELIMINATION || cgs.gametype==GT_LMS) {
-		rst = cgs.roundStartTime;
-
-	    if(cg.time>rst && !cgs.roundtime) {
-
-	    } else {
-			if(cg.time>rst) {
-				msec = cgs.roundtime*1000 - (cg.time -rst);
-				msec += 1000; //120-1 instead of 119-0
-			}
-
-			seconds = msec / 1000;
-			mins = seconds / 60;
-			seconds -= mins * 60;
-			tens = seconds / 10;
-			seconds -= tens * 10;
-
-			if(msec>=0){
-				CG_DrawCounterElement(640+cgs.wideoffset-84, y, va("%i:%i%i", mins, tens, seconds), "Round");
-			} else {
-				CG_DrawCounterElement(640+cgs.wideoffset-84, y, "", "Round");
-			}
-			y += 20;
-		}
 	}
 
     //Skulls!
@@ -650,7 +603,7 @@ static void CG_DrawScores( void ) {
 	}
 
 	// draw from the right side to left
-	if(cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+	if(cgs.gametype >= GT_TEAM) {
 		//blue score
 		x = 320;
 		s = va("%i", s2);
@@ -658,7 +611,7 @@ static void CG_DrawScores( void ) {
 		ST_DrawString( x+16, y+3, s, UI_CENTER, color_white, 1.20);
 
 		//blue flag
-		if(cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION) {
+		if(cgs.gametype == GT_CTF) {
 			if (BG_FindItemForPowerup(PW_BLUEFLAG)) {
 				if(cgs.blueflag >= 0 && cgs.blueflag <= 2) {
 					CG_DrawPic( x+SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, cgs.media.blueFlagShader[cgs.blueflag] );
@@ -672,12 +625,6 @@ static void CG_DrawScores( void ) {
 			ST_DrawString( x+(SCORES_WIDTH*1.50), y+2, s, UI_CENTER, color_white, 1.20);
         }
 
-        if(cgs.gametype == GT_DOUBLE_D) {
-			if(cgs.redflag >= 0 && cgs.redflag <= 3) {
-				CG_DrawPic( x+SCORES_WIDTH, y, SCORES_HEIGHT, SCORES_HEIGHT, cgs.media.ddPointSkinB[cgs.blueflag] );
-			}
-		}
-
 		//red score
 		s = va( "%i", s1 );
 		x = 320-SCORES_WIDTH;
@@ -685,7 +632,7 @@ static void CG_DrawScores( void ) {
 		ST_DrawString( x+16, y+3, s, UI_CENTER, color_white, 1.20);
 
 		//red flag
-		if (cgs.gametype == GT_CTF || cgs.gametype == GT_CTF_ELIMINATION) {
+		if (cgs.gametype == GT_CTF) {
 			if (BG_FindItemForPowerup(PW_REDFLAG)) {
 				if( cgs.redflag >= 0 && cgs.redflag <= 2 ) {
 					CG_DrawPic( x-SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, cgs.media.redFlagShader[cgs.redflag] );
@@ -699,14 +646,8 @@ static void CG_DrawScores( void ) {
 			ST_DrawString( x-(SCORES_WIDTH*0.50), y+2, s, UI_CENTER, color_white, 1.20);
         }
 
-        if (cgs.gametype == GT_DOUBLE_D) {
-			if(cgs.redflag >= 0 && cgs.redflag <= 3) {
-				CG_DrawPic( x-SCORES_HEIGHT, y, SCORES_HEIGHT, SCORES_HEIGHT, cgs.media.ddPointSkinA[cgs.redflag] );
-			}
-		}
-
 		// limit
-		if (cgs.gametype >= GT_CTF && cgs.ffa_gt==0) {
+		if (cgs.gametype >= GT_CTF) {
 			v = cgs.capturelimit;
 		} else {
 			v = cgs.fraglimit;
@@ -1258,76 +1199,6 @@ static void CG_DrawCenter1FctfString( void ) {
 }
 
 /*
-=====================
-CG_DrawCenterDDString
-=====================
-*/
-static void CG_DrawCenterDDString( void ) {
-    int		x, y, w;
-    float       *color;
-    char        *line;
-    int 		statusA, statusB;
-    int sec;
-    static int lastDDSec = -100;
-
-
-    if(cgs.gametype != GT_DOUBLE_D)
-        return;
-
-    	statusA = cgs.redflag;
-	statusB = cgs.blueflag;
-
-    if( ( ( statusB == statusA ) && ( statusA == TEAM_RED ) ) ||
-            ( ( statusB == statusA ) && ( statusA == TEAM_BLUE ) ) ) {
-      }
-    else
-        return; //No team is dominating
-
-    if(statusA == TEAM_BLUE) {
-        line = va("Blue scores in %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-        color = colorBlue;
-    } else if(statusA == TEAM_RED) {
-        line = va("Red scores in %i",(cgs.timetaken+10*1000-cg.time)/1000+1);
-        color = colorRed;
-    } else {
-        lastDDSec = -100;
-        return;
-    }
-
-    sec = (cgs.timetaken+10*1000-cg.time)/1000+1;
-    if(sec!=lastDDSec) {
-        //A new number is being displayed... play the sound!
-        switch ( sec ) {
-            case 1:
-                trap_S_StartLocalSound( cgs.media.count1Sound, CHAN_ANNOUNCER );
-                break;
-            case 2:
-                trap_S_StartLocalSound( cgs.media.count2Sound, CHAN_ANNOUNCER );
-                break;
-            case 3:
-                trap_S_StartLocalSound( cgs.media.count3Sound, CHAN_ANNOUNCER );
-                break;
-            case 10:
-                trap_S_StartLocalSound( cgs.media.doublerSound , CHAN_ANNOUNCER );
-                break;
-            default:
-                break;
-        }
-    }
-    lastDDSec = sec;
-
-    y = 100;
-
-
-    w = cg.centerPrintCharWidth * CG_DrawStrlen( line );
-
-    x = ( SCREEN_WIDTH - w ) / 2;
-
-    CG_DrawString( x, y, line, color, qfalse, qtrue,
-		cg.centerPrintCharWidth, (int)(cg.centerPrintCharWidth * 1.5), 0, 0 );
-}
-
-/*
 ================================================================================
 
 CROSSHAIR
@@ -1703,68 +1574,32 @@ static void CG_DrawWarmup( void ) {
 		return;
 	}
 
-	if (cgs.gametype == GT_TOURNAMENT) {
-		// find the two active players
-		ci1 = NULL;
-		ci2 = NULL;
-		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
-			if ( cgs.clientinfo[i].infoValid && cgs.clientinfo[i].team == TEAM_FREE ) {
-				if ( !ci1 ) {
-					ci1 = &cgs.clientinfo[i];
-				} else {
-					ci2 = &cgs.clientinfo[i];
-				}
-			}
-		}
-
-		if ( ci1 && ci2 ) {
-			s = va( "%s vs %s", ci1->name, ci2->name );
-			w = CG_DrawStrlen( s );
-			if ( w > 640 / GIANT_WIDTH ) {
-				cw = 640 / w;
-			} else {
-				cw = GIANT_WIDTH;
-			}
-			CG_DrawString( 320 - w * cw/2, 20,s, colorWhite, qfalse, qtrue, cw, (int)(cw * 1.5f), 0, 0 );
-		}
+	if ( cgs.gametype == GT_SANDBOX ) {
+		s = "Sandbox";
+	} else if ( cgs.gametype == GT_MAPEDITOR ) {
+		s = "Map Editor";
+	} else if ( cgs.gametype == GT_FFA ) {
+		s = "Free For All";
+	} else if ( cgs.gametype == GT_TEAM ) {
+		s = "Team Deathmatch";
+	} else if ( cgs.gametype == GT_CTF ) {
+		s = "Capture the Flag";
+	} else if ( cgs.gametype == GT_1FCTF ) {
+		s = "One Flag CTF";
+	} else if ( cgs.gametype == GT_OBELISK ) {
+		s = "Overload";
+	} else if ( cgs.gametype == GT_HARVESTER ) {
+		s = "Harvester";
 	} else {
-		if ( cgs.gametype == GT_SANDBOX ) {
-			s = "Sandbox";
-		} else if ( cgs.gametype == GT_MAPEDITOR ) {
-			s = "Map Editor";
-		} else if ( cgs.gametype == GT_FFA ) {
-			s = "Free For All";
-		} else if ( cgs.gametype == GT_LMS ) {
-			s = "Last Man Standing";
-		} else if ( cgs.gametype == GT_TEAM ) {
-			s = "Team Deathmatch";
-		} else if ( cgs.gametype == GT_CTF ) {
-			s = "Capture the Flag";
-		} else if ( cgs.gametype == GT_ELIMINATION ) {
-			s = "Elimination";
-		} else if ( cgs.gametype == GT_CTF_ELIMINATION ) {
-			s = "CTF Elimination";
-		} else if ( cgs.gametype == GT_DOUBLE_D ) {
-			s = "Double Domination";
-		} else if ( cgs.gametype == GT_1FCTF ) {
-			s = "One Flag CTF";
-		} else if ( cgs.gametype == GT_OBELISK ) {
-			s = "Overload";
-		} else if ( cgs.gametype == GT_HARVESTER ) {
-			s = "Harvester";
-        } else if ( cgs.gametype == GT_DOMINATION ) {
-			s = "Domination";
-		} else {
-			s = "";
-		}
-		w = CG_DrawStrlen( s );
-		if ( w > 640 / GIANT_WIDTH ) {
-			cw = 640 / w;
-		} else {
-			cw = GIANT_WIDTH;
-		}
-		CG_DrawString( 320 - w * cw/2, 25,s, colorWhite, qfalse, qtrue, cw, (int)(cw * 1.1f), 0, 0 );
+		s = "";
 	}
+	w = CG_DrawStrlen( s );
+	if ( w > 640 / GIANT_WIDTH ) {
+		cw = 640 / w;
+	} else {
+		cw = GIANT_WIDTH;
+	}
+	CG_DrawString( 320 - w * cw/2, 25,s, colorWhite, qfalse, qtrue, cw, (int)(cw * 1.1f), 0, 0 );
 
 	sec = ( sec - cg.time ) / 1000;
 	if ( sec < 0 ) {
@@ -1975,7 +1810,6 @@ static void CG_Draw2D( void ) {
 		CG_DrawWarmup();
 
 	if (!cg.scoreBoardShowing) {
-    	CG_DrawCenterDDString();
     	CG_DrawCenter1FctfString();
 	}
 

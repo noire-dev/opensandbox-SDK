@@ -30,7 +30,6 @@ level_locals_t	level;
 gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
 int				SourceTechEntityList[MAX_GENTITIES];
-int				g_ffa_gt;
 
 int 		mod_jumpheight;
 int 		mod_ammolimit;
@@ -223,13 +222,6 @@ void G_CheckCvars(void) {
         G_Printf( "g_gametype %i is out of range, defaulting to 0\n", g_gametype.integer );
 		trap_Cvar_Set( "g_gametype", "0" );
 	}
-
-	// set FFA status for high gametypes:
-	if (g_gametype.integer == GT_LMS) {
-		g_ffa_gt = 1;
-	} else {
-		g_ffa_gt = 0;
-	}
 }
 
 /*
@@ -311,7 +303,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_FindTeams();
 
 	// make sure we have flags for CTF, etc
-	if( g_gametype.integer >= GT_TEAM && (g_ffa_gt!=1)) {
+	if( g_gametype.integer >= GT_TEAM ) {
 		G_CheckTeamItems();
 	}
 
@@ -326,24 +318,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
 	NS_OpenScript("nscript/game/init.ns", NULL, 0);		//Noire.Script Init in qagame.qvm
-
-	//elimination:
-	level.roundNumber = 1;
-	level.roundNumberStarted = 0;
-	level.roundStartTime = level.time+g_elimination_warmup.integer*1000;
-	level.roundRespawned = qfalse;
-	level.eliminationSides = rand()%2; //0 or 1
-
-	if(g_gametype.integer == GT_DOUBLE_D)
-		Team_SpawnDoubleDominationPoints();
-
-	if(g_gametype.integer == GT_DOMINATION ){
-		level.dom_scoreGiven = 0;
-		for(i=0;i<MAX_DOMINATION_POINTS;i++)
-			level.pointStatusDom[i] = TEAM_NONE;
-
-		level.domination_points_count = 0; //make sure its not too big
-	}
 
     PlayerStoreInit();
 
@@ -438,151 +412,6 @@ PLAYER COUNTING / SCORE SORTING
 
 /*
 =============
-AddTournamentPlayer
-
-If there are less than two tournament players, put a
-spectator in the game and restart
-=============
-*/
-void AddTournamentPlayer( void ) {
-	int			i;
-	gclient_t	*client;
-	gclient_t	*nextInLine;
-
-	if ( level.numPlayingClients >= 2 ) {
-		return;
-	}
-
-	// never change during intermission
-	if ( level.intermissiontime ) {
-		return;
-	}
-
-	nextInLine = NULL;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		client = &level.clients[i];
-		if ( client->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-			continue;
-		}
-		// never select the dedicated follow or scoreboard clients
-		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ||
-			client->sess.spectatorClient < 0  ) {
-			continue;
-		}
-
-		if(!nextInLine || client->sess.spectatorNum > nextInLine->sess.spectatorNum) {
-			nextInLine = client;
-		}
-	}
-
-	if ( !nextInLine ) {
-		return;
-	}
-
-	level.warmupTime = -1;
-
-	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
-}
-
-/*
-=======================
-AddTournamentQueue
-
-Add client to end of tournament queue
-=======================
-*/
-void AddTournamentQueue(gclient_t *client)
-{
-    int index;
-    gclient_t *curclient;
-    for(index = 0; index < level.maxclients; index++)
-    {
-        curclient = &level.clients[index];
-        if(curclient->pers.connected != CON_DISCONNECTED)
-        {
-            if(curclient == client)
-            curclient->sess.spectatorNum = 0;
-            else if(curclient->sess.sessionTeam == TEAM_SPECTATOR)
-            curclient->sess.spectatorNum++;
-        }
-    }
-}
-
-/*
-=======================
-RemoveTournamentLoser
-
-Make the loser a spectator at the back of the line
-=======================
-*/
-void RemoveTournamentLoser( void ) {
-	int			clientNum;
-
-	if ( level.numPlayingClients != 2 ) {
-		return;
-	}
-
-	clientNum = level.sortedClients[1];
-
-	if ( level.clients[ clientNum ].pers.connected != CON_CONNECTED ) {
-		return;
-	}
-
-	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
-}
-
-/*
-=======================
-RemoveTournamentWinner
-=======================
-*/
-void RemoveTournamentWinner( void ) {
-	int			clientNum;
-
-	if ( level.numPlayingClients != 2 ) {
-		return;
-	}
-
-	clientNum = level.sortedClients[0];
-
-	if ( level.clients[ clientNum ].pers.connected != CON_CONNECTED ) {
-		return;
-	}
-
-	// make them a spectator
-	SetTeam( &g_entities[ clientNum ], "s" );
-}
-
-/*
-=======================
-AdjustTournamentScores
-=======================
-*/
-void AdjustTournamentScores( void ) {
-	int			clientNum;
-
-	clientNum = level.sortedClients[0];
-	if ( level.clients[ clientNum ].pers.connected == CON_CONNECTED ) {
-		level.clients[ clientNum ].sess.wins++;
-		ClientUserinfoChanged( clientNum );
-	}
-
-	clientNum = level.sortedClients[1];
-	if ( level.clients[ clientNum ].pers.connected == CON_CONNECTED ) {
-		level.clients[ clientNum ].sess.losses++;
-		ClientUserinfoChanged( clientNum );
-	}
-
-}
-
-/*
-=============
 SortRanks
 
 =============
@@ -626,15 +455,6 @@ int QDECL SortRanks( const void *a, const void *b ) {
 	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return -1;
 	}
-
-        //In elimination and CTF elimination, sort dead players last
-        if((g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION)
-                && level.roundNumber==level.roundNumberStarted && (ca->isEliminated != cb->isEliminated)) {
-            if( ca->isEliminated )
-                return 1;
-            if( cb->isEliminated )
-                return -1;
-        }
 
 	// then sort by score
 	if ( ca->ps.persistant[PERS_SCORE]
@@ -705,7 +525,7 @@ void CalculateRanks( void ) {
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1 ) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for ( i = 0;  i < level.numConnectedClients; i++ ) {
 			cl = &level.clients[ level.sortedClients[i] ];
@@ -740,7 +560,7 @@ void CalculateRanks( void ) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1 ) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
 		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
 	} else {
@@ -787,58 +607,6 @@ void SendScoreboardMessageToAllClients( void ) {
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
 			DeathmatchScoreboardMessage( g_entities + i );
-			EliminationMessage( g_entities + i );
-		}
-	}
-}
-
-/*
-========================
-SendElimiantionMessageToAllClients
-
-Used to send information important to Elimination
-========================
-*/
-void SendEliminationMessageToAllClients( void ) {
-	int		i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
-			EliminationMessage( g_entities + i );
-		}
-	}
-}
-
-/*
-========================
-SendDDtimetakenMessageToAllClients
-
-Do this if a team just started dominating.
-========================
-*/
-void SendDDtimetakenMessageToAllClients( void ) {
-	int		i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
-			DoubleDominationScoreTimeMessage( g_entities + i );
-		}
-	}
-}
-
-/*
-========================
-SendDominationPointsStatusMessageToAllClients
-
-Used for Standard domination
-========================
-*/
-void SendDominationPointsStatusMessageToAllClients( void ) {
-	int		i;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED ) {
-			DominationPointStatusMessage( g_entities + i );
 		}
 	}
 }
@@ -919,11 +687,6 @@ void BeginIntermission( void ) {
 		return;		// already active
 	}
 
-	// if in tournement mode, change the wins / losses
-	if ( g_gametype.integer == GT_TOURNAMENT ) {
-		AdjustTournamentScores();
-	}
-
 	level.intermissiontime = level.time;
 	// move all clients to the intermission point
 	for (i=0 ; i< level.maxclients ; i++) {
@@ -954,18 +717,6 @@ or moved to a new level based on the "nextmap" cvar
 void ExitLevel (void) {
 	int		 	i;
 	gclient_t 	*cl;
-
-	// if we are running a tournement map, kick the loser to spectator status,
-	// which will automatically grab the next spectator and restart
-	if ( g_gametype.integer == GT_TOURNAMENT  ) {
-		if ( !level.restarted ) {
-			RemoveTournamentLoser();
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-			level.restarted = qtrue;
-			level.intermissiontime = 0;
-		}
-		return;
-	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
 	level.intermissiontime = 0;
@@ -1092,7 +843,7 @@ qboolean ScoreIsTied( void ) {
 		return qfalse;
 	}
 
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
 
@@ -1155,7 +906,7 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( (g_gametype.integer < GT_CTF || g_ffa_gt>0 ) && g_fraglimit.integer ) {
+	if ( (g_gametype.integer < GT_CTF ) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the fraglimit.\n\"" );
 			return;
@@ -1183,7 +934,7 @@ void CheckExitRules( void ) {
 		}
 	}
 
-	if ( (g_gametype.integer >= GT_CTF && g_ffa_gt<1) && g_capturelimit.integer ) {
+	if ( (g_gametype.integer >= GT_CTF) && g_capturelimit.integer ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
@@ -1197,89 +948,6 @@ void CheckExitRules( void ) {
 	}
 }
 
-//LMS - Last man Stading functions:
-void StartLMSRound(void) {
-	int		countsLiving;
-	countsLiving = TeamLivingCount( -1, TEAM_FREE );
-	if(countsLiving<2) {
-		trap_SendServerCommand( -1, "print \"Not enough players to start the round\n\"");
-		level.roundNumberStarted = level.roundNumber-1;
-		level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-		return;
-	}
-
-	//If we are enough to start a round:
-	level.roundNumberStarted = level.roundNumber; //Set numbers
-
-	SendEliminationMessageToAllClients();
-	EnableWeapons();
-}
-
-void G_LevelLoadComplete(void) {
-
-}
-
-//the elimination start function
-void StartEliminationRound(void) {
-
-	int		countsLiving[TEAM_NUM_TEAMS];
-	countsLiving[TEAM_BLUE] = TeamLivingCount( -1, TEAM_BLUE );
-	countsLiving[TEAM_RED] = TeamLivingCount( -1, TEAM_RED );
-	if((countsLiving[TEAM_BLUE]==0) || (countsLiving[TEAM_RED]==0))
-	{
-		trap_SendServerCommand( -1, "print \"Not enough players to start the round\n\"");
-		level.roundNumberStarted = level.roundNumber-1;
-		level.roundRespawned = qfalse;
-		//Remember that one of the teams is empty!
-		level.roundRedPlayers = countsLiving[TEAM_RED];
-		level.roundBluePlayers = countsLiving[TEAM_BLUE];
-		level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-		return;
-	}
-
-	//If we are enough to start a round:
-	level.roundNumberStarted = level.roundNumber; //Set numbers
-	level.roundRedPlayers = countsLiving[TEAM_RED];
-	level.roundBluePlayers = countsLiving[TEAM_BLUE];
-	if(g_gametype.integer == GT_CTF_ELIMINATION) {
-		Team_ReturnFlag( TEAM_RED );
-		Team_ReturnFlag( TEAM_BLUE );
-	}
-
-	SendEliminationMessageToAllClients();
-	EnableWeapons();
-}
-
-//things to do at end of round:
-void EndEliminationRound(void)
-{
-	DisableWeapons();
-	level.roundNumber++;
-	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-	SendEliminationMessageToAllClients();
-    CalculateRanks();
-	level.roundRespawned = qfalse;
-}
-
-//Things to do if we don't want to move the roundNumber
-void RestartEliminationRound(void) {
-	DisableWeapons();
-	level.roundNumberStarted = level.roundNumber-1;
-	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-    if(!level.intermissiontime)
-        SendEliminationMessageToAllClients();
-	level.roundRespawned = qfalse;
-}
-
-//Things to do during match warmup
-void WarmupEliminationRound(void) {
-	EnableWeapons();
-	level.roundNumberStarted = level.roundNumber-1;
-	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-	SendEliminationMessageToAllClients();
-	level.roundRespawned = qfalse;
-}
-
 /*
 ========================================================================
 
@@ -1287,411 +955,6 @@ FUNCTIONS CALLED EVERY FRAME
 
 ========================================================================
 */
-
-/*
-CheckDoubleDomination
-*/
-
-void CheckDoubleDomination( void ) {
-	if ( level.numPlayingClients < 1 ) {
-		return;
-	}
-
-	if ( level.warmupTime != 0) {
-            if( ((level.pointStatusA == TEAM_BLUE && level.pointStatusB == TEAM_BLUE) ||
-                 (level.pointStatusA == TEAM_RED && level.pointStatusB == TEAM_RED)) &&
-                    level.timeTaken + 10*1000 <= level.time ) {
-                        Team_RemoveDoubleDominationPoints();
-                        level.roundStartTime = level.time + 10*1000;
-                        SendScoreboardMessageToAllClients();
-            }
-            return;
-        }
-
-	if(g_gametype.integer != GT_DOUBLE_D)
-		return;
-
-	//Don't score if we are in intermission. Both points might have been taken when we went into intermission
-	if(level.intermissiontime)
-		return;
-
-	if(level.pointStatusA == TEAM_RED && level.pointStatusB == TEAM_RED && level.timeTaken + 10*1000 <= level.time) {
-		//Red scores
-		trap_SendServerCommand( -1, "print \"Red team scores!\n\"");
-		AddTeamScore(level.intermission_origin,TEAM_RED,1);
-		Team_DD_bonusAtPoints(TEAM_RED);
-		Team_RemoveDoubleDominationPoints();
-		//We start again in 10 seconds:
-		level.roundStartTime = level.time + 10*1000;
-		SendScoreboardMessageToAllClients();
-		CalculateRanks();
-	}
-
-	if(level.pointStatusA == TEAM_BLUE && level.pointStatusB == TEAM_BLUE && level.timeTaken + 10*1000 <= level.time) {
-		//Blue scores
-		trap_SendServerCommand( -1, "print \"Blue team scores!\n\"");
-		AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-		Team_DD_bonusAtPoints(TEAM_BLUE);
-		Team_RemoveDoubleDominationPoints();
-		//We start again in 10 seconds:
-		level.roundStartTime = level.time + 10*1000;
-		SendScoreboardMessageToAllClients();
-		CalculateRanks();
-	}
-
-	if((level.pointStatusA == TEAM_NONE || level.pointStatusB == TEAM_NONE) && level.time>level.roundStartTime) {
-		trap_SendServerCommand( -1, "print \"A new round has started\n\"");
-		Team_SpawnDoubleDominationPoints();
-		SendScoreboardMessageToAllClients();
-	}
-}
-
-/*
-CheckLMS
-*/
-
-void CheckLMS(void) {
-	if ( level.numPlayingClients < 1 ) {
-		return;
-	}
-
-	//We don't want to do anything in intermission
-	if(level.intermissiontime) {
-		if(level.roundRespawned) {
-			RestartEliminationRound();
-		}
-		level.roundStartTime = level.time; //so that a player might join at any time to fix the bots+no humans+autojoin bug
-		return;
-	}
-
-	if(g_gametype.integer == GT_LMS) {
-		int	countsLiving[TEAM_NUM_TEAMS];
-		countsLiving[TEAM_FREE] = TeamLivingCount( -1, TEAM_FREE );
-		if(countsLiving[TEAM_FREE]==1 && level.roundNumber==level.roundNumberStarted) {
-			LMSpoint();
-			trap_SendServerCommand( -1, "print \"We have a winner!\n\"");
-			EndEliminationRound();
-		}
-
-		if(countsLiving[TEAM_FREE]==0 && level.roundNumber==level.roundNumberStarted) {
-			trap_SendServerCommand( -1, "print \"All death... how sad\n\"");
-			EndEliminationRound();
-		}
-
-		if((g_elimination_roundtime.integer) && (level.roundNumber==level.roundNumberStarted)&&(level.time>=level.roundStartTime+1000*g_elimination_roundtime.integer)) {
-			trap_SendServerCommand( -1, "print \"Time up - Overtime disabled\n\"");
-			LMSpoint();
-			EndEliminationRound();
-		}
-
-		//This might be better placed another place:
-		if(g_elimination_activewarmup.integer<2)
-			g_elimination_activewarmup.integer=2; //We need at least 2 seconds to spawn all players
-		if(g_elimination_activewarmup.integer >= g_elimination_warmup.integer) //This must not be true
-			g_elimination_warmup.integer = g_elimination_activewarmup.integer+1; //Increase warmup
-
-		//Force respawn
-		if(level.roundNumber != level.roundNumberStarted && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer && !level.roundRespawned) {
-			level.roundRespawned = qtrue;
-			RespawnAll();
-			DisableWeapons();
-			SendEliminationMessageToAllClients();
-		}
-
-		if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer) {
-			RespawnDead();
-		}
-
-		if(level.roundNumber == level.roundNumberStarted) {
-			EnableWeapons();
-		}
-
-		if((level.roundNumber>level.roundNumberStarted)&&(level.time>=level.roundStartTime))
-			StartLMSRound();
-
-		if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime && level.numPlayingClients < 2) {
-			RespawnDead(); //Allow player to run around anyway
-			WarmupEliminationRound(); //Start over
-			return;
-		}
-
-		if(level.warmupTime != 0) {
-			if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime) {
-				RespawnDead();
-				WarmupEliminationRound();
-			}
-		}
-
-	}
-}
-
-/*
-=============
-CheckElimination
-=============
-*/
-void CheckElimination(void) {
-	if ( level.numPlayingClients < 1 ) {
-		if( (g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION) &&
-			( level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime ))
-			RestartEliminationRound(); //For spectators
-		return;
-	}
-
-	//We don't want to do anything in itnermission
-	if(level.intermissiontime) {
-		if(level.roundRespawned)
-			RestartEliminationRound();
-		level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
-		return;
-	}
-
-	if(g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_CTF_ELIMINATION)
-	{
-		int		counts[TEAM_NUM_TEAMS];
-		int		countsLiving[TEAM_NUM_TEAMS];
-		int		countsHealth[TEAM_NUM_TEAMS];
-		counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
-		counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
-
-		countsLiving[TEAM_BLUE] = TeamLivingCount( -1, TEAM_BLUE );
-		countsLiving[TEAM_RED] = TeamLivingCount( -1, TEAM_RED );
-
-		countsHealth[TEAM_BLUE] = TeamHealthCount( -1, TEAM_BLUE );
-		countsHealth[TEAM_RED] = TeamHealthCount( -1, TEAM_RED );
-
-		if(level.roundBluePlayers != 0 && level.roundRedPlayers != 0) { //Cannot score if one of the team never got any living players
-			if((countsLiving[TEAM_BLUE]==0)&&(level.roundNumber==level.roundNumberStarted))
-			{
-				//Blue team has been eliminated!
-				trap_SendServerCommand( -1, "print \"Blue Team eliminated!\n\"");
-				AddTeamScore(level.intermission_origin,TEAM_RED,1);
-				EndEliminationRound();
-			}
-			else if((countsLiving[TEAM_RED]==0)&&(level.roundNumber==level.roundNumberStarted))
-			{
-				//Red team eliminated!
-				trap_SendServerCommand( -1, "print \"Red Team eliminated!\n\"");
-				AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-				EndEliminationRound();
-			}
-		}
-
-		//Time up
-		if((level.roundNumber==level.roundNumberStarted)&&(g_elimination_roundtime.integer)&&(level.time>=level.roundStartTime+1000*g_elimination_roundtime.integer))
-		{
-			trap_SendServerCommand( -1, "print \"No teams eliminated.\n\"");
-
-			if(level.roundBluePlayers != 0 && level.roundRedPlayers != 0) {//We don't want to divide by zero. (should not be possible)
-				if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)>((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
-				{
-					//Red team has higher procentage survivors
-					trap_SendServerCommand( -1, "print \"Red team has most survivers!\n\"");
-					AddTeamScore(level.intermission_origin,TEAM_RED,1);
-				}
-				else if(((double)countsLiving[TEAM_RED])/((double)level.roundRedPlayers)<((double)countsLiving[TEAM_BLUE])/((double)level.roundBluePlayers))
-				{
-					//Blue team has higher procentage survivors
-					trap_SendServerCommand( -1, "print \"Blue team has most survivers!\n\"");
-					AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-				}
-				else if(countsHealth[TEAM_RED]>countsHealth[TEAM_BLUE])
-				{
-					//Red team has more health
-					trap_SendServerCommand( -1, "print \"Red team has more health left!\n\"");
-					AddTeamScore(level.intermission_origin,TEAM_RED,1);
-				}
-				else if(countsHealth[TEAM_RED]<countsHealth[TEAM_BLUE])
-				{
-					//Blue team has more health
-					trap_SendServerCommand( -1, "print \"Blue team has more health left!\n\"");
-					AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-				}
-			}
-			EndEliminationRound();
-		}
-
-		//This might be better placed another place:
-		if(g_elimination_activewarmup.integer<1)
-			g_elimination_activewarmup.integer=1; //We need at least 1 second to spawn all players
-		if(g_elimination_activewarmup.integer >= g_elimination_warmup.integer) //This must not be true
-			g_elimination_warmup.integer = g_elimination_activewarmup.integer+1; //Increase warmup
-
-		//Force respawn
-		if(level.roundNumber!=level.roundNumberStarted && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer && !level.roundRespawned)
-		{
-			level.roundRespawned = qtrue;
-			RespawnAll();
-			SendEliminationMessageToAllClients();
-		}
-
-		if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer)
-		{
-			RespawnDead();
-		}
-
-
-		if((level.roundNumber>level.roundNumberStarted)&&(level.time>=level.roundStartTime))
-			StartEliminationRound();
-
-		if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime)
-		if(counts[TEAM_BLUE]<1 || counts[TEAM_RED]<1)
-		{
-			RespawnDead(); //Allow players to run around anyway
-			WarmupEliminationRound(); //Start over
-			return;
-		}
-
-		if(level.warmupTime != 0) {
-			if(level.time+1000*g_elimination_warmup.integer-500>level.roundStartTime)
-			{
-				RespawnDead();
-				WarmupEliminationRound();
-			}
-		}
-	}
-}
-
-/*
-=============
-CheckDomination
-=============
-*/
-void CheckDomination(void) {
-	int i;
-        int scoreFactor = 1;
-
-	if ( (level.numPlayingClients < 1) || (g_gametype.integer != GT_DOMINATION) ) {
-		return;
-	}
-
-	//Do nothing if warmup
-	if(level.warmupTime != 0)
-		return;
-
-	//Don't score if we are in intermission. Just plain stupid
-	if(level.intermissiontime)
-		return;
-
-	//Sago: I use if instead of while, since if the server stops for more than 2 seconds people should not be allowed to score anyway
-	if(level.domination_points_count>3)
-            scoreFactor = 2; //score more slowly if there are many points
-        if(level.time>=level.dom_scoreGiven*DOM_SECSPERPOINT*scoreFactor) {
-		for(i=0;i<level.domination_points_count;i++) {
-			if ( level.pointStatusDom[i] == TEAM_RED )
-				AddTeamScore(level.intermission_origin,TEAM_RED,1);
-			if ( level.pointStatusDom[i] == TEAM_BLUE )
-				AddTeamScore(level.intermission_origin,TEAM_BLUE,1);
-		}
-		level.dom_scoreGiven++;
-		while(level.time>level.dom_scoreGiven*DOM_SECSPERPOINT*scoreFactor)
-			level.dom_scoreGiven++;
-		CalculateRanks();
-	}
-}
-
-/*
-=============
-CheckTournament
-
-Once a frame, check for changes in tournement player state
-=============
-*/
-void CheckTournament( void ) {
-	// check because we run 3 game frames before calling Connect and/or ClientBegin
-	// for clients on a map_restart
-	if ( level.numPlayingClients == 0 ) {
-		return;
-	}
-
-	if ( g_gametype.integer == GT_TOURNAMENT ) {
-
-		// pull in a spectator if needed
-		if ( level.numPlayingClients < 2 ) {
-			AddTournamentPlayer();
-		}
-
-		// if we don't have two players, go back to "waiting for players"
-		if ( level.numPlayingClients != 2 ) {
-			if ( level.warmupTime != -1 ) {
-				level.warmupTime = -1;
-				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-			}
-			return;
-		}
-
-		if ( level.warmupTime == 0 ) {
-			return;
-		}
-
-		// if all players have arrived, start the countdown
-		if ( level.warmupTime < 0 ) {
-			if ( level.numPlayingClients == 2 ) {
-				// fudge by -1 to account for extra delays
-				if ( g_warmup.integer > 1 ) {
-					level.warmupTime = level.time + ( g_warmup.integer - 1 ) * 1000;
-				} else {
-					level.warmupTime = 0;
-				}
-
-				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-			}
-			return;
-		}
-
-		// if the warmup time has counted down, restart
-		if ( level.time > level.warmupTime ) {
-			level.warmupTime += 10000;
-			trap_Cvar_Set( "g_restarted", "1" );
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-			level.restarted = qtrue;
-			return;
-		}
-	} else if ( level.warmupTime != 0 ) {
-		int		counts[TEAM_NUM_TEAMS];
-		qboolean	notEnough = qfalse;
-
-		if ( g_gametype.integer > GT_TEAM && !g_ffa_gt ) {
-			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
-
-			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
-				notEnough = qtrue;
-			}
-		} else if ( level.numPlayingClients < 2 ) {
-			notEnough = qtrue;
-		}
-
-		if ( notEnough ) {
-			if ( level.warmupTime != -1 ) {
-				level.warmupTime = -1;
-				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-			}
-			return; // still waiting for team members
-		}
-
-		if ( level.warmupTime == 0 ) {
-			return;
-		}
-
-		// if all players have arrived, start the countdown
-		if ( level.warmupTime < 0 ) {
-			// fudge by -1 to account for extra delays
-			level.warmupTime = level.time + ( g_warmup.integer - 1 ) * 1000;
-			trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-			return;
-		}
-
-		// if the warmup time has counted down, restart
-		if ( level.time > level.warmupTime ) {
-			level.warmupTime += 10000;
-			trap_Cvar_Set( "g_restarted", "1" );
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-			level.restarted = qtrue;
-			return;
-		}
-	}
-}
 
 /*
 ==================
@@ -1995,10 +1258,6 @@ void G_RunFrame( int levelTime ) {
 		G_RunThink( ent );
 	}
 
-//unlagged - backward reconciliation #2
-	// NOW run the missiles, with all players backward-reconciled
-	// to the positions they were in exactly 50ms ago, at the end
-	// of the last server frame
 	G_TimeShiftAllClients( level.previousTime, NULL );
 
 	ent = &g_entities[0];
@@ -2018,11 +1277,10 @@ void G_RunFrame( int levelTime ) {
 	}
 
 	G_UnTimeShiftAllClients( NULL );
-//unlagged - backward reconciliation #2
 
-end = trap_Milliseconds();
+	end = trap_Milliseconds();
 
-start = trap_Milliseconds();
+	start = trap_Milliseconds();
 	// perform final fixups on the players
 	ent = &g_entities[0];
 	for (i=0 ; i < level.maxclients ; i++, ent++ ) {
@@ -2030,23 +1288,7 @@ start = trap_Milliseconds();
 			ClientEndFrame( ent );
 		}
 	}
-end = trap_Milliseconds();
-
-	// see if it is time to do a tournement restart
-	CheckTournament();
-
-	//Check Elimination state
-	CheckElimination();
-	CheckLMS();
-
-	//Check Double Domination
-	CheckDoubleDomination();
-
-	CheckDomination();
-
-	//Sago: I just need to think why I placed this here... they should only spawn once
-	if(g_gametype.integer == GT_DOMINATION)
-		Team_Dom_SpawnPoints();
+	end = trap_Milliseconds();
 
 	// see if it is time to end the level
 	CheckExitRules();

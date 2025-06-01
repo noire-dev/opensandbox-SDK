@@ -407,17 +407,15 @@ int BotChat_EnterGame(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-		if(bs->spbot){
-        if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-        }}
+	if(bs->spbot){
+    if(!NpcFactionProp(bs, NP_CHAT, 0)){
+    return qfalse; // spbot no chat
+    }}
 
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENTEREXITGAME, 0, 1);
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -453,8 +451,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENTEREXITGAME, 0, 1);
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -493,8 +489,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (TeamPlayIsOn()) {
 	    return qfalse;
 	}
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -529,8 +523,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	{
 		return qtrue;
 	}
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -585,8 +577,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_DEATH, 0, 1);
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chatting is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -689,8 +679,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_KILL, 0, 1);
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chat is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -760,8 +748,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENEMYSUICIDE, 0, 1);
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chat is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd) return qfalse;
@@ -804,8 +790,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITTALKING, 0, 1);
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chat is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd * 0.5) return qfalse;
@@ -848,8 +832,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITNODEATH, 0, 1);
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chat is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd * 0.5) return qfalse;
@@ -890,8 +872,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITNOKILL, 0, 1);
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//if fast chat is off
 	if (!bot_fastchat.integer) {
 		if (random() > rnd * 0.5) return qfalse;
@@ -928,8 +908,6 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (bot_nochat.integer) return qfalse;
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
-	// don't chat in tournament mode
-	if (gametype == GT_TOURNAMENT) return qfalse;
 	//don't chat when doing something important :)
 	if (bs->ltgtype == LTG_TEAMHELP ||
 		bs->ltgtype == LTG_TEAMACCOMPANY ||

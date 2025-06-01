@@ -30,10 +30,6 @@ START SERVER MENU HEADER ( Q3 INTERFACE INDEPENDENT DEFINTIONS/DATA ) *****
 =============================================================================
 */
 
-#define MAX_GAME_TYPE (GT_DOMINATION + 1)
-
-
-#define NUM_GAMETYPES 15
 
 /*
 =============================================================================
@@ -42,8 +38,6 @@ MAP DATA *****
 
 =============================================================================
 */
-
-
 
 #define MAX_MAPPAGES 4
 #define NUMMAPS_PERPAGE 8
@@ -163,7 +157,7 @@ typedef struct mapparameters_s {
 	int SourceCount;
 	int SourceType;
 
-	int TypeCount[MAX_GAME_TYPE][MAX_MAP_GROUP];
+	int TypeCount[GT_MAX_GAME_TYPE][MAX_MAP_GROUP];
 } mapparameters_t;
 
 
@@ -570,10 +564,6 @@ int obeliskRespawnDelay;
 int cubeTimeout;
 int flagrespawn;
 int weaponTeamRespawn;
-int elimination_selfdamage;
-int elimination_roundtime;
-int elimination_warmup;
-int elimination_activewarmup;
 int accelerate;
 int spectatorspeed;
 int speed;
@@ -636,55 +626,30 @@ int teamblue_respawnwait;
 int teamblue_pickupitems;
 int elimination_blue_respawn;
 int elimination_red_respawn;
-int bluespawn_health;
-int bluespawn_armor;
-int bluespawn_grapple;
-int bluespawn_gauntlet;
-int bluespawn_machinegun;
-int bluespawn_shotgun;
-int bluespawn_grenade;
-int bluespawn_rocket;
-int bluespawn_railgun;
-int bluespawn_lightning;
-int bluespawn_plasmagun;
-int bluespawn_bfg;
-int bluespawn_chain;
-int bluespawn_mine;
-int bluespawn_nail;
-int bluespawn_flame;
-int bluespawn_antimatter;
-int bluespawn_quad;
-int bluespawn_haste;
-int bluespawn_bsuit;
-int bluespawn_invis;
-int bluespawn_regen;
-int bluespawn_flight;
-int bluespawn_items;
-int bluespawn_holdable;
-int redspawn_health;
-int redspawn_armor;
-int redspawn_grapple;
-int redspawn_gauntlet;
-int redspawn_machinegun;
-int redspawn_shotgun;
-int redspawn_grenade;
-int redspawn_rocket;
-int redspawn_railgun;
-int redspawn_lightning;
-int redspawn_plasmagun;
-int redspawn_bfg;
-int redspawn_chain;
-int redspawn_mine;
-int redspawn_nail;
-int redspawn_flame;
-int redspawn_antimatter;
-int redspawn_quad;
-int redspawn_haste;
-int redspawn_bsuit;
-int redspawn_invis;
-int redspawn_regen;
-int redspawn_flight;
-int redspawn_holdable;
+int spawn_health;
+int spawn_armor;
+int spawn_grapple;
+int spawn_gauntlet;
+int spawn_machinegun;
+int spawn_shotgun;
+int spawn_grenade;
+int spawn_rocket;
+int spawn_railgun;
+int spawn_lightning;
+int spawn_plasmagun;
+int spawn_bfg;
+int spawn_chain;
+int spawn_mine;
+int spawn_nail;
+int spawn_flame;
+int spawn_antimatter;
+int spawn_quad;
+int spawn_haste;
+int spawn_bsuit;
+int spawn_invis;
+int spawn_regen;
+int spawn_flight;
+int spawn_holdable;
 int elimination_items;
 int overlay;
 int randomItems;
@@ -996,8 +961,8 @@ void UI_LoadMapTypeInfo(void);
 //
 
 extern const char* idmap_list[];
-extern const char *gametype_items[NUM_GAMETYPES + 1];
-extern const char *gametype_itemsru[NUM_GAMETYPES + 1];
+extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
+extern const char *gametype_itemsru[GT_MAX_GAME_TYPE+1];
 extern const char* randommaptype_items[MAP_RND_MAX + MAX_MAPTYPES + 1];
 extern const char* randommaptype_itemsru[MAP_RND_MAX + MAX_MAPTYPES + 1];
 extern char* var_cvar_base;

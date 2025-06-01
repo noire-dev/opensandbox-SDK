@@ -122,7 +122,7 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 	int traveltimes[MAX_CLIENTS];
 	bot_goal_t *goal = NULL;
 
-	if (gametype == GT_CTF || gametype == GT_1FCTF || gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF || gametype == GT_1FCTF) {
 		if (BotTeam(bs) == TEAM_RED)
 			goal = &ctf_redflag;
 		else
@@ -2084,67 +2084,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			break;
 		}
 		case GT_CTF:
-		case GT_CTF_ELIMINATION:
-		{
-			//if the number of team mates changed or the flag status changed
-			//or someone wants to know what to do
-			if (bs->numteammates != numteammates || bs->flagstatuschanged || bs->forceorders || lastRoundNumber != level.roundNumber) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->flagstatuschanged = qfalse;
-				bs->forceorders = qfalse;
-				lastRoundNumber = level.roundNumber;
-			}
-			//if there were no flag captures the last 3 minutes
-			if (bs->lastflagcapture_time < FloatTime() - 240) {
-				bs->lastflagcapture_time = FloatTime();
-				//randomly change the CTF strategy
-				if (random() < 0.4) {
-					bs->ctfstrategy ^= CTFS_AGRESSIVE;
-					bs->teamgiveorders_time = FloatTime();
-				}
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 3) {
-				BotCTFOrders(bs);
-				//
-				bs->teamgiveorders_time = 0;
-			}
-			break;
-		}
-		case GT_DOUBLE_D:
-		{
-			//if the number of team mates changed or the domination point status changed
-			//or someone wants to know what to do
-			if (bs->numteammates != numteammates || bs->flagstatuschanged || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->flagstatuschanged = qfalse;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 3) {
-				BotDDorders(bs);
-				//
-				bs->teamgiveorders_time = 0;
-			}
-			break;
-		}
-		case GT_ELIMINATION:
-		{
-			if (bs->numteammates != numteammates || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
-				BotTeamOrders(bs);
-				//give orders again after 120 seconds
-				bs->teamgiveorders_time = FloatTime() + 120;
-			}
-			break;
-		}
 		case GT_1FCTF:
 		{
 			if (bs->numteammates != numteammates || bs->flagstatuschanged || bs->forceorders) {

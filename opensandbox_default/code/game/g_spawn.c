@@ -227,11 +227,6 @@ spawn_t	spawns_table[] = {
 	{"team_blueobelisk", SP_team_blueobelisk},
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 
-	{"info_player_dd", SP_info_player_dd},
-    {"info_player_dd_red", SP_info_player_dd_red},
-    {"info_player_dd_blue", SP_info_player_dd_blue},
-	{"domination_point", SP_EmptySpawn},
-
 	{"script_variable", SP_script_variable},
 	{"script_cmd", SP_script_cmd},
 
@@ -280,21 +275,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
 		}
 	}
-	if( g_gametype.integer == GT_ELIMINATION || g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM || g_gametype.integer == GT_LMS || g_gametype.integer == GT_DOMINATION ) {
-		if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
-			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-		}
-		if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
-			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-		}
-		if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
-			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-		}
-		if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
-			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
-		}
-	}
-	if(g_gametype.integer == GT_DOUBLE_D) {
+	if( g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM ) {
 		if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
@@ -430,7 +411,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-	static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "tournament", "lms", "team", "ctf", "oneflag", "obelisk", "harvester", "elimination", "ctf", "dd", "dom"};
+	static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "team", "ctf", "oneflag", "obelisk", "harvester"};
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -439,7 +420,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		G_ParseField( level.spawnVars[i][0], level.spawnVars[i][1], ent );
 	}
 
-	if ( g_gametype.integer >= GT_TEAM && !g_ffa_gt ) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		G_SpawnInt( "notteam", "0", &i );
 		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
 			G_FreeEntity( ent );
@@ -680,9 +661,7 @@ void G_SpawnEntitiesFromString( void ) {
 	// parse ents
 	while( G_ParseSpawnVars() ) {
 		G_SpawnGEntityFromSpawnVars();
-	}	
-
-    G_LevelLoadComplete();
+	}
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
 }

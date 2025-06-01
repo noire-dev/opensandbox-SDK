@@ -60,7 +60,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 			ping += 1;
 		}
 
-		Com_sprintf(entry, sizeof(entry), " %i %i %i %i %i", level.sortedClients[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000, cl->isEliminated);
+		Com_sprintf(entry, sizeof(entry), " %i %i %i %i", level.sortedClients[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000);
 		j = strlen(entry);
 		if (stringlength + j >= sizeof(string))
 			break;
@@ -68,7 +68,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		stringlength += j;
 	}
 
-	trap_SendServerCommand(ent-g_entities, va("scores %i %i %i %i%s", i, level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], level.roundStartTime, string));
+	trap_SendServerCommand(ent-g_entities, va("scores %i %i %i%s", i, level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], string));
 }
 
 void G_SendGameCvars(gentity_t *ent) {
@@ -135,85 +135,8 @@ void G_SendSpawnSwepWeapons(gentity_t *ent) {
 	ClientUserinfoChanged( ent->s.clientNum );
 }
 
-/*
-==================
-DominationPointStatusMessage
-
-==================
-*/
-void DominationPointStatusMessage( gentity_t *ent ) {
-	char		entry[10]; //Will more likely be 2... in fact cannot be more since we are the server
-	char		string[10*(MAX_DOMINATION_POINTS+1)];
-	int			stringlength;
-	int i, j;
-
-	string[0] = 0;
-	stringlength = 0;
-
-	for(i = 0;i<MAX_DOMINATION_POINTS && i<level.domination_points_count; i++) {
-		Com_sprintf (entry, sizeof(entry)," %i",level.pointStatusDom[i]);
-		j = strlen(entry);
-		if (stringlength + j > 10*MAX_DOMINATION_POINTS)
-			break;
-		strcpy (string + stringlength, entry);
-		stringlength += j;
-	}
-
-	trap_SendServerCommand( ent-g_entities, va("domStatus %i%s", level.domination_points_count, string ) );
-}
-
-/*
-==================
-EliminationMessage
-
-==================
-*/
-
-void EliminationMessage(gentity_t *ent) {
-	trap_SendServerCommand( ent-g_entities, va("elimination %i %i %i",
-		level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], level.roundStartTime) );
-}
-
 void RespawnTimeMessage(gentity_t *ent, int time) {
     trap_SendServerCommand( ent-g_entities, va("respawn %i", time) );
-}
-
-/*
-==================
-DoubleDominationScoreTime
-
-==================
-*/
-void DoubleDominationScoreTimeMessage( gentity_t *ent ) {
-	trap_SendServerCommand( ent-g_entities, va("ddtaken %i", level.timeTaken));
-}
-
-/*
-==================
-DominationPointNames
-==================
-*/
-
-void DominationPointNamesMessage( gentity_t *ent ) {
-	char text[MAX_DOMINATION_POINTS_NAMES*MAX_DOMINATION_POINTS];
-	int i,j;
-	qboolean nullFound;
-	for(i=0;i<MAX_DOMINATION_POINTS;i++) {
-		Q_strncpyz(text+i*MAX_DOMINATION_POINTS_NAMES,level.domination_points_names[i],MAX_DOMINATION_POINTS_NAMES-1);
-		if(i!=MAX_DOMINATION_POINTS-1) {
-			//Don't allow "/0"!
-			nullFound = qfalse;
-			for(j=i*MAX_DOMINATION_POINTS_NAMES; j<(i+1)*MAX_DOMINATION_POINTS_NAMES;j++) {
-				if(text[j]==0)
-					nullFound = qtrue;
-				if(nullFound)
-					text[j] = ' ';
-			}
-		}
-		text[MAX_DOMINATION_POINTS_NAMES*MAX_DOMINATION_POINTS-2]=0x19;
-		text[MAX_DOMINATION_POINTS_NAMES*MAX_DOMINATION_POINTS-1]=0;
-	}
-	trap_SendServerCommand( ent-g_entities, va("dompointnames %i \"%s\"", level.domination_points_count, text));
 }
 
 void ObeliskHealthMessage() {
@@ -239,13 +162,9 @@ void Cmd_Score_f( gentity_t *ent ) {
 CheatsOk
 ==================
 */
-qboolean	CheatsOk( gentity_t *ent ) {
+qboolean CheatsOk( gentity_t *ent ) {
 	if ( !g_cheats.integer ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"Cheats are not enabled on this server.\n\""));
-		return qfalse;
-	}
-	if ( ent->health <= 0 ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"You must be alive to use this command.\n\""));
 		return qfalse;
 	}
 	return qtrue;
@@ -257,7 +176,7 @@ qboolean	CheatsOk( gentity_t *ent ) {
 ConcatArgs
 ==================
 */
-char	*ConcatArgs( int start ) {
+char *ConcatArgs( int start ) {
 	int		i, c, tlen;
 	static char	line[MAX_STRING_CHARS];
 	int		len;
@@ -522,7 +441,7 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
 	if (ent->health <= 0) {
@@ -599,7 +518,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 	} else if ( Q_strequal( s, "spectator" ) || Q_strequal( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-	} else if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	} else if ( g_gametype.integer >= GT_TEAM ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
 		if ( Q_strequal( s, "red" ) || Q_strequal( s, "r" ) ) {
@@ -654,10 +573,6 @@ void SetTeam( gentity_t *ent, char *s ) {
     if(oldTeam!=TEAM_SPECTATOR)
         PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"), client->ps);
 
-	// they go to the end of the line for tournements
-    if(team == TEAM_SPECTATOR && oldTeam != team)
-        AddTournamentQueue(client);
-
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
@@ -692,16 +607,8 @@ to free floating spectator mode
 =================
 */
 void StopFollowing( gentity_t *ent ) {
-	if(g_gametype.integer<GT_ELIMINATION || g_gametype.integer>GT_LMS)
-	{
-		//Shouldn't this already be the case?
-		ent->client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
-		ent->client->sess.sessionTeam = TEAM_SPECTATOR;
-	}
-	else {
-		ent->client->ps.stats[STAT_HEALTH] = 0;
-		ent->health = 0;
-	}
+	ent->client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;	
+	ent->client->sess.sessionTeam = TEAM_SPECTATOR;	
 	ent->client->sess.spectatorState = SPECTATOR_FREE;
 	ent->client->ps.pm_flags &= ~PMF_FOLLOW;
 	ent->r.svFlags &= ~SVF_BOT;
@@ -734,12 +641,6 @@ void Cmd_Team_f( gentity_t *ent ) {
 			break;
 		}
 		return;
-	}
-
-	// if they are playing a tournement game, count as a loss
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
-		ent->client->sess.losses++;
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
@@ -778,14 +679,8 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	}
 
 	// can't follow another spectator (or an eliminated player)
-	if ( (level.clients[ i ].sess.sessionTeam == TEAM_SPECTATOR) || level.clients[ i ].isEliminated) {
+	if ( level.clients[ i ].sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
-	}
-
-	// if they are playing a tournement game, count as a loss
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
-		ent->client->sess.losses++;
 	}
 
 	// first set them to spectator
@@ -825,11 +720,6 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
         dir = 1;
     }
 
-	// if they are playing a tournement game, count as a loss
-	if ( (g_gametype.integer == GT_TOURNAMENT )
-		&& ent->client->sess.sessionTeam == TEAM_FREE ) {
-		ent->client->sess.losses++;
-	}
 	// first set them to spectator
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
 		SetTeam( ent, "spectator" );
@@ -861,7 +751,7 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 		}
 
 		// can't follow another spectator
-		if ( (level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR) || level.clients[ clientnum ].isEliminated) {
+		if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR ) {
 			continue;
 		}
 
@@ -937,7 +827,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
-		if (target && g_gametype.integer >= GT_TEAM && g_ffa_gt != 1 &&
+		if (target && g_gametype.integer >= GT_TEAM &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
 			Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
@@ -1025,7 +915,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
 		
@@ -1160,7 +1050,7 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 	
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
 
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
 		
@@ -1266,7 +1156,7 @@ Added for OpenSandbox.
 */
 static void Cmd_Flashlight_f( gentity_t *ent ){
 
-	if ( (ent->client->sess.sessionTeam == TEAM_SPECTATOR) || ent->client->isEliminated ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
 
@@ -1337,17 +1227,11 @@ static const char *gameNames[] = {
 	"Sandbox",
 	"Map Editor",
 	"Free For All",
-	"Tournament",
-	"Last Man Standing",
 	"Team Deathmatch",
 	"Capture the Flag",
 	"One Flag Capture",
 	"Overload",
 	"Harvester",
-	"Elimination",
-	"CTF Elimination",
-	"Double Domination",
-	"Domination",
 	0
 };
 

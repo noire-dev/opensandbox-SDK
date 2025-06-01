@@ -148,31 +148,12 @@ char* 			entity_items[] = {
 	"holdable_kamikaze",
 	"holdable_invulnerability",
 	"holdable_portal",
-	"holdable_key_blue",
-	"holdable_key_gold",
-	"holdable_key_green",
-	"holdable_key_iron",
-	"holdable_key_master",
-	"holdable_key_red",
-	"holdable_key_silver",
-	"holdable_key_yellow",
-	"team_CTF_redflag",
-	"team_CTF_blueflag",
-	"team_CTF_neutralflag",
 
 	//Sandbox things
 //	"sb.shooter",
 
 	//Editor things
-	"info_player_deathmatch",
-	"info_player_dd",
-	"info_player_dd_red",
-	"info_player_dd_blue",
-	"team_CTF_redplayer",
-	"team_CTF_blueplayer",
-	"team_CTF_redspawn",
-	"team_CTF_bluespawn",
-	"misc_teleporter_dest",
+//	...
 	0
 };
 

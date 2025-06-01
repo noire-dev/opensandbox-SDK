@@ -656,104 +656,6 @@ void BotMatch_DefendKeyArea(bot_state_t *bs, bot_match_t *match) {
 
 /*
 ==================
-BotMatch_TakeA
-For Double Domination
-==================
-*/
-void BotMatch_TakeA(bot_state_t *bs, bot_match_t *match) {
-// 	char itemname[MAX_MESSAGE_SIZE];
-	char netname[MAX_MESSAGE_SIZE];
-	int client;
-
-	if (!TeamPlayIsOn()) return;
-	//if not addressed to this bot
-	if (!BotAddressedToBot(bs, match)) return;
-	//get the match variable
-	/*trap_BotMatchVariable(match, KEYAREA, itemname, sizeof(itemname));
-	//
-	if (!BotGetMessageTeamGoal(bs, itemname, &bs->teamgoal)) {
-		//BotAI_BotInitialChat(bs, "cannotfind", itemname, NULL);
-		//trap_BotEnterChat(bs->cs, bs->client, CHAT_TEAM);
-		return;
-	}*/
-	//
-	trap_BotMatchVariable(match, NETNAME, netname, sizeof(netname));
-	//
-	client = ClientFromName(netname);
-	//the team mate who ordered
-	bs->decisionmaker = client;
-	bs->ordered = qtrue;
-	bs->order_time = FloatTime();
-	//set the time to send a message to the team mates
-	bs->teammessage_time = FloatTime() + 2 * random();
-	//set the ltg type
-	bs->ltgtype = LTG_POINTA;
-	//get the team goal time
-	bs->teamgoal_time = BotGetTime(match);
-	//set the team goal time
-	if (!bs->teamgoal_time) bs->teamgoal_time = FloatTime() + DD_POINTA;
-	//away from defending
-	bs->defendaway_time = 0;
-	//
-	BotSetTeamStatus(bs);
-	// remember last ordered task
-	BotRememberLastOrderedTask(bs);
-#ifdef DEBUG
-	BotPrintTeamGoal(bs);
-#endif //DEBUG
-}
-
-/*
-==================
-BotMatch_TakeB
-For Double Domination
-==================
-*/
-void BotMatch_TakeB(bot_state_t *bs, bot_match_t *match) {
-// 	char itemname[MAX_MESSAGE_SIZE];
-	char netname[MAX_MESSAGE_SIZE];
-	int client;
-
-	if (!TeamPlayIsOn()) return;
-	//if not addressed to this bot
-	if (!BotAddressedToBot(bs, match)) return;
-	//get the match variable
-	/*trap_BotMatchVariable(match, KEYAREA, itemname, sizeof(itemname));
-	//
-	if (!BotGetMessageTeamGoal(bs, itemname, &bs->teamgoal)) {
-		//BotAI_BotInitialChat(bs, "cannotfind", itemname, NULL);
-		//trap_BotEnterChat(bs->cs, bs->client, CHAT_TEAM);
-		//return;
-	}*/
-	//
-	trap_BotMatchVariable(match, NETNAME, netname, sizeof(netname));
-	//
-	client = ClientFromName(netname);
-	//the team mate who ordered
-	bs->decisionmaker = client;
-	bs->ordered = qtrue;
-	bs->order_time = FloatTime();
-	//set the time to send a message to the team mates
-	bs->teammessage_time = FloatTime() + 2 * random();
-	//set the ltg type
-	bs->ltgtype = LTG_POINTB;
-	//get the team goal time
-	bs->teamgoal_time = BotGetTime(match);
-	//set the team goal time
-	if (!bs->teamgoal_time) bs->teamgoal_time = FloatTime() + DD_POINTA;
-	//away from defending
-	bs->defendaway_time = 0;
-	//
-	BotSetTeamStatus(bs);
-	// remember last ordered task
-	BotRememberLastOrderedTask(bs);
-#ifdef DEBUG
-	BotPrintTeamGoal(bs);
-#endif //DEBUG
-}
-
-/*
-==================
 BotMatch_GetItem
 ==================
 */
@@ -932,7 +834,7 @@ void BotMatch_GetFlag(bot_state_t *bs, bot_match_t *match) {
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if (gametype == GT_CTF || gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF) {
 		if (!ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
 	}
@@ -960,7 +862,7 @@ void BotMatch_GetFlag(bot_state_t *bs, bot_match_t *match) {
 	//set the team goal time
 	bs->teamgoal_time = FloatTime() + CTF_GETFLAG_TIME;
 	// get an alternate route in ctf
-	if (gametype == GT_CTF || gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF) {
 		//get an alternative route goal towards the enemy base
 		BotGetAlternateRouteGoal(bs, BotOppositeTeam(bs));
 	}
@@ -982,7 +884,7 @@ void BotMatch_AttackEnemyBase(bot_state_t *bs, bot_match_t *match) {
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if (gametype == GT_CTF|| gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF) {
 		BotMatch_GetFlag(bs, match);
 	}
 	else if (gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER) {
@@ -1069,7 +971,7 @@ void BotMatch_RushBase(bot_state_t *bs, bot_match_t *match) {
 	char netname[MAX_MESSAGE_SIZE];
 	int client;
 
-	if (gametype == GT_CTF|| gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF) {
 		if (!ctf_redflag.areanum || !ctf_blueflag.areanum)
 			return;
 	}
@@ -1161,7 +1063,7 @@ void BotMatch_ReturnFlag(bot_state_t *bs, bot_match_t *match) {
 	int client;
 
 	//if not in CTF mode
-	if (gametype != GT_CTF && gametype != GT_CTF_ELIMINATION && gametype != GT_1FCTF)
+	if (gametype != GT_CTF && gametype != GT_1FCTF)
 		return;
 	//if not addressed to this bot
 	if (!BotAddressedToBot(bs, match))
@@ -1531,17 +1433,6 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 			BotAI_BotInitialChat(bs, "harvesting", NULL);
 			break;
 		}
-
-		case LTG_POINTA:
-		{
-			BotAI_BotInitialChat(bs, "dd_pointa", NULL);
-			break;
-		}
-		case LTG_POINTB:
-		{
-			BotAI_BotInitialChat(bs, "dd_pointb", NULL);
-			break;
-		}
 		default:
 		{
 			BotAI_BotInitialChat(bs, "roaming", NULL);
@@ -1660,9 +1551,7 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 		}
 	}
 	if (bestitem != -1) {
-		if (gametype == GT_CTF || gametype == GT_CTF_ELIMINATION
-			|| gametype == GT_1FCTF
-			) {
+		if (gametype == GT_CTF || gametype == GT_1FCTF ) {
 			redtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_redflag.areanum, TFL_DEFAULT);
 			bluett = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_blueflag.areanum, TFL_DEFAULT);
 			if (redtt < (redtt + bluett) * 0.4) {
@@ -1813,7 +1702,7 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 
 	char flag[128], netname[MAX_NETNAME];
 
-	if (gametype == GT_CTF || gametype == GT_CTF_ELIMINATION) {
+	if (gametype == GT_CTF) {
 		trap_BotMatchVariable(match, FLAG, flag, sizeof(flag));
 		if (match->subtype & ST_GOTFLAG) {
 			if (!Q_stricmp(flag, "red")) {
@@ -2063,16 +1952,6 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 		case MSG_SUICIDE:
 		{
 			BotMatch_Suicide(bs, &match);
-			break;
-		}
-		case MSG_TAKEA:
-		{
-			BotMatch_TakeA(bs, &match);
-			break;
-		}
-		case MSG_TAKEB:
-		{
-			BotMatch_TakeB(bs, &match);
 			break;
 		}
 		default:

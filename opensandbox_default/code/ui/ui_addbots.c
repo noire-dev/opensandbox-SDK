@@ -484,7 +484,7 @@ if(cl_language.integer == 1){
 	addBotsMenuInfo.team.string		= "Команда: ";
 }
 	addBotsMenuInfo.team.generic.id			= ID_TEAM;
-	if( addBotsMenuInfo.gametype >= GT_TEAM && !(addBotsMenuInfo.gametype == GT_LMS) ) {
+	if( addBotsMenuInfo.gametype >= GT_TEAM ) {
 		addBotsMenuInfo.team.itemnames		= teamNames2;
 	}
 	else {

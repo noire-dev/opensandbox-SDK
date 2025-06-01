@@ -163,7 +163,7 @@ void ProximityMine_Trigger( gentity_t *trigger, gentity_t *other, trace_t *trace
 	}
 
 
-	if ( g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) {
+	if ( g_gametype.integer >= GT_TEAM ) {
 		// don't trigger same team mines
 		if (trigger->parent->s.generic1 == other->client->sess.sessionTeam) {
 			return;
@@ -604,7 +604,7 @@ void G_HomingMissile( gentity_t *ent )
 		if ( blip->client->sess.sessionTeam == TEAM_SPECTATOR )
 			continue;
 
-		if ((g_gametype.integer >= GT_TEAM && g_ffa_gt!=1) &&
+		if ((g_gametype.integer >= GT_TEAM) &&
 			blip->client->sess.sessionTeam == ent->parent->client->sess.sessionTeam )
 			continue;
 

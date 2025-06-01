@@ -476,7 +476,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname, ci->legsModelName, ci->legsSkinName ) ) {
 
 		// fall back to default team name
-		if( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+		if( cgs.gametype >= GT_TEAM ) {
 			// keep skin name
 			if( ci->team == TEAM_BLUE ) {
 				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
@@ -494,7 +494,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 
 	// sounds
 	dir = ci->modelName;
-	fallback = (cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
+	fallback = cgs.gametype >= GT_TEAM ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS ; i++ ) {
 		s = cg_customSoundNames[i];
@@ -541,7 +541,7 @@ static void CG_ReloadClientInfo( int clientNum, clientInfo_t *ci ) {
 	if ( !CG_ReloadClientModelname( ci, ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname, ci->legsModelName, ci->legsSkinName ) ) {
 
 		// fall back to default team name
-		if( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1) {
+		if( cgs.gametype >= GT_TEAM ) {
 			// keep skin name
 			if( ci->team == TEAM_BLUE ) {
 				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
@@ -604,7 +604,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 			&& !Q_stricmp( ci->skinName, match->skinName )
 			&& !Q_stricmp( ci->headModelName, match->headModelName )
 			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
-			&& (cgs.gametype < GT_TEAM || cgs.ffa_gt==1 || ci->team == match->team) ) {
+			&& (cgs.gametype < GT_TEAM || ci->team == match->team) ) {
 			// this clientinfo is identical, so use it's handles
 
 			ci->deferred = qfalse;
@@ -660,14 +660,6 @@ void CG_NewClientInfo( int clientNum ) {
 	// bot skill
 	v = Info_ValueForKey( configstring, "s" );
 	newInfo.botSkill = atoi( v );
-
-	// wins
-	v = Info_ValueForKey( configstring, "w" );
-	newInfo.wins = atoi( v );
-
-	// losses
-	v = Info_ValueForKey( configstring, "l" );
-	newInfo.losses = atoi( v );
 
 	// team
 	v = Info_ValueForKey( configstring, "t" );
