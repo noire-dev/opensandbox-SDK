@@ -120,13 +120,6 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	vec3_t		org, org2, move2;
 	gentity_t	*block;
 
-	// EF_MOVER_STOP will just stop when contacting another entity
-	// instead of pushing it, but entities can still ride on top of it
-	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) && 
-		check->s.groundEntityNum != pusher->s.number ) {
-		return qfalse;
-	}
-
 	// save off the old position
 	if (pushed_p > &pushed[MAX_GENTITIES]) {
 		G_Error( "pushed_p > &pushed[MAX_GENTITIES]" );

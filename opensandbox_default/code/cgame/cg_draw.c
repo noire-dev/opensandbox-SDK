@@ -350,12 +350,6 @@ static void CG_DrawCounterElement( float x, float y, const char *value, const ch
 	ST_DrawString( x+40, y+3, value, UI_LEFT, customcolor_crosshair, 1.20);
 }
 
-static void CG_DrawDomElement( float x, float y, const char *value, const char *text ) {
-	CG_DrawRoundedRect(x, y, 150, 16, 0, color_dim);
-	ST_DrawString( x+2, y+6, text, UI_LEFT, customcolor_crosshair, 0.90);
-	ST_DrawString( x+110, y+2, value, UI_LEFT, customcolor_crosshair, 1.20);
-}
-
 /*
 ================
 CG_DrawStatusBar
@@ -729,7 +723,7 @@ static void CG_DrawPowerups( void ) {
 		}
 
 		item = BG_FindItemForPowerup(i);
-		if (!item || item->giType == IT_PERSISTANT_POWERUP) {
+		if (!item || item->giType == IT_RUNE) {
 			continue;
 		}
 
@@ -903,159 +897,6 @@ static void CG_DrawPersistantPowerup( void ) {
 		CG_RegisterItemVisuals( value );
 		CG_DrawPic( 0 - cgs.wideoffset, (0+SCREEN_HEIGHT / 2) - ICON_SIZE, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 	}
-}
-
-/*
-===============================================================================
-
-LAGOMETER
-
-===============================================================================
-*/
-
-#define	LAG_SAMPLES			128
-#define	MAX_LAGOMETER_PING	900
-#define	MAX_LAGOMETER_RANGE	300
-
-typedef struct {
-	int		frameSamples[LAG_SAMPLES];
-	int		frameCount;
-	int		snapshotFlags[LAG_SAMPLES];
-	int		snapshotSamples[LAG_SAMPLES];
-	int		snapshotCount;
-} lagometer_t;
-
-lagometer_t		lagometer;
-
-/*
-==============
-CG_AddLagometerFrameInfo
-
-Adds the current interpolate / extrapolate bar for this frame
-==============
-*/
-void CG_AddLagometerFrameInfo( void ) {
-	int			offset;
-
-	offset = cg.time - cg.latestSnapshotTime;
-	lagometer.frameSamples[ lagometer.frameCount & ( LAG_SAMPLES - 1) ] = offset;
-	lagometer.frameCount++;
-}
-
-/*
-==============
-CG_AddLagometerSnapshotInfo
-
-Each time a snapshot is received, log its ping time and
-the number of snapshots that were dropped before it.
-
-Pass NULL for a dropped packet.
-==============
-*/
-void CG_AddLagometerSnapshotInfo( snapshot_t *snap ) {
-	lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->ping;
-	lagometer.snapshotFlags[ lagometer.snapshotCount & ( LAG_SAMPLES - 1) ] = snap->snapFlags;
-	lagometer.snapshotCount++;
-}
-
-/*
-==============
-CG_DrawLagometer
-==============
-*/
-static void CG_DrawLagometer( void ) {
-	int		a, x, y, i;
-	float	v;
-	float	ax, ay, aw, ah, mid, range;
-	int		color;
-	float	vscale;
-
-	if (!cg_lagometer.integer) {
-		return;
-	}
-
-	//
-	// draw the graph
-	//
-	x = 640 - 48;
-	y = 480 - 48;
-
-	trap_R_SetColor( NULL );
-	CG_DrawPic( x + cgs.wideoffset, y, 48, 48, cgs.media.lagometerShader );
-
-	ax = x + cgs.wideoffset;
-	ay = y;
-	aw = 48;
-	ah = 48;
-	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
-
-	color = -1;
-	range = ah / 3;
-	mid = ay + range;
-
-	vscale = range / MAX_LAGOMETER_RANGE;
-
-	// draw the frame interpoalte / extrapolate graph
-	for ( a = 0 ; a < aw ; a++ ) {
-		i = ( lagometer.frameCount - 1 - a ) & (LAG_SAMPLES - 1);
-		v = lagometer.frameSamples[i];
-		v *= vscale;
-		if ( v > 0 ) {
-			if ( color != 1 ) {
-				color = 1;
-				trap_R_SetColor( g_color_table[ColorIndex(COLOR_YELLOW)] );
-			}
-			if ( v > range ) {
-				v = range;
-			}
-			trap_R_DrawStretchPic ( ax + aw - a, mid - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
-		} else if ( v < 0 ) {
-			if ( color != 2 ) {
-				color = 2;
-				trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLUE)] );
-			}
-			v = -v;
-			if ( v > range ) {
-				v = range;
-			}
-			trap_R_DrawStretchPic( ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
-		}
-	}
-
-	// draw the snapshot latency / drop graph
-	range = ah / 2;
-	vscale = range / MAX_LAGOMETER_PING;
-
-	for ( a = 0 ; a < aw ; a++ ) {
-		i = ( lagometer.snapshotCount - 1 - a ) & (LAG_SAMPLES - 1);
-		v = lagometer.snapshotSamples[i];
-		if ( v > 0 ) {
-			if ( lagometer.snapshotFlags[i] & SNAPFLAG_RATE_DELAYED ) {
-				if ( color != 5 ) {
-					color = 5;	// YELLOW for rate delay
-					trap_R_SetColor( g_color_table[ColorIndex(COLOR_MAGENTA)] );
-				}
-			} else {
-				if ( color != 3 ) {
-					color = 3;
-					trap_R_SetColor( g_color_table[ColorIndex(COLOR_GREEN)] );
-				}
-			}
-			v = v * vscale;
-			if ( v > range ) {
-				v = range;
-			}
-			trap_R_DrawStretchPic( ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
-		} else if ( v < 0 ) {
-			if ( color != 4 ) {
-				color = 4;		// RED for dropped snapshots
-				trap_R_SetColor( g_color_table[ColorIndex(COLOR_RED)] );
-			}
-			trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
-		}
-	}
-
-	trap_R_SetColor( NULL );
 }
 
 /*
@@ -1360,70 +1201,6 @@ static void CG_DrawCrosshairNames( void ) {
 
 /*
 =================
-CG_DrawVote
-=================
-*/
-static void CG_DrawVote(void) {
-	char	*s;
-	int		sec;
-
-	if ( !cgs.voteTime ) {
-		return;
-	}
-
-	// play a talk beep whenever it is modified
-	if ( cgs.voteModified ) {
-		cgs.voteModified = qfalse;
-		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
-	}
-
-	sec = ( VOTE_TIME - ( cg.time - cgs.voteTime ) ) / 1000;
-	if ( sec < 0 ) {
-		sec = 0;
-	}
-	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.voteString, cgs.voteYes, cgs.voteNo);
-	CG_DrawSmallString( 0, 58, s, 1.0F );
-	s = "or press ESC then click Vote";
-	CG_DrawSmallString( 0, 58 + BASEFONT_HEIGHT + 2, s, 1.0F );
-}
-
-/*
-=================
-CG_DrawTeamVote
-=================
-*/
-static void CG_DrawTeamVote(void) {
-	char	*s;
-	int		sec, cs_offset;
-
-	if ( cgs.clientinfo[cg.clientNum].team == TEAM_RED )
-		cs_offset = 0;
-	else if ( cgs.clientinfo[cg.clientNum].team == TEAM_BLUE )
-		cs_offset = 1;
-	else
-		return;
-
-	if ( !cgs.teamVoteTime[cs_offset] ) {
-		return;
-	}
-
-	// play a talk beep whenever it is modified
-	if ( cgs.teamVoteModified[cs_offset] ) {
-		cgs.teamVoteModified[cs_offset] = qfalse;
-		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
-	}
-
-	sec = ( VOTE_TIME - ( cg.time - cgs.teamVoteTime[cs_offset] ) ) / 1000;
-	if ( sec < 0 ) {
-		sec = 0;
-	}
-	s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
-							cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-	CG_DrawSmallString( 0, 90, s, 1.0F );
-}
-
-/*
-=================
 CG_DrawIntermission
 =================
 */
@@ -1547,212 +1324,12 @@ void CG_Notify(void) {
     }
 }
 
-/*
-=================
-CG_DrawWarmup
-=================
-*/
-static void CG_DrawWarmup( void ) {
-	int			w;
-	int			sec;
-	int			i;
-	float scale;
-	clientInfo_t	*ci1, *ci2;
-	int			cw;
-	const char	*s;
-
-	sec = cg.warmup;
-	if ( !sec ) {
-		return;
-	}
-
-	if ( sec < 0 ) {
-		s = "Waiting for players";
-		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-		CG_DrawBigString(320 - w / 2, 24, s, 1.0F);
-		cg.warmupCount = 0;
-		return;
-	}
-
-	if ( cgs.gametype == GT_SANDBOX ) {
-		s = "Sandbox";
-	} else if ( cgs.gametype == GT_MAPEDITOR ) {
-		s = "Map Editor";
-	} else if ( cgs.gametype == GT_FFA ) {
-		s = "Free For All";
-	} else if ( cgs.gametype == GT_TEAM ) {
-		s = "Team Deathmatch";
-	} else if ( cgs.gametype == GT_CTF ) {
-		s = "Capture the Flag";
-	} else if ( cgs.gametype == GT_1FCTF ) {
-		s = "One Flag CTF";
-	} else if ( cgs.gametype == GT_OBELISK ) {
-		s = "Overload";
-	} else if ( cgs.gametype == GT_HARVESTER ) {
-		s = "Harvester";
-	} else {
-		s = "";
-	}
-	w = CG_DrawStrlen( s );
-	if ( w > 640 / GIANT_WIDTH ) {
-		cw = 640 / w;
-	} else {
-		cw = GIANT_WIDTH;
-	}
-	CG_DrawString( 320 - w * cw/2, 25,s, colorWhite, qfalse, qtrue, cw, (int)(cw * 1.1f), 0, 0 );
-
-	sec = ( sec - cg.time ) / 1000;
-	if ( sec < 0 ) {
-		cg.warmup = 0;
-		sec = 0;
-	}
-	s = va( "Starts in: %i", sec + 1 );
-	if ( sec != cg.warmupCount ) {
-		cg.warmupCount = sec;
-		switch ( sec ) {
-		case 0:
-			trap_S_StartLocalSound( cgs.media.count1Sound, CHAN_ANNOUNCER );
-			break;
-		case 1:
-			trap_S_StartLocalSound( cgs.media.count2Sound, CHAN_ANNOUNCER );
-			break;
-		case 2:
-			trap_S_StartLocalSound( cgs.media.count3Sound, CHAN_ANNOUNCER );
-			break;
-		default:
-			break;
-		}
-	}
-	scale = 0.45f;
-	switch ( cg.warmupCount ) {
-	case 0:
-		cw = 28;
-		scale = 0.54f;
-		break;
-	case 1:
-		cw = 24;
-		scale = 0.51f;
-		break;
-	case 2:
-		cw = 20;
-		scale = 0.48f;
-		break;
-	default:
-		cw = 16;
-		scale = 0.45f;
-		break;
-	}
-
-	w = CG_DrawStrlen( s );
-	CG_DrawString( 320 - w * cw/2, 70, s, colorWhite,
-			qfalse, qtrue, cw, (int)(cw * 1.5), 0, 0 );
-}
-
 static void CG_DrawDeathMessage( void ) {
 	if(((double) cg.respawnTime - (double) cg.time) / 1000.0 <= 0){
 		CG_DrawSmallString((640 - (BASEFONT_INDENT * strlen( "Press fire key to respawn" ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), "Press fire key to respawn", 1.0);
 	} else {
 		CG_DrawSmallString((640 - (BASEFONT_INDENT * strlen( va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0) ))) / 2, 480 - (BIGCHAR_HEIGHT * 1.1), va("Respawn: %6.2f", ((double) cg.respawnTime - (double) cg.time) / 1000.0), 1.0);
 	}
-}
-
-/*
-=================
-CG_FadeLevelStart
-
-Handles the fade at the start of a map
-=================
-*/
-void CG_FadeLevelStart( void ) {
-	vec4_t colorStart;
-	vec4_t colorEnd;
-	int i;
-
-	//calculate the fade
-	if ( cg.levelFadeStatus == LFS_LEVELLOADED ) {
-		for (i = 0; i < 4; i++ ) {
-			colorStart[i] = 0;
-		}
-
-		cg.levelFadeStatus = LFS_FADEIN;
-		Vector4Copy(colorStart, colorEnd);
-		colorStart[3] = 1;
-		CG_Fade( (FADEIN_TIME / 1000), colorStart, colorEnd );
-	}
-}
-
-/*
-=================
-CG_Fade
-
-Initializes a fade
-=================
-*/
-void CG_Fade( float duration, vec4_t startColor, vec4_t endColor ) {
-	cg.fadeStartTime = cg.time;
-	if (duration < 0)
-		cg.fadeDuration = 0;
-	else
-		cg.fadeDuration = duration * 1000;
-	Vector4Copy(startColor, cg.fadeStartColor);
-	Vector4Copy(endColor, cg.fadeEndColor);
-}
-
-/*
-=================
-CG_DrawFade
-
-Draws fade in or fade out
-=================
-*/
-void CG_DrawFade( void ) {
-	vec4_t	colorDiff;
-	int		timePassed;
-	float	progress;
-
-	//if no start color was defined, do nothing
-	if (!cg.fadeStartColor)
-		return;
-
-	if (cg.fadeStartTime + cg.fadeDuration < cg.time) {
-		//time has progressed beyond the duration of the fade
-
-		if (cg.fadeEndColor[3] == 0)	//end of the fade is fully transparent, so don't bother calling CG_FillRect
-			return;
-
-		//simply draw the end color now
-		CG_FillRect(0 - (cgs.wideoffset+2), 0, 640 + (cgs.wideoffset*2)+4, 480, cg.fadeEndColor);
-		return;
-	}
-
-	//calculate how far we are into the fade
-	timePassed = cg.time - cg.fadeStartTime;
-	if ( cg.fadeDuration == 0 )
-		progress = 1;
-	else
-		progress = timePassed / cg.fadeDuration;
-
-	//calculate the new colors
-	Vector4Subtract(cg.fadeStartColor, cg.fadeEndColor, colorDiff);
-	Vector4Scale(colorDiff, progress, colorDiff);
-	Vector4Subtract(cg.fadeStartColor, colorDiff, colorDiff);
-
-	//draw the fade color over the screen
-	CG_FillRect(0 - (cgs.wideoffset+2), 0, 640 + (cgs.wideoffset*2)+4, 480, colorDiff);
-}
-
-/*
-=================
-CG_DrawOverlay
-=================
-*/
-static void CG_DrawOverlay( void ) {
-	const char *overlay;
-
-	// draw overlay set by target_effect
-	overlay = CG_ConfigString( CS_OVERLAY );
-	if ( strlen(overlay) && cgs.media.effectOverlay )
-		CG_DrawPic( 0 - (cgs.wideoffset+1), 0, SCREEN_WIDTH + (cgs.wideoffset*2)+2, SCREEN_HEIGHT, cgs.media.effectOverlay );
 }
 
 /*
@@ -1797,8 +1374,6 @@ static void CG_Draw2D( void ) {
 		CG_DrawPersistantPowerup();
 	}
 
-	CG_DrawVote();
-	CG_DrawTeamVote();
 	CG_DrawCounters();
 	CG_DrawPowerups();
 	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
@@ -1806,8 +1381,7 @@ static void CG_Draw2D( void ) {
 	}
 	CG_DrawLowerLeft();
 
-	if (!CG_DrawFollow())
-		CG_DrawWarmup();
+	CG_DrawFollow();
 
 	if (!cg.scoreBoardShowing) {
     	CG_DrawCenter1FctfString();
@@ -1869,9 +1443,6 @@ void CG_DrawActive( void ) {
 
 	RunScriptThreads(cg.time);		//Noire.Script - run threads
 
-	// clear around the rendered view if sized down
-	CG_TileClear();
-
 	if(cg.renderingThirdPerson)
 		CG_DrawCrosshair3D();
 	
@@ -1880,33 +1451,16 @@ void CG_DrawActive( void ) {
 	// draw 3D view
 	trap_R_RenderScene( &cg.refdef );
 	
-	if ( Q_stricmp (cgs.mapname, "maps/uimap_1.bsp") == 0 ) {
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
-
-	} else {
-	trap_SendConsoleCommand("ui_menu");
-	}
-	}
-
-	// draw overlay for target_effect
-	CG_DrawOverlay();
-	
 	CG_DrawPostProcess();
 
 	if (catcher != KEYCATCH_UI && !(catcher & KEYCATCH_CONSOLE)) {
  		CG_Draw2D();
 		pm = cg.snap->ps.pm_type;
 		if (pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
-			CG_DrawLagometer();
 			CG_DrawStatusBar();
     	    CG_DrawHoldableItem();
 		}
 	}
-
-    CG_FadeLevelStart();
-
-	// draw fade-in/out
-	CG_DrawFade();
 
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
 		return;
@@ -1920,15 +1474,7 @@ void CG_DrawActive( void ) {
 	}
 	
 	if ( !cg.scoreBoardShowing) {
-	CG_DrawCenterString();
-	}
-
-	// play objectives notification sound if necessary
-	if ( cg.objectivesTime != 0 && cg.time >= cg.objectivesTime ) {
-		if ( !cg.objectivesSoundPlayed ) {
-			cg.objectivesSoundPlayed = qtrue;
-			trap_S_StartLocalSound( cgs.media.objectivesUpdatedSound, CHAN_LOCAL_SOUND );
-		}
+		CG_DrawCenterString();
 	}
 
 	if ( cg.snap->ps.pm_type == PM_DEAD ) {

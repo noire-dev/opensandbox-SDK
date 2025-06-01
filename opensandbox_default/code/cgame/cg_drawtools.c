@@ -334,65 +334,6 @@ int CG_DrawStrlen( const char *str ) {
 }
 
 /*
-=============
-CG_TileClearBox
-
-This repeats a 64*64 tile graphic to fill the screen around a sized down
-refresh window.
-=============
-*/
-static void CG_TileClearBox( int x, int y, int w, int h, qhandle_t hShader ) {
-	float	s1, t1, s2, t2;
-
-	s1 = x/64.0;
-	t1 = y/64.0;
-	s2 = (x+w)/64.0;
-	t2 = (y+h)/64.0;
-	trap_R_DrawStretchPic( x, y, w, h, s1, t1, s2, t2, hShader );
-}
-
-
-
-/*
-==============
-CG_TileClear
-
-Clear around a sized down screen
-==============
-*/
-void CG_TileClear( void ) {
-	int		top, bottom, left, right;
-	int		w, h;
-
-	w = glconfig.vidWidth;
-	h = glconfig.vidHeight;
-
-	if ( cg.refdef.x == 0 && cg.refdef.y == 0 && 
-		cg.refdef.width == w && cg.refdef.height == h ) {
-		return;		// full screen rendering
-	}
-
-	top = cg.refdef.y;
-	bottom = top + cg.refdef.height-1;
-	left = cg.refdef.x;
-	right = left + cg.refdef.width-1;
-
-	// clear above view screen
-	CG_TileClearBox( 0, 0, w, top, cgs.media.backTileShader );
-
-	// clear below view screen
-	CG_TileClearBox( 0, bottom, w, h - bottom, cgs.media.backTileShader );
-
-	// clear left of view screen
-	CG_TileClearBox( 0, top, left, bottom - top + 1, cgs.media.backTileShader );
-
-	// clear right of view screen
-	CG_TileClearBox( right, top, w - right, bottom - top + 1, cgs.media.backTileShader );
-}
-
-
-
-/*
 ================
 CG_FadeColor
 ================

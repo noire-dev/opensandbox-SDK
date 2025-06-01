@@ -49,8 +49,6 @@
 
 #define	SCORE_NOT_PRESENT	-9999	// for the CS_SCORES[12] when only one player is present
 
-#define	VOTE_TIME			30000	// 30 seconds before vote times out
-
 #define	MINS_Z				-24
 #define	DEFAULT_VIEWHEIGHT	26
 #define CROUCH_VIEWHEIGHT	12
@@ -145,34 +143,16 @@
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define	CS_MUSIC				2
-#define	CS_WARMUP				3
-#define	CS_SCORES1				4
-#define	CS_SCORES2				5
-#define CS_VOTE_TIME			6
-#define CS_VOTE_STRING			7
-#define	CS_VOTE_YES				8
-#define	CS_VOTE_NO				9
-#define CS_TEAMVOTE_TIME		10 // 2 slots
-#define CS_TEAMVOTE_STRING		12 // 2 slots
-#define	CS_TEAMVOTE_YES			14 // 2 slots
-#define	CS_TEAMVOTE_NO			16 // 2 slots
-#define	CS_GAME_VERSION			18
-#define	CS_LEVEL_START_TIME		19
-#define	CS_INTERMISSION			20
-#define CS_FLAGSTATUS			21
-#define CS_SHADERSTATE			22
-#define CS_BOTINFO				23 // 2 slots
-#define	CS_ITEMS				25
-#define CS_PRIMARYOBJECTIVE		26
-#define CS_SECONDARYOBJECTIVE	27
-#define	CS_OVERLAY				28
-#define CS_SCOREBOARDMUSIC		29
-#define CS_DEATHMUSIC			30
-#define CS_CUTSCENE				31
-#define CS_PLAYERMODEL			32
-#define CS_PLAYERHEADMODEL		33
-#define CS_OBJECTIVESOVERLAY	34
-#define	CS_MODELS				35
+#define	CS_SCORES1				3
+#define	CS_SCORES2				4
+#define	CS_GAME_VERSION			5
+#define	CS_LEVEL_START_TIME		6
+#define	CS_INTERMISSION			7
+#define CS_FLAGSTATUS			8
+#define CS_SHADERSTATE			9
+#define CS_BOTINFO				10 // 2 slots
+#define	CS_ITEMS				12
+#define	CS_MODELS				13
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
@@ -313,41 +293,21 @@ typedef enum {
 	PERS_ATTACKER,					// clientnum of last damage inflicter
 	PERS_ATTACKEE_ARMOR,			// health/armor of last person we attacked
 	PERS_KILLED,					// count of the number of times you died
-	// player awards tracking
-	PERS_IMPRESSIVE_COUNT,			// two railgun hits in a row
-	PERS_EXCELLENT_COUNT,			// two successive kills in a short amount of time
-	PERS_DEFEND_COUNT,				// defend awards
-	PERS_ASSIST_COUNT,				// assist awards
-	PERS_GAUNTLET_FRAG_COUNT,		// kills with the guantlet
-	PERS_CAPTURES,					// captures
-	// entityplus
-	PERS_SECRETS					// first 7 bits is number of secrets found, 7 bits after that is total number of secrets in level(s)
 } persEnum_t;
 
 
 // entityState_t->eFlags
-#define	EF_DEAD				0x00000001		// don't draw a foe marker over players with EF_DEAD
-#define EF_TICKING			0x00000002		// used to make players play the prox mine ticking sound
-#define	EF_TELEPORT_BIT		0x00000004		// toggled every time the origin abruptly changes
-#define	EF_AWARD_EXCELLENT	0x00000008		// draw an excellent sprite
-#define EF_PLAYER_EVENT		0x00000010
-#define	EF_BOUNCE			0x00000010		// for missiles
-#define	EF_BOUNCE_HALF		0x00000020		// for missiles
-#define	EF_AWARD_GAUNTLET	0x00000040		// draw a gauntlet sprite
-#define	EF_NODRAW			0x00000080		// may have an event, but no model (unspawned items)
-#define	EF_FIRING			0x00000100		// for lightning gun
-#define	EF_KAMIKAZE			0x00000200
-#define	EF_MOVER_STOP		0x00000400		// will push otherwise
-#define EF_AWARD_CAP		0x00000800		// draw the capture sprite
-#define	EF_TALK				0x00001000		// draw a talk balloon
-#define	EF_CONNECTION		0x00002000		// draw a connection trouble sprite
-#define	EF_VOTED			0x00004000		// already cast a vote
-#define	EF_AWARD_IMPRESSIVE	0x00008000		// draw an impressive sprite
-#define	EF_AWARD_DEFEND		0x00010000		// draw a defend sprite
-#define	EF_AWARD_ASSIST		0x00020000		// draw a assist sprite
-#define EF_AWARD_DENIED		0x00040000		// denied
-#define EF_TEAMVOTED		0x00080000		// already cast a team vote
-#define EF_HEARED           0x00100000      // heard gunfire or sounds
+#define	EF_DEAD				1			// don't draw a foe marker over players with EF_DEAD
+#define EF_TICKING			2			// used to make players play the prox mine ticking sound
+#define	EF_TELEPORT_BIT		4			// toggled every time the origin abruptly changes
+#define EF_PLAYER_EVENT		8
+#define	EF_BOUNCE			16			// for missiles
+#define	EF_BOUNCE_HALF		32			// for missiles
+#define	EF_NODRAW			64			// may have an event, but no model (unspawned items)
+#define	EF_FIRING			128			// for lightning gun
+#define	EF_KAMIKAZE			256
+#define	EF_TALK				512			// draw a talk balloon
+#define EF_HEARED           1024      	// heard gunfire or sounds
 
 // NOTE: may not have more than 16
 typedef enum {
@@ -482,7 +442,6 @@ typedef enum {
 	EV_WATER_CLEAR,	// head leaves
 
 	EV_ITEM_PICKUP,			// normal item pickups are predictable
-	EV_GLOBAL_ITEM_PICKUP,	// powerup / team sounds are broadcast to everyone
 
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
@@ -533,10 +492,6 @@ typedef enum {
 	EV_DEATH3,
 	EV_OBITUARY,                    //Event 60
 
-	EV_POWERUP_QUAD,
-	EV_POWERUP_BATTLESUIT,
-	EV_POWERUP_REGEN,
-
 	EV_GIB_PLAYER,			// gib a previously living player
 
 	EV_PROXIMITY_MINE_STICK,
@@ -572,11 +527,8 @@ typedef enum {
 	EV_PARTICLES_LINEAR,
 	EV_PARTICLES_LINEAR_UP,
 	EV_PARTICLES_LINEAR_DOWN,
-	EV_OVERLAY,
 	EV_SMOKEPUFF,
 	EV_WATERPUFF,
-	
-	EV_SILENT_ITEM_PICKUP,		// item pickup without pickup sound
 
 	EV_FOOTSTEP_FLESH,
 	
@@ -772,36 +724,24 @@ typedef enum {
 // gitem_t->type
 typedef enum {
 	IT_BAD,
-	IT_WEAPON,				// EFX: rotate + upscale + minlight
-	IT_AMMO,				// EFX: rotate
-	IT_ARMOR,				// EFX: rotate + minlight
-	IT_HEALTH,				// EFX: static external sphere + rotating internal
-	IT_POWERUP,				// instant on, timer based
-							// EFX: rotate + external ring that rotates
-	IT_HOLDABLE,			// single use, holdable item
-							// EFX: rotate + bob
-	IT_PERSISTANT_POWERUP,
+	IT_WEAPON,
+	IT_AMMO,
+	IT_ARMOR,
+	IT_HEALTH,
+	IT_POWERUP,
+	IT_HOLDABLE,
+	IT_RUNE,
 	IT_TEAM
 } itemType_t;
 
-#define MAX_ITEM_MODELS 4
-
 typedef struct gitem_s {
 	char		*classname;	// spawning name
-	char		*pickup_sound;
-	char		*world_model[MAX_ITEM_MODELS];
-
+	char		*world_model;
 	char		*icon;
 	char		*pickup_name;	// for printing on pickup
-	char		*pickup_nameru;	// for printing on pickup
-
 	int			quantity;		// for ammo how much, or duration of powerup
 	itemType_t  giType;			// IT_* flags
-
 	int			giTag;
-
-	char		*precaches;		// string of all models and images this item will use
-	char		*sounds;		// string of all sounds this item will use
 } gitem_t;
 
 // included in both the game dll and the client

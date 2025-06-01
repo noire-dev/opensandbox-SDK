@@ -508,7 +508,6 @@ typedef struct serverparameters_s {
 	int maxrate;
 
 	int allowdownload;
-	int allowvote;
 	char entitypack[32];
 
 	char password[MAX_PASSWORD_LENGTH];
@@ -684,13 +683,6 @@ int hastetime;
 int invistime;
 int regentime;
 int flighttime;
-int armorrespawn;
-int healthrespawn;
-int ammorespawn;
-int holdablerespawn;
-int megahealthrespawn;
-int poweruprespawn;
-int weaponrespawn;
 // Крюк
 int g_ghspeed;
 int g_ghtimeout;

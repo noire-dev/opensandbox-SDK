@@ -1229,9 +1229,9 @@ void ScrollList_Draw( menuelement_s *l )
 				if(!it->classname){
 					it = UI_FindItemClassname(l->itemnames[i]);
 					if(it->classname && !l->generic.model && !l->generic.shader){
-						l->generic.model = trap_R_RegisterModel( it->world_model[0] );
+						l->generic.model = trap_R_RegisterModel( it->world_model );
 						if(l->generic.model){
-							UI_DrawModelElement( x, y, BASEFONT_HEIGHT*l->size, BASEFONT_HEIGHT*l->size, it->world_model[0], l->corner );
+							UI_DrawModelElement( x, y, BASEFONT_HEIGHT*l->size, BASEFONT_HEIGHT*l->size, it->world_model, l->corner );
 						}
 					}
 				}
@@ -1264,9 +1264,9 @@ void ScrollList_Draw( menuelement_s *l )
 				if(!it->classname){
 					it = UI_FindItemClassname(l->itemnames[i]);
 					if(it->classname && !l->generic.model && !l->generic.shader){
-						l->generic.model = trap_R_RegisterModel( it->world_model[0] );
+						l->generic.model = trap_R_RegisterModel( it->world_model );
 						if(l->generic.model){
-							UI_DrawModelElement( x, y, (float)(BASEFONT_INDENT*l->width), (float)(BASEFONT_INDENT*l->width), it->world_model[0], l->corner );
+							UI_DrawModelElement( x, y, (float)(BASEFONT_INDENT*l->width), (float)(BASEFONT_INDENT*l->width), it->world_model, l->corner );
 						}
 					}
 				}

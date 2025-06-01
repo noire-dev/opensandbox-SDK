@@ -576,16 +576,6 @@ extern void 		UI_DrawModelElement( float x, float y, float w, float h, const cha
 //
 void UI_AddBots_Cache( void );
 void UI_AddBotsMenu( void );
-
-//
-// ui_removebots.c
-//
-enum {
-	RBM_KICKBOT,
-	RBM_CALLVOTEKICK,
-	RBM_CALLVOTELEADER
-};
-
 void UI_RemoveBots_Cache( void );
 void UI_RemoveBotsMenu( int menutype );
 

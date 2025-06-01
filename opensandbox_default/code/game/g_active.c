@@ -153,9 +153,7 @@ void P_WorldEffects( gentity_t *ent ) {
 		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) ) {
 		if (ent->health > 0
 			&& ent->pain_debounce_time <= level.time	) {
-			if ( envirosuit ) {
-				G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
-			} else {
+			if ( !envirosuit ) {
 				if (ent->watertype & CONTENTS_LAVA) {
 					if(g_lavadamage.integer > 0){
 					G_Damage (ent, NULL, NULL, NULL, NULL,
@@ -412,171 +410,64 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 	// Dropped Ammo No-Pickup
 	if(ent->wait_to_pickup <= 60000000){
-	if(level.time < ent->wait_to_pickup){
-		client->ps.stats[STAT_NO_PICKUP] = 1;
-	} else {
-		client->ps.stats[STAT_NO_PICKUP] = 0;
-	}
+		if(level.time < ent->wait_to_pickup){
+			client->ps.stats[STAT_NO_PICKUP] = 1;
+		} else {
+			client->ps.stats[STAT_NO_PICKUP] = 0;
+		}
 	}
 
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
-
+	}
 
 	ent->s.eFlags &= ~EF_HEARED;		//hear update
 
-	// Infinite Ammo
-	if(g_rlinf.integer==1){ Set_Ammo(ent, WP_ROCKET_LAUNCHER, 9999); }
-	if(g_glinf.integer==1){ Set_Ammo(ent, WP_GRENADE_LAUNCHER, 9999); }
-	if(g_pginf.integer==1){ Set_Ammo(ent, WP_PLASMAGUN, 9999); }
-	if(g_mginf.integer==1){ Set_Ammo(ent, WP_MACHINEGUN, 9999); }
-	if(g_sginf.integer==1){ Set_Ammo(ent, WP_SHOTGUN, 9999); }
-	if(g_bfginf.integer==1){ Set_Ammo(ent, WP_BFG, 9999); }
-	if(g_rginf.integer==1){ Set_Ammo(ent, WP_RAILGUN, 9999); }
-	if(g_cginf.integer==1){ Set_Ammo(ent, WP_CHAINGUN, 9999); }
-	if(g_lginf.integer==1){ Set_Ammo(ent, WP_LIGHTNING, 9999); }
-	if(g_nginf.integer==1){ Set_Ammo(ent, WP_NAILGUN, 9999); }
-	if(g_plinf.integer==1){ Set_Ammo(ent, WP_PROX_LAUNCHER, 9999); }
-	if(g_ftinf.integer==1){ Set_Ammo(ent, WP_FLAMETHROWER, 9999); }
-	if(g_aminf.integer==1){ Set_Ammo(ent, WP_ANTIMATTER, 9999); }
+	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
+		MakeUnlimitedAmmo(ent);
+	}
 
-	// guard inf ammo
+	// regenerate
 	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-	if (g_guard_infammo.integer == 1){
-		MakeUnlimitedAmmo(ent);
+		maxHealth = client->ps.stats[STAT_MAX_HEALTH];
+	} else if ( client->ps.powerups[PW_REGEN] ) {
+		maxHealth = client->ps.stats[STAT_MAX_HEALTH];
+	} else {
+		maxHealth = 0;
 	}
-	}
-
-	// scout inf ammo
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-	if (g_scout_infammo.integer == 1){
-		MakeUnlimitedAmmo(ent);
-	}
-	}
-
-	// doubler inf ammo
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
-	if (g_doubler_infammo.integer == 1){
-		MakeUnlimitedAmmo(ent);
-	}
-	}
-
-	//team red infammo
-	if(client->sess.sessionTeam == TEAM_RED){
-	if (g_teamred_infammo.integer == 1){
-		MakeUnlimitedAmmo(ent);
-	}
-	}
-
-	//team blue infammo
-	if(client->sess.sessionTeam == TEAM_BLUE){
-	if (g_teamblue_infammo.integer == 1){
-		MakeUnlimitedAmmo(ent);
-	}
-	}
-
-	if(ent->botskill == 6){
-		MakeUnlimitedAmmo(ent);
-	}
-
-		// regenerate
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-		}
-		else if ( client->ps.powerups[PW_REGEN] ) {
-			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-		}
-		else {
-			maxHealth = 0;
-		}
-		if( maxHealth ) {
-			if ( ent->health < maxHealth ) {
-				ent->health += g_fasthealthregen.integer;
-				if ( ent->health > maxHealth * 1.1 ) {
-					ent->health = maxHealth * 1.1;
-				}
-				G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-			} else if ( ent->health < maxHealth * 2) {
-				ent->health += g_slowhealthregen.integer;
-				if ( ent->health > maxHealth * 2 ) {
-					ent->health = maxHealth * 2;
-				}
-				G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
+	if( maxHealth ) {
+		if ( ent->health < maxHealth ) {
+			ent->health += 15;
+			if ( ent->health > maxHealth * 1.1 ) {
+				ent->health = maxHealth * 1.1;
 			}
-		} else {
-			// count down health when over max
-			if ( !ent->singlebot ){
+		} else if ( ent->health < maxHealth * 2) {
+			ent->health += 5;
+			if ( ent->health > maxHealth * 2 ) {
+				ent->health = maxHealth * 2;
+			}
+		}
+	} else {
+		// count down health when over max
+		if ( !ent->singlebot ){
 			if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
 				ent->health--;
 			}
-			}
-			
-			//Start killing players in LMS, if we are in overtime
-			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
-				ent->health+=g_regen.integer;
-				if(ent->health>client->ps.stats[STAT_MAX_HEALTH])
-					ent->health= client->ps.stats[STAT_MAX_HEALTH];
-			}
 		}
-
-		client->ps.stats[STAT_MONEY] = client->pers.oldmoney;
-
-		G_SendGameCvars( ent );				//send game setting to client for sync
-		G_SendSwepWeapons( ent );			//send sweps list to client for sync
-
-		// count down armor when over max
-		if ( !ent->singlebot ){
-		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-			client->ps.stats[STAT_ARMOR]--;
-		}
-		}
-		if ( client->ps.stats[STAT_ARMOR] < client->ps.stats[STAT_MAX_HEALTH] ) {
-			client->ps.stats[STAT_ARMOR]+=g_regenarmor.integer;
+		
+		if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
+			ent->health += 1;
+			if(ent->health > client->ps.stats[STAT_MAX_HEALTH])
+				ent->health = client->ps.stats[STAT_MAX_HEALTH];
 		}
 	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		int w, max, inc, t, i;
-    int weapList[]={WP_MACHINEGUN,WP_SHOTGUN,WP_GRENADE_LAUNCHER,WP_ROCKET_LAUNCHER,WP_LIGHTNING,WP_RAILGUN,WP_PLASMAGUN,WP_BFG,WP_NAILGUN,WP_PROX_LAUNCHER,WP_CHAINGUN,WP_FLAMETHROWER,WP_ANTIMATTER};
-    int weapCount = sizeof(weapList) / sizeof(int);
-		//
-    for (i = 0; i < weapCount; i++) {
-		  w = weapList[i];
 
-		  switch(w) {
-			  case WP_MACHINEGUN: max = 50; inc = 4; t = 1000; break;
-			  case WP_SHOTGUN: max = 10; inc = 1; t = 1500; break;
-			  case WP_GRENADE_LAUNCHER: max = 10; inc = 1; t = 2000; break;
-			  case WP_ROCKET_LAUNCHER: max = 10; inc = 1; t = 1750; break;
-			  case WP_LIGHTNING: max = 50; inc = 5; t = 1500; break;
-			  case WP_RAILGUN: max = 10; inc = 1; t = 1750; break;
-			  case WP_PLASMAGUN: max = 50; inc = 5; t = 1500; break;
-			  case WP_BFG: max = 10; inc = 1; t = 4000; break;
-			  case WP_NAILGUN: max = 10; inc = 1; t = 1250; break;
-			  case WP_PROX_LAUNCHER: max = 5; inc = 1; t = 2000; break;
-			  case WP_CHAINGUN: max = 100; inc = 5; t = 1000; break;
-			  case WP_FLAMETHROWER: max = 100; inc = 5; t = 1000; break;
-			  case WP_ANTIMATTER: max = 5; inc = 1; t = 4000; break;
-			  default: max = 0; inc = 0; t = 1000; break;
-		  }
-		  client->ammoTimes[w] += msec;
-		  if (g_ammoregen_infammo.integer == 1) {
-			  max = 9999;
-			  inc = 9999;
-			  t = 1;
-		  }
+	G_SendGameCvars( ent );				//send game setting to client for sync
+	G_SendSwepWeapons( ent );			//send sweps list to client for sync
 
-		  if ( ent->swep_ammo[w] >= max ) {
-			  client->ammoTimes[w] = 0;
-		  }
-		  if ( client->ammoTimes[w] >= t ) {
-			  while ( client->ammoTimes[w] >= t )
-				  client->ammoTimes[w] -= t;
-			  Add_Ammo( ent, w, inc );
-			  if ( ent->swep_ammo[w] > max ) {
-				  ent->swep_ammo[w] = max;
-			  }
-		  }
-    }
+	// count down armor when over max
+	if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
+		client->ps.stats[STAT_ARMOR]--;
 	}
 }
 
@@ -975,11 +866,6 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
-	// clear the rewards if time
-	if ( level.time > client->rewardTime ) {
-		client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
-	}
-
 	if ( client->noclip ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
@@ -1283,7 +1169,6 @@ SpectatorClientEndFrame
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
 	gclient_t	*cl;
-	int i, preservedScore[MAX_PERSISTANT]; //for keeping in elimination
 
 	// if we are doing a chase cam or a remote view, grab the latest info
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
@@ -1300,17 +1185,7 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		if ( clientNum >= 0 ) {
 			cl = &level.clients[ clientNum ];
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
-				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
-				//this is here LMS/Elimination goes wrong with player follow
-				if(ent->client->sess.sessionTeam!=TEAM_SPECTATOR){
-					for(i = 0; i < MAX_PERSISTANT; i++)
-						preservedScore[i] = ent->client->ps.persistant[i];
-					ent->client->ps = cl->ps;
-					for(i = 0; i < MAX_PERSISTANT; i++)
-						ent->client->ps.persistant[i] = preservedScore[i];
-				}
-				else
-					ent->client->ps = cl->ps;
+				ent->client->ps = cl->ps;
 				ent->client->ps.pm_flags |= PMF_FOLLOW;
 				ent->client->ps.eFlags = flags;
 				return;
@@ -1322,9 +1197,6 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				}
 			}
 		}
-
-
-
 	}
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
@@ -1397,19 +1269,8 @@ void ClientEndFrame( gentity_t *ent ) {
 
 	G_SetClientSound (ent);
 
-//Unlagged: Always do the else clause
-	// set the latest infor
-/*	if (g_smoothClients.integer) {
-		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue );
-	}
-	else { */
-		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qtrue );
-//	}
+	BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qtrue );
 	SendPendingPredictableEvents( &ent->client->ps );
-
-//unlagged - smooth clients #1
-	// mark as not missing updates initially
-	ent->client->ps.eFlags &= ~EF_CONNECTION;
 
 	// see how many frames the client has missed
 	frames = level.framenum - ent->client->lastUpdateFrame - 1;
@@ -1417,27 +1278,16 @@ void ClientEndFrame( gentity_t *ent ) {
 	// don't extrapolate more than two frames
 	if ( frames > 2 ) {
 		frames = 2;
-
-		// if they missed more than two in a row, show the phone jack
-		ent->client->ps.eFlags |= EF_CONNECTION;
-		ent->s.eFlags |= EF_CONNECTION;
 	}
 
 	// did the client miss any frames?
-	if ( frames > 0 && g_smoothClients.integer ) {
+	if ( frames > 0 ) {
 		// yep, missed one or more, so extrapolate the player's movement
 		G_PredictPlayerMove( ent, (float)frames / sv_fps.integer );
 		// save network bandwidth
 		SnapVector( ent->s.pos.trBase );
 	}
-//unlagged - smooth clients #1
 
-//unlagged - backward reconciliation #1
 	// store the client's position for backward reconciliation later
 	G_StoreHistory( ent );
-//unlagged - backward reconciliation #1
-
-	// set the bit for the reachability area the client is currently in
-//	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );
-//	ent->client->areabits[i >> 3] |= 1 << (i & 7);
 }

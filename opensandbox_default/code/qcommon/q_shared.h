@@ -967,56 +967,11 @@ typedef enum _flag_status {
 	FLAG_DROPPED
 } flagStatus_t;
 
-typedef struct playerscore_s {
-	int carnageScore;
-	int accuracy;
-	int accuracyScore;
-	int deaths;
-	int deathsScore;
-	int secretsFound;
-	int secretsCount;
-	int secretsScore;
-	float skill;
-	float skillModifier;
-	int skillScore;
-	int totalScore;
-} playerscore_t;
-
-#define SCOREBOARD_LENGTH	5		//number of high scores that will be remembered
-
-typedef struct highscores_s {
-	playerscore_t	highscores[SCOREBOARD_LENGTH];
-} highscores_t;
-
 #define MAX_PINGREQUESTS					32
 
 #define SAY_ALL		0
 #define SAY_TEAM	1
 #define SAY_TELL	2
-
-#define SCORE_ACCURACY	0.5		//part of the carnage score that accuracy will apply to.
-#define SCORE_SECRET	0.10	//part of the carnage score that will be gained for each secret found.
-#define SCORE_DEATH		0.10	//part of the carnage score that will be lost for each death.
-#define SCORE_SKILL		0.10	//skill based multiplier. Multiplier is increased with this value for each difficulty level above skill 1.
-
-#define FADEOUT_TIME	500.000	//amount of time it takes for screen to fade out at map change. Needed by both server and client
-
-//score info keys (these should NEVER change because it will break compatibility with older score files)
-#define SIK_CARNAGESCORE	"a"
-#define SIK_ACCURACY		"b"
-#define SIK_ACCURACYSCORE	"c"
-#define SIK_DEATHS			"d"
-#define SIK_DEATHSSCORE		"e"
-#define SIK_SECRETSFOUND	"f"
-#define SIK_SECRETSCOUNT	"g"
-#define SIK_SECRETSSCORE	"h"
-#define SIK_SKILL			"i"
-#define SIK_SKILLMODIFIER	"j"
-#define SIK_SKILLSCORE		"k"
-#define SIK_TOTALSCORE		"l"
-
-playerscore_t COM_CalculatePlayerScore(int persistant[MAX_PERSISTANT], int accuracy, float skill);
-highscores_t COM_LoadLevelScores( char *levelname );
 
 float VectorDistance(const vec3_t v1, const vec3_t v2);
 

@@ -553,26 +553,6 @@ qboolean G_ParseSpawnVars( void ) {
 
 void SP_worldspawn( void ) {
 	char	*s;
-	char	*music;
-	int		 number;
-	
-	number = rand() % 14 + 1;
-	
-	if(number == 1){ music = "music/oa01"; }
-	if(number == 2){ music = "music/oa02"; }
-	if(number == 3){ music = "music/oa03"; }
-	if(number == 4){ music = "music/oa04"; }
-	if(number == 5){ music = "music/oa05"; }
-	if(number == 6){ music = "music/oa06"; }
-	if(number == 7){ music = "music/oa07"; }
-	if(number == 8){ music = "music/oa08"; }
-	if(number == 9){ music = "music/oa09"; }
-	if(number == 10){ music = "music/oa10"; }
-	if(number == 11){ music = "music/oa11"; }
-	if(number == 12){ music = "music/oa12"; }
-	if(number == 13){ music = "music/oa13"; }
-	if(number == 14){ music = "music/oa14"; }
-
 
 	G_SpawnString( "classname", "", &s );
 	if ( Q_stricmp( s, "worldspawn" ) ) {
@@ -581,30 +561,10 @@ void SP_worldspawn( void ) {
 
 	// make some data visible to connecting client
 	trap_SetConfigstring( CS_GAME_VERSION, GAME_VERSION );
-
 	trap_SetConfigstring( CS_LEVEL_START_TIME, va("%i", level.startTime ) );
 	
-
-	if ( *g_music.string && Q_stricmp( g_music.string, "none" ) ) {
-		trap_SetConfigstring( CS_MUSIC, g_music.string );
-	} else {
-		G_SpawnString( "music", music, &s );   
-		trap_SetConfigstring( CS_MUSIC, s );
-	}
-    	G_SpawnString( "scoreboardmusic", "", &s );
-	trap_SetConfigstring( CS_SCOREBOARDMUSIC, s );
-
-	G_SpawnString( "deathmusic", "", &s );
-	trap_SetConfigstring( CS_DEATHMUSIC, s );
-
-	G_SpawnString( "playermodel", "", &s );
-	trap_SetConfigstring( CS_PLAYERMODEL, s );
-
-	G_SpawnString( "playerheadmodel", "", &s );
-	trap_SetConfigstring( CS_PLAYERHEADMODEL, s );
-
-	G_SpawnString( "objectivesoverlay", "menu/objectives/overlay.tga", &s );
-	trap_SetConfigstring( CS_OBJECTIVESOVERLAY, s );
+	G_SpawnString( "music", "", &s );
+	trap_SetConfigstring( CS_MUSIC, s );
 
 	G_SpawnString( "gravity", "800", &s );
 	trap_Cvar_Set( "g_gravity", s );
@@ -619,23 +579,13 @@ void SP_worldspawn( void ) {
 	trap_Cvar_Set( "g_enableBreath", s );
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
-        g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;
+    g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 
-        g_entities[ENTITYNUM_NONE].s.number = ENTITYNUM_NONE;
-        g_entities[ENTITYNUM_NONE].r.ownerNum = ENTITYNUM_NONE;
-        g_entities[ENTITYNUM_NONE].classname = "nothing";
+    g_entities[ENTITYNUM_NONE].s.number = ENTITYNUM_NONE;
+    g_entities[ENTITYNUM_NONE].r.ownerNum = ENTITYNUM_NONE;
+    g_entities[ENTITYNUM_NONE].classname = "nothing";
         
-	// see if we want a warmup time
-	trap_SetConfigstring( CS_WARMUP, "" );
-	if ( g_restarted.integer ) {
-		trap_Cvar_Set( "g_restarted", "0" );
-		level.warmupTime = 0;
-	} else if ( g_doWarmup.integer ) { // Turn it on
-		level.warmupTime = -1;
-		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-	}
-
 }
 
 /*

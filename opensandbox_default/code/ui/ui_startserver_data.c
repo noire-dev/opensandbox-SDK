@@ -183,10 +183,8 @@ itemnode_t server_itemlist[ITEM_COUNT] = {
 	{ ITEMGROUP_HEALTH, ITEM_HEALTH_LARGE, "item_health_large",	"hl"},
 
 	// armour
-	{ ITEMGROUP_ARMOUR, ITEM_ARMOUR_PURPLE, "item_armor_full",	"ap"},
 	{ ITEMGROUP_ARMOUR, ITEM_ARMOUR_RED,	"item_armor_body",		"ar"},
 	{ ITEMGROUP_ARMOUR, ITEM_ARMOUR_YELLOW, "item_armor_combat",	"ay"},
-	{ ITEMGROUP_ARMOUR, ITEM_ARMOUR_GREEN, "item_armor_vest",	"ag"},
 	{ ITEMGROUP_ARMOUR, ITEM_ARMOUR_SHARD, "item_armor_shard",	"as"},
 
 	// powerups
@@ -258,7 +256,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_allowdownload", "0" },
 { "gui_entitypack", "default" },
 { "gui_password", "" },
-{ "gui_allowvote", "1" },
 { "gui_minPing", "0" },
 { "gui_maxPing", "0" },
 { "gui_allowMinPing", "0" },
@@ -281,7 +278,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_extendedsandbox", "0" },
 { "gui_damageModifier", "1" },
 { "gui_selectedmod", "default" },
-{ "gui_elimination", "0" },
 { "gui_obeliskHealth", "2500" },
 { "gui_obeliskRegenPeriod", "1" },
 { "gui_obeliskRegenAmount", "15" },
@@ -409,13 +405,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_invistime", "30" },
 { "gui_regentime", "30" },
 { "gui_flighttime", "60" },
-{ "gui_armorrespawn", "25" },
-{ "gui_healthrespawn", "35" },
-{ "gui_ammorespawn", "30" },
-{ "gui_holdablerespawn", "60" },
-{ "gui_megahealthrespawn", "35" },
-{ "gui_poweruprespawn", "120" },
-{ "gui_weaponrespawn", "5" },
 
 // Крюк
 { "gui_ghspeed", "800" },
@@ -604,7 +593,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_var_doWarmUp", "0" },
 { "gui_var_fraglimit", "0" },
 { "gui_var_timelimit", "0" },
-{ "gui_var_weaponrespawn", "5" },
 { "gui_var_viewdistance", "0" },
 };
 
@@ -635,12 +623,7 @@ const guiCvarConversion_t gui_cvarImport[] = {
 
 	{ "ui_ctf_friendly", "gui_ctf_friendly", "0" },
 	{ "ui_ctf_capturelimit", "gui_ctf_capturelimit", "0" },
-	{ "ui_ctf_timelimit", "gui_ctf_timelimit", "0" },
-
-	{ "g_weaponrespawn", "gui_ffa_weaponrespawn", "5" },
-	{ "g_weaponrespawn", "gui_tourney_weaponrespawn", "5" },
-	{ "g_weaponTeamrespawn", "gui_team_weaponrespawn", "30" },
-	{ "g_weaponrespawn", "gui_ctf_weaponrespawn", "5" }
+	{ "ui_ctf_timelimit", "gui_ctf_timelimit", "0" }
 };
 
 
@@ -2784,7 +2767,6 @@ static void StartServer_LoadServerScriptData(void)
 	s_scriptdata.server.maxrate = GUI_GetSkirmishCvarIntClamp(0, 99999, NULL, "gui_maxrate" );
 
 	s_scriptdata.server.allowdownload = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_allowdownload" );
-	s_scriptdata.server.allowvote = GUI_GetSkirmishCvarIntClamp(0, 1, NULL, "gui_allowvote" );
 	GUI_GetSkirmishCvar(NULL, "gui_entitypack",s_scriptdata.server.entitypack, 32);
 
 	s_scriptdata.server.netport = GUI_GetSkirmishCvarIntClamp(1024, 65535, NULL, "gui_netport" );
@@ -2935,13 +2917,6 @@ s_scriptdata.server.hastetime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, N
 s_scriptdata.server.invistime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_invistime" );
 s_scriptdata.server.regentime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_regentime" );
 s_scriptdata.server.flighttime = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_flighttime" );
-s_scriptdata.server.armorrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_armorrespawn" );
-s_scriptdata.server.healthrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_healthrespawn" );
-s_scriptdata.server.ammorespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ammorespawn" );
-s_scriptdata.server.holdablerespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_holdablerespawn" );
-s_scriptdata.server.megahealthrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_megahealthrespawn" );
-s_scriptdata.server.poweruprespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_poweruprespawn" );
-s_scriptdata.server.weaponrespawn = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_weaponrespawn" );
 // Крюк
 s_scriptdata.server.g_ghspeed = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ghspeed" );
 s_scriptdata.server.g_ghtimeout = GUI_GetSkirmishCvarIntClamp(-9999999, 9999999, NULL, "gui_ghtimeout" );
@@ -3167,7 +3142,6 @@ static void StartServer_SaveServerScriptData(void)
 	GUI_SetSkirmishCvarInt( NULL, "gui_maxrate", s_scriptdata.server.maxrate);
 	GUI_SetSkirmishCvarInt( NULL, "gui_allowmaxrate", s_scriptdata.server.allowmaxrate);
 	GUI_SetSkirmishCvarInt( NULL, "gui_allowdownload", s_scriptdata.server.allowdownload);
-	GUI_SetSkirmishCvarInt( NULL, "gui_allowvote", s_scriptdata.server.allowvote);
 	GUI_SetSkirmishCvar( NULL, "gui_entitypack", s_scriptdata.server.entitypack);
 
 	GUI_SetSkirmishCvarInt( NULL, "gui_netport", s_scriptdata.server.netport);
@@ -3318,13 +3292,6 @@ GUI_SetSkirmishCvarInt( NULL, "gui_hastetime", s_scriptdata.server.hastetime);
 GUI_SetSkirmishCvarInt( NULL, "gui_invistime", s_scriptdata.server.invistime);
 GUI_SetSkirmishCvarInt( NULL, "gui_regentime", s_scriptdata.server.regentime);
 GUI_SetSkirmishCvarInt( NULL, "gui_flighttime", s_scriptdata.server.flighttime);
-GUI_SetSkirmishCvarInt( NULL, "gui_armorrespawn", s_scriptdata.server.armorrespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_healthrespawn", s_scriptdata.server.healthrespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_ammorespawn", s_scriptdata.server.ammorespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_holdablerespawn", s_scriptdata.server.holdablerespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_megahealthrespawn", s_scriptdata.server.megahealthrespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_poweruprespawn", s_scriptdata.server.poweruprespawn);
-GUI_SetSkirmishCvarInt( NULL, "gui_weaponrespawn", s_scriptdata.server.weaponrespawn);
 // Крюк
 GUI_SetSkirmishCvarInt( NULL, "gui_ghspeed", s_scriptdata.server.g_ghspeed);
 GUI_SetSkirmishCvarInt( NULL, "gui_ghtimeout", s_scriptdata.server.g_ghtimeout);

@@ -241,13 +241,6 @@ void CG_InitConsoleCommands( void ) {
 	// the game server will interpret these commands, which will be automatically
 	// forwarded to the server after they are not recognized locally
 	//
-	// normal commands
-	trap_AddCommand ("team");
-	trap_AddCommand ("vote");
-
-	// communication commands
-	trap_AddCommand ("callvote");
-	trap_AddCommand ("callteamvote");
 
 	// can be used even during intermission
 	trap_AddCommand ("say");
@@ -274,7 +267,6 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("follow");
 	trap_AddCommand ("follownext");
 	trap_AddCommand ("followprev");
-	trap_AddCommand ("teamvote");
 	trap_AddCommand ("teamtask");
 	trap_AddCommand ("freespectator");
 

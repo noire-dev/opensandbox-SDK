@@ -46,49 +46,8 @@ static void CG_CalcVrect (void) {
 }
 
 // leilei - eyes hack
-
 extern vec3_t headpos;
 extern vec3_t headang;
-
-/*
-===============
-CG_ViewFog
-
-===============
-*/
-static void CG_ViewFog( void ) {
-	int i;
-	float scale;
-	
-	if(!mod_fogColorA){
-		return;
-	}
-
-	cg.viewfog[0].hModel = trap_R_RegisterModel( va("models/fog%i", mod_fogModel) );
-	cg.viewfog[0].customShader = trap_R_RegisterShader(va("models/fogtex%i", mod_fogShader));
-
-	for(i = 0; i < 16; i++){
-		cg.viewfog[i].hModel = cg.viewfog[0].hModel;
-		cg.viewfog[i].customShader = cg.viewfog[0].customShader;
-
-		VectorCopy(cg.refdef.vieworg, cg.viewfog[i].origin);
-		VectorCopy(cg.refdef.viewaxis[0], cg.viewfog[i].axis[0]);
-		VectorCopy(cg.refdef.viewaxis[1], cg.viewfog[i].axis[1]);
-		VectorCopy(cg.refdef.viewaxis[2], cg.viewfog[i].axis[2]);
-
-		cg.viewfog[i].shaderRGBA[0] = mod_fogColorR;
-		cg.viewfog[i].shaderRGBA[1] = mod_fogColorG;
-		cg.viewfog[i].shaderRGBA[2] = mod_fogColorB;
-		cg.viewfog[i].shaderRGBA[3] = (mod_fogColorA / 16) + (i * (mod_fogColorA - (mod_fogColorA / 16)) / 15);
-
-		scale = ((mod_fogDistance*512) * 0.50) + i * (mod_fogInterval * 0.50);
-		VectorScale(cg.viewfog[i].axis[0], scale, cg.viewfog[i].axis[0]);
-		VectorScale(cg.viewfog[i].axis[1], scale, cg.viewfog[i].axis[1]);
-		VectorScale(cg.viewfog[i].axis[2], scale, cg.viewfog[i].axis[2]);
-
-		trap_R_AddRefEntityToScene(&cg.viewfog[i]);
-	}
-}
 
 static void CG_ViewSky( void ) {
 	float scale;
@@ -98,7 +57,7 @@ static void CG_ViewSky( void ) {
 	}
 
 	cg.viewsky.hModel = trap_R_RegisterModel( "models/fog1" );
-	cg.viewsky.customShader = trap_R_RegisterShader(va("models/skytex%i", mod_skyShader));
+	cg.viewsky.customShader = trap_R_RegisterShader( "models/skytex1" );
 
 	VectorCopy(cg.refdef.vieworg, cg.viewsky.origin);
 	VectorCopy(cg.refdef.viewaxis[0], cg.viewsky.axis[0]);
@@ -660,7 +619,6 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 		CG_AddPacketEntities();
 		CG_AddMarks();
 		CG_AddLocalEntities();
-		CG_ViewFog();
 		CG_ViewSky();
 	}
 	
@@ -678,6 +636,5 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 		cg.frametime = 0;
 	}
 	cg.oldTime = cg.time;
-	CG_AddLagometerFrameInfo();
 }
 

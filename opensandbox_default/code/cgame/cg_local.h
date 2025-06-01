@@ -455,7 +455,7 @@ typedef struct weaponInfo_s {
 // item and its effects
 typedef struct {
 	qboolean		registered;
-	qhandle_t		models[MAX_ITEM_MODELS];
+	qhandle_t		model;
 	qhandle_t		icon;
 } itemInfo_t;
 
@@ -602,9 +602,6 @@ typedef struct {
 
 	char 		entityInfo[512];
 
-	// kill timers for carnage reward
-	int			lastKillTime;
-
 	// crosshair client ID
 	int			crosshairClientNum;
 	int			crosshairClientTime;
@@ -625,8 +622,6 @@ typedef struct {
 	// warmup countdown
 	int			warmup;
 	int			warmupCount;
-
-	//==========================
 
 	int			itemPickup;
 	int			itemPickupTime;
@@ -664,28 +659,6 @@ typedef struct {
 
     //time that the client will respawn. If 0 = the player is alive.
     int respawnTime;
-	//entityplus
-	qboolean		footstepSuppressed; //hack to suppress initial footstep after first spawn
-
-	// entityplus objectives
-	int				objectivesTime;
-	qboolean		objectivesSoundPlayed;
-
-	// entityplus intermission
-	int				intermissionTime;	//for timing the intermission scoreboard in entityplus mode
-	int				scoreSoundsPlayed;	//number of sounds played during SP intermission scoreboard
-
-	// entityplus death
-	qboolean		deathmusicStarted; //true when a background track has been started for the player's death
-	qboolean		musicStarted;	   //true when the normal background track has been started
-
-	// entityplus generic fades
-	levelFadeStatus_t	levelFadeStatus;	//status for level fade in and -out
-	int					levelStartTime;		//cg.time value for when the client loaded cgame
-	int					fadeStartTime;		//starting time for the fade
-	float				fadeDuration;		//duration of the fade
-	vec4_t				fadeStartColor;		//color at the start of fade (r, g, b, a)
-	vec4_t				fadeEndColor;		//color at the end of fade (r, g, b, a)
 
     int redObeliskHealth;
     int blueObeliskHealth;
@@ -934,14 +907,6 @@ typedef struct {
 	qhandle_t	heartShader;
 
 	qhandle_t	invulnerabilityPowerupModel;
-
-	// objectives screen
-	qhandle_t	objectivesOverlay;
-	qhandle_t	objectivesUpdated;
-	sfxHandle_t	objectivesUpdatedSound;
-
-	// target_effect overlay
-	qhandle_t	effectOverlay;
 	
 	// postprocess
 	qhandle_t	postProcess;
@@ -957,14 +922,6 @@ typedef struct {
 
 	// death view image
 	qhandle_t	deathImage;
-
-	// medals shown during gameplay
-	qhandle_t	medalImpressive;
-	qhandle_t	medalExcellent;
-	qhandle_t	medalGauntlet;
-	qhandle_t	medalDefend;
-	qhandle_t	medalAssist;
-	qhandle_t	medalCapture;
 
 	// sounds
 	sfxHandle_t	quadSound;
@@ -1063,15 +1020,10 @@ typedef struct {
 	sfxHandle_t tiedLeadSound;
 	sfxHandle_t lostLeadSound;
 
-	sfxHandle_t voteNow;
-	sfxHandle_t votePassed;
-	sfxHandle_t voteFailed;
-
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
-	sfxHandle_t flightSound;
 	sfxHandle_t medkitSound;
 
 	sfxHandle_t weaponHoverSound;
@@ -1108,11 +1060,6 @@ typedef struct {
 	sfxHandle_t	count1Sound;
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
-
-	sfxHandle_t ammoregenSound;
-	sfxHandle_t doublerSound;
-	sfxHandle_t guardSound;
-	sfxHandle_t scoutSound;
 
 	qhandle_t cursor;
 	qhandle_t selectCursor;
@@ -1163,21 +1110,9 @@ typedef struct {
 	int				maxclients;
 	char			mapname[MAX_QPATH];
 
-	int				voteTime;
-	int				voteYes;
-	int				voteNo;
-	qboolean		voteModified;			// beep whenever changed
-	char			voteString[MAX_STRING_TOKENS];
-
-	int				teamVoteTime[2];
-	int				teamVoteYes[2];
-	int				teamVoteNo[2];
-	qboolean		teamVoteModified[2];	// beep whenever changed
-	char			teamVoteString[2][MAX_STRING_TOKENS];
-
 	int				levelStartTime;
 
-//instantgib + nexuiz style rocket arena:
+	//instantgib + nexuiz style rocket arena:
 	int				nopickup;
 
 	int				scores1, scores2;		// from configstrings
@@ -1272,15 +1207,6 @@ extern	int 	mod_invulinf;
 extern	int 	mod_accelerate;
 extern	int 	mod_movetype;
 extern	int 	mod_gravity;
-extern	int 	mod_fogModel;
-extern	int 	mod_fogShader;
-extern	int 	mod_fogDistance;
-extern	int 	mod_fogInterval;
-extern	int 	mod_fogColorR;
-extern	int 	mod_fogColorG;
-extern	int 	mod_fogColorB;
-extern	int 	mod_fogColorA;
-extern	int 	mod_skyShader;
 extern	int 	mod_skyColorR;
 extern	int 	mod_skyColorG;
 extern	int 	mod_skyColorB;
@@ -1304,7 +1230,6 @@ int CG_LastAttacker( void );
 void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString( void );
-void CG_RegisterOverlay( void );
 
 //unlagged, sagos modfication
 void SnapVectorTowards( vec3_t v, vec3_t to );
@@ -1336,7 +1261,6 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha );
 int CG_DrawStrlen( const char *str );
 
 float	*CG_FadeColor( int startMsec, int totalMsec );
-void CG_TileClear( void );
 void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
 
 qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos );
@@ -1348,10 +1272,6 @@ qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos );
 extern	int sortedTeamPlayers[TEAM_MAXOVERLAY];
 extern	int	numSortedTeamPlayers;
 
-void CG_Fade( float duration, vec4_t startColor, vec4_t endColor );
-void CG_DrawFade( void );
-void CG_AddLagometerFrameInfo( void );
-void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum );
 void CG_DrawActive( void );

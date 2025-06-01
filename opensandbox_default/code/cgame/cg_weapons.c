@@ -588,7 +588,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 	CG_RegisterItemVisuals( item - bg_itemlist );
 
 	// load cmodel before model so filecache works
-	weaponInfo->weaponModel = trap_R_RegisterModel( item->world_model[0] );
+	weaponInfo->weaponModel = trap_R_RegisterModel( item->world_model );
 
 	// calc midpoint for rotation
 	trap_R_ModelBounds( weaponInfo->weaponModel, mins, maxs );
@@ -604,21 +604,21 @@ void CG_RegisterWeapon( int weaponNum ) {
 			break;
 		}
 	}
-	if ( ammo->classname && ammo->world_model[0] ) {
-		weaponInfo->ammoModel = trap_R_RegisterModel( ammo->world_model[0] );
+	if ( ammo->classname && ammo->world_model ) {
+		weaponInfo->ammoModel = trap_R_RegisterModel( ammo->world_model );
 	}
 
-	Q_strncpyz( path, item->world_model[0], MAX_QPATH );
+	Q_strncpyz( path, item->world_model, MAX_QPATH );
 	COM_StripExtension(path, path, sizeof(path));
 	strcat( path, "_flash.md3" );
 	weaponInfo->flashModel = trap_R_RegisterModel( path );
 
-	Q_strncpyz( path, item->world_model[0], MAX_QPATH );
+	Q_strncpyz( path, item->world_model, MAX_QPATH );
 	COM_StripExtension(path, path, sizeof(path));
 	strcat( path, "_barrel.md3" );
 	weaponInfo->barrelModel = trap_R_RegisterModel( path );
 
-	Q_strncpyz( path, item->world_model[0], MAX_QPATH );
+	Q_strncpyz( path, item->world_model, MAX_QPATH );
 	COM_StripExtension(path, path, sizeof(path));
 	strcat( path, "_hand.md3" );
 	weaponInfo->handsModel = trap_R_RegisterModel( path );
@@ -916,22 +916,12 @@ void CG_RegisterItemVisuals( int itemNum ) {
 	memset( itemInfo, 0, sizeof( &itemInfo ) );
 	itemInfo->registered = qtrue;
 
-	itemInfo->models[0] = trap_R_RegisterModel( item->world_model[0] );
+	itemInfo->model = trap_R_RegisterModel( item->world_model );
 
 	itemInfo->icon = trap_R_RegisterShader( item->icon );
 
 	if ( item->giType == IT_WEAPON ) {
 		CG_RegisterWeapon( item->giTag );
-	}
-
-	//
-	// powerups have an accompanying ring or sphere
-	//
-	if ( item->giType == IT_POWERUP || item->giType == IT_HEALTH || 
-		item->giType == IT_ARMOR || item->giType == IT_HOLDABLE ) {
-		if ( item->world_model[1] ) {
-			itemInfo->models[1] = trap_R_RegisterModel( item->world_model[1] );
-		}
 	}
 }
 

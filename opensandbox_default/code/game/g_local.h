@@ -40,12 +40,6 @@
 #define	INTERMISSION_DELAY_TIME	1000
 #define	SP_INTERMISSION_DELAY_TIME	5000
 
-//Domination how many seconds between awarded a point (multiplied by two if more than 3 points)
-#define DOM_SECSPERPOINT	2000
-
-//limit of the votemaps.cfg file and other custom map files
-#define	MAX_MAPS_TEXT		8192
-
 // gentity->flags
 #define	FL_GODMODE				1
 #define	FL_TEAMSLAVE			2
@@ -389,11 +383,7 @@ typedef struct {
 	int			maxHealth;
 	int			enterTime;			// level.time the client entered the game
 	playerTeamState_t teamState;	// status in teamplay games
-	int			voteCount;			// to prevent people from constantly calling votes
-	int			teamVoteCount;		// to prevent people from constantly calling votes
 
-	//elimination:
-	int		roundReached;			//Only spawn if we are new to this round
 	int			pingsamples[NUM_PING_SAMPLES];
 	int			samplehead;
 	
@@ -453,8 +443,6 @@ struct gclient_s {
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
 
-	//
-	int			lastkilled_client;	// last client that this client killed
 	int			lasthurt_client;	// last client that damaged this client
 	int			lasthurt_mod;		// type of damage the client did
 
@@ -463,8 +451,6 @@ struct gclient_s {
 	int			rewardTime;			// clear the EF_AWARD_IMPRESSIVE, etc when time > this
 
 	int			airOutTime;
-
-	int			lastKillTime;		// for multiple kill rewards
 
 	qboolean	fireHeld;			// used for hook
 	gentity_t	*hook;				// grapple hook if out
@@ -484,10 +470,6 @@ struct gclient_s {
 	int			invulnerabilityTime;
 
 	char		*areabits;
-	
-	// New vote system. The votes are saved in the client info, so we know who voted on what and can cancel votes on leave.
-	// 0=not voted, 1=voted yes, -1=voted no
-	int vote;
 	
 	int lastSentFlying;                             // The last client that sent the player flying
 	int lastSentFlyingTime;                         // So we can time out
@@ -556,24 +538,6 @@ typedef struct {
 	int			follow1, follow2;		// clientNums for auto-follow spectators
 
 	int			snd_fry;				// sound index for standing in lava
-
-	// voting state
-	char		voteString[MAX_STRING_CHARS];
-	char		voteDisplayString[MAX_STRING_CHARS];
-	int			voteTime;				// level.time vote was called
-	int			voteExecuteTime;		// time the vote is executed
-	int			voteYes;
-	int			voteNo;
-	int			numVotingClients;		// set by CountVotes
-    int         voteKickClient;                         // if non-negative the current vote is about this client.
-    int         voteKickType;                           // if 1 = ban (execute ban)
-
-	// team voting state
-	char		teamVoteString[2][MAX_STRING_CHARS];
-	int			teamVoteTime[2];		// level.time vote was called
-	int			teamVoteYes[2];
-	int			teamVoteNo[2];
-	int			numteamVotingClients[TEAM_NUM_TEAMS];// set by CalculateRanks
 
 	// spawn variables
 	qboolean	spawning;				// the G_Spawn*() functions are valid
@@ -740,7 +704,6 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match);
 gentity_t *G_PickTarget (char *targetname);
 void G_PickAllTargets ( gentity_t *ent );
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
-void	G_UseDeathTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 char	*G_GetScoringMapName();
 void	G_Fade( float duration, vec4_t startColor, vec4_t endColor, int clientn );
@@ -999,12 +962,6 @@ qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker );
 team_t G_TeamFromString( char *str );
 
 //
-// bg_alloc.c
-//
-
-void Svcmd_GameMem_f( void );
-
-//
 // g_session.c
 //
 
@@ -1187,11 +1144,7 @@ typedef struct
 
 void Svcmd_Status_f( void );
 void Svcmd_TeamMessage_f( void );
-void Svcmd_CenterPrint_f( void );
-void Svcmd_ReplaceTexture_f( void );
-void Svcmd_DumpUser_f( void );
 void Svcmd_MessageWrapper( void );
-void Svcmd_PropNpc_AS_f( void );
 
 //Noire.Script
 void Svcmd_NS_OpenScript_f( void );

@@ -2405,41 +2405,6 @@ int BotWantsToCamp(bot_state_t *bs) {
 
 /*
 ==================
-BotDontAvoid
-==================
-*/
-void BotDontAvoid(bot_state_t *bs, char *itemname) {
-	bot_goal_t goal;
-	int num;
-
-	num = trap_BotGetLevelItemGoal(-1, itemname, &goal);
-	while(num >= 0) {
-		trap_BotRemoveFromAvoidGoals(bs->gs, goal.number);
-		num = trap_BotGetLevelItemGoal(num, itemname, &goal);
-	}
-}
-
-/*
-==================
-BotGoForPowerups
-==================
-*/
-void BotGoForPowerups(bot_state_t *bs) {
-
-	//don't avoid any of the powerups anymore
-	BotDontAvoid(bs, "Quad Damage");
-	BotDontAvoid(bs, "Regeneration");
-	BotDontAvoid(bs, "Battle Suit");
-	BotDontAvoid(bs, "Speed");
-	BotDontAvoid(bs, "Invisibility");
-	//BotDontAvoid(bs, "Flight");
-	//reset the long term goal time so the bot will go for the powerup
-	//NOTE: the long term goal type doesn't change
-	bs->ltg_time = 0;
-}
-
-/*
-==================
 BotRoamGoal
 ==================
 */
@@ -4708,24 +4673,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 			}
 			break;
 		}
-		case EV_GLOBAL_SOUND:
-		{
-			if (state->eventParm < 0 || state->eventParm > MAX_SOUNDS) {
-				BotAI_Print(PRT_ERROR, "EV_GLOBAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
-				break;
-			}
-			trap_GetConfigstring(CS_SOUNDS + state->eventParm, buf, sizeof(buf));
-			if (!strcmp(buf, "sound/items/kamikazerespawn.wav" )) {
-				//the kamikaze respawned so dont avoid it
-				BotDontAvoid(bs, "Kamikaze");
-			}
-			else
-				if (!strcmp(buf, "sound/items/poweruprespawn.wav")) {
-				//powerup respawned... go get it
-				BotGoForPowerups(bs);
-			}
-			break;
-		}
 		case EV_GLOBAL_TEAM_SOUND:
 		{
 			if (gametype == GT_CTF) {
@@ -4842,7 +4789,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_WATER_UNDER:
 		case EV_WATER_CLEAR:
 		case EV_ITEM_PICKUP:
-		case EV_GLOBAL_ITEM_PICKUP:
 		case EV_NOAMMO:
 		case EV_CHANGE_WEAPON:
 		case EV_FIRE_WEAPON:

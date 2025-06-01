@@ -110,15 +110,6 @@ int mod_invulinf;
 int mod_accelerate;
 int mod_movetype;
 int mod_gravity;
-int mod_fogModel;
-int mod_fogShader;
-int mod_fogDistance;
-int mod_fogInterval;
-int mod_fogColorR;
-int mod_fogColorG;
-int mod_fogColorB;
-int mod_fogColorA;
-int mod_skyShader;
 int mod_skyColorR;
 int mod_skyColorG;
 int mod_skyColorB;
@@ -236,54 +227,6 @@ char *CG_Argv( int arg ) {
 
 /*
 =================
-CG_RegisterItemSounds
-
-The server says this item is used on this level
-=================
-*/
-static void CG_RegisterItemSounds( int itemNum ) {
-	gitem_t			*item;
-	char			data[MAX_QPATH];
-	char			*s, *start;
-	int				len;
-
-	item = &bg_itemlist[ itemNum ];
-
-	if( item->pickup_sound ) {
-		trap_S_RegisterSound( item->pickup_sound, qfalse );
-	}
-
-	// parse the space seperated precache string for other media
-	s = item->sounds;
-	if (!s || !s[0])
-		return;
-
-	while (*s) {
-		start = s;
-		while (*s && *s != ' ') {
-			s++;
-		}
-
-		len = s-start;
-		if (len >= MAX_QPATH || len < 5) {
-			CG_Error( "PrecacheItem: %s has bad precache string",
-				item->classname);
-			return;
-		}
-		memcpy (data, start, len);
-		data[len] = 0;
-		if ( *s ) {
-			s++;
-		}
-
-		if ( !strcmp(data+len-3, "wav" )) {
-			trap_S_RegisterSound( data, qfalse );
-		}
-	}
-}
-
-/*
-=================
 CG_RegisterSounds
 
 called during a precache command
@@ -291,7 +234,6 @@ called during a precache command
 */
 static void CG_RegisterSounds( void ) {
 	int		i;
-	char	items[MAX_ITEMS+1];
 	char	name[MAX_QPATH];
 	const char	*soundName;
 
@@ -379,11 +321,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.invulnerabilityImpactSound3 = trap_S_RegisterSound( "sound/items/invul_impact_03.wav", qfalse );
 	cgs.media.invulnerabilityJuicedSound = trap_S_RegisterSound( "sound/items/invul_juiced.wav", qfalse );
 
-	cgs.media.ammoregenSound = trap_S_RegisterSound("sound/items/cl_ammoregen.wav", qfalse);
-	cgs.media.doublerSound = trap_S_RegisterSound("sound/items/cl_doubler.wav", qfalse);
-	cgs.media.guardSound = trap_S_RegisterSound("sound/items/cl_guard.wav", qfalse);
-	cgs.media.scoutSound = trap_S_RegisterSound("sound/items/cl_scout.wav", qfalse);
-        cgs.media.obeliskHitSound1 = trap_S_RegisterSound( "sound/items/obelisk_hit_01.wav", qfalse );
+    cgs.media.obeliskHitSound1 = trap_S_RegisterSound( "sound/items/obelisk_hit_01.wav", qfalse );
 	cgs.media.obeliskHitSound2 = trap_S_RegisterSound( "sound/items/obelisk_hit_02.wav", qfalse );
 	cgs.media.obeliskHitSound3 = trap_S_RegisterSound( "sound/items/obelisk_hit_03.wav", qfalse );
 	cgs.media.obeliskRespawnSound = trap_S_RegisterSound( "sound/items/obelisk_respawn.wav", qfalse );
@@ -414,10 +352,6 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.takenLeadSound = trap_S_RegisterSound( "sound/feedback/takenlead.wav", qtrue);
 	cgs.media.tiedLeadSound = trap_S_RegisterSound( "sound/feedback/tiedlead.wav", qtrue);
 	cgs.media.lostLeadSound = trap_S_RegisterSound( "sound/feedback/lostlead.wav", qtrue);
-
-	cgs.media.voteNow = trap_S_RegisterSound( "sound/feedback/vote_now.wav", qtrue);
-	cgs.media.votePassed = trap_S_RegisterSound( "sound/feedback/vote_passed.wav", qtrue);
-	cgs.media.voteFailed = trap_S_RegisterSound( "sound/feedback/vote_failed.wav", qtrue);
 
 	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav", qfalse);
 	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav", qfalse);
@@ -453,13 +387,6 @@ static void CG_RegisterSounds( void ) {
 		cgs.media.carengine[i] = trap_S_RegisterSound (name, qfalse);
 	}
 
-	// only register the items that the server says we need
-	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
-
-	for ( i = 1 ; i < bg_numItems ; i++ ) {
-		CG_RegisterItemSounds( i );
-	}
-
 	for ( i = 1 ; i < MAX_SOUNDS ; i++ ) {
 		soundName = CG_ConfigString( CS_SOUNDS+i );
 		if ( !soundName[0] ) {
@@ -472,9 +399,8 @@ static void CG_RegisterSounds( void ) {
 	}
 
 	// FIXME: only needed with item
-	cgs.media.flightSound = trap_S_RegisterSound( "sound/items/flight.wav", qfalse );
 	cgs.media.medkitSound = trap_S_RegisterSound ("sound/items/use_medkit.wav", qfalse);
-	cgs.media.quadSound = trap_S_RegisterSound("sound/items/damage3.wav", qfalse);
+	cgs.media.quadSound = trap_S_RegisterSound("sound/items/damagequad.wav", qfalse);
 	cgs.media.sfx_ric1 = trap_S_RegisterSound ("sound/weapons/machinegun/ric1.wav", qfalse);
 	cgs.media.sfx_ric2 = trap_S_RegisterSound ("sound/weapons/machinegun/ric2.wav", qfalse);
 	cgs.media.sfx_ric3 = trap_S_RegisterSound ("sound/weapons/machinegun/ric3.wav", qfalse);
@@ -502,28 +428,10 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.wstbactvSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbactv.wav", qfalse);
 
 	cgs.media.regenSound = trap_S_RegisterSound("sound/items/regen.wav", qfalse);
-	cgs.media.protectSound = trap_S_RegisterSound("sound/items/protect3.wav", qfalse);
+	cgs.media.protectSound = trap_S_RegisterSound("sound/items/protect.wav", qfalse);
 	cgs.media.n_healthSound = trap_S_RegisterSound("sound/items/n_health.wav", qfalse );
 	cgs.media.hgrenb1aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb1a.wav", qfalse);
 	cgs.media.hgrenb2aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb2a.wav", qfalse);
-}
-
-/*
-=================
-CG_RegisterOverlay
-
-Registers the graphic for the target_effect overlay.
-=================
-*/
-void CG_RegisterOverlay( void ) {
-	const char *overlay;
-
-	overlay = CG_ConfigString( CS_OVERLAY );
-	if ( strlen(overlay) ) {
-		cgs.media.effectOverlay = trap_R_RegisterShaderNoMip( overlay );
-	} else {
-		cgs.media.effectOverlay = 0;
-	}
 }
 
 void CG_SetDefaultGameCvars(void) {
@@ -566,15 +474,6 @@ void CG_SetDefaultGameCvars(void) {
 	mod_accelerate = 1;
 	mod_movetype = 0;
 	mod_gravity = 800;
-    mod_fogModel = 0;
-    mod_fogShader = 0;
-    mod_fogDistance = 0;
-    mod_fogInterval = 0;
-    mod_fogColorR = 0;
-    mod_fogColorG = 0;
-    mod_fogColorB = 0;
-    mod_fogColorA = 0;
-    mod_skyShader = 0;
     mod_skyColorR = 0;
     mod_skyColorG = 0;
     mod_skyColorB = 0;
@@ -606,10 +505,6 @@ static void CG_RegisterGraphics( void ) {
 	CG_LoadingString( "game media", 0.70 );
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
-
-	cgs.media.objectivesOverlay = trap_R_RegisterShaderNoMip( CG_ConfigString(CS_OBJECTIVESOVERLAY) );
-	cgs.media.objectivesUpdated = trap_R_RegisterShaderNoMip( "menu/objectives/updated.tga" );
-	cgs.media.objectivesUpdatedSound = trap_S_RegisterSound( "sound/misc/objective_update_01.wav", qfalse );
 
 	cgs.media.deathImage = trap_R_RegisterShaderNoMip( "menu/assets/level_complete5" );
 
@@ -821,12 +716,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.heartShader = trap_R_RegisterShaderNoMip( "ui/assets/statusbar/selectedhealth.tga" );
 
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel( "models/powerups/shield/shield.md3" );
-	cgs.media.medalImpressive = trap_R_RegisterShaderNoMip( "medal_impressive" );
-	cgs.media.medalExcellent = trap_R_RegisterShaderNoMip( "medal_excellent" );
-	cgs.media.medalGauntlet = trap_R_RegisterShaderNoMip( "medal_gauntlet" );
-	cgs.media.medalDefend = trap_R_RegisterShaderNoMip( "medal_defend" );
-	cgs.media.medalAssist = trap_R_RegisterShaderNoMip( "medal_assist" );
-	cgs.media.medalCapture = trap_R_RegisterShaderNoMip( "medal_capture" );
 
 	// LEILEI SHADERS
 	cgs.media.lsmkShader1 = trap_R_RegisterShader("leismoke1" );

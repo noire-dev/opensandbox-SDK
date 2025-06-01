@@ -279,13 +279,9 @@ static snapshot_t *CG_ReadNextSnapshot( void ) {
 
 		// if it succeeded, return
 		if ( r ) {
-			CG_AddLagometerSnapshotInfo( dest );
 			net_error_count = 0;
 			return dest;
 		}
-
-		// record as a dropped packet
-		CG_AddLagometerSnapshotInfo( NULL );
 	}
 
 	net_error_count++;

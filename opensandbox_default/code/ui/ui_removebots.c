@@ -49,8 +49,6 @@ REMOVE BOTS MENU
 
 #define ART_KICK0			"menu/assets/kick_0"
 #define ART_KICK1			"menu/assets/kick_1"
-#define ART_VOTE0			"menu/assets/vote_0"
-#define ART_VOTE1			"menu/assets/vote_1"
 
 #define ID_UP				10
 #define ID_DOWN				11
@@ -153,21 +151,7 @@ static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event )
 		return;
 	}
 
-	switch (removeBotsMenuInfo.action) {
-	case RBM_KICKBOT:
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("kicknum %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
-		break;
-
-	case RBM_CALLVOTEKICK:
-		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote kicknum %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
-		break;
-
-	case RBM_CALLVOTELEADER:
-		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText( EXEC_APPEND, va("callteamvote leader %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
-		break;
-	}
+	trap_Cmd_ExecuteText( EXEC_APPEND, va("kicknum %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
 }
 
 
@@ -265,20 +249,8 @@ static void UI_RemoveBotsMenu_GetBots( void ) {
 
 		isBot = atoi( Info_ValueForKey( info, "skill" ) );
 		team = atoi( Info_ValueForKey( info, "t" ) );
-		if (removeBotsMenuInfo.action == RBM_KICKBOT ) {
-			if (!isBot)
-				continue;
-		}
-		else if (removeBotsMenuInfo.action == RBM_CALLVOTEKICK ) {
-			if (isBot)
-				continue;
-		}
-		else if (removeBotsMenuInfo.action == RBM_CALLVOTELEADER) {
-//			if (isBot)
-//				continue;
-			if (team != playerTeam)
-				continue;
-		}
+		if (!isBot)
+			continue;
 
 		removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.numBots] = n;
 		removeBotsMenuInfo.numBots++;
@@ -380,29 +352,7 @@ static void UI_RemoveBotsMenu_Init( int action) {
 	removeBotsMenuInfo.banner.generic.y			= 16;
 	removeBotsMenuInfo.banner.color				= color_white;
 	removeBotsMenuInfo.banner.style				= UI_CENTER;
-
-if(cl_language.integer == 0){
-	if (action == RBM_CALLVOTEKICK ) {
-		removeBotsMenuInfo.banner.string			= "CALLVOTE KICK";
-	}
-	else if (action == RBM_CALLVOTELEADER ) {
-		removeBotsMenuInfo.banner.string			= "CALLVOTE TEAM LEADER";
-	}
-	else {
-		removeBotsMenuInfo.banner.string			= "REMOVE BOTS";
-	}
-}
-if(cl_language.integer == 1){
-	if (action == RBM_CALLVOTEKICK ) {
-		removeBotsMenuInfo.banner.string			= "ГОЛОСОВАНИЕ - КИКНУТЬ";
-	}
-	else if (action == RBM_CALLVOTELEADER ) {
-		removeBotsMenuInfo.banner.string			= "ГОЛОСОВАНИЕ - ЛИДЕР КОМАНДЫ";
-	}
-	else {
-		removeBotsMenuInfo.banner.string			= "УДАЛЕНИЕ БОТОВ";
-	}
-}
+	removeBotsMenuInfo.banner.string			= "REMOVE BOTS";
 
 	removeBotsMenuInfo.background.generic.type	= MTYPE_BITMAP;
 	removeBotsMenuInfo.background.string	= ART_BACKGROUND;
@@ -461,18 +411,8 @@ if(cl_language.integer == 1){
 	removeBotsMenuInfo.deleteBot.width  			= 128;
 	removeBotsMenuInfo.deleteBot.height  			= 64;
 
-	if (action == RBM_CALLVOTEKICK) {
-		removeBotsMenuInfo.deleteBot.string		= ART_KICK0;
-		removeBotsMenuInfo.deleteBot.focuspic			= ART_KICK1;
-	}
-	else if (action == RBM_CALLVOTELEADER) {
-		removeBotsMenuInfo.deleteBot.string		= ART_VOTE0;
-		removeBotsMenuInfo.deleteBot.focuspic			= ART_VOTE1;
-	}
-	else {
-		removeBotsMenuInfo.deleteBot.string		= ART_DELETE0;
-		removeBotsMenuInfo.deleteBot.focuspic			= ART_DELETE1;
-	}
+	removeBotsMenuInfo.deleteBot.string				= ART_DELETE0;
+	removeBotsMenuInfo.deleteBot.focuspic			= ART_DELETE1;
 
 	removeBotsMenuInfo.back.generic.type		= MTYPE_BITMAP;
 	removeBotsMenuInfo.back.string		= ART_BACK0;

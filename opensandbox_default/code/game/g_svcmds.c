@@ -126,24 +126,6 @@ gclient_t	*ClientForString( const char *s ) {
 }
 
 /*
-==================
-Svcmd_PickTarget_f
-Added for OpenSandbox.
-==================
-*/
-void Svcmd_PickTarget_f( void ){
-	char		p[128];
-	gentity_t 	*act;
-
-	trap_Argv( 1, p, sizeof( p ) );
-
-	act = G_PickTarget( p );
-	if ( act && act->use ) {
-		act->use( act, NULL, NULL );
-	}
-}
-
-/*
 ===================
 Svcmd_ForceTeam_f
 
@@ -176,36 +158,26 @@ Not Worth Listing Elsewhere
 struct
 {
   char      *cmd;
-  qboolean  dedicated; //if it has to be entered from a dedicated server or RCON
   void      ( *function )( void );
 } svcmds[ ] = {
+  { "entityList", Svcmd_EntityList_f },
+  { "forceTeam", Svcmd_ForceTeam_f },
+  { "addbot", Svcmd_AddBot_f },
 
-  { "entityList", qfalse, Svcmd_EntityList_f },
-  { "forceTeam", qfalse, Svcmd_ForceTeam_f },
-  { "game_memory", qfalse, Svcmd_GameMem_f },
-  { "addbot", qfalse, Svcmd_AddBot_f },
-
-  { "status", qfalse, Svcmd_Status_f },
-  { "dumpuser", qfalse, Svcmd_DumpUser_f },
-  { "centerprint", qfalse, Svcmd_CenterPrint_f },
-  { "replacetexture", qfalse, Svcmd_ReplaceTexture_f },
-  { "say_team", qtrue, Svcmd_TeamMessage_f },
-  { "say", qtrue, Svcmd_MessageWrapper },
-  { "savemap", qfalse, G_WriteMapfile_f },
-  { "deletemap", qfalse, G_DeleteMapfile_f },
-  { "clearmap", qfalse, G_ClearMap_f },
-  { "clearmap_sandbox", qfalse, G_ClearSandboxMap_f },
-  { "loadmap", qfalse, G_LoadMapfile_f },
-  
-  { "picktarget", qfalse, Svcmd_PickTarget_f },
-  { "create", qfalse, Svcmd_PropNpc_AS_f },
+  { "say_team", Svcmd_TeamMessage_f },
+  { "say", Svcmd_MessageWrapper },
+  { "savemap", G_WriteMapfile_f },
+  { "deletemap", G_DeleteMapfile_f },
+  { "clearmap", G_ClearMap_f },
+  { "clearmap_sandbox", G_ClearSandboxMap_f },
+  { "loadmap", G_LoadMapfile_f },
 
   //Noire.Script
-  { "ns_openscript", qfalse, Svcmd_NS_OpenScript_f },
-  { "ns_interpret", qfalse, Svcmd_NS_Interpret_f },
-  { "ns_variablelist", qfalse, Svcmd_NS_VariableList_f },
-  { "ns_threadlist", qfalse, Svcmd_NS_ThreadList_f },
-  { "ns_sendvariable", qfalse, Svcmd_NS_SendVariable_f },
+  { "ns_openscript", Svcmd_NS_OpenScript_f },
+  { "ns_interpret", Svcmd_NS_Interpret_f },
+  { "ns_variablelist", Svcmd_NS_VariableList_f },
+  { "ns_threadlist", Svcmd_NS_ThreadList_f },
+  { "ns_sendvariable", Svcmd_NS_SendVariable_f },
 };
 
 /*
@@ -214,19 +186,14 @@ ConsoleCommand
 
 =================
 */
-qboolean  ConsoleCommand( void )
-{
+qboolean  ConsoleCommand( void ) {
   char cmd[ MAX_TOKEN_CHARS ];
   int  i;
 
   trap_Argv( 0, cmd, sizeof( cmd ) );
 
-  for( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
-  {
-    if( !Q_stricmp( cmd, svcmds[ i ].cmd ) )
-    {
-      if( svcmds[ i ].dedicated && !g_dedicated.integer )
-        return qfalse;
+  for( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ ) {
+    if( !Q_stricmp( cmd, svcmds[ i ].cmd ) ) {
       svcmds[ i ].function( );
       return qtrue;
     }

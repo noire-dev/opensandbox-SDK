@@ -44,7 +44,7 @@
 
 static const char* saveparam_list[] = {
 	"gui_gametype", "gui_anticheatengine", "gui_allowmaxrate",
-	"gui_maxrate", "gui_entitypack","gui_password", "gui_allowvote",
+	"gui_maxrate", "gui_entitypack","gui_password",
 	"gui_allowdownload", "gui_smoothclients",
 	"gui_syncclients", "gui_minPing", "gui_maxPing",
 	"gui_allowMinPing", "gui_allowMaxPing", "gui_gravity", "gui_jumpheight", "gui_knockback",
@@ -55,7 +55,6 @@ static const char* saveparam_list[] = {
 	"gui_singleskill",
 	"gui_extendedsandbox",
 	"gui_damageModifier",
-	"gui_elimination",
 	"gui_obeliskHealth",
 	"gui_obeliskRegenPeriod",
 	"gui_obeliskRegenAmount",
@@ -182,13 +181,6 @@ static const char* saveparam_list[] = {
 	"gui_invistime",
 	"gui_regentime",
 	"gui_flighttime",
-	"gui_armorrespawn",
-	"gui_healthrespawn",
-	"gui_ammorespawn",
-	"gui_holdablerespawn",
-	"gui_megahealthrespawn",
-	"gui_poweruprespawn",
-	"gui_weaponrespawn",
 	"gui_selectedmod",
 	
 	// Крюк
@@ -355,7 +347,7 @@ static const char* saveparam_list[] = {
 	"*botname", "*botexclude", "*botskill", "*BotSelection", "*BotCount",
 	"*BotChange", "*OpenSlotCount", "*BotSkillType", "*BotSkillValue",
 	"*BotSkillBias", "*PlayerJoinAs", "*hostname", "*ForceRespawn",
-	"*itemGroups", "*itemsHidden", "*Warmup", "*doWarmup", "*weaponrespawn", "*viewdistance",
+	"*itemGroups", "*itemsHidden", "*Warmup", "*doWarmup", "*viewdistance",
 
 	// many of these are specific to a gametype, but since we
 	// check for the existance of the Cvar they won't appear in
@@ -713,13 +705,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_invistime %i\n", s_scriptdata.server.invistime));
 	AddScript(va("set g_regentime %i\n", s_scriptdata.server.regentime));
 	AddScript(va("set g_flighttime %i\n", s_scriptdata.server.flighttime));
-	AddScript(va("set g_armorrespawn %i\n", s_scriptdata.server.armorrespawn));
-	AddScript(va("set g_healthrespawn %i\n", s_scriptdata.server.healthrespawn));
-	AddScript(va("set g_ammorespawn %i\n", s_scriptdata.server.ammorespawn));
-	AddScript(va("set g_holdablerespawn %i\n", s_scriptdata.server.holdablerespawn));
-	AddScript(va("set g_megahealthrespawn %i\n", s_scriptdata.server.megahealthrespawn));
-	AddScript(va("set g_poweruprespawn %i\n", s_scriptdata.server.poweruprespawn));
-	AddScript(va("set g_weaponrespawn %i\n", s_scriptdata.server.weaponrespawn));
 	// Крюк
 	AddScript(va("set g_ghspeed %i\n", s_scriptdata.server.g_ghspeed));
 	AddScript(va("set g_ghtimeout %i\n", s_scriptdata.server.g_ghtimeout));
@@ -910,7 +895,6 @@ static qboolean StartServer_WriteServerParams( void )
 	}
 
 	AddScript(va("set sv_allowDownload %i\n", s_scriptdata.server.allowdownload));
-	AddScript(va("set g_allowVote %i\n", s_scriptdata.server.allowvote));
 
 	// team game options
 	if (s_scriptdata.gametype >= GT_TEAM) {
@@ -955,9 +939,6 @@ static qboolean StartServer_WriteServerParams( void )
 
 	AddScript(va("set g_maxClients %i\n",value));
 
-	// smoothclients
-	AddScript(va("set g_smoothClients %i\n", s_scriptdata.server.smoothclients));
-
 	// ping limits
 	useping = qtrue;
 	if (s_scriptdata.server.allowMinPing && s_scriptdata.server.allowMaxPing) {
@@ -976,12 +957,6 @@ static qboolean StartServer_WriteServerParams( void )
 
 	// server frame rate
 	AddScript(va("set sv_fps %i\n", s_scriptdata.server.sv_fps));
-
-	// weapon respawn
-	if (s_scriptdata.gametype == GT_TEAM)
-		AddScript(va("set g_weaponTeamrespawn %i\n", s_scriptdata.server.weaponrespawn));
-	else
-		AddScript(va("set g_weaponrespawn %i\n", s_scriptdata.server.weaponrespawn));
 
 	// private clients
 	if (s_scriptdata.server.allowPrivateClients) {

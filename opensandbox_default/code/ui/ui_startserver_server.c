@@ -177,13 +177,10 @@
 #define ID_SERVER_BLUESPAWN_INVIS          477
 #define ID_SERVER_BLUESPAWN_REGEN          478
 #define ID_SERVER_BLUESPAWN_FLIGHT         479
-#define ID_SERVER_ELIMINATION_ITEMS          480
 #define ID_SERVER_BLUESPAWN_HOLDABLE       481
 #define ID_SERVER_OVERLAY                    482
 #define ID_SERVER_RANDOMITEMS                483
-#define ID_SERVER_ALLOWVOTE                  484
 #define ID_SERVER_SPAWNPROTECT               485
-#define ID_SERVER_ELIMINATION_LOCKSPECTATOR  486
 #define ID_SERVER_AWARDPUSHING               487
 #define ID_SERVER_RANDOMTELEPORT             488
 #define ID_SERVER_FALLDAMAGESMALL            489
@@ -212,13 +209,6 @@
 #define ID_SERVER_INVISTIME                  512
 #define ID_SERVER_REGENTIME                  513
 #define ID_SERVER_FLIGHTTIME                 514
-#define ID_SERVER_ARMORRESPAWN               515
-#define ID_SERVER_HEALTHRESPAWN              516
-#define ID_SERVER_AMMORESPAWN                517
-#define ID_SERVER_HOLDABLERESPAWN            518
-#define ID_SERVER_MEGAHEALTHRESPAWN          519
-#define ID_SERVER_POWERUPRESPAWN             520
-#define ID_SERVER_WEAPONRESPAWN              521
 #define ID_SERVER_SELECTEDMOD                522
 #define ID_SERVER_SLICKMOVE                  523
 
@@ -525,9 +515,6 @@ static controlinit_t srv_admin[] = {
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_MAXRATE, ITEM_GRAYIF_PREVOFF|ITEM_HALFGAP,
 		"bytes/s:", &s_scriptdata.server.maxrate, 0, 0, NULL, 6, 6, NULL },
 
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWVOTE, ITEM_ALWAYSON,
-		"Allow voting:", &s_scriptdata.server.allowvote, 0, 0, NULL, 0, 0, NULL },
-
 	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWDOWNLOAD, ITEM_ALWAYSON,
 		"Allow download:", &s_scriptdata.server.allowdownload, 0, 0, NULL, 0, 0, NULL },
 
@@ -725,8 +712,6 @@ static controlinit_t srv_other[] = {
 		"Player move:", &s_scriptdata.server.slickmove, -999999999, 999999999, NULL, 9, 9, slickmove_list },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_SPAWNPROTECT, ITEM_ALWAYSON,
 		"Spawn protect:", &s_scriptdata.server.spawnprotect, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ELIMINATION_LOCKSPECTATOR, ITEM_ALWAYSON,
-		"Elimination lock spectator:", &s_scriptdata.server.elimination_lockspectator, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_RADIO, 0, ID_SERVER_AWARDPUSHING, ITEM_ALWAYSON,
 		"Award pushing:", &s_scriptdata.server.awardpushing, -999999999, 999999999, NULL, 9, 9, NULL }
 
@@ -803,21 +788,7 @@ static controlinit_t srv_time[] = {
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_REGENTIME, ITEM_ALWAYSON,
 		"Regeneration powerup time:", &s_scriptdata.server.regentime, -999999999, 999999999, NULL, 9, 9, NULL },
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLIGHTTIME, ITEM_ALWAYSON|ITEM_HALFGAP,
-		"Flight powerup time:", &s_scriptdata.server.flighttime, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_FLIGHTTIME, ITEM_ALWAYSON,
-		"Armor respawn:", &s_scriptdata.server.armorrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_HEALTHRESPAWN, ITEM_ALWAYSON,
-		"Health respawn:", &s_scriptdata.server.healthrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_AMMORESPAWN, ITEM_ALWAYSON,
-		"Ammo respawn:", &s_scriptdata.server.ammorespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_HOLDABLERESPAWN, ITEM_ALWAYSON,
-		"Holdable respawn:", &s_scriptdata.server.holdablerespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_MEGAHEALTHRESPAWN, ITEM_ALWAYSON,
-		"Megahealth respawn:", &s_scriptdata.server.megahealthrespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_POWERUPRESPAWN, ITEM_ALWAYSON,
-		"Powerup respawn:", &s_scriptdata.server.poweruprespawn, -999999999, 999999999, NULL, 9, 9, NULL },
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_WEAPONRESPAWN, ITEM_ALWAYSON,
-		"Weapon respawn:", &s_scriptdata.server.weaponrespawn, -999999999, 999999999, NULL, 9, 9, NULL }
+		"Flight powerup time:", &s_scriptdata.server.flighttime, -999999999, 999999999, NULL, 9, 9, NULL }
 
 };
 
@@ -1213,10 +1184,6 @@ static void StartServer_ServerPage_ControlListStatusBar(void* ptr)
 
 	case ID_SERVER_PRIVATECLIENT:
 		StartServer_ServerPage_SetStatusBar("number of reserved slots, reduces max clients");
-		return;
-
-	case ID_SERVER_WEAPONRESPAWN:
-		StartServer_ServerPage_SetStatusBar("time before weapon respawns, default = 5, TeamDM = 30");
 		return;
 
 	case ID_SERVER_ENTITYPACK:

@@ -204,12 +204,3 @@ void BG_DefragmentMemory( void ) {
       startfmn = startfmn->next;    // endfmn acts as a 'restart' flag here
   }
 }
-
-//KK-OAX This was moved from g_mem.c to keep functionality from being broken. 
-void Svcmd_GameMem_f( void ) {
-
-    int usedMem;
-    usedMem = POOLSIZE - freeMem;
-	G_Printf( "Game memory status: %i out of %i bytes allocated\n", usedMem, POOLSIZE );
-}
-

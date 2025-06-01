@@ -449,11 +449,10 @@ static void CG_Item( centity_t *cent ) {
 	int				msec;
 	float			frac;
 	weaponInfo_t	*wi;
-	vec3_t 			spinAngles;
 
 	es = &cent->currentState;
 	if ( es->modelindex >= bg_numItems ) {
-		//CG_Error( "Bad item index %i on entity", es->modelindex );
+		CG_Error( "Bad item index %i on entity", es->modelindex );
 		return;
 	}
 
@@ -497,7 +496,7 @@ static void CG_Item( centity_t *cent ) {
 		cent->lerpOrigin[2] += 8;	// an extra height boost
 	}
 
-	ent.hModel = cg_items[es->modelindex].models[0];
+	ent.hModel = cg_items[es->modelindex].model;
 	
 	ent.reType = RT_MODEL;
 
@@ -558,27 +557,6 @@ static void CG_Item( centity_t *cent ) {
 		barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
 
 		trap_R_AddRefEntityToScene( &barrel );
-	}
-
-	VectorClear( spinAngles );
-
-	if ( item->giType == IT_HEALTH || item->giType == IT_POWERUP ) {
-		if ( ( ent.hModel = cg_items[es->modelindex].models[1] ) != 0 ) {
-			if ( item->giType == IT_POWERUP ) {
-				ent.origin[2] += 12;
-				spinAngles[1] = ( cg.time & 1023 ) * 360 / -1024.0f;
-			}
-			AnglesToAxis( spinAngles, ent.axis );
-
-			// scale up if respawning
-			if ( frac != 1.0 ) {
-				VectorScale( ent.axis[0], frac, ent.axis[0] );
-				VectorScale( ent.axis[1], frac, ent.axis[1] );
-				VectorScale( ent.axis[2], frac, ent.axis[2] );
-				ent.nonNormalizedAxes = qtrue;
-			}
-			trap_R_AddRefEntityToScene( &ent );
-		}
 	}
 }
 

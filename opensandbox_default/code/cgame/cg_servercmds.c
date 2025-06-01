@@ -106,19 +106,10 @@ static void CG_ParseGameCvars(void) {
 	mod_accelerate    		= atoi(CG_Argv(37));
 	mod_movetype     		= atoi(CG_Argv(38));
 	mod_gravity       		= atoi(CG_Argv(39));
-	mod_fogModel      		= atoi(CG_Argv(40));
-	mod_fogShader     		= atoi(CG_Argv(41));
-	mod_fogDistance   		= atoi(CG_Argv(42));
-	mod_fogInterval   		= atoi(CG_Argv(43));
-	mod_fogColorR     		= atoi(CG_Argv(44));
-	mod_fogColorG     		= atoi(CG_Argv(45));
-	mod_fogColorB     		= atoi(CG_Argv(46));
-	mod_fogColorA     		= atoi(CG_Argv(47));
-	mod_skyShader     		= atoi(CG_Argv(48));
-	mod_skyColorR     		= atoi(CG_Argv(49));
-	mod_skyColorG     		= atoi(CG_Argv(50));
-	mod_skyColorB     		= atoi(CG_Argv(51));
-	mod_skyColorA     		= atoi(CG_Argv(52));
+	mod_skyColorR     		= atoi(CG_Argv(40));
+	mod_skyColorG     		= atoi(CG_Argv(41));
+	mod_skyColorB     		= atoi(CG_Argv(42));
+	mod_skyColorA     		= atoi(CG_Argv(43));
 }
 
 static void CG_ParseSweps(void) {
@@ -190,31 +181,6 @@ void CG_ParseServerinfo( void ) {
 }
 
 /*
-==================
-CG_ParseWarmup
-==================
-*/
-static void CG_ParseWarmup( void ) {
-	const char	*info;
-	int			warmup;
-
-	info = CG_ConfigString( CS_WARMUP );
-
-	warmup = atoi( info );
-	cg.warmupCount = -1;
-
-	if ( warmup == 0 && cg.warmup ) {
-
-	} else if ( warmup > 0 && cg.warmup <= 0 ) {
-		{
-			trap_S_StartLocalSound( cgs.media.countPrepareSound, CHAN_ANNOUNCER );
-		}
-	}
-
-	cg.warmup = warmup;
-}
-
-/*
 ================
 CG_SetConfigValues
 
@@ -237,8 +203,6 @@ void CG_SetConfigValues( void ) {
 		s = CG_ConfigString( CS_FLAGSTATUS );
 		cgs.flagStatus = s[0] - '0';
 	}
-
-	cg.warmup = atoi( CG_ConfigString( CS_WARMUP ) );
 }
 
 /*
@@ -305,38 +269,12 @@ static void CG_ConfigStringModified( void ) {
 		CG_StartMusic();
 	} else if ( num == CS_SERVERINFO ) {
 		CG_ParseServerinfo();
-	} else if ( num == CS_WARMUP ) {
-		CG_ParseWarmup();
 	} else if ( num == CS_SCORES1 ) {
 		cgs.scores1 = atoi( str );
 	} else if ( num == CS_SCORES2 ) {
 		cgs.scores2 = atoi( str );
 	} else if ( num == CS_LEVEL_START_TIME ) {
 		cgs.levelStartTime = atoi( str );
-	} else if ( num == CS_VOTE_TIME ) {
-		cgs.voteTime = atoi( str );
-		cgs.voteModified = qtrue;
-	} else if ( num == CS_VOTE_YES ) {
-		cgs.voteYes = atoi( str );
-		cgs.voteModified = qtrue;
-	} else if ( num == CS_VOTE_NO ) {
-		cgs.voteNo = atoi( str );
-		cgs.voteModified = qtrue;
-	} else if ( num == CS_VOTE_STRING ) {
-		Q_strncpyz( cgs.voteString, str, sizeof( cgs.voteString ) );
-		trap_S_StartLocalSound( cgs.media.voteNow, CHAN_ANNOUNCER );
-	} else if ( num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1) {
-		cgs.teamVoteTime[num-CS_TEAMVOTE_TIME] = atoi( str );
-		cgs.teamVoteModified[num-CS_TEAMVOTE_TIME] = qtrue;
-	} else if ( num >= CS_TEAMVOTE_YES && num <= CS_TEAMVOTE_YES + 1) {
-		cgs.teamVoteYes[num-CS_TEAMVOTE_YES] = atoi( str );
-		cgs.teamVoteModified[num-CS_TEAMVOTE_YES] = qtrue;
-	} else if ( num >= CS_TEAMVOTE_NO && num <= CS_TEAMVOTE_NO + 1) {
-		cgs.teamVoteNo[num-CS_TEAMVOTE_NO] = atoi( str );
-		cgs.teamVoteModified[num-CS_TEAMVOTE_NO] = qtrue;
-	} else if ( num >= CS_TEAMVOTE_STRING && num <= CS_TEAMVOTE_STRING + 1) {
-		Q_strncpyz( cgs.teamVoteString[num-CS_TEAMVOTE_STRING], str, sizeof( cgs.teamVoteString ) );
-		trap_S_StartLocalSound( cgs.media.voteNow, CHAN_ANNOUNCER );
 	} else if ( num == CS_INTERMISSION ) {
 		cg.intermissionStarted = atoi( str );
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
@@ -385,8 +323,6 @@ static void CG_MapRestart( void ) {
 	cg.timelimitWarnings = 0;
 
 	cg.intermissionStarted = qfalse;
-
-	cgs.voteTime = 0;
 
 	cg.mapRestart = qtrue;
 
@@ -485,33 +421,6 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	if ( !strcmp( cmd, "fade" ) ) {
-		vec4_t color0, color1;
-		float duration;
-
-		duration = atof(CG_Argv(1));
-		
-		color0[0] = atof( CG_Argv(2) );
-		color0[1] = atof( CG_Argv(3) );
-		color0[2] = atof( CG_Argv(4) );
-		color0[3] = atof( CG_Argv(5) );
-		color1[0] = atof( CG_Argv(6) );
-		color1[1] = atof( CG_Argv(7) );
-		color1[2] = atof( CG_Argv(8) );
-		color1[3] = atof( CG_Argv(9) );
-		CG_Fade( duration, color0, color1 );
-		return;
-	}
-
-	if ( !strcmp( cmd, "ou" ) ) {
-		cg.objectivesSoundPlayed = qfalse;
-		if ( cg.time < cg.levelStartTime + BLACKOUT_TIME + FADEIN_TIME )
-			cg.objectivesTime = cg.levelStartTime + BLACKOUT_TIME + FADEIN_TIME;
-		else
-			cg.objectivesTime = cg.time;
-		return;
-	}
-
 	if ( !strcmp( cmd, "print" ) ) {
 		//if the message to print is about a client being dropped after a silent drop, suppress the drop message
 		arg = CG_Argv(1);
@@ -520,13 +429,6 @@ static void CG_ServerCommand( void ) {
 			return;
 		
 		CG_Printf( "%s", CG_Argv(1) );
-		cmd = CG_Argv(1);
-
-		if ( !Q_stricmpn( cmd, "vote failed", 11 ) || !Q_stricmpn( cmd, "team vote failed", 16 )) {
-			trap_S_StartLocalSound( cgs.media.voteFailed, CHAN_ANNOUNCER );
-		} else if ( !Q_stricmpn( cmd, "vote passed", 11 ) || !Q_stricmpn( cmd, "team vote passed", 16 ) ) {
-			trap_S_StartLocalSound( cgs.media.votePassed, CHAN_ANNOUNCER );
-		}
 		return;
 	}
 
@@ -553,24 +455,6 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "map_restart" ) ) {
 		CG_MapRestart();
-		return;
-	}
-
-	if ( Q_stricmp (cmd, "remapShader") == 0 )
-	{
-		if (trap_Argc() == 4)
-		{
-			char shader1[MAX_QPATH];
-			char shader2[MAX_QPATH];
-			char shader3[MAX_QPATH];
-
-			Q_strncpyz(shader1, CG_Argv(1), sizeof(shader1));
-			Q_strncpyz(shader2, CG_Argv(2), sizeof(shader2));
-			Q_strncpyz(shader3, CG_Argv(3), sizeof(shader3));
-
-			trap_R_RemapShader(shader1, shader2, shader3);
-		}
-
 		return;
 	}
 

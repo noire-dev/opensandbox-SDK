@@ -327,7 +327,7 @@ void RespawnItem( gentity_t *ent ) {
 	gitem_t	*item;
 	int 	i = 1;
 
-    if(g_randomItems.integer && ent->item->giType != IT_PERSISTANT_POWERUP && ent->item->giType != IT_TEAM) {
+    if(g_randomItems.integer && ent->item->giType != IT_RUNE && ent->item->giType != IT_TEAM) {
 		char* randomitem[] = {
 			"none",
 			"weapon_machinegun",
@@ -365,10 +365,8 @@ void RespawnItem( gentity_t *ent ) {
 			"ammo_belt",
 			"ammo_flame",
 			"item_armor_shard",
-			"item_armor_vest",
 			"item_armor_combat",
 			"item_armor_body",
-			"item_armor_full",
 			"item_health_small",
 			"item_health",
 			"item_health_large",
@@ -469,7 +467,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		respawn = Pickup_Powerup(ent, other);
 		predict = qfalse;
 		break;
-	case IT_PERSISTANT_POWERUP:
+	case IT_RUNE:
 		respawn = Pickup_PersistantPowerup(ent, other);
 		break;
 	case IT_TEAM:
@@ -491,26 +489,6 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
 	} else {
 		G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-	}
-
-	// powerup pickups are global broadcasts
-	if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
-		// if we want the global sound to play
-		if (!ent->speed) {
-			gentity_t	*te;
-
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-			te->s.eventParm = ent->s.modelindex;
-			te->r.svFlags |= SVF_BROADCAST;
-		} else {
-			gentity_t	*te;
-
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
-			te->s.eventParm = ent->s.modelindex;
-			// only send this temp entity to a single client
-			te->r.svFlags |= SVF_SINGLECLIENT;
-			te->r.singleClient = other->s.number;
-		}
 	}
 
 	// fire item targets
@@ -879,15 +857,9 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
 	ent->think = FinishSpawningItem;
-
 	ent->physicsBounce = 0.50;		// items are bouncy
 
-	if ( item->giType == IT_POWERUP ) {
-		G_SoundIndex( "sound/items/poweruprespawn.wav" );
-		G_SpawnFloat( "noglobalsound", "0", &ent->speed);
-	}
-
-	if ( item->giType == IT_PERSISTANT_POWERUP ) {
+	if ( item->giType == IT_RUNE ) {
 		ent->s.generic1 = ent->spawnflags;
 	}
 }

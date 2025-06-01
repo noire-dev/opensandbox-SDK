@@ -216,15 +216,6 @@ vmCvar_t    g_teamred_damage;
 vmCvar_t    g_teamred_infammo;
 vmCvar_t    g_teamred_respawnwait;
 vmCvar_t    g_teamred_pickupitems;
-vmCvar_t    g_fogModel;
-vmCvar_t    g_fogShader;
-vmCvar_t    g_fogDistance;
-vmCvar_t    g_fogInterval;
-vmCvar_t    g_fogColorR;
-vmCvar_t    g_fogColorG;
-vmCvar_t    g_fogColorB;
-vmCvar_t    g_fogColorA;
-vmCvar_t    g_skyShader;
 vmCvar_t    g_skyColorR;
 vmCvar_t    g_skyColorG;
 vmCvar_t    g_skyColorB;
@@ -280,12 +271,6 @@ vmCvar_t    g_ammolimit;
 vmCvar_t    g_jumpheight;
 vmCvar_t    g_speedfactor;
 vmCvar_t    g_drowndamage;
-vmCvar_t    g_armorrespawn;
-vmCvar_t    g_healthrespawn;
-vmCvar_t    g_ammorespawn;
-vmCvar_t    g_holdablerespawn;
-vmCvar_t    g_megahealthrespawn;
-vmCvar_t    g_poweruprespawn;
 vmCvar_t    g_gametype;
 vmCvar_t    g_fraglimit;
 vmCvar_t    g_timelimit;
@@ -301,16 +286,12 @@ vmCvar_t    g_damageModifier;
 vmCvar_t    g_knockback;
 vmCvar_t    g_quadfactor;
 vmCvar_t    g_respawntime;
-vmCvar_t    g_weaponRespawn;
-vmCvar_t    g_weaponTeamRespawn;
 vmCvar_t    g_warmup;
 vmCvar_t    g_doWarmup;
 vmCvar_t    g_restarted;
 vmCvar_t    g_blood;
-vmCvar_t    g_allowVote;
 vmCvar_t    g_teamAutoJoin;
 vmCvar_t    g_teamForceBalance;
-vmCvar_t    g_smoothClients;
 vmCvar_t    g_obeliskHealth;
 vmCvar_t    g_obeliskRegenPeriod;
 vmCvar_t    g_obeliskRegenAmount;
@@ -319,7 +300,6 @@ vmCvar_t    g_cubeTimeout;
 vmCvar_t    g_enableDust;
 vmCvar_t    g_enableBreath;
 vmCvar_t    g_proxMineTimeout;
-vmCvar_t    g_music;
 vmCvar_t    g_spawnprotect;
 vmCvar_t    g_spawn_health;
 vmCvar_t    g_spawn_armor;
@@ -541,15 +521,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_teamblue_pickupitems,      "g_teamblue_pickupitems",       "1",            0 },
 	{ &g_entitypack,                "g_entitypack",                 "default",      0 },
 	{ &g_extendedsandbox,           "g_extendedsandbox",            "0",            0 },
-	{ &g_fogModel,                  "g_fogModel",                   "1",            0 },
-	{ &g_fogShader,                 "g_fogShader",                  "1",            0 },
-	{ &g_fogDistance,               "g_fogDistance",                "8",            0 },
-	{ &g_fogInterval,               "g_fogInterval",                "32",           0 },
-	{ &g_fogColorR,                 "g_fogColorR",                  "210",          0 },
-	{ &g_fogColorG,                 "g_fogColorG",                  "245",          0 },
-	{ &g_fogColorB,                 "g_fogColorB",                  "255",          0 },
-	{ &g_fogColorA,                 "g_fogColorA",                  "0",            0 },
-	{ &g_skyShader,                 "g_skyShader",                  "1",            0 },
 	{ &g_skyColorR,                 "g_skyColorR",                  "255",          0 },
 	{ &g_skyColorG,                 "g_skyColorG",                  "255",          0 },
 	{ &g_skyColorB,                 "g_skyColorB",                  "255",          0 },
@@ -603,12 +574,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_speedfactor,               "g_speedfactor",                "1.3",          0 },
 	{ &g_drowndamage,               "g_drowndamage",                "1",            0 },
 	{ &g_ammolimit,                 "g_ammolimit",                  "200",          0 },
-	{ &g_armorrespawn,              "g_armorrespawn",               "25",           0 },
-	{ &g_healthrespawn,             "g_healthrespawn",              "35",           0 },
-	{ &g_ammorespawn,               "g_ammorespawn",                "30",           0 },
-	{ &g_holdablerespawn,           "g_holdablerespawn",            "60",           0 },
-	{ &g_megahealthrespawn,         "g_megahealthrespawn",          "35",           0 },
-	{ &g_poweruprespawn,            "g_poweruprespawn",             "120",          0 },
 	{ &g_fraglimit,                 "fraglimit",                    "20",           CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_timelimit,                 "timelimit",                    "0",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_capturelimit,              "capturelimit",                 "8",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
@@ -625,11 +590,8 @@ static cvarTable_t cvarTable[] = {
     { &g_damageModifier,            "g_damageModifier",             "1",            0 },
 	{ &g_knockback,                 "g_knockback",                  "1000",         0 },
 	{ &g_quadfactor,                "g_quadfactor",                 "3",            0 },
-	{ &g_weaponRespawn,             "g_weaponrespawn",              "5",            0 },
-	{ &g_weaponTeamRespawn,         "g_weaponTeamRespawn",          "30",           0 },
     { &g_respawntime,               "g_respawntime",                "0",            CVAR_ARCHIVE },
 	{ &g_blood,                     "com_blood",                    "1",            0 },
-	{ &g_allowVote,                 "g_allowVote",                  "1",            CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_obeliskHealth,             "g_obeliskHealth",              "2500",         0 },
 	{ &g_obeliskRegenPeriod,        "g_obeliskRegenPeriod",         "1",            0 },
 	{ &g_obeliskRegenAmount,        "g_obeliskRegenAmount",         "15",           0 },
@@ -638,9 +600,7 @@ static cvarTable_t cvarTable[] = {
 	{ &g_enableDust,                "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &g_enableBreath,              "g_enableBreath",               "0",            CVAR_SERVERINFO },
 	{ &g_proxMineTimeout,           "g_proxMineTimeout",            "180000",       0 },
-	{ &g_smoothClients,             "g_smoothClients",              "1",            0 },
 	{ &sv_fps,                      "sv_fps",                       "60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE },
-    { &g_music,                     "g_music",                      "",             0 },
     { &g_spawnprotect,              "g_spawnprotect",               "500",          CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_spawn_health,           	"g_spawn_health",            "100",          CVAR_NORESTART },
 	{ &g_spawn_armor,            	"g_spawn_armor",             "0",            CVAR_NORESTART },
@@ -742,7 +702,6 @@ vmCvar_t    cg_zoomFov;
 vmCvar_t    cg_thirdPerson;
 vmCvar_t    cg_thirdPersonRange;
 vmCvar_t    cg_thirdPersonOffset;
-vmCvar_t    cg_lagometer;
 vmCvar_t    cg_drawSpeed;
 vmCvar_t    cg_paused;
 vmCvar_t    cg_blood;
@@ -828,7 +787,6 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawCrosshairNames,           "cg_drawCrosshairNames",        "1",            CVAR_ARCHIVE },
 	{ &cg_crosshairScale,               "cg_crosshairScale",            "24",           CVAR_ARCHIVE },
 	{ &cg_addMarks,                     "cg_addMarks",                  "1",            CVAR_ARCHIVE },
-	{ &cg_lagometer,                    "cg_lagometer",                 "0",            CVAR_ARCHIVE },
 	{ &cg_disableBobbing,               "cg_disableBobbing",            "0",            CVAR_ARCHIVE },
 	{ &cg_debugEvents,                  "cg_debugevents",               "0",            CVAR_CHEAT },
 	{ &cg_thirdPersonRange,             "cg_thirdPersonRange",          "65",           CVAR_ARCHIVE },

@@ -230,7 +230,6 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.blood.curvalue			= trap_Cvar_VariableValue( "com_blood" ) != 0;
 	s_preferences.drawfps.curvalue			= trap_Cvar_VariableValue( "cg_drawFPS" ) != 0;
 	s_preferences.drawtimer.curvalue		= trap_Cvar_VariableValue( "cg_drawTimer" ) != 0;
-	s_preferences.drawlagometer.curvalue	= trap_Cvar_VariableValue( "cg_lagometer" ) != 0;
 	s_preferences.shadows.curvalue			= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_shadows" ) );
 
 
@@ -460,10 +459,6 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_DRAWTIMER:
 		trap_Cvar_SetValue( "cg_drawTimer", s_preferences.drawtimer.curvalue );
-		break;
-
-	case ID_LAGOMETER:
-		trap_Cvar_SetValue( "cg_lagometer", s_preferences.drawlagometer.curvalue );
 		break;
 
 	case ID_SHADOWS:
