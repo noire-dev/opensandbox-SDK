@@ -22,7 +22,7 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
+
 #include "g_local.h"
 
 void InitTrigger( gentity_t *self ) {

@@ -1291,13 +1291,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client ) {
 			targ->client->ps.stats[STAT_HEALTH] = targ->health;
 		}
-		
-		if ( !strcmp(targ->classname, "func_breakable") ) {
-			targ->health -= damage;
-			if ( targ->health <= 0 ){
-			    Break_Breakable(targ, attacker);
-			}
-		}
 
 		if ( targ->health <= 0 ) {
 			if ( client )
