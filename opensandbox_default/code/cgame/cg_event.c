@@ -820,7 +820,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 
 			if (pickupSound) {
-				trap_S_StartSound(NULL, cg.snap->ps.clientNum, CHAN_AUTO, pickupSound);
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, pickupSound);
 			}
 
 			// show icon and name on status bar
@@ -1236,46 +1236,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_DEBUG_LINE:
 		DEBUGNAME("EV_DEBUG_LINE");
 		CG_Beam( cent );
-		break;
-
-	case EV_EMIT_DEBRIS_LIGHT:
-		DEBUGNAME("EV_EMIT_DEBRIS_LIGHT");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_LIGHT );
-		break;
-
-	case EV_EMIT_DEBRIS_DARK:
-		DEBUGNAME("EV_EMIT_DEBRIS_DARK");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_DARK );
-		break;
-
-	case EV_EMIT_DEBRIS_LIGHT_LARGE:
-		DEBUGNAME("EV_EMIT_DEBRIS_LIGHT_LARGE");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_LIGHT_LARGE );
-		break;
-
-	case EV_EMIT_DEBRIS_DARK_LARGE:
-		DEBUGNAME("EV_EMIT_DEBRIS_DARK_LARGE");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_DARK_LARGE );
-		break;
-
-	case EV_EMIT_DEBRIS_WOOD:
-		DEBUGNAME("EV_EMIT_DEBRIS_WOOD");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_WOOD );
-		break;
-
-	case EV_EMIT_DEBRIS_FLESH:
-		DEBUGNAME("EV_EMIT_DEBRIS_FLESH");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_FLESH );
-		break;
-
-	case EV_EMIT_DEBRIS_GLASS:
-		DEBUGNAME("EV_EMIT_DEBRIS_GLASS");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_GLASS );
-		break;
-		
-	case EV_EMIT_DEBRIS_STONE:
-		DEBUGNAME("EV_EMIT_DEBRIS_STONE");
-		CG_ShowDebris( cent->lerpOrigin, es->eventParm, EV_EMIT_DEBRIS_STONE );
 		break;
 
 	case EV_EXPLOSION:

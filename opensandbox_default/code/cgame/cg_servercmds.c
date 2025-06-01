@@ -206,46 +206,6 @@ void CG_SetConfigValues( void ) {
 }
 
 /*
-=====================
-CG_ShaderStateChanged
-=====================
-*/
-void CG_ShaderStateChanged(void) {
-	char originalShader[MAX_QPATH];
-	char newShader[MAX_QPATH];
-	char timeOffset[16];
-	const char *o;
-	char *n,*t;
-
-	o = CG_ConfigString( CS_SHADERSTATE );
-	while (o && *o) {
-		n = strstr(o, "=");
-		if (n && *n) {
-			Q_strncpyz(originalShader, o, n-o);
-			originalShader[n-o] = 0;
-			n++;
-			t = strstr(n, ":");
-			if (t && *t) {
-				Q_strncpyz(newShader, n, t-n);
-				newShader[t-n] = 0;
-			} else {
-				break;
-			}
-			t++;
-			o = strstr(t, "@");
-			if (o) {
-				Q_strncpyz(timeOffset, t, o-t);
-				timeOffset[o-t] = 0;
-				o++;
-				trap_R_RemapShader( originalShader, newShader, timeOffset );
-			}
-		} else {
-			break;
-		}
-	}
-}
-
-/*
 ================
 CG_ConfigStringModified
 
@@ -296,9 +256,6 @@ static void CG_ConfigStringModified( void ) {
 		}
 
 	}
-	else if ( num == CS_SHADERSTATE ) {
-		CG_ShaderStateChanged();
-	}
 
 }
 
@@ -329,13 +286,6 @@ static void CG_MapRestart( void ) {
 	CG_StartMusic();
 
 	trap_S_ClearLoopingSounds(qtrue);
-
-	// we really should clear more parts of cg here and stop sounds
-
-	// play the "fight" sound if this is a restart without warmup
-	if ( cg.warmup == 0 && cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR ) {
-		trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
-	}
 }
 
 /*

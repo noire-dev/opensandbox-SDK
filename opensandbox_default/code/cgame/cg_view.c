@@ -379,8 +379,6 @@ static void CG_CalcFov( void ) {
 	return;
 }
 
-
-
 /*
 ===============
 CG_DamageBlendBlob
@@ -495,31 +493,6 @@ static void CG_CalcViewValues( void ) {
 	return;
 }
 
-
-/*
-=====================
-CG_PowerupTimerSounds
-=====================
-*/
-static void CG_PowerupTimerSounds( void ) {
-	int		i;
-	int		t;
-
-	// powerup timers going away
-	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
-		t = cg.snap->ps.powerups[i];
-		if ( t <= cg.time ) {
-			continue;
-		}
-		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
-			continue;
-		}
-		if ( ( t - cg.time ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
-			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
-		}
-	}
-}
-
 /*
 =====================
 CG_AddBufferedSound
@@ -626,7 +599,6 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	CG_PlayBufferedSounds();
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
-	CG_PowerupTimerSounds();
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis );
 	CG_DrawActive();
 

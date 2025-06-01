@@ -589,8 +589,6 @@ gui_cvarTable_t gui_cvarTable[] = {
 { "gui_var_ForceRespawn", "0" },
 { "gui_var_itemGroups", "" },
 { "gui_var_itemsHidden", "" },
-{ "gui_var_WarmUp", "20" },
-{ "gui_var_doWarmUp", "0" },
 { "gui_var_fraglimit", "0" },
 { "gui_var_timelimit", "0" },
 { "gui_var_viewdistance", "0" },
@@ -3089,9 +3087,6 @@ GUI_GetSkirmishCvar(NULL, "gui_amknockback",s_scriptdata.server.g_amknockback, 3
 	// reset server text control
 	GUI_GetSkirmishCvar( s, "hostname", s_scriptdata.server.hostname, MAX_HOSTNAME_LENGTH );
 
-	//s_scriptdata.server.forceRespawn = GUI_GetSkirmishCvarIntClamp(0, 999, s, "ForceRespawn" );
-	s_scriptdata.server.allowWarmup = GUI_GetSkirmishCvarIntClamp(0, 1, s, "doWarmUp" );
-	s_scriptdata.server.warmupTime = GUI_GetSkirmishCvarIntClamp(0, 999, s, "WarmUp" );
 	s_scriptdata.server.viewdistance = GUI_GetSkirmishCvarIntClamp(0, 90, s, "viewdistance" );
 
 	if (gametype >= GT_TEAM) {
@@ -3461,10 +3456,7 @@ GUI_SetSkirmishCvarInt( NULL, "gui_amguided", s_scriptdata.server.g_amguided);
 	//
 
 	GUI_SetSkirmishCvar(s, "hostname", s_scriptdata.server.hostname);
-	//GUI_SetSkirmishCvarInt(s, "ForceRespawn", s_scriptdata.server.forceRespawn);
 
-	GUI_SetSkirmishCvarInt(s, "doWarmup", s_scriptdata.server.allowWarmup);
-	GUI_SetSkirmishCvarInt(s, "WarmUp", s_scriptdata.server.warmupTime);
 	GUI_SetSkirmishCvarInt(s, "viewdistance", s_scriptdata.server.viewdistance);
 
 	if (gametype >= GT_TEAM) {

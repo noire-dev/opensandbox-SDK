@@ -49,16 +49,6 @@
 #define FL_NO_HUMANS			32
 #define FL_NO_SPAWN				64 
 
-// target_debrisemitter and func_breakable debris spawnflags
-#define SF_DEBRIS_LIGHT					1
-#define SF_DEBRIS_DARK					2
-#define SF_DEBRIS_LIGHT_LARGE			4
-#define SF_DEBRIS_DARK_LARGE			8
-#define SF_DEBRIS_WOOD					16
-#define SF_DEBRIS_FLESH					32
-#define SF_DEBRIS_GLASS					64
-#define SF_DEBRIS_STONE					128
-
 // target_effect spawnflags
 #define SF_EFFECT_EXPLOSION				1
 #define SF_EFFECT_PARTICLES_GRAVITY		2
@@ -146,8 +136,6 @@ struct gentity_s {
 	char		*target;
 	char		*targetname;
 	char		*team;
-	char		*targetShaderName;
-	char		*targetShaderNewName;
 	gentity_t	*target_ent;
 
 	float		speed;
@@ -199,17 +187,9 @@ struct gentity_s {
 	gitem_t		*item;			// for bonus items
 
 	//NEW VARIABLES
-
-	int			playerangle;
-	int			flashon;
-	int			crosson;
-	int			price;
-	int			owner;	// clientNum player owner
-	char		*ownername;	// clientNum player owner
+	qboolean	flashlight;
+	gentity_t	*owner;
 	int			sandboxObject;
-	char		*botname;
-
-	int			lastThinkTime;
 	
 	int			sb_coltype;
 	float		sb_gravity;
@@ -228,8 +208,7 @@ struct gentity_s {
 	float		height;
 	float		phase;
 
-	int			wait_to_pickup;
-	int			singlebot;
+	int			npcType;
 	int			tool_id;
 	gentity_t	*tool_entity;
 	int			botskill;
@@ -512,8 +491,6 @@ typedef struct {
 	int			gentitySize;
 	int			num_entities;		// current number, <= MAX_GENTITIES
 
-	int			warmupTime;			// restart match at this time
-
 	// store latched cvars here that we want to get at often
 	int			maxclients;
 
@@ -705,10 +682,6 @@ gentity_t *G_PickTarget (char *targetname);
 void G_PickAllTargets ( gentity_t *ent );
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
-char	*G_GetScoringMapName();
-void	G_Fade( float duration, vec4_t startColor, vec4_t endColor, int clientn );
-void	G_FadeOut( float duration, int clientn );
-void	G_FadeIn( float duration, int clientn );
 void G_BotSandboxCheck (gentity_t *self);
 void VehiclePhys( gentity_t *self );
 gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
@@ -744,8 +717,6 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void G_SetTarget( gentity_t *ent, char *targ );
 void G_SetTargetname( gentity_t *ent, char *targname );
-void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
-const char *BuildShaderStateConfig( void );
 
 
 void target_finish_think(gentity_t* self);

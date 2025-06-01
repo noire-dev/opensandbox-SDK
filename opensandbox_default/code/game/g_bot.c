@@ -305,7 +305,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	// set the bot's spawning entity
 	Info_SetValueForKey( userinfo, "parentid", va( "%i", parentEntityNum ) );
 	if(customspbot){
-	Info_SetValueForKey( userinfo, "singlebot", va( "%i", customspbot ) );
+	Info_SetValueForKey( userinfo, "npcType", va( "%i", customspbot ) );
 	}
 	if ( waypoint )
 		Info_SetValueForKey( userinfo, "waypoint", waypoint);

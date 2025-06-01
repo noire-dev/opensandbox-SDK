@@ -25,14 +25,6 @@
 
 #include "g_local.h"
 
-/*
-===============================================================================
-
-PUSHMOVE
-
-===============================================================================
-*/
-
 void MatchTeam( gentity_t *teamLeader, int moverState, int time );
 
 typedef struct {
@@ -42,6 +34,7 @@ typedef struct {
 	float	deltayaw;
 } pushed_t;
 pushed_t	pushed[MAX_GENTITIES], *pushed_p;
+
 
 /*
 ============
@@ -70,21 +63,11 @@ gentity_t	*G_TestEntityPosition( gentity_t *ent ) {
 	return NULL;
 }
 
-/*
-================
-G_CreateRotationMatrix
-================
-*/
 void G_CreateRotationMatrix(vec3_t angles, vec3_t matrix[3]) {
 	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
 	VectorInverse(matrix[1]);
 }
 
-/*
-================
-G_TransposeMatrix
-================
-*/
 void G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3]) {
 	int i, j;
 	for (i = 0; i < 3; i++) {
@@ -94,11 +77,6 @@ void G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3]) {
 	}
 }
 
-/*
-================
-G_RotatePoint
-================
-*/
 void G_RotatePoint(vec3_t point, vec3_t matrix[3]) {
 	vec3_t tvec;
 
@@ -192,11 +170,6 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	return qfalse;
 }
 
-/*
-==================
-G_CheckProxMinePosition
-==================
-*/
 qboolean G_CheckProxMinePosition( gentity_t *check ) {
 	vec3_t		start, end;
 	trace_t	tr;
@@ -211,11 +184,6 @@ qboolean G_CheckProxMinePosition( gentity_t *check ) {
 	return qtrue;
 }
 
-/*
-==================
-G_TryPushingProxMine
-==================
-*/
 qboolean G_TryPushingProxMine( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove ) {
 	vec3_t		forward, right, up;
 	vec3_t		org, org2, move2;
@@ -265,7 +233,6 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 	vec3_t		totalMins, totalMaxs;
 
 	*obstacle = NULL;
-
 
 	// mins/maxs are the bounds at the destination
 	// totalMins / totalMaxs are the bounds for the entire move
@@ -325,6 +292,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 							G_FreeEntity(check->activator);
 							check->activator = NULL;
 						}
+						//G_Printf("prox mine explodes\n");
 					}
 				}
 				else {
@@ -338,12 +306,12 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 							G_FreeEntity(check->activator);
 							check->activator = NULL;
 						}
+						//G_Printf("prox mine explodes\n");
 					}
 				}
 				continue;
 			}
 		}
-
 		// only push items and players
 		if ( check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && !check->physicsObject ) {
 			continue;
@@ -380,6 +348,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 			continue;
 		}
 
+		
 		// save off the obstacle so we can call the block function (crush, etc)
 		*obstacle = check;
 
@@ -401,11 +370,6 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 	return qtrue;
 }
 
-/*
-=================
-G_MoverTeam
-=================
-*/
 void G_MoverTeam( gentity_t *ent ) {
 	vec3_t		move, amove;
 	gentity_t	*part, *obstacle;
@@ -458,12 +422,6 @@ void G_MoverTeam( gentity_t *ent ) {
 	}
 }
 
-/*
-================
-G_RunMover
-
-================
-*/
 void G_RunMover( gentity_t *ent ) {
 	// if not a team captain, don't do anything, because
 	// the captain will handle everything
@@ -488,12 +446,6 @@ GENERAL MOVERS
 Doors, plats, and buttons are all binary (two position) movers
 Pos1 is "at rest", pos2 is "activated"
 ============================================================================
-*/
-
-/*
-===============
-SetMoverState
-===============
 */
 void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 	vec3_t			delta;
@@ -546,11 +498,6 @@ void MatchTeam( gentity_t *teamLeader, int moverState, int time ) {
 	}
 }
 
-/*
-================
-ReturnToPos1
-================
-*/
 void ReturnToPos1( gentity_t *ent ) {
 	MatchTeam( ent, MOVER_2TO1, level.time );
 
@@ -563,11 +510,6 @@ void ReturnToPos1( gentity_t *ent ) {
 	}
 }
 
-/*
-================
-Reached_BinaryMover
-================
-*/
 void Reached_BinaryMover( gentity_t *ent ) {
 
 	// stop the looping sound
@@ -608,11 +550,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		G_Error( "Reached_BinaryMover: bad moverState" );
 	}
 }
-/*
-================
-Use_BinaryMover
-================
-*/
+
 void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
@@ -695,6 +633,9 @@ so the movement delta can be calculated
 void InitMover( gentity_t *ent ) {
 	vec3_t		move;
 	float		distance;
+	float		light;
+	vec3_t		color;
+	qboolean	lightSet, colorSet;
 	char		*sound;
 
 	// if the "model2" key is set, use a seperate model
@@ -707,6 +648,32 @@ void InitMover( gentity_t *ent ) {
 	if ( G_SpawnString( "noise", "100", &sound ) ) {
 		ent->s.loopSound = G_SoundIndex( sound );
 	}
+
+	// if the "color" or "light" keys are set, setup constantLight
+	lightSet = G_SpawnFloat( "light", "100", &light );
+	colorSet = G_SpawnVector( "color", "1 1 1", color );
+	if ( lightSet || colorSet ) {
+		int		r, g, b, i;
+
+		r = color[0] * 255;
+		if ( r > 255 ) {
+			r = 255;
+		}
+		g = color[1] * 255;
+		if ( g > 255 ) {
+			g = 255;
+		}
+		b = color[2] * 255;
+		if ( b > 255 ) {
+			b = 255;
+		}
+		i = light / 4;
+		if ( i > 255 ) {
+			i = 255;
+		}
+		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
+	}
+
 
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
@@ -733,21 +700,13 @@ void InitMover( gentity_t *ent ) {
 	}
 }
 
+
 /*
 ===============================================================================
 
 DOOR
 
-A use can be triggered either by a touch function, by being shot, or by being
-targeted by another entity.
-
 ===============================================================================
-*/
-
-/*
-================
-Blocked_Door
-================
 */
 void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	// remove anything other than a client
@@ -773,11 +732,6 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	Use_BinaryMover( ent, ent, other );
 }
 
-/*
-================
-Touch_DoorTriggerSpectator
-================
-*/
 static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	int i, axis;
 	vec3_t origin, dir, angles;
@@ -801,11 +755,6 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 	TeleportPlayer(other, origin, angles );
 }
 
-/*
-================
-Touch_DoorTrigger
-================
-*/
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	if ( other->client && other->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		// if the door is not open and not opening
@@ -819,14 +768,6 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	}
 }
 
-/*
-======================
-Think_SpawnNewDoorTrigger
-
-All of the parts of a door have been spawned, so create
-a trigger that encloses all of them
-======================
-*/
 void Think_SpawnNewDoorTrigger( gentity_t *ent ) {
 	gentity_t		*other;
 	vec3_t		mins, maxs;
@@ -875,20 +816,6 @@ void Think_MatchTeam( gentity_t *ent ) {
 	MatchTeam( ent, ent->moverState, level.time );
 }
 
-/*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER
-TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER	monsters will not trigger this door
-
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"speed"		movement speed (100 default)
-"wait"		wait before returning (3 default, -1 = never return)
-"lip"		lip remaining at end of move (8 default)
-"dmg"		damage to inflict when blocked (2 default)
-"health"	if set, the door must be shot open
-*/
 void SP_func_door (gentity_t *ent) {
 	vec3_t	abs_movedir;
 	float	distance;
@@ -966,14 +893,6 @@ PLAT
 
 ===============================================================================
 */
-
-/*
-==============
-Touch_Plat
-
-Don't allow decent if a living player is on it
-===============
-*/
 void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	if ( !other->client || other->client->ps.stats[STAT_HEALTH] <= 0 ) {
 		return;
@@ -985,13 +904,6 @@ void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	}
 }
 
-/*
-==============
-Touch_PlatCenterTrigger
-
-If the plat is at the bottom position, start it going up
-===============
-*/
 void Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	if ( !other->client ) {
 		return;
@@ -1002,21 +914,10 @@ void Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace ) 
 	}
 }
 
-/*
-================
-SpawnPlatTrigger
-
-Spawn a trigger in the middle of the plat's low position
-Elevator cars require that the trigger extend through the entire low position,
-not just sit on top of it.
-================
-*/
 void SpawnPlatTrigger( gentity_t *ent ) {
 	gentity_t	*trigger;
 	vec3_t	tmin, tmax;
 
-	// the middle trigger will be a thin trigger just
-	// above the starting position
 	trigger = G_Spawn();
 	trigger->classname = "plat_trigger";
 	trigger->touch = Touch_PlatCenterTrigger;
@@ -1046,15 +947,6 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 	trap_LinkEntity (trigger);
 }
 
-/*QUAKED func_plat (0 .5 .8) ?
-Plats are always drawn in the extended position so they will light correctly.
-
-"lip"		default 8, protrusion above rest position
-"height"	total height of movement, defaults to model height
-"speed"		overrides default 200.
-"dmg"		overrides default 2
-"model2"	.md3 model to also draw
-*/
 void SP_func_plat (gentity_t *ent) {
 	float		lip, height;
 
@@ -1105,13 +997,6 @@ BUTTON
 
 ===============================================================================
 */
-
-/*
-==============
-Touch_Button
-
-===============
-*/
 void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	if ( !other->client ) {
 		return;
@@ -1122,17 +1007,6 @@ void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	}
 }
 
-/*QUAKED func_button (0 .5 .8) ?
-When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets, waits some time, then returns to it's original position where it can be triggered again.
-
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"target"	all entities with a matching targetname will be used
-"speed"		override the default 40 speed
-"wait"		override the default 1 second wait (-1 = never return)
-"lip"		override the default 4 pixel lip remaining at end of move
-"health"	if set, the button must be killed instead of touched
-*/
 void SP_func_button( gentity_t *ent ) {
 	vec3_t		abs_movedir;
 	float		distance;
@@ -1184,28 +1058,15 @@ TRAIN
 
 ===============================================================================
 */
-
 #define TRAIN_START_ON		1
 #define TRAIN_TOGGLE		2
 #define TRAIN_BLOCK_STOPS	4
 
-/*
-===============
-Think_BeginMoving
-
-The wait time at a corner has completed, so start moving again
-===============
-*/
 void Think_BeginMoving( gentity_t *ent ) {
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_LINEAR_STOP;
 }
 
-/*
-===============
-Reached_Train
-===============
-*/
 void Reached_Train( gentity_t *ent ) {
 	gentity_t		*next;
 	float			speed;
@@ -1257,13 +1118,6 @@ void Reached_Train( gentity_t *ent ) {
 	}
 }
 
-/*
-===============
-Think_SetupTrainTargets
-
-Link all the corners together
-===============
-*/
 void Think_SetupTrainTargets( gentity_t *ent ) {
 	gentity_t		*path, *next, *start;
 
@@ -1306,12 +1160,6 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 	Reached_Train( ent );
 }
 
-/*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
-Train path corners.
-Target: next path corner and other targets to fire
-"speed" speed to move to the next corner
-"wait" seconds to wait before behining move to next corner
-*/
 void SP_path_corner( gentity_t *self ) {
 	if ( !self->targetname ) {
 		G_Printf ("path_corner with no targetname at %s\n", vtos(self->s.origin));
@@ -1321,16 +1169,6 @@ void SP_path_corner( gentity_t *self ) {
 	// path corners don't need to be linked in
 }
 
-/*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
-A train is a mover that moves between path_corner target points.
-Trains MUST HAVE AN ORIGIN BRUSH.
-The train spawns at the first target it is pointing at.
-"model2"	.md3 model to also draw
-"speed"		default 100
-"dmg"		default	2
-"noise"		looping sound to play when the train is in motion
-"target"	next path corner
-*/
 void SP_func_train (gentity_t *self) {
 	VectorClear (self->s.angles);
 
@@ -1370,11 +1208,6 @@ STATIC
 
 ===============================================================================
 */
-
-/*QUAKED func_static (0 .5 .8) ?
-A bmodel that just sits there, doing nothing.  Can be used for conditional walls and models.
-"model2"	.md3 model to also draw
-*/
 void SP_func_static( gentity_t *ent ) {
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -1388,16 +1221,6 @@ void SP_func_static( gentity_t *ent ) {
 ROTATING
 
 ===============================================================================
-*/
-
-/*QUAKED func_rotating (0 .5 .8) ? START_ON - X_AXIS Y_AXIS
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the X_AXIS or Y_AXIS box to change that.
-
-"model2"	.md3 model to also draw
-"speed"		determines how fast it moves; default value is 100.
-"dmg"		damage to inflict when blocked (2 default)
 */
 void SP_func_rotating (gentity_t *ent) {
 	if ( !ent->speed ) {
@@ -1435,15 +1258,6 @@ BOBBING
 
 ===============================================================================
 */
-
-/*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
-Normally bobs on the Z axis
-"model2"	.md3 model to also draw
-"height"	amplitude of bob (32 default)
-"speed"		seconds to complete a bob cycle (4 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
-*/
 void SP_func_bobbing (gentity_t *ent) {
 	float		height;
 	float		phase;
@@ -1479,16 +1293,6 @@ void SP_func_bobbing (gentity_t *ent) {
 PENDULUM
 
 ===============================================================================
-*/
-
-/*QUAKED func_pendulum (0 .5 .8) ?
-You need to have an origin brush as part of this entity.
-Pendulums always swing north / south on unrotated models.  Add an angles field to the model to allow rotation in other directions.
-Pendulum frequency is a physical constant based on the length of the beam and gravity.
-"model2"	.md3 model to also draw
-"speed"		the number of degrees each way the pendulum swings, (30 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
 */
 void SP_func_pendulum(gentity_t *ent) {
 	float		freq;

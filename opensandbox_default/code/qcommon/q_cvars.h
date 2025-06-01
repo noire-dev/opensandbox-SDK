@@ -292,8 +292,6 @@ extern  vmCvar_t    g_damageModifier;
 extern  vmCvar_t    g_knockback;
 extern  vmCvar_t    g_quadfactor;
 extern  vmCvar_t    g_respawntime;
-extern  vmCvar_t    g_warmup;
-extern  vmCvar_t    g_doWarmup;
 extern  vmCvar_t    g_restarted;
 extern  vmCvar_t    g_blood;
 extern  vmCvar_t    g_teamAutoJoin;

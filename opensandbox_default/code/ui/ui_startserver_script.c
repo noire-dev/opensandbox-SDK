@@ -347,7 +347,7 @@ static const char* saveparam_list[] = {
 	"*botname", "*botexclude", "*botskill", "*BotSelection", "*BotCount",
 	"*BotChange", "*OpenSlotCount", "*BotSkillType", "*BotSkillValue",
 	"*BotSkillBias", "*PlayerJoinAs", "*hostname", "*ForceRespawn",
-	"*itemGroups", "*itemsHidden", "*Warmup", "*doWarmup", "*viewdistance",
+	"*itemGroups", "*itemsHidden", "*viewdistance",
 
 	// many of these are specific to a gametype, but since we
 	// check for the existance of the Cvar they won't appear in
@@ -861,20 +861,6 @@ static qboolean StartServer_WriteServerParams( void )
 	AddScript(va("set g_amknockback  \"%s\"\n", s_scriptdata.server.g_amknockback));
 	AddScript(va("set g_amhoming %i\n", s_scriptdata.server.g_amhoming));
 	AddScript(va("set g_amguided %i\n", s_scriptdata.server.g_amguided));
-
-	if (s_scriptdata.server.allowWarmup) {
-		value = s_scriptdata.server.warmupTime;
-		if (value == 0) {
-			AddScript(va("set g_doWarmup 0\n"));
-		}
-		else {
-			AddScript(va("set g_doWarmup 1\n"));
-			AddScript(va("set g_warmup %i\n", value));
-		}
-	}
-	else {
-		AddScript(va("set g_doWarmup 0\n"));
-	}
 	
 	AddScript(va("set sv_viewdistance %i\n", s_scriptdata.server.viewdistance));
 

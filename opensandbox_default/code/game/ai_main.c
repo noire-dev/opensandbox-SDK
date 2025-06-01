@@ -144,7 +144,7 @@ switch(prop) {
 		
 	case NP_ATTACK:{
 		switch(bs->spbot) {
-			case NPC_ENEMY: 	switch(ent->singlebot) 
+			case NPC_ENEMY: 	switch(ent->npcType) 
 			{
 			case NPC_PLAYER: 	return qtrue;
 			case NPC_ENEMY: 	return qfalse;
@@ -153,7 +153,7 @@ switch(prop) {
 			case NPC_PARTNER: 	return qtrue;
 			case NPC_PARTNERENEMY: 	return qfalse;
 			}
-			case NPC_CITIZEN: 	switch(ent->singlebot) 
+			case NPC_CITIZEN: 	switch(ent->npcType) 
 			{
 			case NPC_PLAYER: 	return qfalse;
 			case NPC_ENEMY: 	return qfalse;
@@ -162,7 +162,7 @@ switch(prop) {
 			case NPC_PARTNER: 	return qfalse;
 			case NPC_PARTNERENEMY: 	return qfalse;
 			}
-			case NPC_GUARD: 	switch(ent->singlebot) 
+			case NPC_GUARD: 	switch(ent->npcType) 
 			{
 			case NPC_PLAYER: 	return qfalse;
 			case NPC_ENEMY: 	return qtrue;
@@ -171,7 +171,7 @@ switch(prop) {
 			case NPC_PARTNER: 	return qfalse;		
 			case NPC_PARTNERENEMY: 	return qtrue;			
 			}
-			case NPC_PARTNER: 	switch(ent->singlebot) 
+			case NPC_PARTNER: 	switch(ent->npcType) 
 			{
 			case NPC_PLAYER: 	return qfalse;
 			case NPC_ENEMY: 	return qtrue;
@@ -180,7 +180,7 @@ switch(prop) {
 			case NPC_PARTNER: 	return qfalse;	
 			case NPC_PARTNERENEMY: 	return qtrue;			
 			}
-			case NPC_PARTNERENEMY: 	switch(ent->singlebot) 
+			case NPC_PARTNERENEMY: 	switch(ent->npcType) 
 			{
 			case NPC_PLAYER: 	return qtrue;
 			case NPC_ENEMY: 	return qfalse;
@@ -1306,7 +1306,7 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 	
 	trap_GetUserinfo(bs->client, userinfo, sizeof(userinfo));
 	
-	bs->spbot = atoi( Info_ValueForKey( userinfo, "singlebot" ) );
+	bs->spbot = atoi( Info_ValueForKey( userinfo, "npcType" ) );
 	
 	numbots++;
 	

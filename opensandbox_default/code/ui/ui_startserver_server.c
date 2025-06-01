@@ -28,7 +28,6 @@
 #define ID_SERVER_GAMETYPE 300
 #define ID_SERVER_HOSTNAME 301
 #define ID_SERVER_RESPAWN 302
-#define ID_SERVER_WARMUP 303
 #define ID_SERVER_FRIENDLY 304
 #define ID_SERVER_AUTOJOIN 305
 #define ID_SERVER_TEAMBALANCE 306
@@ -42,7 +41,6 @@
 #define ID_SERVER_PASSWORD 317
 #define ID_SERVER_ENTITYPACK 318
 #define ID_SERVER_ALLOWMAXRATE 319
-#define ID_SERVER_ALLOWWARMUP 320
 #define ID_SERVER_SYNCCLIENTS 321
 #define ID_SERVER_MINPING 322
 #define ID_SERVER_MAXPING 323
@@ -487,12 +485,6 @@ static controlinit_t srv_connect[] = {
 
 	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_MAXPING, ITEM_GRAYIF_PREVOFF,
 		"Max ping (ms):", &s_scriptdata.server.maxPing, 0, 999, NULL, 4, 4, NULL },
-		
-	{ SRVCTRL_RADIO, 0, ID_SERVER_ALLOWWARMUP, ITEM_ALWAYSON,
-		"Allow warmup:", &s_scriptdata.server.allowWarmup, 0, 0, NULL, 0, 0, NULL },
-
-	{ SRVCTRL_NUMFIELD, 0, ID_SERVER_WARMUP, ITEM_GRAYIF_PREVOFF|ITEM_HALFGAP,
-		"Warmup time:", &s_scriptdata.server.warmupTime, 0, 0, NULL, 4, 4, NULL },
 
 	{ SRVCTRL_RADIO, 0, ID_SERVER_SMOOTHCLIENTS, ITEM_ALWAYSON|ITEM_HALFGAP,
 		"Smooth clients:", &s_scriptdata.server.smoothclients, 0, 0, NULL, 0, 0, NULL },

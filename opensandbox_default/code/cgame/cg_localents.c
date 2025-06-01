@@ -143,24 +143,6 @@ void CG_PuffTrail( localEntity_t *le ) {
 		mediaShader = cgs.media.bloodTrailShader;
 		verticalMovement = 40;
 	}
-	else if ( le->leTrailType == LETT_DEBRIS_CONCRETE ) {
-		step = 25;
-		r = 1;
-		g = 1;
-		b = 1;
-		a = 0.2;
-		mediaShader = cgs.media.smokePuffShader;
-		verticalMovement = -40;
-			}
-	else if ( le->leTrailType == LETT_DEBRIS_WOOD ) {
-		step = 25;
-		r = 0.5;
-		g = 0.42;
-		b = 0.36;
-		a = 0.2;
-		mediaShader = cgs.media.smokePuffShader;
-		verticalMovement = -40;
-	}
 
 	t = step * ( (cg.time - cg.frametime + step ) / step );
 	t2 = step * ( cg.time / step );
@@ -226,37 +208,6 @@ void CG_FragmentBounceSound( localEntity_t *le, trace_t *trace ) {
 				s = cgs.media.gibBounce2Sound;
 			} else {
 				s = cgs.media.gibBounce3Sound;
-			}
-			trap_S_StartSound( trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s );
-		}
-	} else if ( le->leBounceSoundType == LEBS_BRASS ) {
-		// half the casings will make  casing sounds
-		if ( rand() & 1 ) {
-			int r = rand()&3;
-			sfxHandle_t	s;
-
-			if ( r == 0 ) {
-				s = cgs.media.lbul1Sound;
-			} else if ( r == 1 ) {
-				s = cgs.media.lbul2Sound;
-			} else {
-				s = cgs.media.lbul3Sound;
-			}
-			trap_S_StartSound( trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s );
-		}
-
-	} else if ( le->leBounceSoundType == LEBS_SHELL ) {
-		// half the casings will make  casing sounds
-		if ( rand() & 1 ) {
-			int r = rand()&3;
-			sfxHandle_t	s;
-
-			if ( r == 0 ) {
-				s = cgs.media.lshl1Sound;
-			} else if ( r == 1 ) {
-				s = cgs.media.lshl2Sound;
-			} else {
-				s = cgs.media.lshl3Sound;
 			}
 			trap_S_StartSound( trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s );
 		}
@@ -333,8 +284,6 @@ void CG_AddFragment( localEntity_t *le ) {
 
 	// calculate new position
 	BG_EvaluateTrajectory( &le->pos, cg.time, newOrigin );
-	
-	//le->leTrailType = LETT_DEBRIS_CONCRETE;
 
 	// trace a line from previous position to new position
 	CG_Trace( &trace, le->refEntity.origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID );

@@ -149,10 +149,9 @@
 #define	CS_LEVEL_START_TIME		6
 #define	CS_INTERMISSION			7
 #define CS_FLAGSTATUS			8
-#define CS_SHADERSTATE			9
-#define CS_BOTINFO				10 // 2 slots
-#define	CS_ITEMS				12
-#define	CS_MODELS				13
+#define CS_BOTINFO				9 // 2 slots
+#define	CS_ITEMS				11
+#define	CS_MODELS				1680
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
@@ -395,11 +394,6 @@ typedef enum {
 	WEAPONS_NUM		//look for this to add new ones - WEAPONS_HYPER
 } weapon_t;	
 
-// reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
-#define	PLAYEREVENT_DENIEDREWARD		0x0001
-#define	PLAYEREVENT_GAUNTLETREWARD		0x0002
-#define PLAYEREVENT_HOLYSHIT			0x0004
-
 // entityState_t->event values
 // entity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.
@@ -512,15 +506,6 @@ typedef enum {
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
 	EV_TAUNT_PATROL,
-
-	EV_EMIT_DEBRIS_LIGHT,		// emit light concrete chunks
-	EV_EMIT_DEBRIS_DARK,		// emit dark concrete chunks
-	EV_EMIT_DEBRIS_LIGHT_LARGE,	// emit light large concrete chunks
-	EV_EMIT_DEBRIS_DARK_LARGE,	// emit dark large concrete chunks
-	EV_EMIT_DEBRIS_WOOD,		// emit wooden chunks
-	EV_EMIT_DEBRIS_FLESH,		// emit gibs
-	EV_EMIT_DEBRIS_GLASS,		// emite shards of glass
-	EV_EMIT_DEBRIS_STONE,		// emit chunks of stone
 
 	EV_EXPLOSION,
 	EV_PARTICLES_GRAVITY,

@@ -708,14 +708,6 @@ char *eventnames[] = {
 	"EV_TAUNT_GETFLAG",
 	"EV_TAUNT_GUARDBASE",
 	"EV_TAUNT_PATROL",
-	"EV_EMIT_DEBRIS_LIGHT",		// emit light concrete chunks
-	"EV_EMIT_DEBRIS_DARK",		// emit dark concrete chunks
-	"EV_EMIT_DEBRIS_LIGHT_LARGE",	// emit light large concrete chunks
-	"EV_EMIT_DEBRIS_DARK_LARGE",	// emit dark large concrete chunks
-	"EV_EMIT_DEBRIS_WOOD",		// emit wooden chunks
-	"EV_EMIT_DEBRIS_FLESH",		// emit gibs
-	"EV_EMIT_DEBRIS_GLASS",		// emite shards of glass
-	"EV_EMIT_DEBRIS_STONE",		// emit chunks of stone
 	"EV_EXPLOSION",
 	"EV_PARTICLES_GRAVITY",
 	"EV_PARTICLES_LINEAR",

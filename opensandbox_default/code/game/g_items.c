@@ -117,9 +117,6 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 		if ( tr.fraction != 1.0 ) {
 			continue;
 		}
-
-		// anti-reward
-		client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_DENIEDREWARD;
 	}
 	return RESPAWN_POWERUP;
 }
@@ -439,7 +436,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	if (other->health < 1)
 		return;		// dead people can't pickup
 
-	if(ent->singlebot){
+	if(ent->npcType){
 		if(!G_NpcFactionProp(NP_PICKUP, ent))
 		return;		// npc can't pickup
 	}

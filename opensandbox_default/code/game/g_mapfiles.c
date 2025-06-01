@@ -98,7 +98,7 @@ qboolean G_ClassnameAllowed( char *input, qboolean danger ){
 void G_ClearEntities( void ){
 	int i;
 	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
-		if ( g_entities[i].singlebot >= 1 ) {
+		if ( g_entities[i].npcType >= 1 ) {
 			DropClientSilently( g_entities[i].client->ps.clientNum );
 		}
 	}
@@ -210,13 +210,10 @@ fieldCopy_t fieldsCopy[] = {
 	{"target", FOFS(target), F_STRING},
 	{"targetname", FOFS(targetname), F_STRING},
 	{"message", FOFS(message), F_STRING},
-	{"botname", FOFS(botname), F_STRING},
 	//{"team", FOFS(team), F_STRING}, //it's crashing idk why
 	{"wait", FOFS(wait), F_FLOAT},
 	{"random", FOFS(random), F_FLOAT},
 	{"count", FOFS(count), F_INT},
-	{"playerangle", FOFS(playerangle), F_INT},
-	{"price", FOFS(price), F_INT},
 	{"health", FOFS(health), F_INT},
 	{"light", 0, F_IGNORE},
 	{"dmg", FOFS(damage), F_INT},
@@ -231,8 +228,6 @@ fieldCopy_t fieldsCopy[] = {
 	{"mgravity", FOFS(mgravity), F_INT},
 	{"mnoclip", FOFS(mnoclip), F_INT},
 	{"allowuse", FOFS(allowuse), F_INT},
-	{"targetShaderName", FOFS(targetShaderName), F_STRING},
-	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
 	{"mapname", FOFS(mapname), F_STRING},
 	{"clientname", FOFS(clientname), F_STRING},
 	{"teleporterTarget", FOFS(teleporterTarget), F_STRING},
@@ -558,7 +553,7 @@ void G_DeleteMapfile_f(void) {
 void G_ClearMap_f( void ){
 	int i;
 	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
-		if ( g_entities[i].singlebot >= 1 ) {
+		if ( g_entities[i].npcType >= 1 ) {
 			DropClientSilently( g_entities[i].client->ps.clientNum );
 		}
 	}
@@ -574,7 +569,7 @@ void G_ClearMap_f( void ){
 void G_ClearSandboxMap_f( void ){
 	int i;
 	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
-		if ( g_entities[i].singlebot >= 1 ) {
+		if ( g_entities[i].npcType >= 1 ) {
 			DropClientSilently( g_entities[i].client->ps.clientNum );
 		}
 	}

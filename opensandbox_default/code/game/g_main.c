@@ -22,7 +22,6 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
 
 #include "../qcommon/ns_local.h"
 
@@ -237,11 +236,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
 
-	//clear any fades set by target_effect
-	for (i = 0; i < 4; i++) 
-	rgba[i] = 0;
-	G_Fade(0, rgba, rgba, -1);
-
     G_Printf ("------- Game Initialization -------\n");
     G_Printf ("gamename: %s\n", GAME_VERSION);
     G_Printf ("gamedate: %s\n", __DATE__);
@@ -326,8 +320,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 }
 
-
-
 /*
 =================
 G_ShutdownGame
@@ -340,7 +332,7 @@ void G_ShutdownGame( int restart ) {
 
 	//drop all bots from game in single player
 	for (i = 0; i < MAX_CLIENTS; i++ ) {
-		if ( g_entities[i].singlebot >= 1 ) {
+		if ( g_entities[i].npcType >= 1 ) {
 			DropClientSilently( g_entities[i].client->ps.clientNum );
 		}
 	}
@@ -356,7 +348,7 @@ void G_ShutdownGame( int restart ) {
 qboolean G_NpcFactionProp(int prop, gentity_t* ent){
 switch(prop) {
 	case NP_PICKUP:{
-		switch(ent->singlebot) {
+		switch(ent->npcType) {
 			case NPC_PLAYER: 	return qtrue;
 			case NPC_ENEMY: 	return qfalse;
 			case NPC_CITIZEN: 	return qfalse;
@@ -367,7 +359,7 @@ switch(prop) {
 	break;}
 	
 	case NP_HARM:{
-		switch(ent->singlebot) {
+		switch(ent->npcType) {
 			case NPC_PLAYER: 	return qtrue;
 			case NPC_ENEMY: 	return qfalse;
 			case NPC_CITIZEN: 	return qfalse;
@@ -884,7 +876,7 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( g_timelimit.integer > 0 && !level.warmupTime ) {
+	if ( g_timelimit.integer > 0 ) {
 		if ( (level.time - level.startTime)/60000 >= g_timelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
 			return;

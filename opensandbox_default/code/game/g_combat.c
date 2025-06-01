@@ -22,8 +22,6 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
-// g_combat.c
 
 #include "g_local.h"
 
@@ -37,14 +35,7 @@ Adds score to both the client and his team
 void AddScore( gentity_t *ent, int score ) {
         int i;
 
-	if ( !ent->client ) {
-		return;
-	}
-	if ( ent->singlebot ){
-		return;
-	}
-	// no scoring during pre-match warmup
-	if ( level.warmupTime ) {
+	if ( !ent->client || ent->npcType  ) {
 		return;
 	}
 
@@ -91,7 +82,7 @@ void TossClientItems( gentity_t *self ) {
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
 
-	if(self->singlebot >= 1){
+	if(self->npcType >= 1){
         return;
 	}
 
@@ -750,7 +741,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	vec3_t		bouncedir, impactpoint;
 	gentity_t 	*act;
 
-	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->singlebot >= 1 && targ->singlebot == attacker->singlebot)
+	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->npcType >= 1 && targ->npcType == attacker->npcType)
 		return;
 
 	if(mod == MOD_TOOLGUN){

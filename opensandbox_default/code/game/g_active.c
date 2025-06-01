@@ -192,7 +192,7 @@ void G_SetClientSound( gentity_t *ent ) {
 	if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
 		ent->client->ps.loopSound = level.snd_fry;
 	} else {
-		if(ent->singlebot){
+		if(ent->npcType){
 		ent->client->ps.loopSound = G_SoundIndex(va("bots/%s", ent->target));
 		} else {
 		ent->client->ps.loopSound = 0;
@@ -408,66 +408,57 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	client = ent->client;
 	client->timeResidual += msec;
 
-	// Dropped Ammo No-Pickup
-	if(ent->wait_to_pickup <= 60000000){
-		if(level.time < ent->wait_to_pickup){
-			client->ps.stats[STAT_NO_PICKUP] = 1;
-		} else {
-			client->ps.stats[STAT_NO_PICKUP] = 0;
-		}
-	}
-
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
-	}
 
-	ent->s.eFlags &= ~EF_HEARED;		//hear update
+		ent->s.eFlags &= ~EF_HEARED;		//hear update
 
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		MakeUnlimitedAmmo(ent);
-	}
+		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
+			MakeUnlimitedAmmo(ent);
+		}
 
-	// regenerate
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-	} else if ( client->ps.powerups[PW_REGEN] ) {
-		maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-	} else {
-		maxHealth = 0;
-	}
-	if( maxHealth ) {
-		if ( ent->health < maxHealth ) {
-			ent->health += 15;
-			if ( ent->health > maxHealth * 1.1 ) {
-				ent->health = maxHealth * 1.1;
+		// regenerate
+		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
+		} else if ( client->ps.powerups[PW_REGEN] ) {
+			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
+		} else {
+			maxHealth = 0;
+		}
+		if( maxHealth ) {
+			if ( ent->health < maxHealth ) {
+				ent->health += 15;
+				if ( ent->health > maxHealth * 1.1 ) {
+					ent->health = maxHealth * 1.1;
+				}
+			} else if ( ent->health < maxHealth * 2) {
+				ent->health += 5;
+				if ( ent->health > maxHealth * 2 ) {
+					ent->health = maxHealth * 2;
+				}
 			}
-		} else if ( ent->health < maxHealth * 2) {
-			ent->health += 5;
-			if ( ent->health > maxHealth * 2 ) {
-				ent->health = maxHealth * 2;
+		} else {
+			// count down health when over max
+			if ( !ent->npcType ){
+				if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
+					ent->health--;
+				}
+			}
+
+			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
+				ent->health += 1;
+				if(ent->health > client->ps.stats[STAT_MAX_HEALTH])
+					ent->health = client->ps.stats[STAT_MAX_HEALTH];
 			}
 		}
-	} else {
-		// count down health when over max
-		if ( !ent->singlebot ){
-			if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
-				ent->health--;
-			}
-		}
-		
-		if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
-			ent->health += 1;
-			if(ent->health > client->ps.stats[STAT_MAX_HEALTH])
-				ent->health = client->ps.stats[STAT_MAX_HEALTH];
-		}
-	}
 
-	G_SendGameCvars( ent );				//send game setting to client for sync
-	G_SendSwepWeapons( ent );			//send sweps list to client for sync
+		G_SendGameCvars( ent );				//send game setting to client for sync
+		G_SendSwepWeapons( ent );			//send sweps list to client for sync
 
-	// count down armor when over max
-	if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-		client->ps.stats[STAT_ARMOR]--;
+		// count down armor when over max
+		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
+			client->ps.stats[STAT_ARMOR]--;
+		}
 	}
 }
 
@@ -522,7 +513,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		damage;
 	vec3_t	dir;
 	vec3_t	origin, angles;
-//	qboolean	fired;
 	gitem_t *item;
 	gentity_t *drop;
 
@@ -739,7 +729,7 @@ void PhysgunHold(gentity_t *player) {
             findent = FindEntityForPhysgun(player, PHYSGUN_RANGE);
 			if(findent && findent->isGrabbed == qfalse ){
 			if(!G_PlayerIsOwner(player, findent)) return;
-			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
+			if(!findent->client || findent->npcType || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}
@@ -757,8 +747,8 @@ void PhysgunHold(gentity_t *player) {
 		if(ent->grabNewPhys == PHYS_DYNAMIC){
 			Phys_HoldDropDynamic(player, velocity, qtrue);
 		}
-		VectorClear( player->grabOffset );																				//clear offset
-		player->grabbedEntity = 0;																						//end
+		VectorClear( player->grabOffset );
+		player->grabbedEntity = 0;
     }
 }
 
@@ -776,7 +766,7 @@ void GravitygunHold(gentity_t *player) {
             findent = FindEntityForGravitygun(player, GRAVITYGUN_RANGE);
 			if(findent && findent->isGrabbed == qfalse ){
 			if(!G_PlayerIsOwner(player, findent)) return;
-			if(!findent->client || findent->singlebot || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
+			if(!findent->client || findent->npcType || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR){
 				player->grabbedEntity = findent;
 			}
 			}

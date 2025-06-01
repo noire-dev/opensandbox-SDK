@@ -673,7 +673,7 @@ ClientRespawn
 void ClientRespawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	if(ent->singlebot >= 1){
+	if(ent->npcType >= 1){
 		DropClientSilently( ent->client->ps.clientNum );
 		return;
 	}
@@ -861,7 +861,7 @@ if desired.
 void ClientUserinfoChanged( int clientNum ) {
 	gentity_t *ent;
 	int			teamTask, teamLeader, team;
-	int			singlebot;
+	int			npcType;
 	int			botskill;
 	char		*s;
 	char		model[MAX_QPATH];
@@ -929,8 +929,8 @@ void ClientUserinfoChanged( int clientNum ) {
 
 		botskill = atoi( Info_ValueForKey( userinfo, "skill" ) );
 		ent->botskill = botskill;
-		singlebot = atoi( Info_ValueForKey( userinfo, "singlebot" ) );
-		ent->singlebot = singlebot;
+		npcType = atoi( Info_ValueForKey( userinfo, "npcType" ) );
+		ent->npcType = npcType;
 	}
 
 	strcpy(legsR, Info_ValueForKey( userinfo, "legsR" ));
@@ -953,7 +953,7 @@ void ClientUserinfoChanged( int clientNum ) {
 			team = TEAM_RED;
 		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
 			team = TEAM_BLUE;
-		} else if ( !Q_stricmp( s, "free" ) && ent->singlebot ) { //FREE_TEAM
+		} else if ( !Q_stricmp( s, "free" ) && ent->npcType ) { //FREE_TEAM
 			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
@@ -974,10 +974,10 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, ent->singlebot, Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
+			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, ent->npcType, Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
 		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\tt\\%d\\tl\\%d\\f\\%i",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum, teamTask, teamLeader, ent->flashon);
+			client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehiclenum, teamTask, teamLeader, ent->flashlight);
 	}
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
@@ -1056,7 +1056,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	ClientUserinfoChanged( clientNum );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
-	if ( firstTime && ( !ent->singlebot )) {
+	if ( firstTime && ( !ent->npcType )) {
 		trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " connected\n\"", client->pers.netname) );
 	}
 
@@ -1384,7 +1384,7 @@ Applies properties from the entity that spawned the bot to the bot
 ============
 */
 void SetupCustomBot( gentity_t *bot ) {
-	if ( !bot->singlebot || !(bot->botspawn) )
+	if ( !bot->npcType || !(bot->botspawn) )
 		return;
 
 	//give bot weapons

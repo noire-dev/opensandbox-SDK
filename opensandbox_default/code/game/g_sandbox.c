@@ -206,7 +206,7 @@ void G_TouchProp( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	if( !other->client ) {
 		return;
 	}
-	if( !other->singlebot ) {
+	if( !other->npcType ) {
 		return;
 	}
 	if( other->client->vehiclenum ) {
@@ -419,8 +419,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 		//Owner
 		if(atoi(arg04) == 1){
-			ent->owner = player->s.clientNum + 1;
-			ent->ownername = player->client->pers.netname;
+			ent->owner = player;
 		}
 
 		//Material
@@ -554,7 +553,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		return; 
 	}
 
-	if(entity->client && !entity->singlebot){
+	if(entity->client && !entity->npcType){
 		return;
 	}
 
@@ -570,7 +569,7 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 
 	if(attacker->tool_id == TL_DELETE){
-		if(!entity->singlebot){
+		if(!entity->npcType){
 			G_FreeEntity(entity);
 		} else {
 			DropClientSilently( entity->client->ps.clientNum );	
@@ -595,17 +594,15 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	if(attacker->tool_id == TL_PRIVATE){
 		if(atoi(arg19) == 0){
 			entity->owner = 0;
-			entity->ownername = 0;
 		}
 		if(atoi(arg19) == 1){
-			entity->owner = attacker->s.clientNum + 1;
-			entity->ownername = attacker->client->pers.netname;
+			entity->owner = attacker;
 		}
 		if(atoi(arg19) == 2){
-			if(entity->ownername){
-				trap_SendServerCommand( attacker->s.clientNum, va( "cllp \"Owned by %s\n\"", entity->ownername ));
+			if(entity->owner){
+				trap_SendServerCommand( attacker->s.clientNum, va( "cllp \"Owned by %s\n\"", entity->owner->client->pers.netname ));
 			} 
-			if(!entity->ownername){
+			if(!entity->owner){
 				trap_SendServerCommand( attacker->s.clientNum, "cllp \"Not owned\n\"" );
 			} 
 		}

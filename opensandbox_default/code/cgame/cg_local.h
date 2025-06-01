@@ -259,16 +259,12 @@ typedef enum {
 
 typedef enum {
 	LEBS_NONE,
-	LEBS_BLOOD,
-	LEBS_BRASS,
-	LEBS_SHELL
+	LEBS_BLOOD
 } leBounceSoundType_t;	// fragment local entities can make sounds on impacts
 
 typedef enum {
 	LETT_NONE,				// does not emit a puff trail
 	LETT_BLOOD,				// emits a blood trail
-	LETT_DEBRIS_CONCRETE,	// emits a (gray) smoke trail
-	LETT_DEBRIS_WOOD		// emits a (brown) dust trail
 } leTrailType_t;		// defines bounce behavior and trail on fragment local entities
 
 typedef enum {
@@ -619,10 +615,6 @@ typedef struct {
 	int			soundTime;
 	qhandle_t	soundBuffer[MAX_SOUNDBUFFER];
 
-	// warmup countdown
-	int			warmup;
-	int			warmupCount;
-
 	int			itemPickup;
 	int			itemPickupTime;
 	int			itemPickupBlendTime;	// the pulse around the crosshair is timed seperately
@@ -728,57 +720,6 @@ typedef struct {
 	qhandle_t	gibLeg;
 	qhandle_t	gibSkull;
 	qhandle_t	gibBrain;
-
-	// debris explosions
-	qhandle_t	debrislight1;
-	qhandle_t	debrislight2;
-	qhandle_t	debrislight3;
-	qhandle_t	debrislight4;
-	qhandle_t	debrislight5;
-	qhandle_t	debrislight6;
-	qhandle_t	debrislight7;
-	qhandle_t	debrislight8;
-
-	qhandle_t	debrisdark1;
-	qhandle_t	debrisdark2;
-	qhandle_t	debrisdark3;
-	qhandle_t	debrisdark4;
-	qhandle_t	debrisdark5;
-	qhandle_t	debrisdark6;
-	qhandle_t	debrisdark7;
-	qhandle_t	debrisdark8;
-
-	qhandle_t	debrislightlarge1;
-	qhandle_t	debrislightlarge2;
-	qhandle_t	debrislightlarge3;
-
-	qhandle_t	debrisdarklarge1;
-	qhandle_t	debrisdarklarge2;
-	qhandle_t	debrisdarklarge3;
-
-	qhandle_t	debriswood1;
-	qhandle_t	debriswood2;
-	qhandle_t	debriswood3;
-	qhandle_t	debriswood4;
-	qhandle_t	debriswood5;
-
-	qhandle_t	debrisglass1;
-	qhandle_t	debrisglass2;
-	qhandle_t	debrisglass3;
-	qhandle_t	debrisglass4;
-	qhandle_t	debrisglass5;
-
-	qhandle_t	debrisglasslarge1;
-	qhandle_t	debrisglasslarge2;
-	qhandle_t	debrisglasslarge3;
-	qhandle_t	debrisglasslarge4;
-	qhandle_t	debrisglasslarge5;
-	
-	qhandle_t	debrisstone1;
-	qhandle_t	debrisstone2;
-	qhandle_t	debrisstone3;
-	qhandle_t	debrisstone4;
-	qhandle_t	debrisstone5;
 
 	qhandle_t	sparkShader;
 
@@ -928,7 +869,6 @@ typedef struct {
 	sfxHandle_t	tracerSound;
 	sfxHandle_t	selectSound;
 	sfxHandle_t	useNothingSound;
-	sfxHandle_t	wearOffSound;
 	sfxHandle_t	footsteps[FOOTSTEP_TOTAL][4];
 	sfxHandle_t	carengine[11];
 	sfxHandle_t	sfx_lghit1;
@@ -937,7 +877,6 @@ typedef struct {
 	sfxHandle_t	sfx_ric1;
 	sfxHandle_t	sfx_ric2;
 	sfxHandle_t	sfx_ric3;
-	sfxHandle_t	sfx_railg;
 	sfxHandle_t	sfx_rockexp;
 	sfxHandle_t	sfx_plasmaexp;
 
@@ -960,9 +899,6 @@ typedef struct {
 	sfxHandle_t obeliskHitSound2;
 	sfxHandle_t obeliskHitSound3;
 	sfxHandle_t	obeliskRespawnSound;
-	sfxHandle_t	winnerSound;
-	sfxHandle_t	loserSound;
-	sfxHandle_t	youSuckSound;
 
 	sfxHandle_t	gibSound;
 	sfxHandle_t	gibBounce1Sound;
@@ -980,20 +916,6 @@ typedef struct {
 	sfxHandle_t notifySound;
 	sfxHandle_t undoSound;
 
-// LEILEI
-	sfxHandle_t	lspl1Sound;
-	sfxHandle_t	lspl2Sound; // Blood Splat Noises
-	sfxHandle_t	lspl3Sound;
-
-	sfxHandle_t	lbul1Sound;
-	sfxHandle_t	lbul2Sound;	// Bullet Drop Noises
-	sfxHandle_t	lbul3Sound;
-
-	sfxHandle_t	lshl1Sound;
-	sfxHandle_t	lshl2Sound; // Shell Drop Noises
-	sfxHandle_t	lshl3Sound;
-// LEILEI END
-
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;
 	sfxHandle_t suddenDeathSound;
@@ -1006,27 +928,12 @@ typedef struct {
 	sfxHandle_t hitSoundHighArmor;
 	sfxHandle_t hitSoundLowArmor;
 	sfxHandle_t hitTeamSound;
-	sfxHandle_t impressiveSound;
-	sfxHandle_t excellentSound;
-	sfxHandle_t deniedSound;
-	sfxHandle_t humiliationSound;
-	sfxHandle_t assistSound;
-	sfxHandle_t defendSound;
-	sfxHandle_t firstImpressiveSound;
-	sfxHandle_t firstExcellentSound;
-	sfxHandle_t firstHumiliationSound;
-
-	sfxHandle_t takenLeadSound;
-	sfxHandle_t tiedLeadSound;
-	sfxHandle_t lostLeadSound;
 
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
 	sfxHandle_t medkitSound;
-
-	sfxHandle_t weaponHoverSound;
 
 	// teamplay sounds
 	sfxHandle_t captureAwardSound;
@@ -1040,34 +947,15 @@ typedef struct {
 	sfxHandle_t	captureOpponentSound;
 	sfxHandle_t	returnYourTeamSound;
 	sfxHandle_t	returnOpponentSound;
-	sfxHandle_t	takenYourTeamSound;
-	sfxHandle_t	takenOpponentSound;
 
 	sfxHandle_t redFlagReturnedSound;
 	sfxHandle_t blueFlagReturnedSound;
-	sfxHandle_t neutralFlagReturnedSound;
 	sfxHandle_t	enemyTookYourFlagSound;
 	sfxHandle_t	enemyTookTheFlagSound;
 	sfxHandle_t yourTeamTookEnemyFlagSound;
 	sfxHandle_t yourTeamTookTheFlagSound;
-	sfxHandle_t	youHaveFlagSound;
 	sfxHandle_t yourBaseIsUnderAttackSound;
-	sfxHandle_t holyShitSound;
 
-	// tournament sounds
-	sfxHandle_t	count3Sound;
-	sfxHandle_t	count2Sound;
-	sfxHandle_t	count1Sound;
-	sfxHandle_t	countFightSound;
-	sfxHandle_t	countPrepareSound;
-
-	qhandle_t cursor;
-	qhandle_t selectCursor;
-	qhandle_t sizeCursor;
-
-	sfxHandle_t	regenSound;
-	sfxHandle_t	protectSound;
-	sfxHandle_t	n_healthSound;
 	sfxHandle_t	hgrenb1aSound;
 	sfxHandle_t	hgrenb2aSound;
 	sfxHandle_t	wstbimplSound;
@@ -1137,14 +1025,6 @@ typedef struct {
 	console_t console;
 	console_t chat;
 	console_t teamChat;
-
-	int cursorX;
-	int cursorY;
-	qboolean eventHandling;
-	qboolean mouseCaptured;
-	qboolean sizingHud;
-	void *capturedItem;
-	qhandle_t activeCursor;
 
 	// orders
 	int currentOrder;
@@ -1454,7 +1334,6 @@ void CG_InitConsoleCommands( void );
 void CG_ExecuteNewServerCommands( int latestSequence );
 void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
-void CG_ShaderStateChanged(void);
 
 //
 // cg_playerstate.c

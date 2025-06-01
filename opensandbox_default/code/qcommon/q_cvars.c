@@ -286,8 +286,6 @@ vmCvar_t    g_damageModifier;
 vmCvar_t    g_knockback;
 vmCvar_t    g_quadfactor;
 vmCvar_t    g_respawntime;
-vmCvar_t    g_warmup;
-vmCvar_t    g_doWarmup;
 vmCvar_t    g_restarted;
 vmCvar_t    g_blood;
 vmCvar_t    g_teamAutoJoin;
@@ -580,8 +578,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_friendlyFire,              "g_friendlyFire",               "0",            CVAR_ARCHIVE },
 	{ &g_teamAutoJoin,              "g_teamAutoJoin",               "0",            CVAR_ARCHIVE },
 	{ &g_teamForceBalance,          "g_teamForceBalance",           "0",            CVAR_ARCHIVE },
-	{ &g_warmup,                    "g_warmup",                     "20",           CVAR_ARCHIVE },
-	{ &g_doWarmup,                  "g_doWarmup",                   "0",            CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_password,                  "g_password",                   "",             CVAR_USERINFO },
 	{ &g_dedicated,                 "dedicated",                    "0",            0 },
 	{ &g_speed,                     "g_speed",                      "320",          0 },

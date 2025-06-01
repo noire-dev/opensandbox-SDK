@@ -49,7 +49,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		cl = &level.clients[level.sortedClients[i]];
 		client = g_entities + cl->ps.clientNum;
 
-		if (client->singlebot){
+		if (client->npcType){
 			continue;
 		}
 
@@ -496,7 +496,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 			team = TEAM_RED;
 		} else if ( Q_strequal( s, "blue" ) || Q_strequal( s, "b" ) ) {
 			team = TEAM_BLUE;
-		} else if ( Q_strequal( s, "free" ) && ent->singlebot ) { //FREE_TEAM
+		} else if ( Q_strequal( s, "free" ) && ent->npcType ) { //FREE_TEAM
 			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
@@ -728,7 +728,7 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 
 		// can't follow npc
 		checkNPC = g_entities + clientnum;
-		if ( checkNPC->singlebot ) {
+		if ( checkNPC->npcType ) {
 			continue;
 		}
 
@@ -1056,7 +1056,7 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 	
 	traceEnt = &g_entities[ tr.entityNum ];		//entity for modding
 
-	if(!traceEnt->sandboxObject && !traceEnt->singlebot && ent->s.eType != ET_ITEM){
+	if(!traceEnt->sandboxObject && !traceEnt->npcType && ent->s.eType != ET_ITEM){
 		return;
 	}
 	
@@ -1131,13 +1131,13 @@ static void Cmd_Flashlight_f( gentity_t *ent ){
 		return;
 	}
 
-	if(ent->flashon != 1){
-		ent->flashon = 1;
+	if(!ent->flashlight){
+		ent->flashlight = qtrue;
 		ClientUserinfoChanged( ent->s.clientNum );
 		return;
 	}
-	if(ent->flashon == 1){
-		ent->flashon = 0;
+	if(ent->flashlight){
+		ent->flashlight = qfalse;
 		ClientUserinfoChanged( ent->s.clientNum );
 		return;
 	}

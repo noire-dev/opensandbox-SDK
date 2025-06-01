@@ -161,8 +161,7 @@ qboolean CG_DrawScoreboard( void ) {
 		return qfalse;
 	}
 
-	// don't draw scoreboard during death while warmup up
-	if ( cg.warmup && !cg.showScores ) {
+	if ( !cg.showScores ) {
 		return qfalse;
 	}
 

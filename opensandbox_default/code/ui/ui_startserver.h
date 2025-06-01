@@ -511,10 +511,6 @@ typedef struct serverparameters_s {
 	char entitypack[32];
 
 	char password[MAX_PASSWORD_LENGTH];
-
-	int forceRespawn;
-	int allowWarmup;
-	int warmupTime;
 	
 	int viewdistance;
 

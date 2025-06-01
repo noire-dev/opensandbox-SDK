@@ -27,49 +27,6 @@
 
 #include "g_local.h"
 
-typedef struct {
-  char oldShader[MAX_QPATH];
-  char newShader[MAX_QPATH];
-  float timeOffset;
-} shaderRemap_t;
-
-#define MAX_SHADER_REMAPS 512
-
-int remapCount = 0;
-shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
-
-void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
-	int i;
-
-	for (i = 0; i < remapCount; i++) {
-		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
-			// found it, just update this one
-			strcpy(remappedShaders[i].newShader,newShader);
-			remappedShaders[i].timeOffset = timeOffset;
-			return;
-		}
-	}
-	if (remapCount < MAX_SHADER_REMAPS) {
-		strcpy(remappedShaders[remapCount].newShader,newShader);
-		strcpy(remappedShaders[remapCount].oldShader,oldShader);
-		remappedShaders[remapCount].timeOffset = timeOffset;
-		remapCount++;
-	}
-}
-
-const char *BuildShaderStateConfig(void) {
-	static char	buff[MAX_STRING_CHARS*4];
-	char out[(MAX_QPATH * 2) + 5];
-	int i;
-
-	memset(buff, 0, MAX_STRING_CHARS);
-	for (i = 0; i < remapCount; i++) {
-		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
-		Q_strcat( buff, sizeof( buff ), out);
-	}
-	return buff;
-}
-
 /*
 =========================================================================
 
@@ -248,12 +205,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 	
 	if ( !ent ) {
 		return;
-	}
-
-	if (ent->targetShaderName && ent->targetShaderNewName) {
-		float f = level.time * 0.001;
-		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
-		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
 	if ( !ent->target ) {
@@ -724,130 +675,12 @@ qboolean IsBot( gentity_t *self ) {
 
 /*
 ==================
-IsSingleBot
-==================
-*/
-qboolean IsSingleBot( gentity_t *self, int num ) {
-	//return qtrue if client is a bot
-	return (self->singlebot == num);
-}
-
-qboolean IsClientBot( gclient_t *client ) {
-	gentity_t *ent;
-	int i;
-
-	for (i = 0; i < MAX_CLIENTS; i++) {
-		ent = &g_entities[i];
-		if ( ent->client->ps.clientNum == client->ps.clientNum )
-			return IsBot( ent );
-	}
-
-	return qfalse;
-}
-
-/*
-==================
-PickDebrisType
-returns a type of debris based on the passed spawnflags value
-==================
-*/
-int PickDebrisType( int spawnflags ) {
-
-	if ( spawnflags & SF_DEBRIS_LIGHT )
-		return EV_EMIT_DEBRIS_LIGHT;
-	
-	if ( spawnflags & SF_DEBRIS_DARK )
-		return EV_EMIT_DEBRIS_DARK;
-	
-	if ( spawnflags & SF_DEBRIS_LIGHT_LARGE )
-		return EV_EMIT_DEBRIS_LIGHT_LARGE;
-
-	if ( spawnflags & SF_DEBRIS_DARK_LARGE )
-		return EV_EMIT_DEBRIS_DARK_LARGE;
-	
-	if ( spawnflags & SF_DEBRIS_WOOD )
-		return EV_EMIT_DEBRIS_WOOD;
-
-	if ( spawnflags & SF_DEBRIS_FLESH )
-		return EV_EMIT_DEBRIS_FLESH;
-	
-	if ( spawnflags & SF_DEBRIS_GLASS )
-		return EV_EMIT_DEBRIS_GLASS;
-		
-	if ( spawnflags & SF_DEBRIS_STONE )
-		return EV_EMIT_DEBRIS_STONE;	
-
-	//if no compatible spawnflags supplied, return EV_EMIT_DEBRIS_LIGHT
-	return EV_EMIT_DEBRIS_LIGHT;
-}
-
-/*
-==================
 G_IsTeamGame
 returns true if we're currently in a team gametype
 ==================
 */
 qboolean G_IsTeamGame() {
 	return qfalse;
-}
-
-/*
-==================
-G_GetScoringMapName
-returns the bsp name of the map to which high scores should be written
-==================
-*/
-char *G_GetScoringMapName() {
-	char info[1024];
-	char *result;
-	int i;
-
-	if ( strcmp( va("%s", level.scoreLevelName ), "" ) ) {
-		return level.scoreLevelName;
-	}
-
-	trap_GetServerinfo(info, sizeof(info));
-	result = Info_ValueForKey( info, "mapname" );
-
-	for (i = 0; i < strlen(result); i++)
-		result[i] = toupper(result[i]);
-
-	return result;
-}
-
-/*
-==================
-G_Fade
-Tells clients to initiate a fade effect
-==================
-*/
-void G_Fade( float duration, vec4_t startColor, vec4_t endColor, int clientn ) {
-	trap_SendServerCommand( clientn, 
-		va(
-			"fade \"%f\" \"%f\" \"%f\" \"%f\" \"%f\" \"%f\" \"%f\" \"%f\" \"%f\"", 
-			duration, startColor[0], startColor[1], startColor[2], startColor[3], endColor[0], endColor[1], endColor[2], endColor[3]
-		)
-	);
-}
-
-/*
-==================
-G_FadeOut
-Fades out to black
-==================
-*/
-void G_FadeOut( float duration, int clientn ) {
-	trap_SendServerCommand( clientn, va("fade \"%f\" \"0\" \"0\" \"0\" \"0\" \"0\" \"0\" \"0\" \"1\"", duration) );
-}
-
-/*
-==================
-G_FadeIn
-Fades in from black
-==================
-*/
-void G_FadeIn( float duration, int clientn ) {
-	trap_SendServerCommand( clientn, va("fade \"%f\" \"0\" \"0\" \"0\" \"1\" \"0\" \"0\" \"0\" \"0\"", duration) );
 }
 
 /*
@@ -882,7 +715,7 @@ gentity_t *FindEntityForPhysgun( gentity_t *ent, int range ){
 			return NULL;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+		if(!traceEnt->sandboxObject && !traceEnt->npcType){
 			return NULL;
 		}
 	}
@@ -923,7 +756,7 @@ gentity_t *FindEntityForGravitygun( gentity_t *ent, int range ){
 			return NULL;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+		if(!traceEnt->sandboxObject && !traceEnt->npcType){
 			return NULL;
 		}
 	}
@@ -1005,9 +838,9 @@ gentity_t *G_FindEntityForClientNum(int entityn) {
 }
 
 qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
-	if(ent->owner != 0){
-    	if(ent->owner != player->s.clientNum + 1){	//offset +1 for clientNum
-			trap_SendServerCommand( player->s.clientNum, va( "cllp \"Owned by %s\n\"", ent->ownername ));
+	if(ent->owner){
+    	if(ent->owner != player){
+			trap_SendServerCommand( player->s.clientNum, va( "cllp \"Owned by %s\n\"", ent->owner->client->pers.netname ));
 			return qfalse;	//ent owned by another player
 		} else {
 			return qtrue;	//ent owned by this player

@@ -973,7 +973,7 @@ void Weapon_Toolgun( gentity_t *ent ) {
 			return;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+		if(!traceEnt->sandboxObject && !traceEnt->npcType){
 			return;
 		}
 	}
@@ -1007,7 +1007,7 @@ void Weapon_Toolgun_Info( gentity_t *ent ) {
 			return;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->singlebot){
+		if(!traceEnt->sandboxObject && !traceEnt->npcType){
 			trap_SendServerCommand( ent->s.clientNum, va("t_info \"%s\"", "") );
 			return;
 		}
