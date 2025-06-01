@@ -655,7 +655,7 @@ qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out );
 qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out );
 void		G_SpawnEntitiesFromString( void );
-char *G_NewString( const char *string );
+char 		*G_NewString( const char *string );
 
 typedef struct {
 	char	*name;
@@ -664,17 +664,9 @@ typedef struct {
 
 void SP_info_player_start (gentity_t *ent);
 void SP_info_player_deathmatch (gentity_t *ent);
-void SP_info_player_dd (gentity_t *ent);
-void SP_info_player_dd_red (gentity_t *ent);
-void SP_info_player_dd_blue (gentity_t *ent);
-
-void SP_info_waypoint( gentity_t *self );
 
 void SP_func_plat (gentity_t *ent);
 void SP_func_static (gentity_t *ent);
-void SP_sandbox_prop (gentity_t *ent);
-void SP_sandbox_npc (gentity_t *ent);
-void SP_func_breakable (gentity_t *ent);
 void SP_func_rotating (gentity_t *ent);
 void SP_func_bobbing (gentity_t *ent);
 void SP_func_pendulum( gentity_t *ent );
@@ -688,28 +680,16 @@ void SP_trigger_push (gentity_t *ent);
 void SP_trigger_teleport (gentity_t *ent);
 void SP_trigger_hurt (gentity_t *ent);
 
-void SP_trigger_death (gentity_t *ent);
-void SP_trigger_frag (gentity_t *ent);
-void SP_trigger_lock (gentity_t *ent);
-
 void SP_target_give (gentity_t *ent);
 void SP_target_delay (gentity_t *ent);
 void SP_target_speaker (gentity_t *ent);
 void SP_target_print (gentity_t *ent);
-void SP_target_laser (gentity_t *self);
 void SP_target_teleporter( gentity_t *ent );
 void SP_target_relay (gentity_t *ent);
 void SP_target_kill (gentity_t *ent);
 void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_push (gentity_t *ent);
-void SP_target_mapchange (gentity_t *ent);
-void SP_target_unlink (gentity_t *ent);
-void SP_target_effect (gentity_t *ent);
-void SP_target_botremove (gentity_t *ent);
-
-void SP_script_variable (gentity_t *ent);
-void SP_script_cmd (gentity_t *ent);
 
 void SP_path_corner (gentity_t *self);
 
@@ -724,15 +704,21 @@ void SP_shooter_grenade( gentity_t *ent );
 
 void SP_team_CTF_redplayer( gentity_t *ent );
 void SP_team_CTF_blueplayer( gentity_t *ent );
-
 void SP_team_CTF_redspawn( gentity_t *ent );
 void SP_team_CTF_bluespawn( gentity_t *ent );
-
-void SP_func_door_rotating( gentity_t *ent );
-
 void SP_team_blueobelisk( gentity_t *ent );
 void SP_team_redobelisk( gentity_t *ent );
 void SP_team_neutralobelisk( gentity_t *ent );
+
+void SP_info_player_dd (gentity_t *ent);
+void SP_info_player_dd_red (gentity_t *ent);
+void SP_info_player_dd_blue (gentity_t *ent);
+
+void SP_script_variable (gentity_t *ent);
+void SP_script_cmd (gentity_t *ent);
+
+void SP_sandbox_prop (gentity_t *ent);
+void SP_sandbox_npc (gentity_t *ent);
 
 extern spawn_t spawns_table[];
 

@@ -25,46 +25,24 @@
 //
 #include "g_local.h"
 
-
 void InitTrigger( gentity_t *self ) {
 	if (!VectorCompare (self->s.angles, vec3_origin))
 		G_SetMovedir (self->s.angles, self->movedir);
 
-	if(!self->sandboxObject){
 	trap_SetBrushModel( self, self->model );
-	}
 	self->r.contents = CONTENTS_TRIGGER;		// replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 }
-
 
 // the wait time has passed, so set back up for another activation
 void multi_wait( gentity_t *ent ) {
 	ent->nextthink = 0;
 }
 
-
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
 void multi_trigger( gentity_t *ent, gentity_t *activator ) {
-	//if nobots flag is set and activator is a bot, do nothing
-	if ( (ent->flags & FL_NO_BOTS) && IsBot( activator ) )
-		return;
-
-	//if nohumans flag is set and activator is a human, do nothing
-	if ( (ent->flags & FL_NO_HUMANS) && !IsBot( activator ) )
-		return;
-	
-	if(strlen(ent->botname) >= 1){
-	if(!Q_stricmp (activator->botspawn->botname, ent->botname)){
-	
-	} else {
-	return;
-	}
-	}
-	
-	
 	ent->activator = activator;
 	if ( ent->nextthink ) {
 		return;		// can't retrigger until the wait is over
@@ -96,118 +74,30 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 }
 
 void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	usercmd_t	*ucmd;
-	
-ucmd = &activator->client->pers.cmd;
-		
-if(!G_PlayerIsOwner(activator, ent)) return;
-
-if(ent->price > 0){
-	
-if(activator->client->pers.oldmoney < ent->price){	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"%i is not enough\"\n", ent->price - activator->client->pers.oldmoney ));
-return;	
-} else {
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"^1%s %i$\"\n", ent->message, ent->price ));
-return;		
-}
-}
-
-if(activator->client->pers.oldmoney >= ent->price){	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"%s purchased\"\n", ent->message, ent->price ));
-} else {
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"^2%s %i$\"\n", ent->message, ent->price ));
-return;		
-}
-}
-
-}
-
-
-if(ent->price == -1){
-	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"%s activated\"\n", ent->message));
-} else {
-trap_SendServerCommand( activator->s.clientNum, va( "lp \"^2%s\"\n", ent->message));
-return;
-}
-
-}
-
-
-
 	multi_trigger( ent, activator );
 }
 
 void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace ) {
-	usercmd_t	*ucmd;
-	
-ucmd = &other->client->pers.cmd;
-
 	if( !other->client ) {
 		return;
 	}
-	if(!G_PlayerIsOwner(other, self)) return;
-
-if(self->price > 0){
-	
-if(other->client->pers.oldmoney < self->price){	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( other->s.clientNum, va( "lp \"%i is not enough\"\n", self->price - other->client->pers.oldmoney ));
-return;	
-} else {
-trap_SendServerCommand( other->s.clientNum, va( "lp \"^1%s %i$\"\n", self->message, self->price ));
-return;		
-}
-}
-
-if(other->client->pers.oldmoney >= self->price){	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( other->s.clientNum, va( "lp \"%s purchased\"\n", self->message, self->price ));
-} else {
-trap_SendServerCommand( other->s.clientNum, va( "lp \"^2%s %i$\"\n", self->message, self->price ));
-return;		
-}
-}
-
-}
-
-
-if(self->price == -1){
-	
-if(ucmd->buttons & BUTTON_GESTURE){
-trap_SendServerCommand( other->s.clientNum, va( "lp \"%s activated\"\n", self->message));
-} else {
-trap_SendServerCommand( other->s.clientNum, va( "lp \"^2%s\"\n", self->message));
-return;
-}
-
-}
-
 	multi_trigger( self, other );
 }
 
+/*QUAKED trigger_multiple (.5 .5 .5) ?
+"wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
+"random"	wait variance, default is 0
+Variable sized repeatable trigger.  Must be targeted at one or more entities.
+so, the basic time between firing is a random time between
+(wait - random) and (wait + random)
+*/
 void SP_trigger_multiple( gentity_t *ent ) {
-	int		i;
-
-	G_SpawnInt( "nobots", "0", &i);
-	if ( i ) {
-		ent->flags |= FL_NO_BOTS;
-	}
-	G_SpawnInt( "nohumans", "0", &i );
-	if ( i ) {
-		ent->flags |= FL_NO_HUMANS;
-	}
-	
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
 	if ( ent->random >= ent->wait && ent->wait >= 0 ) {
 		ent->random = ent->wait - FRAMETIME;
-        G_Printf( "trigger_multiple has random >= wait\n" );
+		G_Printf( "trigger_multiple has random >= wait\n" );
 	}
 
 	ent->touch = Touch_Multi;
@@ -216,8 +106,6 @@ void SP_trigger_multiple( gentity_t *ent ) {
 	InitTrigger( ent );
 	trap_LinkEntity (ent);
 }
-
-
 
 /*
 ==============================================================================
@@ -232,12 +120,14 @@ void trigger_always_think( gentity_t *ent ) {
 	G_FreeEntity( ent );
 }
 
+/*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
+This trigger will always fire.  It is activated by the world.
+*/
 void SP_trigger_always (gentity_t *ent) {
 	// we must have some delay to make sure our use targets are present
-	ent->nextthink = level.time + 1000;
+	ent->nextthink = level.time + 300;
 	ent->think = trigger_always_think;
 }
-
 
 /*
 ==============================================================================
@@ -253,9 +143,8 @@ void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 		return;
 	}
 
-	BG_TouchJumpPad( &other->client->ps, &self->s, !(self->spawnflags & 1) );
+	BG_TouchJumpPad( &other->client->ps, &self->s );
 }
-
 
 /*
 =================
@@ -280,7 +169,7 @@ void AimAtTarget( gentity_t *self ) {
 	}
 
 	height = ent->s.origin[2] - origin[2];
-	gravity = g_gravity.value*g_gravityModifier.value;
+	gravity = g_gravity.value;
 	time = sqrt( height / ( .5 * gravity ) );
 	if ( !time ) {
 		G_FreeEntity( self );
@@ -298,11 +187,15 @@ void AimAtTarget( gentity_t *self ) {
 	self->s.origin2[2] = time * gravity;
 }
 
+/*QUAKED trigger_push (.5 .5 .5) ?
+Must point at a target_position, which will be the apex of the leap.
+This will be client side predicted, unlike target_push
+*/
 void SP_trigger_push( gentity_t *self ) {
 	InitTrigger (self);
 
 	// unlike other triggers, we need to send this one to the client
-	self->r.svFlags = SVF_NOCLIENT;
+	self->r.svFlags &= ~SVF_NOCLIENT;
 
 	// make sure the client precaches this sound
 	G_SoundIndex("sound/world/jumppad.wav");
@@ -313,7 +206,6 @@ void SP_trigger_push( gentity_t *self ) {
 	self->nextthink = level.time + FRAMETIME;
 	trap_LinkEntity (self);
 }
-
 
 void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	if ( !activator->client ) {
@@ -336,6 +228,11 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 	}
 }
 
+/*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8) bouncepad
+Pushes the activator in the direction.of angle, or towards a target apex.
+"speed"		defaults to 1000
+if "bouncepad", play bounce noise instead of windfly
+*/
 void SP_target_push( gentity_t *self ) {
 	if (!self->speed) {
 		self->speed = 1000;
@@ -345,8 +242,6 @@ void SP_target_push( gentity_t *self ) {
 
 	if ( self->spawnflags & 1 ) {
 		self->noise_index = G_SoundIndex("sound/world/jumppad.wav");
-	} else if (self->spawnflags & 2) {
-		self->noise_index = G_SoundIndex("*jump1.wav");
 	} else {
 		self->noise_index = G_SoundIndex("sound/misc/windfly.wav");
 	}
@@ -368,7 +263,7 @@ trigger_teleport
 */
 
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
-	gentity_t *dest;
+	gentity_t	*dest;
 
 	if ( !other->client ) {
 		return;
@@ -376,16 +271,30 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 	if ( other->client->ps.pm_type == PM_DEAD ) {
 		return;
 	}
+	// Spectators only?
+	if ( ( self->spawnflags & 1 ) && 
+		other->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		return;
+	}
 
-	dest = G_PickTarget(self->target);
+
+	dest = 	G_PickTarget( self->target );
 	if (!dest) {
-        G_Printf ("Couldn't find teleporter destination\n");
+		G_Printf ("Couldn't find teleporter destination\n");
 		return;
 	}
 
 	TeleportPlayer( other, dest->s.origin, dest->s.angles );
 }
 
+/*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR
+Allows client side prediction of teleportation events.
+Must point at a target_position, which will be the teleport destination.
+
+If spectator is set, only spectators can use this teleport
+Spectator teleporters are not normally placed in the editor, but are created
+automatically near doors to allow spectators to move through them
+*/
 void SP_trigger_teleport( gentity_t *self ) {
 	InitTrigger (self);
 
@@ -394,7 +303,7 @@ void SP_trigger_teleport( gentity_t *self ) {
 	if ( self->spawnflags & 1 ) {
 		self->r.svFlags |= SVF_NOCLIENT;
 	} else {
-	self->r.svFlags = SVF_NOCLIENT;
+		self->r.svFlags &= ~SVF_NOCLIENT;
 	}
 
 	// make sure the client precaches this sound
@@ -406,7 +315,6 @@ void SP_trigger_teleport( gentity_t *self ) {
 	trap_LinkEntity (self);
 }
 
-
 /*
 ==============================================================================
 
@@ -415,6 +323,18 @@ trigger_hurt
 ==============================================================================
 */
 
+/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
+Any entity that touches this will be hurt.
+It does dmg points of damage each server frame
+Targeting the trigger will toggle its on / off state.
+
+SILENT			supresses playing the sound
+SLOW			changes the damage rate to once per second
+NO_PROTECTION	*nothing* stops the damage
+
+"dmg"			default 5 (whole numbers only)
+
+*/
 void hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	if ( self->r.linked ) {
 		trap_UnlinkEntity( self );
@@ -465,284 +385,11 @@ void SP_trigger_hurt( gentity_t *self ) {
 	self->r.contents = CONTENTS_TRIGGER;
 
 	if ( self->spawnflags & 2 ) {
-	self->use = hurt_use;
-        }
+		self->use = hurt_use;
+	}
 
 	// link in to the world if starting active
-	if ( self->spawnflags & 1 ) {
-            trap_UnlinkEntity (self);
-        }
-        else
-        {
+	if ( ! (self->spawnflags & 1) ) {
 		trap_LinkEntity (self);
 	}
 }
-
-/*
-==============================================================================
-
-trigger_death
-
-==============================================================================
-*/
-
-void trigger_death_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	
-	//filter red/blue players
-	if ( ( self->spawnflags & 1 ) && activator->client->sess.sessionTeam != TEAM_RED ) {
-		return;
-	}
-	if ( ( self->spawnflags & 2 ) && activator->client->sess.sessionTeam != TEAM_BLUE ) {
-		return;
-	}
-
-	// if died player is a bot and bots aren't allowed, do nothing
-	if ( ( self->flags & FL_NO_BOTS ) && ( activator->r.svFlags & SVF_BOT ) )
-		return;
-
-	// if died player is not a bot and humans aren't allowed, do nothing
-	if ( ( self->flags & FL_NO_HUMANS ) && !( activator->r.svFlags & SVF_BOT ) )
-		return;
-
-	//damage is used to keep track of the number of times a player died
-	self->damage++;
-
-	if ( self->damage < self->count )
-		return;
-
-	self->damage = 0;
-	
-	G_UseTargets ( self, activator );
-
-	//the entity is triggered and TRIGGER_ONCE is set, so remove the entity from the game.
-	if ( ( self->spawnflags & 4 ) )
-		G_FreeEntity( self );
-}
-
-
-void SP_trigger_death( gentity_t *self ) {
-	int		i;
-
-	self->use = trigger_death_use;
-
-	G_SpawnInt( "nobots", "0", &i);
-	if ( i ) {
-		self->flags |= FL_NO_BOTS;
-	}
-	G_SpawnInt( "nohumans", "0", &i );
-	if ( i ) {
-		self->flags |= FL_NO_HUMANS;
-	}
-
-	G_SpawnInt( "count", "1", &self->count );	//count is the number of times a player must die before the entity is triggered
-	self->damage = 0;							//damage is used to keep track of the number of times a player died
-
-	self->r.svFlags = SVF_NOCLIENT;
-}
-
-/*
-==============================================================================
-
-trigger_frag
-
-==============================================================================
-*/
-
-void trigger_frag_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	
-	// cannot be triggered by non-player entities
-	if ( !activator->client )
-		return;
-
-	// the NO_SUICIDE spawnflag is set and player killed himself so we do nothing
-	if ( ( self->spawnflags & 8 ) && activator == other )
-		return;
-
-	//filter red/blue players
-	if ( ( self->spawnflags & 1 ) && activator->client->sess.sessionTeam != TEAM_RED ) {
-		return;
-	}
-	if ( ( self->spawnflags & 2 ) && activator->client->sess.sessionTeam != TEAM_BLUE ) {
-		return;
-	}
-
-	// if player scoring a frag is a bot and bots aren't allowed, do nothing
-	if ( ( self->flags & FL_NO_BOTS ) && ( activator->r.svFlags & SVF_BOT ) )
-		return;
-
-	// if player scoring a frag is not a bot and humans aren't allowed, do nothing
-	if ( ( self->flags & FL_NO_HUMANS ) && !( activator->r.svFlags & SVF_BOT ) )
-		return;
-
-	//damage is used to keep track of the number of times a frag was made
-	self->damage++;
-
-	if ( self->damage < self->count )
-		return;
-	
-	self->damage = 0;
-	
-	G_UseTargets ( self, activator );
-
-	//the entity is triggered and TRIGGER_ONCE is set, so remove the entity from the game.
-	if ( ( self->spawnflags & 4 ) )
-		G_FreeEntity( self );
-}
-
-
-void SP_trigger_frag( gentity_t *self ) {
-	int		i;
-
-	self->use = trigger_frag_use;
-
-	G_SpawnInt( "nobots", "0", &i);
-	if ( i ) {
-		self->flags |= FL_NO_BOTS;
-	}
-	G_SpawnInt( "nohumans", "0", &i );
-	if ( i ) {
-		self->flags |= FL_NO_HUMANS;
-	}
-
-	G_SpawnInt( "count", "1", &self->count );	//count is the number of times a frag must be scored before the entity is triggered
-	self->damage = 0;							//damage is used to keep track of the number of times a frag was scored
-
-	self->r.svFlags = SVF_NOCLIENT;
-}
-/*
-==============================================================================
-
-EntityPlus: trigger_lock
-Note: If NONE of the trigger_lock's KEY_* spawnflags have been set, it operates
-like an ordinary trigger_multiple
-==============================================================================
-*/
-
-void lock_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
-	int holdables;
-	qboolean playerHasKeys;
-	
-	if (!other->client)
-		return;
-
-	if ( self->nextthink )
-		return;
-
-	holdables = other->client->ps.stats[STAT_HOLDABLE_ITEM];
-	playerHasKeys = qtrue;
-
-	//if player doesn't have all the required key(card)s, do nothing
-	if ( (self->spawnflags & 4) && !(holdables & (1 << HI_KEY_RED)) ) 
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 8) && !(holdables & (1 << HI_KEY_GREEN)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 16) && !(holdables & (1 << HI_KEY_BLUE)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 32) && !(holdables & (1 << HI_KEY_YELLOW)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 64) && !(holdables & (1 << HI_KEY_MASTER)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 128) && !(holdables & (1 << HI_KEY_GOLD)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 256) && !(holdables & (1 << HI_KEY_SILVER)) )
-		playerHasKeys = qfalse;
-	if ( (self->spawnflags & 512) && !(holdables & (1 << HI_KEY_IRON)) )
-		playerHasKeys = qfalse;
-
-	if ( !playerHasKeys ) {
-		if ( self->message )
-			trap_SendServerCommand( other-g_entities, va("cp \"%s\"", self->message ));
-
-		// sound played when locked
-		if ( self->soundPos1 )
-		{
-			vec3_t size, center;
-			gentity_t *tent;
-
-			VectorSubtract(self->r.maxs, self->r.mins, size);
-			VectorScale(size, 0.5, size);
-			VectorAdd(self->r.mins, size, center);
-			tent = G_TempEntity( center, EV_GENERAL_SOUND );
-			tent->s.eventParm = self->soundPos1;
-		}
-
-		self->think = multi_wait;
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
-		return;
-	}
-	else {
-		self->message = 0;	//remove the message so it's not displayed anymore once the lock is opened
-		
-		// sound played when unlocked
-		if ( self->soundPos2 ) {
-			vec3_t size, center;
-			gentity_t *tent;
-
-			VectorSubtract(self->r.maxs, self->r.mins, size);
-			VectorScale(size, 0.5, size);
-			VectorAdd(self->r.mins, size, center);
-			tent = G_TempEntity( center, EV_GENERAL_SOUND );
-			tent->s.eventParm = self->soundPos2;
-
-			self->soundPos1 = 0;
-			self->soundPos2 = 0;
-		}
-	}
-
-	// remove the required key(card)s if KEEP_KEYS spawnflag isn't set
-	if (!(self->spawnflags & 1024)) {
-		if (self->spawnflags & 4)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_RED);
-		if (self->spawnflags & 8)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_GREEN);
-		if (self->spawnflags & 16)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_BLUE);
-		if (self->spawnflags & 32)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_YELLOW);
-		if (self->spawnflags & 64)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_MASTER);
-		if (self->spawnflags & 128)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_GOLD);
-		if (self->spawnflags & 256)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_SILVER);
-		if (self->spawnflags & 512)
-			other->client->ps.stats[STAT_HOLDABLE_ITEM] -= (1 << HI_KEY_IRON);
-	}
-
-	// everything else is the same as a trigger_multiple
-	multi_trigger(self, other);
-}
-
-/*
-QUAKED trigger_lock (.5 .5 .5) ? RED_ONLY BLUE_ONLY KEY_RED KEY_GREEN KEY_BLUE KEY_YELLOW
-Used in conjunction with a holdable_key_* to grant/deny access to some entity
-(e.g. a door).
-Spawnflags determine which key is needed to trigger this lock
-*/
-void SP_trigger_lock(gentity_t *self) {
-	char  *lockedsound;
-	char  *unlockedsound;
-	
-	InitTrigger(self);
-
-	// default values
-	G_SpawnFloat("wait", "0.5", &self->wait);
-	G_SpawnFloat("random", "0", &self->random);
-	G_SpawnString("lockedsound", "", &lockedsound);
-	G_SpawnString("unlockedsound", "", &unlockedsound);
-
-	// sounds
-	self->soundPos1 = G_SoundIndex(lockedsound);
-	self->soundPos2 = G_SoundIndex(unlockedsound);
-
-	// random cannot be larger than wait
-	if ( self->random >= self->wait && self->wait >= 0 ) {
-		self->random = self->wait - FRAMETIME;
-		G_Printf("trigger_lock has random >= wait\n");
-	}
-
-	self->touch = lock_touch;
-	
-	trap_LinkEntity(self);
-}
-

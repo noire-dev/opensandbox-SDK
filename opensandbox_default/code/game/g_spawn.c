@@ -212,7 +212,6 @@ spawn_t	spawns_table[] = {
 	{"target_delay", SP_target_delay},
 	{"target_speaker", SP_target_speaker},
 	{"target_print", SP_target_print},
-	{"target_laser", SP_target_laser},
 	{"target_teleporter", SP_target_teleporter},
 	{"target_relay", SP_target_relay},
 	{"target_kill", SP_target_kill},
