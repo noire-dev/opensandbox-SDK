@@ -32,7 +32,6 @@ typedef struct {
     int age; //int that grows each time a new player is stored. The lowest number is always replaced. Reset to 0 then retrieved.
     int	persistant[MAX_PERSISTANT]; //This is the only information we need to save
     int timePlayed;
-    int	accuracy[MAX_WEAPONS][2];
 } playerstore_t;
 
 static playerstore_t playerstore[MAX_CLIENTS];
@@ -75,7 +74,6 @@ void PlayerStore_store(char* guid, playerState_t ps) {
     playerstore[place2store].age = nextAge++;
     Q_strncpyz(playerstore[place2store].guid,guid,GUID_SIZE+1);
     memcpy(playerstore[place2store].persistant,ps.persistant,sizeof(int[MAX_PERSISTANT]));
-    memcpy(playerstore[place2store].accuracy,level.clients[ps.clientNum].accuracy, sizeof(playerstore[0].accuracy) );
     playerstore[place2store].timePlayed = level.time - level.clients[ps.clientNum].pers.enterTime;
 }
 
@@ -87,7 +85,6 @@ void PlayerStore_restore(char* guid, playerState_t *ps)  {
     for(i=0;i<MAX_CLIENTS;i++) {
         if(!Q_stricmpn(guid,playerstore[i].guid,GUID_SIZE) && playerstore[i].age != -1) {
             memcpy(ps->persistant,playerstore[i].persistant,sizeof(int[MAX_PERSISTANT]));
-            memcpy(level.clients[ps->clientNum].accuracy, playerstore[i].accuracy,sizeof(playerstore[0].accuracy) );
             level.clients[ps->clientNum].pers.enterTime = level.time - playerstore[i].timePlayed;
             //Never ever restore a player with negative score
             if(ps->persistant[PERS_SCORE]<0)

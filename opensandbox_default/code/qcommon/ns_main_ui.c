@@ -10,9 +10,6 @@ const char *function_list[MAX_FUNCS] = {
     "getVariable",
     "setVariable",
     "sendVariable",
-    "NSGui_Init",
-    "NSGui_Reset",
-    "NSGui_Load",
     NULL
 };
 
@@ -28,9 +25,6 @@ const char *function_arg_types[MAX_FUNCS][MAX_ARGS] = {
     {"char"},                                       // getVariable
     {"char", "char", "char"},                       // setVariable
     {"char", "char"},                               // sendVariable
-    {0},                                            // NSGui_Init
-    {0},                                            // NSGui_Reset
-    {0},                                            // NSGui_Load
     {NULL}                                          // NULL
 };
 
@@ -130,42 +124,29 @@ void callfunc(Variable *var, const char *name, const char *operation, const char
 
     else if (strcmp(name, "sendVariable") == 0 && argCount >= 2) {   
         Variable *sendVar = find_variable(ns_args[1].c); 
-
-    if(!strcmp(ns_args[0].c, "server")){
-        if(sendVar->type == TYPE_CHAR){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+        
+        if(!strcmp(ns_args[0].c, "server")){
+            if(sendVar->type == TYPE_CHAR){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+            }
+            if(sendVar->type == TYPE_INT){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+            }
+            if(sendVar->type == TYPE_FLOAT){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
+            }
         }
-        if(sendVar->type == TYPE_INT){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+        if(!strcmp(ns_args[0].c, "client")){
+            if(sendVar->type == TYPE_CHAR){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+            }
+            if(sendVar->type == TYPE_INT){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+            }
+            if(sendVar->type == TYPE_FLOAT){
+            trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
+            }
         }
-        if(sendVar->type == TYPE_FLOAT){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
-        }
-    }
-    if(!strcmp(ns_args[0].c, "client")){
-        if(sendVar->type == TYPE_CHAR){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
-        }
-        if(sendVar->type == TYPE_INT){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
-        }
-        if(sendVar->type == TYPE_FLOAT){
-        trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_sendvariable_cl %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
-        }
-    }
-
-    }
-
-    else if (strcmp(name, "NSGui_Init") == 0 && argCount >= 0) {
-        NSGUI_Init();
-    }
-
-    else if (strcmp(name, "NSGui_Reset") == 0 && argCount >= 0) {
-        NSGUI_Clear();
-    }
-
-    else if (strcmp(name, "NSGui_Load") == 0 && argCount >= 0) {
-        NSGUI_Load();
     }
 
     if (hasReturnValue) {

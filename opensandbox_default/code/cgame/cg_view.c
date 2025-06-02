@@ -49,37 +49,6 @@ static void CG_CalcVrect (void) {
 extern vec3_t headpos;
 extern vec3_t headang;
 
-static void CG_ViewSky( void ) {
-	float scale;
-	
-	if(!mod_skyColorA){
-		return;
-	}
-
-	cg.viewsky.hModel = trap_R_RegisterModel( "models/fog1" );
-	cg.viewsky.customShader = trap_R_RegisterShader( "models/skytex1" );
-
-	VectorCopy(cg.refdef.vieworg, cg.viewsky.origin);
-	VectorCopy(cg.refdef.viewaxis[0], cg.viewsky.axis[0]);
-	VectorCopy(cg.refdef.viewaxis[1], cg.viewsky.axis[1]);
-	VectorCopy(cg.refdef.viewaxis[2], cg.viewsky.axis[2]);
-
-	cg.viewsky.shaderRGBA[0] = mod_skyColorR;
-	cg.viewsky.shaderRGBA[1] = mod_skyColorG;
-	cg.viewsky.shaderRGBA[2] = mod_skyColorB;
-	cg.viewsky.shaderRGBA[3] = mod_skyColorA;
-
-	scale = 4;
-	VectorScale(cg.viewsky.axis[0], scale, cg.viewsky.axis[0]);
-	VectorScale(cg.viewsky.axis[1], scale, cg.viewsky.axis[1]);
-	VectorScale(cg.viewsky.axis[2], scale, cg.viewsky.axis[2]);
-	
-	cg.viewsky.renderfx = RF_FIRST_PERSON;
-
-	trap_R_AddRefEntityToScene(&cg.viewsky);
-}
-
-
 /*
 ===============
 CG_OffsetThirdPersonView
@@ -592,7 +561,6 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 		CG_AddPacketEntities();
 		CG_AddMarks();
 		CG_AddLocalEntities();
-		CG_ViewSky();
 	}
 	
 	CG_AddViewWeapon( &cg.predictedPlayerState );

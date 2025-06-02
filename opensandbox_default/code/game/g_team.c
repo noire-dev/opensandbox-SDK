@@ -485,19 +485,17 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 	gclient_t *cl = other->client;
 
-	if( g_gametype.integer == GT_1FCTF ) {
+	if(g_gametype.integer == GT_1FCTF) {
 		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname );
                 
 		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
 
-		if( team == TEAM_RED ) {
+		if(team == TEAM_RED) {
 			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_RED );
-		}
-		else {
+		} else {
 			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_BLUE );
 		}
-	}
-	else{
+	} else {
 		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
 		other->client->pers.netname, TeamName(team));
 
@@ -513,7 +511,7 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 	cl->pers.teamState.flagsince = level.time;
 	Team_TakeFlagSound( ent, team );
 
-	return g_flagrespawn.integer; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
+	return -1; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
 }
 
 int Pickup_Team( gentity_t *ent, gentity_t *other ) {
@@ -900,7 +898,7 @@ Obelisks
 
 static void ObeliskHealthChange( int team, int health ) {
     int currentPercentage;
-    int percentage = (health*100)/g_obeliskHealth.integer;
+    int percentage = (health*100)/2500;
     if(percentage < 0)
         percentage = 0;
     currentPercentage = level.healthRedObelisk;
@@ -918,27 +916,27 @@ static void ObeliskHealthChange( int team, int health ) {
 } 
 
 static void ObeliskRegen( gentity_t *self ) {
-	self->nextthink = level.time + g_obeliskRegenPeriod.integer * 1000;
+	self->nextthink = level.time + 1 * 1000;
         ObeliskHealthChange(self->spawnflags,self->health);
-	if( self->health >= g_obeliskHealth.integer ) {
+	if( self->health >= 2500 ) {
 		return;
 	}
 
-	self->health += g_obeliskRegenAmount.integer;
-	if ( self->health > g_obeliskHealth.integer ) {
-		self->health = g_obeliskHealth.integer;
+	self->health += 15;
+	if ( self->health > 2500 ) {
+		self->health = 2500;
 	}
 
-	self->activator->s.modelindex2 = self->health * 0xff / g_obeliskHealth.integer;
+	self->activator->s.modelindex2 = self->health * 0xff / 2500;
 	self->activator->s.frame = 0;
 }
 
 static void ObeliskRespawn( gentity_t *self ) {
 	self->takedamage = qtrue;
-	self->health = g_obeliskHealth.integer;
+	self->health = 2500;
 
 	self->think = ObeliskRegen;
-	self->nextthink = level.time + g_obeliskRegenPeriod.integer * 1000;
+	self->nextthink = level.time + 1 * 1000;
 
 	self->activator->s.frame = 0;
 }
@@ -953,7 +951,7 @@ static void ObeliskDie( gentity_t *self, gentity_t *inflictor, gentity_t *attack
 
 	self->takedamage = qfalse;
 	self->think = ObeliskRespawn;
-	self->nextthink = level.time + g_obeliskRespawnDelay.integer * 1000;
+	self->nextthink = level.time + 10 * 1000;
 
 	self->activator->s.modelindex2 = 0xff;
 	self->activator->s.frame = 2;
@@ -1000,7 +998,7 @@ static void ObeliskPain( gentity_t *self, gentity_t *attacker, int damage ) {
 	if (actualDamage <= 0) {
 		actualDamage = 1;
 	}
-	self->activator->s.modelindex2 = self->health * 0xff / g_obeliskHealth.integer;
+	self->activator->s.modelindex2 = self->health * 0xff / 2500;
 	if (!self->activator->s.frame) {
 		G_AddEvent(self, EV_OBELISKPAIN, 0);
 	}
@@ -1028,11 +1026,11 @@ gentity_t *SpawnObelisk( vec3_t origin, int team, int spawnflags) {
 	if( g_gametype.integer == GT_OBELISK ) {
 		ent->r.contents = CONTENTS_SOLID;
 		ent->takedamage = qtrue;
-		ent->health = g_obeliskHealth.integer;
+		ent->health = 2500;
 		ent->die = ObeliskDie;
 		ent->pain = ObeliskPain;
 		ent->think = ObeliskRegen;
-		ent->nextthink = level.time + g_obeliskRegenPeriod.integer * 1000;
+		ent->nextthink = level.time + 1 * 1000;
 	}
 	if( g_gametype.integer == GT_HARVESTER ) {
 		ent->r.contents = CONTENTS_TRIGGER;

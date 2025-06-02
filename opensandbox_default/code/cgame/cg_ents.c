@@ -1063,7 +1063,7 @@ static void CG_TeamBase( centity_t *cent ) {
 				cent->miscTime = cg.time;
 			}
 			t = cg.time - cent->miscTime;
-			h = (cg_obeliskRespawnDelay.integer - 5) * 1000;
+			h = (10 - 5) * 1000;
 			//
 			if (t > h) {
 				c = (float) (t - h) / h;

@@ -411,7 +411,7 @@ void G_FreeEntity( gentity_t *ed ) {
 		ClientUserinfoChanged( ed->parent->s.clientNum );
 		VectorSet( ed->parent->r.mins, -15, -15, -24 );
 		VectorSet( ed->parent->r.maxs, 15, 15, 32 );
-		ed->parent->client->ps.gravity = (g_gravity.value*g_gravityModifier.value);
+		ed->parent->client->ps.gravity = g_gravity.value;
 	}
 
     Phys_Unweld(ed);
@@ -631,36 +631,6 @@ Sets the targetname for a selected entity
 */
 void G_SetTargetname( gentity_t *ent, char *targname ) {
 	ent->targetname = targname;
-}
-
-/*
-================
-findradius
-================
-*/
-gentity_t *findradius (gentity_t *ent, vec3_t org, float rad) {
-
-	vec3_t eorg;
-	int j;
-
-	if (!ent)
-		ent = g_entities;
-	else
-		ent++;
-
-	for (; ent < &g_entities[level.num_entities]; ent++)
-		{
-		if (!ent->inuse)
-			continue;
-
-		for (j=0; j<3; j++)
-			eorg[j] = org[j] - (ent->r.currentOrigin[j] +
-			(ent->r.mins[j] + ent->r.maxs[j])*0.5);
-		if (VectorLength(eorg) > rad)
-			continue;
-		return ent;
-	}
-	return NULL;
 }
 
 /*

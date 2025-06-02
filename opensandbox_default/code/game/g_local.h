@@ -417,11 +417,6 @@ struct gclient_s {
 	vec3_t		damage_from;		// origin for vector calculation
 	qboolean	damage_fromWorld;	// if true, don't use the damage_from vector
 
-	int			accurateCount;		// for "impressive" reward sound
-
-	int			accuracy_shots;		// total number of shots
-	int			accuracy_hits;		// total number of hits
-
 	int			lasthurt_client;	// last client that damaged this client
 	int			lasthurt_mod;		// type of damage the client did
 
@@ -472,8 +467,6 @@ struct gclient_s {
 	// the last frame number we got an update from this client
 	int			lastUpdateFrame;
 	qboolean    spawnprotected;
-
-	int			accuracy[MAX_WEAPONS][2];
 
 	undo_stack_t undoStack[MAX_UNDO_STACK];
 };
@@ -695,7 +688,6 @@ qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
 gentity_t *G_FindWeldEntity(gentity_t *ent);
 
 void	G_InitGentity( gentity_t *e );
-gentity_t *findradius (gentity_t *ent, vec3_t org, float rad);
 gentity_t	*G_Spawn (void);
 gentity_t *G_TempEntity( vec3_t origin, int event );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
@@ -729,7 +721,7 @@ void target_finish_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 qboolean CanDamage (gentity_t *targ, vec3_t origin);
 void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 void G_ExitVehicle (int num);
-qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
+void G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
 int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir );
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
 void TossClientItems( gentity_t *self );
@@ -748,9 +740,7 @@ void TossClientCubes( gentity_t *self );
 //
 
 void G_RunMissile( gentity_t *ent );
-void ProximityMine_RemoveAll( void );
 
-gentity_t *fire_custom (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
@@ -793,8 +783,6 @@ void DropPortalDestination( gentity_t *ent );
 //
 // g_weapon.c
 //
-
-qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 //unlagged - attack prediction #3
 // we're making this available to both games
@@ -1044,54 +1032,7 @@ void 	grenade_think( gentity_t *ent );
 void 	bfg_think( gentity_t *ent );
 void 	nailgun_think( gentity_t *ent );
 void 	UpdateGameCvars( void );
-extern	int			mod_ammolimit;
 extern 	int 		mod_jumpheight;
-extern 	int			mod_gdelay;
-extern 	int			mod_mgdelay;
-extern	int			mod_mgspread;
-extern 	int			mod_sgdelay;
-extern	int			mod_sgspread;
-extern	int			mod_sgcount;
-extern 	int			mod_gldelay;
-extern 	int			mod_rldelay;
-extern 	int			mod_lgdelay;
-extern	int			mod_lgrange;
-extern 	int			mod_pgdelay;
-extern 	int			mod_rgdelay;
-extern 	int			mod_bfgdelay;
-extern 	int			mod_ngdelay;
-extern 	int			mod_pldelay;
-extern 	int			mod_cgdelay;
-extern	int			mod_cgspread;
-extern 	int			mod_ftdelay;
-extern 	int			mod_amdelay;
-extern	float 		mod_hastefirespeed;
-extern	float 		mod_ammoregenfirespeed;
-extern	float 		mod_scoutfirespeed;
-extern	int			mod_poweruptime;
-extern	float		mod_guardfirespeed;
-extern	float		mod_doublerfirespeed;
-extern	int			mod_quadtime;
-extern	int			mod_bsuittime;
-extern	int			mod_hastetime;
-extern	int			mod_invistime;
-extern	int			mod_regentime;
-extern	int			mod_flighttime;
-extern	int			mod_noplayerclip;
-extern	int			mod_ammolimit;
-extern	int			mod_invulmove;
-extern	float		mod_teamred_firespeed;
-extern	float		mod_teamblue_firespeed;
-extern	int			mod_medkitlimit;
-extern	int			mod_medkitinf;
-extern	int			mod_teleporterinf;
-extern	int			mod_portalinf;
-extern	int			mod_kamikazeinf;
-extern	int			mod_invulinf;
-extern	int 		mod_teamblue_damage;
-extern	int 		mod_teamred_damage;
-extern	int			mod_accelerate;
-extern	int			mod_movetype;
 extern	int			mod_gravity;
 
 #define CMD_CHEAT           0x0001

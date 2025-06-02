@@ -30,12 +30,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 =======================================================================
 */
 
-
-
-
-
 #include "ui_local.h"
-#include "ui_startserver.h"
 
 
 #define MAX_GLOBALSERVERS		128
@@ -723,12 +718,7 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 
 	i = atoi( Info_ValueForKey( info, "gametype") );
 	servernodeptr->gametype = i;
-	if(cl_language.integer == 0){
 	Q_strncpyz( servernodeptr->gamename, gametype_items[i], sizeof(servernodeptr->gamename) );
-	}
-	if(cl_language.integer == 1){
-	Q_strncpyz( servernodeptr->gamename, gametype_itemsru[i], sizeof(servernodeptr->gamename) );
-	}
 }
 
 
@@ -747,21 +737,14 @@ void ArenaServers_InsertFavorites( void )
 
 	// resync existing results with new or deleted cvars
 	info[0] = '\0';
-	if(cl_language.integer == 0){
 	Info_SetValueForKey( info, "hostname", "No connection" );
-	}
-	if(cl_language.integer == 1){
-	Info_SetValueForKey( info, "hostname", "Нет соединения" );
-	}
-	for (i=0; i<g_arenaservers.numfavoriteaddresses; i++)
-	{
+	for (i=0; i<g_arenaservers.numfavoriteaddresses; i++)  {
 		// find favorite address in refresh list
 		for (j=0; j<g_numfavoriteservers; j++)
 			if (!Q_stricmp(g_arenaservers.favoriteaddresses[i],g_favoriteserverlist[j].adrstr))
 				break;
 
-		if ( j >= g_numfavoriteservers)
-		{
+		if ( j >= g_numfavoriteservers) {
 			// not in list, add it
 			ArenaServers_Insert( g_arenaservers.favoriteaddresses[i], info, ArenaServers_MaxPing() );
 		}
@@ -776,8 +759,7 @@ ArenaServers_LoadFavorites
 Load cvar address book entries into local lists.
 =================
 */
-void ArenaServers_LoadFavorites( void )
-{
+void ArenaServers_LoadFavorites( void ) {
 	int				i;
 	int				j;
 	int				numtempitems;
@@ -1373,7 +1355,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 		break;
 
 	case ID_CREATE:
-		UI_StartServerMenu();
+		//UI_StartServerMenu();
 		break;
 
 	case ID_CONNECT:

@@ -1053,7 +1053,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 
 	// project forward by the lightning range
 	if (weaphack == WP_LIGHTNING){
-	VectorMA( muzzlePoint, mod_lgrange, forward, endPoint );
+	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
 	} else if (weaphack == WP_TOOLGUN){
 	VectorMA( muzzlePoint, TOOLGUN_RANGE, forward, endPoint );	
 	} else if (weaphack == WP_PHYSGUN){
@@ -2036,9 +2036,9 @@ void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum
 	CrossProduct( forward, right, up );
 
 	// generate the "random" spread pattern
-	for ( i = 0 ; i < mod_sgcount ; i++ ) {
-		r = Q_crandom( &seed ) * mod_sgspread * 16;
-		u = Q_crandom( &seed ) * mod_sgspread * 16;
+	for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
+		r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
+		u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
 		VectorMA( origin, 8192 * 16, forward, end);
 		VectorMA (end, r, right, end);
 		VectorMA (end, u, up, end);

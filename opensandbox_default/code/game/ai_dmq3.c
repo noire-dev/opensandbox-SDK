@@ -2484,32 +2484,13 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 		attack_range = 0;
                 jumper = 0.5; // Mix3r_Durachok: less jumpy on the ring
                 attack_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AGGRESSION, 0, 3);
-                if (attack_skill > 1.999) {
-                        level.clients[bs->client].accurateCount = -3;
-                }
 	} else {
 		attack_dist = IDEAL_ATTACKDIST;
 		attack_range = 40;
                 jumper = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_JUMPER, 0, 1);
 	}
 
-	//if (bs->attackchase_time > FloatTime()) {
-        if (level.clients[bs->client].accurateCount < -2) {
-		//create the chase goal
-		goal.entitynum = attackentity;
-		goal.areanum = bs->lastenemyareanum;
-		VectorCopy(bs->lastenemyorigin, goal.origin);
-		VectorSet(goal.mins, -8, -8, -8);
-		VectorSet(goal.maxs, 8, 8, 8);
-		//initialize the movement state
-		BotSetupForMovement(bs);
-		//move towards the goal
-		trap_BotMoveToGoal(&moveresult, bs->ms, &goal, tfl);
-		return moveresult;
-	}
-	//
 	memset(&moveresult, 0, sizeof(bot_moveresult_t));
-	//
 	attack_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_ATTACK_SKILL, 0, 1);
 	jumper = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_JUMPER, 0, 1);
 	croucher = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CROUCHER, 0, 1);

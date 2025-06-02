@@ -418,16 +418,7 @@ static sfxHandle_t RadioButton_Key( menuelement_s *rb, int key ) {
 			if (!(rb->generic.flags & QMF_HASMOUSEFOCUS))
 				break;
 
-		case K_JOY1:
-		case K_JOY2:
-		case K_JOY3:
-		case K_JOY4:
 		case K_ENTER:
-		case K_KP_ENTER:
-		case K_KP_LEFTARROW:
-		case K_LEFTARROW:
-		case K_KP_RIGHTARROW:
-		case K_RIGHTARROW:
 			rb->curvalue = !rb->curvalue;
 			if ( rb->generic.callback )
 				rb->generic.callback( rb, QM_ACTIVATED );
@@ -533,7 +524,6 @@ static sfxHandle_t Slider_Key( menuelement_s *s, int key )
 				sound = 0;
 			break;
 
-		case K_KP_LEFTARROW:
 		case K_LEFTARROW:
 			if (s->curvalue > s->minvalue)
 			{
@@ -544,7 +534,6 @@ static sfxHandle_t Slider_Key( menuelement_s *s, int key )
 				sound = menu_buzz_sound;
 			break;			
 
-		case K_KP_RIGHTARROW:
 		case K_RIGHTARROW:
 			if (s->curvalue < s->maxvalue)
 			{
@@ -686,7 +675,6 @@ static sfxHandle_t SpinControl_Key( menuelement_s *s, int key )
 			sound = menu_move_sound;
 			break;
 		
-		case K_KP_LEFTARROW:
 		case K_LEFTARROW:
 			if (s->curvalue > 0)
 			{
@@ -697,7 +685,6 @@ static sfxHandle_t SpinControl_Key( menuelement_s *s, int key )
 				sound = menu_buzz_sound;
 			break;
 
-		case K_KP_RIGHTARROW:
 		case K_RIGHTARROW:
 			if (s->curvalue < s->numitems-1)
 			{
@@ -805,10 +792,8 @@ void ScrollList_Init( menuelement_s *l )
 ScrollList_Key
 =================
 */
-sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
-{
+sfxHandle_t ScrollList_Key( menuelement_s *l, int key ) {
 	static int clicktime = 0;
-
 	int	x;
 	int	y;
 	int	w;
@@ -820,85 +805,55 @@ sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
 	int	column;
 	int	index;
 	int clickdelay;
+	int modifier;
+
+	if(l->generic.style <= 1){
+		modifier = l->height*(BASEFONT_HEIGHT*l->size);
+	} else if(l->generic.style == 2){
+		modifier = l->height * (BASEFONT_INDENT*l->width);
+	}
 
 	switch (key) {
 		case K_MOUSE1:
-			if (l->generic.flags & QMF_HASMOUSEFOCUS)
-			{
+			if (l->generic.flags & QMF_HASMOUSEFOCUS) {
 				// check scroll region
 				x = l->generic.x;
 				y = l->generic.y;
+
 				if(l->generic.style <= 1){
-				w = ( l->width * l->columns) * (BASEFONT_INDENT*l->size);
-				}
-				if(l->generic.style == 2){
-				w = ( l->width * l->columns) * (BASEFONT_INDENT);
-				}
-				if( l->generic.flags & QMF_CENTER_JUSTIFY ) {
-					x -= w / 2;
+					w = ( l->width * l->columns) * (BASEFONT_INDENT*l->size);
+				} else if(l->generic.style == 2){
+					w = ( l->width * l->columns) * (BASEFONT_INDENT);
 				}
 				
-				if(l->generic.style <= 1){
-				if (UI_CursorInRect( x, y, w, l->height*(BASEFONT_HEIGHT*l->size) ))
-				{
-					cursorx = (uis.cursorx - x)/(BASEFONT_INDENT*l->size);
+				if (UI_CursorInRect( x, y, w, modifier )) {
+					if(l->generic.style <= 1){
+						cursorx = (uis.cursorx - x)/(BASEFONT_INDENT*l->size);
+						cursory = (uis.cursory - y)/(BASEFONT_HEIGHT*l->size);
+					} else if(l->generic.style == 2){
+						cursorx = (uis.cursorx - x)/(BASEFONT_INDENT);
+						cursory = (uis.cursory - y)/(BASEFONT_INDENT*l->width);
+					}
 					column = cursorx / l->width;
-					cursory = (uis.cursory - y)/(BASEFONT_HEIGHT*l->size);
 					index = (cursory * l->columns) + column;
-					if (l->top + index < l->numitems)
-					{
+					if (l->top + index < l->numitems) {
 						l->oldvalue = l->curvalue;
 						l->curvalue = l->top + index;
 
 						clickdelay = uis.realtime - clicktime;
 						clicktime = uis.realtime;
-						if (l->oldvalue != l->curvalue)
-						{
+						if (l->oldvalue != l->curvalue) {
 							if (l->generic.callback) {
 								l->generic.callback( l, QM_GOTFOCUS );
 							}
 							return (menu_move_sound);
-						}
-						else {
+						} else {
 							// double click
-							if ((clickdelay < 350) && !(l->generic.flags & (QMF_GRAYED|QMF_INACTIVE)))
-							{
+							if ((clickdelay < 350) && !(l->generic.flags & (QMF_GRAYED|QMF_INACTIVE))) {
 								return (Menu_ActivateItem( l->generic.parent, &l->generic ));
 							}
 						}
 					}
-				}
-				}
-				if(l->generic.style == 2){
-				if (UI_CursorInRect( x, y, w, l->height * (BASEFONT_INDENT*l->width) ))
-				{
-					cursorx = (uis.cursorx - x)/(BASEFONT_INDENT);
-					column = cursorx / l->width;
-					cursory = (uis.cursory - y)/(BASEFONT_INDENT*l->width);
-					index = (cursory * l->columns) + column;
-					if (l->top + index < l->numitems)
-					{
-						l->oldvalue = l->curvalue;
-						l->curvalue = l->top + index;
-
-						clickdelay = uis.realtime - clicktime;
-						clicktime = uis.realtime;
-						if (l->oldvalue != l->curvalue)
-						{
-							if (l->generic.callback) {
-								l->generic.callback( l, QM_GOTFOCUS );
-							}
-							return (menu_move_sound);
-						}
-						else {
-							// double click
-							if ((clickdelay < 350) && !(l->generic.flags & (QMF_GRAYED|QMF_INACTIVE)))
-							{
-								return (Menu_ActivateItem( l->generic.parent, &l->generic ));
-							}
-						}
-					}
-				}
 				}
 
 				// absorbed, silent sound effect
@@ -906,111 +861,14 @@ sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
 			}
 			break;
 
-		case K_KP_HOME:
-		case K_HOME:
-			l->oldvalue = l->curvalue;
-			l->curvalue = 0;
-			l->top      = 0;
-
-			if (l->oldvalue != l->curvalue && l->generic.callback)
-			{
-				l->generic.callback( l, QM_GOTFOCUS );
-				return (menu_move_sound);
-			}
-			return (menu_buzz_sound);
-
-		case K_KP_END:
-		case K_END:
-			l->oldvalue = l->curvalue;
-			l->curvalue = l->numitems-1;
-			if( l->columns > 1 ) {
-				c = (l->curvalue / l->height + 1) * l->height;
-				l->top = c - (l->columns * l->height);
-			}
-			else {
-				l->top = l->curvalue - (l->height - 1);
-			}
-			if (l->top < 0)
-				l->top = 0;			
-
-			if (l->oldvalue != l->curvalue && l->generic.callback)
-			{
-				l->generic.callback( l, QM_GOTFOCUS );
-				return (menu_move_sound);
-			}
-			return (menu_buzz_sound);
-
-		case K_PGUP:
-		case K_KP_PGUP:
-			if( l->columns > 1 ) {
-				return menu_null_sound;
-			}
-
-			if (l->curvalue > 0)
-			{
-				l->oldvalue = l->curvalue;
-				l->curvalue -= l->height-1;
-				if (l->curvalue < 0)
-					l->curvalue = 0;
-				l->top = l->curvalue;
-				if (l->top < 0)
-					l->top = 0;
-
-				if (l->generic.callback)
-					l->generic.callback( l, QM_GOTFOCUS );
-
-				return (menu_move_sound);
-			}
-			return (menu_buzz_sound);
-
-		case K_PGDN:
-		case K_KP_PGDN:
-			if( l->columns > 1 ) {
-				return menu_null_sound;
-			}
-
-			if (l->curvalue < l->numitems-1)
-			{
-				l->oldvalue = l->curvalue;
-				l->curvalue += l->height-1;
-				if (l->curvalue > l->numitems-1)
-					l->curvalue = l->numitems-1;
-				l->top = l->curvalue - (l->height-1);
-				if (l->top < 0)
-					l->top = 0;
-
-				if (l->generic.callback)
-					l->generic.callback( l, QM_GOTFOCUS );
-
-				return (menu_move_sound);
-			}
-			return (menu_buzz_sound);
-
-		case K_KP_UPARROW:
-		case K_UPARROW:
 		case K_MWHEELUP:
 			if(l->columns <= 1){
-				ScrollList_Key(l, K_LEFTARROW);
-				return 0;
-			}
-			if( l->columns == 1 ) {
 				return menu_null_sound;
 			}
-
-			if( l->curvalue < l->height ) {
-				return menu_buzz_sound;
-			}
-
-			l->oldvalue = l->curvalue;
-			l->curvalue -= l->columns;
-
-			if( l->curvalue < l->top ) {
+			if(l->top - l->columns >= 0){
 				l->top -= l->columns;
-			}
-
-			if(l->top < 0 || l->curvalue < 0){
-				l->curvalue = 0;
-				l->top = 0;
+			} else {
+				return menu_buzz_sound;
 			}
 
 			if( l->generic.callback ) {
@@ -1019,85 +877,14 @@ sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
 
 			return menu_move_sound;
 
-		case K_KP_DOWNARROW:
-		case K_DOWNARROW:
 		case K_MWHEELDOWN:
 			if(l->columns <= 1){
-				ScrollList_Key(l, K_RIGHTARROW);
-				return 0;
-			}
-			if( l->columns == 1 ) {
 				return menu_null_sound;
 			}
-
-			if(l->curvalue + l->columns >= l->numitems){
-			c = l->numitems - 1;
-			} else {
-			c = l->curvalue + l->columns;
-			}
-
-			if( c >= l->numitems ) {
-				return menu_buzz_sound;
-			}
-
-			l->oldvalue = l->curvalue;
-			l->curvalue = c;
-
-			if( l->curvalue > l->top + l->columns * l->height - 1 ) {
+			if(l->top + (l->columns * l->height) < l->numitems){
 				l->top += l->columns;
-			}
-
-			if( l->generic.callback ) {
-				l->generic.callback( l, QM_GOTFOCUS );
-			}
-
-			return menu_move_sound;
-
-		case K_KP_LEFTARROW:
-		case K_LEFTARROW:
-			if( l->curvalue == 0 ) {
+			} else {
 				return menu_buzz_sound;
-			}
-
-			l->oldvalue = l->curvalue;
-			l->curvalue--;
-
-			if( l->curvalue < l->top ) {
-				if( l->columns == 1 ) {
-					l->top--;
-				}
-				else {
-					l->top -= l->columns;
-				}
-			}
-
-			if(l->top < 0 || l->curvalue < 0){
-				l->curvalue = 0;
-				l->top = 0;
-			}
-
-			if( l->generic.callback ) {
-				l->generic.callback( l, QM_GOTFOCUS );
-			}
-
-			return (menu_move_sound);
-
-		case K_KP_RIGHTARROW:
-		case K_RIGHTARROW:
-			if( l->curvalue == l->numitems - 1 ) {
-				return menu_buzz_sound;
-			}
-
-			l->oldvalue = l->curvalue;
-			l->curvalue++;
-
-			if( l->curvalue >= l->top + l->columns * l->height ) {
-				if( l->columns == 1 ) {
-					l->top++;
-				}
-				else {
-					l->top += l->columns;
-				}
 			}
 
 			if( l->generic.callback ) {
@@ -1112,37 +899,27 @@ sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
 		return (0);
 
 	// force to lower for case insensitive compare
-	if ( Q_isupper( key ) )
-	{
+	if ( Q_isupper( key ) ) {
 		key -= 'A' - 'a';
 	}
 
 	// iterate list items
-	for (i=1; i<=l->numitems; i++)
-	{
+	for (i=1; i<=l->numitems; i++) {
 		j = (l->curvalue + i) % l->numitems;
 		c = l->itemnames[j][0];
-		if ( Q_isupper( c ) )
-		{
+		if (Q_isupper( c )) {
 			c -= 'A' - 'a';
 		}
 
-		if (c == key)
-		{
+		if (c == key) {
 			// set current item, mimic windows listbox scroll behavior
-			if (j < l->top)
-			{
-				// behind top most item, set this as new top
+			if (j < l->top) {
 				l->top = j;
-			}
-			else if (j > l->top+l->height-1)
-			{
-				// past end of list box, do page down
+			} else if (j > l->top+l->height-1) {
 				l->top = (j+1) - l->height;
 			}
 			
-			if (l->curvalue != j)
-			{
+			if (l->curvalue != j) {
 				l->oldvalue = l->curvalue;
 				l->curvalue = j;
 				if (l->generic.callback)
@@ -1162,8 +939,7 @@ sfxHandle_t ScrollList_Key( menuelement_s *l, int key )
 ScrollList_Draw
 =================
 */
-void ScrollList_Draw( menuelement_s *l )
-{
+void ScrollList_Draw( menuelement_s *l ) {
 	int			x;
 	int			u;
 	int			y;
@@ -1333,8 +1109,7 @@ void ScrollList_Draw( menuelement_s *l )
 Menu_AddItem
 =================
 */
-void Menu_AddItem( menuframework_s *menu, menuelement_s *item )
-{
+void Menu_AddItem( menuframework_s *menu, menuelement_s *item ) {
 	menucommon_s	*itemptr;
 
 	if (menu->nitems >= MAX_MENUITEMS)
@@ -1351,19 +1126,8 @@ void Menu_AddItem( menuframework_s *menu, menuelement_s *item )
 
 	// perform any item specific initializations
 	itemptr = (menucommon_s*)item;
-	if (!(itemptr->flags & QMF_NODEFAULTINIT))
-	{
-		switch (itemptr->type)
-		{
-			case MTYPE_BUTTON:
-
-				break;
-			case MTYPE_PICTURE:
-
-				break;
-			case MTYPE_MODEL:
-
-				break;
+	if (!(itemptr->flags & QMF_NODEFAULTINIT)) {
+		switch (itemptr->type)  {
 			case MTYPE_ACTION:
 				Action_Init((menuelement_s*)item);
 				break;
@@ -1526,37 +1290,22 @@ wrap:
 Menu_Draw
 =================
 */
-void Menu_Draw( menuframework_s *menu )
-{
+void Menu_Draw( menuframework_s *menu ) {
 	int				i;
 	menucommon_s	*itemptr;
 
 	// draw menu
-	for (i=0; i<menu->nitems; i++)
-	{
+	for (i=0; i<menu->nitems; i++) {
 		itemptr = (menucommon_s*)menu->items[i];
 
 		if (itemptr->flags & QMF_HIDDEN)
 			continue;
 
-		if (itemptr->ownerdraw)
-		{
+		if (itemptr->ownerdraw) {
 			// total subclassing, owner draws everything
 			itemptr->ownerdraw( itemptr );
-		}	
-		else 
-		{
-			switch (itemptr->type)
-			{	
-				case MTYPE_BUTTON:
-
-					break;
-				case MTYPE_PICTURE:
-
-					break;
-				case MTYPE_MODEL:
-
-					break;
+		} else {
+			switch (itemptr->type) {	
 				case MTYPE_RADIOBUTTON:
 					RadioButton_Draw( (menuelement_s*)itemptr );
 					break;
@@ -1687,19 +1436,8 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
 	b = (menuelement_s*)item;
-	if (item && (item->flags & (QMF_HASMOUSEFOCUS)) && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
-	{
-		switch (item->type)
-		{
-			case MTYPE_BUTTON:
-
-				break;
-			case MTYPE_PICTURE:
-
-				break;
-			case MTYPE_MODEL:
-
-				break;
+	if (item && (item->flags & (QMF_HASMOUSEFOCUS)) && !(item->flags & (QMF_GRAYED|QMF_INACTIVE))) {
+		switch (item->type) {
 			case MTYPE_SPINCONTROL:
 				sound = SpinControl_Key( (menuelement_s*)item, key );
 				break;
@@ -1740,7 +1478,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 		case K_F12:
 			trap_Cmd_ExecuteText(EXEC_APPEND, "screenshotJPEG\n");
 			break;
-		case K_KP_UPARROW:
+
 		case K_UPARROW:
 			cursor_prev    = m->cursor;
 			m->cursor_prev = m->cursor;
@@ -1753,7 +1491,6 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 			break;
 
 		case K_TAB:
-		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
 			cursor_prev    = m->cursor;
 			m->cursor_prev = m->cursor;
@@ -1766,33 +1503,11 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 			break;
 
 		case K_MOUSE1:
-		case K_MOUSE3:
 			if (item)
 				if ((item->flags & QMF_HASMOUSEFOCUS) && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
 					return (Menu_ActivateItem( m, item ));
 			break;
 
-		case K_JOY1:
-		case K_JOY2:
-		case K_JOY3:
-		case K_JOY4:
-		case K_AUX1:
-		case K_AUX2:
-		case K_AUX3:
-		case K_AUX4:
-		case K_AUX5:
-		case K_AUX6:
-		case K_AUX7:
-		case K_AUX8:
-		case K_AUX9:
-		case K_AUX10:
-		case K_AUX11:
-		case K_AUX12:
-		case K_AUX13:
-		case K_AUX14:
-		case K_AUX15:
-		case K_AUX16:
-		case K_KP_ENTER:
 		case K_ENTER:
 			if (item)
 				if (!(item->flags & (QMF_MOUSEONLY|QMF_GRAYED|QMF_INACTIVE)))
@@ -1839,10 +1554,8 @@ x, y, are in pixels
 */
 void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float size ) {
 	int		len;
-	int		charw;
 	int		drawLen;
 	int		prestep;
-	int		cursorChar;
 	char	str[MAX_STRING_CHARS];
 
 	drawLen = edit->widthInChars;
@@ -1866,9 +1579,8 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float s
 	}
 
 	// extract <drawLen> characters from the field at <prestep>
-	if ( drawLen >= MAX_STRING_CHARS ) {
+	if ( drawLen >= MAX_STRING_CHARS )
 		trap_Error( "drawLen >= MAX_STRING_CHARS" );
-	}
 	memcpy( str, edit->buffer + prestep, drawLen );
 	str[ drawLen ] = 0;
 
@@ -1879,44 +1591,18 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float s
 		return;
 	}
 
-	if ( trap_Key_GetOverstrikeMode() ) {
-		cursorChar = 11;
-	} else {
-		cursorChar = 10;
-	}
-
 	style &= ~UI_PULSE;
 	style |= UI_BLINK;
 
-	if (style & UI_SMALLFONT)
-	{
-		charw =	BASEFONT_INDENT;
-	}
-	else if (style & UI_GIANTFONT)
-	{
-		charw =	GIANTCHAR_WIDTH;
-	}
-	else if (style & UI_TINYFONT)
-	{
-		charw =	TINYCHAR_WIDTH;
-	}
-	else
-	{
-		charw =	BIGCHAR_WIDTH;
-	}
-
-	if (style & UI_CENTER)
-	{
+	if (style & UI_CENTER) {
 		len = strlen(str);
-		x = x - len*charw/2;
-	}
-	else if (style & UI_RIGHT)
-	{
+		x = x - len*BASEFONT_INDENT/2;
+	} else if (style & UI_RIGHT) {
 		len = strlen(str);
-		x = x - len*charw;
+		x = x - len*BASEFONT_INDENT;
 	}
 	
-	ST_DrawChar( x + ( edit->cursor - prestep ) * charw, y, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color, 1.00 );
+	ST_DrawChar( x + ( edit->cursor - prestep ) * BASEFONT_INDENT, y, 10, style & ~(UI_CENTER|UI_RIGHT), color, 1.00 );
 }
 
 /*
@@ -1966,41 +1652,23 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 		return;
 	}
 
-	if ( key == K_RIGHTARROW || key == K_KP_RIGHTARROW ) 
-	{
+	if ( key == K_RIGHTARROW ) {
 		if ( edit->cursor < len ) {
 			edit->cursor++;
 		}
-		if ( edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len )
-		{
+		if ( edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len ) {
 			edit->scroll++;
 		}
 		return;
 	}
 
-	if ( key == K_LEFTARROW || key == K_KP_LEFTARROW ) 
-	{
+	if ( key == K_LEFTARROW ) {
 		if ( edit->cursor > 0 ) {
 			edit->cursor--;
 		}
-		if ( edit->cursor < edit->scroll )
-		{
+		if ( edit->cursor < edit->scroll ) {
 			edit->scroll--;
 		}
-		return;
-	}
-
-	if ( key == K_HOME || key == K_KP_HOME || ( tolower(key) == 'a' && trap_Key_IsDown( K_CTRL ) ) ) {
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if ( key == K_END || key == K_KP_END || ( tolower(key) == 'e' && trap_Key_IsDown( K_CTRL ) ) ) {
-		edit->cursor = len;
-		edit->scroll = len - edit->widthInChars + 1;
-		if (edit->scroll < 0)
-			edit->scroll = 0;
 		return;
 	}
 
@@ -2149,30 +1817,27 @@ void MenuField_Draw( menuelement_s *f ) {
 	if (Menu_ItemAtCursor( f->generic.parent ) == f) {
 		focus = qtrue;
 		style |= UI_PULSE;
-	}
-	else {
+	} else {
 		focus = qfalse;
 	}
 
-	if (f->generic.flags & QMF_GRAYED)
+	if (f->generic.flags & QMF_GRAYED) {
 		color = color_disabled;
-	else if (focus)
+	} else if (focus) {
 		color = color_highlight;
-	else
-		if(!f->color){
+	} else if (!f->color) {
 		color = color_white;
-		} else {
+	} else {
 		color = f->color;
-		}
+	}
 
-	if ( focus )
-	{
+	if (focus){
 		// draw cursor
 		ST_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color, 1.00);
 		f->generic.flags |= QMF_HASMOUSEFOCUS;
 	}
 
-	if ( f->string ) {
+	if (f->string) {
 		ST_DrawString( x - w, y, f->string, style|UI_RIGHT, color, f->size );
 	}
 
@@ -2184,37 +1849,24 @@ void MenuField_Draw( menuelement_s *f ) {
 MenuField_Key
 ==================
 */
-sfxHandle_t MenuField_Key( menuelement_s* m, int* key )
-{
+sfxHandle_t MenuField_Key( menuelement_s* m, int* key ) {
 	int keycode;
 	static int lastKeypress = 0;
 
 	keycode = *key;
 
-	switch ( keycode )
-	{
-		case K_KP_ENTER:
+	switch ( keycode ) {
 		case K_ENTER:
 		case K_MOUSE1:
 			break;
-		case K_JOY1:
-		case K_JOY2:
-		case K_JOY3:
-		case K_JOY4:
-			// have enter go to next cursor point
-			*key = K_TAB;
-			break;
 
 		case K_TAB:
-		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
-		case K_KP_UPARROW:
 		case K_UPARROW:
 			break;
 
 		default:
-			if ( keycode & K_CHAR_FLAG )
-			{
+			if ( keycode & K_CHAR_FLAG ) {
 				keycode &= ~K_CHAR_FLAG;
 
 				if ((m->generic.flags & QMF_UPPERCASE) && Q_islower( keycode ))
@@ -2225,14 +1877,39 @@ sfxHandle_t MenuField_Key( menuelement_s* m, int* key )
 					return (menu_buzz_sound);
 
 				MField_CharEvent( &m->field, keycode);
-			}
-			else
+			} else {
 				MField_KeyDownEvent( &m->field, keycode );
+			}
 			break;
 	}
 	lastKeypress = uis.realtime;
 
 	return (0);
+}
+
+/*
+=================
+UI_ServerPlayerIcon
+=================
+*/
+void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize ) {
+	char	*skin;
+	char	model[MAX_QPATH];
+
+	Q_strncpyz( model, modelAndSkin, sizeof(model));
+	skin = strrchr( model, '/' );
+	if ( skin ) {
+		*skin++ = '\0';
+	}
+	else {
+		skin = "default";
+	}
+
+	Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_%s.tga", model, skin );
+
+	if( !trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
+		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model );
+	}
 }
 
 #define	CB_COMMAND 		0
@@ -2256,10 +1933,6 @@ void UI_FindButtonPic( menuelement_s* e, int pic ) {
 	case AST_LINK:
 		e->string = "menu/officialsite";
 		e->focuspic = "menu/officialsite";
-		break;
-	case AST_ADDONBTN:
-		e->string = "menu/addonstoggle";
-		e->focuspic = "menu/addonstoggle";
 		break;
 	}
 }

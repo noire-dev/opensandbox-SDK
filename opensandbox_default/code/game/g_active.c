@@ -117,7 +117,6 @@ void P_WorldEffects( gentity_t *ent ) {
 	//
 	// check for drowning
 	//
-	if (g_drowndamage.integer == 1)
 	if ( waterlevel == 3 ) {
 		// envirosuit give air
 		if ( envirosuit ) {
@@ -134,10 +133,19 @@ void P_WorldEffects( gentity_t *ent ) {
 				if (ent->damage > 15)
 					ent->damage = 15;
 
+				// play a gurp sound instead of a normal pain sound
+				if (ent->health <= ent->damage) {
+					G_Sound(ent, CHAN_VOICE, G_SoundIndex("*drown.wav"));
+				} else if (rand()&1) {
+					G_Sound(ent, CHAN_VOICE, G_SoundIndex("sound/player/gurp1.wav"));
+				} else {
+					G_Sound(ent, CHAN_VOICE, G_SoundIndex("sound/player/gurp2.wav"));
+				}
+
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage (ent, NULL, NULL, NULL, NULL,
+				G_Damage (ent, NULL, NULL, NULL, NULL, 
 					ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
@@ -149,30 +157,20 @@ void P_WorldEffects( gentity_t *ent ) {
 	//
 	// check for sizzle damage (move to pmove?)
 	//
-	if (waterlevel &&
-		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) ) {
+	if (waterlevel && 
+		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
 		if (ent->health > 0
 			&& ent->pain_debounce_time <= level.time	) {
+
 			if ( !envirosuit ) {
 				if (ent->watertype & CONTENTS_LAVA) {
-					if(g_lavadamage.integer > 0){
-					G_Damage (ent, NULL, NULL, NULL, NULL,
-						g_lavadamage.integer, 0, MOD_LAVA);
-					}
+					G_Damage (ent, NULL, NULL, NULL, NULL, 
+						30*waterlevel, 0, MOD_LAVA);
 				}
 
 				if (ent->watertype & CONTENTS_SLIME) {
-					if(g_slimedamage.integer > 0){
-					G_Damage (ent, NULL, NULL, NULL, NULL,
-						g_slimedamage.integer, 0, MOD_SLIME);
-					}
-				}
-
-				if (ent->watertype & CONTENTS_WATER) {
-					if(g_waterdamage.integer > 0){
-					G_Damage (ent, NULL, NULL, NULL, NULL,
-						g_waterdamage.integer, 0, MOD_WATER);
-					}
+					G_Damage (ent, NULL, NULL, NULL, NULL, 
+						10*waterlevel, 0, MOD_SLIME);
 				}
 			}
 		}
@@ -452,8 +450,8 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			}
 		}
 
-		G_SendGameCvars( ent );				//send game setting to client for sync
-		G_SendSwepWeapons( ent );			//send sweps list to client for sync
+		G_SendGameCvars(ent);				//send game setting to client for sync
+		G_SendSwepWeapons(ent);			//send sweps list to client for sync
 
 		// count down armor when over max
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
@@ -531,9 +529,9 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 				break;		// not in the player model
 			}
 			if ( event == EV_FALL_FAR ) {
-				damage = g_falldamagebig.integer;
+				damage = 10;
 			} else {
-				damage = g_falldamagesmall.integer;
+				damage = 5;
 			}
 			VectorSet (dir, 0, 0, 1);
 			ent->pain_debounce_time = level.time + 200;	// no normal pain sound
@@ -607,7 +605,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 
 		case EV_USE_ITEM2:		// medkit
-			ent->health += g_medkitmodifier.integer;
+			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
 
 			break;
 
@@ -627,7 +625,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 			break;
 		case EV_USE_ITEM5:		// invulnerability
-			ent->client->invulnerabilityTime = level.time + g_invultime.integer*1000;
+			ent->client->invulnerabilityTime = level.time + 10000;
 			break;
 
 		default:
@@ -720,9 +718,8 @@ void PhysgunHold(gentity_t *player) {
 	gentity_t 	*findent;
 	vec3_t		velocity;
 	
-	if (!g_allowphysgun.integer || player->client->ps.generic2 != WP_PHYSGUN){
+	if (player->client->ps.generic2 != WP_PHYSGUN)
 		return; 
-	}
 	
     if (player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
         if (!player->grabbedEntity) {
@@ -757,9 +754,8 @@ void GravitygunHold(gentity_t *player) {
 	gentity_t 	*findent;
 	vec3_t		velocity;
 
-	if (!g_allowgravitygun.integer || player->client->ps.generic2 != WP_GRAVITYGUN){
+	if (player->client->ps.generic2 != WP_GRAVITYGUN)
 		return; 
-	}
 	
     if (player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
         if (!player->grabbedEntity) {
@@ -863,81 +859,31 @@ void ClientThink_real( gentity_t *ent ) {
 	} else if ( client->ps.pm_type != PM_FREEZE ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
-	// set gravity
-	if ( !client->ps.gravity ){
-		if(client->sess.sessionTeam == TEAM_FREE){
-			client->ps.gravity = g_gravity.value*g_gravityModifier.value;
-		}
-		if(client->sess.sessionTeam == TEAM_BLUE){
-			client->ps.gravity = g_gravity.value*g_teamblue_gravityModifier.value;
-		}
-		if(client->sess.sessionTeam == TEAM_RED){
-			client->ps.gravity = g_gravity.value*g_teamred_gravityModifier.value;
-		}
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		client->ps.gravity *= g_scoutgravitymodifier.value;
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		client->ps.gravity *= g_ammoregengravitymodifier.value;
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
-		client->ps.gravity *= g_doublergravitymodifier.value;
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		client->ps.gravity *= g_guardgravitymodifier.value;
-	}
-
-
-	// set speed
-	if ( !ent->speed ){
-		if ( !ent->client->noclip ) {
-			client->ps.speed = g_speed.value;
-		} else {
-			client->ps.speed = g_speed.value*2.5;	
-		}
-		if(client->sess.sessionTeam == TEAM_BLUE){
-			client->ps.speed = g_teamblue_speed.integer;
-		}
-		if(client->sess.sessionTeam == TEAM_RED){
-			client->ps.speed = g_teamred_speed.integer;
-		}
-	}
-	else if ( ent->speed == -1 )
-		client->ps.speed = 0;
-	else
-		client->ps.speed = ent->speed;			//ent->speed holds a modified speed value that's set by a target_playerspeed
 	
+	client->ps.gravity = g_gravity.value;
+
 	if(client->vehiclenum){	//VEHICLE-SYSTEM: setup physics for all
 		if(G_FindEntityForEntityNum(client->vehiclenum)){
 			vehicle = G_FindEntityForEntityNum(client->vehiclenum);
 			client->ps.stats[STAT_VEHICLE] = vehicle->vehicle;
 			if(BG_VehicleCheckClass(vehicle->vehicle)){
 				client->ps.speed = BG_GetVehicleSettings(vehicle->vehicle, VSET_SPEED);
-				client->ps.gravity = (g_gravity.value*g_gravityModifier.value)*BG_GetVehicleSettings(vehicle->vehicle, VSET_GRAVITY);
+				client->ps.gravity *= BG_GetVehicleSettings(vehicle->vehicle, VSET_GRAVITY);
 			}
 		}
 	} else {
+		client->ps.speed = g_speed.value;
 		client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
 	}
-	
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		client->ps.speed *= g_scoutspeedfactor.value;
+
+	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
+		client->ps.speed *= 1.5;
 	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		client->ps.speed *= g_ammoregenspeedfactor.value;
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
-		client->ps.speed *= g_doublerspeedfactor.value;
-	}
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		client->ps.speed *= g_guardspeedfactor.value;
-	}
-	if ( client->ps.powerups[PW_HASTE] ) {
-		client->ps.speed *= g_speedfactor.value;
+	if (client->ps.powerups[PW_HASTE]) {
+		client->ps.speed *= 1.3;
 	}
 	if ( ent->botskill == 9 ) {
-		client->ps.speed *= g_nextbot_speed.value;
+		client->ps.speed *= 2.0;
 	}
 
 	// Let go of the hook if we aren't firing

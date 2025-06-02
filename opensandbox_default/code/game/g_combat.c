@@ -175,7 +175,7 @@ void TossClientCubes( gentity_t *self ) {
 
 	drop = LaunchItem( item, origin, velocity );
 
-	drop->nextthink = level.time + g_cubeTimeout.integer * 1000;
+	drop->nextthink = level.time + 300 * 1000;
 	drop->think = G_FreeEntity;
 	drop->spawnflags = self->client->sess.sessionTeam;
 }
@@ -188,11 +188,7 @@ TossClientPersistantPowerups
 void TossClientPersistantPowerups( gentity_t *ent ) {
 	gentity_t	*powerup;
 
-	if( !ent->client ) {
-		return;
-	}
-
-	if( !ent->client->persistantPowerup ) {
+	if( !ent->client || !ent->client->persistantPowerup ) {
 		return;
 	}
 
@@ -215,7 +211,6 @@ LookAtKiller
 */
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker ) {
 	vec3_t		dir;
-	//vec3_t		angles;
 
 	if ( attacker && attacker != self ) {
 		VectorSubtract (attacker->s.pos.trBase, self->s.pos.trBase, dir);
@@ -536,8 +531,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 CheckArmor
 ================
 */
-int CheckArmor (gentity_t *ent, int damage, int dflags)
-{
+int CheckArmor (gentity_t *ent, int damage, int dflags) {
 	gclient_t	*client;
 	int			save;
 	int			count;
@@ -555,7 +549,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 
 	// armor
 	count = client->ps.stats[STAT_ARMOR];
-	save = damage * g_armorprotect.value;
+	save = damage * 0.80;
 	if (save >= count)
 		save = count;
 
@@ -661,7 +655,7 @@ void VehiclePhys( gentity_t *self ) {
 	self->parent->client->vehiclenum = 0;
 	self->s.legsAnim = 0;
 	self->s.generic1 = 0; 		//smooth vehicles
-	self->parent->client->ps.gravity = (g_gravity.value*g_gravityModifier.value);
+	self->parent->client->ps.gravity = g_gravity.value;
 	return;
 	}
 	
@@ -959,10 +953,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage *= 0.20;
 	}
 
-    if(g_damageModifier.value > 0.01) {
-        damage *= g_damageModifier.value;
-    }
-
 	if ( damage < 1 ) {
 		damage = 1;
 	}
@@ -1085,7 +1075,7 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 G_RadiusDamage
 ============
 */
-qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
+void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
 					 gentity_t *ignore, int mod) {
 	float		points, dist;
 	gentity_t	*ent;
@@ -1094,7 +1084,6 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 	vec3_t		v;
 	vec3_t		dir;
 	int			i, e;
-	qboolean	hitClient = qfalse;
 
 	if ( radius < 1 ) {
 		radius = 1;
@@ -1134,9 +1123,6 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 		points = damage * ( 1.0 - dist / radius );
 
 		if( CanDamage (ent, origin) ) {
-			if( LogAccuracyHit( ent, attacker ) ) {
-				hitClient = qtrue;
-			}
 			VectorSubtract (ent->r.currentOrigin, origin, dir);
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
@@ -1144,6 +1130,4 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 			G_Damage (ent, NULL, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
 		}
 	}
-
-	return hitClient;
 }

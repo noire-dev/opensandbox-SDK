@@ -78,7 +78,6 @@ typedef void (*voidfunc_f)(void);
 #define AST_OSLOGO 		1000
 #define AST_MOD 		1001
 #define AST_LINK 		1002
-#define AST_ADDONBTN 	1003
 
 //
 // ui_qmenu.c
@@ -95,20 +94,17 @@ typedef void (*voidfunc_f)(void);
 
 #define MTYPE_NULL				0
 
-#define MTYPE_BUTTON			1
-#define MTYPE_PICTURE			2
-#define MTYPE_MODEL				3
-#define MTYPE_SLIDER			4	
-#define MTYPE_ACTION			5
-#define MTYPE_SPINCONTROL		6
-#define MTYPE_FIELD				7
-#define MTYPE_RADIOBUTTON		8
-#define MTYPE_BITMAP			9
-#define MTYPE_SCROLLLIST		10
-#define MTYPE_PTEXT				11
-#define MTYPE_TEXT				12
+#define MTYPE_SLIDER			1
+#define MTYPE_ACTION			2
+#define MTYPE_SPINCONTROL		3
+#define MTYPE_FIELD				4
+#define MTYPE_RADIOBUTTON		5
+#define MTYPE_BITMAP			6
+#define MTYPE_SCROLLLIST		7
+#define MTYPE_PTEXT				8
+#define MTYPE_TEXT				9
 
-#define MTYPE_MAX				13
+#define MTYPE_MAX				10
 
 #define QMF_BLINK				0x00000001
 #define QMF_SMALLFONT			0x00000002
@@ -315,14 +311,6 @@ extern void UI_DemosMenu( void );
 extern void Demos_Cache( void );
 
 //
-// ui_saves.c
-//
-extern void UI_SavesMenu( int num );
-extern void UI_SavesMenu_Save( void );
-extern void UI_SavesMenu_Load( void );
-extern void UI_SavesMenu_Cache( void );
-
-//
 // ui_mods.c
 //
 extern void UI_ModsMenu( void );
@@ -354,19 +342,6 @@ extern void SpecifyServer_Cache( void );
 
 extern void UI_ArenaServersMenu( void );
 extern void ArenaServers_Cache( void );
-
-//
-// ui_startserver.c group of files
-//
-extern void UI_StartServerMenu( void );
-extern void StartServer_Cache( void );
-extern void UI_BotSelect( char *bot );
-extern void UI_BotSelect_Cache( void );
-extern int Clamp_Random(int range);
-extern void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize );
-extern void GUI_InGame_EnabledItems(void);
-extern void GUI_StartServer_RegisterDisableCvars(qboolean init);
-extern char* GUI_DefaultIconFromGameType(int gametype);
 
 //
 // ui_video.c
@@ -539,7 +514,6 @@ typedef struct {
 	qboolean			firstdraw;
 	qboolean			onmap;
 	qboolean			postfx_status;
-	qboolean			addonsdraw;
 } uiStatic_t;
 
 extern void			UI_Init( void );
@@ -643,6 +617,8 @@ void UI_loadMapEdMenu( void );
 //
 void UI_saveMapEdMenu_Cache( void );
 void UI_saveMapEdMenu( void );
+
+extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
 
 //SourceTech UI Framework
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);

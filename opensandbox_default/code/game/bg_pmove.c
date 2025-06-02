@@ -203,7 +203,7 @@ static void PM_Friction( void ) {
 
 	// apply ground friction
 	if ( pm->waterlevel <= 1) {
-		if(mod_movetype != 1 && !pm->ps->stats[STAT_VEHICLE]){  //VEHICLE-SYSTEM: disable player phys for all
+		if(!pm->ps->stats[STAT_VEHICLE]){  //VEHICLE-SYSTEM: disable player phys for all
 			if ( pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK) ) {
 				// if getting knocked back, no friction
 				if ( ! (pm->ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
@@ -269,7 +269,7 @@ Handles user intended acceleration
 ==============
 */
 static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
-if(mod_accelerate == 1 && !pm->ps->stats[STAT_VEHICLE]) {  //VEHICLE-SYSTEM: disable player accelerate for all
+if(!pm->ps->stats[STAT_VEHICLE]) {  //VEHICLE-SYSTEM: disable player accelerate for all
 	// q2 style
 	int			i;
 	float		addspeed, accelspeed, currentspeed;
@@ -305,26 +305,7 @@ if(mod_accelerate == 1 && !pm->ps->stats[STAT_VEHICLE]) {  //VEHICLE-SYSTEM: dis
 	for (i=0 ; i<3 ; i++) {
 		pm->ps->velocity[i] += (accelspeed*wishdir[i]);
 	}
-} else {
-	// proper way (avoids strafe jump maxspeed bug), but feels bad
-	vec3_t		wishVelocity;
-	vec3_t		pushDir;
-	float		pushLen;
-	float		canPush;
-
-	VectorScale( wishdir, wishspeed, wishVelocity );
-	VectorSubtract( wishVelocity, pm->ps->velocity, pushDir );
-	pushLen = VectorNormalize( pushDir );
-
-	canPush = accel*pml.frametime*wishspeed;
-	if (canPush > pushLen) {
-		canPush = pushLen;
-	}
-
-	VectorMA( pm->ps->velocity, canPush, pushDir, pm->ps->velocity );
-}	
-
-
+}
 }
 
 
@@ -447,7 +428,7 @@ static qboolean PM_CheckJump( void ) {
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pm->ps->velocity[2] = JUMP_VELOCITY;
+	pm->ps->velocity[2] = mod_jumpheight;
 	PM_AddEvent( EV_JUMP );
 
 	if ( pm->cmd.forwardmove >= 0 ) {
@@ -663,20 +644,11 @@ PM_InvulnerabilityMove
 Only with the invulnerability powerup
 ===================
 */
-static void PM_InvulnerabilityMove( void )
-{
-	if (mod_invulmove == 1){
-	PM_WaterMove();
-	}
-	if (mod_invulmove == 2){
-	PM_NoclipMove();
-	}
-	if (mod_invulmove == 0){
+static void PM_InvulnerabilityMove( void ) {
 	pm->cmd.forwardmove = 0;
 	pm->cmd.rightmove = 0;
 	pm->cmd.upmove = 0;
 	VectorClear(pm->ps->velocity);
-}
 }
 
 /*
@@ -708,7 +680,6 @@ static void PM_FlyMove( void ) {
 		for (i=0 ; i<3 ; i++) {
 			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove + scale * pml.right[i]*pm->cmd.rightmove;
 		}
-
 		wishvel[2] += scale * pm->cmd.upmove;
 	}
 
@@ -739,11 +710,11 @@ static void PM_AirMove( void ) {
 	PM_Friction();
 
 	if(!pm->ps->stats[STAT_VEHICLE]) { //VEHICLE-SYSTEM: disable air move for all
-	smove = pm->cmd.rightmove;
-	fmove = pm->cmd.forwardmove;
+		smove = pm->cmd.rightmove;
+		fmove = pm->cmd.forwardmove;
 	} else {
-	smove = 0;	
-	fmove = 0;	
+		smove = 0;	
+		fmove = 0;	
 	}
 
 	cmd = pm->cmd;
@@ -845,9 +816,9 @@ static void PM_WalkMove( void ) {
 
 	fmove = pm->cmd.forwardmove;
 	if(!pm->ps->stats[STAT_VEHICLE]) { //VEHICLE-SYSTEM: disable strafe for all
-	smove = pm->cmd.rightmove;
+		smove = pm->cmd.rightmove;
 	} else {
-	smove = 0;	
+		smove = 0;	
 	}
 
 	cmd = pm->cmd;
@@ -870,8 +841,6 @@ static void PM_WalkMove( void ) {
 	for ( i = 0 ; i < 3 ; i++ ) {
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	}
-	// when going up or down slopes the wish velocity should Not be zero
-//	wishvel[2] = 0;
 
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
@@ -904,7 +873,7 @@ static void PM_WalkMove( void ) {
 
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_movetype == 1 ) {
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) {
 		accelerate = pm_airaccelerate;
 	} else if(BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) { //VEHICLE-SYSTEM: accelerate for 1
 		accelerate = pm_veh00001accelerate;
@@ -914,14 +883,8 @@ static void PM_WalkMove( void ) {
 
 	PM_Accelerate (wishdir, wishspeed, accelerate);
 
-	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
-	//Com_Printf("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
-
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || mod_movetype == 1 || BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) { //VEHICLE-SYSTEM: slick move for 1
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) { //VEHICLE-SYSTEM: slick move for 1
 		pm->ps->velocity[2] -= (pm->ps->gravity * pml.frametime);
-	} else {
-		// don't reset the z velocity for slopes
-//		pm->ps->velocity[2] = 0;
 	}
 
 	vel = VectorLength(pm->ps->velocity);
@@ -940,9 +903,6 @@ static void PM_WalkMove( void ) {
 	}
 
 	PM_StepSlideMove( qfalse );
-
-	//Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
-
 }
 
 
@@ -954,11 +914,8 @@ PM_DeadMove
 static void PM_DeadMove( void ) {
 	float	forward;
 
-	if ( !pml.walking ) {
+	if ( !pml.walking )
 		return;
-	}
-
-	// extra friction
 
 	forward = VectorLength (pm->ps->velocity);
 	forward -= 20;
@@ -989,7 +946,6 @@ static int PM_FootstepForSurface( void ) {
 	}
 	return EV_FOOTSTEP;
 }
-
 
 /*
 =================
@@ -1241,8 +1197,7 @@ PM_CheckDuck
 Sets mins, maxs, and pm->ps->viewheight
 ==============
 */
-static void PM_CheckDuck (void)
-{
+static void PM_CheckDuck (void) {
 	trace_t	trace;
 
 	if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
@@ -1449,7 +1404,6 @@ static void PM_WaterEvents( void ) {		// FIXME?
 	}
 }
 
-
 /*
 ===============
 PM_BeginWeaponChange
@@ -1461,16 +1415,16 @@ static void PM_BeginWeaponChange( int weapon ) {
 		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
-	item = BG_FindSwep(weapon);
-	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
-	return;
-	}
-	pm->ps->weaponstate = WEAPON_DROPPING;
-    PM_AddEvent( EV_CHANGE_WEAPON );
-    pm->ps->weaponstate = WEAPON_DROPPING;
-    pm->ps->weaponTime += 200;
-    PM_StartTorsoAnim( TORSO_DROP );
-	return;
+		item = BG_FindSwep(weapon);
+		if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
+			return;
+		}
+		pm->ps->weaponstate = WEAPON_DROPPING;
+    	PM_AddEvent( EV_CHANGE_WEAPON );
+    	pm->ps->weaponstate = WEAPON_DROPPING;
+    	pm->ps->weaponTime += 200;
+    	PM_StartTorsoAnim( TORSO_DROP );
+		return;
 	}
 }
 
@@ -1488,18 +1442,18 @@ static void PM_FinishWeaponChange( void ) {
 		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
-	item = BG_FindSwep(weapon);
-	#ifdef GAME
-	if(G_CheckSwep(pm->ps->clientNum, weapon, 1)){
-	pm->ps->generic2 = item->giTag;
-	pm->ps->weaponstate = WEAPON_RAISING;
-	}
-	#endif
-	if(pm->ps->weaponstate == WEAPON_RAISING){
-        pm->ps->weaponTime += 500;
-        PM_StartTorsoAnim( TORSO_RAISE );
-	}
-	return;
+		item = BG_FindSwep(weapon);
+#ifdef GAME
+		if(G_CheckSwep(pm->ps->clientNum, weapon, 1)){
+			pm->ps->generic2 = item->giTag;
+			pm->ps->weaponstate = WEAPON_RAISING;
+		}
+#endif
+		if(pm->ps->weaponstate == WEAPON_RAISING){
+    	    pm->ps->weaponTime += 500;
+    	    PM_StartTorsoAnim( TORSO_RAISE );
+		}
+		return;
 	}
 }
 
@@ -1637,63 +1591,61 @@ static void PM_Weapon( void ) {
 	}
 #endif
 
-if( !(pm->ps->stats[STAT_SWEPAMMO] == -1 || pm->ps->stats[STAT_SWEPAMMO] >= 9999) ){ 
-if(pm->s->generic3 > 0 ){ pm->s->generic3 -= 1; }
-if(pm->ps->stats[STAT_SWEPAMMO] >= 1 ){ pm->ps->stats[STAT_SWEPAMMO] -= 1; }
-#ifdef 	GAME
-if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2) > 0 ){ 
-PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1); 
-}
+#ifdef GAME
+	if( !(pm->ps->stats[STAT_SWEPAMMO] == -1 || pm->ps->stats[STAT_SWEPAMMO] >= 9999) ){
+		if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2) > 0 ){ 
+			PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1); 
+		}
+	}
 #endif
-}
 	// fire weapon
 	PM_AddEvent( EV_FIRE_WEAPON );
 	switch( pm->ps->generic2 ) {
 	default:
 	case WP_GAUNTLET:
-		addTime = mod_gdelay;
-		break;
-	case WP_MACHINEGUN:
-		addTime = mod_mgdelay;
-		break;
-	case WP_SHOTGUN:
-		addTime = mod_sgdelay;
-		break;
-	case WP_GRENADE_LAUNCHER:
-		addTime = mod_gldelay;
-		break;
-	case WP_ROCKET_LAUNCHER:
-		addTime = mod_rldelay;
+		addTime = 400;
 		break;
 	case WP_LIGHTNING:
-		addTime = mod_lgdelay;
+		addTime = 50;
 		break;
-	case WP_RAILGUN:
-		addTime = mod_rgdelay;
-		break;
-	case WP_PLASMAGUN:
-		addTime = mod_pgdelay;
-		break;
-	case WP_BFG:
-		addTime = mod_bfgdelay;
-		break;
-	case WP_GRAPPLING_HOOK:
+	case WP_SHOTGUN:
 		addTime = 1000;
 		break;
+	case WP_MACHINEGUN:
+		addTime = 100;
+		break;
+	case WP_GRENADE_LAUNCHER:
+		addTime = 800;
+		break;
+	case WP_ROCKET_LAUNCHER:
+		addTime = 800;
+		break;
+	case WP_PLASMAGUN:
+		addTime = 100;
+		break;
+	case WP_RAILGUN:
+		addTime = 1500;
+		break;
+	case WP_BFG:
+		addTime = 200;
+		break;
+	case WP_GRAPPLING_HOOK:
+		addTime = 400;
+		break;
 	case WP_NAILGUN:
-		addTime = mod_ngdelay;
+		addTime = 1000;
 		break;
 	case WP_PROX_LAUNCHER:
-		addTime = mod_pldelay;
+		addTime = 800;
 		break;
 	case WP_CHAINGUN:
-		addTime = mod_cgdelay;
+		addTime = 30;
 		break;
 	case WP_FLAMETHROWER:
-		addTime = mod_ftdelay;
+		addTime = 40;
 		break;
 	case WP_ANTIMATTER:
-		addTime = mod_amdelay;
+		addTime = 40;
 		break;
 	case WP_TOOLGUN:
 		addTime = 200;
@@ -1731,28 +1683,10 @@ PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1);
 	}
 
 	if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		addTime *= mod_scoutfirespeed;
-	}
-	else if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		addTime *= mod_guardfirespeed;
-	}
-	else if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		addTime *= mod_ammoregenfirespeed;
-	}
-	else if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
-		addTime *= mod_doublerfirespeed;
-	}
-	else if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		addTime *= mod_guardfirespeed;
+		addTime *= 0.65;
 	}
 	if ( pm->ps->powerups[PW_HASTE] ) {
-		addTime *= mod_hastefirespeed;
-	}
-	if ( pm->ps->persistant[PERS_TEAM] == TEAM_BLUE ) {
-		addTime *= mod_teamblue_firespeed;
-	}
-	if ( pm->ps->persistant[PERS_TEAM] == TEAM_RED ) {
-		addTime *= mod_teamred_firespeed;
+		addTime *= 0.65;
 	}
 
 	pm->ps->weaponTime += addTime;
@@ -1999,9 +1933,6 @@ void PmoveSingle (pmove_t *pmove) {
 
 	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
 		pm->tracemask &= ~CONTENTS_BODY;	// corpses can fly through bodies
-	}
-	if ( mod_noplayerclip == 1 ) {
-		pm->tracemask &= ~CONTENTS_PLAYERCLIP;	// corpses can fly through bodies
 	}
 
 	// make sure walking button is clear if they are running, to avoid

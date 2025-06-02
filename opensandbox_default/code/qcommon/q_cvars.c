@@ -34,271 +34,25 @@ typedef struct {
 
 #ifdef GAME
 vmCvar_t    g_cheats;
-vmCvar_t    g_physimpact;
-vmCvar_t    g_physimpulse;
-vmCvar_t    g_physdamage;
-vmCvar_t    g_ghspeed;
-vmCvar_t    g_ghtimeout;
-vmCvar_t    g_gdelay;
-vmCvar_t    g_gdamage;
-vmCvar_t    g_grange;
-vmCvar_t    g_gknockback;
-vmCvar_t    g_mgdelay;
-vmCvar_t    g_mgdamage;
-vmCvar_t    g_mgspread;
-vmCvar_t    g_mgexplode;
-vmCvar_t    g_mgsdamage;
-vmCvar_t    g_mgsradius;
-vmCvar_t    g_mginf;
-vmCvar_t    g_mgknockback;
-vmCvar_t    g_sgdelay;
-vmCvar_t    g_sgdamage;
-vmCvar_t    g_sgspread;
-vmCvar_t    g_sgexplode;
-vmCvar_t    g_sgsdamage;
-vmCvar_t    g_sgsradius;
-vmCvar_t    g_sgcount;
-vmCvar_t    g_sginf;
-vmCvar_t    g_sgknockback;
-vmCvar_t    g_gldelay;
-vmCvar_t    g_glspeed;
-vmCvar_t    g_gltimeout;
-vmCvar_t    g_glsradius;
-vmCvar_t    g_glsdamage;
-vmCvar_t    g_gldamage;
-vmCvar_t    g_glbounce;
-vmCvar_t    g_glgravity;
-vmCvar_t    g_glinf;
-vmCvar_t    g_glbouncemodifier;
-vmCvar_t    g_glknockback;
-vmCvar_t    g_rldelay;
-vmCvar_t    g_rlspeed;
-vmCvar_t    g_rltimeout;
-vmCvar_t    g_rlsradius;
-vmCvar_t    g_rlsdamage;
-vmCvar_t    g_rldamage;
-vmCvar_t    g_rlbounce;
-vmCvar_t    g_rlgravity;
-vmCvar_t    g_rlinf;
-vmCvar_t    g_rlbouncemodifier;
-vmCvar_t    g_rlknockback;
-vmCvar_t    g_lgdamage;
-vmCvar_t    g_lgdelay;
-vmCvar_t    g_lgrange;
-vmCvar_t    g_lgexplode;
-vmCvar_t    g_lgsdamage;
-vmCvar_t    g_lgsradius;
-vmCvar_t    g_lginf;
-vmCvar_t    g_lgknockback;
-vmCvar_t    g_rgdelay;
-vmCvar_t    g_rgdamage;
-vmCvar_t    g_rginf;
-vmCvar_t    g_rgknockback;
-vmCvar_t    g_pgdelay;
-vmCvar_t    g_pgsradius;
-vmCvar_t    g_pgspeed;
-vmCvar_t    g_pgsdamage;
-vmCvar_t    g_pgdamage;
-vmCvar_t    g_pgtimeout;
-vmCvar_t    g_pgbounce;
-vmCvar_t    g_pggravity;
-vmCvar_t    g_pginf;
-vmCvar_t    g_pgbouncemodifier;
-vmCvar_t    g_pgknockback;
-vmCvar_t    g_bfgdelay;
-vmCvar_t    g_bfgspeed;
-vmCvar_t    g_bfgtimeout;
-vmCvar_t    g_bfgsradius;
-vmCvar_t    g_bfgsdamage;
-vmCvar_t    g_bfgdamage;
-vmCvar_t    g_bfgbounce;
-vmCvar_t    g_bfggravity;
-vmCvar_t    g_bfginf;
-vmCvar_t    g_bfgbouncemodifier;
-vmCvar_t    g_bfgknockback;
-vmCvar_t    g_ngdelay;
-vmCvar_t    g_ngspeed;
-vmCvar_t    g_ngspread;
-vmCvar_t    g_ngdamage;
-vmCvar_t    g_ngtimeout;
-vmCvar_t    g_ngcount;
-vmCvar_t    g_ngbounce;
-vmCvar_t    g_nggravity;
-vmCvar_t    g_ngrandom;
-vmCvar_t    g_nginf;
-vmCvar_t    g_ngbouncemodifier;
-vmCvar_t    g_ngknockback;
-vmCvar_t    g_pldelay;
-vmCvar_t    g_plspeed;
-vmCvar_t    g_pltimeout;
-vmCvar_t    g_plsradius;
-vmCvar_t    g_plsdamage;
-vmCvar_t    g_plgravity;
-vmCvar_t    g_pldamage;
-vmCvar_t    g_plinf;
-vmCvar_t    g_plknockback;
-vmCvar_t    g_cgdelay;
-vmCvar_t    g_cgdamage;
-vmCvar_t    g_cgspread;
-vmCvar_t    g_cginf;
-vmCvar_t    g_cgknockback;
-vmCvar_t    g_ftdelay;
-vmCvar_t    g_ftsradius;
-vmCvar_t    g_ftspeed;
-vmCvar_t    g_ftsdamage;
-vmCvar_t    g_ftdamage;
-vmCvar_t    g_fttimeout;
-vmCvar_t    g_ftbounce;
-vmCvar_t    g_ftgravity;
-vmCvar_t    g_ftinf;
-vmCvar_t    g_ftbouncemodifier;
-vmCvar_t    g_ftknockback;
-vmCvar_t    g_amdelay;
-vmCvar_t    g_amsradius;
-vmCvar_t    g_amspeed;
-vmCvar_t    g_amsdamage;
-vmCvar_t    g_amdamage;
-vmCvar_t    g_amtimeout;
-vmCvar_t    g_ambounce;
-vmCvar_t    g_amgravity;
-vmCvar_t    g_aminf;
-vmCvar_t    g_ambouncemodifier;
-vmCvar_t    g_amknockback;
-vmCvar_t    g_glhoming;
-vmCvar_t    g_glguided;
-vmCvar_t    g_rlhoming;
-vmCvar_t    g_rlguided;
-vmCvar_t    g_pghoming;
-vmCvar_t    g_pgguided;
-vmCvar_t    g_bfghoming;
-vmCvar_t    g_bfgguided;
-vmCvar_t    g_nghoming;
-vmCvar_t    g_ngguided;
-vmCvar_t    g_fthoming;
-vmCvar_t    g_ftguided;
-vmCvar_t    g_amhoming;
-vmCvar_t    g_amguided;
-vmCvar_t    g_scoutspeedfactor;
-vmCvar_t    g_scoutfirespeed;
-vmCvar_t    g_scoutdamagefactor;
-vmCvar_t    g_scoutgravitymodifier;
-vmCvar_t    g_scout_infammo;
-vmCvar_t    g_scouthealthmodifier;
-vmCvar_t    g_doublerspeedfactor;
-vmCvar_t    g_doublerfirespeed;
-vmCvar_t    g_doublerdamagefactor;
-vmCvar_t    g_doublergravitymodifier;
-vmCvar_t    g_doubler_infammo;
-vmCvar_t    g_doublerhealthmodifier;
-vmCvar_t    g_guardhealthmodifier;
-vmCvar_t    g_guardspeedfactor;
-vmCvar_t    g_guardfirespeed;
-vmCvar_t    g_guarddamagefactor;
-vmCvar_t    g_guardgravitymodifier;
-vmCvar_t    g_guard_infammo;
-vmCvar_t    g_ammoregenspeedfactor;
-vmCvar_t    g_ammoregenfirespeed;
-vmCvar_t    g_ammoregen_infammo;
-vmCvar_t    g_ammoregendamagefactor;
-vmCvar_t    g_ammoregengravitymodifier;
-vmCvar_t    g_ammoregenhealthmodifier;
-vmCvar_t    g_teamblue_speed;
-vmCvar_t    g_teamblue_gravityModifier;
-vmCvar_t    g_teamblue_firespeed;
-vmCvar_t    g_teamblue_damage;
-vmCvar_t    g_teamblue_infammo;
-vmCvar_t    g_teamblue_respawnwait;
-vmCvar_t    g_teamblue_pickupitems;
-vmCvar_t    g_teamred_speed;
-vmCvar_t    g_teamred_gravityModifier;
-vmCvar_t    g_teamred_firespeed;
-vmCvar_t    g_teamred_damage;
-vmCvar_t    g_teamred_infammo;
-vmCvar_t    g_teamred_respawnwait;
-vmCvar_t    g_teamred_pickupitems;
-vmCvar_t    g_skyColorR;
-vmCvar_t    g_skyColorG;
-vmCvar_t    g_skyColorB;
-vmCvar_t    g_skyColorA;
-vmCvar_t    g_entitypack;
-vmCvar_t    g_extendedsandbox;
-vmCvar_t    g_allowprops;
-vmCvar_t    g_allownpc;
-vmCvar_t    g_allowitems;
-vmCvar_t    g_allownoclip;
-vmCvar_t    g_allowtoolgun;
-vmCvar_t    g_allowphysgun;
-vmCvar_t    g_allowgravitygun;
+vmCvar_t    g_maxClients;
 vmCvar_t    g_maxEntities;
-vmCvar_t    cl_selectedmod;
-vmCvar_t    cl_language;
-vmCvar_t    g_regenarmor;
-vmCvar_t    g_movetype;
-vmCvar_t    g_accelerate;
-vmCvar_t    g_randomItems;
-vmCvar_t    g_kamikazeinf;
-vmCvar_t    g_invulinf;
-vmCvar_t    g_medkitinf;
-vmCvar_t    g_teleporterinf;
-vmCvar_t    g_portalinf;
-vmCvar_t    g_medkitlimit;
-vmCvar_t    g_waterdamage;
-vmCvar_t    g_lavadamage;
-vmCvar_t    g_slimedamage;
-vmCvar_t    g_nextbot_speed;
-vmCvar_t    g_randomteleport;
-vmCvar_t    g_falldamagesmall;
-vmCvar_t    g_falldamagebig;
-vmCvar_t    g_noplayerclip;
-vmCvar_t    g_flagrespawn;
-vmCvar_t    g_portaltimeout;
-vmCvar_t    g_portalhealth;
-vmCvar_t    g_quadtime;
-vmCvar_t    g_bsuittime;
-vmCvar_t    g_hastetime;
-vmCvar_t    g_invistime;
-vmCvar_t    g_regentime;
-vmCvar_t    g_flighttime;
-vmCvar_t    g_invulmove;
-vmCvar_t    g_invultime;
-vmCvar_t    g_fasthealthregen;
-vmCvar_t    g_slowhealthregen;
-vmCvar_t    g_hastefirespeed;
-vmCvar_t    g_medkitmodifier;
-vmCvar_t    g_armorprotect;
-vmCvar_t    g_respawnwait;
-vmCvar_t    g_ammolimit;
-vmCvar_t    g_jumpheight;
-vmCvar_t    g_speedfactor;
-vmCvar_t    g_drowndamage;
-vmCvar_t    g_gametype;
 vmCvar_t    g_fraglimit;
 vmCvar_t    g_timelimit;
 vmCvar_t    g_capturelimit;
+vmCvar_t    g_gametype;
+vmCvar_t    g_entitypack;
+vmCvar_t    g_extendedsandbox;
+vmCvar_t    g_randomItems;
+vmCvar_t    g_jumpheight;
 vmCvar_t    g_friendlyFire;
 vmCvar_t    g_password;
-vmCvar_t    g_maxClients;
 vmCvar_t    g_dedicated;
 vmCvar_t    g_speed;
 vmCvar_t    g_gravity;
-vmCvar_t    g_gravityModifier;
-vmCvar_t    g_damageModifier;
 vmCvar_t    g_knockback;
-vmCvar_t    g_quadfactor;
-vmCvar_t    g_respawntime;
-vmCvar_t    g_restarted;
 vmCvar_t    g_blood;
-vmCvar_t    g_teamAutoJoin;
-vmCvar_t    g_teamForceBalance;
-vmCvar_t    g_obeliskHealth;
-vmCvar_t    g_obeliskRegenPeriod;
-vmCvar_t    g_obeliskRegenAmount;
-vmCvar_t    g_obeliskRespawnDelay;
-vmCvar_t    g_cubeTimeout;
 vmCvar_t    g_enableDust;
 vmCvar_t    g_enableBreath;
-vmCvar_t    g_proxMineTimeout;
-vmCvar_t    g_spawnprotect;
 vmCvar_t    g_spawn_health;
 vmCvar_t    g_spawn_armor;
 vmCvar_t    g_spawn_gauntlet;
@@ -323,308 +77,56 @@ vmCvar_t    g_spawn_invis;
 vmCvar_t    g_spawn_regen;
 vmCvar_t    g_spawn_flight;
 vmCvar_t    g_spawn_holdable;
-vmCvar_t    g_vampire;
-vmCvar_t    g_vampireMaxHealth;
-vmCvar_t    g_regen;
 vmCvar_t    sv_fps;
 
 static cvarTable_t cvarTable[] = {
-	{ &g_cheats,                    "sv_cheats",                    "",             0 },
 	{ NULL,                         "gamename",                     GAME_VERSION,   CVAR_ROM },
 	{ NULL,                         "gamedate",                     __DATE__,       CVAR_ROM },
-	{ &g_restarted,                 "g_restarted",                  "0",            CVAR_ROM },
-	{ &g_gametype,                  "g_gametype",                   "0",            CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH },
+	{ &g_cheats,                    "sv_cheats",                    "",             0 },
 	{ &g_maxClients,                "g_maxClients",                 "128",          CVAR_SERVERINFO|CVAR_ARCHIVE },
-	{ &g_physimpact,                "g_physimpact",                 "0.80",         0 },
-	{ &g_physimpulse,               "g_physimpulse",                "450",          0 },
-	{ &g_physdamage,                "g_physdamage",                 "0.60",         0 },
-	{ &g_ghspeed,                   "g_ghspeed",                    "800",          0 },
-	{ &g_ghtimeout,                 "g_ghtimeout",                  "10000",        0 },
-	{ &g_gdelay,                    "g_gdelay",                     "400",          0 },
-	{ &g_gdamage,                   "g_gdamage",                    "50",           0 },
-	{ &g_grange,                    "g_grange",                     "32",           0 },
-	{ &g_gknockback,                "g_gknockback",                 "1",            0 },
-	{ &g_mgdelay,                   "g_mgdelay",                    "100",          0 },
-	{ &g_mgdamage,                  "g_mgdamage",                   "7",            0 },
-	{ &g_mgspread,                  "g_mgspread",                   "200",          0 },
-	{ &g_mgexplode,                 "g_mgexplode",                  "0",            0 },
-	{ &g_mgsradius,                 "g_mgsradius",                  "70",           0 },
-	{ &g_mgsdamage,                 "g_mgsdamage",                  "50",           0 },
-	{ &g_mginf,                     "g_mginf",                      "0",            0 },
-	{ &g_mgknockback,               "g_mgknockback",                "1",            0 },
-	{ &g_sgdelay,                   "g_sgdelay",                    "1000",         0 },
-	{ &g_sgdamage,                  "g_sgdamage",                   "10",           0 },
-	{ &g_sgspread,                  "g_sgspread",                   "700",          0 },
-	{ &g_sgexplode,                 "g_sgexplode",                  "0",            0 },
-	{ &g_sgsradius,                 "g_sgsradius",                  "35",           0 },
-	{ &g_sgsdamage,                 "g_sgsdamage",                  "45",           0 },
-	{ &g_sgcount,                   "g_sgcount",                    "11",           0 },
-	{ &g_sginf,                     "g_sginf",                      "0",            0 },
-	{ &g_sgknockback,               "g_sgknockback",                "1",            0 },
-	{ &g_gldelay,                   "g_gldelay",                    "500",          0 },
-	{ &g_glspeed,                   "g_glspeed",                    "700",          0 },
-	{ &g_gltimeout,                 "g_gltimeout",                  "2500",         0 },
-	{ &g_glsradius,                 "g_glsradius",                  "120",          0 },
-	{ &g_glsdamage,                 "g_glsdamage",                  "100",          0 },
-	{ &g_gldamage,                  "g_gldamage",                   "100",          0 },
-	{ &g_glbounce,                  "g_glbounce",                   "1",            0 },
-	{ &g_glgravity,                 "g_glgravity",                  "1",            0 },
-	{ &g_glinf,                     "g_glinf",                      "0",            0 },
-	{ &g_glbouncemodifier,          "g_glbouncemodifier",           "0.65",         0 },
-	{ &g_glknockback,               "g_glknockback",                "1",            0 },
-	{ &g_rldelay,                   "g_rldelay",                    "800",          0 },
-	{ &g_rlspeed,                   "g_rlspeed",                    "900",          0 },
-	{ &g_rltimeout,                 "g_rltimeout",                  "15000",        0 },
-	{ &g_rlsradius,                 "g_rlsradius",                  "120",          0 },
-	{ &g_rlsdamage,                 "g_rlsdamage",                  "100",          0 },
-	{ &g_rldamage,                  "g_rldamage",                   "100",          0 },
-	{ &g_rlbounce,                  "g_rlbounce",                   "0",            0 },
-	{ &g_rlgravity,                 "g_rlgravity",                  "0",            0 },
-	{ &g_rlinf,                     "g_rlinf",                      "0",            0 },
-	{ &g_rlbouncemodifier,          "g_rlbouncemodifier",           "0.65",         0 },
-	{ &g_rlknockback,               "g_rlknockback",                "1",            0 },
-	{ &g_lgdelay,                   "g_lgdelay",                    "50",           0 },
-	{ &g_lgdamage,                  "g_lgdamage",                   "8",            0 },
-	{ &g_lgrange,                   "g_lgrange",                    "768",          0 },
-	{ &g_lgexplode,                 "g_lgexplode",                  "0",            0 },
-	{ &g_lgsradius,                 "g_lgsradius",                  "75",           0 },
-	{ &g_lgsdamage,                 "g_lgsdamage",                  "70",           0 },
-	{ &g_lginf,                     "g_lginf",                      "0",            0 },
-	{ &g_lgknockback,               "g_lgknockback",                "1",            0 },
-	{ &g_rgdelay,                   "g_rgdelay",                    "1500",         0 },
-	{ &g_rgdamage,                  "g_rgdamage",                   "100",          0 },
-	{ &g_rginf,                     "g_rginf",                      "0",            0 },
-	{ &g_rgknockback,               "g_rgknockback",                "1",            0 },
-	{ &g_pgsradius,                 "g_pgsradius",                  "20",           0 },
-	{ &g_pgspeed,                   "g_pgspeed",                    "2000",         0 },
-	{ &g_pgsdamage,                 "g_pgsdamage",                  "15",           0 },
-	{ &g_pgdamage,                  "g_pgdamage",                   "20",           0 },
-	{ &g_pgtimeout,                 "g_pgtimeout",                  "10000",        0 },
-	{ &g_pgdelay,                   "g_pgdelay",                    "100",          0 },
-	{ &g_pgbounce,                  "g_pgbounce",                   "0",            0 },
-	{ &g_pggravity,                 "g_pggravity",                  "0",            0 },
-	{ &g_pginf,                     "g_pginf",                      "0",            0 },
-	{ &g_pgbouncemodifier,          "g_pgbouncemodifier",           "0.65",         0 },
-	{ &g_pgknockback,               "g_pgknockback",                "1",            0 },
-	{ &g_bfgsradius,                "g_bfgsradius",                 "120",          0 },
-	{ &g_bfgspeed,                  "g_bfgspeed",                   "2000",         0 },
-	{ &g_bfgsdamage,                "g_bfgsdamage",                 "100",          0 },
-	{ &g_bfgdamage,                 "g_bfgdamage",                  "100",          0 },
-	{ &g_bfgtimeout,                "g_bfgtimeout",                 "10000",        0 },
-	{ &g_bfgdelay,                  "g_bfgdelay",                   "200",          0 },
-	{ &g_bfgbounce,                 "g_bfgbounce",                  "0",            0 },
-	{ &g_bfggravity,                "g_bfggravity",                 "0",            0 },
-	{ &g_bfginf,                    "g_bfginf",                     "0",            0 },
-	{ &g_bfgbouncemodifier,         "g_bfgbouncemodifier",          "0.65",         0 },
-	{ &g_bfgknockback,              "g_bfgknockback",               "1",            0 },
-	{ &g_ngdelay,                   "g_ngdelay",                    "1000",         0 },
-	{ &g_ngspeed,                   "g_ngspeed",                    "555",          0 },
-	{ &g_ngspread,                  "g_ngspread",                   "500",          0 },
-	{ &g_ngdamage,                  "g_ngdamage",                   "20",           0 },
-	{ &g_ngtimeout,                 "g_ngtimeout",                  "10000",        0 },
-	{ &g_ngcount,                   "g_ngcount",                    "15",           0 },
-	{ &g_ngbounce,                  "g_ngbounce",                   "0",            0 },
-	{ &g_nggravity,                 "g_nggravity",                  "0",            0 },
-	{ &g_ngrandom,                  "g_ngrandom",                   "1800",         0 },
-	{ &g_nginf,                     "g_nginf",                      "0",            0 },
-	{ &g_ngbouncemodifier,          "g_ngbouncemodifier",           "0.65",         0 },
-	{ &g_ngknockback,               "g_ngknockback",                "1",            0 },
-	{ &g_pldelay,                   "g_pldelay",                    "800",          0 },
-	{ &g_plspeed,                   "g_plspeed",                    "700",          0 },
-	{ &g_pltimeout,                 "g_pltimeout",                  "3000",         0 },
-	{ &g_plsradius,                 "g_plsradius",                  "150",          0 },
-	{ &g_plsdamage,                 "g_plsdamage",                  "100",          0 },
-	{ &g_plgravity,                 "g_plgravity",                  "1",            0 },
-	{ &g_pldamage,                  "g_pldamage",                   "0",            0 },
-	{ &g_plinf,                     "g_plinf",                      "0",            0 },
-	{ &g_plknockback,               "g_plknockback",                "1",            0 },
-	{ &g_cgdelay,                   "g_cgdelay",                    "30",           0 },
-	{ &g_cgdamage,                  "g_cgdamage",                   "7",            0 },
-	{ &g_cgspread,                  "g_cgspread",                   "600",          0 },
-	{ &g_cginf,                     "g_cginf",                      "0",            0 },
-	{ &g_cgknockback,               "g_cgknockback",                "1",            0 },
-	{ &g_ftsradius,                 "g_ftsradius",                  "20",           0 },
-	{ &g_ftspeed,                   "g_ftspeed",                    "600",          0 },
-	{ &g_ftsdamage,                 "g_ftsdamage",                  "15",           0 },
-	{ &g_ftdamage,                  "g_ftdamage",                   "20",           0 },
-	{ &g_fttimeout,                 "g_fttimeout",                  "1500",         0 },
-	{ &g_ftdelay,                   "g_ftdelay",                    "40",           0 },
-	{ &g_ftbounce,                  "g_ftbounce",                   "1",            0 },
-	{ &g_ftgravity,                 "g_ftgravity",                  "0",            0 },
-	{ &g_ftinf,                     "g_ftinf",                      "0",            0 },
-	{ &g_ftbouncemodifier,          "g_ftbouncemodifier",           "0.65",         0 },
-	{ &g_ftknockback,               "g_ftknockback",                "1",            0 },
-	{ &g_amsradius,                 "g_amsradius",                  "0",            0 },
-	{ &g_amspeed,                   "g_amspeed",                    "600",          0 },
-	{ &g_amsdamage,                 "g_amsdamage",                  "0",            0 },
-	{ &g_amdamage,                  "g_amdamage",                   "6",            0 },
-	{ &g_amtimeout,                 "g_amtimeout",                  "1000",         0 },
-	{ &g_amdelay,                   "g_amdelay",                    "40",           0 },
-	{ &g_ambounce,                  "g_ambounce",                   "1",            0 },
-	{ &g_amgravity,                 "g_amgravity",                  "1",            0 },
-	{ &g_aminf,                     "g_aminf",                      "0",            0 },
-	{ &g_ambouncemodifier,          "g_ambouncemodifier",           "0.65",         0 },
-	{ &g_amknockback,               "g_amknockback",                "1",            0 },
-	{ &g_glhoming,                  "g_glhoming",                   "0",            0 },
-	{ &g_glguided,                  "g_glguided",                   "0",            0 },
-	{ &g_rlhoming,                  "g_rlhoming",                   "0",            0 },
-	{ &g_rlguided,                  "g_rlguided",                   "0",            0 },
-	{ &g_pghoming,                  "g_pghoming",                   "0",            0 },
-	{ &g_pgguided,                  "g_pgguided",                   "0",            0 },
-	{ &g_bfghoming,                 "g_bfghoming",                  "0",            0 },
-	{ &g_bfgguided,                 "g_bfgguided",                  "0",            0 },
-	{ &g_nghoming,                  "g_nghoming",                   "0",            0 },
-	{ &g_ngguided,                  "g_ngguided",                   "0",            0 },
-	{ &g_fthoming,                  "g_fthoming",                   "0",            0 },
-	{ &g_ftguided,                  "g_ftguided",                   "0",            0 },
-	{ &g_amhoming,                  "g_amhoming",                   "0",            0 },
-	{ &g_amguided,                  "g_amguided",                   "0",            0 },
-	{ &g_scoutspeedfactor,          "g_scoutspeedfactor",           "1.5",          0 },
-	{ &g_scoutfirespeed,            "g_scoutfirespeed",             "0.60",         0 },
-	{ &g_scoutdamagefactor,         "g_scoutdamagefactor",          "1",            0 },
-	{ &g_scoutgravitymodifier,      "g_scoutgravitymodifier",       "1",            0 },
-	{ &g_scout_infammo,             "g_scout_infammo",              "0",            0 },
-	{ &g_scouthealthmodifier,       "g_scouthealthmodifier",        "1",            0 },
-	{ &g_doublerfirespeed,          "g_doublerfirespeed",           "1",            0 },
-	{ &g_doublerdamagefactor,       "g_doublerdamagefactor",        "2.5",          0 },
-	{ &g_doublerspeedfactor,        "g_doublerspeedfactor",         "1",            0 },
-	{ &g_doublergravitymodifier,    "g_doublergravitymodifier",     "1",            0 },
-	{ &g_doubler_infammo,           "g_doubler_infammo",            "0",            0 },
-	{ &g_doublerhealthmodifier,     "g_doublerhealthmodifier",      "1",            0 },
-	{ &g_guardhealthmodifier,       "g_guardhealthmodifier",        "1.5",          0 },
-	{ &g_guardfirespeed,            "g_guardfirespeed",             "1",            0 },
-	{ &g_guarddamagefactor,         "g_guarddamagefactor",          "1",            0 },
-	{ &g_guardspeedfactor,          "g_guardspeedfactor",           "1",            0 },
-	{ &g_guardgravitymodifier,      "g_guardgravitymodifier",       "1",            0 },
-	{ &g_guard_infammo,             "g_guard_infammo",              "0",            0 },
-	{ &g_ammoregenfirespeed,        "g_ammoregenfirespeed",         "0.65",         0 },
-	{ &g_ammoregen_infammo,         "g_ammoregen_infammo",          "0",            0 },
-	{ &g_ammoregendamagefactor,     "g_ammoregendamagefactor",      "1",            0 },
-	{ &g_ammoregenspeedfactor,      "g_ammoregenspeedfactor",       "1",            0 },
-	{ &g_ammoregengravitymodifier,  "g_ammoregengravitymodifier",   "1",            0 },
-	{ &g_ammoregenhealthmodifier,   "g_ammoregenhealthmodifier",    "1",            0 },
-	{ &g_teamred_speed,             "g_teamred_speed",              "320",          0 },
-	{ &g_teamred_gravityModifier,   "g_teamred_gravityModifier",    "1",            0 },
-	{ &g_teamred_firespeed,         "g_teamred_firespeed",          "1",            0 },
-	{ &g_teamred_damage,            "g_teamred_damage",             "1",            0 },
-	{ &g_teamred_infammo,           "g_teamred_infammo",            "0",            0 },
-	{ &g_teamred_respawnwait,       "g_teamred_respawnwait",        "3000",         0 },
-	{ &g_teamred_pickupitems,       "g_teamred_pickupitems",        "1",            0 },
-	{ &g_teamblue_speed,            "g_teamblue_speed",             "320",          0 },
-	{ &g_teamblue_gravityModifier,  "g_teamblue_gravityModifier",   "1",            0 },
-	{ &g_teamblue_firespeed,        "g_teamblue_firespeed",         "1",            0 },
-	{ &g_teamblue_damage,           "g_teamblue_damage",            "1",            0 },
-	{ &g_teamblue_infammo,          "g_teamblue_infammo",           "0",            0 },
-	{ &g_teamblue_respawnwait,      "g_teamblue_respawnwait",       "3000",         0 },
-	{ &g_teamblue_pickupitems,      "g_teamblue_pickupitems",       "1",            0 },
-	{ &g_entitypack,                "g_entitypack",                 "default",      0 },
-	{ &g_extendedsandbox,           "g_extendedsandbox",            "0",            0 },
-	{ &g_skyColorR,                 "g_skyColorR",                  "255",          0 },
-	{ &g_skyColorG,                 "g_skyColorG",                  "255",          0 },
-	{ &g_skyColorB,                 "g_skyColorB",                  "255",          0 },
-	{ &g_skyColorA,                 "g_skyColorA",                  "0",            0 },
-	{ &g_allowprops,                "g_allowprops",                 "1",            0 },
-	{ &g_allownpc,                  "g_allownpc",                   "1",            0 },
-	{ &g_allowitems,                "g_allowitems",                 "1",            0 },
-	{ &g_allownoclip,               "g_allownoclip",                "1",            0 },
-	{ &g_allowtoolgun,              "g_allowtoolgun",               "1",            0 },
-	{ &g_allowphysgun,              "g_allowphysgun",               "1",            0 },
-	{ &g_allowgravitygun,           "g_allowgravitygun",            "1",            0 },
-	{ &cl_selectedmod,              "cl_selectedmod",               "default",      CVAR_ARCHIVE },
-	{ &cl_language,                 "cl_language",                  "0",            CVAR_ARCHIVE },
-	{ &g_maxEntities,               "g_maxEntities",                "1024",         0 },
-	{ &g_regenarmor,                "g_regenarmor",                 "0",            0 },
-	{ &g_movetype,                  "g_movetype",                   "0",            0 },
-	{ &g_accelerate,                "g_accelerate",                 "1",            0 },
-	{ &g_randomItems,               "g_randomItems",                "0",            0 },
-	{ &g_invulinf,                  "g_invulinf",                   "0",            0 },
-	{ &g_kamikazeinf,               "g_kamikazeinf",                "0",            0 },
-	{ &g_portalinf,                 "g_portalinf",                  "0",            0 },
-	{ &g_teleporterinf,             "g_teleporterinf",              "0",            0 },
-	{ &g_medkitinf,                 "g_medkitinf",                  "0",            0 },
-	{ &g_medkitlimit,               "g_medkitlimit",                "200",          0 },
-	{ &g_waterdamage,               "g_waterdamage",                "0",            0 },
-	{ &g_lavadamage,                "g_lavadamage",                 "30",           0 },
-	{ &g_slimedamage,               "g_slimedamage",                "10",           0 },
-	{ &g_nextbot_speed,             "g_nextbot_speed",              "2.00",         0 },
-	{ &g_randomteleport,            "g_randomteleport",             "0",            0 },
-	{ &g_falldamagesmall,           "g_falldamagesmall",            "5",            0 },
-	{ &g_falldamagebig,             "g_falldamagebig",              "10",           0 },
-	{ &g_noplayerclip,              "g_noplayerclip",               "0",            0 },
-	{ &g_flagrespawn,               "g_flagrespawn",                "-1",           0 },
-	{ &g_portaltimeout,             "g_portaltimeout",              "120",          0 },
-	{ &g_portalhealth,              "g_portalhealth",               "200",          0 },
-	{ &g_quadtime,                  "g_quadtime",                   "30",           0 },
-	{ &g_bsuittime,                 "g_bsuittime",                  "30",           0 },
-	{ &g_hastetime,                 "g_hastetime",                  "30",           0 },
-	{ &g_invistime,                 "g_invistime",                  "30",           0 },
-	{ &g_regentime,                 "g_regentime",                  "30",           0 },
-	{ &g_flighttime,                "g_flighttime",                 "60",           0 },
-	{ &g_invulmove,                 "g_invulmove",                  "0",            0 },
-	{ &g_invultime,                 "g_invultime",                  "10",           0 },
-	{ &g_fasthealthregen,           "g_fasthealthregen",            "15",           0 },
-	{ &g_slowhealthregen,           "g_slowhealthregen",            "5",            0 },
-	{ &g_hastefirespeed,            "g_hastefirespeed",             "0.65",         0 },
-	{ &g_medkitmodifier,            "g_medkitmodifier",             "100",          0 },
-	{ &g_armorprotect,              "g_armorprotect",               "0.66",         0 },
-	{ &g_respawnwait,               "g_respawnwait",                "3000",         0 },
-	{ &g_jumpheight,                "g_jumpheight",                 "270",          0 },
-	{ &g_speedfactor,               "g_speedfactor",                "1.3",          0 },
-	{ &g_drowndamage,               "g_drowndamage",                "1",            0 },
-	{ &g_ammolimit,                 "g_ammolimit",                  "200",          0 },
+	{ &g_maxEntities,               "g_maxEntities",                "1024",         CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_fraglimit,                 "fraglimit",                    "20",           CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_timelimit,                 "timelimit",                    "0",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_capturelimit,              "capturelimit",                 "8",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
+	{ &g_gametype,                  "g_gametype",                   "0",            CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH },
+	{ &g_entitypack,                "g_entitypack",                 "default",      0 },
+	{ &g_extendedsandbox,           "g_extendedsandbox",            "0",            0 },
+	{ &g_randomItems,               "g_randomItems",                "0",            0 },
+	{ &g_jumpheight,                "g_jumpheight",                 "270",          0 },
 	{ &g_friendlyFire,              "g_friendlyFire",               "0",            CVAR_ARCHIVE },
-	{ &g_teamAutoJoin,              "g_teamAutoJoin",               "0",            CVAR_ARCHIVE },
-	{ &g_teamForceBalance,          "g_teamForceBalance",           "0",            CVAR_ARCHIVE },
 	{ &g_password,                  "g_password",                   "",             CVAR_USERINFO },
 	{ &g_dedicated,                 "dedicated",                    "0",            0 },
 	{ &g_speed,                     "g_speed",                      "320",          0 },
 	{ &g_gravity,                   "g_gravity",                    "800",          0 },
-	{ &g_gravityModifier,           "g_gravityModifier",            "1",            0 },
-    { &g_damageModifier,            "g_damageModifier",             "1",            0 },
 	{ &g_knockback,                 "g_knockback",                  "1000",         0 },
-	{ &g_quadfactor,                "g_quadfactor",                 "3",            0 },
-    { &g_respawntime,               "g_respawntime",                "0",            CVAR_ARCHIVE },
 	{ &g_blood,                     "com_blood",                    "1",            0 },
-	{ &g_obeliskHealth,             "g_obeliskHealth",              "2500",         0 },
-	{ &g_obeliskRegenPeriod,        "g_obeliskRegenPeriod",         "1",            0 },
-	{ &g_obeliskRegenAmount,        "g_obeliskRegenAmount",         "15",           0 },
-	{ &g_obeliskRespawnDelay,       "g_obeliskRespawnDelay",        "10",           CVAR_SERVERINFO },
-	{ &g_cubeTimeout,               "g_cubeTimeout",                "30",           0 },
 	{ &g_enableDust,                "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &g_enableBreath,              "g_enableBreath",               "0",            CVAR_SERVERINFO },
-	{ &g_proxMineTimeout,           "g_proxMineTimeout",            "180000",       0 },
-	{ &sv_fps,                      "sv_fps",                       "60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE },
-    { &g_spawnprotect,              "g_spawnprotect",               "500",          CVAR_ARCHIVE|CVAR_NORESTART },
-	{ &g_spawn_health,           	"g_spawn_health",            "100",          CVAR_NORESTART },
-	{ &g_spawn_armor,            	"g_spawn_armor",             "0",            CVAR_NORESTART },
-	{ &g_spawn_gauntlet,         	"g_spawn_gauntlet",          "1",            CVAR_NORESTART },
-	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        "500",          CVAR_NORESTART },
-	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           "0",            CVAR_NORESTART },
-	{ &g_spawn_grenade,          	"g_spawn_grenade",           "0",            CVAR_NORESTART },
-	{ &g_spawn_rocket,           	"g_spawn_rocket",            "0",            CVAR_NORESTART },
-	{ &g_spawn_lightning,        	"g_spawn_lightning",         "0",            CVAR_NORESTART },
-	{ &g_spawn_railgun,          	"g_spawn_railgun",           "0",            CVAR_NORESTART },
-	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         "0",            CVAR_NORESTART },
-	{ &g_spawn_bfg,              	"g_spawn_bfg",               "0",            CVAR_NORESTART },
-    { &g_spawn_grapple,          	"g_spawn_grapple",           "0",            CVAR_NORESTART },
-	{ &g_spawn_nail,             	"g_spawn_nail",              "0",            CVAR_NORESTART },
-	{ &g_spawn_mine,             	"g_spawn_mine",              "0",            CVAR_NORESTART },
-	{ &g_spawn_chain,            	"g_spawn_chain",             "0",            CVAR_NORESTART },
-	{ &g_spawn_flame,            	"g_spawn_flame",             "0",            CVAR_NORESTART },
-	{ &g_spawn_antimatter,       	"g_spawn_antimatter",        "0",            CVAR_NORESTART },
-	{ &g_spawn_quad,             	"g_spawn_quad",              "0",            CVAR_NORESTART },
-	{ &g_spawn_haste,            	"g_spawn_haste",             "0",            CVAR_NORESTART },
-	{ &g_spawn_bsuit,            	"g_spawn_bsuit",             "0",            CVAR_NORESTART },
-	{ &g_spawn_invis,            	"g_spawn_invis",             "0",            CVAR_NORESTART },
-	{ &g_spawn_regen,            	"g_spawn_regen",             "0",            CVAR_NORESTART },
-	{ &g_spawn_flight,           	"g_spawn_flight",            "0",            CVAR_NORESTART },
-	{ &g_spawn_holdable,         	"g_spawn_holdable",          "0",            CVAR_NORESTART },
-	{ &g_vampire,                   "g_vampire",                    "0.0",          CVAR_NORESTART },
-	{ &g_regen,                     "g_regen",                      "0",            CVAR_NORESTART },
-	{ &g_vampireMaxHealth,          "g_vampire_max_health",         "500",          CVAR_NORESTART }
+	{ &g_spawn_health,           	"g_spawn_health",            	"100",          CVAR_NORESTART },
+	{ &g_spawn_armor,            	"g_spawn_armor",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_gauntlet,         	"g_spawn_gauntlet",          	"1",            CVAR_NORESTART },
+	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        	"500",          CVAR_NORESTART },
+	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           	"0",            CVAR_NORESTART },
+	{ &g_spawn_grenade,          	"g_spawn_grenade",           	"0",            CVAR_NORESTART },
+	{ &g_spawn_rocket,           	"g_spawn_rocket",            	"0",            CVAR_NORESTART },
+	{ &g_spawn_lightning,        	"g_spawn_lightning",         	"0",            CVAR_NORESTART },
+	{ &g_spawn_railgun,          	"g_spawn_railgun",           	"0",            CVAR_NORESTART },
+	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         	"0",            CVAR_NORESTART },
+	{ &g_spawn_bfg,              	"g_spawn_bfg",               	"0",            CVAR_NORESTART },
+    { &g_spawn_grapple,          	"g_spawn_grapple",           	"0",            CVAR_NORESTART },
+	{ &g_spawn_nail,             	"g_spawn_nail",              	"0",            CVAR_NORESTART },
+	{ &g_spawn_mine,             	"g_spawn_mine",              	"0",            CVAR_NORESTART },
+	{ &g_spawn_chain,            	"g_spawn_chain",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_flame,            	"g_spawn_flame",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_antimatter,       	"g_spawn_antimatter",        	"0",            CVAR_NORESTART },
+	{ &g_spawn_quad,             	"g_spawn_quad",              	"0",            CVAR_NORESTART },
+	{ &g_spawn_haste,            	"g_spawn_haste",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_bsuit,            	"g_spawn_bsuit",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_invis,            	"g_spawn_invis",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_regen,            	"g_spawn_regen",             	"0",            CVAR_NORESTART },
+	{ &g_spawn_flight,           	"g_spawn_flight",            	"0",            CVAR_NORESTART },
+	{ &g_spawn_holdable,         	"g_spawn_holdable",          	"0",            CVAR_NORESTART },
+	{ &sv_fps,                      "sv_fps",                    	"60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE }
 };
 #endif
 
@@ -706,7 +208,6 @@ vmCvar_t    cg_cameraEyes;
 vmCvar_t    cg_cameraEyes_Fwd;
 vmCvar_t    cg_cameraEyes_Up;
 vmCvar_t    cg_noProjectileTrail;
-vmCvar_t    cg_obeliskRespawnDelay;
 vmCvar_t    cg_enableDust;
 vmCvar_t    cg_enableBreath;
 vmCvar_t    sv_fps;
@@ -794,7 +295,6 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_blood,                        "com_blood",                    "1",            CVAR_ARCHIVE },
 	{ &cg_enableDust,                   "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &cg_enableBreath,                 "g_enableBreath",               "0",            CVAR_SERVERINFO },
-	{ &cg_obeliskRespawnDelay,          "g_obeliskRespawnDelay",        "10",           0 },
 	{ &cg_noProjectileTrail,            "cg_noProjectileTrail",         "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes,                   "cg_cameraEyes",                "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes_Fwd,               "cg_cameraEyes_Fwd",            "0",            CVAR_ARCHIVE },
@@ -873,7 +373,6 @@ vmCvar_t    sbt_color3_3;
 vmCvar_t    sbt_wallpaper;
 vmCvar_t    ui_3dmap;
 vmCvar_t    ui_effectslevel;
-vmCvar_t    ui_singlemode;
 vmCvar_t    cl_selectedmod;
 vmCvar_t    cl_language;
 vmCvar_t    ui_loaded;
@@ -1001,7 +500,6 @@ static cvarTable_t cvarTable[] = {
 	{ &sbt_wallpaper,                   "sbt_wallpaper",                "trans", 	    CVAR_ARCHIVE },
 	{ &ui_3dmap,                        "ui_3dmap",                     "",             CVAR_ARCHIVE },
 	{ &ui_effectslevel,                 "ui_effectslevel",              "0",            CVAR_ARCHIVE },
-	{ &ui_singlemode,                   "ui_singlemode",                "0",            CVAR_ARCHIVE },
 	{ &ui_loaded,                       "ui_loaded",                    "0",            0 },
 	{ &cl_selectedmod,                  "cl_selectedmod",               "default",      CVAR_ARCHIVE },
 	{ &cl_language,                     "cl_language",                  "0",            CVAR_ARCHIVE },

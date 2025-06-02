@@ -803,16 +803,12 @@ typedef struct {
 	qhandle_t   healthModel;          
 	qhandle_t   healthSphereModel;    
 	qhandle_t   healthIcon;          
-	qhandle_t   weaponSelectShader;   
-	qhandle_t   medalAccuracy;        
-	qhandle_t   medalThaws;           
-	qhandle_t   medalDeath;          
-	qhandle_t   medalSpawn;           
+	qhandle_t   weaponSelectShader;           
 
-        // player overlays
-        qhandle_t       neutralOverlay;
-        qhandle_t       redOverlay;
-        qhandle_t       blueOverlay;
+    // player overlays
+    qhandle_t       neutralOverlay;
+    qhandle_t       redOverlay;
+    qhandle_t       blueOverlay;
 
 	// weapon effect models
 	qhandle_t	bulletFlashModel;
@@ -1048,49 +1044,8 @@ extern	weaponInfo_t	cg_weapons[WEAPONS_NUM];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
 
-extern	int		mod_mgspread;
-extern	int		mod_cgspread;
-extern	int		mod_lgrange;
-extern	int		mod_sgcount;
-extern	int		mod_sgspread;
 extern	int		mod_jumpheight;
-extern 	int		mod_gdelay;
-extern 	int		mod_mgdelay;
-extern 	int		mod_sgdelay;
-extern 	int		mod_gldelay;
-extern 	int		mod_rldelay;
-extern 	int		mod_lgdelay;
-extern 	int		mod_pgdelay;
-extern 	int		mod_rgdelay;
-extern 	int		mod_bfgdelay;
-extern 	int		mod_ngdelay;
-extern 	int		mod_pldelay;
-extern 	int		mod_cgdelay;
-extern 	int		mod_ftdelay;
-extern	int		mod_amdelay;
-extern	float 	mod_hastefirespeed;
-extern	float 	mod_ammoregenfirespeed;
-extern	float 	mod_scoutfirespeed;
-extern	float		mod_guardfirespeed;
-extern	float		mod_doublerfirespeed;
-extern	int		mod_noplayerclip;
-extern	int		mod_ammolimit;
-extern	int		mod_invulmove;
-extern	float		mod_teamred_firespeed;
-extern	float		mod_teamblue_firespeed;
-extern	int 	mod_medkitlimit;
-extern	int 	mod_medkitinf;
-extern	int 	mod_teleporterinf;
-extern	int 	mod_portalinf;
-extern	int 	mod_kamikazeinf;
-extern	int 	mod_invulinf;
-extern	int 	mod_accelerate;
-extern	int 	mod_movetype;
 extern	int 	mod_gravity;
-extern	int 	mod_skyColorR;
-extern	int 	mod_skyColorG;
-extern	int 	mod_skyColorB;
-extern	int 	mod_skyColorA;
 
 void CG_PredictWeaponEffects( centity_t *cent );
 

@@ -75,7 +75,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 			Phys_Enable(hit);
 			}
 			VectorCopy(ent->client->ps.velocity, impactVector);
-			VectorScale(impactVector, VEHICLE_PROP_IMPACT, impactVector);
+			VectorScale(impactVector, PHYS_PROP_IMPACT, impactVector);
 			impactVector[2] = impactForce*0.15;
 			if (!hit->client){
 			hit->lastPlayer = ent;		//for save attacker
@@ -659,7 +659,7 @@ void Phys_SelectPhysModel(gentity_t *ent) {
 
 	float impactForceFixed;
 
-	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer*g_gravityModifier.value * g_gravity.integer*g_gravityModifier.value);
+	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer * g_gravity.integer);
 
 	impactForceFixed *= ent->s.angles2[A2_MASS];
 

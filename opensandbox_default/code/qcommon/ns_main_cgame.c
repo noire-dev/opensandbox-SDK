@@ -10,7 +10,6 @@ const char *function_list[MAX_FUNCS] = {
     "getVariable",
     "setVariable",
     "sendVariable",
-    "notify",
     NULL
 };
 
@@ -26,7 +25,6 @@ const char *function_arg_types[MAX_FUNCS][MAX_ARGS] = {
     {"char"},                                       // getVariable
     {"char", "char", "char"},                       // setVariable
     {"char", "char"},                               // sendVariable
-    {"char", "int"},                                // notify
     {NULL}                                          // NULL
 };
 
@@ -124,33 +122,28 @@ void callfunc(Variable *var, const char *name, const char *operation, const char
     else if (strcmp(name, "sendVariable") == 0 && argCount >= 2) {   
         Variable *sendVar = find_variable(ns_args[1].c); 
 
-    if(!strcmp(ns_args[0].c, "server")){
-        if(sendVar->type == TYPE_CHAR){
-        trap_SendConsoleCommand(va("ns_sendvariable %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+        if(!strcmp(ns_args[0].c, "server")){
+            if(sendVar->type == TYPE_CHAR){
+            trap_SendConsoleCommand(va("ns_sendvariable %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+            }
+            if(sendVar->type == TYPE_INT){
+            trap_SendConsoleCommand(va("ns_sendvariable %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+            }
+            if(sendVar->type == TYPE_FLOAT){
+            trap_SendConsoleCommand(va("ns_sendvariable %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
+            }
         }
-        if(sendVar->type == TYPE_INT){
-        trap_SendConsoleCommand(va("ns_sendvariable %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+        if(!strcmp(ns_args[0].c, "ui")){
+            if(sendVar->type == TYPE_CHAR){
+            trap_SendConsoleCommand(va("ns_sendvariable_ui %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
+            }
+            if(sendVar->type == TYPE_INT){
+            trap_SendConsoleCommand(va("ns_sendvariable_ui %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
+            }
+            if(sendVar->type == TYPE_FLOAT){
+            trap_SendConsoleCommand(va("ns_sendvariable_ui %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
+            }
         }
-        if(sendVar->type == TYPE_FLOAT){
-        trap_SendConsoleCommand(va("ns_sendvariable %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
-        }
-    }
-    if(!strcmp(ns_args[0].c, "ui")){
-        if(sendVar->type == TYPE_CHAR){
-        trap_SendConsoleCommand(va("ns_sendvariable_ui %s %s %i", ns_args[1].c, sendVar->value.c, TYPE_CHAR));
-        }
-        if(sendVar->type == TYPE_INT){
-        trap_SendConsoleCommand(va("ns_sendvariable_ui %s %i %i", ns_args[1].c, sendVar->value.i, TYPE_INT));
-        }
-        if(sendVar->type == TYPE_FLOAT){
-        trap_SendConsoleCommand(va("ns_sendvariable_ui %s %f %i", ns_args[1].c, sendVar->value.f, TYPE_FLOAT));
-        }
-    }
-
-    }
-
-    else if (strcmp(name, "notify") == 0 && argCount >= 2) {
-        CG_AddNotify(ns_args[0].c, ns_args[1].i);
     }
 
     if (hasReturnValue) {

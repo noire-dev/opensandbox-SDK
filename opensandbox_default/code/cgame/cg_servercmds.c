@@ -67,49 +67,8 @@ static void CG_ParseRespawnTime( void ) {
 }
 
 static void CG_ParseGameCvars(void) {
-	mod_sgspread     		= atoi(CG_Argv(1));
-	mod_sgcount     		= atoi(CG_Argv(2));
-	mod_lgrange    		 	= atoi(CG_Argv(3));
-	mod_mgspread     		= atoi(CG_Argv(4));
-	mod_cgspread     		= atoi(CG_Argv(5));
-	mod_jumpheight     		= atoi(CG_Argv(6));
-	mod_gdelay     			= atoi(CG_Argv(7));
-	mod_mgdelay     		= atoi(CG_Argv(8));
-	mod_sgdelay     		= atoi(CG_Argv(9));
-	mod_gldelay     		= atoi(CG_Argv(10));
-	mod_rldelay     		= atoi(CG_Argv(11));
-	mod_lgdelay		 		= atoi(CG_Argv(12));
-	mod_pgdelay     		= atoi(CG_Argv(13));
-	mod_rgdelay     		= atoi(CG_Argv(14));
-	mod_bfgdelay     		= atoi(CG_Argv(15));
-	mod_ngdelay     		= atoi(CG_Argv(16));
-	mod_pldelay     		= atoi(CG_Argv(17));
-	mod_cgdelay     		= atoi(CG_Argv(18));
-	mod_ftdelay     		= atoi(CG_Argv(19));
-	mod_scoutfirespeed     	= atof(CG_Argv(20));
-	mod_ammoregenfirespeed  = atof(CG_Argv(21));
-	mod_doublerfirespeed    = atof(CG_Argv(22));
-	mod_guardfirespeed     	= atof(CG_Argv(23));
-	mod_hastefirespeed     	= atof(CG_Argv(24));
-	mod_noplayerclip     	= atoi(CG_Argv(25));
-	mod_ammolimit     		= atoi(CG_Argv(26));
-	mod_invulmove     		= atoi(CG_Argv(27));
-	mod_amdelay       		= atoi(CG_Argv(28));
-	mod_teamred_firespeed   = atof(CG_Argv(29));
-	mod_teamblue_firespeed  = atof(CG_Argv(30));
-	mod_medkitlimit   		= atoi(CG_Argv(31));
-	mod_medkitinf     		= atoi(CG_Argv(32));
-	mod_teleporterinf 		= atoi(CG_Argv(33));
-	mod_portalinf     		= atoi(CG_Argv(34));
-	mod_kamikazeinf   		= atoi(CG_Argv(35));
-	mod_invulinf      		= atoi(CG_Argv(36));
-	mod_accelerate    		= atoi(CG_Argv(37));
-	mod_movetype     		= atoi(CG_Argv(38));
-	mod_gravity       		= atoi(CG_Argv(39));
-	mod_skyColorR     		= atoi(CG_Argv(40));
-	mod_skyColorG     		= atoi(CG_Argv(41));
-	mod_skyColorB     		= atoi(CG_Argv(42));
-	mod_skyColorA     		= atoi(CG_Argv(43));
+	mod_jumpheight     		= atoi(CG_Argv(1));
+	mod_gravity       		= atoi(CG_Argv(2));
 }
 
 static void CG_ParseSweps(void) {

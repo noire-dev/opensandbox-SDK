@@ -35,7 +35,6 @@
 
 int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 	int			quantity;
-	int			i;
 	gclient_t	*client;
 
 	if ( !other->client->ps.powerups[ent->item->giTag] ) {
@@ -48,144 +47,38 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 		quantity = ent->item->quantity;
 		other->client->ps.powerups[ent->item->giTag] += ent->count * 1000;
 	}
-	if (ent->item->giTag == PW_QUAD){
-		if (!ent->count)
-			quantity = mod_quadtime;
-	}
-	if (ent->item->giTag == PW_BATTLESUIT){
-		if ( !ent->count )
-			quantity = mod_bsuittime;
-	}
-	if (ent->item->giTag == PW_HASTE){
-		if ( !ent->count )
-			quantity = mod_hastetime;
-	}
-	if (ent->item->giTag == PW_INVIS){
-		if ( !ent->count )
-			quantity = mod_invistime;
-	}
-	if (ent->item->giTag == PW_REGEN){
-		if ( !ent->count )
-			quantity = mod_regentime;
-	}
-	if (ent->item->giTag == PW_FLIGHT){
-		if ( !ent->count )
-			quantity = mod_flighttime;
-	}
 
 	other->client->ps.powerups[ent->item->giTag] += quantity * 1000;
 
-	// give any nearby players a "denied" anti-reward
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		vec3_t		delta;
-		float		len;
-		vec3_t		forward;
-		trace_t		tr;
-
-		client = &level.clients[i];
-		if ( client == other->client ) {
-			continue;
-		}
-		if ( client->pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-		if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-			continue;
-		}
-
-    	// if same team in team game, no sound
-    	// cannot use OnSameTeam as it expects to g_entities, not clients
-  		if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam ) {
-    	  continue;
-    	}
-
-		// if too far away, no sound
-		VectorSubtract( ent->s.pos.trBase, client->ps.origin, delta );
-		len = VectorNormalize( delta );
-		if ( len > 192 ) {
-			continue;
-		}
-
-		// if not facing, no sound
-		AngleVectors( client->ps.viewangles, forward, NULL, NULL );
-		if ( DotProduct( delta, forward ) < 0.4 ) {
-			continue;
-		}
-
-		// if not line of sight, no sound
-		trap_Trace( &tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID );
-		if ( tr.fraction != 1.0 ) {
-			continue;
-		}
-	}
 	return RESPAWN_POWERUP;
 }
 
 int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
-	int		clientNum;
-	char	userinfo[MAX_INFO_STRING];
-	float	handicap;
-	int		max;
-
 	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
 	other->client->persistantPowerup = ent;
 
 	switch( ent->item->giTag ) {
 	case PW_GUARD:
-		clientNum = other->client->ps.clientNum;
-		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-		if( handicap<=0.0f || handicap>100.0f) {
-			handicap = 100.0f;
-		}
-		max = (int)(2 *  handicap);
-
-		other->health = max;
-		other->client->ps.stats[STAT_HEALTH] = max;
-		other->client->ps.stats[STAT_MAX_HEALTH] = max;
-		other->client->ps.stats[STAT_ARMOR] = max;
-		other->client->pers.maxHealth = max;
-
+		other->health = 200;
+		other->client->ps.stats[STAT_HEALTH] = 200;
+		other->client->ps.stats[STAT_MAX_HEALTH] = 200;
+		other->client->ps.stats[STAT_ARMOR] = 200;
+		other->client->pers.maxHealth = 200;
 		break;
 
 	case PW_SCOUT:
-		clientNum = other->client->ps.clientNum;
-		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-		if( handicap<=0.0f || handicap>100.0f) {
-			handicap = 100.0f;
-		}
-		other->client->pers.maxHealth = handicap;
+		other->client->pers.maxHealth = 100;
 		other->client->ps.stats[STAT_ARMOR] = 0;
 		break;
 
 	case PW_DOUBLER:
-		clientNum = other->client->ps.clientNum;
-		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-		if( handicap<=0.0f || handicap>100.0f) {
-			handicap = 100.0f;
-		}
-		other->client->pers.maxHealth = handicap;
+		other->client->pers.maxHealth = 100;
 		break;
 	case PW_AMMOREGEN:
-		clientNum = other->client->ps.clientNum;
-		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-		if( handicap<=0.0f || handicap>100.0f) {
-			handicap = 100.0f;
-		}
-		other->client->pers.maxHealth = handicap;
-		memset(other->client->ammoTimes, 0, sizeof(other->client->ammoTimes));
+		other->client->pers.maxHealth = 100;
 		break;
 	default:
-		clientNum = other->client->ps.clientNum;
-		trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
-		handicap = atof( Info_ValueForKey( userinfo, "handicap" ) );
-		if( handicap<=0.0f || handicap>100.0f) {
-			handicap = 100.0f;
-		}
-		other->client->pers.maxHealth = handicap;
+		other->client->pers.maxHealth = 100;
 		break;
 	}
 
@@ -193,7 +86,6 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 }
 
 int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
-
 	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 
 	if( ent->item->giTag == HI_KAMIKAZE ) {
@@ -211,11 +103,15 @@ void Set_Weapon (gentity_t *ent, int weapon, int status) {
 	}
 }
 
-void Add_Ammo (gentity_t *ent, int weapon, int count) {
-	ent->swep_ammo[weapon] += count;
-	if ( ent->swep_ammo[weapon] > mod_ammolimit && count != 9999 ) {
-		ent->swep_ammo[weapon] = mod_ammolimit;
-	}
+void Add_Ammo(gentity_t *ent, int weapon, int count) {
+    if (count == 9999) {
+        ent->swep_ammo[weapon] = 9999;
+    } else {
+        ent->swep_ammo[weapon] += count;
+        if (ent->swep_ammo[weapon] > 9000) {
+            ent->swep_ammo[weapon] = 9000;
+        }
+    }
 }
 
 void Set_Ammo (gentity_t *ent, int weapon, int count) {
@@ -443,6 +339,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 	// the same pickup rules are used for client side and server side
 	if ( !BG_CanItemBeGrabbed( g_gametype.integer, &ent->s, &other->client->ps ) ) {
+		G_Printf ("BG_CanItemBeGrabbed: ERROR\n");
 		return;
 	}
 
@@ -562,7 +459,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	VectorCopy( velocity, dropped->s.pos.trDelta );
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF)			&& item->giType == IT_TEAM) { // Special case for CTF flags
+	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) && item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem( dropped );
@@ -627,7 +524,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
 	ent->s.eType = ET_ITEM;
-	ent->s.modelindex = ent->item - bg_itemlist;		// store item number in modelindex
+	ent->s.modelindex = ent->item - bg_itemlist; // store item number in modelindex
 	ent->s.modelindex2 = 0; // zero indicates this isn't a dropped item
 
 	ent->r.contents = CONTENTS_TRIGGER;
@@ -673,7 +570,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 		return;
 	}
 
-
 	trap_LinkEntity (ent);
 }
 
@@ -702,6 +598,7 @@ void G_CheckTeamItems( void ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_blueflag in map\n" );
 		}
 	}
+
 	if( g_gametype.integer == GT_1FCTF ) {
 		gitem_t	*item;
 
@@ -861,7 +758,6 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 }
 
-
 /*
 ================
 G_BounceItem
@@ -929,10 +825,9 @@ void G_RunItem( gentity_t *ent ) {
 	if ( ent->clipmask ) {
 		mask = ent->clipmask;
 	} else {
-		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;//MASK_SOLID;
+		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY; //MASK_SOLID;
 	}
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, 
-		ent->r.ownerNum, mask );
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->r.ownerNum, mask );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
 

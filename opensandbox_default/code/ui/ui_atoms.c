@@ -344,7 +344,6 @@ void UI_Cache_f( void ) {
 	Preferences_Cache();
 	SpecifyServer_Cache();
 	ArenaServers_Cache();
-	StartServer_Cache();
 	DriverInfo_Cache();
 	GraphicsOptions_Cache();
 	UI_DisplayOptionsMenu_Cache();
@@ -352,7 +351,6 @@ void UI_Cache_f( void ) {
 	UI_NetworkOptionsMenu_Cache();
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
-	UI_BotSelect_Cache();
 	UI_ModsMenu_Cache();
 }
 
@@ -415,14 +413,6 @@ qboolean UI_ConsoleCommand( int realTime ) {
 
 if( Q_stricmp (UI_Argv(0), "ui_addbots") == 0 ){
 UI_AddBotsMenu();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_savegame") == 0 ){
-UI_SavesMenu_Save();
-return qtrue;
-}
-if( Q_stricmp (UI_Argv(0), "ui_loadgame") == 0 ){
-UI_SavesMenu_Load();
 return qtrue;
 }
 if( Q_stricmp (UI_Argv(0), "ui_controls") == 0 ){

@@ -27,20 +27,11 @@
 
 // g_client.c -- client functions that don't happen every frame
 
-#define	MAX_SPAWN_POINTS	MAX_CLIENTS
-
 static vec3_t	playerMins = {-15, -15, -24};
 static vec3_t	playerMaxs = {15, 15, 32};
 
-void info_player_deathmatch_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	self->flags ^= FL_NO_SPAWN;	//toggle no spawn flag
-}
-
 void SP_info_player_deathmatch( gentity_t *ent ) {
 	int		i;
-
-	G_SpawnInt( "count", "0", &ent->count);
-	ent->damage = 0; //damage is used to keep track of the number of times this spawnpoint was used.
 
 	G_SpawnInt( "nobots", "0", &i);
 	if ( i ) {
@@ -50,119 +41,11 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	if ( i ) {
 		ent->flags |= FL_NO_HUMANS;
 	}
-
-	//if DISABLED spawnflag is, disable the spawnpoint at start
-	if (ent->spawnflags & 2)
-		info_player_deathmatch_use( ent, NULL, NULL );
-	
-	ent->use = info_player_deathmatch_use;
-
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->classname = "info_player_deathmatch";
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->r.contents = CONTENTS_TRIGGER;
-	if(g_gametype.integer == GT_MAPEDITOR ){
-		VectorSet( ent->r.mins, -16, -16, -25);
-		VectorSet( ent->r.maxs, 16, 16, 25 );
-		ent->s.scales[0] = 0.64;
-		ent->s.scales[1] = 0.64;
-		ent->s.scales[2] = 1.00;
-		ent->s.modelindex = G_ModelIndex( "props/cube" );
-		ent->s.generic2 = 255;
-		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
-		ent->sandboxObject = OBJ_EDITOR;
-	}
-	
-	trap_LinkEntity( ent );
 }
 
 void SP_info_player_start(gentity_t *ent) {
 	ent->classname = "info_player_deathmatch";
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->r.contents = CONTENTS_TRIGGER;
-	if(g_gametype.integer == GT_MAPEDITOR){
-		VectorSet( ent->r.mins, -16, -16, -25);
-		VectorSet( ent->r.maxs, 16, 16, 25 );
-		ent->s.scales[0] = 0.64;
-		ent->s.scales[1] = 0.64;
-		ent->s.scales[2] = 1.00;
-		ent->s.modelindex = G_ModelIndex( "props/cube" );
-		ent->s.generic2 = 255;
-		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
-		ent->sandboxObject = OBJ_EDITOR;
-	}
-
 	SP_info_player_deathmatch( ent );
-}
-
-//Three for Double_D
-void SP_info_player_dd(gentity_t *ent) {
-		VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->classname = "info_player_dd";
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->r.contents = CONTENTS_TRIGGER;
-	if(g_gametype.integer == GT_MAPEDITOR){
-		VectorSet( ent->r.mins, -16, -16, -25);
-		VectorSet( ent->r.maxs, 16, 16, 25 );
-		ent->s.scales[0] = 0.64;
-		ent->s.scales[1] = 0.64;
-		ent->s.scales[2] = 1.00;
-		ent->s.modelindex = G_ModelIndex( "props/cube" );
-		ent->s.generic2 = 255;
-		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
-		ent->sandboxObject = OBJ_EDITOR;
-	}
-	
-	trap_LinkEntity( ent );
-}
-void SP_info_player_dd_red(gentity_t *ent) {
-		VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->classname = "info_player_dd_red";
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->r.contents = CONTENTS_TRIGGER;
-	if(g_gametype.integer == GT_MAPEDITOR){
-		VectorSet( ent->r.mins, -16, -16, -25);
-		VectorSet( ent->r.maxs, 16, 16, 25 );
-		ent->s.scales[0] = 0.64;
-		ent->s.scales[1] = 0.64;
-		ent->s.scales[2] = 1.00;
-		ent->s.modelindex = G_ModelIndex( "props/cube" );
-		ent->s.generic2 = 255;
-		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
-		ent->sandboxObject = OBJ_EDITOR;
-	}
-	
-	trap_LinkEntity( ent );
-}
-void SP_info_player_dd_blue(gentity_t *ent) {
-		VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-	ent->classname = "info_player_dd_blue";
-	ent->s.eType = ET_GENERAL;
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->r.contents = CONTENTS_TRIGGER;
-	if(g_gametype.integer == GT_MAPEDITOR){
-		VectorSet( ent->r.mins, -16, -16, -25);
-		VectorSet( ent->r.maxs, 16, 16, 25 );
-		ent->s.scales[0] = 0.64;
-		ent->s.scales[1] = 0.64;
-		ent->s.scales[2] = 1.00;
-		ent->s.modelindex = G_ModelIndex( "props/cube" );
-		ent->s.generic2 = 255;
-		ent->s.angles2[A2_MASS] = 1.00;	//mass for correct physics
-		ent->sandboxObject = OBJ_EDITOR;
-	}
-	
-	trap_LinkEntity( ent );
 }
 
 /*
@@ -266,6 +149,7 @@ SelectRandomDeathmatchSpawnPoint
 go to a random point that doesn't telefrag
 ================
 */
+#define MAX_SPAWN_POINTS 128
 gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	gentity_t	*spot;
 	int			count;
@@ -1131,7 +1015,6 @@ void ClientSpawn(gentity_t *ent) {
 	gentity_t	*spawnPoint;
 	int		flags;
 	int		savedPing;
-	int		accuracy_hits, accuracy_shots;
 	int		eventSequence;
 	char	userinfo[MAX_INFO_STRING];
 
@@ -1176,8 +1059,6 @@ void ClientSpawn(gentity_t *ent) {
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
-	accuracy_hits = client->accuracy_hits;
-	accuracy_shots = client->accuracy_shots;
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
 		persistant[i] = client->ps.persistant[i];
 	}
@@ -1188,8 +1069,6 @@ void ClientSpawn(gentity_t *ent) {
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
-	client->accuracy_hits = accuracy_hits;
-	client->accuracy_shots = accuracy_shots;
 
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
 		client->ps.persistant[i] = persistant[i];
@@ -1451,15 +1330,9 @@ void SetUnlimitedWeapons( gentity_t *ent ) {
 
 void SetSandboxWeapons( gentity_t *ent ) {
 	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
-		if(g_allowtoolgun.integer){
 		Set_Weapon(ent, WP_TOOLGUN, 1);
-		}
-		if(g_allowphysgun.integer){
 		Set_Weapon(ent, WP_PHYSGUN, 1);
-		}
-		if(g_allowgravitygun.integer){
 		Set_Weapon(ent, WP_GRAVITYGUN, 1);
-		}
 	}
 }
 

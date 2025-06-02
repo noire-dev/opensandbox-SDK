@@ -81,7 +81,18 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	return -1;
 }
 
-int 	mod_ammolimit = 200;
+const char *gametype_items[GT_MAX_GAME_TYPE+1] = {
+	"Sandbox",
+	"Map Editor",
+	"Free For All",
+	"Team Deathmatch",
+	"Capture the Flag",
+	"One Flag Capture",
+	"Overload",
+	"Harvester",
+	0
+};
+
 int 	mod_gravity = 800;
 
 /*
@@ -90,9 +101,6 @@ UI_CreateCvars
 =================
 */
 void UI_CreateCvars( void ) {
-	// we also set default values for the disable_* Cvars here
-	// since first usage defines their default value
-	GUI_StartServer_RegisterDisableCvars(qtrue);
 	trap_Cmd_ExecuteText( EXEC_APPEND, "exec uiautoexec.cfg\n");
 }
 

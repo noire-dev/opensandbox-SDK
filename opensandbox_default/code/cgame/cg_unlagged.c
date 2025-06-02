@@ -139,8 +139,8 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 
 		// do everything exactly like the server does
 		r = Q_random(&seed) * M_PI * 2.0f;
-		u = sin(r) * Q_crandom(&seed) * mod_mgspread * 16;
-		r = cos(r) * Q_crandom(&seed) * mod_mgspread * 16;
+		u = sin(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
+		r = cos(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
 
 		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
 		VectorMA( endPoint, r, right, endPoint );
@@ -177,8 +177,8 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 
 		// do everything exactly like the server does
 		r = Q_random(&seed) * M_PI * 2.0f;
-		u = sin(r) * Q_crandom(&seed) * mod_cgspread * 16;
-		r = cos(r) * Q_crandom(&seed) * mod_cgspread * 16;
+		u = sin(r) * Q_crandom(&seed) * CHAINGUN_SPREAD * 16;
+		r = cos(r) * Q_crandom(&seed) * CHAINGUN_SPREAD * 16;
 
 		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
 		VectorMA( endPoint, r, right, endPoint );

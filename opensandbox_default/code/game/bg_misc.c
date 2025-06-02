@@ -289,8 +289,9 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 	gitem_t	*item;
 	int		upperBound;
 
-	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems )
+	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
+	}
 
 	item = &bg_itemlist[ent->modelindex];
 
@@ -323,20 +324,25 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_HEALTH:
-		// small and mega healths will go over the max, otherwise
-		// don't pick up if already at max
+		Com_Printf ("BG_CanItemBeGrabbed: IT_HEALTH\n");
+		Com_Printf ("BG_CanItemBeGrabbed: quantity=%i\n", item->quantity);
 		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
 		} else if ( item->quantity == 5 || item->quantity == 100 ) {
 			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
+				Com_Printf ("BG_CanItemBeGrabbed: qfalse\n");
 				return qfalse;
 			}
+			Com_Printf ("BG_CanItemBeGrabbed: qtrue\n");
 			return qtrue;
 		}
 
 		if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] ) {
+			Com_Printf ("BG_CanItemBeGrabbed: qfalse2\n");
+			Com_Printf ("BG_CanItemBeGrabbed: STAT_HEALTH=%i STAT_MAX_HEALTH=%i\n", ps->stats[STAT_HEALTH], ps->stats[STAT_MAX_HEALTH]);
 			return qfalse;
 		}
+		Com_Printf ("BG_CanItemBeGrabbed: qtrue2\n");
 		return qtrue;
 
 	case IT_POWERUP:
@@ -375,9 +381,6 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 			}
 		}
 		if( gametype == GT_CTF ) {
-			// ent->modelindex2 is non-zero on items if they are dropped
-			// we need to know this because we can pick up our dropped flag (and return it)
-			// but we can't pick up our flag at base
 			if (ps->persistant[PERS_TEAM] == TEAM_RED) {
 				if (item->giTag == PW_BLUEFLAG ||
 					(item->giTag == PW_REDFLAG && ent->modelindex2) ||
@@ -390,14 +393,12 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 					return qtrue;
 			}
 		}
-
 		if( gametype == GT_HARVESTER ) {
 			return qtrue;
 		}
 		return qfalse;
 
 	case IT_HOLDABLE:
-		// can only hold one item at a time
 		if ( ps->stats[STAT_HOLDABLE_ITEM] ) {
 			return qfalse;
 		}
@@ -406,6 +407,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
         case IT_BAD:
             Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
         default:
+    		Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType );
         	break;
 	}
 

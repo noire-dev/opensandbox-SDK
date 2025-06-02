@@ -73,9 +73,9 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 void G_SendGameCvars(gentity_t *ent) {
 	char string[4096];
-	Com_sprintf(string, sizeof(string), "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %f %f %f %f %f %i %i %i %i %f %f %i %i %i %i %i %i %i %i %i %i %i %i %i",
-	            mod_sgspread, mod_sgcount, mod_lgrange, mod_mgspread, mod_cgspread, mod_jumpheight, mod_gdelay, mod_mgdelay ,mod_sgdelay, mod_gldelay, mod_rldelay, mod_lgdelay, mod_pgdelay, mod_rgdelay, mod_bfgdelay, mod_ngdelay, mod_pldelay, mod_cgdelay, mod_ftdelay, mod_scoutfirespeed, mod_ammoregenfirespeed, mod_doublerfirespeed, mod_guardfirespeed, mod_hastefirespeed, mod_noplayerclip, mod_ammolimit, mod_invulmove, mod_amdelay, mod_teamred_firespeed, mod_teamblue_firespeed, mod_medkitlimit, mod_medkitinf, mod_teleporterinf, mod_portalinf, mod_kamikazeinf, mod_invulinf, mod_accelerate, mod_movetype, mod_gravity, g_skyColorR.integer, g_skyColorG.integer, g_skyColorB.integer, g_skyColorA.integer);
-	trap_SendServerCommand(ent-g_entities, va( "gCvars %s", string));
+	Com_sprintf(string, sizeof(string), "%i %i",
+	mod_jumpheight, mod_gravity);
+	trap_SendServerCommand(ent-g_entities, va("gCvars %s", string));
 }
 
 void G_SendSwepWeapons(gentity_t *ent) {
@@ -264,7 +264,6 @@ void Cmd_Give_f (gentity_t *ent) {
 	trace_t		trace;
 
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR && !CheatsOk(ent)){ return; }
-	if(!g_allowitems.integer){ return; }
 
 	name = ConcatArgs( 1 );
 
@@ -378,7 +377,6 @@ argv(0) noclip
 */
 void Cmd_Noclip_f( gentity_t *ent ) {
 	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
-	if(!g_allownoclip.integer){ return; }
 
 	ent->client->noclip = !ent->client->noclip;
 }
@@ -923,7 +921,6 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT );
 	
 	if(!Q_stricmp (arg01, "prop")){
-	if(!g_allowprops.integer){ return; }
 	
 	tent = G_TempEntity( tr.endpos, EV_PARTICLES_GRAVITY );
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8 ) | rand() % 256 << 16 ) | ( 255 << 24 ));
@@ -935,7 +932,6 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	return;
 	}
 	if(!Q_stricmp (arg01, "npc")){
-	if(!g_allownpc.integer){ return; }
 	
 	tent = G_Spawn();
 	tent->sb_isnpc = 1;

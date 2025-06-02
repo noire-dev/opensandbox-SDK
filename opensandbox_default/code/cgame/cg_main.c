@@ -71,49 +71,8 @@ centity_t			cg_entities[MAX_GENTITIES];
 weaponInfo_t		cg_weapons[WEAPONS_NUM];
 itemInfo_t			cg_items[MAX_ITEMS];
 
-int	mod_mgspread;
-int	mod_sgspread;
-int mod_sgcount;
-int	mod_lgrange;
-int	mod_cgspread;
 int mod_jumpheight;
-int	mod_gdelay;
-int	mod_mgdelay;
-int	mod_sgdelay;
-int	mod_gldelay;
-int	mod_rldelay;
-int	mod_lgdelay;
-int	mod_pgdelay;
-int	mod_rgdelay;
-int	mod_bfgdelay;
-int	mod_ngdelay;
-int	mod_pldelay;
-int	mod_cgdelay;
-int	mod_ftdelay;
-int	mod_amdelay;
-float mod_hastefirespeed;
-float mod_ammoregenfirespeed;
-float mod_scoutfirespeed;
-float	mod_guardfirespeed;
-float	mod_doublerfirespeed;
-int mod_noplayerclip;
-int	mod_ammolimit;
-int mod_invulmove;
-float mod_teamred_firespeed;
-float mod_teamblue_firespeed;
-int mod_medkitlimit;
-int mod_medkitinf;
-int mod_teleporterinf;
-int mod_portalinf;
-int mod_kamikazeinf;
-int mod_invulinf;
-int mod_accelerate;
-int mod_movetype;
 int mod_gravity;
-int mod_skyColorR;
-int mod_skyColorG;
-int mod_skyColorB;
-int mod_skyColorA;
 
 /*
 =================
@@ -379,52 +338,6 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.hgrenb2aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb2a.wav", qfalse);
 }
 
-void CG_SetDefaultGameCvars(void) {
-	mod_sgspread = 700;
-	mod_sgcount = 11;
-	mod_lgrange = 768;
-	mod_mgspread = 200;
-	mod_cgspread = 600;
-	mod_jumpheight = 270;
-	mod_gdelay = 400;
-	mod_mgdelay = 100;
-	mod_sgdelay = 1000;
-	mod_gldelay = 800;
-	mod_rldelay = 800;
-	mod_lgdelay = 50;
-	mod_pgdelay = 100;
-	mod_rgdelay = 1500;
-	mod_bfgdelay = 200;
-	mod_ngdelay = 1000;
-	mod_pldelay = 800;
-	mod_cgdelay = 30;
-	mod_ftdelay = 40;
-	mod_amdelay = 40;
-	mod_scoutfirespeed = 1.5;
-	mod_doublerfirespeed = 1;
-	mod_guardfirespeed = 1;
-	mod_hastefirespeed = 1.3;
-	mod_ammoregenfirespeed = 1.3;
-	mod_noplayerclip = 0;
-	mod_ammolimit = 200;
-	mod_invulmove = 0;
-	mod_teamred_firespeed = 1;
-	mod_teamblue_firespeed = 1;
-	mod_medkitlimit = 200;
-	mod_medkitinf = 0;
-	mod_teleporterinf = 0;
-	mod_portalinf = 0;
-	mod_kamikazeinf = 0;
-	mod_invulinf = 0;
-	mod_accelerate = 1;
-	mod_movetype = 0;
-	mod_gravity = 800;
-    mod_skyColorR = 0;
-    mod_skyColorG = 0;
-    mod_skyColorB = 0;
-    mod_skyColorA = 0;
-}
-
 /*
 =================
 CG_RegisterGraphics
@@ -443,8 +356,6 @@ static void CG_RegisterGraphics( void ) {
 	CG_LoadingString( cgs.mapname, -1 );
 
 	trap_R_LoadWorldMap( cgs.mapname );
-	
-	CG_SetDefaultGameCvars();
 
 	// precache status bar pics
 	CG_LoadingString( "game media", 0.70 );

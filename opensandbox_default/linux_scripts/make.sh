@@ -202,24 +202,11 @@ $cc ../../../code/ui/ui_qmenu.c
 $cc ../../../code/ui/ui_removebots.c
 $cc ../../../code/ui/ui_sandbox.c
 $cc ../../../code/ui/ui_saveconfiged.c
-$cc ../../../code/ui/ui_saves.c
 $cc ../../../code/ui/ui_servers2.c
 $cc ../../../code/ui/ui_setup.c
 $cc ../../../code/ui/ui_sound.c
 $cc ../../../code/ui/ui_specifyserver.c
-$cc ../../../code/ui/ui_startserver_bot.c
-$cc ../../../code/ui/ui_startserver_botsel.c
-$cc ../../../code/ui/ui_startserver_common.c
-$cc ../../../code/ui/ui_startserver_custommaps.c
-$cc ../../../code/ui/ui_startserver_data.c
-$cc ../../../code/ui/ui_startserver_items.c
-$cc ../../../code/ui/ui_startserver_map.c
-$cc ../../../code/ui/ui_startserver_mapsel.c
-$cc ../../../code/ui/ui_startserver_script.c
-$cc ../../../code/ui/ui_startserver_server.c
-$cc ../../../code/ui/ui_startserver_weapon.c
 $cc ../../../code/ui/ui_video.c
-$cc ../../../code/ui/ui_workshop.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 
@@ -231,7 +218,6 @@ $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
 $cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/ns_func_ui.c
-$cc ../../../code/qcommon/ns_interface_ui.c
 
 echo "-----------------"
 echo "ui.qvm compiled"

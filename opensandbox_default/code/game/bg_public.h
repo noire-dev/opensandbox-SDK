@@ -42,6 +42,7 @@
 
 #define	ITEM_RADIUS			15		// item sizes are needed for client side pickup detection
 
+#define	LIGHTNING_RANGE		768
 #define	TOOLGUN_RANGE		4096
 #define	PHYSGUN_RANGE		8192
 #define	GRAVITYGUN_RANGE	1024
@@ -67,10 +68,9 @@
 #define		VEHICLE_DAMAGESENS 30
 
 #ifdef GAME
-#define		PHYS_PROP_IMPACT g_physimpact.value
-#define		PHYS_SENS g_physimpulse.integer
-#define		PHYS_DAMAGE g_physdamage.value
-#define		VEHICLE_PROP_IMPACT g_physimpact.value
+#define		PHYS_PROP_IMPACT 	0.80
+#define		PHYS_SENS 			450
+#define		PHYS_DAMAGE 		0.60
 #endif
 
 //entity info

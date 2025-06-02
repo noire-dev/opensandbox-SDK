@@ -549,10 +549,6 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 		return; 
 	}
 
-	if(!g_allowtoolgun.integer){
-		return; 
-	}
-
 	if(entity->client && !entity->npcType){
 		return;
 	}

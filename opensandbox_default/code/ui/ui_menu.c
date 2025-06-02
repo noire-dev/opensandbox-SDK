@@ -24,11 +24,8 @@
 // 
 
 #include "ui_local.h"
-#include "ui_startserver_q3.h"
 
 #define ID_LINK			100
-#define ID_ADDONS		99
-#define ID_MODLIST		98
 
 typedef struct {
 	menuframework_s	menu;
@@ -72,19 +69,6 @@ static void Main_MenuEvent (void* ptr, int event) {
 			trap_System("open https://opensandbox.neocities.org/");
 		}
 		break;
-		
-	case ID_ADDONS:
-		if(!uis.addonsdraw){
-			uis.addonsdraw = qtrue;
-		} else {
-			uis.addonsdraw = qfalse;
-		}
-		UI_MainMenu();
-		break;
-
-	case ID_MODLIST:
-		trap_Cmd_ExecuteText( EXEC_INSERT, va("nsgui %s.ns \n", main.e[ID_MODLIST].itemnames[main.e[ID_MODLIST].curvalue]) );
-		break;
 
 	}
 }
@@ -97,9 +81,6 @@ static void Main_MenuDraw( void ) {
 
 	if (strlen(main.error)){
 		ST_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color, 1.00 );
-	}
-	if(uis.addonsdraw){
-		UI_DrawRoundedRect(315+uis.wideoffset, 30, 1000000, (20*BASEFONT_HEIGHT*1.25)+4, 10, modlistcolor);
 	}
 	ST_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 }
@@ -116,16 +97,8 @@ void UI_MainMenu( void ) {
 	if(uis.onmap){
 		UI_CButton(&main.e[0], 64 - uis.wideoffset, y, "Resume game", UI_LEFT, 1.00, NULL, NULL, UI_ForceMenuOff, NULL, 0); y += OSUI_BIGSPACING_Y;
 	}
-	if(ui_singlemode.integer){
-		UI_CButton(&main.e[1], 64 - uis.wideoffset, y, "Start New Game", UI_LEFT, 1.00, "ns_openscript_ui new_game.ns\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-	} else {
-		UI_CButton(&main.e[1], 64 - uis.wideoffset, y, "Start New Game", UI_LEFT, 1.00, NULL, NULL, UI_StartServerMenu, NULL, 0); y += OSUI_SPACING_Y;
-	}
-	if(ui_singlemode.integer){
-		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Load Saved Game", UI_LEFT, 1.00, NULL, NULL, UI_SavesMenu_Load, NULL, 0); y += OSUI_BIGSPACING_Y;
-	} else {
-		UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Find Multiplayer Game", UI_LEFT, 1.00, NULL, NULL, UI_ArenaServersMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
-	}
+	//UI_CButton(&main.e[1], 64 - uis.wideoffset, y, "Start New Game", UI_LEFT, 1.00, NULL, NULL, UI_StartServerMenu, NULL, 0); y += OSUI_SPACING_Y;
+	//UI_CButton(&main.e[2], 64 - uis.wideoffset, y, "Find Multiplayer Game", UI_LEFT, 1.00, NULL, NULL, UI_ArenaServersMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
 	UI_CButton(&main.e[3], 64 - uis.wideoffset, y, "Profile", UI_LEFT, 1.00, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&main.e[4], 64 - uis.wideoffset, y, "Mods", UI_LEFT, 1.00, NULL, NULL, UI_ModsMenu, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&main.e[5], 64 - uis.wideoffset, y, "Demos", UI_LEFT, 1.00, NULL, NULL, UI_DemosMenu, NULL, 0); y += OSUI_BIGSPACING_Y;
@@ -137,14 +110,8 @@ void UI_MainMenu( void ) {
 
 	UI_CPicture(&main.e[9], OSUI_LOGO_X, OSUI_LOGO_Y, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, NULL, 0);
 
-	UI_CBitmap(&main.e[10], 315 + 256*0.62 + 5 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_MOD, 0, NULL, NULL, StartServer_ServerPage_Mods, NULL, 0);
+	//UI_CBitmap(&main.e[10], 315 + 256*0.62 + 5 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_MOD, 0, NULL, NULL, StartServer_ServerPage_Mods, NULL, 0);
 	UI_CBitmap(&main.e[ID_LINK], 315 + uis.wideoffset, 450, 256*0.62, 38*0.62, AST_LINK, 0, NULL, NULL, NULL, Main_MenuEvent, ID_LINK);
-
-	UI_CBitmap(&main.e[ID_ADDONS], 613 + uis.wideoffset, 2, 24, 12, AST_ADDONBTN, 0, NULL, NULL, NULL, Main_MenuEvent, ID_ADDONS);
-	if(uis.addonsdraw){
-		UI_CList(&main.e[ID_MODLIST], 320 + uis.wideoffset, 32, 32, 20, LST_ICONS, 1.24, 1, Main_MenuEvent, ID_MODLIST);
-		UI_FillList(&main.e[ID_MODLIST], "nsgui/", ".ns", main.names1, 524288, main.list1);
-	}
 
 	uis.menusp = 0;
 
