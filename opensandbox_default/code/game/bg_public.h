@@ -265,9 +265,7 @@ typedef enum {
 	STAT_HEALTH,
 	STAT_HOLDABLE_ITEM,
 	STAT_PERSISTANT_POWERUP,
-	STAT_WEAPONS,					// 16 bit fields
 	STAT_ARMOR,				
-	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH,				// health / armor limit
 	STAT_NO_PICKUP,					// for dropped ammo
