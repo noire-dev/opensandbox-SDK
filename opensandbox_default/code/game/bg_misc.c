@@ -300,7 +300,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;	// weapons are always picked up
 
 	case IT_AMMO:
-		if ( ps->ammo[ item->giTag ] >= 200 ) {
+		if ( ps->stats[STAT_SWEPAMMO] >= 9000 ) {
 			return qfalse;		// can't hold any more
 		}
 		return qtrue;
@@ -324,25 +324,18 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_HEALTH:
-		Com_Printf ("BG_CanItemBeGrabbed: IT_HEALTH\n");
-		Com_Printf ("BG_CanItemBeGrabbed: quantity=%i\n", item->quantity);
 		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
 		} else if ( item->quantity == 5 || item->quantity == 100 ) {
 			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
-				Com_Printf ("BG_CanItemBeGrabbed: qfalse\n");
 				return qfalse;
 			}
-			Com_Printf ("BG_CanItemBeGrabbed: qtrue\n");
 			return qtrue;
 		}
 
 		if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] ) {
-			Com_Printf ("BG_CanItemBeGrabbed: qfalse2\n");
-			Com_Printf ("BG_CanItemBeGrabbed: STAT_HEALTH=%i STAT_MAX_HEALTH=%i\n", ps->stats[STAT_HEALTH], ps->stats[STAT_MAX_HEALTH]);
 			return qfalse;
 		}
-		Com_Printf ("BG_CanItemBeGrabbed: qtrue2\n");
 		return qtrue;
 
 	case IT_POWERUP:
@@ -873,7 +866,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 		ps->entityEventSequence++;
 	}
 
-	s->weapon = ps->generic2;
+	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;
@@ -953,7 +946,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 		ps->entityEventSequence++;
 	}
 
-	s->weapon = ps->generic2;
+	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;

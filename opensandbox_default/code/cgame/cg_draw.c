@@ -399,9 +399,9 @@ static void CG_DrawStatusBar( void ) {
 	if ( weaphack ) { //VEHICLE-SYSTEM: vehicle's speedmeter for all
 		value = ps->stats[STAT_SWEPAMMO];
 		if(value <= 0 && value != -1){	// OpenSandbox weapon predict
-			cg.swep_listcl[ps->generic2] = 2;
+			cg.swep_listcl[ps->weapon] = 2;
 		} else {
-			cg.swep_listcl[ps->generic2] = 1;	
+			cg.swep_listcl[ps->weapon] = 1;	
 		}
 		CG_DrawWeaponSelect();
 		if (value > -1)
@@ -1438,7 +1438,7 @@ void CG_DrawActive( void ) {
 
 	// select the weapon the server says we are using
 	if(!cg.weaponSelect){
-		cg.weaponSelect = cg.snap->ps.generic2;
+		cg.weaponSelect = cg.snap->ps.weapon;
 	}
 
 	RunScriptThreads(cg.time);		//Noire.Script - run threads

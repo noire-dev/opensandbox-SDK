@@ -571,10 +571,10 @@ static void CG_Missile( centity_t *cent ) {
 	const weaponInfo_t		*weapon;
 
 	s1 = &cent->currentState;
-	if ( s1->generic3 > WEAPONS_NUM ) {
-		s1->generic3 = 0;
+	if ( s1->weapon > WEAPONS_NUM ) {
+		s1->weapon = 0;
 	}
-	weapon = &cg_weapons[s1->generic3];
+	weapon = &cg_weapons[s1->weapon];
 
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);
@@ -605,7 +605,7 @@ static void CG_Missile( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 
-	if ( cent->currentState.generic3 == WP_PLASMAGUN ) {
+	if ( cent->currentState.weapon == WP_PLASMAGUN ) {
 		ent.reType = RT_SPRITE;
 		ent.radius = 16;
 		ent.rotation = 0;
@@ -613,7 +613,7 @@ static void CG_Missile( centity_t *cent ) {
 		trap_R_AddRefEntityToScene( &ent );
 		return;
 	}
-	if ( cent->currentState.generic3 == WP_FLAMETHROWER ) {
+	if ( cent->currentState.weapon == WP_FLAMETHROWER ) {
 		ent.reType = RT_SPRITE;
 		ent.radius = 20;
 		ent.rotation = 1;
@@ -622,7 +622,7 @@ static void CG_Missile( centity_t *cent ) {
 		return;
 	}
 
-	if ( cent->currentState.generic3 == WP_ANTIMATTER ) {
+	if ( cent->currentState.weapon == WP_ANTIMATTER ) {
 		ent.reType = RT_SPRITE;
 		ent.radius = 50;
 		ent.rotation = 1;
@@ -636,7 +636,7 @@ static void CG_Missile( centity_t *cent ) {
 	ent.hModel = weapon->missileModel;
 	ent.renderfx = weapon->missileRenderfx;
 
-	if ( cent->currentState.generic3 == WP_PROX_LAUNCHER ) {
+	if ( cent->currentState.weapon == WP_PROX_LAUNCHER ) {
 		if (s1->generic1 == TEAM_BLUE) {
 			ent.hModel = cgs.media.blueProxMine;
 		}
@@ -651,7 +651,7 @@ static void CG_Missile( centity_t *cent ) {
 	if ( s1->pos.trType != TR_STATIONARY ) {
 		RotateAroundDirection( ent.axis, cg.time / 4 );
 	} else {
-		if ( s1->generic3 == WP_PROX_LAUNCHER ) {
+		if ( s1->weapon == WP_PROX_LAUNCHER ) {
 			AnglesToAxis( cent->lerpAngles, ent.axis );
 		} else {
 			RotateAroundDirection( ent.axis, s1->time );
@@ -675,10 +675,10 @@ static void CG_Grapple( centity_t *cent ) {
 	const weaponInfo_t		*weapon;
 
 	s1 = &cent->currentState;
-	if ( s1->generic3 > WEAPONS_NUM ) {
-		s1->generic3 = 0;
+	if ( s1->weapon > WEAPONS_NUM ) {
+		s1->weapon = 0;
 	}
-	weapon = &cg_weapons[s1->generic3];
+	weapon = &cg_weapons[s1->weapon];
 
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);

@@ -988,31 +988,31 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_MISSILE_HIT:
 		DEBUGNAME("EV_MISSILE_HIT");
 		ByteToDir( es->eventParm, dir );
-		CG_MissileHitPlayer( es->generic3, position, dir, es->otherEntityNum );
+		CG_MissileHitPlayer( es->weapon, position, dir, es->otherEntityNum );
 		break;
 
 	case EV_MISSILE_MISS:
 		DEBUGNAME("EV_MISSILE_MISS");
 		ByteToDir( es->eventParm, dir );
-		CG_MissileHitWall( es->generic3, 0, position, dir, IMPACTSOUND_DEFAULT );
+		CG_MissileHitWall( es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT );
 		break;
 
 	case EV_MISSILE_MISS_METAL:
 		DEBUGNAME("EV_MISSILE_MISS_METAL");
 		ByteToDir( es->eventParm, dir );
-		CG_MissileHitWall( es->generic3, 0, position, dir, IMPACTSOUND_METAL );
+		CG_MissileHitWall( es->weapon, 0, position, dir, IMPACTSOUND_METAL );
 		break;
 
 	case EV_RAILTRAIL:
 		DEBUGNAME("EV_RAILTRAIL");
-		cent->currentState.generic3 = WP_RAILGUN;
+		cent->currentState.weapon = WP_RAILGUN;
 		if ( es->clientNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
 		} else {
 			CG_RailTrail( ci, es->origin2, es->pos.trBase );
 			if ( es->eventParm != 255 ) {
 				ByteToDir( es->eventParm, dir );
-				CG_MissileHitWall( es->generic3, es->clientNum, position, dir, IMPACTSOUND_DEFAULT );
+				CG_MissileHitWall( es->weapon, es->clientNum, position, dir, IMPACTSOUND_DEFAULT );
 			}
 		}
 		break;

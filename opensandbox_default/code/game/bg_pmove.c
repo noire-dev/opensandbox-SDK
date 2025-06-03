@@ -1445,7 +1445,7 @@ static void PM_FinishWeaponChange( void ) {
 		item = BG_FindSwep(weapon);
 #ifdef GAME
 		if(G_CheckSwep(pm->ps->clientNum, weapon, 1)){
-			pm->ps->generic2 = item->giTag;
+			pm->ps->weapon = item->giTag;
 			pm->ps->weaponstate = WEAPON_RAISING;
 		}
 #endif
@@ -1465,7 +1465,7 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) {
 	if ( pm->ps->weaponstate == WEAPON_READY ) {
-		if ( pm->ps->generic2 == WP_GAUNTLET ) {
+		if ( pm->ps->weapon == WP_GAUNTLET ) {
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_ContinueTorsoAnim( TORSO_STAND );
@@ -1496,7 +1496,7 @@ static void PM_Weapon( void ) {
 
 	// check for dead player
 	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
-		pm->ps->generic2 = WP_NONE;
+		pm->ps->weapon = WP_NONE;
 		return;
 	}
 
@@ -1526,7 +1526,7 @@ static void PM_Weapon( void ) {
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
 	if ( pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING ) {
-		if ( pm->ps->generic2 != pm->cmd.weapon ) {
+		if ( pm->ps->weapon != pm->cmd.weapon ) {
 			PM_BeginWeaponChange( pm->cmd.weapon );
 		}		
 	}
@@ -1543,7 +1543,7 @@ static void PM_Weapon( void ) {
 
 	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
 		pm->ps->weaponstate = WEAPON_READY;
-		if ( pm->ps->generic2 == WP_GAUNTLET ) {
+		if ( pm->ps->weapon == WP_GAUNTLET ) {
 			PM_StartTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_StartTorsoAnim( TORSO_STAND );
@@ -1563,7 +1563,7 @@ static void PM_Weapon( void ) {
 	}
 
 	// start the animation even if out of ammo
-	if ( pm->ps->generic2 == WP_GAUNTLET ) {
+	if ( pm->ps->weapon == WP_GAUNTLET ) {
 		// the guantlet only "fires" when it actually hits something
 		if ( !pm->gauntletHit ) {
 			pm->ps->weaponTime = 0;
@@ -1578,7 +1578,7 @@ static void PM_Weapon( void ) {
 	pm->ps->weaponstate = WEAPON_FIRING;
 
 #ifdef GAME
-	if(!G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2)){
+	if(!G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->weapon)){
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 500;
 		return;
@@ -1593,14 +1593,14 @@ static void PM_Weapon( void ) {
 
 #ifdef GAME
 	if( !(pm->ps->stats[STAT_SWEPAMMO] == -1 || pm->ps->stats[STAT_SWEPAMMO] >= 9999) ){
-		if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->generic2) > 0 ){ 
-			PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->generic2, -1); 
+		if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->weapon) > 0 ){ 
+			PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->weapon, -1); 
 		}
 	}
 #endif
 	// fire weapon
 	PM_AddEvent( EV_FIRE_WEAPON );
-	switch( pm->ps->generic2 ) {
+	switch( pm->ps->weapon ) {
 	default:
 	case WP_GAUNTLET:
 		addTime = 400;

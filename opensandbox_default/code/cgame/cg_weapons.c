@@ -1484,8 +1484,8 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	}
 
 	cent = &cg.predictedPlayerEntity;	// &cg_entities[cg.snap->ps.clientNum];
-	CG_RegisterWeapon( ps->generic2 );
-	weapon = &cg_weapons[ ps->generic2 ];
+	CG_RegisterWeapon( ps->weapon );
+	weapon = &cg_weapons[ ps->weapon ];
 
 	memset (&hand, 0, sizeof(hand));
 
@@ -1523,7 +1523,7 @@ void CG_NextWeapon_f( void ) {
 	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
 	
-	if ( cg.snap->ps.generic2 == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
+	if ( cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
 		trap_SendConsoleCommand("physgun_dist 0\n");
 		return;
 	}
@@ -1564,7 +1564,7 @@ void CG_PrevWeapon_f( void ) {
 	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
 
-	if ( cg.snap->ps.generic2 == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
+	if ( cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
 		trap_SendConsoleCommand("physgun_dist 1\n");
 		return;
 	}

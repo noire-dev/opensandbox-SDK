@@ -1072,7 +1072,7 @@ Added for OpenSandbox.
 ==================
 */
 static void Cmd_Altfire_Physgun_f( gentity_t *ent ){
-	if ( ent->client->ps.generic2 == WP_PHYSGUN ){
+	if ( ent->client->ps.weapon == WP_PHYSGUN ){
 	    if (ent->client->buttons & BUTTON_ATTACK) {
 			if (ent->grabbedEntity) {
 				ent->grabbedEntity->grabNewPhys = PHYS_STATIC;	//say physgun about freeze option
@@ -1092,7 +1092,7 @@ static void Cmd_PhysgunDist_f( gentity_t *ent ){
 	
 	trap_Argv( 1, mode, sizeof( mode ) );
 	
-	if ( ent->client->ps.generic2 == WP_PHYSGUN ){
+	if ( ent->client->ps.weapon == WP_PHYSGUN ){
 	    if (ent->client->buttons & BUTTON_ATTACK) {
 			if (ent->grabbedEntity) {
 				if(atoi(mode) == 0){

@@ -1061,7 +1061,6 @@ void QDECL CG_Error( const char *msg, ... ) __attribute__((noreturn));
 void CG_StartMusic( void );
 
 int CG_CrosshairPlayer( void );
-int CG_LastAttacker( void );
 void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString( void );

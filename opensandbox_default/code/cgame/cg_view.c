@@ -232,21 +232,19 @@ static void CG_OffsetFirstPersonView( void ) {
 }
 
 void CG_ZoomDown_f( void ) {
-	if ( cg.zoomed ) {
+	if ( cg.zoomed )
 		return;
-	}
-	if ( cg.snap->ps.generic2 != WP_PHYSGUN ){
-	cg.zoomed = qtrue;
-	cg.zoomTime = cg.time;
+	if ( cg.snap->ps.weapon != WP_PHYSGUN ){
+		cg.zoomed = qtrue;
+		cg.zoomTime = cg.time;
 	} else {
-	trap_SendConsoleCommand("altfire_physgun\n");
+		trap_SendConsoleCommand("altfire_physgun\n");
 	}
 }
 
 void CG_ZoomUp_f( void ) { 
-	if ( !cg.zoomed ) {
+	if ( !cg.zoomed )
 		return;
-	}
 	cg.zoomed = qfalse;
 	cg.zoomTime = cg.time;
 }

@@ -181,7 +181,7 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 		tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
 		tent->s.otherEntityNum = traceEnt->s.number;
 		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.generic3 = ent->s.weapon;
+		tent->s.weapon = ent->s.weapon;
 	}
 	
 	if(!ent->client->vehiclenum){
@@ -730,7 +730,7 @@ void Weapon_LightningFire( gentity_t *ent ) {
 		tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
 		tent->s.otherEntityNum = traceEnt->s.number;
 		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.generic3 = ent->s.weapon;
+		tent->s.weapon = ent->s.weapon;
 	} else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
 		tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
 		tent->s.eventParm = DirToByte( tr.plane.normal );

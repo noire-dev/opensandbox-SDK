@@ -683,9 +683,10 @@ typedef enum {
 //
 // per-level limits
 //
+#define	MAX_CUSTOMSTRINGS	128
+#define	MAX_MODELS			1024
+#define	MAX_SOUNDS			256
 #define	MAX_CLIENTS			128
-#define MAX_LOCATIONS		64
-
 #define	GENTITYNUM_BITS		12
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
 
@@ -696,16 +697,14 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-3)
 
-#define	MAX_MODELS			4096
-#define	MAX_SOUNDS			4096
-#define	MAX_CONFIGSTRINGS	10000+32
+#define	MAX_CONFIGSTRINGS	1600
+#define	MAX_GAMESTATE_CHARS	32000
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
 #define	CS_SERVERINFO		0		// an info string with all the serverinfo cvars
 #define	CS_SYSTEMINFO		1
 
-#define	MAX_GAMESTATE_CHARS	16384*16
 typedef struct {
 	int			stringOffsets[MAX_CONFIGSTRINGS];
 	char		stringData[MAX_GAMESTATE_CHARS];
@@ -716,7 +715,6 @@ typedef struct {
 #define	MAX_STATS				16
 #define	MAX_PERSISTANT			16
 #define	MAX_POWERUPS			16
-#define	MAX_WEAPONS				16
 
 #define	MAX_PS_EVENTS			2
 
@@ -788,10 +786,8 @@ typedef struct playerState_s {
 	int			stats[MAX_STATS];
 	int			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
 	int			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
-	int			ammo[MAX_WEAPONS];
 
 	int			generic1;
-	int			generic2;
 	int			loopSound;
 	int			jumppad_ent;	// jumppad entity hit this frame
 
@@ -911,7 +907,6 @@ typedef struct entityState_s {
 
 	int		generic1;
 	int		generic2;
-	int		generic3;
 } entityState_t;
 
 typedef enum {

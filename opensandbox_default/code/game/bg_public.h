@@ -151,7 +151,7 @@
 #define CS_FLAGSTATUS			8
 #define CS_BOTINFO				9 // 2 slots
 #define	CS_ITEMS				11
-#define	CS_MODELS				1680
+#define	CS_MODELS				MAX_CUSTOMSTRINGS
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
@@ -286,8 +286,6 @@ typedef enum {
 	PERS_RANK,						// player rank or team rank
 	PERS_TEAM,						// player team
 	PERS_SPAWN_COUNT,				// incremented every respawn
-	PERS_PLAYEREVENTS,				// 16 bits that can be flipped for events
-	PERS_ATTACKER,					// clientnum of last damage inflicter
 	PERS_ATTACKEE_ARMOR,			// health/armor of last person we attacked
 	PERS_KILLED,					// count of the number of times you died
 } persEnum_t;

@@ -440,7 +440,6 @@ struct gclient_s {
 
 	gentity_t	*persistantPowerup;
 	int			portalID;
-	int			ammoTimes[MAX_WEAPONS];
 	int			invulnerabilityTime;
 
 	char		*areabits;

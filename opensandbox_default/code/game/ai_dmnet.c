@@ -1332,7 +1332,7 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult) {
 				//
 				moveresult->flags |= MOVERESULT_MOVEMENTWEAPON | MOVERESULT_MOVEMENTVIEW;
 				// if holding the right weapon
-				if (bs->cur_ps.generic2 == moveresult->weapon) {
+				if (bs->cur_ps.weapon == moveresult->weapon) {
 					// if the bot is pretty close with it's aim
 					if (InFieldOfVision(bs->viewangles, 20, moveresult->ideal_viewangles)) {
 						//
@@ -1416,7 +1416,7 @@ int AINode_Seek_ActivateEntity(bot_state_t *bs) {
 		if (bsptrace.fraction >= 1.0 || bsptrace.ent == goal->entitynum) {
 			targetvisible = qtrue;
 			// if holding the right weapon
-			if (bs->cur_ps.generic2 == bs->activatestack->weapon) {
+			if (bs->cur_ps.weapon == bs->activatestack->weapon) {
 				VectorSubtract(bs->activatestack->target, bs->eye, dir);
 				vectoangles(dir, ideal_viewangles);
 				// if the bot is pretty close with it's aim

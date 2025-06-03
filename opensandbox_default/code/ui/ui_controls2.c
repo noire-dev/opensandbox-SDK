@@ -42,7 +42,7 @@ typedef struct {
 #define ID_KEYS			90
 #define ID_SETTINGS		91
 
-#define KEYS_NUM		31
+#define KEYS_NUM		30
 #define SETTINGS_NUM	KEYS_NUM+5
 
 typedef struct {
@@ -83,11 +83,10 @@ static bind_t g_bindings[] = {
 	{"messagemode", 			"chat",					24,	-1, -1},
 	{"messagemode2", 			"chat - team",			25,	-1, -1},
 	{"messagemode3", 			"chat - target",		26,	-1, -1},
-	{"messagemode4", 			"chat - attacker",		27,	-1, -1},
-	{"flashlight", 				"flashlight",			28,	-1, -1},
-	{"ui_sandbox", 				"sandbox menu",			29,	-1, -1},
-	{"vstr uitoolmode", 		"sandbox tool mode",	30,	-1, -1},
-	{"exitvehicle", 			"exit vehicle",			31,	-1, -1},
+	{"flashlight", 				"flashlight",			27,	-1, -1},
+	{"ui_sandbox", 				"sandbox menu",			28,	-1, -1},
+	{"vstr uitoolmode", 		"sandbox tool mode",	29,	-1, -1},
+	{"exitvehicle", 			"exit vehicle",			30,	-1, -1},
 	{(char*)NULL,				(char*)NULL,			-1,	-1,	-1},
 };
 

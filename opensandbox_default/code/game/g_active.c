@@ -718,7 +718,7 @@ void PhysgunHold(gentity_t *player) {
 	gentity_t 	*findent;
 	vec3_t		velocity;
 	
-	if (player->client->ps.generic2 != WP_PHYSGUN)
+	if (player->client->ps.weapon != WP_PHYSGUN)
 		return; 
 	
     if (player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
@@ -754,7 +754,7 @@ void GravitygunHold(gentity_t *player) {
 	gentity_t 	*findent;
 	vec3_t		velocity;
 
-	if (player->client->ps.generic2 != WP_GRAVITYGUN)
+	if (player->client->ps.weapon != WP_GRAVITYGUN)
 		return; 
 	
     if (player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
@@ -887,7 +887,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	// Let go of the hook if we aren't firing
-	if ( client->ps.generic2 == WP_GRAPPLING_HOOK &&
+	if ( client->ps.weapon == WP_GRAPPLING_HOOK &&
 		client->hook && !( ucmd->buttons & BUTTON_ATTACK ) ) {
 		Weapon_HookFree(client->hook);
 	}
@@ -899,7 +899,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if ( client->ps.generic2 == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
+	if ( client->ps.weapon == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
 		pm.gauntletHit = CheckGauntletAttack( ent );
 	}
@@ -965,9 +965,9 @@ void ClientThink_real( gentity_t *ent ) {
 
 	ent->waterlevel = pm.waterlevel;
 	ent->watertype = pm.watertype;
-	ent->client->ps.generic2 = ent->swep_id;
+	ent->client->ps.weapon = ent->swep_id;
 	ent->client->ps.stats[STAT_SWEPAMMO] = ent->swep_ammo[ent->swep_id];
-	ent->s.generic3 = ent->swep_ammo[ent->swep_id];
+	ent->s.weapon = ent->swep_ammo[ent->swep_id];
 
 	// execute client events
 	ClientEvents( ent, oldEventSequence );

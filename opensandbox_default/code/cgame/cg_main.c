@@ -56,8 +56,6 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
-	case CG_LAST_ATTACKER:
-		return CG_LastAttacker();
 	default:
 		CG_Error( "vmMain: unknown command %i", command );
 		break;
@@ -99,13 +97,6 @@ int CG_CrosshairPlayer( void ) {
 		return -1;
 	}
 	return cg.crosshairClientNum;
-}
-
-int CG_LastAttacker( void ) {
-	if ( !cg.attackerTime ) {
-		return -1;
-	}
-	return cg.snap->ps.persistant[PERS_ATTACKER];
 }
 
 void QDECL CG_PrintfChat( qboolean team, const char *msg, ... ) {

@@ -1447,20 +1447,20 @@ void SetCustomWeapons( gentity_t *ent ) {
 	//Set spawnweapon
 	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		ent->swep_id = WP_PHYSGUN;
-		ent->client->ps.generic2 = WP_PHYSGUN;
+		ent->client->ps.weapon = WP_PHYSGUN;
 		ClientUserinfoChanged( ent->s.clientNum );
 		return;
 	} else {
 		for ( i = WEAPONS_NUM; i > 1; i-- ) {
 			if(ent->swep_list[i] == 1 ){
 				ent->swep_id = i;
-				ent->client->ps.generic2 = i;
+				ent->client->ps.weapon = i;
 				ClientUserinfoChanged( ent->s.clientNum );
 				return;
 			}
 		}
 		ent->swep_id = 1;
-		ent->client->ps.generic2 = 1;
+		ent->client->ps.weapon = 1;
 		ClientUserinfoChanged( ent->s.clientNum );
 	}
 }
