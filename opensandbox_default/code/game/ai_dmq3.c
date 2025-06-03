@@ -2689,9 +2689,6 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 	//
 	bestvis = 0;
 	for (i = 0; i < 3; i++) {
-		//if the point is not in potential visible sight
-		//if (!AAS_inPVS(eye, middle)) continue;
-		//
 		contents_mask = CONTENTS_SOLID|CONTENTS_PLAYERCLIP;
 		passent = viewer;
 		hitent = ent;
