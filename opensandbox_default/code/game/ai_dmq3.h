@@ -38,7 +38,7 @@ void BotSetupDeathmatchAI(void);
 //shutdown the deathmatch AI
 void BotShutdownDeathmatchAI(void);
 //let the bot live within it's deathmatch AI net
-void BotDeathmatchAI(bot_state_t *bs);
+void BotDeathmatchAI(bot_state_t *bs, float thinktime);
 //free waypoints
 void BotFreeWaypoints(bot_waypoint_t *wp);
 //choose a weapon
@@ -83,18 +83,14 @@ int BotSynonymContext(bot_state_t *bs);
 int BotSetLastOrderedTask(bot_state_t *bs);
 // selection of goals for teamplay
 void BotTeamGoals(bot_state_t *bs, int retreat);
-//returns the aggression of the bot in the range [0, 100]
-float BotAggression(bot_state_t *bs);
-//returns how bad the bot feels
-float BotFeelingBad(bot_state_t *bs);
 //returns true if the bot wants to retreat
 int BotWantsToRetreat(bot_state_t *bs);
 //returns true if the bot wants to chase
 int BotWantsToChase(bot_state_t *bs);
+//returns true if the bot wants to help
+int BotWantsToHelp(bot_state_t *bs);
 //returns true if the bot can and wants to rocketjump
 int BotCanAndWantsToRocketJump(bot_state_t *bs);
-// returns true if the bot has a persistant powerup and a weapon
-int BotHasPersistantPowerupAndWeapon(bot_state_t *bs);
 //returns true if the bot wants to and goes camping
 int BotWantsToCamp(bot_state_t *bs);
 //the bot will perform attack movements
@@ -151,6 +147,7 @@ int BotHarvesterCarryingCubes(bot_state_t *bs);
 void Bot1FCTFSeekGoals(bot_state_t *bs);
 void Bot1FCTFRetreatGoals(bot_state_t *bs);
 void BotObeliskSeekGoals(bot_state_t *bs);
+void BotObeliskRetreatGoals(bot_state_t *bs);
 void BotGoHarvest(bot_state_t *bs);
 void BotHarvesterSeekGoals(bot_state_t *bs);
 void BotHarvesterRetreatGoals(bot_state_t *bs);
@@ -161,12 +158,11 @@ int BotGetAlternateRouteGoal(bot_state_t *bs, int base);
 //returns either the alternate route goal or the given goal
 bot_goal_t *BotAlternateRoute(bot_state_t *bs, bot_goal_t *goal);
 //create a new waypoint
-bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, float wait, int areanum);
+bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, int areanum);
 //find a waypoint with the given name
 bot_waypoint_t *BotFindWayPoint(bot_waypoint_t *waypoints, char *name);
 //strstr but case insensitive
 char *stristr(char *str, char *charset);
-int Q_strcmp_simple(const char *s1, const char *s2);
 //returns the number of the client with the given name
 int ClientFromName(char *name);
 int ClientOnSameTeamFromName(bot_state_t *bs, char *name);

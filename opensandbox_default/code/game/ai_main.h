@@ -35,8 +35,6 @@
 
 //#define DEBUG
 #define CTF
-
-#define MAX_ITEMS					1024
 //bot flags
 #define BFL_STRAFERIGHT				1	//strafe to the right
 #define BFL_ATTACKED				2	//bot has attacked last ai frame
@@ -61,12 +59,6 @@
 #define LTG_ATTACKENEMYBASE			13	//attack the enemy base
 #define LTG_MAKELOVE_UNDER			14
 #define LTG_MAKELOVE_ONTOP			15
-//Long term DD goals
-#define LTG_POINTA				16	//Take/Defend point A
-#define LTG_POINTB				17	//Take/Defend point B
-//Long term DD goals
-#define LTG_DOMROAM                             18      //Go for a non taken point.
-#define LTG_DOMHOLD                             19      //Pick a point and hold it.
 //some goal dedication times
 #define TEAM_HELP_TIME				60	//1 minute teamplay help time
 #define TEAM_ACCOMPANY_TIME			600	//10 minutes teamplay accompany time
@@ -104,8 +96,6 @@ typedef struct bot_waypoint_s
 	int			inuse;
 	char		name[32];
 	bot_goal_t	goal;
-	float		wait;
-	int			stoptime;			//time at which bot stopped moving at waypoint
 	struct		bot_waypoint_s *next, *prev;
 } bot_waypoint_t;
 
@@ -136,7 +126,7 @@ typedef struct bot_state_s
 	int botthink_residual;							//residual for the bot thinks
 	int client;										//client number of the bot
 	int entitynum;									//entity number of the bot
-	int spbot;										//singleplayer bot
+	int npcType;
 	playerState_t cur_ps;							//current player state
 	int last_eFlags;								//last ps flags
 	usercmd_t lastucmd;								//usercmd from last frame
@@ -289,8 +279,8 @@ typedef struct bot_state_s
 	bot_waypoint_t *patrolpoints;					//patrol points
 	bot_waypoint_t *curpatrolpoint;					//current patrol point the bot is going for
 	int patrolflags;								//patrol flags
-	int	swep_list[WEAPONS_NUM];					//OpenSandbox weapon system
-	int	swep_ammo[WEAPONS_NUM];					//OpenSandbox ammo system
+	int	swep_list[WEAPONS_NUM];						//OpenSandbox weapon system
+	int	swep_ammo[WEAPONS_NUM];						//OpenSandbox ammo system
 } bot_state_t;
 
 //resets the whole bot state
@@ -311,3 +301,4 @@ int		BotAI_GetClientState( int clientNum, playerState_t *state );
 int		BotAI_GetEntityState( int entityNum, entityState_t *state );
 int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );
 int		BotSelectOpenSandboxWeapon(bot_state_t *bs);
+int		BotTeamLeader(bot_state_t *bs);

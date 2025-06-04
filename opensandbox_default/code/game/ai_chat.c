@@ -35,6 +35,7 @@
 
 #include "g_local.h"
 #include "botlib.h"
+
 //
 #include "ai_main.h"
 #include "ai_dmq3.h"
@@ -48,6 +49,7 @@
 #include "match.h"				//string matching types and vars
 
 #define TIME_BETWEENCHATTING	25
+
 
 /*
 ==================
@@ -284,10 +286,6 @@ char *BotWeaponNameForMeansOfDeath(int mod) {
 		case MOD_BFG_SPLASH: return "BFG10K";
 		case MOD_NAIL: return "Nailgun";
 		case MOD_CHAINGUN: return "Chaingun";
-		case MOD_FLAME:
-		case MOD_FLAME_SPLASH: return "Flamethrower";
-		case MOD_ANTIMATTER:
-		case MOD_ANTIMATTER_SPLASH: return "Dark Flare";
 		case MOD_PROXIMITY_MINE: return "Proximity Launcher";
 		case MOD_KAMIKAZE: return "Kamikaze";
 		case MOD_JUICED: return "Prox mine";
@@ -362,16 +360,10 @@ int BotValidChatPosition(bot_state_t *bs) {
 	vec3_t point, start, end, mins, maxs;
 	bsp_trace_t trace;
 
-		if(bs->spbot){
-        if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-        }}
 	//if the bot is dead all positions are valid
 	if (BotIsDead(bs)) return qtrue;
-        if (BotIsObserver(bs)) return qtrue;
 	//never start chatting with a powerup
 	if (bs->inventory[INVENTORY_QUAD] ||
-		bs->inventory[INVENTORY_ENVIRONMENTSUIT] ||
 		bs->inventory[INVENTORY_HASTE] ||
 		bs->inventory[INVENTORY_INVISIBILITY] ||
 		bs->inventory[INVENTORY_REGEN] ||
@@ -407,11 +399,6 @@ int BotChat_EnterGame(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-	if(bs->spbot){
-    if(!NpcFactionProp(bs, NP_CHAT, 0)){
-    return qfalse; // spbot no chat
-    }}
-
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	//don't chat in teamplay
@@ -443,10 +430,6 @@ int BotChat_ExitGame(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	//don't chat in teamplay
@@ -478,15 +461,12 @@ int BotChat_StartLevel(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) {
+	    trap_EA_Command(bs->client, "vtaunt");
 	    return qfalse;
 	}
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
@@ -511,16 +491,15 @@ int BotChat_EndLevel(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	// teamplay
 	if (TeamPlayIsOn()) 
 	{
+		if (BotIsFirstInRankings(bs)) {
+			trap_EA_Command(bs->client, "vtaunt");
+		}
 		return qtrue;
 	}
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
@@ -570,10 +549,6 @@ int BotChat_Death(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_DEATH, 0, 1);
@@ -590,15 +565,14 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	//
 	if (TeamPlayIsOn() && BotSameTeam(bs, bs->lastkilledby)) {
 		if (bs->lastkilledby == bs->client) return qfalse;
-		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR){
 		BotAI_BotInitialChat(bs, "death_teammate", name, NULL);
 		bs->chatto = CHAT_TEAM;
-		}
 	}
 	else
 	{
 		//teamplay
 		if (TeamPlayIsOn()) {
+			trap_EA_Command(bs->client, "vtaunt");
 			return qtrue;
 		}
 		//
@@ -672,10 +646,6 @@ int BotChat_Kill(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_KILL, 0, 1);
@@ -693,15 +663,14 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	//
 	bs->chatto = CHAT_ALL;
 	if (TeamPlayIsOn() && BotSameTeam(bs, bs->lastkilledplayer)) {
-		if(gametype != GT_SANDBOX && gametype != GT_MAPEDITOR){
 		BotAI_BotInitialChat(bs, "kill_teammate", name, NULL);
 		bs->chatto = CHAT_TEAM;
-		}
 	}
 	else
 	{
 		//don't chat in teamplay
 		if (TeamPlayIsOn()) {
+			trap_EA_Command(bs->client, "vtaunt");
 			return qfalse;			// don't wait
 		}
 		//
@@ -737,15 +706,11 @@ int BotChat_EnemySuicide(bot_state_t *bs) {
 	char name[32];
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	if (BotNumActivePlayers() <= 1) return qfalse;
 	//
-	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENEMYSUICIDE, 0, 1);
+	rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_KILL, 0, 1);
 	//don't chat in teamplay
 	if (TeamPlayIsOn()) return qfalse;
 	//if fast chat is off
@@ -774,10 +739,6 @@ int BotChat_HitTalking(bot_state_t *bs) {
 	int lasthurt_client;
 	float rnd;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	if (BotNumActivePlayers() <= 1) return qfalse;
@@ -797,7 +758,7 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (!BotValidChatPosition(bs)) return qfalse;
 	//
 	ClientName(g_entities[bs->client].client->lasthurt_client, name, sizeof(name));
-	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_mod);
+	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_client);
 	//
 	BotAI_BotInitialChat(bs, "hit_talking", name, weap, NULL);
 	bs->lastchat_time = FloatTime();
@@ -816,10 +777,6 @@ int BotChat_HitNoDeath(bot_state_t *bs) {
 	int lasthurt_client;
 	aas_entityinfo_t entinfo;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	lasthurt_client = g_entities[bs->client].client->lasthurt_client;
 	if (!lasthurt_client) return qfalse;
 	if (lasthurt_client == bs->client) return qfalse;
@@ -862,10 +819,6 @@ int BotChat_HitNoKill(bot_state_t *bs) {
 	float rnd;
 	aas_entityinfo_t entinfo;
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	if (BotNumActivePlayers() <= 1) return qfalse;
@@ -901,10 +854,6 @@ int BotChat_Random(bot_state_t *bs) {
 	float rnd;
 	char name[32];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return qfalse; // spbot no chat
-}}
 	if (bot_nochat.integer) return qfalse;
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
@@ -926,12 +875,13 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	if (BotVisibleEnemies(bs)) return qfalse;
 	//
 	if (bs->lastkilledplayer == bs->client) {
-		Q_strncpyz(name, BotRandomOpponentName(bs),sizeof(name));
+		strcpy(name, BotRandomOpponentName(bs));
 	}
 	else {
 		EasyClientName(bs->lastkilledplayer, name, sizeof(name));
 	}
 	if (TeamPlayIsOn()) {
+		trap_EA_Command(bs->client, "vtaunt");
 		return qfalse;			// don't wait
 	}
 	//
@@ -983,12 +933,6 @@ void BotChatTest(bot_state_t *bs) {
 	char name[32];
 	char *weap;
 	int num, i;
-	
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHAT, 0)){
-        return; // spbot no chat
-}}
-        if (bot_nochat.integer) return;
 
 	num = trap_BotNumInitialChats(bs->cs, "game_enter");
 	for (i = 0; i < num; i++)
@@ -1203,7 +1147,7 @@ if(!NpcFactionProp(bs, NP_CHAT, 0)){
 	}
 	//
 	if (bs->lastkilledplayer == bs->client) {
-		Q_strncpyz(name, BotRandomOpponentName(bs), sizeof(name));
+		strcpy(name, BotRandomOpponentName(bs));
 	}
 	else {
 		EasyClientName(bs->lastkilledplayer, name, sizeof(name));

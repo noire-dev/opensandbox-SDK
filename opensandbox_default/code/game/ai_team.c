@@ -35,6 +35,7 @@
 
 #include "g_local.h"
 #include "botlib.h"
+
 //
 #include "ai_main.h"
 #include "ai_dmq3.h"
@@ -169,61 +170,10 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 
 /*
 ==================
-BotSortTeamMatesByReletiveTravelTime2ddA
-For Double Domination
-==================
-*/
-int BotSortTeamMatesByRelativeTravelTime2ddA(bot_state_t *bs, int *teammates, int maxteammates) {
-	int i, j, k, numteammates;
-	double traveltime, traveltime2b;
-	char buf[MAX_INFO_STRING];
-	static int maxclients;
-	double traveltimes[MAX_CLIENTS];
-	//int traveltimes2b[MAX_CLIENTS];
-	bot_goal_t *goalA = &ctf_redflag;
-	bot_goal_t *goalB = &ctf_blueflag;
-
-	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
-
-	numteammates = 0;
-
-	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
-		trap_GetConfigstring(CS_PLAYERS+i, buf, sizeof(buf));
-		//if no config string or no name
-		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
-		//skip spectators
-		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) continue;
-		if (BotSameTeam(bs, i)) {
-			traveltime = (double)BotClientTravelTimeToGoal(i, goalA);
-			traveltime2b = (double)BotClientTravelTimeToGoal(i, goalB);
-			traveltime = traveltime/traveltime2b;
-
-			for (j = 0; j < numteammates; j++) {
-				if (traveltime < traveltimes[j]) {
-					for (k = numteammates; k > j; k--) {
-						traveltimes[k] = traveltimes[k-1];
-						teammates[k] = teammates[k-1];
-					}
-					break;
-				}
-			}
-			traveltimes[j] = traveltime;
-			teammates[j] = i;
-			numteammates++;
-			if (numteammates >= maxteammates) break;
-		}
-	}
-
-	return numteammates;
-}
-
-/*
-==================
 BotSetTeamMateTaskPreference
 ==================
 */
-void BotSetTeamMateTaskPreference(int teammate, int preference) {
+void BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference) {
 	char teammatename[MAX_NETNAME];
 
 	ctftaskpreferences[teammate].preference = preference;
@@ -236,7 +186,7 @@ void BotSetTeamMateTaskPreference(int teammate, int preference) {
 BotGetTeamMateTaskPreference
 ==================
 */
-int BotGetTeamMateTaskPreference(int teammate) {
+int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate) {
 	char teammatename[MAX_NETNAME];
 
 	if (!ctftaskpreferences[teammate].preference) return 0;
@@ -250,7 +200,7 @@ int BotGetTeamMateTaskPreference(int teammate) {
 BotSortTeamMatesByTaskPreference
 ==================
 */
-int BotSortTeamMatesByTaskPreference(int *teammates, int numteammates) {
+int BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numteammates) {
 	int defenders[MAX_CLIENTS], numdefenders;
 	int attackers[MAX_CLIENTS], numattackers;
 	int roamers[MAX_CLIENTS], numroamers;
@@ -258,7 +208,7 @@ int BotSortTeamMatesByTaskPreference(int *teammates, int numteammates) {
 
 	numdefenders = numattackers = numroamers = 0;
 	for (i = 0; i < numteammates; i++) {
-		preference = BotGetTeamMateTaskPreference(teammates[i]);
+		preference = BotGetTeamMateTaskPreference(bs, teammates[i]);
 		if (preference & TEAMTP_DEFENDER) {
 			defenders[numdefenders++] = teammates[i];
 		}
@@ -293,8 +243,6 @@ void BotSayTeamOrderAlways(bot_state_t *bs, int toclient) {
 	char buf[MAX_MESSAGE_SIZE];
 	char name[MAX_NETNAME];
 
-    if (bot_nochat.integer>2) return;
-
 	//if the bot is talking to itself
 	if (bs->client == toclient) {
 		//don't show the message just put it in the console message queue
@@ -302,7 +250,8 @@ void BotSayTeamOrderAlways(bot_state_t *bs, int toclient) {
 		ClientName(bs->client, name, sizeof(name));
 		Com_sprintf(teamchat, sizeof(teamchat), EC"(%s"EC")"EC": %s", name, buf);
 		trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, teamchat);
-	} else {
+	}
+	else {
 		trap_BotEnterChat(bs->cs, toclient, CHAT_TELL);
 	}
 }
@@ -313,11 +262,6 @@ BotSayTeamOrders
 ==================
 */
 void BotSayTeamOrder(bot_state_t *bs, int toclient) {
-	if(bs->spbot){
-	if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-	    return; // spbot no chat
-	}}
-
 	BotSayTeamOrderAlways(bs, toclient);
 }
 
@@ -331,12 +275,8 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//different orders based on the number of team mates
 	switch(bs->numteammates) {
 		case 1: break;
@@ -346,7 +286,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			if (teammates[0] != bs->flagcarrier) other = teammates[0];
 			else other = teammates[1];
 			ClientName(other, name, sizeof(name));
-			if (bot_nochat.integer<3) BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, other);
 			break;
 		}
@@ -359,22 +299,23 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			if ( bs->flagcarrier != -1 ) {
 				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 				if (bs->flagcarrier == bs->client) {
-					if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 				}
 				else {
-					if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+					BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 				}
 			}
 			else {
-				if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				//
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			}
-			if (bot_nochat.integer<3)BotSayTeamOrder(bs, other);
+			BotSayTeamOrder(bs, other);
 			//tell the one furthest from the the base not carrying the flag to get the enemy flag
 			if (teammates[2] != bs->flagcarrier) other = teammates[2];
 			else other = teammates[1];
 			ClientName(other, name, sizeof(name));
-			if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-			if (bot_nochat.integer<3)BotSayTeamOrder(bs, other);
+			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			BotSayTeamOrder(bs, other);
 			break;
 		}
 		default:
@@ -393,12 +334,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					//
 					ClientName(teammates[i], name, sizeof(name));
 					if (bs->flagcarrier == bs->client) {
-						if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 					}
 					else {
-						if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 					}
-					if (bot_nochat.integer<3)BotSayTeamOrder(bs, teammates[i]);
+					BotSayTeamOrder(bs, teammates[i]);
 				}
 			}
 			else {
@@ -409,8 +350,8 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					}
 					//
 					ClientName(teammates[i], name, sizeof(name));
-					if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					if (bot_nochat.integer<3)BotSayTeamOrder(bs, teammates[i]);
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
 				}
 			}
 			for (i = 0; i < attackers; i++) {
@@ -420,8 +361,8 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				}
 				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
-				if (bot_nochat.integer<3)BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				if (bot_nochat.integer<3)BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
 			//
 			break;
@@ -438,20 +379,9 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs) {
 	int numteammates, defenders, attackers, i;
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
-	qboolean weAreAttacking;
-
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
 
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
-
-	weAreAttacking = qfalse;
-
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -459,7 +389,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			case 1: break;
 			case 2:
 			{
-				// keep one near the base for when the flag is returned
+				//both will go for the enemy flag
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
@@ -490,7 +420,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				//keep some people near the base for when the flag is returned
 				defenders = (int) (float) numteammates * 0.3 + 0.5;
 				if (defenders > 3) defenders = 3;
-				attackers = (int) (float) numteammates * 0.6 + 0.5;
+				attackers = (int) (float) numteammates * 0.7 + 0.5;
 				if (attackers > 6) attackers = 6;
 				for (i = 0; i < defenders; i++) {
 					//
@@ -529,7 +459,7 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			{
 				//everyone go for the flag
 				ClientName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				//
 				ClientName(teammates[1], name, sizeof(name));
@@ -577,15 +507,8 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//different orders based on the number of team mates
 	switch(numteammates) {
 		case 1: break;
@@ -669,46 +592,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 	}
 }
 
-/*
-==================
-BotDDorders
-==================
-*/
-
-void BotDDorders_Standard(bot_state_t *bs) {
-	int numteammates, i;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME];
-
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
-	//sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByRelativeTravelTime2ddA(bs, teammates, sizeof(teammates));
-
-	switch(numteammates) {
-		case 1: break;
-
-		default:
-		{
-			for(i=0;i<numteammates/2;i++) { //Half take point A
-				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_takea", name, NULL);
-				BotSayTeamOrder(bs, teammates[i]);
-			}
-			for(i=numteammates/2+1;i<numteammates;i++) { //Rest takes point B
-				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_takeb", name, NULL);
-				BotSayTeamOrder(bs, teammates[i]);
-			}
-			break;
-		}
-	}
-}
 
 /*
 ==================
@@ -719,21 +602,11 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 	int numteammates, defenders, attackers, i;
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
-	qboolean weAreAttacking;
-
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-        if (bot_nochat.integer>2) return;
 
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
-
-	weAreAttacking = qfalse;
-
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -867,15 +740,6 @@ void BotCTFOrders(bot_state_t *bs) {
 	}
 }
 
-/*
-==================
-BotDDorders
-==================
-*/
-void BotDDorders(bot_state_t *bs) {
-	BotDDorders_Standard(bs);	
-}
-
 
 /*
 ==================
@@ -885,11 +749,6 @@ BotCreateGroup
 void BotCreateGroup(bot_state_t *bs, int *teammates, int groupsize) {
 	char name[MAX_NETNAME], leadername[MAX_NETNAME];
 	int i;
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-        if (bot_nochat.integer>2) return;
 
 	// the others in the group will follow the teammates[0]
 	ClientName(teammates[0], leadername, sizeof(leadername));
@@ -985,17 +844,10 @@ void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1007,12 +859,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will get the flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1021,17 +871,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the second one closest to the base will defend the base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//the other will get the flag
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1047,14 +894,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1071,12 +916,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will get the flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1085,17 +928,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the others should go for the enemy flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1111,14 +951,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1139,17 +977,10 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1163,7 +994,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(other, name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, other);
-
 				break;
 			}
 			case 3:
@@ -1174,7 +1004,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(other, name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, other);
-
 				//tell the one furthest from the base not carrying the flag to accompany the flag carrier
 				if (teammates[2] != bs->flagcarrier) other = teammates[2];
 				else other = teammates[1];
@@ -1183,17 +1012,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 					if (bs->flagcarrier == bs->client) {
 						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-
 					}
 					else {
 						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-
 					}
 				}
 				else {
 					//
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-
 				}
 				BotSayTeamOrder(bs, other);
 				break;
@@ -1214,7 +1040,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				if (bs->flagcarrier != -1) {
 					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
@@ -1227,11 +1052,9 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 						if (bs->flagcarrier == bs->client) {
 							BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-
 						}
 						else {
 							BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-
 						}
 						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					}
@@ -1246,7 +1069,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 						BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 					}
 				}
 				//
@@ -1266,7 +1088,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(other, name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, other);
-
 				break;
 			}
 			case 3:
@@ -1277,7 +1098,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(other, name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, other);
-
 				//tell the one furthest from the base not carrying the flag to accompany the flag carrier
 				if (teammates[2] != bs->flagcarrier) other = teammates[2];
 				else other = teammates[1];
@@ -1285,11 +1105,9 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 				if (bs->flagcarrier == bs->client) {
 					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-
 				}
 				else {
 					BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-
 				}
 				BotSayTeamOrder(bs, other);
 				break;
@@ -1310,7 +1128,6 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 				for (i = 0; i < attackers; i++) {
@@ -1322,11 +1139,9 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					if (bs->flagcarrier == bs->client) {
 						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-
 					}
 					else {
 						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-
 					}
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				}
@@ -1349,17 +1164,10 @@ void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1371,12 +1179,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1385,17 +1191,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the second one closest to the base will defend the base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//the other will also defend the base
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1405,20 +1208,18 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				if (defenders > 8) defenders = 8;
 				//10% will try to return the flag
 				attackers = (int) (float) numteammates * 0.1 + 0.5;
-				if (attackers > 1) attackers = 1;
+				if (attackers > 2) attackers = 2;
 				for (i = 0; i < defenders; i++) {
 					//
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1435,12 +1236,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will get the flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1449,24 +1248,21 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the others should go for the enemy flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
 			{
 				//70% defend the base
 				defenders = (int) (float) numteammates * 0.7 + 0.5;
-				if (defenders > 7) defenders = 7;
+				if (defenders > 8) defenders = 8;
 				//20% try to return the flag
 				attackers = (int) (float) numteammates * 0.2 + 0.5;
 				if (attackers > 2) attackers = 2;
@@ -1475,14 +1271,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1503,17 +1297,10 @@ void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1525,12 +1312,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will get the flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1539,17 +1324,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the second one closest to the base will defend the base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//the other will get the flag
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1565,14 +1347,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1589,12 +1369,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will get the flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1603,17 +1381,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the others should go for the enemy flag
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1629,14 +1404,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1671,17 +1444,10 @@ void BotObeliskOrders(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1693,12 +1459,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will attack the enemy base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1707,17 +1471,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the one second closest to the base also defends the base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//the other one attacks the enemy base
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1733,14 +1494,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1757,12 +1516,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will attack the enemy base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1771,17 +1528,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the others attack the enemy base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1797,14 +1551,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1825,17 +1577,10 @@ void BotHarvesterOrders(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-        if (bot_nochat.integer>2) return;
-
 	//sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
 	//sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(teammates, numteammates);
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	//passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
 		//different orders based on the number of team mates
@@ -1847,12 +1592,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will harvest
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1861,17 +1604,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the one second closest to the base also defends the base
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//the other one goes harvesting
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1887,14 +1627,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1911,12 +1649,10 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the other will harvest
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				break;
 			}
 			case 3:
@@ -1925,17 +1661,14 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
-
 				//the others go harvesting
 				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
-
 				//
 				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
-
 				break;
 			}
 			default:
@@ -1951,14 +1684,12 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
-
 				}
 				for (i = 0; i < attackers; i++) {
 					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-
 				}
 				//
 				break;
@@ -1993,8 +1724,6 @@ int FindHumanTeamLeader(bot_state_t *bs) {
 	return qfalse;
 }
 
-int lastRoundNumber; //used to give new orders every round
-
 /*
 ==================
 BotTeamAI
@@ -2004,70 +1733,50 @@ void BotTeamAI(bot_state_t *bs) {
 	int numteammates;
 	char netname[MAX_NETNAME];
 
-if(bs->spbot){
-if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
-        return; // spbot no chat
-}}
-
-    if (bot_nochat.integer>2) return;
-
-	if ( !TeamPlayIsOn() )
+	//
+	if ( gametype < GT_TEAM  )
 		return;
-
+	// make sure we've got a valid team leader
+	if (!BotValidTeamLeader(bs)) {
+		//
+		if (!FindHumanTeamLeader(bs)) {
+			//
+			if (!bs->askteamleader_time && !bs->becometeamleader_time) {
+				if (bs->entergame_time + 10 > FloatTime()) {
+					bs->askteamleader_time = FloatTime() + 5 + random() * 10;
+				}
+				else {
+					bs->becometeamleader_time = FloatTime() + 5 + random() * 10;
+				}
+			}
+			if (bs->askteamleader_time && bs->askteamleader_time < FloatTime()) {
+				// if asked for a team leader and no response
+				BotAI_BotInitialChat(bs, "whoisteamleader", NULL);
+				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
+				bs->askteamleader_time = 0;
+				bs->becometeamleader_time = FloatTime() + 8 + random() * 10;
+			}
+			if (bs->becometeamleader_time && bs->becometeamleader_time < FloatTime()) {
+				BotAI_BotInitialChat(bs, "iamteamleader", NULL);
+				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
+				ClientName(bs->client, netname, sizeof(netname));
+				Q_strncpyz(bs->teamleader, netname, sizeof(bs->teamleader));
+				bs->teamleader[sizeof(bs->teamleader)] = '\0';
+				bs->becometeamleader_time = 0;
+			}
+			return;
+		}
+	}
 	bs->askteamleader_time = 0;
 	bs->becometeamleader_time = 0;
 
 	//return if this bot is NOT the team leader
 	ClientName(bs->client, netname, sizeof(netname));
-
+	if (Q_stricmp(netname, bs->teamleader) != 0) return;
+	//
 	numteammates = BotNumTeamMates(bs);
 	//give orders
 	switch(gametype) {
-		case GT_SANDBOX:
-		{
-			if (bs->numteammates != numteammates || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
-				BotTeamOrders(bs);
-				//give orders again after 120 seconds
-				bs->teamgiveorders_time = FloatTime() + 120;
-			}
-			break;
-		}
-		case GT_MAPEDITOR:
-		{
-			if (bs->numteammates != numteammates || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
-				BotTeamOrders(bs);
-				//give orders again after 120 seconds
-				bs->teamgiveorders_time = FloatTime() + 120;
-			}
-			break;
-		}
-		case GT_FFA:
-		{
-			if (bs->numteammates != numteammates || bs->forceorders) {
-				bs->teamgiveorders_time = FloatTime();
-				bs->numteammates = numteammates;
-				bs->forceorders = qfalse;
-			}
-			//if it's time to give orders
-			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 5) {
-				BotTeamOrders(bs);
-				//give orders again after 120 seconds
-				bs->teamgiveorders_time = FloatTime() + 120;
-			}
-			break;
-		}
 		case GT_TEAM:
 		{
 			if (bs->numteammates != numteammates || bs->forceorders) {
@@ -2084,6 +1793,32 @@ if(!NpcFactionProp(bs, NP_CHATLISTEN, 0)){
 			break;
 		}
 		case GT_CTF:
+		{
+			//if the number of team mates changed or the flag status changed
+			//or someone wants to know what to do
+			if (bs->numteammates != numteammates || bs->flagstatuschanged || bs->forceorders) {
+				bs->teamgiveorders_time = FloatTime();
+				bs->numteammates = numteammates;
+				bs->flagstatuschanged = qfalse;
+				bs->forceorders = qfalse;
+			}
+			//if there were no flag captures the last 3 minutes
+			if (bs->lastflagcapture_time < FloatTime() - 240) {
+				bs->lastflagcapture_time = FloatTime();
+				//randomly change the CTF strategy
+				if (random() < 0.4) {
+					bs->ctfstrategy ^= CTFS_AGRESSIVE;
+					bs->teamgiveorders_time = FloatTime();
+				}
+			}
+			//if it's time to give orders
+			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 3) {
+				BotCTFOrders(bs);
+				//
+				bs->teamgiveorders_time = 0;
+			}
+			break;
+		}
 		case GT_1FCTF:
 		{
 			if (bs->numteammates != numteammates || bs->flagstatuschanged || bs->forceorders) {
