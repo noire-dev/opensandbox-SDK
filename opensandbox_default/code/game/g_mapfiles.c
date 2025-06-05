@@ -442,7 +442,7 @@ void G_LoadMapfile_f( void ) {
 	
 	G_LoadMapfile(filename);
 	trap_Cvar_Set("mapfile",filename);
-	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
+	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, sizeof(mapname));
 	trap_Cvar_Set("lastmap",mapname);
 
 	G_RelinkEntities();

@@ -687,6 +687,7 @@ typedef enum {
 #define	MAX_MODELS			1024
 #define	MAX_SOUNDS			256
 #define	MAX_CLIENTS			128
+#define MAX_LOCATIONS		64
 #define	GENTITYNUM_BITS		12
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
 
@@ -697,7 +698,7 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-3)
 
-#define	MAX_CONFIGSTRINGS	1600+32
+#define	MAX_CONFIGSTRINGS	1600
 #define	MAX_GAMESTATE_CHARS	32000
 
 // these are the only configstrings that the system reserves, all the

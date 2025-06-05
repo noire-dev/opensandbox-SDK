@@ -1180,7 +1180,7 @@ int BotAILoadMap( int restart ) {
 	vmCvar_t	mapname;
 
 	if (!restart) {
-		trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+		trap_Cvar_Register( &mapname, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 		trap_BotLibLoadMap( mapname.string );
 	}
 

@@ -89,7 +89,7 @@ void CG_DrawInformation( void ) {
 	qhandle_t	fade;
 	qhandle_t	logo;
 	qhandle_t	loading;
-	char		buf[1024];
+	char		buf[64];
 	vec4_t 		color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
 	vec4_t 		color_whiteblack	= {0.90f, 0.90f, 0.90f, 1.00f};
 	vec4_t 		color_grey	    	= {0.30f, 0.30f, 0.30f, 1.00f};
@@ -97,7 +97,7 @@ void CG_DrawInformation( void ) {
 
 	info = CG_ConfigString( CS_SERVERINFO );
 
-	s = Info_ValueForKey( info, "mapname" );
+	s = Info_ValueForKey( info, "sv_mapname" );
 	levelshot = trap_R_RegisterShaderNoMip( va( "levelshots/%s", s ) );
 	detail = trap_R_RegisterShaderNoMip( "menu/assets/loadingoverlay" );
 	fade = trap_R_RegisterShaderNoMip( "menu/assets/blacktrans" );
@@ -124,13 +124,13 @@ void CG_DrawInformation( void ) {
 	y = 15;
 
 	// server hostname
-	Q_strncpyz(buf, Info_ValueForKey( info, "sv_hostname" ), 1024);
+	Q_strncpyz(buf, Info_ValueForKey( info, "sv_hostname" ), 64);
 	Q_CleanStr(buf);
 	CG_DrawBigString( 110-cgs.wideoffset, y, buf, 1.0F );
 	y += PROP_HEIGHT;
 
 	// server mapname
-	Q_strncpyz(buf, Info_ValueForKey( info, "mapname" ), 1024);
+	Q_strncpyz(buf, Info_ValueForKey( info, "sv_mapname" ), 64);
 	Q_CleanStr(buf);
 	CG_DrawBigString( 110-cgs.wideoffset, y, buf, 1.0F );
 	y += PROP_HEIGHT;

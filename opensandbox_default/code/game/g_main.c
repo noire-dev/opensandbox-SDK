@@ -187,7 +187,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	vec4_t				rgba;
 	char mapname[64];
 
-	trap_Cvar_VariableStringBuffer("mapname", mapname, 64);
+	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, 64);
 
     G_Printf ("------- Game Initialization -------\n");
     G_Printf ("gamename: %s\n", GAME_VERSION);

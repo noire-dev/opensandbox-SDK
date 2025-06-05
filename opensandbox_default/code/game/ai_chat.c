@@ -256,7 +256,7 @@ char *BotMapTitle(void) {
 
 	trap_GetServerinfo(info, sizeof(info));
 
-	Q_strncpyz(mapname, Info_ValueForKey( info, "mapname" ), sizeof(mapname)-1);
+	Q_strncpyz(mapname, Info_ValueForKey( info, "sv_mapname" ), sizeof(mapname)-1);
 	mapname[sizeof(mapname)-1] = '\0';
 
 	return mapname;

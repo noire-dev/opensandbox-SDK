@@ -1397,8 +1397,6 @@ int AINode_Seek_ActivateEntity(bot_state_t *bs) {
 	if (bot_grapple.integer) bs->tfl |= TFL_GRAPPLEHOOK;
 	// if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-	// map specific code
-	BotMapScripts(bs);
 	// no enemy
 	bs->enemy = -1;
 	// if the bot has no activate goal
@@ -1614,8 +1612,6 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
-	//map specific code
-	BotMapScripts(bs);
 	//no enemy
 	bs->enemy = -1;
 	//if the bot has no goal
@@ -1757,8 +1753,6 @@ int AINode_Seek_LTG(bot_state_t *bs)
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
-	//map specific code
-	BotMapScripts(bs);
 	//no enemy
 	bs->enemy = -1;
 	//
@@ -2121,8 +2115,6 @@ int AINode_Battle_Chase(bot_state_t *bs)
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
-	//map specific code
-	BotMapScripts(bs);
 	//create the chase goal
 	goal.entitynum = bs->enemy;
 	goal.areanum = bs->lastenemyareanum;
@@ -2254,8 +2246,6 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 	if (bot_grapple.integer) bs->tfl |= TFL_GRAPPLEHOOK;
 	//if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-	//map specific code
-	BotMapScripts(bs);
 	//update the attack inventory values
 	BotUpdateBattleInventory(bs, bs->enemy);
 	//if the bot doesn't want to retreat anymore... probably picked up some nice items
@@ -2420,8 +2410,6 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
-	//map specific code
-	BotMapScripts(bs);
 	//update the last time the enemy was visible
 	if (BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy)) {
 		bs->enemyvisible_time = FloatTime();
