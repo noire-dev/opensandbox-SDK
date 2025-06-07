@@ -704,7 +704,7 @@ typedef enum {
 
 // gitem_t->type
 typedef enum {
-	IT_BAD,
+	IT_NULL,
 	IT_WEAPON,
 	IT_AMMO,
 	IT_ARMOR,

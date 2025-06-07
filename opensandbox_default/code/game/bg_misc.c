@@ -30,7 +30,7 @@
 #include "g_local.h"
 
 gitem_t	bg_itemlist[] = {
-	{ NULL, 						NULL, 											NULL, 						NULL, 					0, 		0, 				0, },
+	{ NULL, 						NULL, 											NULL, 						NULL, 					0, 		IT_NULL, 		0, },
 	{ "item_armor_shard", 			"models/powerups/armor/shard.md3", 				"icons/iconr_shard", 		"Armor Shard", 			5, 		IT_ARMOR, 		0 },
 	{ "item_armor_combat", 			"models/powerups/armor/armor_yel.md3", 			"icons/iconr_yellow", 		"Armor 50", 			50, 	IT_ARMOR, 		0 },
 	{ "item_armor_body", 			"models/powerups/armor/armor_red.md3",			"icons/iconr_red",			"Heavy Armor",			100,	IT_ARMOR,		0 },
@@ -397,8 +397,8 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		}
 		return qtrue;
 
-        case IT_BAD:
-            Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
+        case IT_NULL:
+            Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_NULL" );
         default:
     		Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType );
         	break;
