@@ -554,7 +554,7 @@ The server says this item is used on this level
 */
 void CG_RegisterWeapon( int weaponNum ) {
 	weaponInfo_t	*weaponInfo;
-	gitem_t			*item, *ammo;
+	item_t			*item, *ammo;
 	char			path[MAX_QPATH];
 	vec3_t			mins, maxs;
 	int				i;
@@ -572,7 +572,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 	memset( weaponInfo, 0, sizeof( *weaponInfo ) );
 	weaponInfo->registered = qtrue;
 
-	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
+	for ( item = gameInfoItems + 1 ; item->classname ; item++ ) {
 		if ( item->giType == IT_WEAPON && item->giTag == weaponNum ) {
 			weaponInfo->item = item;
 			break;
@@ -583,7 +583,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		CG_Error( "Couldn't find weapon %i", weaponNum );
 		return;
 	}
-	CG_RegisterItemVisuals( item - bg_itemlist );
+	CG_RegisterItemVisuals( item - gameInfoItems );
 
 	// load cmodel before model so filecache works
 	weaponInfo->weaponModel = trap_R_RegisterModel( item->world_model );
@@ -597,7 +597,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 	weaponInfo->weaponIcon = trap_R_RegisterShader( item->icon );
 	weaponInfo->ammoIcon = trap_R_RegisterShader( item->icon );
 
-	for ( ammo = bg_itemlist + 1 ; ammo->classname ; ammo++ ) {
+	for ( ammo = gameInfoItems + 1 ; ammo->classname ; ammo++ ) {
 		if ( ammo->giType == IT_AMMO && ammo->giTag == weaponNum ) {
 			break;
 		}
@@ -898,10 +898,10 @@ The server says this item is used on this level
 */
 void CG_RegisterItemVisuals( int itemNum ) {
 	itemInfo_t		*itemInfo;
-	gitem_t			*item;
+	item_t			*item;
 
-	if ( itemNum < 0 || itemNum >= bg_numItems ) {
-		CG_Error( "CG_RegisterItemVisuals: itemNum %d out of range [0-%d]", itemNum, bg_numItems-1 );
+	if ( itemNum < 0 || itemNum >= gameInfoItemsNum ) {
+		CG_Error( "CG_RegisterItemVisuals: itemNum %d out of range [0-%d]", itemNum, gameInfoItemsNum-1 );
 	}
 
 	itemInfo = &cg_items[ itemNum ];
@@ -909,7 +909,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 		return;
 	}
 
-	item = &bg_itemlist[ itemNum ];
+	item = &gameInfoItems[ itemNum ];
 
 	memset( itemInfo, 0, sizeof( &itemInfo ) );
 	itemInfo->registered = qtrue;

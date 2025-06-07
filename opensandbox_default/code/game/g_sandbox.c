@@ -360,7 +360,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	gentity_t	*ent;
 	vec3_t		position;
 	spawn_t		*s;
-	gitem_t		*item;
+	item_t		*item;
 	qboolean spawn_entity = qfalse;
 	int			i;
 	qboolean extended_spawn = qtrue;
@@ -472,7 +472,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	}
 
 	// Item spawn
-	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
+	for ( item=gameInfoItems+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
 			position[2] += 48;
 			VectorCopy( position, ent->s.origin );
@@ -667,17 +667,17 @@ void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, 
 	}
 
 	if(attacker->tool_id == TL_REPLACEITEM){
-		gitem_t	*item;
+		item_t	*item;
 		int i;
 		if(entity->s.eType != ET_ITEM){
 			trap_SendServerCommand( attacker->s.clientNum, "cllp \"This must be the item\n\"" );
 			return;
 		}
-		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
+		for ( item=gameInfoItems+1, i = 1; item->classname; item++, i++ ) {
 			if ( !strcmp(item->classname, arg01) ) {
-				entity->item = &bg_itemlist[i];
-				entity->item->classname = bg_itemlist[i].classname;
-				entity->classname = bg_itemlist[i].classname;
+				entity->item = &gameInfoItems[i];
+				entity->item->classname = gameInfoItems[i].classname;
+				entity->classname = gameInfoItems[i].classname;
 				entity->s.modelindex = i;
 			}
 		}

@@ -74,10 +74,10 @@ UI_FindItem
 
 ===============
 */
-gitem_t	*UI_FindItem( const char *pickupName ) {
-	gitem_t	*it;
+item_t	*UI_FindItem( const char *pickupName ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->pickup_name, pickupName ) )
 			return it;
 	}
@@ -85,10 +85,10 @@ gitem_t	*UI_FindItem( const char *pickupName ) {
 	return NULL;
 }
 
-gitem_t	*UI_FindItemClassname( const char *classname ) {
-	gitem_t	*it;
+item_t	*UI_FindItemClassname( const char *classname ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->classname, classname ) )
 			return it;
 	}
@@ -949,7 +949,7 @@ void ScrollList_Draw( menuelement_s *l ) {
 	float*		color;
 	qboolean	hasfocus;
 	int			style;
-	gitem_t		*it;
+	item_t		*it;
 	const char	*info;
 	char		pic[MAX_QPATH];
 	float		select_x = 0;
@@ -1910,6 +1910,19 @@ void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int iconName
 	if( !trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
 		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model );
 	}
+}
+
+/*
+=================
+UI_ServerGametype
+=================
+*/
+int UI_ServerGametype(void)
+{
+	char	info[MAX_INFO_STRING];
+
+	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	return atoi( Info_ValueForKey( info, "g_gametype" ) );
 }
 
 #define	CB_COMMAND 		0

@@ -1476,7 +1476,7 @@ UI_SandboxMainMenu
 ===============
 */
 void UI_SandboxMainMenu( void ) {
-	if(DynamicMenu_ServerGametype() == GT_SANDBOX || DynamicMenu_ServerGametype() == GT_MAPEDITOR){
+	if(UI_ServerGametype() == GT_SANDBOX || UI_ServerGametype() == GT_MAPEDITOR){
 	if(!uis.sb_tab){ uis.sb_tab = 1;}
 	SandboxMain_MenuInit();
 	UI_PushMenu ( &s_sandboxmain.menu );

@@ -184,7 +184,7 @@ struct gentity_s {
 	float		wait;
 	float		random;
 
-	gitem_t		*item;			// for bonus items
+	item_t		*item;			// for bonus items
 
 	//NEW VARIABLES
 	qboolean	flashlight;
@@ -636,11 +636,11 @@ void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
 void UseHoldableItem( gentity_t *ent );
-void PrecacheItem (gitem_t *it);
-gentity_t *Drop_Item( gentity_t *ent, gitem_t *item );
-gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity );
+void PrecacheItem (item_t *it);
+gentity_t *Drop_Item( gentity_t *ent, item_t *item );
+gentity_t *LaunchItem( item_t *item, vec3_t origin, vec3_t velocity );
 void SetRespawn (gentity_t *ent, float delay);
-void G_SpawnItem (gentity_t *ent, gitem_t *item);
+void G_SpawnItem (gentity_t *ent, item_t *item);
 void FinishSpawningItem( gentity_t *ent );
 void Think_Weapon (gentity_t *ent);
 int ArmorIndex (gentity_t *ent);
@@ -651,7 +651,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace );
 void Touch_Item2(gentity_t *ent, gentity_t *other, trace_t *trace, qboolean allowBot);
 
 void ClearRegisteredItems( void );
-void RegisterItem( gitem_t *item );
+void RegisterItem( item_t *item );
 void SaveRegisteredItems( void );
 
 //
@@ -1052,8 +1052,8 @@ float cvar_VariableValue( const char *var_name );
 void		trap_Printf( const char *fmt );
 void		trap_Error( const char *fmt ) __attribute__((noreturn));
 int			trap_Milliseconds( void );
-void		trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
-void		trap_Cvar_Update( vmCvar_t *cvar );
+void		trap_Cvar_Register( cvar_t *cvar, const char *var_name, const char *value, int flags );
+void		trap_Cvar_Update( cvar_t *cvar );
 void		trap_Cvar_Set( const char *var_name, const char *value );
 int			trap_Cvar_VariableIntegerValue( const char *var_name );
 void		trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );

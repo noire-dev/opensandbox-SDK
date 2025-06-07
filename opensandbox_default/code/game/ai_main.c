@@ -62,14 +62,14 @@ float floattime;
 //time to do a regular update
 float regularupdate_time;
 //
-vmCvar_t bot_thinktime;
-vmCvar_t bot_memorydump;
-vmCvar_t bot_saveroutingcache;
-vmCvar_t bot_pause;
-vmCvar_t bot_report;
-vmCvar_t bot_testsolid;
-vmCvar_t bot_testclusters;
-vmCvar_t bot_developer;
+cvar_t bot_thinktime;
+cvar_t bot_memorydump;
+cvar_t bot_saveroutingcache;
+cvar_t bot_pause;
+cvar_t bot_report;
+cvar_t bot_testsolid;
+cvar_t bot_testclusters;
+cvar_t bot_developer;
 
 
 void ExitLevel( void );
@@ -1177,7 +1177,7 @@ BotAILoadMap
 */
 int BotAILoadMap( int restart ) {
 	int			i;
-	vmCvar_t	mapname;
+	cvar_t	mapname;
 
 	if (!restart) {
 		trap_Cvar_Register( &mapname, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM );

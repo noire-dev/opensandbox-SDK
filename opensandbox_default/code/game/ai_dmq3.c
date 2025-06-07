@@ -67,15 +67,15 @@ bot_waypoint_t *botai_freewaypoints;
 int gametype;		//game type
 int maxclients;		//maximum number of clients
 
-vmCvar_t bot_grapple;
-vmCvar_t bot_rocketjump;
-vmCvar_t bot_fastchat;
-vmCvar_t bot_nochat;
-vmCvar_t bot_testrchat;
-vmCvar_t bot_challenge;
-vmCvar_t bot_predictobstacles;
+cvar_t bot_grapple;
+cvar_t bot_rocketjump;
+cvar_t bot_fastchat;
+cvar_t bot_nochat;
+cvar_t bot_testrchat;
+cvar_t bot_challenge;
+cvar_t bot_predictobstacles;
 
-extern vmCvar_t bot_developer;
+extern cvar_t bot_developer;
 
 vec3_t lastteleport_origin;		//last teleport event origin
 float lastteleport_time;		//last teleport event time

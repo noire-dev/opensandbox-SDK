@@ -26,58 +26,130 @@
 #include "ns_local.h"
 
 typedef struct {
-	vmCvar_t	*vmCvar;
+	cvar_t	*vmCvar;
 	char		*cvarName;
 	char		*defaultString;
 	int			cvarFlags;
 } cvarTable_t;
 
+item_t gameInfoItems[] = {
+	{ NULL, 						NULL, 											NULL, 						NULL, 					0, 		IT_NULL, 		0 },
+	{ "item_armor_shard", 			"models/powerups/armor/shard.md3", 				"icons/iconr_shard", 		"Armor Shard", 			5, 		IT_ARMOR, 		0 },
+	{ "item_armor_combat", 			"models/powerups/armor/armor_yel.md3", 			"icons/iconr_yellow", 		"Armor 50", 			50, 	IT_ARMOR, 		0 },
+	{ "item_armor_body", 			"models/powerups/armor/armor_red.md3",			"icons/iconr_red",			"Heavy Armor",			100,	IT_ARMOR,		0 },
+	{ "item_health_small",			"models/powerups/health/small_cross.md3", 		"icons/iconh_green",		"Health 5",				5,		IT_HEALTH,		0 },
+	{ "item_health",				"models/powerups/health/medium_cross.md3",		"icons/iconh_yellow",		"Health 25",			25,		IT_HEALTH,		0 },
+	{ "item_health_large",			"models/powerups/health/large_cross.md3",		"icons/iconh_red",			"Health 50",			50,		IT_HEALTH,		0 },
+	{ "item_health_mega",			"models/powerups/health/mega_cross.md3",		"icons/iconh_mega",			"Mega Health",			100,	IT_HEALTH,		0 },
+	{ "weapon_gauntlet",			"models/weapons2/gauntlet/gauntlet.md3",		"icons/iconw_gauntlet",		"Melee",				0,		IT_WEAPON,		WP_GAUNTLET },
+	{ "weapon_shotgun",				"models/weapons2/shotgun/shotgun.md3",			"icons/iconw_shotgun",		"Shotgun",				10,		IT_WEAPON,		WP_SHOTGUN },
+	{ "weapon_machinegun",			"models/weapons2/machinegun/machinegun.md3",	"icons/iconw_machinegun",	"Machinegun",			40,		IT_WEAPON,		WP_MACHINEGUN },
+	{ "weapon_grenadelauncher",		"models/weapons2/grenadel/grenadel.md3",		"icons/iconw_grenade",		"Grenade Launcher",		10,		IT_WEAPON,		WP_GRENADE_LAUNCHER },
+	{ "weapon_rocketlauncher",		"models/weapons2/rocketl/rocketl.md3",			"icons/iconw_rocket",		"Rocket Launcher",		10,		IT_WEAPON,		WP_ROCKET_LAUNCHER },
+	{ "weapon_lightning",			"models/weapons2/lightning/lightning.md3",		"icons/iconw_lightning",	"Lightning Gun",		100,	IT_WEAPON,		WP_LIGHTNING },
+	{ "weapon_railgun",				"models/weapons2/railgun/railgun.md3",			"icons/iconw_railgun",		"Railgun",				10,		IT_WEAPON,		WP_RAILGUN },
+	{ "weapon_plasmagun",			"models/weapons2/plasma/plasma.md3",			"icons/iconw_plasma",		"Plasma Gun",			50,		IT_WEAPON,		WP_PLASMAGUN },
+	{ "weapon_bfg",					"models/weapons2/bfg/bfg.md3",					"icons/iconw_bfg",			"BFG10K",				20,		IT_WEAPON,		WP_BFG },
+	{ "weapon_grapplinghook",		"models/weapons2/grapple/grapple.md3",			"icons/iconw_grapple",		"Grappling Hook",		0,		IT_WEAPON,		WP_GRAPPLING_HOOK },
+	{ "weapon_nailgun",				"models/weapons/nailgun/nailgun.md3",			"icons/iconw_nailgun",		"Nailgun",				10,		IT_WEAPON,		WP_NAILGUN },
+	{ "weapon_prox_launcher",		"models/weapons/proxmine/proxmine.md3",			"icons/iconw_proxlauncher",	"Prox Launcher",		5,		IT_WEAPON,		WP_PROX_LAUNCHER },
+	{ "weapon_chaingun",			"models/weapons/vulcan/vulcan.md3",				"icons/iconw_chaingun",		"Chaingun",				80,		IT_WEAPON,		WP_CHAINGUN },
+	{ "weapon_flamethrower",		"models/weapons2/flamethrower/rocketl.md3",		"icons/iconw_flamethrower",	"Flamethrower",			100,	IT_WEAPON,		WP_FLAMETHROWER },
+	{ "weapon_antimatter",			"models/weapons2/antimatter/plasma.md3",		"icons/iconw_voodoo",		"Dark Flare",			100,	IT_WEAPON,		WP_ANTIMATTER },
+	{ "weapon_toolgun", 			"models/weapons/toolgun/toolgun.md3",			"icons/iconw_toolgun",		"Toolgun",				0,		IT_WEAPON,		WP_TOOLGUN },
+	{ "weapon_physgun", 			"models/weapons/physgun/physgun.md3",			"icons/iconw_physgun",		"Physgun",				0,		IT_WEAPON,		WP_PHYSGUN },
+	{ "weapon_gravitygun", 			"models/weapons/physgun/physgun.md3",			"icons/iconw_gravitygun",	"Gravitygun",			0,		IT_WEAPON,		WP_GRAVITYGUN },
+	{ "weapon_thrower",				"models/weapons3/machinegun/machinegun.md3",	"icons/iconw_thrower",		"Thrower",				100,	IT_WEAPON,		WP_THROWER },
+	{ "weapon_bouncer",				"models/weapons3/shotgun/shotgun.md3",			"icons/iconw_bouncer",		"Bouncer",				15,		IT_WEAPON,		WP_BOUNCER },
+	{ "weapon_thunder",				"models/weapons3/grenadel/grenadel.md3",		"icons/iconw_thunder",		"Thunder",				10,		IT_WEAPON,		WP_THUNDER },
+	{ "weapon_exploder",			"models/weapons3/rocketl/rocketl.md3",			"icons/iconw_exploder",		"Exploder",				10,		IT_WEAPON,		WP_EXPLODER },
+	{ "weapon_knocker",				"models/weapons3/lightning/lightning.md3",		"icons/iconw_knocker",		"Knocker",				25,		IT_WEAPON,		WP_KNOCKER },
+	{ "weapon_propgun",				"models/weapons3/railgun/railgun.md3",			"icons/iconw_propgun",		"Propgun",				15,		IT_WEAPON,		WP_PROPGUN },
+	{ "weapon_regenerator",			"models/weapons3/plasma/plasma.md3",			"icons/iconw_regenerator",	"Regenerator",			15,		IT_WEAPON,		WP_REGENERATOR },
+	{ "weapon_nuke",				"models/weapons3/bfg/bfg.md3",					"icons/iconw_nuke",			"Nuke",					2,		IT_WEAPON,		WP_NUKE },
+	{ "ammo_bullets",				"models/powerups/ammo/machinegunam.md3",		"icons/icona_machinegun",	"Bullets",				50,		IT_AMMO,		WP_MACHINEGUN },
+	{ "ammo_shells",				"models/powerups/ammo/shotgunam.md3",			"icons/icona_shotgun",		"Shells",				10,		IT_AMMO,		WP_SHOTGUN },
+	{ "ammo_grenades",				"models/powerups/ammo/grenadeam.md3",			"icons/icona_grenade",		"Grenades",				5,		IT_AMMO,		WP_GRENADE_LAUNCHER },
+	{ "ammo_cells",					"models/powerups/ammo/plasmaam.md3",			"icons/icona_plasma",		"Cells",				30,		IT_AMMO,		WP_PLASMAGUN },
+	{ "ammo_lightning",				"models/powerups/ammo/lightningam.md3",			"icons/icona_lightning",	"Lightning",			60,		IT_AMMO,		WP_LIGHTNING },
+	{ "ammo_rockets",				"models/powerups/ammo/rocketam.md3",			"icons/icona_rocket",		"Rockets",				5,		IT_AMMO,		WP_ROCKET_LAUNCHER },
+	{ "ammo_slugs",					"models/powerups/ammo/railgunam.md3",			"icons/icona_railgun",		"Slugs",				10,		IT_AMMO,		WP_RAILGUN },
+	{ "ammo_bfg",					"models/powerups/ammo/bfgam.md3",				"icons/icona_bfg",			"Bfg Ammo",				15,		IT_AMMO,		WP_BFG },
+	{ "ammo_nails",					"models/powerups/ammo/nailgunam.md3",			"icons/icona_nailgun",		"Nails",				20,		IT_AMMO,		WP_NAILGUN },
+	{ "ammo_mines",					"models/powerups/ammo/proxmineam.md3",			"icons/icona_proxlauncher",	"Proximity Mines",		10,		IT_AMMO,		WP_PROX_LAUNCHER },
+	{ "ammo_belt",					"models/powerups/ammo/chaingunam.md3",			"icons/icona_chaingun",		"Chaingun Belt",		100,	IT_AMMO,		WP_CHAINGUN },
+	{ "ammo_flame",					"models/powerups/ammo/flamethroweram.md3",		"icons/icona_flamethrower",	"Flame",				50,		IT_AMMO,		WP_FLAMETHROWER },
+	{ "holdable_teleporter",		"models/powerups/holdable/teleporter.md3",		"icons/teleporter",			"Personal Teleporter",	0,		IT_HOLDABLE,	HI_TELEPORTER },
+	{ "holdable_medkit", 			"models/powerups/holdable/medkit.md3",			"icons/medkit",				"Medkit", 				0,		IT_HOLDABLE,	HI_MEDKIT },
+	{ "holdable_kamikaze", 			"models/powerups/kamikazi.md3",					"icons/kamikaze",			"Kamikaze",				0,		IT_HOLDABLE,	HI_KAMIKAZE },
+	{ "holdable_portal", 			"models/powerups/holdable/porter.md3",			"icons/portal",				"Portal",				0,		IT_HOLDABLE,	HI_PORTAL },
+	{ "holdable_invulnerability", 	"models/powerups/holdable/invulnerability.md3",	"icons/invulnerability",	"Invulnerability",		0,		IT_HOLDABLE,	HI_INVULNERABILITY },
+	{ "item_quad",					"models/powerups/instant/quad.md3",				"icons/quad",				"Quad Damage",			30,		IT_POWERUP,		PW_QUAD },
+	{ "item_enviro",				"models/powerups/instant/enviro.md3",			"icons/envirosuit",			"Battle Suit",			30,		IT_POWERUP,		PW_BATTLESUIT },
+	{ "item_haste",					"models/powerups/instant/haste.md3",			"icons/haste",				"Speed",				30,		IT_POWERUP,		PW_HASTE },
+	{ "item_invis",					"models/powerups/instant/invis.md3",			"icons/invis",				"Invisibility",			30,		IT_POWERUP,		PW_INVIS },
+	{ "item_regen",					"models/powerups/instant/regen.md3",			"icons/regen",				"Regeneration",			30,		IT_POWERUP,		PW_REGEN },
+	{ "item_flight",				"models/powerups/instant/flight.md3",			"icons/flight",				"Flight",				60,		IT_POWERUP,		PW_FLIGHT },
+	{ "item_scout",					"models/powerups/scout.md3",					"icons/scout",				"Scout",				0,		IT_RUNE,		PW_SCOUT },
+	{ "item_guard",					"models/powerups/guard.md3",					"icons/guard",				"Guard",				0,		IT_RUNE,		PW_GUARD },
+	{ "item_doubler",				"models/powerups/doubler.md3",					"icons/doubler",			"Doubler",				0,		IT_RUNE,		PW_DOUBLER },
+	{ "item_ammoregen",				"models/powerups/ammo.md3",						"icons/ammo_regen",			"Ammo Regen",			0,		IT_RUNE,		PW_AMMOREGEN },
+	{ "team_CTF_redflag",			"models/flags/r_flag.md3",						"icons/iconf_red1",			"Red Flag",				0,		IT_TEAM,		PW_REDFLAG },
+	{ "team_CTF_blueflag",			"models/flags/b_flag.md3",						"icons/iconf_blu1",			"Blue Flag",			0,		IT_TEAM,		PW_BLUEFLAG },
+	{ "team_CTF_neutralflag",		"models/flags/n_flag.md3",						"icons/iconf_neutral1",		"Neutral Flag",			0,		IT_TEAM,		PW_NEUTRALFLAG },
+	{ "item_redcube",				"models/powerups/orb/r_orb.md3",				"icons/iconh_rorb",			"Red Cube",				0,		IT_TEAM,		0 },
+	{ "item_bluecube",				"models/powerups/orb/b_orb.md3",				"icons/iconh_borb",			"Blue Cube",			0,		IT_TEAM,		0 },
+	{NULL}
+};
+
+int	gameInfoItemsNum = sizeof(gameInfoItems) / sizeof(gameInfoItems[0]) - 1;
+
 #ifdef GAME
-vmCvar_t    sv_cheats;
-vmCvar_t    g_maxClients;
-vmCvar_t    g_maxEntities;
-vmCvar_t    g_fraglimit;
-vmCvar_t    g_timelimit;
-vmCvar_t    g_capturelimit;
-vmCvar_t    g_gametype;
-vmCvar_t    g_entitypack;
-vmCvar_t    g_extendedsandbox;
-vmCvar_t    g_randomItems;
-vmCvar_t    g_jumpheight;
-vmCvar_t    g_friendlyFire;
-vmCvar_t    g_password;
-vmCvar_t    g_dedicated;
-vmCvar_t    g_speed;
-vmCvar_t    g_gravity;
-vmCvar_t    g_knockback;
-vmCvar_t    g_blood;
-vmCvar_t    g_enableDust;
-vmCvar_t    g_enableBreath;
-vmCvar_t    g_spawn_health;
-vmCvar_t    g_spawn_armor;
-vmCvar_t    g_spawn_gauntlet;
-vmCvar_t    g_spawn_machinegun;
-vmCvar_t    g_spawn_shotgun;
-vmCvar_t    g_spawn_grenade;
-vmCvar_t    g_spawn_rocket;
-vmCvar_t    g_spawn_lightning;
-vmCvar_t    g_spawn_railgun;
-vmCvar_t    g_spawn_plasmagun;
-vmCvar_t    g_spawn_bfg;
-vmCvar_t    g_spawn_grapple;
-vmCvar_t    g_spawn_nail;
-vmCvar_t    g_spawn_mine;
-vmCvar_t    g_spawn_chain;
-vmCvar_t    g_spawn_flame;
-vmCvar_t    g_spawn_antimatter;
-vmCvar_t    g_spawn_quad;
-vmCvar_t    g_spawn_haste;
-vmCvar_t    g_spawn_bsuit;
-vmCvar_t    g_spawn_invis;
-vmCvar_t    g_spawn_regen;
-vmCvar_t    g_spawn_flight;
-vmCvar_t    g_spawn_holdable;
-vmCvar_t    sv_fps;
+cvar_t    sv_cheats;
+cvar_t    g_maxClients;
+cvar_t    g_maxEntities;
+cvar_t    g_fraglimit;
+cvar_t    g_timelimit;
+cvar_t    g_capturelimit;
+cvar_t    g_gametype;
+cvar_t    g_entitypack;
+cvar_t    g_extendedsandbox;
+cvar_t    g_randomItems;
+cvar_t    g_jumpheight;
+cvar_t    g_friendlyFire;
+cvar_t    g_password;
+cvar_t    g_dedicated;
+cvar_t    g_speed;
+cvar_t    g_gravity;
+cvar_t    g_knockback;
+cvar_t    g_blood;
+cvar_t    g_enableDust;
+cvar_t    g_enableBreath;
+cvar_t    g_spawn_health;
+cvar_t    g_spawn_armor;
+cvar_t    g_spawn_gauntlet;
+cvar_t    g_spawn_machinegun;
+cvar_t    g_spawn_shotgun;
+cvar_t    g_spawn_grenade;
+cvar_t    g_spawn_rocket;
+cvar_t    g_spawn_lightning;
+cvar_t    g_spawn_railgun;
+cvar_t    g_spawn_plasmagun;
+cvar_t    g_spawn_bfg;
+cvar_t    g_spawn_grapple;
+cvar_t    g_spawn_nail;
+cvar_t    g_spawn_mine;
+cvar_t    g_spawn_chain;
+cvar_t    g_spawn_flame;
+cvar_t    g_spawn_antimatter;
+cvar_t    g_spawn_quad;
+cvar_t    g_spawn_haste;
+cvar_t    g_spawn_bsuit;
+cvar_t    g_spawn_invis;
+cvar_t    g_spawn_regen;
+cvar_t    g_spawn_flight;
+cvar_t    g_spawn_holdable;
+cvar_t    sv_fps;
 
 static cvarTable_t cvarTable[] = {
 	{ NULL,                         "gamename",                     GAME_VERSION,   CVAR_ROM },
@@ -131,91 +203,91 @@ static cvarTable_t cvarTable[] = {
 #endif
 
 #ifdef CGAME
-vmCvar_t    g_gametype;
-vmCvar_t    headR;
-vmCvar_t    headG;
-vmCvar_t    headB;
-vmCvar_t    modelR;
-vmCvar_t    modelG;
-vmCvar_t    modelB;
-vmCvar_t    legsR;
-vmCvar_t    legsG;
-vmCvar_t    legsB;
-vmCvar_t    physR;
-vmCvar_t    physG;
-vmCvar_t    physB;
-vmCvar_t    cg_effectsTime;
-vmCvar_t    cg_effectsLimit;
-vmCvar_t    cg_effectsGibs;
-vmCvar_t    toolgun_mod1;
-vmCvar_t    toolgun_mod2;
-vmCvar_t    toolgun_mod3;
-vmCvar_t    toolgun_mod4;
-vmCvar_t    toolgun_mod5;
-vmCvar_t    toolgun_mod6;
-vmCvar_t    toolgun_mod7;
-vmCvar_t    toolgun_mod8;
-vmCvar_t    toolgun_mod9;
-vmCvar_t    toolgun_mod10;
-vmCvar_t    toolgun_mod11;
-vmCvar_t    toolgun_mod12;
-vmCvar_t    toolgun_mod13;
-vmCvar_t    toolgun_mod14;
-vmCvar_t    toolgun_mod15;
-vmCvar_t    toolgun_mod16;
-vmCvar_t    toolgun_mod17;
-vmCvar_t    toolgun_mod18;
-vmCvar_t    toolgun_mod19;
-vmCvar_t    toolgun_tool;
-vmCvar_t    toolgun_toolcmd1;
-vmCvar_t    toolgun_toolcmd2;
-vmCvar_t    toolgun_toolcmd3;
-vmCvar_t    toolgun_toolcmd4;
-vmCvar_t    toolgun_tooltext;
-vmCvar_t    toolgun_tooltip1;
-vmCvar_t    toolgun_tooltip2;
-vmCvar_t    toolgun_tooltip3;
-vmCvar_t    toolgun_tooltip4;
-vmCvar_t    toolgun_toolmode1;
-vmCvar_t    toolgun_toolmode2;
-vmCvar_t    toolgun_toolmode3;
-vmCvar_t    toolgun_toolmode4;
-vmCvar_t    cg_hide255;
-vmCvar_t    ns_haveerror;
-vmCvar_t    cg_postprocess;
-vmCvar_t    cl_language;
-vmCvar_t    cg_disableBobbing;
-vmCvar_t    cg_shadows;
-vmCvar_t    cg_drawTimer;
-vmCvar_t    cg_drawFPS;
-vmCvar_t    cg_drawCrosshair;
-vmCvar_t    cg_crosshairScale;
-vmCvar_t    cg_draw2D;
-vmCvar_t    cg_debugEvents;
-vmCvar_t    cg_addMarks;
-vmCvar_t    cg_drawGun;
-vmCvar_t    cg_fov;
-vmCvar_t    cg_zoomFov;
-vmCvar_t    cg_thirdPerson;
-vmCvar_t    cg_thirdPersonRange;
-vmCvar_t    cg_thirdPersonOffset;
-vmCvar_t    cg_drawSpeed;
-vmCvar_t    cg_paused;
-vmCvar_t    cg_blood;
-vmCvar_t    cg_drawFriend;
-vmCvar_t    cg_cameraEyes;
-vmCvar_t    cg_cameraEyes_Fwd;
-vmCvar_t    cg_cameraEyes_Up;
-vmCvar_t    cg_noProjectileTrail;
-vmCvar_t    cg_enableDust;
-vmCvar_t    cg_enableBreath;
-vmCvar_t    sv_fps;
-vmCvar_t    cg_atmosphericLevel;
-vmCvar_t    cg_crosshairColorRed;
-vmCvar_t    cg_crosshairColorGreen;
-vmCvar_t    cg_crosshairColorBlue;
-vmCvar_t    cg_chatBeep;
-vmCvar_t    cg_teamChatBeep;
+cvar_t    g_gametype;
+cvar_t    headR;
+cvar_t    headG;
+cvar_t    headB;
+cvar_t    modelR;
+cvar_t    modelG;
+cvar_t    modelB;
+cvar_t    legsR;
+cvar_t    legsG;
+cvar_t    legsB;
+cvar_t    physR;
+cvar_t    physG;
+cvar_t    physB;
+cvar_t    cg_effectsTime;
+cvar_t    cg_effectsLimit;
+cvar_t    cg_effectsGibs;
+cvar_t    toolgun_mod1;
+cvar_t    toolgun_mod2;
+cvar_t    toolgun_mod3;
+cvar_t    toolgun_mod4;
+cvar_t    toolgun_mod5;
+cvar_t    toolgun_mod6;
+cvar_t    toolgun_mod7;
+cvar_t    toolgun_mod8;
+cvar_t    toolgun_mod9;
+cvar_t    toolgun_mod10;
+cvar_t    toolgun_mod11;
+cvar_t    toolgun_mod12;
+cvar_t    toolgun_mod13;
+cvar_t    toolgun_mod14;
+cvar_t    toolgun_mod15;
+cvar_t    toolgun_mod16;
+cvar_t    toolgun_mod17;
+cvar_t    toolgun_mod18;
+cvar_t    toolgun_mod19;
+cvar_t    toolgun_tool;
+cvar_t    toolgun_toolcmd1;
+cvar_t    toolgun_toolcmd2;
+cvar_t    toolgun_toolcmd3;
+cvar_t    toolgun_toolcmd4;
+cvar_t    toolgun_tooltext;
+cvar_t    toolgun_tooltip1;
+cvar_t    toolgun_tooltip2;
+cvar_t    toolgun_tooltip3;
+cvar_t    toolgun_tooltip4;
+cvar_t    toolgun_toolmode1;
+cvar_t    toolgun_toolmode2;
+cvar_t    toolgun_toolmode3;
+cvar_t    toolgun_toolmode4;
+cvar_t    cg_hide255;
+cvar_t    ns_haveerror;
+cvar_t    cg_postprocess;
+cvar_t    cl_language;
+cvar_t    cg_disableBobbing;
+cvar_t    cg_shadows;
+cvar_t    cg_drawTimer;
+cvar_t    cg_drawFPS;
+cvar_t    cg_drawCrosshair;
+cvar_t    cg_crosshairScale;
+cvar_t    cg_draw2D;
+cvar_t    cg_debugEvents;
+cvar_t    cg_addMarks;
+cvar_t    cg_drawGun;
+cvar_t    cg_fov;
+cvar_t    cg_zoomFov;
+cvar_t    cg_thirdPerson;
+cvar_t    cg_thirdPersonRange;
+cvar_t    cg_thirdPersonOffset;
+cvar_t    cg_drawSpeed;
+cvar_t    cg_paused;
+cvar_t    cg_blood;
+cvar_t    cg_drawFriend;
+cvar_t    cg_cameraEyes;
+cvar_t    cg_cameraEyes_Fwd;
+cvar_t    cg_cameraEyes_Up;
+cvar_t    cg_noProjectileTrail;
+cvar_t    cg_enableDust;
+cvar_t    cg_enableBreath;
+cvar_t    sv_fps;
+cvar_t    cg_atmosphericLevel;
+cvar_t    cg_crosshairColorRed;
+cvar_t    cg_crosshairColorGreen;
+cvar_t    cg_crosshairColorBlue;
+cvar_t    cg_chatBeep;
+cvar_t    cg_teamChatBeep;
 
 static cvarTable_t cvarTable[] = {
 	{ &g_gametype,                      "g_gametype",                    "0",           0 },
@@ -307,122 +379,122 @@ static cvarTable_t cvarTable[] = {
 #endif
 
 #ifdef UI
-vmCvar_t    sb_private;
-vmCvar_t    sb_texture;
-vmCvar_t    sb_grid;
-vmCvar_t    sb_modelnum;
-vmCvar_t    sb_classnum;
-vmCvar_t    sb_texturenum;
-vmCvar_t    sb_tab;
-vmCvar_t    spawn_preset;
-vmCvar_t    tool_spawnpreset;
-vmCvar_t    tool_modifypreset;
-vmCvar_t    tool_modifypreset2;
-vmCvar_t    tool_modifypreset3;
-vmCvar_t    tool_modifypreset4;
-vmCvar_t    sb_ctab_1;
-vmCvar_t    sb_ctab_2;
-vmCvar_t    sb_ctab_3;
-vmCvar_t    sb_ctab_4;
-vmCvar_t    sb_ctab_5;
-vmCvar_t    sb_ctab_6;
-vmCvar_t    sb_ctab_7;
-vmCvar_t    sb_ctab_8;
-vmCvar_t    sb_ctab_9;
-vmCvar_t    sb_ctab_10;
-vmCvar_t    toolgun_toolset1;
-vmCvar_t    toolgun_toolset2;
-vmCvar_t    toolgun_toolset3;
-vmCvar_t    toolgun_toolset4;
-vmCvar_t    toolgun_toolset5;
-vmCvar_t    toolgun_toolset6;
-vmCvar_t    toolgun_toolset7;
-vmCvar_t    toolgun_toolset8;
-vmCvar_t    toolgun_toolset9;
-vmCvar_t    toolgun_toolset10;
-vmCvar_t    toolgun_toolset11;
-vmCvar_t    toolgun_toolset12;
-vmCvar_t    toolgun_toolset13;
-vmCvar_t    toolgun_toolset14;
-vmCvar_t    toolgun_toolset15;
-vmCvar_t    toolgun_toolset16;
-vmCvar_t    toolgun_toolset17;
-vmCvar_t    toolgun_toolset18;
-vmCvar_t    toolgun_disabledarg1;
-vmCvar_t    toolgun_disabledarg2;
-vmCvar_t    toolgun_disabledarg3;
-vmCvar_t    toolgun_disabledarg4;
-vmCvar_t    sbt_color0_0;
-vmCvar_t    sbt_color0_1;
-vmCvar_t    sbt_color0_2;
-vmCvar_t    sbt_color0_3;
-vmCvar_t    sbt_color1_0;
-vmCvar_t    sbt_color1_1;
-vmCvar_t    sbt_color1_2;
-vmCvar_t    sbt_color1_3;
-vmCvar_t    sbt_color2_0;
-vmCvar_t    sbt_color2_1;
-vmCvar_t    sbt_color2_2;
-vmCvar_t    sbt_color2_3;
-vmCvar_t    sbt_color3_0;
-vmCvar_t    sbt_color3_1;
-vmCvar_t    sbt_color3_2;
-vmCvar_t    sbt_color3_3;
-vmCvar_t    sbt_wallpaper;
-vmCvar_t    ui_3dmap;
-vmCvar_t    ui_effectslevel;
-vmCvar_t    cl_selectedmod;
-vmCvar_t    cl_language;
-vmCvar_t    ui_loaded;
-vmCvar_t    sensitivitymenu;
-vmCvar_t    ui_browserMaster;
-vmCvar_t    ui_browserGameType;
-vmCvar_t    ui_browserSortKey;
-vmCvar_t    ui_browserShowFull;
-vmCvar_t    ui_browserShowEmpty;
-vmCvar_t    ui_brassTime;
-vmCvar_t    ui_drawCrosshair;
-vmCvar_t    ui_drawCrosshairNames;
-vmCvar_t    ui_marks;
-vmCvar_t    ui_server1;
-vmCvar_t    ui_server2;
-vmCvar_t    ui_server3;
-vmCvar_t    ui_server4;
-vmCvar_t    ui_server5;
-vmCvar_t    ui_server6;
-vmCvar_t    ui_server7;
-vmCvar_t    ui_server8;
-vmCvar_t    ui_server9;
-vmCvar_t    ui_server10;
-vmCvar_t    ui_server11;
-vmCvar_t    ui_server12;
-vmCvar_t    ui_server13;
-vmCvar_t    ui_server14;
-vmCvar_t    ui_server15;
-vmCvar_t    ui_server16;
-vmCvar_t    ui_server17;
-vmCvar_t    ui_server18;
-vmCvar_t    ui_server19;
-vmCvar_t    ui_server20;
-vmCvar_t    ui_server21;
-vmCvar_t    ui_server22;
-vmCvar_t    ui_server23;
-vmCvar_t    ui_server24;
-vmCvar_t    ui_server25;
-vmCvar_t    ui_server26;
-vmCvar_t    ui_server27;
-vmCvar_t    ui_server28;
-vmCvar_t    ui_server29;
-vmCvar_t    ui_server30;
-vmCvar_t    ui_server31;
-vmCvar_t    ui_server32;
-vmCvar_t    gui_animsfx;
-vmCvar_t    gui_mapicons;
-vmCvar_t    gui_autoclosebotmenu;
-vmCvar_t    gui_map_multisel;
-vmCvar_t    gui_map_list;
-vmCvar_t    gui_bot_multisel;
-vmCvar_t    gui_bot_list;
+cvar_t    sb_private;
+cvar_t    sb_texture;
+cvar_t    sb_grid;
+cvar_t    sb_modelnum;
+cvar_t    sb_classnum;
+cvar_t    sb_texturenum;
+cvar_t    sb_tab;
+cvar_t    spawn_preset;
+cvar_t    tool_spawnpreset;
+cvar_t    tool_modifypreset;
+cvar_t    tool_modifypreset2;
+cvar_t    tool_modifypreset3;
+cvar_t    tool_modifypreset4;
+cvar_t    sb_ctab_1;
+cvar_t    sb_ctab_2;
+cvar_t    sb_ctab_3;
+cvar_t    sb_ctab_4;
+cvar_t    sb_ctab_5;
+cvar_t    sb_ctab_6;
+cvar_t    sb_ctab_7;
+cvar_t    sb_ctab_8;
+cvar_t    sb_ctab_9;
+cvar_t    sb_ctab_10;
+cvar_t    toolgun_toolset1;
+cvar_t    toolgun_toolset2;
+cvar_t    toolgun_toolset3;
+cvar_t    toolgun_toolset4;
+cvar_t    toolgun_toolset5;
+cvar_t    toolgun_toolset6;
+cvar_t    toolgun_toolset7;
+cvar_t    toolgun_toolset8;
+cvar_t    toolgun_toolset9;
+cvar_t    toolgun_toolset10;
+cvar_t    toolgun_toolset11;
+cvar_t    toolgun_toolset12;
+cvar_t    toolgun_toolset13;
+cvar_t    toolgun_toolset14;
+cvar_t    toolgun_toolset15;
+cvar_t    toolgun_toolset16;
+cvar_t    toolgun_toolset17;
+cvar_t    toolgun_toolset18;
+cvar_t    toolgun_disabledarg1;
+cvar_t    toolgun_disabledarg2;
+cvar_t    toolgun_disabledarg3;
+cvar_t    toolgun_disabledarg4;
+cvar_t    sbt_color0_0;
+cvar_t    sbt_color0_1;
+cvar_t    sbt_color0_2;
+cvar_t    sbt_color0_3;
+cvar_t    sbt_color1_0;
+cvar_t    sbt_color1_1;
+cvar_t    sbt_color1_2;
+cvar_t    sbt_color1_3;
+cvar_t    sbt_color2_0;
+cvar_t    sbt_color2_1;
+cvar_t    sbt_color2_2;
+cvar_t    sbt_color2_3;
+cvar_t    sbt_color3_0;
+cvar_t    sbt_color3_1;
+cvar_t    sbt_color3_2;
+cvar_t    sbt_color3_3;
+cvar_t    sbt_wallpaper;
+cvar_t    ui_3dmap;
+cvar_t    ui_effectslevel;
+cvar_t    cl_selectedmod;
+cvar_t    cl_language;
+cvar_t    ui_loaded;
+cvar_t    sensitivitymenu;
+cvar_t    ui_browserMaster;
+cvar_t    ui_browserGameType;
+cvar_t    ui_browserSortKey;
+cvar_t    ui_browserShowFull;
+cvar_t    ui_browserShowEmpty;
+cvar_t    ui_brassTime;
+cvar_t    ui_drawCrosshair;
+cvar_t    ui_drawCrosshairNames;
+cvar_t    ui_marks;
+cvar_t    ui_server1;
+cvar_t    ui_server2;
+cvar_t    ui_server3;
+cvar_t    ui_server4;
+cvar_t    ui_server5;
+cvar_t    ui_server6;
+cvar_t    ui_server7;
+cvar_t    ui_server8;
+cvar_t    ui_server9;
+cvar_t    ui_server10;
+cvar_t    ui_server11;
+cvar_t    ui_server12;
+cvar_t    ui_server13;
+cvar_t    ui_server14;
+cvar_t    ui_server15;
+cvar_t    ui_server16;
+cvar_t    ui_server17;
+cvar_t    ui_server18;
+cvar_t    ui_server19;
+cvar_t    ui_server20;
+cvar_t    ui_server21;
+cvar_t    ui_server22;
+cvar_t    ui_server23;
+cvar_t    ui_server24;
+cvar_t    ui_server25;
+cvar_t    ui_server26;
+cvar_t    ui_server27;
+cvar_t    ui_server28;
+cvar_t    ui_server29;
+cvar_t    ui_server30;
+cvar_t    ui_server31;
+cvar_t    ui_server32;
+cvar_t    gui_animsfx;
+cvar_t    gui_mapicons;
+cvar_t    gui_autoclosebotmenu;
+cvar_t    gui_map_multisel;
+cvar_t    gui_map_list;
+cvar_t    gui_bot_multisel;
+cvar_t    gui_bot_list;
 
 static cvarTable_t cvarTable[] = {
 	{ &sb_private,                      "sb_private",                   "0",            0 },

@@ -243,7 +243,7 @@ returning qfalse if not found
 */
 qboolean G_CallSpawn( gentity_t *ent ) {
 	spawn_t	*s;
-	gitem_t	*item;
+	item_t	*item;
     char 	itemname[128];
 	
 	if( strcmp(ent->classname, "none") == 0 )
@@ -291,7 +291,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	}
 
 	// check item spawn functions
-	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
+	for ( item=gameInfoItems+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, itemname) ) {
 			G_SpawnItem( ent, item );
 			return qtrue;

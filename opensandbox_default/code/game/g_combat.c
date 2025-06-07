@@ -74,7 +74,7 @@ Toss the weapon and powerups for the killed player
 =================
 */
 void TossClientItems( gentity_t *self ) {
-	gitem_t		*item;
+	item_t		*item;
 	int			weapon;
 	int			i;
 	gentity_t	*drop;
@@ -137,7 +137,7 @@ TossClientCubes
 extern gentity_t	*neutralObelisk;
 
 void TossClientCubes( gentity_t *self ) {
-	gitem_t		*item;
+	item_t		*item;
 	gentity_t	*drop;
 	vec3_t		velocity;
 	vec3_t		angles;
@@ -769,7 +769,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// unless they are rocket jumping
 	if ( attacker->client && attacker != targ ) {
 		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
-		if( bg_itemlist[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+		if( gameInfoItems[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			max /= 2;
 		}
 		damage = damage * max / 100;

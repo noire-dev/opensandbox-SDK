@@ -433,7 +433,7 @@ CG_UseItem
 static void CG_UseItem( centity_t *cent ) {
 	clientInfo_t *ci;
 	int			itemNum, clientNum;
-	gitem_t		*item;
+	item_t		*item;
 	entityState_t *es;
 
 	es = &cent->currentState;
@@ -497,13 +497,13 @@ static void CG_ItemPickup( int itemNum ) {
 	cg.itemPickupBlendTime = cg.time;
 	// see if it should be the grabbed weapon
 	// OpenSandbox weapon predict
-	if ( bg_itemlist[itemNum].giType == IT_AMMO ) {
-		if(cg.swep_listcl[bg_itemlist[itemNum].giTag] == 2){
-			cg.swep_listcl[bg_itemlist[itemNum].giTag] = 1;
+	if ( gameInfoItems[itemNum].giType == IT_AMMO ) {
+		if(cg.swep_listcl[gameInfoItems[itemNum].giTag] == 2){
+			cg.swep_listcl[gameInfoItems[itemNum].giTag] = 1;
 		}
 	}
-	if ( bg_itemlist[itemNum].giType == IT_WEAPON ) {
-		cg.swep_listcl[bg_itemlist[itemNum].giTag] = 1;
+	if ( gameInfoItems[itemNum].giType == IT_WEAPON ) {
+		cg.swep_listcl[gameInfoItems[itemNum].giTag] = 1;
 	}
 
 }
@@ -796,15 +796,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_ITEM_PICKUP");
 		{
 			sfxHandle_t pickupSound = 0;
-			gitem_t	*item;
+			item_t	*item;
 			int		index;
 
 			index = es->eventParm;		// player predicted
 
-			if ( index < 1 || index >= bg_numItems ) {
+			if ( index < 1 || index >= gameInfoItemsNum ) {
 				break;
 			}
-			item = &bg_itemlist[ index ];
+			item = &gameInfoItems[ index ];
 
 			// powerups and team items will have a separate global sound, this one
 			// will be played at prediction time

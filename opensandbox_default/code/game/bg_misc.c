@@ -22,102 +22,25 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
-// bg_misc.c -- both games misc functions, all completely stateless
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 #include "g_local.h"
-
-gitem_t	bg_itemlist[] = {
-	{ NULL, 						NULL, 											NULL, 						NULL, 					0, 		IT_NULL, 		0, },
-	{ "item_armor_shard", 			"models/powerups/armor/shard.md3", 				"icons/iconr_shard", 		"Armor Shard", 			5, 		IT_ARMOR, 		0 },
-	{ "item_armor_combat", 			"models/powerups/armor/armor_yel.md3", 			"icons/iconr_yellow", 		"Armor 50", 			50, 	IT_ARMOR, 		0 },
-	{ "item_armor_body", 			"models/powerups/armor/armor_red.md3",			"icons/iconr_red",			"Heavy Armor",			100,	IT_ARMOR,		0 },
-	{ "item_health_small",			"models/powerups/health/small_cross.md3", 		"icons/iconh_green",		"Health 5",				5,		IT_HEALTH,		0 },
-	{ "item_health",				"models/powerups/health/medium_cross.md3",		"icons/iconh_yellow",		"Health 25",			25,		IT_HEALTH,		0 },
-	{ "item_health_large",			"models/powerups/health/large_cross.md3",		"icons/iconh_red",			"Health 50",			50,		IT_HEALTH,		0 },
-	{ "item_health_mega",			"models/powerups/health/mega_cross.md3",		"icons/iconh_mega",			"Mega Health",			100,	IT_HEALTH,		0 },
-	{ "weapon_gauntlet",			"models/weapons2/gauntlet/gauntlet.md3",		"icons/iconw_gauntlet",		"Melee",				0,		IT_WEAPON,		WP_GAUNTLET },
-	{ "weapon_shotgun",				"models/weapons2/shotgun/shotgun.md3",			"icons/iconw_shotgun",		"Shotgun",				10,		IT_WEAPON,		WP_SHOTGUN },
-	{ "weapon_machinegun",			"models/weapons2/machinegun/machinegun.md3",	"icons/iconw_machinegun",	"Machinegun",			40,		IT_WEAPON,		WP_MACHINEGUN },
-	{ "weapon_grenadelauncher",		"models/weapons2/grenadel/grenadel.md3",		"icons/iconw_grenade",		"Grenade Launcher",		10,		IT_WEAPON,		WP_GRENADE_LAUNCHER },
-	{ "weapon_rocketlauncher",		"models/weapons2/rocketl/rocketl.md3",			"icons/iconw_rocket",		"Rocket Launcher",		10,		IT_WEAPON,		WP_ROCKET_LAUNCHER },
-	{ "weapon_lightning",			"models/weapons2/lightning/lightning.md3",		"icons/iconw_lightning",	"Lightning Gun",		100,	IT_WEAPON,		WP_LIGHTNING },
-	{ "weapon_railgun",				"models/weapons2/railgun/railgun.md3",			"icons/iconw_railgun",		"Railgun",				10,		IT_WEAPON,		WP_RAILGUN },
-	{ "weapon_plasmagun",			"models/weapons2/plasma/plasma.md3",			"icons/iconw_plasma",		"Plasma Gun",			50,		IT_WEAPON,		WP_PLASMAGUN },
-	{ "weapon_bfg",					"models/weapons2/bfg/bfg.md3",					"icons/iconw_bfg",			"BFG10K",				20,		IT_WEAPON,		WP_BFG },
-	{ "weapon_grapplinghook",		"models/weapons2/grapple/grapple.md3",			"icons/iconw_grapple",		"Grappling Hook",		0,		IT_WEAPON,		WP_GRAPPLING_HOOK },
-	{ "weapon_nailgun",				"models/weapons/nailgun/nailgun.md3",			"icons/iconw_nailgun",		"Nailgun",				10,		IT_WEAPON,		WP_NAILGUN },
-	{ "weapon_prox_launcher",		"models/weapons/proxmine/proxmine.md3",			"icons/iconw_proxlauncher",	"Prox Launcher",		5,		IT_WEAPON,		WP_PROX_LAUNCHER },
-	{ "weapon_chaingun",			"models/weapons/vulcan/vulcan.md3",				"icons/iconw_chaingun",		"Chaingun",				80,		IT_WEAPON,		WP_CHAINGUN },
-	{ "weapon_flamethrower",		"models/weapons2/flamethrower/rocketl.md3",		"icons/iconw_flamethrower",	"Flamethrower",			100,	IT_WEAPON,		WP_FLAMETHROWER },
-	{ "weapon_antimatter",			"models/weapons2/antimatter/plasma.md3",		"icons/iconw_voodoo",		"Dark Flare",			100,	IT_WEAPON,		WP_ANTIMATTER },
-	{ "weapon_toolgun", 			"models/weapons/toolgun/toolgun.md3",			"icons/iconw_toolgun",		"Toolgun",				0,		IT_WEAPON,		WP_TOOLGUN },
-	{ "weapon_physgun", 			"models/weapons/physgun/physgun.md3",			"icons/iconw_physgun",		"Physgun",				0,		IT_WEAPON,		WP_PHYSGUN },
-	{ "weapon_gravitygun", 			"models/weapons/physgun/physgun.md3",			"icons/iconw_gravitygun",	"Gravitygun",			0,		IT_WEAPON,		WP_GRAVITYGUN },
-	{ "weapon_thrower",				"models/weapons3/machinegun/machinegun.md3",	"icons/iconw_thrower",		"Thrower",				100,	IT_WEAPON,		WP_THROWER },
-	{ "weapon_bouncer",				"models/weapons3/shotgun/shotgun.md3",			"icons/iconw_bouncer",		"Bouncer",				15,		IT_WEAPON,		WP_BOUNCER },
-	{ "weapon_thunder",				"models/weapons3/grenadel/grenadel.md3",		"icons/iconw_thunder",		"Thunder",				10,		IT_WEAPON,		WP_THUNDER },
-	{ "weapon_exploder",			"models/weapons3/rocketl/rocketl.md3",			"icons/iconw_exploder",		"Exploder",				10,		IT_WEAPON,		WP_EXPLODER },
-	{ "weapon_knocker",				"models/weapons3/lightning/lightning.md3",		"icons/iconw_knocker",		"Knocker",				25,		IT_WEAPON,		WP_KNOCKER },
-	{ "weapon_propgun",				"models/weapons3/railgun/railgun.md3",			"icons/iconw_propgun",		"Propgun",				15,		IT_WEAPON,		WP_PROPGUN },
-	{ "weapon_regenerator",			"models/weapons3/plasma/plasma.md3",			"icons/iconw_regenerator",	"Regenerator",			15,		IT_WEAPON,		WP_REGENERATOR },
-	{ "weapon_nuke",				"models/weapons3/bfg/bfg.md3",					"icons/iconw_nuke",			"Nuke",					2,		IT_WEAPON,		WP_NUKE },
-	{ "ammo_bullets",				"models/powerups/ammo/machinegunam.md3",		"icons/icona_machinegun",	"Bullets",				50,		IT_AMMO,		WP_MACHINEGUN },
-	{ "ammo_shells",				"models/powerups/ammo/shotgunam.md3",			"icons/icona_shotgun",		"Shells",				10,		IT_AMMO,		WP_SHOTGUN },
-	{ "ammo_grenades",				"models/powerups/ammo/grenadeam.md3",			"icons/icona_grenade",		"Grenades",				5,		IT_AMMO,		WP_GRENADE_LAUNCHER },
-	{ "ammo_cells",					"models/powerups/ammo/plasmaam.md3",			"icons/icona_plasma",		"Cells",				30,		IT_AMMO,		WP_PLASMAGUN },
-	{ "ammo_lightning",				"models/powerups/ammo/lightningam.md3",			"icons/icona_lightning",	"Lightning",			60,		IT_AMMO,		WP_LIGHTNING },
-	{ "ammo_rockets",				"models/powerups/ammo/rocketam.md3",			"icons/icona_rocket",		"Rockets",				5,		IT_AMMO,		WP_ROCKET_LAUNCHER },
-	{ "ammo_slugs",					"models/powerups/ammo/railgunam.md3",			"icons/icona_railgun",		"Slugs",				10,		IT_AMMO,		WP_RAILGUN },
-	{ "ammo_bfg",					"models/powerups/ammo/bfgam.md3",				"icons/icona_bfg",			"Bfg Ammo",				15,		IT_AMMO,		WP_BFG },
-	{ "ammo_nails",					"models/powerups/ammo/nailgunam.md3",			"icons/icona_nailgun",		"Nails",				20,		IT_AMMO,		WP_NAILGUN },
-	{ "ammo_mines",					"models/powerups/ammo/proxmineam.md3",			"icons/icona_proxlauncher",	"Proximity Mines",		10,		IT_AMMO,		WP_PROX_LAUNCHER },
-	{ "ammo_belt",					"models/powerups/ammo/chaingunam.md3",			"icons/icona_chaingun",		"Chaingun Belt",		100,	IT_AMMO,		WP_CHAINGUN },
-	{ "ammo_flame",					"models/powerups/ammo/flamethroweram.md3",		"icons/icona_flamethrower",	"Flame",				50,		IT_AMMO,		WP_FLAMETHROWER },
-	{ "holdable_teleporter",		"models/powerups/holdable/teleporter.md3",		"icons/teleporter",			"Personal Teleporter",	0,		IT_HOLDABLE,	HI_TELEPORTER },
-	{ "holdable_medkit", 			"models/powerups/holdable/medkit.md3",			"icons/medkit",				"Medkit", 				0,		IT_HOLDABLE,	HI_MEDKIT },
-	{ "holdable_kamikaze", 			"models/powerups/kamikazi.md3",					"icons/kamikaze",			"Kamikaze",				0,		IT_HOLDABLE,	HI_KAMIKAZE },
-	{ "holdable_portal", 			"models/powerups/holdable/porter.md3",			"icons/portal",				"Portal",				0,		IT_HOLDABLE,	HI_PORTAL },
-	{ "holdable_invulnerability", 	"models/powerups/holdable/invulnerability.md3",	"icons/invulnerability",	"Invulnerability",		0,		IT_HOLDABLE,	HI_INVULNERABILITY },
-	{ "item_quad",					"models/powerups/instant/quad.md3",				"icons/quad",				"Quad Damage",			30,		IT_POWERUP,		PW_QUAD },
-	{ "item_enviro",				"models/powerups/instant/enviro.md3",			"icons/envirosuit",			"Battle Suit",			30,		IT_POWERUP,		PW_BATTLESUIT },
-	{ "item_haste",					"models/powerups/instant/haste.md3",			"icons/haste",				"Speed",				30,		IT_POWERUP,		PW_HASTE },
-	{ "item_invis",					"models/powerups/instant/invis.md3",			"icons/invis",				"Invisibility",			30,		IT_POWERUP,		PW_INVIS },
-	{ "item_regen",					"models/powerups/instant/regen.md3",			"icons/regen",				"Regeneration",			30,		IT_POWERUP,		PW_REGEN },
-	{ "item_flight",				"models/powerups/instant/flight.md3",			"icons/flight",				"Flight",				60,		IT_POWERUP,		PW_FLIGHT },
-	{ "item_scout",					"models/powerups/scout.md3",					"icons/scout",				"Scout",				0,		IT_RUNE,		PW_SCOUT },
-	{ "item_guard",					"models/powerups/guard.md3",					"icons/guard",				"Guard",				0,		IT_RUNE,		PW_GUARD },
-	{ "item_doubler",				"models/powerups/doubler.md3",					"icons/doubler",			"Doubler",				0,		IT_RUNE,		PW_DOUBLER },
-	{ "item_ammoregen",				"models/powerups/ammo.md3",						"icons/ammo_regen",			"Ammo Regen",			0,		IT_RUNE,		PW_AMMOREGEN },
-	{ "team_CTF_redflag",			"models/flags/r_flag.md3",						"icons/iconf_red1",			"Red Flag",				0,		IT_TEAM,		PW_REDFLAG },
-	{ "team_CTF_blueflag",			"models/flags/b_flag.md3",						"icons/iconf_blu1",			"Blue Flag",			0,		IT_TEAM,		PW_BLUEFLAG },
-	{ "team_CTF_neutralflag",		"models/flags/n_flag.md3",						"icons/iconf_neutral1",		"Neutral Flag",			0,		IT_TEAM,		PW_NEUTRALFLAG },
-	{ "item_redcube",				"models/powerups/orb/r_orb.md3",				"icons/iconh_rorb",			"Red Cube",				0,		IT_TEAM,		0 },
-	{ "item_bluecube",				"models/powerups/orb/b_orb.md3",				"icons/iconh_borb",			"Blue Cube",			0,		IT_TEAM,		0 },
-	{NULL}
-};
-
-//look for this to add new ones - WEAPONS_HYPER
-
-int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
-
 
 /*
 ==============
 BG_FindItemForPowerup
 ==============
 */
-gitem_t	*BG_FindItemForPowerup( powerup_t pw ) {
+item_t	*BG_FindItemForPowerup( powerup_t pw ) {
 	int		i;
 
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( (bg_itemlist[i].giType == IT_POWERUP || 
-					bg_itemlist[i].giType == IT_TEAM ||
-					bg_itemlist[i].giType == IT_RUNE) && 
-			bg_itemlist[i].giTag == pw ) {
-			return &bg_itemlist[i];
+	for ( i = 0 ; i < gameInfoItemsNum ; i++ ) {
+		if ( (gameInfoItems[i].giType == IT_POWERUP || 
+					gameInfoItems[i].giType == IT_TEAM ||
+					gameInfoItems[i].giType == IT_RUNE) && 
+			gameInfoItems[i].giTag == pw ) {
+			return &gameInfoItems[i];
 		}
 	}
 
@@ -130,12 +53,12 @@ gitem_t	*BG_FindItemForPowerup( powerup_t pw ) {
 BG_FindItemForHoldable
 ==============
 */
-gitem_t	*BG_FindItemForHoldable( holdable_t pw ) {
+item_t	*BG_FindItemForHoldable( holdable_t pw ) {
 	int		i;
 
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( bg_itemlist[i].giType == IT_HOLDABLE && bg_itemlist[i].giTag == pw ) {
-			return &bg_itemlist[i];
+	for ( i = 0 ; i < gameInfoItemsNum ; i++ ) {
+		if ( gameInfoItems[i].giType == IT_HOLDABLE && gameInfoItems[i].giTag == pw ) {
+			return &gameInfoItems[i];
 		}
 	}
 
@@ -151,10 +74,10 @@ BG_FindItemForWeapon
 
 ===============
 */
-gitem_t	*BG_FindItemForWeapon( weapon_t weapon ) {
-	gitem_t	*it;
+item_t	*BG_FindItemForWeapon( weapon_t weapon ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++) {
 		if ( it->giType == IT_WEAPON && it->giTag == weapon ) {
 			return it;
 		}
@@ -170,10 +93,10 @@ BG_FindItem
 
 ===============
 */
-gitem_t	*BG_FindItem( const char *pickupName ) {
-	gitem_t	*it;
+item_t	*BG_FindItem( const char *pickupName ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->pickup_name, pickupName ) )
 			return it;
 	}
@@ -186,10 +109,10 @@ gitem_t	*BG_FindItem( const char *pickupName ) {
 BG_FindClassname
 ===============
 */
-gitem_t		*BG_FindClassname( const char *classname ) {
-	gitem_t	*it;
+item_t		*BG_FindClassname( const char *classname ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->classname, classname ) )
 			return it;
 	}
@@ -203,9 +126,9 @@ BG_CheckClassname
 ===============
 */
 qboolean	BG_CheckClassname( const char *classname ) {
-	gitem_t	*it;
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->classname, classname ) )
 			return qtrue;
 	}
@@ -219,10 +142,10 @@ BG_FindSwep
 
 ===============
 */
-gitem_t	*BG_FindSwep( int id ) {
-	gitem_t	*it;
+item_t	*BG_FindSwep( int id ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( it->giType == IT_WEAPON && it->giTag == id ) {
 			return it;
 		}
@@ -238,10 +161,10 @@ BG_FindSwepAmmo
 
 ===============
 */
-gitem_t	*BG_FindSwepAmmo( int id ) {
-	gitem_t	*it;
+item_t	*BG_FindSwepAmmo( int id ) {
+	item_t	*it;
 	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
 		if ( it->giType == IT_AMMO && it->giTag == id ) {
 			return it;
 		}
@@ -286,14 +209,14 @@ This needs to be the same for client side prediction and server use.
 ================
 */
 qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps ) {
-	gitem_t	*item;
+	item_t	*item;
 	int		upperBound;
 
-	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
+	if ( ent->modelindex < 1 || ent->modelindex >= gameInfoItemsNum ) {
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
 	}
 
-	item = &bg_itemlist[ent->modelindex];
+	item = &gameInfoItems[ent->modelindex];
 
 	switch( item->giType ) {
 	case IT_WEAPON:
@@ -306,12 +229,12 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_ARMOR:
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
+		if( gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
 			return qfalse;
 		}
 
 		// we also clamp armor to the maxhealth for handicapping
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+		if( gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
 		}
 		else {
@@ -324,7 +247,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_HEALTH:
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+		if( gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			upperBound = ps->stats[STAT_MAX_HEALTH];
 		} else if ( item->quantity == 5 || item->quantity == 100 ) {
 			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
@@ -1014,7 +937,7 @@ int GetPlayerHoldable( int stat_holdable ) {
 /*
 ==================
 GetHoldableListIndex( int giTag )
-Determines what the index is of a holdable in the bg_itemlist
+Determines what the index is of a holdable in the gameInfoItems
 ==================
 */
 int GetHoldableListIndex( int giTag ) {
@@ -1023,8 +946,8 @@ int GetHoldableListIndex( int giTag ) {
 	if ( giTag <= HI_NONE || giTag >= HI_NUM_HOLDABLE || giTag == HI_HOLDABLE_SPLIT )
 		return 0;
 
-	for (i = 0; i < bg_numItems; i++ ){
-		if ( bg_itemlist[i].giType == IT_HOLDABLE && bg_itemlist[i].giTag == giTag )
+	for (i = 0; i < gameInfoItemsNum; i++ ){
+		if ( gameInfoItems[i].giType == IT_HOLDABLE && gameInfoItems[i].giTag == giTag )
 			return i;
 	}
 

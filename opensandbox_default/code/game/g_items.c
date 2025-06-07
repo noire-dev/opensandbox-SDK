@@ -54,7 +54,7 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 }
 
 int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
-	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
+	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - gameInfoItems;
 	other->client->persistantPowerup = ent;
 
 	switch( ent->item->giTag ) {
@@ -86,7 +86,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 }
 
 int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
-	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
+	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - gameInfoItems;
 
 	if( ent->item->giTag == HI_KAMIKAZE ) {
 		other->client->ps.eFlags |= EF_KAMIKAZE;
@@ -163,7 +163,7 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 	int			quantity;
 
 	// small and mega healths will go over the max
-	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+	if( other->client && gameInfoItems[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
 	} else if ( ent->item->quantity != 5 && ent->item->quantity != 100 ) {
 		max = other->client->ps.stats[STAT_MAX_HEALTH];
@@ -196,7 +196,7 @@ int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
-	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+	if( other->client && gameInfoItems[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 		upperBound = other->client->ps.stats[STAT_MAX_HEALTH];
 	}
 	else {
@@ -217,7 +217,7 @@ RespawnItem
 */
 void RespawnItem( gentity_t *ent ) {
 	int		spawn_item;
-	gitem_t	*item;
+	item_t	*item;
 	int 	i = 1;
 
     if(g_randomItems.integer && ent->item->giType != IT_RUNE && ent->item->giType != IT_TEAM) {
@@ -280,10 +280,10 @@ void RespawnItem( gentity_t *ent ) {
 
 		spawn_item = rq3_random(1, 55);
 
-		for ( item=bg_itemlist+1, i = 1; item->classname; item++, i++ ) {
+		for ( item=gameInfoItems+1, i = 1; item->classname; item++, i++ ) {
 			if ( !strcmp(item->classname, randomitem[spawn_item]) ) {
-				ent->item = &bg_itemlist[i];
-				ent->item->classname = bg_itemlist[i].classname;
+				ent->item = &gameInfoItems[i];
+				ent->item->classname = gameInfoItems[i].classname;
 				ent->s.modelindex = i;
 			}
 		}
@@ -435,13 +435,13 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
+gentity_t *LaunchItem( item_t *item, vec3_t origin, vec3_t velocity ) {
 	gentity_t	*dropped;
 
 	dropped = G_Spawn();
 
 	dropped->s.eType = ET_ITEM;
-	dropped->s.modelindex = item - bg_itemlist;	// store item number in modelindex
+	dropped->s.modelindex = item - gameInfoItems;	// store item number in modelindex
 	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
 
 	dropped->classname = item->classname;
@@ -481,7 +481,7 @@ Drop_Item
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *Drop_Item( gentity_t *ent, gitem_t *item ) {
+gentity_t *Drop_Item( gentity_t *ent, item_t *item ) {
 	vec3_t	velocity;
 	vec3_t	angles;
 
@@ -523,7 +523,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
 	ent->s.eType = ET_ITEM;
-	ent->s.modelindex = ent->item - bg_itemlist; // store item number in modelindex
+	ent->s.modelindex = ent->item - gameInfoItems; // store item number in modelindex
 	ent->s.modelindex2 = 0; // zero indicates this isn't a dropped item
 
 	ent->r.contents = CONTENTS_TRIGGER;
@@ -585,33 +585,33 @@ void G_CheckTeamItems( void ) {
 	Team_InitGame();
 
 	if( g_gametype.integer == GT_CTF ) {
-		gitem_t	*item;
+		item_t	*item;
 
 		// check for the two flags
 		item = BG_FindItem( "Red Flag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
+		if ( !item || !itemRegistered[ item - gameInfoItems ] ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_redflag in map\n" );
 		}
 		item = BG_FindItem( "Blue Flag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
+		if ( !item || !itemRegistered[ item - gameInfoItems ] ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_blueflag in map\n" );
 		}
 	}
 
 	if( g_gametype.integer == GT_1FCTF ) {
-		gitem_t	*item;
+		item_t	*item;
 
 		// check for all three flags
 		item = BG_FindItem( "Red Flag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
+		if ( !item || !itemRegistered[ item - gameInfoItems ] ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_redflag in map\n" );
 		}
 		item = BG_FindItem( "Blue Flag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
+		if ( !item || !itemRegistered[ item - gameInfoItems ] ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_blueflag in map\n" );
 		}
 		item = BG_FindItem( "Neutral Flag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
+		if ( !item || !itemRegistered[ item - gameInfoItems ] ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_neutralflag in map\n" );
 		}
 	}
@@ -678,11 +678,11 @@ RegisterItem
 The item will be added to the precache list
 ===============
 */
-void RegisterItem( gitem_t *item ) {
+void RegisterItem( item_t *item ) {
 	if ( !item ) {
 		G_Printf( "RegisterItem: NULL");
 	}
-	itemRegistered[ item - bg_itemlist ] = qtrue;
+	itemRegistered[ item - gameInfoItems ] = qtrue;
 }
 
 
@@ -700,7 +700,7 @@ void SaveRegisteredItems( void ) {
 	int		count;
 
 	count = 0;
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
+	for ( i = 0 ; i < gameInfoItemsNum ; i++ ) {
 		if ( itemRegistered[i] ) {
 			count++;
 			string[i] = '1';
@@ -708,7 +708,7 @@ void SaveRegisteredItems( void ) {
 			string[i] = '0';
 		}
 	}
-	string[ bg_numItems ] = 0;
+	string[ gameInfoItemsNum ] = 0;
 
     G_Printf( "%i items registered\n", count );
 	trap_SetConfigstring(CS_ITEMS, string);
@@ -719,7 +719,7 @@ void SaveRegisteredItems( void ) {
 G_ItemDisabled
 ============
 */
-int G_ItemDisabled( gitem_t *item ) {
+int G_ItemDisabled( item_t *item ) {
 
 	char name[128];
 
@@ -737,7 +737,7 @@ Items can't be immediately dropped to floor, because they might
 be on an entity that hasn't spawned yet.
 ============
 */
-void G_SpawnItem (gentity_t *ent, gitem_t *item) {
+void G_SpawnItem (gentity_t *ent, item_t *item) {
 	G_SpawnFloat( "random", "0", &ent->random );
 	G_SpawnFloat( "wait", "0", &ent->wait );
 

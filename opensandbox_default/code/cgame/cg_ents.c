@@ -445,13 +445,13 @@ CG_Item
 static void CG_Item( centity_t *cent ) {
 	refEntity_t		ent;
 	entityState_t	*es;
-	gitem_t			*item;
+	item_t			*item;
 	int				msec;
 	float			frac;
 	weaponInfo_t	*wi;
 
 	es = &cent->currentState;
-	if ( es->modelindex >= bg_numItems ) {
+	if ( es->modelindex >= gameInfoItemsNum ) {
 		CG_Error( "Bad item index %i on entity", es->modelindex );
 		return;
 	}
@@ -461,7 +461,7 @@ static void CG_Item( centity_t *cent ) {
 		return;
 	}
 
-	item = &bg_itemlist[ es->modelindex ];
+	item = &gameInfoItems[ es->modelindex ];
 
 	memset (&ent, 0, sizeof(ent));
 

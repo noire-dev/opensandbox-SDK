@@ -700,42 +700,13 @@ typedef enum {
 } meansOfDeath_t;
 
 
-//---------------------------------------------------------
-
-// gitem_t->type
-typedef enum {
-	IT_NULL,
-	IT_WEAPON,
-	IT_AMMO,
-	IT_ARMOR,
-	IT_HEALTH,
-	IT_POWERUP,
-	IT_HOLDABLE,
-	IT_RUNE,
-	IT_TEAM
-} itemType_t;
-
-typedef struct gitem_s {
-	char		*classname;	// spawning name
-	char		*world_model;
-	char		*icon;
-	char		*pickup_name;	// for printing on pickup
-	int			quantity;		// for ammo how much, or duration of powerup
-	itemType_t  giType;			// IT_* flags
-	int			giTag;
-} gitem_t;
-
-// included in both the game dll and the client
-extern	gitem_t	bg_itemlist[];
-extern	int		bg_numItems;
-
-gitem_t	*BG_FindItem( const char *pickupName );
-gitem_t	*BG_FindSwep( int id );
-gitem_t	*BG_FindSwepAmmo( int id );
-gitem_t	*BG_FindItemForWeapon( weapon_t weapon );
-gitem_t	*BG_FindItemForPowerup( powerup_t pw );
-gitem_t	*BG_FindItemForHoldable( holdable_t pw );
-#define	ITEM_INDEX(x) ((x)-bg_itemlist)
+item_t	*BG_FindItem( const char *pickupName );
+item_t	*BG_FindSwep( int id );
+item_t	*BG_FindSwepAmmo( int id );
+item_t	*BG_FindItemForWeapon( weapon_t weapon );
+item_t	*BG_FindItemForPowerup( powerup_t pw );
+item_t	*BG_FindItemForHoldable( holdable_t pw );
+#define	ITEM_INDEX(x) ((x)-gameInfoItems)
 
 qboolean	BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps );
 

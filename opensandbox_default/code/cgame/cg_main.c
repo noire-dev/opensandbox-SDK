@@ -529,7 +529,7 @@ static void CG_RegisterGraphics( void ) {
 	// only register the items that the server says we need
 	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
 
-	for ( i = 1 ; i < bg_numItems ; i++ ) {
+	for ( i = 1 ; i < gameInfoItemsNum ; i++ ) {
 		if ( items[ i ] == '1' || 1 ) {
 			CG_LoadingItem( i );
 			CG_RegisterItemVisuals( i );

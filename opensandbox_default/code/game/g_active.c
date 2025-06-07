@@ -409,12 +409,12 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 		ent->s.eFlags &= ~EF_HEARED;		//hear update
 
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
+		if( gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
 			MakeUnlimitedAmmo(ent);
 		}
 
 		// regenerate
-		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+		if( gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
 		} else if ( client->ps.powerups[PW_REGEN] ) {
 			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
@@ -509,7 +509,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		damage;
 	vec3_t	dir;
 	vec3_t	origin, angles;
-	gitem_t *item;
+	item_t *item;
 	gentity_t *drop;
 
 	client = ent->client;
@@ -874,7 +874,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
 	}
 
-	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
+	if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
 		client->ps.speed *= 1.5;
 	}
 	if (client->ps.powerups[PW_HASTE]) {
@@ -1163,16 +1163,16 @@ void ClientEndFrame( gentity_t *ent ) {
 	}
 
 	// set powerup for player animation
-	if( bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+	if( gameInfoItems[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
 		ent->client->ps.powerups[PW_GUARD] = level.time;
 	}
-	if( bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
+	if( gameInfoItems[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
 		ent->client->ps.powerups[PW_SCOUT] = level.time;
 	}
-	if( bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
+	if( gameInfoItems[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER ) {
 		ent->client->ps.powerups[PW_DOUBLER] = level.time;
 	}
-	if( bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
+	if( gameInfoItems[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
 		ent->client->ps.powerups[PW_AMMOREGEN] = level.time;
 	}
 	if ( ent->client->invulnerabilityTime > level.time ) {

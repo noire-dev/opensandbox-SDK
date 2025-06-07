@@ -420,7 +420,7 @@ typedef struct {
 // weapon and its effects
 typedef struct weaponInfo_s {
 	qboolean		registered;
-	gitem_t			*item;
+	item_t			*item;
 
 	qhandle_t		handsModel;			// the hands don't actually draw, they just position the weapon
 	qhandle_t		weaponModel;
@@ -1289,8 +1289,8 @@ void	CG_LaunchFragment( vec3_t origin, vec3_t velocity, leTrailType_t trailType,
 void		trap_Print( const char *fmt );
 void		trap_Error( const char *fmt )  __attribute__((noreturn));
 int			trap_Milliseconds( void );
-void		trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
-void		trap_Cvar_Update( vmCvar_t *vmCvar );
+void		trap_Cvar_Register( cvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
+void		trap_Cvar_Update( cvar_t *vmCvar );
 void		trap_Cvar_Set( const char *var_name, const char *value );
 void		trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int			trap_Argc( void );

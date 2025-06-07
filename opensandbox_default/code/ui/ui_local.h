@@ -620,6 +620,8 @@ void UI_saveMapEdMenu( void );
 
 extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
 
+int UI_ServerGametype(void);
+
 //SourceTech UI Framework
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
 
@@ -690,8 +692,8 @@ int				trap_LAN_GetPingQueueCount( void );
 void			trap_LAN_ClearPing( int n );
 void			trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
 void			trap_LAN_GetPingInfo( int n, char *buf, int buflen );
-void			trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
-void			trap_Cvar_Update( vmCvar_t *vmCvar );
+void			trap_Cvar_Register( cvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
+void			trap_Cvar_Update( cvar_t *vmCvar );
 int				trap_MemoryRemaining( void );
 int				trap_RealTime(qtime_t *qtime);
 int				trap_LAN_GetServerCount( int source );

@@ -261,7 +261,7 @@ CG_TouchItem
 ===================
 */
 static void CG_TouchItem( centity_t *cent ) {
-	gitem_t		*item;
+	item_t		*item;
 	//For instantgib
 	qboolean	canBePicked;
 
@@ -281,7 +281,7 @@ static void CG_TouchItem( centity_t *cent ) {
 		return;		// can't hold it
 	}
 
-	item = &bg_itemlist[ cent->currentState.modelindex ];
+	item = &gameInfoItems[ cent->currentState.modelindex ];
 
 	// Special case for flags.  
 	// We don't predict touching our own flag

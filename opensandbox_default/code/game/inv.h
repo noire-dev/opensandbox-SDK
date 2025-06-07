@@ -58,7 +58,7 @@
 #define NUM_VISIBLE_ENEMIES			202
 #define NUM_VISIBLE_TEAMMATES		203
 
-//item numbers (make sure they are in sync with bg_itemlist in bg_misc.c)
+//item numbers (make sure they are in sync with gameInfoItems in bg_misc.c)
 #define MODELINDEX_ARMORSHARD		1
 #define MODELINDEX_ARMORCOMBAT		2
 #define MODELINDEX_ARMORBODY		3
