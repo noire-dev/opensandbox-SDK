@@ -88,6 +88,18 @@
 #define NOTIFY_INFO		1
 #define NOTIFY_UNDO		2
 
+#define MAX_3D_STRING_QUEUE 8192
+
+typedef struct {
+    float x, y, z;
+    const char* str;
+    int style;
+    vec4_t color;
+    float fontSize;
+	float min, max;
+    qboolean useScale, useFade, useTrace;
+} queued3DString_t;
+
 typedef enum {
 	FOOTSTEP_NORMAL,
 	FOOTSTEP_BOOT,
@@ -402,7 +414,6 @@ typedef struct {
 
 	sfxHandle_t		sounds[MAX_CUSTOM_SOUNDS];
 } clientInfo_t;
-
 
 // each WP_* weapon enum has an associated weaponInfo_t
 // that contains media references necessary to present the
@@ -736,14 +747,12 @@ typedef struct {
 	qhandle_t	friendShader;
 
 	qhandle_t	balloonShader;
-	qhandle_t	connectionShader;
 
 	qhandle_t	selectShader;
 	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
 	qhandle_t	crosshairSh3d[NUM_CROSSHAIRS];
-	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
 	qhandle_t	noammoShader;
 
@@ -1087,6 +1096,7 @@ void CG_FillRect2( float x, float y, float width, float height, const float *col
 void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
 void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor);
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void CG_Draw3DString(float x, float y, float z, const char* str, int style, vec4_t color, float fontSize, float min, float max, qboolean useTrace);
 void CG_DrawString( int x, int y, const char *string, const float *setColor, qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars, float offset );
 void CG_DrawBigString( int x, int y, const char *s, float alpha );
 void CG_DrawGiantString( int x, int y, const char *s, float alpha );
@@ -1103,38 +1113,13 @@ qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos );
 //
 // cg_draw.c
 //
-extern	int sortedTeamPlayers[TEAM_MAXOVERLAY];
-extern	int	numSortedTeamPlayers;
-
+void CG_Add3DString(float x, float y, float z, const char* str, int style, const vec4_t color, float fontSize, float min, float max, qboolean useTrace);
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum );
 void CG_DrawActive( void );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team );
-void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
-void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style);
-int CG_Text_Width(const char *text, float scale, int limit);
-int CG_Text_Height(const char *text, float scale, int limit);
-void CG_SelectPrevPlayer( void );
-void CG_SelectNextPlayer( void );
-float CG_GetValue(int ownerDraw);
-qboolean CG_OwnerDrawVisible(int flags);
-void CG_RunMenuScript(char **args);
-void CG_ShowResponseHead( void );
-void CG_SetPrintString(int type, const char *p);
-void CG_InitTeamChat( void );
-void CG_GetTeamColor(vec4_t *color);
-const char *CG_GetGameStatusText( void );
-const char *CG_GetKillerText( void );
-void CG_Draw3DModelToolgun(float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material);
-void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
-void CG_CheckOrderPending( void );
-const char *CG_GameTypeString( void );
-qboolean CG_YourTeamHasFlag( void );
-qboolean CG_OtherTeamHasFlag( void );
-qhandle_t CG_StatusHandle(int task);
 void CG_AddToGenericConsole( const char *str, console_t *console );
 void CG_AddNotify(const char *text, int type);
-
 
 //
 // cg_player.c

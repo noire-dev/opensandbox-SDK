@@ -1019,9 +1019,9 @@ extern qhandle_t defaultFont[5];
 
 void ST_RegisterFont(const char* font);
 void ST_UpdateColors(void);
-void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size);
+void ST_DrawChar(float x, float y, int ch, int style, vec4_t color, float size);
 float ST_StringWidth(const char* str, float size);
-void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize);
+void ST_DrawString(float x, float y, const char* str, int style, vec4_t color, float fontSize);
 
 void ST_AnimStart(stAnim_t *anim, int timeNow, int duration);
 float ST_AnimValue(stAnim_t *anim, int timeNow);

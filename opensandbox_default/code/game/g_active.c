@@ -371,11 +371,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	client->oldbuttons = client->buttons;
 	client->buttons = ucmd->buttons;
 
-    //KK-OAX Changed to keep followcycle functional
 	// attack button cycles through spectators
-	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
-		Cmd_FollowCycle_f( ent );
-	}
+	if ((client->buttons & BUTTON_ATTACK) && !(client->oldbuttons & BUTTON_ATTACK ))
+		Cmd_FollowCycle_f( ent, 1 );
 }
 
 void MakeUnlimitedAmmo(gentity_t *ent) {
@@ -596,11 +594,11 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			else
 				
 			if (g_gametype.integer >= GT_CTF) {
-			SelectCTFSpawnPoint ( ent->client->sess.sessionTeam, ent->client->pers.teamState.state, origin, angles);
-			TeleportPlayer( ent, origin, angles );
+				SelectCTFSpawnPoint ( ent->client->sess.sessionTeam, ent->client->pers.teamState.state, origin, angles);
+				TeleportPlayer( ent, origin, angles, qfalse );
 			} else {
-			SelectSpawnPoint( ent->client->ps.origin, origin, angles );
-			TeleportPlayer( ent, origin, angles );
+				SelectSpawnPoint( ent->client->ps.origin, origin, angles );
+				TeleportPlayer( ent, origin, angles, qfalse );
 			}
 			break;
 
@@ -1009,12 +1007,6 @@ void ClientThink_real( gentity_t *ent ) {
 			ClientRespawn( ent );
 		}
 		return;
-	}
-
-    if ( pm.waterlevel <= 1 && pm.ps->groundEntityNum!=ENTITYNUM_NONE && client->lastSentFlyingTime+500>level.time) {
-		if ( ! (pm.ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
-            client->lastSentFlying = -1;
-		}
 	}
 
 	// perform once-a-second actions

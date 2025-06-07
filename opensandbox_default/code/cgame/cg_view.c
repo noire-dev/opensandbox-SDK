@@ -553,7 +553,7 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback ) {
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis );
 	CG_DrawActive();
 
-	// add frames to lagometer
+	// add frames
 	cg.frametime = cg.time - cg.oldTime;
 	if ( cg.frametime < 0 ) {
 		cg.frametime = 0;

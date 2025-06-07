@@ -84,13 +84,6 @@ void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	multi_trigger( self, other );
 }
 
-/*QUAKED trigger_multiple (.5 .5 .5) ?
-"wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random"	wait variance, default is 0
-Variable sized repeatable trigger.  Must be targeted at one or more entities.
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
-*/
 void SP_trigger_multiple( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
@@ -114,15 +107,11 @@ trigger_always
 
 ==============================================================================
 */
-
 void trigger_always_think( gentity_t *ent ) {
 	G_UseTargets(ent, ent);
 	G_FreeEntity( ent );
 }
 
-/*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
-This trigger will always fire.  It is activated by the world.
-*/
 void SP_trigger_always (gentity_t *ent) {
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + 300;
@@ -136,7 +125,6 @@ trigger_push
 
 ==============================================================================
 */
-
 void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 
 	if ( !other->client ) {
@@ -146,13 +134,6 @@ void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 	BG_TouchJumpPad( &other->client->ps, &self->s );
 }
 
-/*
-=================
-AimAtTarget
-
-Calculate origin2 so the target apogee will be hit
-=================
-*/
 void AimAtTarget( gentity_t *self ) {
 	gentity_t	*ent;
 	vec3_t		origin;
@@ -187,10 +168,6 @@ void AimAtTarget( gentity_t *self ) {
 	self->s.origin2[2] = time * gravity;
 }
 
-/*QUAKED trigger_push (.5 .5 .5) ?
-Must point at a target_position, which will be the apex of the leap.
-This will be client side predicted, unlike target_push
-*/
 void SP_trigger_push( gentity_t *self ) {
 	InitTrigger (self);
 
@@ -228,11 +205,6 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 	}
 }
 
-/*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8) bouncepad
-Pushes the activator in the direction.of angle, or towards a target apex.
-"speed"		defaults to 1000
-if "bouncepad", play bounce noise instead of windfly
-*/
 void SP_target_push( gentity_t *self ) {
 	if (!self->speed) {
 		self->speed = 1000;
@@ -261,7 +233,6 @@ trigger_teleport
 
 ==============================================================================
 */
-
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 	gentity_t	*dest;
 
@@ -284,17 +255,9 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	TeleportPlayer( other, dest->s.origin, dest->s.angles );
+	TeleportPlayer( other, dest->s.origin, dest->s.angles, qfalse );
 }
 
-/*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR
-Allows client side prediction of teleportation events.
-Must point at a target_position, which will be the teleport destination.
-
-If spectator is set, only spectators can use this teleport
-Spectator teleporters are not normally placed in the editor, but are created
-automatically near doors to allow spectators to move through them
-*/
 void SP_trigger_teleport( gentity_t *self ) {
 	InitTrigger (self);
 
@@ -321,19 +284,6 @@ void SP_trigger_teleport( gentity_t *self ) {
 trigger_hurt
 
 ==============================================================================
-*/
-
-/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
-Any entity that touches this will be hurt.
-It does dmg points of damage each server frame
-Targeting the trigger will toggle its on / off state.
-
-SILENT			supresses playing the sound
-SLOW			changes the damage rate to once per second
-NO_PROTECTION	*nothing* stops the damage
-
-"dmg"			default 5 (whole numbers only)
-
 */
 void hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	if ( self->r.linked ) {

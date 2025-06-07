@@ -893,9 +893,8 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
 
-	if(clientNum >= g_maxClients.integer){
+	if(clientNum >= g_maxClients.integer)
 		return "Server is full, increase g_maxClients.";
-	}
 
     ent = &g_entities[ clientNum ];
 
@@ -958,10 +957,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 /*
 ===========
 ClientBegin
-
-called when a client has finished connecting, and is ready
-to be placed into the level.  This will happen every level load,
-and on transition between teams, but doesn't happen on respawns
 ============
 */
 void ClientBegin( int clientNum ) {
@@ -1004,6 +999,11 @@ void ClientBegin( int clientNum ) {
 	CalculateRanks();
 }
 
+/*
+===========
+ClientSpawn
+============
+*/
 void ClientSpawn(gentity_t *ent) {
 	int		index;
 	vec3_t	spawn_origin, spawn_angles;
@@ -1032,13 +1032,11 @@ void ClientSpawn(gentity_t *ent) {
 			// don't spawn near existing origin if possible
 			spawnPoint = SelectSpawnPoint ( client->ps.origin, spawn_origin, spawn_angles);
 
-			if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-			}
+			if ((spawnPoint->flags & FL_NO_BOTS) && (ent->r.svFlags & SVF_BOT))
+				continue;
 
-			if ( ( spawnPoint->flags & FL_NO_HUMANS ) && !( ent->r.svFlags & SVF_BOT ) ) {
-				continue;	// try again
-			}
+			if ((spawnPoint->flags & FL_NO_HUMANS) && !(ent->r.svFlags & SVF_BOT))
+				continue;
 
 			break;
 
@@ -1178,13 +1176,6 @@ void ClientSpawn(gentity_t *ent) {
 /*
 ===========
 ClientDisconnect
-
-Called when a player drops from the server.
-Will not be called between levels.
-
-This should NOT be called directly by any game logic,
-call trap_DropClient(), which will call this and do
-server system housekeeping.
 ============
 */
 void ClientDisconnect( int clientNum ) {
@@ -1246,9 +1237,6 @@ void ClientDisconnect( int clientNum ) {
 /*
 ===========
 DropClientSilently
-
-Drops a client without displaying a message about it.
-See http://www.quake3world.com/forum/viewtopic.php?f=16&t=45625
 ============
 */
 void DropClientSilently( int clientNum ) {
@@ -1258,8 +1246,6 @@ void DropClientSilently( int clientNum ) {
 /*
 ===========
 SetupCustomBot
-
-Applies properties from the entity that spawned the bot to the bot
 ============
 */
 void SetupCustomBot( gentity_t *bot ) {
@@ -1295,8 +1281,6 @@ void SetupCustomBot( gentity_t *bot ) {
 /*
 ===========
 LinkBotSpawn
-
-Links a bot to the entity that spawned it
 ============
 */
 void LinkBotSpawn( gentity_t *bot, char parentid[] ) {
@@ -1448,19 +1432,19 @@ void SetCustomWeapons( gentity_t *ent ) {
 	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR){
 		ent->swep_id = WP_PHYSGUN;
 		ent->client->ps.weapon = WP_PHYSGUN;
-		ClientUserinfoChanged( ent->s.clientNum );
+		ClientUserinfoChanged(ent->s.clientNum);
 		return;
 	} else {
-		for ( i = WEAPONS_NUM; i > 1; i-- ) {
+		for (i = WEAPONS_NUM; i > 1; i--) {
 			if(ent->swep_list[i] == 1 ){
 				ent->swep_id = i;
 				ent->client->ps.weapon = i;
-				ClientUserinfoChanged( ent->s.clientNum );
+				ClientUserinfoChanged(ent->s.clientNum);
 				return;
 			}
 		}
 		ent->swep_id = 1;
 		ent->client->ps.weapon = 1;
-		ClientUserinfoChanged( ent->s.clientNum );
+		ClientUserinfoChanged(ent->s.clientNum);
 	}
 }

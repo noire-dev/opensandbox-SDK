@@ -63,7 +63,6 @@ CG_DrawRoundedRect
 Coordinates are 640*480 virtual values
 =================
 */
-
 void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color) {
     
 	CG_AdjustFrom640( &x, &y, &width, &height );
@@ -126,6 +125,61 @@ Coordinates are 640*480 virtual values
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader ) {
 	CG_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
+}
+
+/*
+================
+CG_Draw3DString
+
+Render 3D string from ST_DrawString
+=================
+*/
+void CG_Draw3DString(float x, float y, float z, const char* str, int style, vec4_t color, float fontSize, float min, float max, qboolean useTrace) {
+    vec3_t dir;
+    float localX, localY, localZ;
+    float tanFovX, tanFovY;
+    float finalx, finaly;
+    float dist;
+    vec3_t worldPos;
+    vec4_t finalColor;
+    trace_t trace;
+
+    worldPos[0] = x;
+    worldPos[1] = y;
+    worldPos[2] = z;
+
+    VectorSubtract(worldPos, cg.refdef.vieworg, dir);
+
+    if (useTrace) {
+        CG_Trace(&trace, cg.refdef.vieworg, vec3_origin, vec3_origin, worldPos, cg.snap->ps.clientNum, CONTENTS_SOLID);
+        if (trace.fraction < 1.0f)
+            return;
+    }
+
+    localX = -DotProduct(dir, cg.refdef.viewaxis[1]);
+    localY = DotProduct(dir, cg.refdef.viewaxis[2]);
+    localZ = DotProduct(dir, cg.refdef.viewaxis[0]);
+
+    if (localZ <= 0)
+        return;
+
+    tanFovX = tan(DEG2RAD(cg.refdef.fov_x * 0.5f));
+    tanFovY = tan(DEG2RAD(cg.refdef.fov_y * 0.5f));
+
+	finalx = (localX / (localZ * tanFovX)) * (320+cgs.wideoffset) + 320;
+	finaly = (-localY / (localZ * tanFovY)) * 240 + 240;
+
+    dist = VectorLength(dir);
+
+	Vector4Copy(color, finalColor);
+
+    if (dist > min) {
+        finalColor[3] = color[3] * (1.0f - (dist - min) / (max - min));
+        if (finalColor[3] < 0.0f)
+            finalColor[3] = 0.0f;
+    }
+
+    ST_DrawString(finalx, finaly, str, style | UI_CENTER, finalColor, fontSize);
 }
 
 /*

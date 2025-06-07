@@ -367,8 +367,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.flameBallShader = trap_R_RegisterShader( "sprites/flameball" );
 	cgs.media.antimatterBallShader = trap_R_RegisterShader( "sprites/antimatter" );
 	cgs.media.bloodTrailShader = trap_R_RegisterShader( "bloodTrail" );
-	cgs.media.lagometerShader = trap_R_RegisterShader("lagometer" );
-	cgs.media.connectionShader = trap_R_RegisterShader( "disconnected" );
 
 	cgs.media.waterBubbleShader = trap_R_RegisterShader( "waterBubble" );
 
@@ -379,9 +377,6 @@ static void CG_RegisterGraphics( void ) {
 		if (i < 10){
 			cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
 		    cgs.media.crosshairSh3d[i] = trap_R_RegisterShader( va("gfx/3d/crosshair%c", 'a'+i) );
-		} else {
-			cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%02d", i - 10) );
-			cgs.media.crosshairSh3d[i] = trap_R_RegisterShader( va("gfx/3d/crosshair%02d", i - 10) );
 		}
  	}
 
@@ -755,9 +750,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	if ( glconfig.vidWidth * 480 > glconfig.vidHeight * 640 ) {
 		// wide screen
-		cgs.bias = 0.5 * ( glconfig.vidWidth - ( glconfig.vidHeight * (640.0/480.0) ) );
-	}
-	else {
+		cgs.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0/480.0)));
+		CG_Printf( "Bias is %f\n", cgs.scale );
+	} else {
 		// no wide screen
 		cgs.bias = 0;
 	}

@@ -34,7 +34,7 @@
 
 #define DIRLIST_SIZE 	16384
 
-#define MAX_MAPNAME 32
+#define MAX_MAPNAME 	48
 
 int				ui_numBots;
 static char		*ui_botInfos[MAX_BOTS];
@@ -194,11 +194,10 @@ static void UI_LoadArenasFromFile( char *filename ) {
 	char			buf[MAX_ARENAS_TEXT];
 
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		//trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
+	if (!f)
 		return;
-	}
-	if ( len >= MAX_ARENAS_TEXT ) {
+
+	if (len >= MAX_ARENAS_TEXT) {
 		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
 		trap_FS_FCloseFile( f );
 		return;
@@ -213,47 +212,11 @@ static void UI_LoadArenasFromFile( char *filename ) {
 
 /*
 ===============
-UI_LoadUnscriptedMaps
-===============
-*/
-static void UI_LoadUnscriptedMaps( void )
-{
-	int i;
-	int dirlen;
-	int nummaps;
-	char* dirptr;
-	char mapname[MAX_QPATH];
-
-	nummaps = trap_FS_GetFileList("maps", ".bsp", dirlist, DIRLIST_SIZE);
-	dirptr = dirlist;
-
-	for (i = 0; i < nummaps; i++, dirptr += dirlen + 1) {
-		if (ui_numArenas == MAX_ARENAS)
-			break;
-
-		dirlen = strlen(dirptr);
-
-		COM_StripExtension(dirptr, mapname, sizeof(mapname));
-
-		if (UI_GetArenaInfoByMap(mapname))
-			continue;
-
-		if (UI_StoreInfo(va("\\map\\%s", mapname), &ui_arenaInfos[ui_numArenas])) {
-			trap_Print(va("Found unscripted map: %s\n", mapname));
-			ui_numArenas++;
-		}
-	}
-}
-
-
-/*
-===============
 UI_LoadArenas
 ===============
 */
 void UI_LoadArenas( void ) {
 	int			numdirs;
-	vmCvar_t	arenasFile;
 	char		filename[128];
 	char*		dirptr;
 	int			i, j, n;
@@ -261,20 +224,15 @@ void UI_LoadArenas( void ) {
 	char		*type;
 	char		*tag;
 	char*		tmpinfo;
-	int			startArenaScript;
 	int			swap;
 	char 		bestMap[MAX_MAPNAME];
 	char*		thisMap;
 
 	ui_numArenas = 0;
 
-	UI_LoadArenasFromFile("scripts/arenas.txt");
-
-	startArenaScript = ui_numArenas;
-
 	// get all arenas from .arena files
 	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, DIRLIST_SIZE );
-	dirptr  = dirlist;
+	dirptr = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
@@ -282,17 +240,9 @@ void UI_LoadArenas( void ) {
 		UI_LoadArenasFromFile(filename);
 	}
 
-	UI_LoadUnscriptedMaps();
-
 	trap_Print( va( "%i arenas parsed\n", ui_numArenas ) );
 
-	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
-
-	// sort the arenas we loaded from the .arena files, by mapname
-	// we leave the original Id levels (and those in an overriding
-	// arenas.txt) unchanged
-	// not the most efficient sorting method, but we're only going to do it once
-	for (i = startArenaScript - 1; i < ui_numArenas - 1; i++) {
+	for (i = ui_numArenas - 1; i < ui_numArenas - 1; i++) {
 		swap = 0;
 		Q_strncpyz(bestMap, Info_ValueForKey(ui_arenaInfos[i],"map"), MAX_MAPNAME);
 
@@ -321,17 +271,6 @@ void UI_LoadArenas( void ) {
 	// set initial numbers
 	for( n = 0; n < ui_numArenas; n++ ) {
 		Info_SetValueForKey( ui_arenaInfos[n], "num", va( "%i", n ) );
-	}
-
-	// go through and count single players levels
-	for( n = 0; n < ui_numArenas; n++ ) {
-		// determine type
-		type = Info_ValueForKey( ui_arenaInfos[n], "type" );
-
-		// if no type specified, it will be treated as "ffa"
-		if( !*type ) {
-			continue;
-		}
 	}
 }
 
@@ -387,10 +326,8 @@ static void UI_LoadBotsFromFile( char *filename ) {
 	char			buf[MAX_BOTS_TEXT];
 
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		//trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
+	if ( !f )
+
 	if ( len >= MAX_BOTS_TEXT ) {
 		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
 		trap_FS_FCloseFile( f );
@@ -402,8 +339,6 @@ static void UI_LoadBotsFromFile( char *filename ) {
 	trap_FS_FCloseFile( f );
 
 	ui_numBots += UI_ParseInfos( buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots] );
-
-	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not anough memory in pool to load all bots\n");
 }
 
 /*
@@ -412,17 +347,13 @@ UI_LoadBots
 ===============
 */
 void UI_LoadBots( void ) {
-	vmCvar_t	botsFile;
 	int			numdirs;
 	char		filename[128];
-//	char		dirlist[1024];
 	char*		dirptr;
 	int			i;
 	int			dirlen;
 
 	ui_numBots = 0;
-
-	UI_LoadBotsFromFile("scripts/bots.txt");
 
 	// get all bots from .bot files
 	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, DIRLIST_SIZE );

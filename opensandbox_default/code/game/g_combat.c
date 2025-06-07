@@ -145,12 +145,6 @@ void TossClientCubes( gentity_t *self ) {
 
 	self->client->ps.generic1 = 0;
 
-	// this should never happen but we should never
-	// get the server to crash due to skull being spawned in
-	if (!G_EntitiesFree()) {
-		return;
-	}
-
 	if( self->client->sess.sessionTeam == TEAM_RED ) {
 		item = BG_FindItem( "Red Cube" );
 	}
@@ -855,13 +849,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->client->ps.pm_time = t;
 				targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 			}
-        	//Remeber the last person to hurt the player
-        	if( targ==attacker || OnSameTeam (targ, attacker) ) {
-        	    targ->client->lastSentFlying = -1;
-        	} else {
-        	    targ->client->lastSentFlying = attacker->s.number;
-        	    targ->client->lastSentFlyingTime = level.time;
-        	}
 		}
 	}
 

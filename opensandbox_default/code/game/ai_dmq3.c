@@ -74,7 +74,6 @@ vmCvar_t bot_nochat;
 vmCvar_t bot_testrchat;
 vmCvar_t bot_challenge;
 vmCvar_t bot_predictobstacles;
-vmCvar_t g_spSkill;
 
 extern vmCvar_t bot_developer;
 
@@ -1650,8 +1649,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory) {
 					// tell the leader we want to be on offence
 					BotAI_BotInitialChat(bs, "wantoffence", NULL);
 					trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-				}
-				else if (g_spSkill.integer <= 3) {
+				} else {
 					if ( bs->ltgtype != LTG_GETFLAG &&
 						 bs->ltgtype != LTG_ATTACKENEMYBASE &&
 						 bs->ltgtype != LTG_HARVEST ) {
@@ -1667,16 +1665,14 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory) {
 				}
 			}
 			bs->teamtaskpreference &= ~TEAMTP_DEFENDER;
-		}
-		else {
+		} else {
 			if (!(bs->teamtaskpreference & TEAMTP_DEFENDER)) {
 				// if we have a bot team leader
 				if (BotTeamLeader(bs)) {
 					// tell the leader we want to be on defense
 					BotAI_BotInitialChat(bs, "wantdefence", NULL);
 					trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
-				}
-				else if (g_spSkill.integer <= 3) {
+				} else {
 					if ( bs->ltgtype != LTG_DEFENDKEYAREA ) {
 						//
 						if ((gametype != GT_CTF || (bs->redflagstatus == 0 && bs->blueflagstatus == 0)) &&
@@ -5048,7 +5044,6 @@ void BotSetupDeathmatchAI(void) {
 	trap_Cvar_Register(&bot_testrchat, "bot_testrchat", "0", 0);
 	trap_Cvar_Register(&bot_challenge, "bot_challenge", "0", 0);
 	trap_Cvar_Register(&bot_predictobstacles, "bot_predictobstacles", "1", 0);
-	trap_Cvar_Register(&g_spSkill, "g_spSkill", "2", 0);
 	//
 	if (gametype == GT_CTF) {
 		if (trap_BotGetLevelItemGoal(-1, "Red Flag", &ctf_redflag) < 0)

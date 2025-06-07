@@ -659,7 +659,24 @@ const char *Q_stristr( const char *s, const char *find)
 }
 
 char *Q_CleanStr( char *string ) {
-return string;
+	char*	d;
+	char*	s;
+	int		c;
+
+	s = string;
+	d = string;
+	while ((c = *s) != 0 ) {
+		if ( Q_IsColorString( s ) ) {
+			s++;
+		}		
+		else if ( c >= 0x20 && c <= 0x7E ) {
+			*d++ = c;
+		}
+		s++;
+	}
+	*d = '\0';
+
+	return string;
 }
 
 void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
@@ -1172,7 +1189,7 @@ void ST_UpdateColors(void){
 #endif
 }
 
-static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style) {
+static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style, qboolean drawShadow) {
 	const char* s;
 	char 		ch;
 	int 		prev_unicode = 0;
@@ -1220,7 +1237,8 @@ static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw,
 		if (Q_IsColorString(s))  {
 			memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
 			tempcolor[3] = color[3];
-			trap_R_SetColor(tempcolor);
+			if(!drawShadow)
+				trap_R_SetColor(tempcolor);
 			s += 2;
 			continue;
 		}
@@ -1262,7 +1280,7 @@ static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw,
 	trap_R_SetColor(NULL);
 }
 
-void ST_DrawChar(int x, int y, int ch, int style, vec4_t color, float size) {
+void ST_DrawChar(float x, float y, int ch, int style, vec4_t color, float size) {
 	char	buff[2];
 
 	buff[0] = ch;
@@ -1299,7 +1317,7 @@ float ST_StringWidth(const char* str, float size) {
 	}
 }
 
-void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float fontSize) {
+void ST_DrawString(float x, float y, const char* str, int style, vec4_t color, float fontSize) {
 	int		charw;
 	int		charh;
 	float	*drawcolor;
@@ -1338,10 +1356,10 @@ void ST_DrawString(int x, int y, const char* str, int style, vec4_t color, float
 	if (style & UI_DROPSHADOW) {
 		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
 		dropcolor[3] = drawcolor[3];
-		ST_DrawChars(x+1,y+1,str,dropcolor,charw,charh,style);
+		ST_DrawChars(x+1,y+1,str,dropcolor,charw,charh,style,qtrue);
 	}
 
-	ST_DrawChars(x,y,str,drawcolor,charw,charh,style);
+	ST_DrawChars(x,y,str,drawcolor,charw,charh,style,qfalse);
 }
 
 stAnim_t weaponSelectIn;

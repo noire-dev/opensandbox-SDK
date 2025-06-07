@@ -23,10 +23,7 @@
 // Contact: opensandboxteam@gmail.com
 // 
 
-//Sago: For some reason the Niels version must use a different char set.
 #include "g_local.h"
-
-//#include "g_local.h"
 
 /*
 ============
@@ -47,7 +44,6 @@ void G_ResetHistory( gentity_t *ent ) {
 		ent->client->history[i].leveltime = time;
 	}
 }
-
 
 /*
 ============
@@ -76,7 +72,6 @@ void G_StoreHistory( gentity_t *ent ) {
 	ent->client->history[head].leveltime = level.time;
 }
 
-
 /*
 =============
 TimeShiftLerp
@@ -91,7 +86,6 @@ static void TimeShiftLerp( float frac, vec3_t start, vec3_t end, vec3_t result )
 	result[2] = start[2] + frac * ( end[2] - start[2] );
 }
 
-
 /*
 =================
 G_TimeShiftClient
@@ -101,36 +95,6 @@ Move a client back to where he was at the specified "time"
 */
 void G_TimeShiftClient( gentity_t *ent, int time, qboolean debug, gentity_t *debugger ) {
 	int		j, k;
-	//char msg[2048];
-
-	// this will dump out the head index, and the time for all the stored positions
-/*
-	if ( debug ) {
-		char	str[MAX_STRING_CHARS];
-
-		Com_sprintf(str, sizeof(str), "print \"head: %d, %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\"",
-			ent->client->historyHead,
-			ent->client->history[0].leveltime,
-			ent->client->history[1].leveltime,
-			ent->client->history[2].leveltime,
-			ent->client->history[3].leveltime,
-			ent->client->history[4].leveltime,
-			ent->client->history[5].leveltime,
-			ent->client->history[6].leveltime,
-			ent->client->history[7].leveltime,
-			ent->client->history[8].leveltime,
-			ent->client->history[9].leveltime,
-			ent->client->history[10].leveltime,
-			ent->client->history[11].leveltime,
-			ent->client->history[12].leveltime,
-			ent->client->history[13].leveltime,
-			ent->client->history[14].leveltime,
-			ent->client->history[15].leveltime,
-			ent->client->history[16].leveltime);
-
-		trap_SendServerCommand( debugger - g_entities, str );
-	}
-*/
 
 	// find two entries in the history whose times sandwich "time"
 	// assumes no two adjacent records have the same timestamp
@@ -178,29 +142,6 @@ void G_TimeShiftClient( gentity_t *ent, int time, qboolean debug, gentity_t *deb
 				ent->client->history[j].maxs, ent->client->history[k].maxs,
 				ent->r.maxs );
 
-			/*if ( debug && debugger != NULL ) {
-				// print some debugging stuff exactly like what the client does
-
-				// it starts with "Rec:" to let you know it backward-reconciled
-				Com_sprintf( msg, sizeof(msg),
-					"print \"^1Rec: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n"
-					"^2frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n"
-					"^7level.time: %d, est time: %d, level.time delta: %d, est real ping: %d\n\"",
-					time, ent->client->history[j].leveltime, ent->client->history[k].leveltime,
-					ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2],
-					frac,
-					ent->client->history[j].currentOrigin[0],
-					ent->client->history[j].currentOrigin[1],
-					ent->client->history[j].currentOrigin[2], 
-					ent->client->history[k].currentOrigin[0],
-					ent->client->history[k].currentOrigin[1],
-					ent->client->history[k].currentOrigin[2],
-					level.time, level.time + debugger->client->frameOffset,
-					level.time - time, level.time + debugger->client->frameOffset - time);
-
-				trap_SendServerCommand( debugger - g_entities, msg );
-			}*/
-
 			// this will recalculate absmin and absmax
 			trap_LinkEntity( ent );
 		} else {
@@ -213,18 +154,7 @@ void G_TimeShiftClient( gentity_t *ent, int time, qboolean debug, gentity_t *deb
 			trap_LinkEntity( ent );
 		}
 	}
-	else {
-		// this only happens when the client is using a negative timenudge, because that
-		// number is added to the command time
-
-		// print some debugging stuff exactly like what the client does
-
-		// it starts with "No rec:" to let you know it didn't backward-reconcile
-		//Sago: This code looks wierd
-
-	}
 }
-
 
 /*
 =====================
@@ -247,7 +177,6 @@ void G_TimeShiftAllClients( int time, gentity_t *skip ) {
 		}
 	}
 }
-
 
 /*
 ================
@@ -276,7 +205,6 @@ void G_DoTimeShiftFor( gentity_t *ent ) {
 	G_TimeShiftAllClients(time, ent);
 }
 
-
 /*
 ===================
 G_UnTimeShiftClient
@@ -298,7 +226,6 @@ void G_UnTimeShiftClient( gentity_t *ent ) {
 	}
 }
 
-
 /*
 =======================
 G_UnTimeShiftAllClients
@@ -319,7 +246,6 @@ void G_UnTimeShiftAllClients( gentity_t *skip ) {
 	}
 }
 
-
 /*
 ==================
 G_UndoTimeShiftFor
@@ -336,7 +262,6 @@ void G_UndoTimeShiftFor( gentity_t *ent ) {
 
 	G_UnTimeShiftAllClients( ent );
 }
-
 
 /*
 ===========================
@@ -365,7 +290,6 @@ void G_PredictPlayerClipVelocity( vec3_t in, vec3_t normal, vec3_t out ) {
 	VectorMA( in, -backoff, normal, out );
 }
 
-
 /*
 ========================
 G_PredictPlayerSlideMove
@@ -390,7 +314,6 @@ qboolean G_PredictPlayerSlideMove( gentity_t *ent, float frametime ) {
 	float		into;
 	vec3_t		endVelocity;
 	vec3_t		endClipVelocity;
-//	vec3_t		worldUp = { 0.0f, 0.0f, 1.0f };
 	
 	numbumps = 4;
 
@@ -437,11 +360,9 @@ qboolean G_PredictPlayerSlideMove( gentity_t *ent, float frametime ) {
 			return qtrue;
 		}
 
-		//
 		// if this is the same plane we hit before, nudge velocity
 		// out along it, which fixes some epsilon issues with
 		// non-axial planes
-		//
 		for ( i = 0; i < numplanes; i++ ) {
 			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99 ) {
 				VectorAdd( trace.plane.normal, velocity, velocity );
@@ -533,7 +454,6 @@ qboolean G_PredictPlayerSlideMove( gentity_t *ent, float frametime ) {
 	return (bumpcount != 0);
 }
 
-
 /*
 ============================
 G_PredictPlayerStepSlideMove
@@ -588,7 +508,6 @@ void G_PredictPlayerStepSlideMove( gentity_t *ent, float frametime ) {
 		G_PredictPlayerClipVelocity( ent->s.pos.trDelta, trace.plane.normal, ent->s.pos.trDelta );
 	}
 }
-
 
 /*
 ===================

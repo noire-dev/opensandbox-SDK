@@ -430,8 +430,6 @@ struct gclient_s {
 	gentity_t	*hook;				// grapple hook if out
 	gentity_t	*lasersight;		// flashlight
 
-	int			switchTeamTime;		// time the player switched teams
-
 	// timeResidual is used to handle events that happen every second
 	// like health / armor countdowns and regeneration
 	int			timeResidual;
@@ -443,9 +441,6 @@ struct gclient_s {
 	int			invulnerabilityTime;
 
 	char		*areabits;
-	
-	int lastSentFlying;                             // The last client that sent the player flying
-	int lastSentFlyingTime;                         // So we can time out
 
 	// unlagged - backward reconciliation #1
 	// the serverTime the button was pressed
@@ -630,10 +625,8 @@ void Cmd_Score_f (gentity_t *ent);
 void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
 void SetTeam( gentity_t *ent, char *s );
-void Cmd_FollowCycle_f( gentity_t *ent );  //KK-OAX Changed to match definition
+void Cmd_FollowCycle_f( gentity_t *ent, int dir );  //KK-OAX Changed to match definition
 char *ConcatArgs( int start );  //KK-OAX This declaration moved from g_svccmds.c
-//KK-OAX Added this to make accessible from g_svcmds_ext.c
-void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText );
 
 //
 // g_items.c
@@ -691,14 +684,9 @@ gentity_t	*G_Spawn (void);
 gentity_t *G_TempEntity( vec3_t origin, int event );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
 
-//KK-OAX For Playing Sounds Globally
-void    G_GlobalSound( int soundIndex );
-
 void	    G_FreeEntity( gentity_t *e );
-qboolean	G_EntitiesFree( void );
 
 void	G_TouchTriggers (gentity_t *ent);
-void	G_TouchSolids (gentity_t *ent);
 
 float	*tv (float x, float y, float z);
 char	*vtos( const vec3_t v );
@@ -706,8 +694,6 @@ char	*vtos( const vec3_t v );
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
-void G_SetTarget( gentity_t *ent, char *targ );
-void G_SetTargetname( gentity_t *ent, char *targname );
 
 
 void target_finish_think(gentity_t* self);
@@ -775,7 +761,7 @@ void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 // g_misc.c
 //
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
+void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback );
 void DropPortalSource( gentity_t *ent );
 void DropPortalDestination( gentity_t *ent );
 
@@ -1052,10 +1038,6 @@ typedef struct
 //
 // g_svcmds_ext.c
 //
-
-void Svcmd_Status_f( void );
-void Svcmd_TeamMessage_f( void );
-void Svcmd_MessageWrapper( void );
 
 //Noire.Script
 void Svcmd_NS_OpenScript_f( void );

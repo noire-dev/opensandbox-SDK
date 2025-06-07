@@ -1491,8 +1491,7 @@ static qboolean CG_PlayerShadow( centity_t *cent ) {
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
+	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal, cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
 
 	return qtrue;
 }
@@ -1894,12 +1893,18 @@ void CG_Player( centity_t *cent ) {
 	//
 	// add the gun / barrel / flash
 	//
-	if(cent->currentState.eFlags & EF_DEAD){
-		return;	
-	}
-	CG_AddPlayerWeapon( &torso, NULL, cent, ci->team, ci );
+	if(cent->currentState.eFlags & EF_DEAD)
+		return;
 
-	// add powerups floating behind the player
+	if(cent->currentState.number != cg.snap->ps.clientNum){
+		if(ci->team == cg.snap->ps.persistant[PERS_TEAM] && ci->team != TEAM_FREE){
+			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2]+48, ci->name, UI_DROPSHADOW, color_white, 1.00, 2048, 3072, qfalse);
+		} else if (ci->team == TEAM_FREE) {
+			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2]+48, ci->name, UI_DROPSHADOW, color_white, 1.00, 512, 768, qtrue);
+		}
+	}
+
+	CG_AddPlayerWeapon( &torso, NULL, cent, ci->team, ci );
 	CG_PlayerPowerups( cent, &torso );
 }
 

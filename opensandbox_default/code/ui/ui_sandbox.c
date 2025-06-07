@@ -1247,19 +1247,10 @@ if (uis.sb_tab == STAB_NPC) {
     configname = s_sandboxmain.names;
     
     for (i = 0; i < s_sandboxmain.list.numitems; i++) {
-        // Получение имени из информации о боте
         bot_name = Info_ValueForKey(UI_GetBotInfoByNumber(i), "name");
-
-        // Проверка длины строки, чтобы избежать переполнения буфера
         name_length = strlen(bot_name);
-
-        // Копирование имени в массив имен
         strcpy(configname, bot_name);
-
-        // Установка имени в массив itemnames
         s_sandboxmain.list.itemnames[i] = configname;
-
-        // Переход к следующему элементу
         configname += name_length + 1;
     }
 }

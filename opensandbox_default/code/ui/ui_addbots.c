@@ -397,9 +397,6 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.numBots = UI_GetNumBots();
 	count = addBotsMenuInfo.numBots < 7 ? addBotsMenuInfo.numBots : 7;
 
-   // set the default bot skill
-   //addBotsMenuInfo.f_skill = Com_Clamp( 0, 4, (int)trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
-
    // prepare the menu items
 	addBotsMenuInfo.arrows.generic.type  = MTYPE_BITMAP;
 	addBotsMenuInfo.arrows.string  = ART_ARROWS;

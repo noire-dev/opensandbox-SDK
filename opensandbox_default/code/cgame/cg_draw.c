@@ -28,10 +28,36 @@
 
 #include "../qcommon/ns_local.h"
 
-int sortedTeamPlayers[TEAM_MAXOVERLAY];
-int	numSortedTeamPlayers;
+static queued3DString_t queued3DStrings[MAX_3D_STRING_QUEUE];
+static int queued3DStringCount = 0;
+void CG_Add3DString(float x, float y, float z, const char* str, int style, const vec4_t color, float fontSize, float min, float max, qboolean useTrace) {
+    queued3DString_t* q = &queued3DStrings[queued3DStringCount++];
 
-void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material ) {
+	if (queued3DStringCount >= MAX_3D_STRING_QUEUE)
+        return;
+
+    q->x = x;
+    q->y = y;
+    q->z = z;
+    q->str = str;
+    q->style = style;
+    Vector4Copy(color, q->color);
+    q->fontSize = fontSize;
+    q->min = min;
+    q->max = max;
+    q->useTrace = useTrace;
+}
+
+static void CG_Draw3DStringQueue(void) {
+	int i;
+    for (i = 0; i < queued3DStringCount; i++) {
+        queued3DString_t* q = &queued3DStrings[i];
+        CG_Draw3DString(q->x, q->y, q->z, q->str, q->style, q->color, q->fontSize, q->min, q->max, q->useTrace);
+    }
+    queued3DStringCount = 0;
+}
+
+static void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t model, char *texlocation, char *material ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
 	vec3_t			origin, angles;
@@ -1144,63 +1170,6 @@ static void CG_DrawCrosshair3D(void) {
 
 /*
 =================
-CG_ScanForCrosshairEntity
-=================
-*/
-static void CG_ScanForCrosshairEntity( void ) {
-	trace_t		trace;
-	vec3_t		start, end;
-	int			content;
-
-	VectorCopy( cg.refdef.vieworg, start );
-	VectorMA( start, 131072, cg.refdef.viewaxis[0], end );
-
-	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-		cg.snap->ps.clientNum, CONTENTS_SOLID|CONTENTS_BODY );
-	if ( trace.entityNum >= MAX_CLIENTS ) {
-		return;
-	}
-
-	// if the player is in fog, don't show it
-	content = CG_PointContents( trace.endpos, 0 );
-	if ( content & CONTENTS_FOG ) {
-		return;
-	}
-
-	// if the player is invisible, don't show it
-	if ( cg_entities[ trace.entityNum ].currentState.powerups & ( 1 << PW_INVIS ) ) {
-		return;
-	}
-
-	// update the fade timer
-	cg.crosshairClientNum = trace.entityNum;
-	cg.crosshairClientTime = cg.time;
-}
-
-/*
-=====================
-CG_DrawCrosshairNames
-=====================
-*/
-static void CG_DrawCrosshairNames( void ) {
-	float		*color;
-	char		*name;
-
-	if ( !cg_drawCrosshair.integer || !cg_drawCrosshairNames.integer ) {
-		return;
-	}
-
-	CG_ScanForCrosshairEntity();
-	color = CG_FadeColor(cg.crosshairClientTime, 1000);
-	if ( !color ) {
-		return;
-	}
-	name = cgs.clientinfo[cg.crosshairClientNum].name;
-	ST_DrawString(320, 200, name, UI_CENTER, color, 1.25);
-}
-
-/*
-=================
 CG_DrawIntermission
 =================
 */
@@ -1368,29 +1337,39 @@ static void CG_Draw2D( void ) {
 	}
 
 	CG_DrawCrosshair();
-	CG_DrawCrosshairNames();
-
-	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR && !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0) {
-		CG_DrawPersistantPowerup();
-	}
-
 	CG_DrawCounters();
 	CG_DrawPowerups();
-	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR){
-		CG_DrawScores();
-	}
 	CG_DrawLowerLeft();
-
 	CG_DrawFollow();
+	CG_Notify();
 
-	if (!cg.scoreBoardShowing) {
+	if (!cg.scoreBoardShowing)
     	CG_DrawCenter1FctfString();
-	}
 
 	if(ns_haveerror.integer)
 		CG_NSErrors();
 
-	CG_Notify();
+	if(cgs.gametype != GT_SANDBOX && cgs.gametype != GT_MAPEDITOR)
+		CG_DrawScores();
+
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
+		CG_DrawIntermission();
+		return;
+	}
+	
+	if ( !cg.scoreBoardShowing)
+		CG_DrawCenterString();
+
+	if ( cg.snap->ps.pm_type == PM_DEAD )
+		CG_DrawDeathMessage();
+
+	if (cg.snap->ps.pm_type != PM_INTERMISSION && cg.snap->ps.pm_type != PM_DEAD && cg.snap->ps.pm_type != PM_SPECTATOR) {
+		CG_DrawStatusBar();
+        CG_DrawHoldableItem();
+		CG_DrawPersistantPowerup();
+	}
+
+	cg.scoreBoardShowing = CG_DrawScoreboard();
 }
 
 /*
@@ -1398,7 +1377,6 @@ static void CG_Draw2D( void ) {
 Noire.Script API - Threads
 ###############
 */
-
 char cgameThreadBuffer[MAX_CYCLE_SIZE];
 
 // Load threads
@@ -1428,56 +1406,22 @@ Perform all drawing needed to completely fill the screen
 =====================
 */
 void CG_DrawActive( void ) {
-	int catcher = trap_Key_GetCatcher();
-	int pm;
-
-	if ( !cg.snap ) {
+	if (!cg.snap) {
 		CG_DrawInformation();
 		return;
 	}
 
 	// select the weapon the server says we are using
-	if(!cg.weaponSelect){
+	if(!cg.weaponSelect)
 		cg.weaponSelect = cg.snap->ps.weapon;
-	}
 
 	RunScriptThreads(cg.time);		//Noire.Script - run threads
+	CG_ReloadPlayers();
+	trap_R_RenderScene( &cg.refdef );
+	CG_Draw3DStringQueue();
+	CG_DrawPostProcess();
+	CG_Draw2D();
 
 	if(cg.renderingThirdPerson)
 		CG_DrawCrosshair3D();
-	
-	CG_ReloadPlayers();
-
-	// draw 3D view
-	trap_R_RenderScene( &cg.refdef );
-	
-	CG_DrawPostProcess();
-
-	if (catcher != KEYCATCH_UI && !(catcher & KEYCATCH_CONSOLE)) {
- 		CG_Draw2D();
-		pm = cg.snap->ps.pm_type;
-		if (pm != PM_INTERMISSION && pm != PM_DEAD && pm != PM_SPECTATOR) {
-			CG_DrawStatusBar();
-    	    CG_DrawHoldableItem();
-		}
-	}
-
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
-		return;
-	}
-	
-	cg.scoreBoardShowing = CG_DrawScoreboard();
-
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
-		CG_DrawIntermission();
-		return;
-	}
-	
-	if ( !cg.scoreBoardShowing) {
-		CG_DrawCenterString();
-	}
-
-	if ( cg.snap->ps.pm_type == PM_DEAD ) {
-		CG_DrawDeathMessage();
-	}
 }

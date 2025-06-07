@@ -39,7 +39,7 @@ typedef struct {
 } vmCvar_t;
 
 #ifdef GAME
-extern  vmCvar_t    g_cheats;
+extern  vmCvar_t    sv_cheats;
 extern  vmCvar_t    g_maxClients;
 extern  vmCvar_t    g_maxEntities;
 extern  vmCvar_t    g_fraglimit;
@@ -145,7 +145,6 @@ extern  vmCvar_t    cg_shadows;
 extern  vmCvar_t    cg_drawTimer;
 extern  vmCvar_t    cg_drawFPS;
 extern  vmCvar_t    cg_drawCrosshair;
-extern  vmCvar_t    cg_drawCrosshairNames;
 extern  vmCvar_t    cg_crosshairScale;
 extern  vmCvar_t    cg_draw2D;
 extern  vmCvar_t    cg_debugEvents;
@@ -244,15 +243,6 @@ extern  vmCvar_t    cl_selectedmod;
 extern  vmCvar_t    cl_language;
 extern  vmCvar_t    ui_loaded;
 extern  vmCvar_t    sensitivitymenu;
-extern  vmCvar_t    ui_spScores1;
-extern  vmCvar_t    ui_spScores2;
-extern  vmCvar_t    ui_spScores3;
-extern  vmCvar_t    ui_spScores4;
-extern  vmCvar_t    ui_spScores5;
-extern  vmCvar_t    ui_spAwards;
-extern  vmCvar_t    ui_spVideos;
-extern  vmCvar_t    ui_spSkill;
-extern  vmCvar_t    ui_spSelection;
 extern  vmCvar_t    ui_browserMaster;
 extern  vmCvar_t    ui_browserGameType;
 extern  vmCvar_t    ui_browserSortKey;

@@ -27,8 +27,7 @@
 
 /*
 ==================
-DeathmatchScoreboardMessage
-
+CGAME commands
 ==================
 */
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
@@ -149,8 +148,6 @@ void ObeliskHealthMessage() {
 /*
 ==================
 Cmd_Score_f
-
-Request current scoreboard information
 ==================
 */
 void Cmd_Score_f( gentity_t *ent ) {
@@ -163,20 +160,19 @@ CheatsOk
 ==================
 */
 qboolean CheatsOk( gentity_t *ent ) {
-	if ( !g_cheats.integer ) {
+	if ( !sv_cheats.integer ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return qfalse;
 	}
 	return qtrue;
 }
 
-
 /*
 ==================
 ConcatArgs
 ==================
 */
-char *ConcatArgs( int start ) {
+char	*ConcatArgs( int start ) {
 	int		i, c, tlen;
 	static char	line[MAX_STRING_CHARS];
 	int		len;
@@ -205,65 +201,19 @@ char *ConcatArgs( int start ) {
 
 /*
 ==================
-ClientNumberFromString
-
-Returns a player number for either a number or name string
-Returns -1 if invalid
-==================
-*/
-int ClientNumberFromString( gentity_t *to, char *s ) {
-	gclient_t	*cl;
-	int			idnum;
-    char        cleanName[MAX_STRING_CHARS];
-
-	// numeric values are just slot numbers
-	if (s[0] >= '0' && s[0] <= '9') {
-		idnum = atoi( s );
-		if ( idnum < 0 || idnum >= level.maxclients ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Bad client slot: %i\n\"", idnum));
-			return -1;
-		}
-
-		cl = &level.clients[idnum];
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Client %i is not active\n\"", idnum));
-			return -1;
-		}
-		return idnum;
-	}
-
-	// check for a name match
-	for ( idnum=0,cl=level.clients ; idnum < level.maxclients ; idnum++,cl++ ) {
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-        Q_strncpyz(cleanName, cl->pers.netname, sizeof(cleanName));
-        Q_CleanStr(cleanName);
-        if ( Q_strequal( cleanName, s ) ) {
-			return idnum;
-		}
-	}
-
-	trap_SendServerCommand( to-g_entities, va("print \"User %s is not on the server\n\"", s));
-	return -1;
-}
-
-/*
-==================
 Cmd_Give_f
-
-Give items to a client
 ==================
 */
-void Cmd_Give_f (gentity_t *ent) {
+static void Cmd_Give_f (gentity_t *ent) {
 	char		*name;
 	gitem_t		*it;
 	int			i;
 	qboolean	give_all;
-	gentity_t		*it_ent;
+	gentity_t	*it_ent;
 	trace_t		trace;
 
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR && !CheatsOk(ent)){ return; }
+	if((g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) && !CheatsOk(ent))
+		return;
 
 	name = ConcatArgs( 1 );
 
@@ -272,25 +222,23 @@ void Cmd_Give_f (gentity_t *ent) {
 	else
 		give_all = qfalse;
 
-	if (give_all || Q_strequal( name, "health"))
-	{
+	if (give_all || Q_strequal( name, "health")) {
 		ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
 		if (!give_all)
 			return;
 	}
 
-	if (give_all || Q_strequal(name, "weapons"))
-	{
+	if (give_all || Q_strequal(name, "weapons")) {
 		for(i = 1; i < WEAPONS_NUM; i++){
 			ent->swep_list[i] = 1; 
 			ent->swep_ammo[i] = 9999; 
 		}
+		SetUnlimitedWeapons(ent);
 		if (!give_all)
 			return;
 	}
 
-	if (give_all || Q_strequal(name, "ammo"))
-	{
+	if (give_all || Q_strequal(name, "ammo")) {
 		for ( i = 1; i < WEAPONS_NUM; i++ ) {
 			ent->swep_ammo[i] = 9999;
 		}
@@ -299,8 +247,7 @@ void Cmd_Give_f (gentity_t *ent) {
 			return;
 	}
 
-	if (give_all || Q_strequal(name, "armor"))
-	{
+	if (give_all || Q_strequal(name, "armor")) {
 		ent->client->ps.stats[STAT_ARMOR] = 200;
 
 		if (!give_all)
@@ -330,34 +277,25 @@ void Cmd_Give_f (gentity_t *ent) {
 /*
 ==================
 Cmd_VehicleExit_f
-
-Exit from vehicle for player
 ==================
 */
-void Cmd_VehicleExit_f (gentity_t *ent)
-{
+static void Cmd_VehicleExit_f (gentity_t *ent) {
 	if(ent->client->vehiclenum){
-	ent->client->vehiclenum = 0;
-	ClientUserinfoChanged( ent->s.clientNum );
+		ent->client->vehiclenum = 0;
+		ClientUserinfoChanged( ent->s.clientNum );
 	}
 }
 
 /*
 ==================
 Cmd_God_f
-
-Sets client to godmode
-
-argv(0) god
 ==================
 */
-void Cmd_God_f (gentity_t *ent)
-{
+static void Cmd_God_f (gentity_t *ent) {
 	char	*msg;
 
-	if ( !CheatsOk( ent ) ) {
+	if(!CheatsOk(ent))
 		return;
-	}
 
 	ent->flags ^= FL_GODMODE;
 	if (!(ent->flags & FL_GODMODE) )
@@ -371,12 +309,11 @@ void Cmd_God_f (gentity_t *ent)
 /*
 ==================
 Cmd_Noclip_f
-
-argv(0) noclip
 ==================
 */
-void Cmd_Noclip_f( gentity_t *ent ) {
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
+static void Cmd_Noclip_f( gentity_t *ent ) {
+	if((g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) && !CheatsOk(ent))
+		return;
 
 	ent->client->noclip = !ent->client->noclip;
 }
@@ -386,17 +323,16 @@ void Cmd_Noclip_f( gentity_t *ent ) {
 Cmd_TeamTask_f
 ==================
 */
-void Cmd_TeamTask_f( gentity_t *ent ) {
+static void Cmd_TeamTask_f( gentity_t *ent ) {
 	char userinfo[MAX_INFO_STRING];
 	char		arg[MAX_TOKEN_CHARS];
 	int task;
 	int client = ent->client - level.clients;
 
-	if ( trap_Argc() != 2 ) {
+	if (trap_Argc() != 2)
 		return;
-	}
-	trap_Argv( 1, arg, sizeof( arg ) );
-	task = atoi( arg );
+	trap_Argv(1, arg, sizeof(arg));
+	task = atoi(arg);
 
 	trap_GetUserinfo(client, userinfo, sizeof(userinfo));
 	Info_SetValueForKey(userinfo, "teamtask", va("%d", task));
@@ -409,50 +345,36 @@ void Cmd_TeamTask_f( gentity_t *ent ) {
 Cmd_Kill_f
 =================
 */
-void Cmd_Kill_f( gentity_t *ent ) {
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+static void Cmd_Kill_f( gentity_t *ent ) {
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
 		return;
-	}
-	if (ent->health <= 0) {
+	if (ent->health <= 0)
 		return;
-	}
 	ent->flags &= ~FL_GODMODE;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
-        if(ent->client->lastSentFlying>-1)
-            //If player is in the air because of knockback we give credit to the person who sent it flying
-            player_die (ent, ent, &g_entities[ent->client->lastSentFlying], 100000, MOD_FALLING);
-        else
-            player_die (ent, ent, ent, 100000, MOD_SUICIDE);
+	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
 }
 
 /*
 =================
 BroadCastTeamChange
-
-Let everyone know about a team change
 =================
 */
-void BroadcastTeamChange( gclient_t *client, int oldTeam )
-{
+void BroadcastTeamChange( gclient_t *client, int oldTeam ){
 	if ( client->sess.sessionTeam == TEAM_RED ) {
-		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the red team.\n\"",
-			client->pers.netname) );
+		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the red team.\n\"", client->pers.netname) );
 	} else if ( client->sess.sessionTeam == TEAM_BLUE ) {
-		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the blue team.\n\"",
-		client->pers.netname));
+		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the blue team.\n\"", client->pers.netname));
 	} else if ( client->sess.sessionTeam == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR ) {
-		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the spectators.\n\"",
-		client->pers.netname));
+		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the spectators.\n\"", client->pers.netname));
 	} else if ( client->sess.sessionTeam == TEAM_FREE ) {
-		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the battle.\n\"",
-		client->pers.netname));
+		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the battle.\n\"", client->pers.netname));
 	}
 }
 
 /*
 =================
 SetTeam
-KK-OAX Modded this to accept a forced admin change.
 =================
 */
 void SetTeam( gentity_t *ent, char *s ) {
@@ -462,7 +384,6 @@ void SetTeam( gentity_t *ent, char *s ) {
 	spectatorState_t	specState;
 	int					specClient;
 	int					teamLeader;
-    char	            userinfo[MAX_INFO_STRING];
 
 	//
 	// see what change is requested
@@ -470,32 +391,29 @@ void SetTeam( gentity_t *ent, char *s ) {
 	client = ent->client;
 
 	clientNum = client - level.clients;
-    trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 	specClient = 0;
 	specState = SPECTATOR_NOT;
-	if ( Q_strequal( s, "scoreboard" ) || Q_strequal( s, "score" )  ) {
+	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_SCOREBOARD;
-	} else if ( Q_strequal( s, "follow1" ) ) {
+	} else if ( !Q_stricmp( s, "follow1" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FOLLOW;
 		specClient = -1;
-	} else if ( Q_strequal( s, "follow2" ) ) {
+	} else if ( !Q_stricmp( s, "follow2" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FOLLOW;
 		specClient = -2;
-	} else if ( Q_strequal( s, "spectator" ) || Q_strequal( s, "s" ) ) {
+	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
 	} else if ( g_gametype.integer >= GT_TEAM ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
-		if ( Q_strequal( s, "red" ) || Q_strequal( s, "r" ) ) {
+		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
 			team = TEAM_RED;
-		} else if ( Q_strequal( s, "blue" ) || Q_strequal( s, "b" ) ) {
+		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
 			team = TEAM_BLUE;
-		} else if ( Q_strequal( s, "free" ) && ent->npcType ) { //FREE_TEAM
-			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
 			team = PickTeam( clientNum );
@@ -509,55 +427,41 @@ void SetTeam( gentity_t *ent, char *s ) {
 	// decide if we will allow the change
 	//
 	oldTeam = client->sess.sessionTeam;
-	if ( team == oldTeam && team != TEAM_SPECTATOR ) {
+	if ( team == oldTeam && team != TEAM_SPECTATOR )
 		return;
-	}
 
 	//
 	// execute the team change
 	//
-	
+
 	// if the player was dead leave the body
-	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
+	if ( client->ps.stats[STAT_HEALTH] <= 0 )
 		CopyToBodyQue(ent);
-	}
 
 	// he starts at 'base'
 	client->pers.teamState.state = TEAM_BEGIN;
 	if ( oldTeam != TEAM_SPECTATOR ) {
-        int teamscore = -99;
-
-        //Prevent a team from loosing point because of player leaving team
-        if(g_gametype.integer == GT_TEAM && ent->client->ps.stats[STAT_HEALTH])
-            teamscore = level.teamScores[ ent->client->sess.sessionTeam ];
-
 		// Kill him (makes sure he loses flags, etc)
 		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die (ent, ent, ent, 100000, MOD_SUICIDE);
-        if(teamscore != -99)
-            level.teamScores[ ent->client->sess.sessionTeam ] = teamscore;
-	}
 
-    if(oldTeam!=TEAM_SPECTATOR)
-        PlayerStore_store(Info_ValueForKey(userinfo,"cl_guid"), client->ps);
+	}
 
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
 
 	client->sess.teamLeader = qfalse;
-	if ( team == TEAM_RED || team == TEAM_BLUE ) {
+	if (team == TEAM_RED || team == TEAM_BLUE) {
 		teamLeader = TeamLeader( team );
 		// if there is no team leader or the team leader is a bot and this client is not a bot
-		if ( teamLeader == -1 || ( !(g_entities[clientNum].r.svFlags & SVF_BOT) && (g_entities[teamLeader].r.svFlags & SVF_BOT) ) ) {
+		if (teamLeader == -1 || (!(g_entities[clientNum].r.svFlags & SVF_BOT) && (g_entities[teamLeader].r.svFlags & SVF_BOT)))
 			SetLeader( team, clientNum );
-		}
 	}
 	// make sure there is a team leader on the team the player came from
-	if ( oldTeam == TEAM_RED || oldTeam == TEAM_BLUE ) {
+	if (oldTeam == TEAM_RED || oldTeam == TEAM_BLUE)
 		CheckTeamLeader( oldTeam );
-	}
 
 	BroadcastTeamChange( client, oldTeam );
 
@@ -570,9 +474,6 @@ void SetTeam( gentity_t *ent, char *s ) {
 /*
 =================
 StopFollowing
-
-If the client being followed leaves the game, or you just want to drop
-to free floating spectator mode
 =================
 */
 void StopFollowing( gentity_t *ent ) {
@@ -589,187 +490,95 @@ void StopFollowing( gentity_t *ent ) {
 Cmd_Team_f
 =================
 */
-void Cmd_Team_f( gentity_t *ent ) {
-	int			oldTeam;
+static void Cmd_Team_f( gentity_t *ent ) {
 	char		s[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc() != 2 ) {
-		oldTeam = ent->client->sess.sessionTeam;
-		switch ( oldTeam ) {
-		case TEAM_BLUE:
-			trap_SendServerCommand( ent-g_entities, "print \"Blue team\n\"" );
-			break;
-		case TEAM_RED:
-			trap_SendServerCommand( ent-g_entities, "print \"Red team\n\"" );
-			break;
-		case TEAM_FREE:
-			trap_SendServerCommand( ent-g_entities, "print \"Deathmatch-Playing\n\"" );
-			break;
-		case TEAM_SPECTATOR:
-			trap_SendServerCommand( ent-g_entities, "print \"Spectator team\n\"" );
-			break;
-		}
+		trap_SendServerCommand( ent-g_entities, "print \"Enter team name.\n\"" );
 		return;
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
 
 	SetTeam( ent, s );
-
-	ent->client->switchTeamTime = level.time + 5000;
-}
-
-
-/*
-=================
-Cmd_Follow_f
-=================
-*/
-void Cmd_Follow_f( gentity_t *ent ) {
-	int		i;
-	char	arg[MAX_TOKEN_CHARS];
-
-	if ( trap_Argc() != 2 ) {
-		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
-			StopFollowing( ent );
-		}
-		return;
-	}
-
-	trap_Argv( 1, arg, sizeof( arg ) );
-	i = ClientNumberFromString( ent, arg );
-	if ( i == -1 ) {
-		return;
-	}
-
-	// can't follow self
-	if ( &level.clients[ i ] == ent->client ) {
-		return;
-	}
-
-	// can't follow another spectator (or an eliminated player)
-	if ( level.clients[ i ].sess.sessionTeam == TEAM_SPECTATOR ) {
-		return;
-	}
-
-	// first set them to spectator
-	//if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-		SetTeam( ent, "spectator" );
-	}
-
-	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
-	ent->client->sess.spectatorClient = i;
 }
 
 /*
 =================
 Cmd_FollowCycle_f
-KK-OAX Modified to trap arguments.
 =================
 */
-void Cmd_FollowCycle_f( gentity_t *ent ) {
+void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	int		clientnum;
 	int		original;
-    int     count;
-    char    args[11];
-    int     dir;
 	gentity_t		*checkNPC;
 
-    if( ent->client->sess.sessionTeam == TEAM_NONE ) {
-        dir = 1;
-    }
-
-    trap_Argv( 0, args, sizeof( args ) );
-    if( Q_strequal( args, "followprev" )) {
-        dir = -1;
-    } else if( Q_strequal( args, "follownext" )) {
-        dir = 1;
-    } else {
-        dir = 1;
-    }
-
 	// first set them to spectator
-	if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
+	if (ent->client->sess.spectatorState == SPECTATOR_NOT)
 		SetTeam( ent, "spectator" );
-	}
-
-	if ( dir != 1 && dir != -1 ) {
-		G_Error( "Cmd_FollowCycle_f: bad dir %i", dir );
-	}
 
 	clientnum = ent->client->sess.spectatorClient;
 	original = clientnum;
-        count = 0;
+	checkNPC = g_entities + clientnum;
 	do {
 		clientnum += dir;
-                count++;
-		if ( clientnum >= level.maxclients ) {
-			clientnum = 0;
-		}
-		if ( clientnum < 0 ) {
-			clientnum = level.maxclients - 1;
-		}
 
-        if(count>level.maxclients) //We have looked at all clients at least once and found nothing
-            return; //We might end up in an infinite loop here. Stop it!
+		if(clientnum >= level.maxclients)
+			clientnum = 0;
+
+		if(clientnum < 0)
+			clientnum = level.maxclients - 1;
 
 		// can only follow connected clients
-		if ( level.clients[ clientnum ].pers.connected != CON_CONNECTED ) {
+		if(level.clients[clientnum].pers.connected != CON_CONNECTED)
 			continue;
-		}
 
 		// can't follow another spectator
-		if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR ) {
+		if(level.clients[clientnum].sess.sessionTeam == TEAM_SPECTATOR)
 			continue;
-		}
 
 		// can't follow npc
-		checkNPC = g_entities + clientnum;
-		if ( checkNPC->npcType ) {
+		if(checkNPC->npcType)
 			continue;
-		}
 
 		// this is good, we can use it
 		ent->client->sess.spectatorClient = clientnum;
 		ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
 		return;
 	} while ( clientnum != original );
-
-	// leave it where it was
 }
 
+static void Cmd_RunFollowNext_f(gentity_t *ent){
+	Cmd_FollowCycle_f(ent, 1);
+}
+
+static void Cmd_RunFollowPrev_f(gentity_t *ent){
+	Cmd_FollowCycle_f(ent, -1);
+}
 
 /*
 ==================
 G_Say
 ==================
 */
-
 static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message ) {
-	if (!other) {
+	if (!other)
 		return;
-	}
-	if (!other->inuse) {
+	if (!other->inuse)
 		return;
-	}
-	if (!other->client) {
+	if (!other->client)
 		return;
-	}
-	if ( other->client->pers.connected != CON_CONNECTED ) {
+	if ( other->client->pers.connected != CON_CONNECTED )
 		return;
-	}
+	if ( mode == SAY_TEAM  && !OnSameTeam(ent, other) )
+		return;
 
-    if ((ent->r.svFlags & SVF_BOT) && cvar_VariableValue( "bot_nochat" )>1) return;
-
-	trap_SendServerCommand( other-g_entities, va("%s \"%s%c%c%s\"",
-		mode == SAY_TEAM ? "tchat" : "chat",
-		name, Q_COLOR_ESCAPE, color, message));
+	trap_SendServerCommand(other-g_entities, va("%s \"%s%c%c%s\"", mode == SAY_TEAM ? "tchat" : "chat", name, Q_COLOR_ESCAPE, color, message));
 }
 
 #define EC		"\x19"
 
-void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) {
+static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) {
 	int			j;
 	gentity_t	*other;
 	int			color;
@@ -778,7 +587,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		text[MAX_SAY_TEXT];
 	char		location[64];
 
-    if ((ent->r.svFlags & SVF_BOT) && cvar_VariableValue( "bot_nochat" )>1) return;
+	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM )
+		mode = SAY_ALL;
 
 	switch ( mode ) {
 	default:
@@ -788,10 +598,10 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		break;
 	case SAY_TEAM:
 		if (Team_GetLocationMsg(ent, location, sizeof(location)))
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ",
+			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ", 
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 		else
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
+			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ", 
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_CYAN;
 		break;
@@ -825,34 +635,73 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	}
 }
 
-
 /*
 ==================
 Cmd_Say_f
-KK-OAX Modified this to trap the additional arguments from console.
 ==================
 */
-static void Cmd_Say_f( gentity_t *ent ){
+static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 	char		*p;
-	char        arg[MAX_TOKEN_CHARS];
-	int         mode = SAY_ALL;
 
-    trap_Argv( 0, arg, sizeof( arg ) );
-    if( Q_strequal( arg, "say_team" ) )
-        mode = SAY_TEAM ;
+	if ( trap_Argc () < 2 && !arg0 )
+		return;
 
-    if( trap_Argc( ) < 2 )
-        return;
+	if (arg0) {
+		p = ConcatArgs( 0 );
+	} else {
+		p = ConcatArgs( 1 );
+	}
 
-    p = ConcatArgs( 1 );
+	G_Say( ent, NULL, mode, p );
+}
 
-    G_Say( ent, NULL, mode, p );
+/*
+==================
+Cmd_Tell_f
+==================
+*/
+static void Cmd_Tell_f( gentity_t *ent ) {
+	int			targetNum;
+	gentity_t	*target;
+	char		*p;
+	char		arg[MAX_TOKEN_CHARS];
+
+	if ( trap_Argc () < 2 ) {
+		return;
+	}
+
+	trap_Argv( 1, arg, sizeof( arg ) );
+	targetNum = atoi( arg );
+	if ( targetNum < 0 || targetNum >= level.maxclients ) {
+		return;
+	}
+
+	target = &g_entities[targetNum];
+	if ( !target || !target->inuse || !target->client ) {
+		return;
+	}
+
+	p = ConcatArgs( 2 );
+
+	G_Say( ent, target, SAY_TELL, p );
+	// don't tell to the player self if it was already directed to this player
+	// also don't send the chat back to a bot
+	if ( ent != target && !(ent->r.svFlags & SVF_BOT)) {
+		G_Say( ent, ent, SAY_TELL, p );
+	}
+}
+
+static void Cmd_RunSay_f(gentity_t *ent){
+	Cmd_Say_f(ent, SAY_ALL, qfalse);
+}
+
+static void Cmd_RunSayTeam_f(gentity_t *ent){
+	Cmd_Say_f(ent, SAY_TEAM, qfalse);
 }
 
 /*
 ==================
 Cmd_SpawnList_Item_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_SpawnList_Item_f( gentity_t *ent ){
@@ -882,11 +731,11 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	char		arg21[64];
 	char		arg22[64];
 	
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
-
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR)
 		return;
-	}
+
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+		return;
 		
 	//tr.endpos
 	trap_Argv( 1, arg01, sizeof( arg01 ) );
@@ -921,73 +770,65 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT );
 	
 	if(!Q_stricmp (arg01, "prop")){
-	
-	tent = G_TempEntity( tr.endpos, EV_PARTICLES_GRAVITY );
-	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8 ) | rand() % 256 << 16 ) | ( 255 << 24 ));
-	tent->s.eventParm = 24; //eventParm is used to determine the number of particles
-	tent->s.generic1 = 500; //generic1 is used to determine the speed of the particles
-	tent->s.generic2 = 16; //generic2 is used to determine the size of the particles
-	G_BuildPropSL( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
-	
-	return;
+		tent = G_TempEntity( tr.endpos, EV_PARTICLES_GRAVITY );
+		tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8 ) | rand() % 256 << 16 ) | ( 255 << 24 ));
+		tent->s.eventParm = 24; //eventParm is used to determine the number of particles
+		tent->s.generic1 = 500; //generic1 is used to determine the speed of the particles
+		tent->s.generic2 = 16; //generic2 is used to determine the size of the particles
+		G_BuildPropSL( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
+		return;
 	}
 	if(!Q_stricmp (arg01, "npc")){
-	
-	tent = G_Spawn();
-	tent->sb_isnpc = 1;
-	VectorCopy( tr.endpos, tent->s.origin);
-	tent->s.origin[2] += 25;
-	tent->classname = "sandbox_npc";
-	CopyAlloc(tent->clientname, arg02);
-	tent->type = NPC_ENEMY;
-	if(!Q_stricmp (arg03, "NPC_Enemy")){
-	tent->type = NPC_ENEMY;
-	}
-	if(!Q_stricmp (arg03, "NPC_Citizen")){
-	tent->type = NPC_CITIZEN;
-	}
-	if(!Q_stricmp (arg03, "NPC_Guard")){
-	tent->type = NPC_GUARD;
-	}
-	if(!Q_stricmp (arg03, "NPC_Partner")){
-	tent->type = NPC_PARTNER;
-	}
-	if(!Q_stricmp (arg03, "NPC_PartnerEnemy")){
-	tent->type = NPC_PARTNERENEMY;
-	}
-	tent->skill = atof(arg04);
-	tent->health = atoi(arg05);
-	CopyAlloc(tent->message, arg06);	
-	tent->mtype = atoi(arg08);
-	if(!Q_stricmp (arg07, "0") ){
-	CopyAlloc(tent->target, arg02);	
-	} else {
-	CopyAlloc(tent->target, arg07);	
-	}
-	if(tent->health <= 0){
-	tent->health = 100;
-	}
-	if(tent->skill <= 0){
-	tent->skill = 1;
-	}
-	if(!Q_stricmp (tent->message, "0") || !tent->message ){
-	CopyAlloc(tent->message, tent->clientname);
-	}
-	G_AddBot(tent->clientname, tent->skill, "Blue", 0, tent->message, tent->s.number, tent->target, tent->type, tent );
-	
-	if(tent->parent){
-		Undo_AddElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
-	}
+		tent = G_Spawn();
+		tent->sb_isnpc = 1;
+		VectorCopy( tr.endpos, tent->s.origin);
+		tent->s.origin[2] += 25;
+		tent->classname = "sandbox_npc";
+		CopyAlloc(tent->clientname, arg02);
 
-	trap_Cvar_Set("g_spSkill", arg04);
-	return;
+		tent->type = NPC_ENEMY;
+		if(!Q_stricmp (arg03, "NPC_Enemy"))
+			tent->type = NPC_ENEMY;
+		if(!Q_stricmp (arg03, "NPC_Citizen"))
+			tent->type = NPC_CITIZEN;
+		if(!Q_stricmp (arg03, "NPC_Guard"))
+			tent->type = NPC_GUARD;
+		if(!Q_stricmp (arg03, "NPC_Partner"))
+			tent->type = NPC_PARTNER;
+		if(!Q_stricmp (arg03, "NPC_PartnerEnemy"))
+			tent->type = NPC_PARTNERENEMY;
+
+		tent->skill = atof(arg04);
+		tent->health = atoi(arg05);
+		CopyAlloc(tent->message, arg06);	
+		tent->mtype = atoi(arg08);
+
+		if(!Q_stricmp (arg07, "0") ){
+			CopyAlloc(tent->target, arg02);	
+		} else {
+			CopyAlloc(tent->target, arg07);	
+		}
+
+		if(tent->health <= 0)
+			tent->health = 100;
+
+		if(tent->skill <= 0)
+			tent->skill = 1;
+
+		if(!Q_stricmp (tent->message, "0") || !tent->message )
+			CopyAlloc(tent->message, tent->clientname);
+
+		G_AddBot(tent->clientname, tent->skill, "Blue", 0, tent->message, tent->s.number, tent->target, tent->type, tent );
+
+		if(tent->parent)
+			Undo_AddElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
+		return;
 	}
 }
 
 /*
 ==================
 Cmd_Modify_Prop_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_Modify_Prop_f( gentity_t *ent ){
@@ -1015,11 +856,11 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 	char		arg18[64];
 	char		arg19[64];
 	
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR){ return; }
-
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR)
 		return;
-	}
+
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+		return;
 		
 	//tr.endpos
 	trap_Argv( 1, arg01, sizeof( arg01 ) );
@@ -1052,9 +893,8 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 	
 	traceEnt = &g_entities[ tr.entityNum ];		//entity for modding
 
-	if(!traceEnt->sandboxObject && !traceEnt->npcType && ent->s.eType != ET_ITEM){
+	if(!traceEnt->sandboxObject && !traceEnt->npcType && ent->s.eType != ET_ITEM)
 		return;
-	}
 	
 	tent = G_TempEntity( tr.endpos, EV_PARTICLES_GRAVITY );
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8 ) | rand() % 256 << 16 ) | ( 255 << 24 ));
@@ -1068,7 +908,6 @@ static void Cmd_Modify_Prop_f( gentity_t *ent ){
 /*
 ==================
 Cmd_Altfire_Physgun_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_Altfire_Physgun_f( gentity_t *ent ){
@@ -1084,7 +923,6 @@ static void Cmd_Altfire_Physgun_f( gentity_t *ent ){
 /*
 ==================
 Cmd_PhysgunDist_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_PhysgunDist_f( gentity_t *ent ){
@@ -1118,7 +956,6 @@ static void Cmd_PhysgunDist_f( gentity_t *ent ){
 /*
 ==================
 Cmd_Flashlight_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_Flashlight_f( gentity_t *ent ){
@@ -1143,7 +980,6 @@ static void Cmd_Flashlight_f( gentity_t *ent ){
 /*
 ==================
 Cmd_Undo_f
-Added for OpenSandbox.
 ==================
 */
 static void Cmd_Undo_f(gentity_t *ent) {
@@ -1182,76 +1018,31 @@ static void Cmd_Undo_f(gentity_t *ent) {
 }
 
 /*
-==================
-Cmd_Where_f
-==================
-*/
-void Cmd_Where_f( gentity_t *ent ) {
-	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos(ent->r.currentOrigin) ) );
-}
-
-static const char *gameNames[] = {
-	"Sandbox",
-	"Map Editor",
-	"Free For All",
-	"Team Deathmatch",
-	"Capture the Flag",
-	"One Flag Capture",
-	"Overload",
-	"Harvester",
-	0
-};
-
-/*
 =================
-Cmd_SetViewpos_f
+Cmd_Teleport_f
 =================
 */
-void Cmd_SetViewpos_f( gentity_t *ent ) {
+static void Cmd_Teleport_f( gentity_t *ent ) {
 	vec3_t		origin;
 	char		buffer[MAX_TOKEN_CHARS];
 	int			i;
 
-	if ( !g_cheats.integer ) {
+	if (!sv_cheats.integer) {
 		trap_SendServerCommand( ent-g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return;
 	}
-	if ( trap_Argc() != 4 ) {
+
+	if (trap_Argc() != 4) {
 		trap_SendServerCommand( ent-g_entities, va("print \"usage: setviewpos x y z\n\""));
 		return;
 	}
 
-	for ( i = 0 ; i < 3 ; i++ ) {
-		trap_Argv( i + 1, buffer, sizeof( buffer ) );
-		origin[i] = atof( buffer );
+	for (i = 0 ; i < 3 ; i++) {
+		trap_Argv(i + 1, buffer, sizeof(buffer));
+		origin[i] = atof(buffer);
 	}
 
-	TeleportPlayer(ent, origin, ent->client->ps.viewangles);
-}
-
-/*
-=================
-Cmd_UseTarget_f
-=================
-*/
-void Cmd_UseTarget_f( gentity_t *ent ) {
-	char		*p;
-	char        arg[MAX_TOKEN_CHARS];
-	gentity_t 	*act;
-
-    trap_Argv( 0, arg, sizeof( arg ) );
-
-    if( trap_Argc( ) < 2 )
-        return;
-
-    p = ConcatArgs( 1 );
-	
-	ent->target = p;
-
-	act = G_PickTarget( ent->target );
-	if ( act && act->use && act->allowuse ) {
-		act->use( act, ent, ent );
-	}
+	TeleportPlayer(ent, origin, ent->client->ps.viewangles, qtrue);
 }
 
 /*
@@ -1259,7 +1050,7 @@ void Cmd_UseTarget_f( gentity_t *ent ) {
 Cmd_ActivateTarget_f
 =================
 */
-void Cmd_ActivateTarget_f(gentity_t *ent) {
+static void Cmd_ActivateTarget_f(gentity_t *ent) {
 	char	*p;
 	char	arg[MAX_TOKEN_CHARS];
 
@@ -1275,40 +1066,37 @@ void Cmd_ActivateTarget_f(gentity_t *ent) {
 	G_PickAllTargets(ent);
 }
 
-//KK-OAX This is the table that ClientCommands runs the console entry against.
-commands_t cmds[ ] =
-{
+//This is the table that ClientCommands runs the console entry against.
+commands_t cmds[ ] = {
   // can be used even during intermission
-  { "say", CMD_MESSAGE|CMD_INTERMISSION, Cmd_Say_f },
-  { "say_team", CMD_MESSAGE|CMD_INTERMISSION, Cmd_Say_f },
+  { "say", CMD_MESSAGE|CMD_INTERMISSION, Cmd_RunSay_f },
+  { "say_team", CMD_MESSAGE|CMD_INTERMISSION, Cmd_RunSayTeam_f },
+  { "tell", CMD_MESSAGE|CMD_INTERMISSION, Cmd_Tell_f },
+  { "team", CMD_INTERMISSION, Cmd_Team_f },
   { "score", CMD_INTERMISSION, Cmd_Score_f },
 
   // cheats
   { "give", CMD_LIVING, Cmd_Give_f },
   { "god", CMD_CHEAT|CMD_LIVING, Cmd_God_f },
-  { "setviewpos", CMD_CHEAT, Cmd_SetViewpos_f },
+  { "tp", CMD_CHEAT, Cmd_Teleport_f },
   { "noclip", CMD_LIVING, Cmd_Noclip_f },
 
   // interaction
   { "exitvehicle", CMD_LIVING, Cmd_VehicleExit_f },
   { "kill", CMD_TEAM|CMD_LIVING, Cmd_Kill_f },
-  { "sl", CMD_LIVING, Cmd_SpawnList_Item_f },	//hidden
-  { "tm", CMD_LIVING, Cmd_Modify_Prop_f },		//hidden
-  { "altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f },		//hidden
-  { "physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f },	//hidden
+  { "sl", CMD_LIVING, Cmd_SpawnList_Item_f },
+  { "tm", CMD_LIVING, Cmd_Modify_Prop_f },
+  { "altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f },
+  { "physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f },
   { "flashlight", CMD_LIVING, Cmd_Flashlight_f },
   { "undo", CMD_LIVING, Cmd_Undo_f },
-  { "usetarget", CMD_LIVING, Cmd_UseTarget_f },
   { "activate", CMD_LIVING, Cmd_ActivateTarget_f }, 
-  { "where", 0, Cmd_Where_f },
 
   // game commands
-  { "follow", CMD_NOTEAM, Cmd_Follow_f },
-  { "follownext", CMD_NOTEAM, Cmd_FollowCycle_f },
-  { "followprev", CMD_NOTEAM, Cmd_FollowCycle_f },
+  { "follownext", CMD_NOTEAM, Cmd_RunFollowNext_f },
+  { "followprev", CMD_NOTEAM, Cmd_RunFollowPrev_f },
   { "teamtask", CMD_TEAM, Cmd_TeamTask_f },
   { "freespectator", CMD_NOTEAM, StopFollowing }
-
 };
 
 static int numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
@@ -1316,65 +1104,51 @@ static int numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
 /*
 =================
 ClientCommand
-KK-OAX, Takes the client command and runs it through a loop which matches
-it against the table.
 =================
 */
-void ClientCommand( int clientNum )
-{
+void ClientCommand( int clientNum ) {
     gentity_t *ent;
     char      cmd[ MAX_TOKEN_CHARS ];
     int       i;
 
     ent = g_entities + clientNum;
-    if( !ent->client )
-        return;   // not fully in game yet
+    if(!ent->client)
+        return;
 
     trap_Argv( 0, cmd, sizeof( cmd ) );
 
-    for( i = 0; i < numCmds; i++ )
-    {
-        if( Q_stricmp( cmd, cmds[ i ].cmdName ) == 0 )
+    for(i = 0; i < numCmds; i++){
+        if(Q_stricmp(cmd, cmds[i].cmdName) == 0)
             break;
     }
 
-	if (i == numCmds) 
-	{
+	if (i == numCmds){
 	    trap_SendServerCommand(clientNum, va("print \"Unknown command: %s\n\"", cmd));
 	    return;
 	}
 
-	// do tests here to reduce the amount of repeated code
-    if( !( cmds[ i ].cmdFlags & CMD_INTERMISSION ) && level.intermissiontime )
+    if(!(cmds[i].cmdFlags & CMD_INTERMISSION) && level.intermissiontime)
         return;
 
-    if( cmds[ i ].cmdFlags & CMD_CHEAT && !g_cheats.integer )
-    {
-        trap_SendServerCommand( clientNum, "print \"Cheats are not enabled on this server\n\"" );
+    if(cmds[i].cmdFlags & CMD_CHEAT && !sv_cheats.integer){
+        trap_SendServerCommand(clientNum, "print \"Cheats are not enabled on this server\n\"");
         return;
     }
 
-    //KK-OAX Do I need to change this for FFA gametype?
-    if( cmds[ i ].cmdFlags & CMD_TEAM &&
-        ent->client->sess.sessionTeam == TEAM_SPECTATOR )
-    {
-        trap_SendServerCommand( clientNum, "print \"Join a team first\n\"" );
+    if(cmds[i].cmdFlags & CMD_TEAM && ent->client->sess.sessionTeam == TEAM_SPECTATOR){
+        trap_SendServerCommand(clientNum, "print \"Join a team first\n\"");
         return;
     }
 
-    if( ( cmds[ i ].cmdFlags & CMD_NOTEAM ||
-        ( cmds[ i ].cmdFlags & CMD_CHEAT_TEAM && !g_cheats.integer ) ) &&
-        ent->client->sess.sessionTeam != TEAM_NONE )
-    {
-        trap_SendServerCommand( clientNum, "print \"Cannot use this command when on a team\n\"" );
+    if((cmds[i].cmdFlags & CMD_NOTEAM || (cmds[i].cmdFlags & CMD_CHEAT_TEAM && !sv_cheats.integer)) && ent->client->sess.sessionTeam != TEAM_NONE){
+        trap_SendServerCommand(clientNum, "print \"Cannot use this command when on a team\n\"");
         return;
     }
 
-    if( ( ent->client->ps.pm_type == PM_DEAD ) && ( cmds[ i ].cmdFlags & CMD_LIVING ) )
-    {
-        trap_SendServerCommand( clientNum, "print \"Must be alive to use this command\n\"" );
+    if((ent->client->ps.pm_type == PM_DEAD) && (cmds[i].cmdFlags & CMD_LIVING)){
+        trap_SendServerCommand(clientNum, "print \"Must be alive to use this command\n\"");
         return;
     }
 
-    cmds[ i ].cmdHandler( ent );
+    cmds[i].cmdHandler(ent);
 }

@@ -67,11 +67,11 @@ static void CG_DrawClientScore( int y, score_t *score, float fade ) {
 	headx = SB_HEAD_X + (SB_RATING_WIDTH / 2);
 
 	if ( ci->powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_FREE );
+		CG_DrawFlagModel( iconx-16, y, 16, 16, TEAM_FREE );
 	} else if ( ci->powerups & ( 1 << PW_REDFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_RED );
+		CG_DrawFlagModel( iconx-16, y, 16, 16, TEAM_RED );
 	} else if ( ci->powerups & ( 1 << PW_BLUEFLAG ) ) {
-		CG_DrawFlagModel( iconx, y, 16, 16, TEAM_BLUE );
+		CG_DrawFlagModel( iconx-16, y, 16, 16, TEAM_BLUE );
 	}
 
 	CG_DrawHead( headx, y, 16, 16, score->client );

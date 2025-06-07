@@ -27,59 +27,11 @@
 
 /*
 ============
-Svcmd_TeamMessage_f
-Sends a Chat Message to a Team from the Console
-============
-*/
-void Svcmd_TeamMessage_f( void )
-{
-  char   teamNum[ 2 ];
-  const char*   prefix;
-  team_t team;
-
-  if( trap_Argc( ) < 3 )
-  {
-    G_Printf( "usage: say_team <team> <message>\n" );
-    return;
-  }
-
-  trap_Argv( 1, teamNum, sizeof( teamNum ) );
-  team = G_TeamFromString( teamNum );
-
-  if( team == TEAM_NUM_TEAMS )
-  {
-    G_Printf( "say_team: invalid team \"%s\"\n", teamNum );
-    return;
-  }
-
-  prefix = BG_TeamName( team );
-  prefix = va( "[%c] ", toupper( *prefix ) );
-
-  G_TeamCommand( team, va( "tchat \"(console): " S_COLOR_CYAN "%s\"", ConcatArgs( 2 ) ) );
-}
-
-/*
-=============
-Svcmd_MessageWrapper
-Dumb wrapper for "a" and "m" and "say"
-=============
-*/
-void Svcmd_MessageWrapper( void )
-{
-  char cmd[ 5 ];
-  trap_Argv( 0, cmd, sizeof( cmd ) );
-  if( !Q_stricmp( cmd, "say" ) )
-    G_Say( NULL, NULL, SAY_ALL, ConcatArgs( 1 ) );
-}
-
-/*
-============
 Svcmd_NS_OpenScript_f
 Opens Noire.Script file
 ============
 */
-void Svcmd_NS_OpenScript_f( void )
-{
+void Svcmd_NS_OpenScript_f( void ) {
 	char   filename[64];
 	if( trap_Argc( ) == 1 ){
 		G_Printf( "usage: ns_openscript <filename>\n" );
@@ -98,8 +50,7 @@ Svcmd_NS_Interpret_f
 Show Noire.Script variables
 ============
 */
-void Svcmd_NS_Interpret_f( void )
-{
+void Svcmd_NS_Interpret_f( void ) {
 	if( trap_Argc( ) == 1 ){
 		G_Printf( "usage: ns_interpret <code>\n" );
 		return;
@@ -115,8 +66,7 @@ Svcmd_NS_VariableList_f
 Show Noire.Script variables
 ============
 */
-void Svcmd_NS_VariableList_f( void )
-{
+void Svcmd_NS_VariableList_f( void ) {
   
 	print_variables();
 
@@ -128,8 +78,7 @@ Svcmd_NS_ThreadList_f
 Show Noire.Script threads
 ============
 */
-void Svcmd_NS_ThreadList_f( void )
-{
+void Svcmd_NS_ThreadList_f( void ) {
   
 	print_threads();
 
@@ -141,8 +90,7 @@ Svcmd_NS_SendVariable_f
 Sends variable to Noire.Script vm
 ============
 */
-void Svcmd_NS_SendVariable_f( void )
-{
+void Svcmd_NS_SendVariable_f( void ) {
 	char   varName[MAX_VAR_NAME];
 	char   varValue[MAX_VAR_CHAR_BUF];
 	char   varType[8];

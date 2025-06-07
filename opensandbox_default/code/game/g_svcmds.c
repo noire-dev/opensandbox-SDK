@@ -31,61 +31,19 @@
 Svcmd_EntityList_f
 ===================
 */
-void	Svcmd_EntityList_f (void) {
+void Svcmd_EntityList_f (void) {
 	int			e;
-	gentity_t		*check;
+	gentity_t	*check;
 
 	check = g_entities+1;
 	for (e = 1; e < level.num_entities ; e++, check++) {
-		if ( !check->inuse ) {
+		if (!check->inuse)
 			continue;
-		}
-                G_Printf("%3i:", e);
-		switch ( check->s.eType ) {
-		case ET_GENERAL:
-			G_Printf("ET_GENERAL          ");
-			break;
-		case ET_PLAYER:
-			G_Printf("ET_PLAYER           ");
-			break;
-		case ET_ITEM:
-			G_Printf("ET_ITEM             ");
-			break;
-		case ET_MISSILE:
-			G_Printf("ET_MISSILE          ");
-			break;
-		case ET_MOVER:
-			G_Printf("ET_MOVER            ");
-			break;
-		case ET_BEAM:
-			G_Printf("ET_BEAM             ");
-			break;
-		case ET_PORTAL:
-			G_Printf("ET_PORTAL           ");
-			break;
-		case ET_SPEAKER:
-			G_Printf("ET_SPEAKER          ");
-			break;
-		case ET_PUSH_TRIGGER:
-			G_Printf("ET_PUSH_TRIGGER     ");
-			break;
-		case ET_TELEPORT_TRIGGER:
-			G_Printf("ET_TELEPORT_TRIGGER ");
-			break;
-		case ET_INVISIBLE:
-			G_Printf("ET_INVISIBLE        ");
-			break;
-		case ET_GRAPPLE:
-			G_Printf("ET_GRAPPLE          ");
-			break;
-		default:
-			G_Printf("%3i                 ", check->s.eType);
-			break;
-		}
-		if ( check->classname ) {
+		G_Printf("%3i:    ", e);
+
+		if (check->classname)
 			G_Printf("%s", check->classname);
-		}
-                G_Printf("\n");
+		G_Printf("\n");
 	}
 }
 
@@ -104,31 +62,28 @@ gclient_t	*ClientForString( const char *s ) {
 
 		cl = &level.clients[idnum];
 		if ( cl->pers.connected == CON_DISCONNECTED ) {
-                        G_Printf( "Client %i is not connected\n", idnum );
+			G_Printf( "Client %i is not connected\n", idnum );
 			return NULL;
 		}
 		return cl;
 	}
 
 	// check for a name match
-	for ( i=0 ; i < level.maxclients ; i++ ) {
+	for (i=0 ; i < level.maxclients ; i++) {
 		cl = &level.clients[i];
-		if ( cl->pers.connected == CON_DISCONNECTED ) {
+		if (cl->pers.connected == CON_DISCONNECTED)
 			continue;
-		}
-		if ( !Q_stricmp( cl->pers.netname, s ) ) {
+		if (!Q_stricmp(cl->pers.netname, s))
 			return cl;
-		}
 	}
-        G_Printf( "User %s is not on the server\n", s );
 
+	G_Printf( "User %s is not on the server\n", s );
 	return NULL;
 }
 
 /*
 ===================
 Svcmd_ForceTeam_f
-
 forceteam <player> <team>
 ===================
 */
@@ -148,24 +103,19 @@ void	Svcmd_ForceTeam_f( void ) {
 	SetTeam( &g_entities[cl - level.clients], str );
 }
 
-
 /*
 ===============
 Server Command Table
-Not Worth Listing Elsewhere
 ================
 */
-struct
-{
+struct {
   char      *cmd;
-  void      ( *function )( void );
-} svcmds[ ] = {
+  void      (*function)(void);
+} svcmds[] = {
   { "entityList", Svcmd_EntityList_f },
   { "forceTeam", Svcmd_ForceTeam_f },
   { "addbot", Svcmd_AddBot_f },
 
-  { "say_team", Svcmd_TeamMessage_f },
-  { "say", Svcmd_MessageWrapper },
   { "savemap", G_WriteMapfile_f },
   { "deletemap", G_DeleteMapfile_f },
   { "clearmap", G_ClearMap_f },
@@ -183,24 +133,23 @@ struct
 /*
 =================
 ConsoleCommand
-
 =================
 */
 qboolean  ConsoleCommand( void ) {
-  char cmd[ MAX_TOKEN_CHARS ];
-  int  i;
+	char cmd[ MAX_TOKEN_CHARS ];
+	int  i;
 
-  trap_Argv( 0, cmd, sizeof( cmd ) );
+	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-  for( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ ) {
-    if( !Q_stricmp( cmd, svcmds[ i ].cmd ) ) {
-      svcmds[ i ].function( );
-      return qtrue;
-    }
-  }
+	for(i = 0; i < sizeof(svcmds) / sizeof(svcmds[0]); i++){
+		if(!Q_stricmp(cmd, svcmds[i].cmd)) {
+			svcmds[i].function();
+			return qtrue;
+		}
+	}
 
-  if( g_dedicated.integer )
-    G_Printf( "unknown command: %s\n", cmd );
+	if(g_dedicated.integer)
+		G_Printf( "unknown command: %s\n", cmd );
 
   return qfalse;
 }

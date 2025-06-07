@@ -33,7 +33,7 @@ typedef struct {
 } cvarTable_t;
 
 #ifdef GAME
-vmCvar_t    g_cheats;
+vmCvar_t    sv_cheats;
 vmCvar_t    g_maxClients;
 vmCvar_t    g_maxEntities;
 vmCvar_t    g_fraglimit;
@@ -82,7 +82,7 @@ vmCvar_t    sv_fps;
 static cvarTable_t cvarTable[] = {
 	{ NULL,                         "gamename",                     GAME_VERSION,   CVAR_ROM },
 	{ NULL,                         "gamedate",                     __DATE__,       CVAR_ROM },
-	{ &g_cheats,                    "sv_cheats",                    "",             0 },
+	{ &sv_cheats,                   "sv_cheats",                  	"0",            0 },
 	{ &g_maxClients,                "g_maxClients",                 "128",          CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_maxEntities,               "g_maxEntities",                "1024",         CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_fraglimit,                 "fraglimit",                    "20",           CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
@@ -189,7 +189,6 @@ vmCvar_t    cg_shadows;
 vmCvar_t    cg_drawTimer;
 vmCvar_t    cg_drawFPS;
 vmCvar_t    cg_drawCrosshair;
-vmCvar_t    cg_drawCrosshairNames;
 vmCvar_t    cg_crosshairScale;
 vmCvar_t    cg_draw2D;
 vmCvar_t    cg_debugEvents;
@@ -281,7 +280,6 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawFPS,                      "cg_drawFPS",                   "0",            CVAR_ARCHIVE },
 	{ &cg_drawSpeed,                    "cg_drawSpeed",                 "0",            CVAR_ARCHIVE },
 	{ &cg_drawCrosshair,                "cg_drawCrosshair",             "4",            CVAR_ARCHIVE },
-	{ &cg_drawCrosshairNames,           "cg_drawCrosshairNames",        "1",            CVAR_ARCHIVE },
 	{ &cg_crosshairScale,               "cg_crosshairScale",            "24",           CVAR_ARCHIVE },
 	{ &cg_addMarks,                     "cg_addMarks",                  "1",            CVAR_ARCHIVE },
 	{ &cg_disableBobbing,               "cg_disableBobbing",            "0",            CVAR_ARCHIVE },
@@ -377,15 +375,6 @@ vmCvar_t    cl_selectedmod;
 vmCvar_t    cl_language;
 vmCvar_t    ui_loaded;
 vmCvar_t    sensitivitymenu;
-vmCvar_t    ui_spScores1;
-vmCvar_t    ui_spScores2;
-vmCvar_t    ui_spScores3;
-vmCvar_t    ui_spScores4;
-vmCvar_t    ui_spScores5;
-vmCvar_t    ui_spAwards;
-vmCvar_t    ui_spVideos;
-vmCvar_t    ui_spSkill;
-vmCvar_t    ui_spSelection;
 vmCvar_t    ui_browserMaster;
 vmCvar_t    ui_browserGameType;
 vmCvar_t    ui_browserSortKey;
@@ -504,22 +493,12 @@ static cvarTable_t cvarTable[] = {
 	{ &cl_selectedmod,                  "cl_selectedmod",               "default",      CVAR_ARCHIVE },
 	{ &cl_language,                     "cl_language",                  "0",            CVAR_ARCHIVE },
 	{ &sensitivitymenu,                 "sensitivitymenu",              "1",            CVAR_ARCHIVE },
-	{ &ui_spScores1,                    "g_spScores1",                  "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spScores2,                    "g_spScores2",                  "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spScores3,                    "g_spScores3",                  "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spScores4,                    "g_spScores4",                  "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spScores5,                    "g_spScores5",                  "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spAwards,                     "g_spAwards",                   "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spVideos,                     "g_spVideos",                   "",             CVAR_ARCHIVE|CVAR_ROM },
-	{ &ui_spSkill,                      "g_spSkill",                    "1",            0 },
-	{ &ui_spSelection,                  "ui_spSelection",               "",             CVAR_ROM },
 	{ &ui_browserMaster,                "ui_browserMaster",             "0",            CVAR_ARCHIVE },
 	{ &ui_browserGameType,              "ui_browserGameType",           "0",            CVAR_ARCHIVE },
 	{ &ui_browserSortKey,               "ui_browserSortKey",            "4",            CVAR_ARCHIVE },
 	{ &ui_browserShowFull,              "ui_browserShowFull",           "1",            CVAR_ARCHIVE },
 	{ &ui_browserShowEmpty,             "ui_browserShowEmpty",          "1",            CVAR_ARCHIVE },
 	{ &ui_drawCrosshair,                "cg_drawCrosshair",             "4",            CVAR_ARCHIVE },
-	{ &ui_drawCrosshairNames,           "cg_drawCrosshairNames",        "1",            CVAR_ARCHIVE },
 	{ &ui_server1,                      "server1",                      "",             CVAR_ARCHIVE },
 	{ &ui_server2,                      "server2",                      "",             CVAR_ARCHIVE },
 	{ &ui_server3,                      "server3",                      "",             CVAR_ARCHIVE },

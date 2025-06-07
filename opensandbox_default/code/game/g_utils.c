@@ -28,17 +28,8 @@
 #include "g_local.h"
 
 /*
-=========================================================================
-
-model / sound configstring indexes
-
-=========================================================================
-*/
-
-/*
 ================
 G_FindConfigstringIndex
-
 ================
 */
 int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
@@ -72,7 +63,6 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 	return i;
 }
 
-
 int G_ModelIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_MODELS, MAX_MODELS, qtrue);
 }
@@ -100,7 +90,6 @@ void G_TeamCommand( team_t team, char *cmd ) {
 	}
 }
 
-
 /*
 =============
 G_Find
@@ -110,11 +99,9 @@ the matching string at fieldofs (use the FOFS() macro) in the structure.
 
 Searches beginning at the entity after from, or the beginning if NULL
 NULL will be returned if the end of the list is reached.
-
 =============
 */
-gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
-{
+gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match) {
 	char	*s;
 
 	if (!from)
@@ -122,8 +109,7 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 	else
 		from++;
 
-	for ( ; from < &g_entities[level.num_entities] ; from++)
-	{
+	for ( ; from < &g_entities[level.num_entities] ; from++) {
 		if (!from->inuse)
 			continue;
 		s = *(char **) ((byte *)from + fieldofs);
@@ -139,7 +125,6 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 /*
 =============
 G_PickTarget
-
 Selects a random entity from among the targets
 =============
 */
@@ -175,7 +160,6 @@ gentity_t *G_PickTarget (char *targetname) {
 /*
 =============
 G_PickAllTargets
-
 Selects all entities
 =============
 */
@@ -192,24 +176,16 @@ void G_PickAllTargets (gentity_t *ent) {
 /*
 ==============================
 G_UseTargets
-
 "activator" should be set to the entity that initiated the firing.
-
 Search for (string)targetname in all entities that
 match (string)self.target and call their .use function
-
 ==============================
 */
 void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 	gentity_t		*t;
 	
-	if ( !ent ) {
+	if (!ent || !ent->target)
 		return;
-	}
-
-	if ( !ent->target ) {
-		return;
-	}
 
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
@@ -230,7 +206,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 /*
 =============
 TempVector
-
 This is just a convenience function
 for making temporary vectors for function calls
 =============
@@ -252,11 +227,9 @@ float	*tv( float x, float y, float z ) {
 	return v;
 }
 
-
 /*
 =============
 VectorToString
-
 This is just a convenience function
 for printing vectors
 =============
@@ -275,11 +248,9 @@ char	*vtos( const vec3_t v ) {
 	return s;
 }
 
-
 /*
 ===============
 G_SetMovedir
-
 The editor only specifies a single value for angles (yaw),
 but we have special constants to generate an up or down direction.
 Angles will be cleared, because it is being used to represent a direction
@@ -312,16 +283,7 @@ void G_InitGentity( gentity_t *e ) {
 /*
 =================
 G_Spawn
-
 Either finds a free entity, or allocates a new one.
-
-  The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, and will
-never be used by anything else.
-
-Try to avoid reusing an entity that was recently freed, because it
-can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated
-angles and bad trails.
 =================
 */
 gentity_t *G_Spawn( void ) {
@@ -372,29 +334,7 @@ gentity_t *G_Spawn( void ) {
 
 /*
 =================
-G_EntitiesFree
-=================
-*/
-qboolean G_EntitiesFree( void ) {
-	int			i;
-	gentity_t	*e;
-
-	e = &g_entities[MAX_CLIENTS];
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
-		if ( e->inuse ) {
-			continue;
-		}
-		// slot available
-		return qtrue;
-	}
-	return qfalse;
-}
-
-
-/*
-=================
 G_FreeEntity
-
 Marks the entity as free
 =================
 */
@@ -402,11 +342,10 @@ void G_FreeEntity( gentity_t *ed ) {
 
 	trap_UnlinkEntity (ed);		// unlink from world
 
-	if ( ed->neverFree ) {
+	if(ed->neverFree)
 		return;
-	}
 
-	if ( ed->vehicle && ed->parent && ed->parent->client->vehiclenum == ed->s.number){	//Reset vehicle
+	if (ed->vehicle && ed->parent && ed->parent->client->vehiclenum == ed->s.number){	//Reset vehicle
 		ed->parent->client->vehiclenum = 0;
 		ClientUserinfoChanged( ed->parent->s.clientNum );
 		VectorSet( ed->parent->r.mins, -15, -15, -24 );
@@ -425,10 +364,7 @@ void G_FreeEntity( gentity_t *ed ) {
 /*
 =================
 G_TempEntity
-
 Spawns an event entity that will be auto-removed
-The origin will be snapped to save net bandwidth, so care
-must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
 gentity_t *G_TempEntity( vec3_t origin, int event ) {
@@ -452,22 +388,9 @@ gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	return e;
 }
 
-
-
-/*
-==============================================================================
-
-Kill box
-
-==============================================================================
-*/
-
 /*
 =================
 G_KillBox
-
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
 =================
 */
 void G_KillBox (gentity_t *ent) {
@@ -495,7 +418,6 @@ void G_KillBox (gentity_t *ent) {
 /*
 ===============
 G_AddPredictableEvent
-
 Use for non-pmove events that would also be predicted on the
 client side: jumppads and item pickups
 Adds an event+parm and twiddles the event counter
@@ -508,11 +430,9 @@ void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 	BG_AddPredictableEventToPlayerstate( event, eventParm, &ent->client->ps );
 }
 
-
 /*
 ===============
 G_AddEvent
-
 Adds an event+parm and twiddles the event counter
 ===============
 */
@@ -555,7 +475,6 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 	ent->eventTime = level.time;
 }
 
-
 /*
 =============
 G_Sound
@@ -566,32 +485,6 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 
 	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
 	te->s.eventParm = soundIndex;
-}
-
-/*
-=============
-G_GlobalSound
-KK-OAX G_SoundIndex must first be called.
-=============
-*/
-void G_GlobalSound( int soundIndex )
-{
-    gentity_t  *te;
-    //Let's avoid the S_FindName error if soundIndex is 0.
-    //Sago: And let's check that the sound index is within the allowed range.
-	if( ( soundIndex <= 0 ) ||  soundIndex >= MAX_SOUNDS ) {
-	    //Display this message when debugging
-	    #ifdef DEBUG
-            G_Printf( "GlobalSound: Error, no soundIndex specified. Check your code!\n" );
-	    #endif
-	    return;
-	}
-	//Spawn a Temporary Entity at the origin point for Intermission with the event EV_GLOBAL_SOUND
-	te = G_TempEntity( level.intermission_origin, EV_GLOBAL_SOUND );
-	//Add the soundIndex to the parameters for the EV_GLOBAL_SOUND event we are calling
-	te->s.eventParm = soundIndex;
-	//Broadcast the sound event.
-	te->r.svFlags |= SVF_BROADCAST;
 }
 
 /*
@@ -609,28 +502,6 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 	VectorClear( ent->s.pos.trDelta );
 
 	VectorCopy( origin, ent->r.currentOrigin );
-}
-
-/*
-================
-G_SetTarget
-
-Sets the target for a selected entity
-================
-*/
-void G_SetTarget( gentity_t *ent, char *targ ) {
-	ent->target = targ;
-}
-
-/*
-================
-G_SetTargetName
-
-Sets the targetname for a selected entity
-================
-*/
-void G_SetTargetname( gentity_t *ent, char *targname ) {
-	ent->targetname = targname;
 }
 
 /*
@@ -747,7 +618,6 @@ gentity_t *FindEntityForGravitygun( gentity_t *ent, int range ){
 /*
 ==================
 CrosshairPointPhys
-Added for OpenSandbox.
 ==================
 */
 void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint) {

@@ -153,8 +153,6 @@ void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun
 			VectorScale(velocity, 10, velocity);
 			VectorCopy(velocity, ent->client->ps.velocity);
 		}
-		ent->client->lastSentFlying = player->s.number;
-		ent->client->lastSentFlyingTime = level.time;
 	}
 }
 

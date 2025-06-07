@@ -25,7 +25,7 @@
 
 #include "g_local.h"
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
+void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback ) {
 	gentity_t	*tent;
 
 	// use temp events at source and destination to prevent the effect
@@ -45,10 +45,12 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	player->client->ps.origin[2] += 1;
 
 	// spit the player out
-	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-	player->client->ps.pm_time = 160;		// hold time
-	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	if(!noKnockback){
+		AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
+		VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
+		player->client->ps.pm_time = 160;		// hold time
+		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	}
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -299,13 +301,13 @@ static void PortalTouch( gentity_t *self, gentity_t *other, trace_t *trace) {
 	// if there is not one, die!
 	if( !destination ) {
 		if( self->pos1[0] || self->pos1[1] || self->pos1[2] ) {
-			TeleportPlayer( other, self->pos1, self->s.angles );
+			TeleportPlayer( other, self->pos1, self->s.angles, qfalse );
 		}
 		G_Damage( other, other, other, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
 		return;
 	}
 
-	TeleportPlayer( other, destination->s.pos.trBase, destination->s.angles );
+	TeleportPlayer( other, destination->s.pos.trBase, destination->s.angles, qfalse );
 }
 
 static void PortalEnable( gentity_t *self ) {
