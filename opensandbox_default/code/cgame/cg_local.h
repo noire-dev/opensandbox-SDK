@@ -340,23 +340,19 @@ typedef struct {
 
 	int				isNPC;		// 0 = not NPC, 1 = NPC
 
-	int			headR;
-	int			headG;
-	int			headB;
-	int			modelR;
-	int			modelG;
-	int			modelB;
-	int			legsR;
-	int			legsG;
-	int			legsB;
-	int			physR;
-	int			physG;
-	int			physB;
-	int			swepid;
-	int			vehiclenum;
-	int			totex;
-	int			hetex;
-	int			plradius;
+	int				headR;
+	int				headG;
+	int				headB;
+	int				modelR;
+	int				modelG;
+	int				modelB;
+	int				legsR;
+	int				legsG;
+	int				legsB;
+	int				physR;
+	int				physG;
+	int				physB;
+	int				vehiclenum;
 
 	int				location;		// location index for team mode
 	int				health;			// you only get this info about your teammates
@@ -1105,7 +1101,6 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha );
 int CG_DrawStrlen( const char *str );
 
 float	*CG_FadeColor( int startMsec, int totalMsec );
-void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
 
 qboolean CG_InsideBox( vec3_t mins, vec3_t maxs, vec3_t pos );
 

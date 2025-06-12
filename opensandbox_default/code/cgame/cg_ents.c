@@ -943,12 +943,9 @@ CG_CalcEntityLerpPositions
 */
 static void CG_CalcEntityLerpPositions( centity_t *cent, qboolean STPhys ) {
 	clientInfo_t	*ci;
-	int				weaphack;
-	int timeshift = 0;
+	int 			timeshift = 0;
 
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	
-	weaphack = ci->swepid;
 
 	if ( cent->interpolate && cent->currentState.pos.trType == TR_INTERPOLATE || cent->interpolate && cent->currentState.pos.trType == TR_LINEAR_STOP && cent->currentState.number < MAX_CLIENTS ) {
 		if(STPhys){

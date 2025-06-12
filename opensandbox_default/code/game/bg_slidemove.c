@@ -30,14 +30,6 @@
 #include "bg_local.h"
 
 /*
-
-input: origin, velocity, bounds, groundPlane, trace function
-
-output: origin, velocity, impacts, stairup boolean
-
-*/
-
-/*
 ==================
 PM_SlideMove
 
@@ -237,8 +229,6 @@ void PM_StepSlideMove( qboolean gravity ) {
 	vec3_t		start_o, start_v;
 	vec3_t		down_o, down_v;
 	trace_t		trace;
-//	float		down_dist, up_dist;
-//	vec3_t		delta, delta2;
 	vec3_t		up, down;
 	float		stepSize;
 

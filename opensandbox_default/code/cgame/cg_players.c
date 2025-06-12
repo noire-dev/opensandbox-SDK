@@ -646,9 +646,6 @@ void CG_NewClientInfo( int clientNum ) {
 	// isolate the player's name
 	v = Info_ValueForKey(configstring, "n");
 	Q_strncpyz( newInfo.name, v, sizeof( newInfo.name ) );
-
-	v = Info_ValueForKey( configstring, "si" );
-	newInfo.swepid = atoi( v );
 	
 	v = Info_ValueForKey( configstring, "vn" );
 	newInfo.vehiclenum = atoi( v );

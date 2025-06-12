@@ -22,9 +22,8 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
 
-#include "g_local.h"
+#include "../qcommon/ns_local.h"
 
 /*
 ===================
@@ -101,6 +100,81 @@ void	Svcmd_ForceTeam_f( void ) {
 	// set the team
 	trap_Argv( 2, str, sizeof( str ) );
 	SetTeam( &g_entities[cl - level.clients], str );
+}
+
+/*
+============
+Svcmd_NS_OpenScript_f
+Opens Noire.Script file
+============
+*/
+void Svcmd_NS_OpenScript_f(void) {
+	char filename[64];
+	if(trap_Argc() == 1){
+		G_Printf("usage: ns_openscript <filename>\n");
+		return;
+	}
+  
+	trap_Argv(1, filename, sizeof(filename));
+  
+	NS_OpenScript(filename, NULL, 0);
+
+}
+
+/*
+============
+Svcmd_NS_Interpret_f
+Show Noire.Script variables
+============
+*/
+void Svcmd_NS_Interpret_f(void) {
+	if(trap_Argc() == 1){
+		G_Printf("usage: ns_interpret <code>\n");
+		return;
+	}
+  
+	Interpret(ConcatArgs(1));
+}
+
+/*
+============
+Svcmd_NS_VariableList_f
+Show Noire.Script variables
+============
+*/
+void Svcmd_NS_VariableList_f(void) {
+	print_variables();
+}
+
+/*
+============
+Svcmd_NS_ThreadList_f
+Show Noire.Script threads
+============
+*/
+void Svcmd_NS_ThreadList_f(void) {
+	print_threads();
+}
+
+/*
+============
+Svcmd_NS_SendVariable_f
+Sends variable to Noire.Script vm
+============
+*/
+void Svcmd_NS_SendVariable_f(void) {
+	char   varName[MAX_VAR_NAME];
+	char   varValue[MAX_VAR_CHAR_BUF];
+	char   varType[8];
+  
+	trap_Argv(1, varName, sizeof(varName));
+	trap_Argv(2, varValue, sizeof(varValue));
+	trap_Argv(3, varType, sizeof(varType));
+  
+  	if(!variable_exists(varName))
+		create_variable(varName, varValue, atoi(varType));
+
+	set_variable_value(varName, varValue, atoi(varType));
 }
 
 /*

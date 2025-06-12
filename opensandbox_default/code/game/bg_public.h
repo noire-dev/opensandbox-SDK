@@ -31,7 +31,6 @@
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-66
-#define	ARMOR_PROTECTION	0.66
 
 #define	MAX_ITEMS			1024
 
@@ -695,8 +694,7 @@ typedef enum {
 	MOD_SWEP,
 	MOD_KNOCKER,
 	MOD_REGENERATOR,
-	MOD_NUKE,
-	MOD_BREAKABLE_SPLASH
+	MOD_NUKE
 } meansOfDeath_t;
 
 
@@ -753,7 +751,6 @@ qboolean BG_CanAlloc( unsigned int size );
 void    *BG_Alloc( unsigned int size );
 void    BG_InitMemory( void );
 void    BG_Free( void *ptr );
-void    BG_DefragmentMemory( void );
 
 
 void	BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );

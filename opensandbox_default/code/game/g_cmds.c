@@ -433,7 +433,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 	//
 	// execute the team change
 	//
-
+	
 	// if the player was dead leave the body
 	if ( client->ps.stats[STAT_HEALTH] <= 0 )
 		CopyToBodyQue(ent);
@@ -818,7 +818,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 		if(!Q_stricmp (tent->message, "0") || !tent->message )
 			CopyAlloc(tent->message, tent->clientname);
 
-		G_AddBot(tent->clientname, tent->skill, "Blue", 0, tent->message, tent->s.number, tent->target, tent->type, tent );
+		G_AddBot(tent->clientname, tent->skill, "Blue", tent->message, tent );
 
 		if(tent->parent)
 			Undo_AddElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);

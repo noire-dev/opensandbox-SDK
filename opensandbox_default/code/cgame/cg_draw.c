@@ -73,7 +73,7 @@ static void CG_Draw3DModelToolgun( float x, float y, float w, float h, qhandle_t
 	origin[2] = 0;
 
 	angles[0] = 0;
-	angles[1] = ( cg.time & 4095 ) * 360 / 4096.0;
+	angles[1] = (cg.time & 4095) * 360 / 4096.0;
 	angles[2] = 0;
 
 	AnglesToAxis( angles, ent.axis );
@@ -383,29 +383,21 @@ CG_DrawStatusBar
 ================
 */
 static void CG_DrawStatusBar( void ) {
-	centity_t	*cent;
+	centity_t		*cent;
 	playerState_t	*ps;
-	int			value;
-	clientInfo_t	*ci;
-	int				weaphack;
-	vec_t       *vel;
+	int				value;
+	vec_t       	*vel;
 
 	vel = cg.snap->ps.velocity;
-
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
-	
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	
-	weaphack = ci->swepid;
 
-	if ( cg.showScores || !cg_draw2D.integer ){
+	if ( cg.showScores || !cg_draw2D.integer )
 		return;
-	}
 
 	// draw any 3D icons first, so the changes back to 2D are minimized
-	if (weaphack) {
-		if(weaphack == WP_TOOLGUN){
+	if (cent->currentState.weapon) {
+		if(cent->currentState.weapon == WP_TOOLGUN){
 			CG_DrawToolgun();
 		}
 	}
@@ -422,7 +414,7 @@ static void CG_DrawStatusBar( void ) {
 	// ammo
 	//
 	if(!ps->stats[STAT_VEHICLE]){
-	if ( weaphack ) { //VEHICLE-SYSTEM: vehicle's speedmeter for all
+	if ( cent->currentState.weapon ) { //VEHICLE-SYSTEM: vehicle's speedmeter for all
 		value = ps->stats[STAT_SWEPAMMO];
 		if(value <= 0 && value != -1){	// OpenSandbox weapon predict
 			cg.swep_listcl[ps->weapon] = 2;

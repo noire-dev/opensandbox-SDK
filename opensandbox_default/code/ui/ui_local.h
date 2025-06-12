@@ -620,6 +620,7 @@ void UI_saveMapEdMenu( void );
 
 extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
 
+int UI_CurrentPlayerTeam(void);
 int UI_ServerGametype(void);
 
 //SourceTech UI Framework

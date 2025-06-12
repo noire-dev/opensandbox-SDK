@@ -198,7 +198,7 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	if( ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER ) {
 		s_quadFactor *= 2.0;
 	}
-	if(ent->botskill == 9){
+	if(ent->skill == 9){
 		s_quadFactor *= 5;
 	}
 
@@ -1072,7 +1072,7 @@ void FireWeapon( gentity_t *ent ) {
 	if( ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER ) {
 		s_quadFactor *= 2.0;
 	}
-	if(ent->botskill == 9){
+	if(ent->skill == 9){
 		s_quadFactor *= 5;
 	}
 

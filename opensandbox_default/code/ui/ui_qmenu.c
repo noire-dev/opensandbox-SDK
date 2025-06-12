@@ -1914,6 +1914,20 @@ void UI_ServerPlayerIcon( const char *modelAndSkin, char *iconName, int iconName
 
 /*
 =================
+UI_CurrentPlayerTeam
+=================
+*/
+int UI_CurrentPlayerTeam(void) {
+	static uiClientState_t	cs;
+	static char	info[MAX_INFO_STRING];
+
+	trap_GetClientState(&cs);
+	trap_GetConfigString(CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING);
+	return atoi(Info_ValueForKey(info, "t"));
+}
+
+/*
+=================
 UI_ServerGametype
 =================
 */

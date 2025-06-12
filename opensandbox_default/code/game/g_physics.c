@@ -45,7 +45,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 	vec3_t impactVector;
 	vec3_t end, start, forward, up, right;
 	
-	if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && ent->botskill != 9){
+	if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && ent->skill != 9){
 	return;
 	}
 	
@@ -86,7 +86,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 			}
 			if(impactForce > VEHICLE_DAMAGESENS){
 			if(hit->grabbedEntity != ent){
-			if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->botskill == 9 && hit->botskill != 9)){
+			if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->skill == 9 && hit->skill != 9)){
 				Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
 			}
 			}
@@ -859,7 +859,7 @@ void Phys_Impact(gentity_t *ent, trace_t *tr) {
 				if (!hit->client){
             		VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
 				} else {
-					if(hit->grabbedEntity != ent && hit->botskill != 9){
+					if(hit->grabbedEntity != ent && hit->skill != 9){
 						VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
 					}
 				}

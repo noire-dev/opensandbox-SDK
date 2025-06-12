@@ -33,36 +33,12 @@ Adds score to both the client and his team
 ============
 */
 void AddScore( gentity_t *ent, int score ) {
-        int i;
-
-	if ( !ent->client || ent->npcType  ) {
+	if ( !ent->client )
 		return;
-	}
 
-        //No scoring during intermission
-        if ( level.intermissiontime ) {
-            return;
-        }
-	// show score plum
-    if( level.numNonSpectatorClients<3 && score < 0 && g_gametype.integer<GT_TEAM) {
-        for ( i = 0 ; i < level.maxclients ; i++ ) {
-            if ( level.clients[ i ].pers.connected != CON_CONNECTED )
-                continue; //Client was not connected
-            if (level.clients[i].sess.sessionTeam == TEAM_SPECTATOR)
-                continue; //Don't give anything to spectators
-            if (g_entities+i == ent)
-                continue; //Don't award dead one
-            level.clients[i].ps.persistant[PERS_SCORE] -= score;
-        }
-    } else {
-		if(score == 1){
-        ent->client->ps.persistant[PERS_SCORE] += score;
-        if ( g_gametype.integer == GT_TEAM ) {
-            int team = ent->client->ps.persistant[PERS_TEAM];
-                level.teamScores[ team ] += score;
-        }
-		}
-    }
+	ent->client->ps.persistant[PERS_SCORE] += score;
+	if ( g_gametype.integer == GT_TEAM )
+		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
 	CalculateRanks();
 }
 
@@ -82,9 +58,8 @@ void TossClientItems( gentity_t *self ) {
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
 
-	if(self->npcType >= 1){
+	if(self->npcType >= 1)
         return;
-	}
 
 	// drop all weapons
 	for ( i = 1 ; i < WEAPONS_NUM ; i++ ) {
@@ -147,8 +122,7 @@ void TossClientCubes( gentity_t *self ) {
 
 	if( self->client->sess.sessionTeam == TEAM_RED ) {
 		item = BG_FindItem( "Red Cube" );
-	}
-	else {
+	} else {
 		item = BG_FindItem( "Blue Cube" );
 	}
 
@@ -168,7 +142,6 @@ void TossClientCubes( gentity_t *self ) {
 	}
 
 	drop = LaunchItem( item, origin, velocity );
-
 	drop->nextthink = level.time + 300 * 1000;
 	drop->think = G_FreeEntity;
 	drop->spawnflags = self->client->sess.sessionTeam;
@@ -182,12 +155,10 @@ TossClientPersistantPowerups
 void TossClientPersistantPowerups( gentity_t *ent ) {
 	gentity_t	*powerup;
 
-	if( !ent->client || !ent->client->persistantPowerup ) {
+	if( !ent->client || !ent->client->persistantPowerup )
 		return;
-	}
 
 	powerup = ent->client->persistantPowerup;
-
 	powerup->r.svFlags &= ~SVF_NOCLIENT;
 	powerup->s.eFlags &= ~EF_NODRAW;
 	powerup->r.contents = CONTENTS_TRIGGER;
@@ -244,49 +215,6 @@ void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 	GibEntity( self, 0 );
 }
 
-
-// these are just for logging, the client prints its own messages
-char	*modNames[] = {
-	"MOD_UNKNOWN",
-	"MOD_SHOTGUN",
-	"MOD_GAUNTLET",
-	"MOD_MACHINEGUN",
-	"MOD_GRENADE",
-	"MOD_GRENADE_SPLASH",
-	"MOD_ROCKET",
-	"MOD_ROCKET_SPLASH",
-	"MOD_PLASMA",
-	"MOD_PLASMA_SPLASH",
-	"MOD_RAILGUN",
-	"MOD_LIGHTNING",
-	"MOD_BFG",
-	"MOD_BFG_SPLASH",
-	"MOD_FLAME",
-	"MOD_FLAME_SPLASH",
-	"MOD_ANTIMATTER",
-	"MOD_ANTIMATTER_SPLASH",
-	"MOD_TOOLGUN",
-	"MOD_WATER",
-	"MOD_SLIME",
-	"MOD_LAVA",
-	"MOD_CRUSH",
-	"MOD_TELEFRAG",
-	"MOD_FALLING",
-	"MOD_SUICIDE",
-	"MOD_TARGET_LASER",
-	"MOD_TRIGGER_HURT",
-	"MOD_NAIL",
-	"MOD_CHAINGUN",
-	"MOD_PROXIMITY_MINE",
-	"MOD_KAMIKAZE",
-	"MOD_JUICED",
-	"MOD_GRAPPLE",
-	"MOD_CAR",
-	"MOD_CAREXPLODE",
-	"MOD_PROP",
-	"MOD_BREAKABLE_SPLASH"
-};
-
 /*
 ==================
 Kamikaze_DeathActivate
@@ -310,7 +238,7 @@ void Kamikaze_DeathTimer( gentity_t *self ) {
 	VectorCopy(self->s.pos.trBase, ent->s.pos.trBase);
 	ent->r.svFlags |= SVF_NOCLIENT;
 	ent->think = Kamikaze_DeathActivate;
-	ent->nextthink = level.time + 50;
+	ent->nextthink = level.time + 500;
 
 	ent->activator = self;
 }
@@ -326,44 +254,20 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			contents;
 	int			killer;
 	int			i;
-	char		*killerName, *obit;
 
-	if ( self->client->ps.pm_type == PM_DEAD || level.intermissiontime ) {
+	if (self->client->ps.pm_type == PM_DEAD || level.intermissiontime)
 		return;
-	}
 
-	if (self->client && self->client->hook) {
+	if (self->client && self->client->hook)
 		Weapon_HookFree(self->client->hook);
-	}
+
 	if ((self->client->ps.eFlags & EF_TICKING) && self->activator) {
 		self->client->ps.eFlags &= ~EF_TICKING;
 		self->activator->think = G_FreeEntity;
 		self->activator->nextthink = level.time;
 	}
+
 	self->client->ps.pm_type = PM_DEAD;
-
-	if ( attacker ) {
-		killer = attacker->s.number;
-		if ( attacker->client ) {
-			killerName = attacker->client->pers.netname;
-		} else {
-			killerName = "<non-client>";
-		}
-	} else {
-		killer = ENTITYNUM_WORLD;
-		killerName = "<world>";
-	}
-
-	if ( killer < 0 || killer >= MAX_CLIENTS ) {
-		killer = ENTITYNUM_WORLD;
-		killerName = "<world>";
-	}
-
-	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
-		obit = "<bad obituary>";
-	} else {
-		obit = modNames[ meansOfDeath ];
-	}
 
 	// broadcast the death event to everyone
 	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
@@ -373,7 +277,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
 	self->enemy = attacker;
-
 	self->client->ps.persistant[PERS_KILLED]++;
 
 	if (attacker && attacker->client) {
@@ -388,16 +291,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
 	contents = trap_PointContents( self->r.currentOrigin, -1 );
-	if ( !( contents & CONTENTS_NODROP )) {
+	if (!(contents & CONTENTS_NODROP)) {
 		TossClientItems( self );
 	} else {
-		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {
 			Team_ReturnFlag( TEAM_FREE );
-		}
-		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+		} else if ( self->client->ps.powerups[PW_REDFLAG] ) {
 			Team_ReturnFlag( TEAM_RED );
-		}
-		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+		} else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {
 			Team_ReturnFlag( TEAM_BLUE );
 		}
 	}
@@ -426,13 +327,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	self->takedamage = qtrue;	// can still be gibbed
-
 	self->s.weapon = WP_NONE;
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
-
 	self->s.loopSound = 0;
-
 	self->r.maxs[2] = -8;
 
 	// don't allow respawn until the death anim is done
@@ -490,7 +388,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	trap_LinkEntity (self);
 }
 
-
 /*
 ================
 CheckArmor
@@ -506,10 +403,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags) {
 
 	client = ent->client;
 
-	if (!client)
-		return 0;
-
-	if (dflags & DAMAGE_NO_ARMOR)
+	if (!client || dflags & DAMAGE_NO_ARMOR)
 		return 0;
 
 	// armor
@@ -534,11 +428,6 @@ RaySphereIntersections
 int RaySphereIntersections( vec3_t origin, float radius, vec3_t point, vec3_t dir, vec3_t intersections[2] ) {
 	float b, c, d, t;
 
-	//	| origin - (point + t * dir) | = radius
-	//	a = dir[0]^2 + dir[1]^2 + dir[2]^2;
-	//	b = 2 * (dir[0] * (point[0] - origin[0]) + dir[1] * (point[1] - origin[1]) + dir[2] * (point[2] - origin[2]));
-	//	c = (point[0] - origin[0])^2 + (point[1] - origin[1])^2 + (point[2] - origin[2])^2 - radius^2;
-
 	// normalize dir so a = 1
 	VectorNormalize(dir);
 	b = 2 * (dir[0] * (point[0] - origin[0]) + dir[1] * (point[1] - origin[1]) + dir[2] * (point[2] - origin[2]));
@@ -554,8 +443,7 @@ int RaySphereIntersections( vec3_t origin, float radius, vec3_t point, vec3_t di
 		t = (- b - sqrt(d)) / 2;
 		VectorMA(point, t, dir, intersections[1]);
 		return 2;
-	}
-	else if (d == 0) {
+	} else if (d == 0) {
 		t = (- b ) / 2;
 		VectorMA(point, t, dir, intersections[0]);
 		return 1;
@@ -573,9 +461,9 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 	vec3_t		intersections[2], vec;
 	int			n;
 
-	if ( !targ->client ) {
+	if ( !targ->client )
 		return qfalse;
-	}
+
 	VectorCopy(dir, vec);
 	VectorInverse(vec);
 	// sphere model radius = 42 units
@@ -595,8 +483,7 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 			VectorNormalize( bouncedir );
 		}
 		return qtrue;
-	}
-	else {
+	} else {
 		return qfalse;
 	}
 }
@@ -652,14 +539,8 @@ void VehiclePhys( gentity_t *self ) {
 
 qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
     // Validate conditions
-    if (!player->client || !vehicle->vehicle) {
+    if (!player->client || !vehicle->vehicle || player->client->vehiclenum)
         return qtrue;
-    }
-
-    // Player is already in another vehicle
-    if (player->client->vehiclenum) {
-        return qtrue;
-    }
 
     // Assign vehicle to player
     player->client->vehiclenum = vehicle->s.number;
@@ -703,17 +584,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->npcType >= 1 && targ->npcType == attacker->npcType)
 		return;
 
-	if(mod == MOD_TOOLGUN){
+	if (!targ->takedamage && !targ->sandboxObject && mod == MOD_TOOLGUN && mod == MOD_GAUNTLET && attacker->health <= 0)
 		return;
-	}
-
-	if (!targ->takedamage && !targ->sandboxObject) {
-		return;
-	}
-
-	if(mod == MOD_GAUNTLET && attacker->health <= 0){
-		return;
-	}
 
 	if (mod == MOD_GAUNTLET) {
 		if (targ->vehicle) {
@@ -765,8 +637,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if( g_gametype.integer == GT_OBELISK && CheckObeliskAttack( targ, attacker ) ) {
 		return;
 	}
-	// reduce damage by the attacker's handicap value
-	// unless they are rocket jumping
 	if ( attacker->client && attacker != targ ) {
 		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
 		if( gameInfoItems[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
@@ -856,7 +726,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
-	if(targ->botskill == 7){
+	if(targ->skill == 7){
 		return;
 	}
 
@@ -1019,7 +889,6 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	if (tr.fraction == 1.0)
 		return qtrue;
 
-
 	return qfalse;
 }
 
@@ -1028,29 +897,28 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 G_RadiusDamage
 ============
 */
-void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
-					 gentity_t *ignore, int mod) {
+void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod) {
 	float		points, dist;
 	gentity_t	*ent;
+	int			entityList[MAX_GENTITIES];
 	int			numListedEntities;
 	vec3_t		mins, maxs;
 	vec3_t		v;
 	vec3_t		dir;
 	int			i, e;
 
-	if ( radius < 1 ) {
+	if(radius < 1)
 		radius = 1;
-	}
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		mins[i] = origin[i] - radius;
 		maxs[i] = origin[i] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, SourceTechEntityList, MAX_GENTITIES );
+	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
 	for ( e = 0 ; e < numListedEntities ; e++ ) {
-		ent = &g_entities[SourceTechEntityList[ e ]];
+		ent = &g_entities[entityList[ e ]];
 
 		if (ent == ignore)
 			continue;
@@ -1069,11 +937,10 @@ void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float ra
 		}
 
 		dist = VectorLength( v );
-		if ( dist >= radius ) {
+		if(dist >= radius)
 			continue;
-		}
 
-		points = damage * ( 1.0 - dist / radius );
+		points = damage * (1.0 - dist / radius);
 
 		if( CanDamage (ent, origin) ) {
 			VectorSubtract (ent->r.currentOrigin, origin, dir);
@@ -1083,4 +950,6 @@ void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float ra
 			G_Damage (ent, NULL, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
 		}
 	}
+
+	return;
 }

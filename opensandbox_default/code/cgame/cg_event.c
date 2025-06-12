@@ -614,7 +614,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	int				clientNum;
 	clientInfo_t	*ci;
 	byte			r, g, b;
-	int				weaphack;
 	int 			random_number;
 
 	es = &cent->currentState;
@@ -634,8 +633,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		clientNum = 0;
 	}
 	ci = &cgs.clientinfo[ clientNum ];
-	
-	weaphack = ci->swepid;
 
 	switch ( event ) {
 	//

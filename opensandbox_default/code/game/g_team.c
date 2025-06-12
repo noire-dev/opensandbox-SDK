@@ -126,7 +126,6 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 /*
 ==============
 AddTeamScore
-
  used for gametype > GT_TEAM
  for gametype GT_TEAM the level.teamScores is updated in AddScore in g_combat.c
 ==============
@@ -387,9 +386,7 @@ void Team_FreeEntity( gentity_t *ent ) {
 /*
 ==============
 Team_DroppedFlagThink
-
 Automatically set in Launch_Item if the item is one of the flags
-
 Flags are unique in that if they are dropped, the base flag must be respawned when they time out
 ==============
 */
@@ -580,7 +577,6 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 /*
 ===========
 Team_GetLocation
-
 Report a location for the player. Uses placed nearby target_location entities
 ============
 */
@@ -617,7 +613,6 @@ gentity_t *Team_GetLocation(gentity_t *ent) {
 /*
 ===========
 Team_GetLocation
-
 Report a location for the player. Uses placed nearby target_location entities
 ============
 */
@@ -645,7 +640,6 @@ qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 /*
 ================
 SelectRandomDeathmatchSpawnPoint
-
 go to a random point that doesn't telefrag
 ================
 */
@@ -696,7 +690,6 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
 /*
 ===========
 SelectCTFSpawnPoint
-
 ============
 */
 gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
@@ -986,8 +979,7 @@ qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker ) {
 		if( obelisk->spawnflags == TEAM_RED ) {
 			te->s.eventParm = GTS_REDOBELISK_ATTACKED;
 			teamgame.redObeliskAttackedTime = level.time;
-		}
-		else {
+		} else {
 			te->s.eventParm = GTS_BLUEOBELISK_ATTACKED;
 			teamgame.blueObeliskAttackedTime = level.time;
 		}

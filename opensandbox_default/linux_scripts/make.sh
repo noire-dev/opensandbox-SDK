@@ -56,7 +56,6 @@ $cc ../../../code/game/g_sandbox.c
 $cc ../../../code/game/g_session.c
 $cc ../../../code/game/g_spawn.c
 $cc ../../../code/game/g_svcmds.c
-$cc ../../../code/game/g_svcmds_ext.c
 cp ../../../code/game/g_syscalls.asm ..
 $cc ../../../code/game/g_target.c
 $cc ../../../code/game/g_team.c
@@ -176,17 +175,13 @@ cd linux/build/ui
 # ########################################
 
 $cc ../../../code/ui/ui_addbots.c
-$cc ../../../code/ui/ui_advanced.c
 $cc ../../../code/ui/ui_atoms.c
 $cc ../../../code/ui/ui_confirm.c
 $cc ../../../code/ui/ui_connect.c
 $cc ../../../code/ui/ui_controls2.c
 $cc ../../../code/ui/ui_demo2.c
 $cc ../../../code/ui/ui_display.c
-$cc ../../../code/ui/ui_dynamicmenu.c
 $cc ../../../code/ui/ui_gameinfo.c
-$cc ../../../code/ui/ui_ingame.c
-$cc ../../../code/ui/ui_ingame_mapvote.c
 $cc ../../../code/ui/ui_loadconfig.c
 $cc ../../../code/ui/ui_loadconfiged.c
 $cc ../../../code/ui/ui_main.c
@@ -203,7 +198,6 @@ $cc ../../../code/ui/ui_removebots.c
 $cc ../../../code/ui/ui_sandbox.c
 $cc ../../../code/ui/ui_saveconfiged.c
 $cc ../../../code/ui/ui_servers2.c
-$cc ../../../code/ui/ui_setup.c
 $cc ../../../code/ui/ui_sound.c
 $cc ../../../code/ui/ui_specifyserver.c
 $cc ../../../code/ui/ui_video.c

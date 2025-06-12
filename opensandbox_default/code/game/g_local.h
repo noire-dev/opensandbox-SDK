@@ -186,9 +186,13 @@ struct gentity_s {
 
 	item_t		*item;			// for bonus items
 
-	//NEW VARIABLES
+	// flashlight
 	qboolean	flashlight;
+
+	// object private system
 	gentity_t	*owner;
+
+	// sandbox
 	int			sandboxObject;
 	
 	int			sb_coltype;
@@ -204,14 +208,13 @@ struct gentity_s {
 	int			sb_blue;
 	int			sb_radius;
 
-	float		lip;
-	float		height;
-	float		phase;
-
 	int			npcType;
+
+	// toolgun
 	int			tool_id;
 	gentity_t	*tool_entity;
-	int			botskill;
+
+	int			skill;
 	
 	float		distance;
 	int			type;
@@ -229,7 +232,6 @@ struct gentity_s {
 	char		*targetname2; //second targetname
 	char		*deathTarget;	// target to trigger when bot from target_botspawn dies
 	char		*lootTarget;	//item to drop when bot from target_botspawn dies
-	float		skill; // skill level set by target_skill
 	char		*overlay; // reference to overlay texture for target_effect
 	char		*key;	// key for target_modify to change
 	char		*value; // value for target_modify to change to
@@ -667,7 +669,6 @@ gentity_t *G_PickTarget (char *targetname);
 void G_PickAllTargets ( gentity_t *ent );
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
-void G_BotSandboxCheck (gentity_t *self);
 void VehiclePhys( gentity_t *self );
 gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
 gentity_t *FindEntityForGravitygun( gentity_t *ent, int range );
@@ -878,7 +879,6 @@ void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
 void ClientCommand( int clientNum );
 void DropClientSilently( int clientNum );
-void LinkBotSpawn( gentity_t *bot, char parentid[] );
 void SetupCustomBot( gentity_t *bot );
 void SetUnlimitedWeapons( gentity_t *ent );
 void SetSandboxWeapons( gentity_t *ent );
@@ -893,7 +893,6 @@ void ClientEndFrame( gentity_t *ent );
 void G_RunClient( gentity_t *ent );
 qboolean G_CheckSwep( int clientNum, int wp, int finish );
 int G_CheckSwepAmmo( int clientNum, int wp );
-void G_DefaultSwep( int clientNum, int wp );
 
 //
 // g_team.c
@@ -918,12 +917,11 @@ void G_WriteSessionData( void );
 // g_bot.c
 //
 
-char *G_GetBotInfoByNumber( int num );
-char *G_GetBotInfoByName( const char *name );
-void G_CheckBotSpawn( void );
-void G_RemoveQueuedBotBegin( int clientNum );
-qboolean G_BotConnect( int clientNum, qboolean restart );
-void Svcmd_AddBot_f( void );
+qboolean G_BotConnect(int clientNum, qboolean restart);
+void G_AddBot(const char *name, float skill, const char *team, char *altname, gentity_t *spawn);
+void Svcmd_AddBot_f(void);
+void G_LoadBots(void);
+void SandboxBotSpawn(gentity_t *bot, char spawnid[]);
 
 //
 // g_physics.c
@@ -1034,19 +1032,6 @@ typedef struct
     int     cmdFlags;
     void    ( *cmdHandler )( gentity_t *ent );
 } commands_t;
-
-//
-// g_svcmds_ext.c
-//
-
-//Noire.Script
-void Svcmd_NS_OpenScript_f( void );
-void Svcmd_NS_Interpret_f( void );
-void Svcmd_NS_VariableList_f( void );
-void Svcmd_NS_ThreadList_f( void );
-void Svcmd_NS_SendVariable_f( void );
-
-float cvar_VariableValue( const char *var_name );
 
 //SYSCALLS
 void		trap_Printf( const char *fmt );

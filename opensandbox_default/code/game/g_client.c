@@ -812,7 +812,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 
 		botskill = atoi( Info_ValueForKey( userinfo, "skill" ) );
-		ent->botskill = botskill;
+		ent->skill = botskill;
 		npcType = atoi( Info_ValueForKey( userinfo, "npcType" ) );
 		ent->npcType = npcType;
 	}
@@ -900,7 +900,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
-	if ( !isBot ) {
+	if(!isBot){
 		// check for a password
 		value = Info_ValueForKey (userinfo, "password");
 		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) &&
@@ -923,17 +923,14 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 	G_ReadSessionData( client );
 
-	if( isBot ) {
+	if(isBot){
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
-		if( !G_BotConnect( clientNum, !firstTime ) ) {
+		if(!G_BotConnect(clientNum, !firstTime))
 			return "BotConnectfailed";
-		}
 
-		//link the bot to the target_botspawn entity. For this we abuse the parent property.
-		if(ent){
-			LinkBotSpawn( ent, Info_ValueForKey (userinfo, "parentid") );
-		}
+		if(ent)
+			SandboxBotSpawn(ent, Info_ValueForKey(userinfo, "spawnid"));
 	}
 
 	ClientUserinfoChanged( clientNum );
@@ -969,7 +966,7 @@ void ClientBegin( int clientNum ) {
 
 	client = level.clients + clientNum;
 
-	if ( ent->r.linked )
+	if (ent->r.linked)
 		trap_UnlinkEntity( ent );
 	G_InitGentity( ent );
 	ent->touch = 0;
@@ -1022,7 +1019,11 @@ void ClientSpawn(gentity_t *ent) {
 	client = ent->client;
 
 	// find a spawn point
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( ent->botspawn ) {
+		spawnPoint = ent->botspawn;
+		VectorCopy(ent->botspawn->s.origin, spawn_origin);
+		VectorCopy(ent->botspawn->s.angles, spawn_angles);
+	} else if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		spawnPoint = SelectSpectatorSpawnPoint ( spawn_origin, spawn_angles);
 	} else if (g_gametype.integer >= GT_CTF ) {
 		// all base oriented team games use the CTF spawn points
@@ -1080,7 +1081,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 	// set max health
-	client->pers.maxHealth = atoi( Info_ValueForKey( userinfo, "handicap" ) );
+	client->pers.maxHealth = 100;
 	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
 		client->pers.maxHealth = 100;
 	}
@@ -1183,10 +1184,6 @@ void ClientDisconnect( int clientNum ) {
 	gentity_t	*tent;
 	int			i;
 
-	// cleanup if we are kicking a bot that
-	// hasn't spawned yet
-	G_RemoveQueuedBotBegin( clientNum );
-
 	ent = g_entities + clientNum;
 	if ( !ent->client ) {
 		return;
@@ -1276,32 +1273,6 @@ void SetupCustomBot( gentity_t *bot ) {
 	}
 	
 	CopyAlloc(bot->target, bot->botspawn->target);	//noire.dev bot->target
-}
-
-/*
-===========
-LinkBotSpawn
-============
-*/
-void LinkBotSpawn( gentity_t *bot, char parentid[] ) {
-	gentity_t	*t;
-	int			entityNum;
-	
-	if ( !bot )
-		return;
-
-	if ( !parentid || !strcmp(parentid, "") )
-		return;
-
-	entityNum = atoi(parentid);
-
-	t = NULL;
-	bot->botspawn = NULL;
-	while ( (t = G_Find (t, FOFS(classname), "sandbox_npc")) != NULL ) {
-		if ( t->s.number == entityNum ) {
-			bot->botspawn = t;
-		}
-	}
 }
 
 void SetUnlimitedWeapons( gentity_t *ent ) {

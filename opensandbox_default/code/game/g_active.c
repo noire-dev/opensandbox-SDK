@@ -28,7 +28,6 @@
 /*
 ===============
 G_DamageFeedback
-
 Called just before a snapshot is sent to the given player.
 Totals up all damage and generates both the player_state_t
 damage values to that client for pain blends and kicks, and
@@ -41,22 +40,18 @@ void P_DamageFeedback( gentity_t *player ) {
 	vec3_t	angles;
 
 	client = player->client;
-	if ( client->ps.pm_type == PM_DEAD ) {
+	if ( client->ps.pm_type == PM_DEAD )
 		return;
-	}
 
 	// total points of damage shot at the player this frame
 	count = client->damage_blood + client->damage_armor;
-	if ( count == 0 ) {
-		return;		// didn't take any damage
-	}
+	if ( count == 0 )
+		return;
 
-	if ( count > 255 ) {
+	if ( count > 255 )
 		count = 255;
-	}
 
 	// send the information to the client
-
 	// world damage (falling, slime, etc) uses a special code
 	// to make the blend blob centered instead of positional
 	if ( client->damage_fromWorld ) {
@@ -71,16 +66,11 @@ void P_DamageFeedback( gentity_t *player ) {
 	}
 
 	// play an apropriate pain sound
-	if(!player->client->vehiclenum){ //VEHICLE-SYSTEM: disable pain sound for all
 	if ( (level.time > player->pain_debounce_time) && !(player->flags & FL_GODMODE) ) {
 		player->pain_debounce_time = level.time + 700;
 		G_AddEvent( player, EV_PAIN, player->health );
 		client->ps.damageEvent++;
 	}
-	} else {
-		G_AddEvent( player, EV_PAINVEHICLE, player->health );
-	}
-
 
 	client->ps.damageCount = count;
 
@@ -92,12 +82,9 @@ void P_DamageFeedback( gentity_t *player ) {
 	client->damage_knockback = 0;
 }
 
-
-
 /*
 =============
 P_WorldEffects
-
 Check for lava / slime contents and drowning
 =============
 */
@@ -185,15 +172,13 @@ G_SetClientSound
 void G_SetClientSound( gentity_t *ent ) {
 	if( ent->s.eFlags & EF_TICKING ) {
 		ent->client->ps.loopSound = G_SoundIndex( "sound/weapons/proxmine/wstbtick.wav");
-	}
-	else
-	if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
+	} else if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
 		ent->client->ps.loopSound = level.snd_fry;
 	} else {
 		if(ent->npcType){
-		ent->client->ps.loopSound = G_SoundIndex(va("bots/%s", ent->target));
+			ent->client->ps.loopSound = G_SoundIndex(va("bots/%s", ent->target));
 		} else {
-		ent->client->ps.loopSound = 0;
+			ent->client->ps.loopSound = 0;
 		}
 	}
 }
@@ -230,13 +215,11 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
 
 		other->touch( other, ent, &trace );
 	}
-
 }
 
 /*
 ============
 G_TouchTriggers
-
 Find all trigger entities that ent's current position touches.
 Spectators will only interact with teleporters.
 ============
@@ -317,25 +300,6 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	}
 }
 
-void G_KillVoid( gentity_t *ent ) {
-	vec3_t		orig;
-
-	if ( !ent->client ) {
-		return;
-	}
-
-	// dead clients don't activate triggers! The reason our pm_spectators can't do anything
-	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 && ent->client->ps.pm_type != PM_SPECTATOR) {
-		return;
-	}
-
-	VectorCopy( ent->client->ps.origin, orig );
-	if(orig[2] <= -520000){
-	G_Damage (ent, NULL, NULL, NULL, NULL, 1000, 0, MOD_UNKNOWN);	
-	}
-
-}
-
 /*
 =================
 SpectatorThink
@@ -376,24 +340,28 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 		Cmd_FollowCycle_f( ent, 1 );
 }
 
-void MakeUnlimitedAmmo(gentity_t *ent) {
-	Set_Ammo(ent, WP_MACHINEGUN, 9999);
-	Set_Ammo(ent, WP_SHOTGUN, 9999);
-	Set_Ammo(ent, WP_GRENADE_LAUNCHER, 9999);
-	Set_Ammo(ent, WP_ROCKET_LAUNCHER, 9999);	
-	Set_Ammo(ent, WP_LIGHTNING, 9999);
-	Set_Ammo(ent, WP_RAILGUN, 9999);
-	Set_Ammo(ent, WP_PLASMAGUN, 9999);
-	Set_Ammo(ent, WP_BFG, 9999);
-	Set_Ammo(ent, WP_NAILGUN, 9999);
-	Set_Ammo(ent, WP_PROX_LAUNCHER, 9999);
-	Set_Ammo(ent, WP_CHAINGUN, 9999);
+void G_KillVoid( gentity_t *ent ) {
+	vec3_t		orig;
+
+	if (!ent->client && ent->client->ps.stats[STAT_HEALTH] <= 0 && ent->client->ps.pm_type != PM_SPECTATOR)
+		return;
+
+	VectorCopy( ent->client->ps.origin, orig );
+	if(orig[2] <= -520000)
+		G_Damage (ent, NULL, NULL, NULL, NULL, 1000, 0, MOD_UNKNOWN);
+}
+
+void G_MakeUnlimitedAmmo(gentity_t *ent) {
+	int i;
+	for(i = 1; i < WEAPONS_NUM; i++){
+		ent->swep_ammo[i] = 9999;
+	}
+	SetUnlimitedWeapons(ent);
 }
 
 /*
 ==================
-ClientTimerActions
-
+ClientTimerAction
 Actions that happen once a second
 ==================
 */
@@ -409,20 +377,19 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 		ent->s.eFlags &= ~EF_HEARED;		//hear update
 
-		if( gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-			MakeUnlimitedAmmo(ent);
-		}
+		if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN)
+			G_MakeUnlimitedAmmo(ent);
 
 		// regenerate
-		if( gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-		} else if ( client->ps.powerups[PW_REGEN] ) {
+		if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD){
+			maxHealth = client->ps.stats[STAT_MAX_HEALTH] / 2;
+		} else if(client->ps.powerups[PW_REGEN]){
 			maxHealth = client->ps.stats[STAT_MAX_HEALTH];
 		} else {
 			maxHealth = 0;
 		}
-		if( maxHealth ) {
-			if ( ent->health < maxHealth ) {
+		if(maxHealth) {
+			if (ent->health < maxHealth){
 				ent->health += 15;
 				if ( ent->health > maxHealth * 1.1 ) {
 					ent->health = maxHealth * 1.1;
@@ -434,14 +401,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 				}
 			}
 		} else {
-			// count down health when over max
-			if ( !ent->npcType ){
-				if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
-					ent->health--;
-				}
-			}
-
-			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] ) {
+			if (ent->health < client->ps.stats[STAT_MAX_HEALTH]) {
 				ent->health += 1;
 				if(ent->health > client->ps.stats[STAT_MAX_HEALTH])
 					ent->health = client->ps.stats[STAT_MAX_HEALTH];
@@ -449,22 +409,17 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		}
 
 		G_SendGameCvars(ent);				//send game setting to client for sync
-		G_SendSwepWeapons(ent);			//send sweps list to client for sync
-
-		// count down armor when over max
-		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-			client->ps.stats[STAT_ARMOR]--;
-		}
+		G_SendSwepWeapons(ent);				//send sweps list to client for sync
 	}
 }
 
-void SendEntityInfoToClient( gentity_t *ent, int msec ) {
+void SendEntityInfoToClient(gentity_t *ent, int msec) {
 	gclient_t	*client;
 
 	client = ent->client;
 	client->timeEntityInfo += msec;
 
-	while ( client->timeEntityInfo >= 100 ) {
+	while (client->timeEntityInfo >= 100) {
 		client->timeEntityInfo -= 100;
 		Weapon_Toolgun_Info( ent );			//send entity info to client for sync
 	}
@@ -480,24 +435,20 @@ void ClientIntermissionThink( gclient_t *client ) {
 	client->ps.eFlags &= ~EF_FIRING;
 
 	// the level will exit when everyone wants to or after timeouts
-
-    if( g_entities[client->ps.clientNum].r.svFlags & SVF_BOT )
-        return; //Bots cannot mark themself as ready
+    if(g_entities[client->ps.clientNum].r.svFlags & SVF_BOT)
+        return;
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
 	client->buttons = client->pers.cmd.buttons;
-	if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
-		// this used to be an ^1 but once a player says ready, it should stick
+	if (client->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) & (client->oldbuttons ^ client->buttons)) {
 		client->readyToExit = 1;
 	}
 }
 
-
 /*
 ================
 ClientEvents
-
 Events will be passed on to the clients for presentation,
 but any server game effects are handled here
 ================
@@ -509,8 +460,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		damage;
 	vec3_t	dir;
 	vec3_t	origin, angles;
-	item_t *item;
-	gentity_t *drop;
 
 	client = ent->client;
 
@@ -541,84 +490,23 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 
 		case EV_USE_ITEM1:		// teleporter
-			// drop flags in CTF
-			item = NULL;
-			j = 0;
-
-			if ( ent->client->ps.powerups[ PW_REDFLAG ] ) {
-				item = BG_FindItemForPowerup( PW_REDFLAG );
-				j = PW_REDFLAG;
-			} else if ( ent->client->ps.powerups[ PW_BLUEFLAG ] ) {
-				item = BG_FindItemForPowerup( PW_BLUEFLAG );
-				j = PW_BLUEFLAG;
-			} else if ( ent->client->ps.powerups[ PW_NEUTRALFLAG ] ) {
-				item = BG_FindItemForPowerup( PW_NEUTRALFLAG );
-				j = PW_NEUTRALFLAG;
-			}
-
-			if ( item ) {
-				drop = Drop_Item( ent, item );
-				// decide how many seconds it has left
-				drop->count = ( ent->client->ps.powerups[ j ] - level.time ) / 1000;
-				if ( drop->count < 1 ) {
-					drop->count = 1;
-				}
-
-				ent->client->ps.powerups[ j ] = 0;
-			}
-
-			if ( g_gametype.integer == GT_HARVESTER ) {
-				if ( ent->client->ps.generic1 > 0 ) {
-					if ( ent->client->sess.sessionTeam == TEAM_RED ) {
-						item = BG_FindItem( "Blue Cube" );
-					} else {
-						item = BG_FindItem( "Red Cube" );
-					}
-					if ( item ) {
-						for ( j = 0; j < ent->client->ps.generic1; j++ ) {
-							drop = Drop_Item( ent, item );
-							if ( ent->client->sess.sessionTeam == TEAM_RED ) {
-								drop->spawnflags = TEAM_BLUE;
-							} else {
-								drop->spawnflags = TEAM_RED;
-							}
-						}
-					}
-					ent->client->ps.generic1 = 0;
-				}
-			}
-			if ( ent->teleporterTarget ) {
-				FindTeleporterTarget( ent, origin, angles );
-				ent->teleporterTarget = NULL;		//reset the teleporter target again
-			}
-			else
-				
-			if (g_gametype.integer >= GT_CTF) {
-				SelectCTFSpawnPoint ( ent->client->sess.sessionTeam, ent->client->pers.teamState.state, origin, angles);
-				TeleportPlayer( ent, origin, angles, qfalse );
-			} else {
-				SelectSpawnPoint( ent->client->ps.origin, origin, angles );
-				TeleportPlayer( ent, origin, angles, qfalse );
-			}
+			SelectSpawnPoint( ent->client->ps.origin, origin, angles );
+			TeleportPlayer( ent, origin, angles, qfalse );
 			break;
 
 		case EV_USE_ITEM2:		// medkit
 			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
-
 			break;
 
 		case EV_USE_ITEM3:		// kamikaze
-			// make sure the invulnerability is off
 			ent->client->invulnerabilityTime = 0;
-			// start the kamikze
 			G_StartKamikaze( ent );
 			break;
 
 		case EV_USE_ITEM4:		// portal
 			if( ent->client->portalID ) {
 				DropPortalSource( ent );
-			}
-			else {
+			} else {
 				DropPortalDestination( ent );
 			}
 			break;
@@ -630,7 +518,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 		}
 	}
-
 }
 
 /*
@@ -773,7 +660,7 @@ void GravitygunHold(gentity_t *player) {
     } else if (player->grabbedEntity) {
         ent->isGrabbed = qfalse;
 		Phys_HoldDropDynamic(player, velocity, qfalse);
-		player->grabbedEntity = 0;																						//end
+		player->grabbedEntity = 0;
 		G_AddEvent( player, EV_GRAVITYSOUND, 0 );
     }
 }
@@ -781,7 +668,6 @@ void GravitygunHold(gentity_t *player) {
 /*
 ==============
 ClientThink
-
 This will be called once for each client frame, which will
 usually be a couple times for each server frame on fast clients.
 ==============
@@ -804,12 +690,10 @@ void ClientThink_real( gentity_t *ent ) {
 	ucmd = &ent->client->pers.cmd;
 
 	// sanity check the command time (anti-cheat)
-	if ( ucmd->serverTime > level.time + 200 ) {
+	if ( ucmd->serverTime > level.time + 200 )
 		ucmd->serverTime = level.time + 200;
-	}
-	if ( ucmd->serverTime < level.time - 1000 ) {
+	if ( ucmd->serverTime < level.time - 1000 )
 		ucmd->serverTime = level.time - 1000;
-	}
 
 	client->frameOffset = trap_Milliseconds() - level.frameStartTime;
 
@@ -826,12 +710,10 @@ void ClientThink_real( gentity_t *ent ) {
 	client->lastUpdateFrame = level.framenum;
 
 	msec = ucmd->serverTime - client->ps.commandTime;
-	if ( msec < 1 && client->sess.spectatorState != SPECTATOR_FOLLOW ) {
+	if ( msec < 1 && client->sess.spectatorState != SPECTATOR_FOLLOW )
 		return;
-	}
-	if ( msec > 200 ) {
+	if ( msec > 200 )
 		msec = 200;
-	}
 
 	//
 	// check for exiting intermission
@@ -880,7 +762,7 @@ void ClientThink_real( gentity_t *ent ) {
 	if (client->ps.powerups[PW_HASTE]) {
 		client->ps.speed *= 1.3;
 	}
-	if ( ent->botskill == 9 ) {
+	if ( ent->skill == 9 ) {
 		client->ps.speed *= 2.0;
 	}
 
@@ -931,11 +813,9 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.cmd = *ucmd;
 	if ( pm.ps->pm_type == PM_DEAD ) {
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
-	}
-	else if ( ent->r.svFlags & SVF_BOT ) {
+	} else if ( ent->r.svFlags & SVF_BOT ) {
 		pm.tracemask = MASK_PLAYERSOLID | CONTENTS_BOTCLIP;
-	}
-	else {
+	} else {
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
 	pm.trace = trap_Trace;
@@ -1018,7 +898,6 @@ void ClientThink_real( gentity_t *ent ) {
 /*
 ==================
 ClientThink
-
 A new command has arrived from the client
 ==================
 */
@@ -1033,7 +912,6 @@ void ClientThink( int clientNum ) {
 	}
 }
 
-
 void G_RunClient( gentity_t *ent ) {
 	if ( !(ent->r.svFlags & SVF_BOT) ) {
 		return;
@@ -1043,56 +921,41 @@ void G_RunClient( gentity_t *ent ) {
 }
 
 qboolean G_CheckSwep( int clientNum, int wp, int finish ) {
-gentity_t *ent;
+	gentity_t *ent;
 
-ent = g_entities + clientNum;
-
-if(ent->swep_list[wp] >= 1){
-	if(finish){
-	ent->swep_id = wp;
+	ent = g_entities + clientNum;
+	if(ent->swep_list[wp] >= 1){
+		if(finish)
+			ent->swep_id = wp;
+		ClientUserinfoChanged(clientNum);
+		return qtrue;
+	} else {
+		return qfalse;
 	}
-	ClientUserinfoChanged(clientNum);
-	return qtrue;
-} else {
-	return qfalse;
-}
 }
 
 int G_CheckSwepAmmo( int clientNum, int wp ) {
-gentity_t *ent;
+	gentity_t *ent;
 
-ent = g_entities + clientNum;
-
-return ent->swep_ammo[wp];
+	ent = g_entities + clientNum;
+	return ent->swep_ammo[wp];
 }
 
 void PM_Add_SwepAmmo( int clientNum, int wp, int count ) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
-	
-if(!(ent->swep_ammo[wp] == -1)){
-if(!(ent->swep_ammo[wp] >= 9999)){
-	ent->swep_ammo[wp] += count;
-	
-}
-}
-}
+	if(!(ent->swep_ammo[wp] == -1)){
+		if(!(ent->swep_ammo[wp] >= 9999)){
+			ent->swep_ammo[wp] += count;
 
-void G_DefaultSwep( int clientNum, int wp ) {
-gentity_t *ent;
-
-ent = g_entities + clientNum;
-ent->swep_id = wp;
-ClientUserinfoChanged(clientNum);
-
-return;
+		}
+	}
 }
 
 /*
 ==================
 SpectatorClientEndFrame
-
 ==================
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
@@ -1137,7 +1000,6 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 /*
 ==============
 ClientEndFrame
-
 Called at the end of each server frame for each connected client
 A fast client will have multiple ClientThink for each ClientEdFrame,
 while a slow client may have multiple ClientEndFrame between ClientThink.

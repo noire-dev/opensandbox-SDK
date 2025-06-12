@@ -1911,8 +1911,6 @@ void CheckLadder( void )
 
 }
 
-
-
 /*
 ================
 PmoveSingle
@@ -2099,7 +2097,7 @@ void PmoveSingle (pmove_t *pmove) {
 
 	// footstep events / legs animations
 	if(!pm->ps->stats[STAT_VEHICLE]) {	//VEHICLE-SYSTEM: footsteps lock for all
-	PM_Footsteps();
+		PM_Footsteps();
 	}
 
 	// entering / leaving water splashes

@@ -46,21 +46,10 @@ of setting the right origin and angles.
 void CG_PredictWeaponEffects( centity_t *cent ) {
 	vec3_t		muzzlePoint, forward, right, up;
 	entityState_t *ent = &cent->currentState;
-	clientInfo_t	*ci;
-	int				weaphack;
 
 	// if the client isn't us, forget it
-	if ( cent->currentState.number != cg.predictedPlayerState.clientNum ) {
+	if ( cent->currentState.number != cg.predictedPlayerState.clientNum )
 		return;
-	}
-	
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	
-	if(ci->swepid >= 1){
-	weaphack = ci->swepid;
-	} else {
-	weaphack = ent->weapon;
-	}
 
 	// get the muzzle point
 	VectorCopy( cg.predictedPlayerState.origin, muzzlePoint );
@@ -71,7 +60,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
 
 	// was it a rail attack?
-	if ( weaphack == WP_RAILGUN ) {
+	if ( ent->weapon == WP_RAILGUN ) {
 		// do we have it on for the rail gun?
 		trace_t trace;
 		vec3_t endPoint;
@@ -99,11 +88,11 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		// explosion at end if not SURF_NOIMPACT
 		if ( !(trace.surfaceFlags & SURF_NOIMPACT) ) {
 			// predict an explosion
-			CG_MissileHitWall( weaphack, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT );
+			CG_MissileHitWall( ent->weapon, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT );
 		}
 	}
 	// was it a shotgun attack?
-	else if ( weaphack == WP_SHOTGUN ) {
+	else if ( ent->weapon == WP_SHOTGUN ) {
 		int contents;
 		vec3_t endPoint, v;
 		vec3_t			up;
@@ -129,7 +118,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum );
 	}
 	// was it a machinegun attack?
-	else if ( weaphack == WP_MACHINEGUN ) {
+	else if ( ent->weapon == WP_MACHINEGUN ) {
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;
@@ -167,7 +156,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
 	}
         // was it a chaingun attack?
-	else if ( weaphack == WP_CHAINGUN ) {
+	else if ( ent->weapon == WP_CHAINGUN ) {
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;

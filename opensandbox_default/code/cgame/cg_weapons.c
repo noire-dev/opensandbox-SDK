@@ -1026,13 +1026,10 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	vec3_t   forward;
 	vec3_t   muzzlePoint, endPoint;
 	clientInfo_t	*ci;
-	int				weaphack;
 
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	
-	weaphack = ci->swepid;
 
-	if (weaphack != WP_LIGHTNING && weaphack != WP_TOOLGUN && weaphack != WP_PHYSGUN && weaphack != WP_GRAVITYGUN) {
+	if (cent->currentState.weapon != WP_LIGHTNING && cent->currentState.weapon != WP_TOOLGUN && cent->currentState.weapon != WP_PHYSGUN && cent->currentState.weapon != WP_GRAVITYGUN) {
 		return;
 	}
 
@@ -1052,13 +1049,13 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
 
 	// project forward by the lightning range
-	if (weaphack == WP_LIGHTNING){
+	if (cent->currentState.weapon == WP_LIGHTNING){
 	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
-	} else if (weaphack == WP_TOOLGUN){
+	} else if (cent->currentState.weapon == WP_TOOLGUN){
 	VectorMA( muzzlePoint, TOOLGUN_RANGE, forward, endPoint );	
-	} else if (weaphack == WP_PHYSGUN){
+	} else if (cent->currentState.weapon == WP_PHYSGUN){
 	VectorMA( muzzlePoint, PHYSGUN_RANGE, forward, endPoint );	
-	} else if (weaphack == WP_GRAVITYGUN){
+	} else if (cent->currentState.weapon == WP_GRAVITYGUN){
 	VectorMA( muzzlePoint, GRAVITYGUN_RANGE, forward, endPoint );	
 	}
 
@@ -1073,11 +1070,11 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	// different than the muzzle origin
 	VectorCopy( origin, beam.origin );
 	
-	if (weaphack == WP_PHYSGUN) {
+	if (cent->currentState.weapon == WP_PHYSGUN) {
 		CG_PhysgunTrail (ci, origin, trace.endpos);
 		return;
 	}
-	if (weaphack == WP_GRAVITYGUN) {
+	if (cent->currentState.weapon == WP_GRAVITYGUN) {
 		CG_GravitygunTrail (ci, origin, trace.endpos);
 		return;
 	}
@@ -1118,13 +1115,10 @@ different than the muzzle point used for determining hits.
 */
 static void CG_SpawnRailTrail( centity_t *cent, vec3_t origin ) {
 	clientInfo_t	*ci;
-	int				weaphack;
 
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 
-	weaphack = ci->swepid;
-
-	if ( weaphack != WP_RAILGUN ) {
+	if ( cent->currentState.weapon != WP_RAILGUN ) {
 		return;
 	}
 	if ( !cent->pe.railgunFlash ) {
@@ -1146,12 +1140,6 @@ static float	CG_MachinegunSpinAngle( centity_t *cent ) {
 	int		delta;
 	float	angle;
 	float	speed;
-	clientInfo_t	*ci;
-	int				weaphack;
-
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-
-	weaphack = ci->swepid;
 
 	delta = cg.time - cent->pe.barrelTime;
 	if ( cent->pe.barrelSpinning ) {
@@ -1170,7 +1158,7 @@ static float	CG_MachinegunSpinAngle( centity_t *cent ) {
 		cent->pe.barrelAngle = AngleMod( angle );
 		cent->pe.barrelSpinning = !!(cent->currentState.eFlags & EF_FIRING);
 
-		if ( weaphack == WP_CHAINGUN && !cent->pe.barrelSpinning ) {
+		if ( cent->currentState.weapon == WP_CHAINGUN && !cent->pe.barrelSpinning ) {
 			trap_S_StartSound( NULL, cent->currentState.number, CHAN_WEAPON, trap_S_RegisterSound( "sound/weapons/vulcan/wvulwind.wav", qfalse ) );
 		}
 
@@ -1275,11 +1263,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	centity_t	*nonPredictedCent;
 	orientation_t	lerped;
 
-	weaponNum = ci->swepid;
+	weaponNum = cent->currentState.weapon;
 
-	if(ci->flashlight == 1){
-		CG_PlayerFlashlight( &cg_entities[cent->currentState.clientNum] );
-	}
+	if(ci->flashlight)
+		CG_PlayerFlashlight(&cg_entities[cent->currentState.clientNum]);
 
 	CG_RegisterWeapon( weaponNum );
 	weapon = &cg_weapons[weaponNum];

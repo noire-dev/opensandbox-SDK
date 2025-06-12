@@ -2,17 +2,13 @@
 ui_main
 ..\ui_syscalls
 ui_addbots
-ui_advanced
 ui_atoms
 ui_confirm
 ui_connect
 ui_controls2
 ui_demo2
 ui_display
-ui_dynamicmenu
 ui_gameinfo
-ui_ingame
-ui_ingame_mapvote
 ui_loadconfig
 ui_loadconfiged
 ui_menu
@@ -28,7 +24,6 @@ ui_removebots
 ui_sandbox
 ui_saveconfiged
 ui_servers2
-ui_setup
 ui_sound
 ui_specifyserver
 ui_video
