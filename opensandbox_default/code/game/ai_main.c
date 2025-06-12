@@ -1212,8 +1212,6 @@ int BotAIStartFrame(int time) {
 	static int botlib_residual;
 	static int lastbotthink_time;
 
-	G_CheckBotSpawn();
-
 	trap_Cvar_Update(&bot_rocketjump);
 	trap_Cvar_Update(&bot_grapple);
 	trap_Cvar_Update(&bot_fastchat);
