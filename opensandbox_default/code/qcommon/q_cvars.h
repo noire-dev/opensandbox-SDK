@@ -26,31 +26,6 @@
 #ifndef __Q_CVARS_H
 #define __Q_CVARS_H
 
-typedef enum {
-	IT_NULL,
-	IT_WEAPON,
-	IT_AMMO,
-	IT_ARMOR,
-	IT_HEALTH,
-	IT_POWERUP,
-	IT_HOLDABLE,
-	IT_RUNE,
-	IT_TEAM
-} itemType_t;
-
-typedef struct gitem_s {
-	char			*classname;
-	char			*world_model;
-	char			*icon;
-	char			*pickup_name;
-	int				quantity;
-	itemType_t  	giType;
-	int				giTag;
-} item_t;
-
-extern	item_t	gameInfoItems[];
-extern	int		gameInfoItemsNum;
-
 #define	MAX_CVAR_VALUE_STRING	256
 
 typedef int	cvarHandle_t;

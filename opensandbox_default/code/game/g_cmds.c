@@ -800,8 +800,8 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 
 		tent->skill = atof(arg04);
 		tent->health = atoi(arg05);
-		CopyAlloc(tent->message, arg06);	
-		tent->mtype = atoi(arg08);
+		CopyAlloc(tent->message, arg06);
+		tent->weapon = atoi(arg08);
 
 		if(!Q_stricmp (arg07, "0") ){
 			CopyAlloc(tent->target, arg02);	

@@ -26,7 +26,7 @@
 
 #include "g_local.h"
 
-qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
+qboolean G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;
 
 	if ( !level.spawning )
@@ -43,7 +43,7 @@ qboolean	G_SpawnString( const char *key, const char *defaultString, char **out )
 	return qfalse;
 }
 
-qboolean	G_SpawnFloat( const char *key, const char *defaultString, float *out ) {
+qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out ) {
 	char		*s;
 	qboolean	present;
 
@@ -52,7 +52,7 @@ qboolean	G_SpawnFloat( const char *key, const char *defaultString, float *out ) 
 	return present;
 }
 
-qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out ) {
+qboolean G_SpawnInt( const char *key, const char *defaultString, int *out ) {
 	char		*s;
 	qboolean	present;
 
@@ -61,7 +61,7 @@ qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out ) {
 	return present;
 }
 
-qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out ) {
+qboolean G_SpawnVector( const char *key, const char *defaultString, float *out ) {
 	char		*s;
 	qboolean	present;
 
@@ -73,9 +73,6 @@ qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out )
 void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin( ent, ent->s.origin ); }
 void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 
-//
-// fields are needed for spawning from the entity string
-//
 typedef enum {
 	F_INT, 
 	F_FLOAT,
@@ -93,143 +90,104 @@ typedef struct {
 } field_t;
 
 field_t fields[] = {
-	{"classname", FOFS(classname), F_STRING},
-	{"model", FOFS(model), F_STRING},
-	{"model2", FOFS(model2), F_STRING},
-	{"origin", FOFS(s.origin), F_VECTOR},
-	{"angles", FOFS(s.angles), F_VECTOR},
-	{"modelscale_vec", FOFS(s.scales), F_VECTOR},
-	{"spawnflags", FOFS(spawnflags), F_INT},
-	{"speed", FOFS(speed), F_FLOAT},
-	{"target", FOFS(target), F_STRING},
-	{"targetname", FOFS(targetname), F_STRING},
-	{"message", FOFS(message), F_STRING},
-	{"team", FOFS(team), F_STRING},
-	{"wait", FOFS(wait), F_FLOAT},
-	{"random", FOFS(random), F_FLOAT},
-	{"count", FOFS(count), F_INT},
-	{"health", FOFS(health), F_INT},
-	{"light", 0, F_IGNORE},
-	{"dmg", FOFS(damage), F_INT},
-	{"mtype", FOFS(mtype), F_INT},
-	{"mtimeout", FOFS(mtimeout), F_INT},
-	{"mhoming", FOFS(mhoming), F_INT},
-	{"mspeed", FOFS(mspeed), F_INT},
-	{"mbounce", FOFS(mbounce), F_INT},
-	{"mdamage", FOFS(mdamage), F_INT},
-	{"msdamage", FOFS(msdamage), F_INT},
-	{"msradius", FOFS(msradius), F_INT},
-	{"mgravity", FOFS(mgravity), F_INT},
-	{"mnoclip", FOFS(mnoclip), F_INT},
-	{"allowuse", FOFS(allowuse), F_INT},
-	{"angle", FOFS(s.angles), F_ANGLEHACK},		//deleted in mapfiles
-	{"mapname", FOFS(mapname), F_STRING},
-	{"clientname", FOFS(clientname), F_STRING},
-	{"teleporterTarget", FOFS(teleporterTarget), F_STRING},
-	{"deathTarget", FOFS(deathTarget), F_STRING},
-	{"lootTarget", FOFS(lootTarget), F_STRING},
-	{"skill", FOFS(skill), F_FLOAT},
-	{"overlay", FOFS(overlay), F_STRING},
-	{"target2", FOFS(target2), F_STRING},
-	{"damagetarget", FOFS(damagetarget), F_STRING},
-	{"targetname2", FOFS(targetname2), F_STRING},
-	{"key", FOFS(key), F_STRING},
-	{"value", FOFS(value), F_STRING},
-	{"armor", FOFS(armor), F_INT},
-	{"music", FOFS(music), F_STRING},
-	{"sb_class", FOFS(sb_class), F_STRING},
-	{"sb_sound", FOFS(sb_sound), F_STRING},
-	{"sb_coltype", FOFS(sb_coltype), F_INT},
-	{"physicsBounce", FOFS(physicsBounce), F_FLOAT},
-	{"vehicle", FOFS(vehicle), F_INT},
-	{"sb_material", FOFS(sb_material), F_INT},
-	{"sb_gravity", FOFS(sb_gravity), F_FLOAT},
-	{"sb_phys", FOFS(sb_phys), F_INT},
-	{"sb_coll", FOFS(sb_coll), F_INT},
-	{"sb_red", FOFS(sb_red), F_INT},
-	{"sb_green", FOFS(sb_green), F_INT},
-	{"sb_blue", FOFS(sb_blue), F_INT},
-	{"sb_radius", FOFS(sb_radius), F_INT},
-	{"sb_isnpc", FOFS(sb_isnpc), F_INT},
-	{"objectType", FOFS(objectType), F_INT},
-
-	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), F_VECTOR},
-	{"phys_rv_0", FOFS(phys_rv_0), F_VECTOR},
-	{"phys_rv_1", FOFS(phys_rv_1), F_VECTOR},
-	{"phys_rv_2", FOFS(phys_rv_2), F_VECTOR},
-
-	{"sb_phys_welded", FOFS(sb_phys_welded), F_INT},
-	{"sb_phys_parent", FOFS(sb_phys_parent), F_INT},
-	
-	{"distance", FOFS(distance), F_FLOAT},
-	{"type", FOFS(type), F_INT},
-	
+	{"classname", 			FOFS(classname), 				F_STRING},
+	{"model", 				FOFS(model), 					F_STRING},
+	{"model2", 				FOFS(model2), 					F_STRING},
+	{"origin", 				FOFS(s.origin), 				F_VECTOR},
+	{"angles", 				FOFS(s.angles), 				F_VECTOR},
+	{"modelscale_vec", 		FOFS(s.scales), 				F_VECTOR},
+	{"spawnflags", 			FOFS(spawnflags), 				F_INT},
+	{"speed", 				FOFS(speed), 					F_FLOAT},
+	{"target", 				FOFS(target), 					F_STRING},
+	{"targetname", 			FOFS(targetname), 				F_STRING},
+	{"message", 			FOFS(message), 					F_STRING},
+	{"team", 				FOFS(team), 					F_STRING},
+	{"wait", 				FOFS(wait), 					F_FLOAT},
+	{"random", 				FOFS(random), 					F_FLOAT},
+	{"count", 				FOFS(count), 					F_INT},
+	{"health", 				FOFS(health), 					F_INT},
+	{"light", 				0, 								F_IGNORE},
+	{"dmg", 				FOFS(damage), 					F_INT},
+	{"angle", 				FOFS(s.angles), 				F_ANGLEHACK},
+	{"clientname", 			FOFS(clientname), 				F_STRING},
+	{"sb_class", 			FOFS(sb_class), 				F_STRING},
+	{"sb_sound", 			FOFS(sb_sound), 				F_STRING},
+	{"sb_coltype", 			FOFS(sb_coltype), 				F_INT},
+	{"physicsBounce", 		FOFS(physicsBounce),			F_FLOAT},
+	{"vehicle", 			FOFS(vehicle), 					F_INT},
+	{"sb_material", 		FOFS(sb_material), 				F_INT},
+	{"sb_gravity", 			FOFS(sb_gravity), 				F_FLOAT},
+	{"sb_phys", 			FOFS(sb_phys), 					F_INT},
+	{"sb_coll", 			FOFS(sb_coll), 					F_INT},
+	{"sb_red", 				FOFS(sb_red), 					F_INT},
+	{"sb_green", 			FOFS(sb_green), 				F_INT},
+	{"sb_blue", 			FOFS(sb_blue), 					F_INT},
+	{"sb_radius", 			FOFS(sb_radius), 				F_INT},
+	{"sb_isnpc", 			FOFS(sb_isnpc), 				F_INT},
+	{"objectType", 			FOFS(objectType), 				F_INT},
+	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), 		F_VECTOR},
+	{"phys_rv_0", 			FOFS(phys_rv_0), 				F_VECTOR},
+	{"phys_rv_1", 			FOFS(phys_rv_1), 				F_VECTOR},
+	{"phys_rv_2", 			FOFS(phys_rv_2), 				F_VECTOR},
+	{"sb_phys_welded", 		FOFS(sb_phys_welded), 			F_INT},
+	{"sb_phys_parent", 		FOFS(sb_phys_parent), 			F_INT},
+	{"distance", 			FOFS(distance), 				F_FLOAT},
+	{"type", 				FOFS(type), 					F_INT},
 	{NULL}
 };
 
 spawn_t	spawns_table[] = {
-	{"info_player_start", SP_info_player_start},
-	{"info_player_deathmatch", SP_info_player_deathmatch},
-	{"info_player_intermission", SP_EmptySpawn},
-	{"info_null", SP_DeleteSpawn},
-	{"info_notnull", SP_EmptySpawn},
-	{"info_camp", SP_EmptySpawn},
-
-	{"func_plat", SP_func_plat},
-	{"func_button", SP_func_button},
-	{"func_door", SP_func_door},
-	{"func_static", SP_func_static},
-	{"func_rotating", SP_func_rotating},
-	{"func_bobbing", SP_func_bobbing},
-	{"func_pendulum", SP_func_pendulum},
-	{"func_train", SP_func_train},
-	{"func_group", SP_DeleteSpawn},
-
-	{"trigger_always", SP_trigger_always},
-	{"trigger_multiple", SP_trigger_multiple},
-	{"trigger_push", SP_trigger_push},
-	{"trigger_teleport", SP_trigger_teleport},
-	{"trigger_hurt", SP_trigger_hurt},
-
-	{"target_give", SP_target_give},
-	{"target_delay", SP_target_delay},
-	{"target_speaker", SP_target_speaker},
-	{"target_print", SP_target_print},
-	{"target_teleporter", SP_target_teleporter},
-	{"target_relay", SP_target_relay},
-	{"target_kill", SP_target_kill},
-	{"target_position", SP_target_position},
-	{"target_location", SP_target_location},
-	{"target_push", SP_target_push},
-
-	{"light", SP_DeleteSpawn},
-	{"path_corner", SP_path_corner},
-
-	{"misc_teleporter_dest", SP_EmptySpawn},
-	{"misc_model", SP_DeleteSpawn},
-	{"misc_portal_surface", SP_misc_portal_surface},
-	{"misc_portal_camera", SP_misc_portal_camera},
-
-	{"shooter_rocket", SP_shooter_rocket},
-	{"shooter_grenade", SP_shooter_grenade},
-	{"shooter_plasma", SP_shooter_plasma},
-
-	{"team_CTF_redplayer", SP_EmptySpawn},
-	{"team_CTF_blueplayer", SP_EmptySpawn},
-	{"team_CTF_redspawn", SP_EmptySpawn},
-	{"team_CTF_bluespawn", SP_EmptySpawn},
-	{"team_redobelisk", SP_team_redobelisk},
-	{"team_blueobelisk", SP_team_blueobelisk},
-	{"team_neutralobelisk", SP_team_neutralobelisk},
-
-	{"script_variable", SP_script_variable},
-	{"script_cmd", SP_script_cmd},
-
-	{"sandbox_prop", SP_sandbox_prop},
-	{"sandbox_npc", SP_sandbox_npc},
-
-	{"item_botroam", SP_EmptySpawn},
-
+	{"info_player_start", 			SP_info_player_start},
+	{"info_player_deathmatch", 		SP_info_player_deathmatch},
+	{"info_player_intermission", 	SP_EmptySpawn},
+	{"info_null", 					SP_DeleteSpawn},
+	{"info_notnull", 				SP_EmptySpawn},
+	{"info_camp", 					SP_EmptySpawn},
+	{"func_plat", 					SP_func_plat},
+	{"func_button", 				SP_func_button},
+	{"func_door", 					SP_func_door},
+	{"func_static", 				SP_func_static},
+	{"func_rotating", 				SP_func_rotating},
+	{"func_bobbing", 				SP_func_bobbing},
+	{"func_pendulum", 				SP_func_pendulum},
+	{"func_train", 					SP_func_train},
+	{"func_group", 					SP_DeleteSpawn},
+	{"trigger_always", 				SP_trigger_always},
+	{"trigger_multiple", 			SP_trigger_multiple},
+	{"trigger_push", 				SP_trigger_push},
+	{"trigger_teleport", 			SP_trigger_teleport},
+	{"trigger_hurt", 				SP_trigger_hurt},
+	{"target_give", 				SP_target_give},
+	{"target_delay", 				SP_target_delay},
+	{"target_speaker", 				SP_target_speaker},
+	{"target_print", 				SP_target_print},
+	{"target_teleporter", 			SP_target_teleporter},
+	{"target_relay", 				SP_target_relay},
+	{"target_kill", 				SP_target_kill},
+	{"target_position", 			SP_target_position},
+	{"target_location", 			SP_target_location},
+	{"target_push", 				SP_target_push},
+	{"light", 						SP_DeleteSpawn},
+	{"path_corner", 				SP_path_corner},
+	{"misc_teleporter_dest", 		SP_EmptySpawn},
+	{"misc_model", 					SP_DeleteSpawn},
+	{"misc_portal_surface", 		SP_misc_portal_surface},
+	{"misc_portal_camera", 			SP_misc_portal_camera},
+	{"shooter_rocket", 				SP_shooter_rocket},
+	{"shooter_grenade", 			SP_shooter_grenade},
+	{"shooter_plasma", 				SP_shooter_plasma},
+	{"team_CTF_redplayer", 			SP_EmptySpawn},
+	{"team_CTF_blueplayer", 		SP_EmptySpawn},
+	{"team_CTF_redspawn", 			SP_EmptySpawn},
+	{"team_CTF_bluespawn", 			SP_EmptySpawn},
+	{"team_redobelisk", 			SP_team_redobelisk},
+	{"team_blueobelisk", 			SP_team_blueobelisk},
+	{"team_neutralobelisk", 		SP_team_neutralobelisk},
+	{"script_variable", 			SP_script_variable},
+	{"script_cmd", 					SP_script_cmd},
+	{"sandbox_prop", 				SP_sandbox_prop},
+	{"sandbox_npc", 				SP_sandbox_npc},
+	{"item_botroam", 				SP_EmptySpawn},
 	{NULL, 0}
 };
 
@@ -550,8 +508,8 @@ void SP_worldspawn( void ) {
 	char	*s;
 
 	G_SpawnString( "classname", "", &s );
-	if ( Q_stricmp( s, "worldspawn" ) ) {
-		G_Error( "SP_worldspawn: The first entity isn't 'worldspawn'" );
+	if (Q_stricmp(s, "worldspawn")) {
+		G_Error("SP_worldspawn: The first entity isn't 'worldspawn'");
 	}
 
 	// make some data visible to connecting client

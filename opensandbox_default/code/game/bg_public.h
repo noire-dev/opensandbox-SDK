@@ -177,6 +177,31 @@ typedef enum {
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
+typedef enum {
+	IT_NULL,
+	IT_WEAPON,
+	IT_AMMO,
+	IT_ARMOR,
+	IT_HEALTH,
+	IT_POWERUP,
+	IT_HOLDABLE,
+	IT_RUNE,
+	IT_TEAM
+} itemType_t;
+
+typedef struct gitem_s {
+	char			*classname;
+	char			*world_model;
+	char			*icon;
+	char			*pickup_name;
+	int				quantity;
+	itemType_t  	giType;
+	int				giTag;
+} item_t;
+
+extern	item_t	gameInfoItems[];
+extern	int		gameInfoItemsNum;
+
 /*
 ===================================================================================
 

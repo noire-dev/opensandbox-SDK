@@ -221,35 +221,12 @@ struct gentity_s {
 	int			vehicle;
 	int			objectType;
 
-	//entityplus variables
+	//opensandbox variables
 	gentity_t	*botspawn;
-	char		*clientname;			// name of the bot to spawn for target_botspawn
-	char		*mapname;				// name of the map to switch to for target_mapchange
-	char		*teleporterTarget;		// forces a client to be teleported to the entity with this targetname when using holdable_teleporter. Also used as key for holdable_teleporter itself.
-	int			logicEntities[MAX_LOGIC_ENTITIES];	//keeping track of entities targeting a target_logic
-	char		*target2;	//second target
-	char		*damagetarget;	//second target
-	char		*targetname2; //second targetname
-	char		*deathTarget;	// target to trigger when bot from target_botspawn dies
-	char		*lootTarget;	//item to drop when bot from target_botspawn dies
-	char		*overlay; // reference to overlay texture for target_effect
-	char		*key;	// key for target_modify to change
-	char		*value; // value for target_modify to change to
-	int			armor; // armor for the target_playerstats entity
-	char		*music; //path to music file(s) for target_music
-	vec4_t		rgba1; //start color for target_effect fade
-	vec4_t		rgba2; //end color for target_effect fade
-	int			mtype;
-	int			mtimeout;
-	int			mhoming;
-	int			mspeed;
-	int			mbounce;
-	int			mdamage;
-	int			msdamage;
-	int			msradius;
-	int			mgravity;
-	int			mnoclip;
-	int			allowuse;
+	char		*clientname;	// name of the bot to spawn for target_botspawn
+	char		*key;			// key for target_modify to change
+	char		*value; 		// value for target_modify to change to
+	int			weapon;
 	
 	int			swep_list[WEAPONS_NUM];
 	int			swep_ammo[WEAPONS_NUM];
@@ -968,14 +945,11 @@ void Undo_RemoveElement(gentity_t *ent);
 // g_mapfiles.c
 //
 
-qboolean G_ClassnameAllowed( char *input, qboolean danger );
 void G_WriteMapfile_f( void );
 void G_DeleteMapfile_f( void );
 void G_ClearMap_f( void );
 void G_ClearSandboxMap_f( void );
-void G_LoadMapfile( char *filename );
 void G_LoadMapfile_f( void );
-qboolean SkippedChar ( char in );
 
 // ai_main.c
 #define MAX_FILEPATH			144

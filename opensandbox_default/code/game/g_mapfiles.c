@@ -25,11 +25,9 @@
 
 #include "g_local.h"
 
-#define MAX_MAPFILE_LENGTH 2500000*6
-
-#define MAX_TOKENNUM 524288*6
-
-static char 		mapbuffer[ 2500000*6 ];
+#define 		MAX_MAPFILE_LENGTH		2500000*6
+#define 		MAX_TOKENNUM 			524288*6
+static char 	mapbuffer[2500000*6];
 
 typedef enum {
 	TOT_LPAREN,
@@ -49,7 +47,7 @@ typedef struct {
 
 token_t tokens2[MAX_TOKENNUM];
 
-void G_RelinkEntities( void ) {
+static void G_RelinkEntities(void) {
 	int i, j;
 	int entNum, newEntNum;
 
@@ -67,18 +65,11 @@ void G_RelinkEntities( void ) {
 	}
 }
 
-/*
-=================
-SkippedChar
-returns qtrue if the argument
-is a char we should skip
-=================
-*/
-qboolean SkippedChar ( char in ) {
+static qboolean SkippedChar (char in) {
 	return ( in == '\n' || in == '\r' || in == ';' || in == '\t' || in == ' ' );
 }
 
-qboolean G_ClassnameAllowed( char *input, qboolean danger ){
+static qboolean G_ClassnameAllowed(char *input){
 	int i;
 	char* 			classes_allowed[] = {
 		"sandbox_prop",
@@ -86,8 +77,8 @@ qboolean G_ClassnameAllowed( char *input, qboolean danger ){
 		0
 	};
 
-	for ( i = 0; classes_allowed[i] != 0; i++ ) {		//Allowed classlist
-		if ( !strcmp(input, classes_allowed[i]) ) {
+	for (i = 0; classes_allowed[i] != 0; i++) {			//Allowed classlist
+		if (!strcmp(input, classes_allowed[i])) {
 			return qtrue;
 		}
 	}
@@ -95,15 +86,15 @@ qboolean G_ClassnameAllowed( char *input, qboolean danger ){
 	return BG_CheckClassname(input);					//Items
 }
 
-void G_ClearEntities( void ){
+static void G_ClearEntities(void){
 	int i;
-	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
+	for(i = 0; i < MAX_CLIENTS; i++){					//NPCs
 		if ( g_entities[i].npcType >= 1 ) {
 			DropClientSilently( g_entities[i].client->ps.clientNum );
 		}
 	}
-	for( i = 0; i < MAX_GENTITIES; i++ ) {				//Items and Other
-		if( !G_ClassnameAllowed(g_entities[i].classname, qtrue) )
+	for(i = 0; i < MAX_GENTITIES; i++){					//Items and Other
+		if(!G_ClassnameAllowed(g_entities[i].classname))
 			continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);
@@ -111,10 +102,10 @@ void G_ClearEntities( void ){
 	}
 }
 
-static int G_setTokens2( char* in, char* out, int start ){
+static int G_setTokens2(char* in, char* out, int start){
 	int i = 0;
-	while ( in[ start + i ] != ' ' ){
-		if( in[ start + i ] == '\0' ){
+	while (in[start + i] != ' '){
+		if( in[start + i] == '\0' ){
 			out[i] = in[start+1];
 			return MAX_MAPFILE_LENGTH;
 		}
@@ -190,8 +181,7 @@ typedef enum {
 	F_IGNORE
 } fieldtypeCopy_t;
 
-typedef struct
-{
+typedef struct {
 	char	*name;
 	int		ofs;
 	fieldtypeCopy_t	type;
@@ -210,38 +200,15 @@ fieldCopy_t fieldsCopy[] = {
 	{"target", FOFS(target), F_STRING},
 	{"targetname", FOFS(targetname), F_STRING},
 	{"message", FOFS(message), F_STRING},
-	//{"team", FOFS(team), F_STRING}, //it's crashing idk why
+//	{"team", FOFS(team), F_STRING},
 	{"wait", FOFS(wait), F_FLOAT},
 	{"random", FOFS(random), F_FLOAT},
 	{"count", FOFS(count), F_INT},
 	{"health", FOFS(health), F_INT},
 	{"light", 0, F_IGNORE},
 	{"dmg", FOFS(damage), F_INT},
-	{"mtype", FOFS(mtype), F_INT},
-	{"mtimeout", FOFS(mtimeout), F_INT},
-	{"mhoming", FOFS(mhoming), F_INT},
-	{"mspeed", FOFS(mspeed), F_INT},
-	{"mbounce", FOFS(mbounce), F_INT},
-	{"mdamage", FOFS(mdamage), F_INT},
-	{"msdamage", FOFS(msdamage), F_INT},
-	{"msradius", FOFS(msradius), F_INT},
-	{"mgravity", FOFS(mgravity), F_INT},
-	{"mnoclip", FOFS(mnoclip), F_INT},
-	{"allowuse", FOFS(allowuse), F_INT},
-	{"mapname", FOFS(mapname), F_STRING},
+//	{"angle", FOFS(s.angles), F_ANGLEHACK},		//deleted in mapfiles
 	{"clientname", FOFS(clientname), F_STRING},
-	{"teleporterTarget", FOFS(teleporterTarget), F_STRING},
-	{"deathTarget", FOFS(deathTarget), F_STRING},
-	{"lootTarget", FOFS(lootTarget), F_STRING},
-	{"skill", FOFS(skill), F_FLOAT},
-	{"overlay", FOFS(overlay), F_STRING},
-	{"target2", FOFS(target2), F_STRING},
-	{"damagetarget", FOFS(damagetarget), F_STRING},
-	{"targetname2", FOFS(targetname2), F_STRING},
-	{"key", FOFS(key), F_STRING},
-	{"value", FOFS(value), F_STRING},
-	{"armor", FOFS(armor), F_INT},
-	{"music", FOFS(music), F_STRING},
 	{"sb_class", FOFS(sb_class), F_STRING},
 	{"sb_sound", FOFS(sb_sound), F_STRING},
 	{"sb_coltype", FOFS(sb_coltype), F_INT},
@@ -265,14 +232,14 @@ fieldCopy_t fieldsCopy[] = {
 
 	{"sb_phys_welded", FOFS(sb_phys_welded), F_INT},
 	{"sb_phys_parent", FOFS(sb_phys_parent), F_INT},
-
+	
 	{"distance", FOFS(distance), F_FLOAT},
 	{"type", FOFS(type), F_INT},
 	
 	{NULL}
 };
 
-char *G_ClearString( char *input ){
+static char *G_ClearString( char *input ){
 	if( input[0] == '"' ){
 		input[0] = '\0';
 		input++;
@@ -299,30 +266,32 @@ static void G_LoadMapfileEntity( token_t *in, int min, int max ){
 	for( i = min; i <= max ; i++ ) {
 		for( field = fieldsCopy; field->name; field++ ){
 			if( !strcmp(va("\"%s\"",field->name), in[i].value ) ) {
+				if (!strcmp(field->name, "team") || !strcmp(field->name, "angle"))
+            		break;
 				switch( field->type ) {
-				  case F_STRING:
-					*(char **)(b+field->ofs) = G_NewString(G_ClearString(in[i+1].value));
-					break;
-				  case F_VECTOR:
-					buf = in[i+1].value;
-					strcat(buf, " ");
-					strcat(buf, in[i+2].value);
-					strcat(buf, " ");
-					strcat(buf, in[i+3].value);
-					sscanf (G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
-					((float *)(b+field->ofs))[0] = vec[0];
-					((float *)(b+field->ofs))[1] = vec[1];
-					((float *)(b+field->ofs))[2] = vec[2];
-					break;
-				  case F_INT:
-					*(int *)(b+field->ofs) = atoi(G_ClearString(in[i+1].value));
-					break;
-				  case F_FLOAT:
-					*(float *)(b+field->ofs) = atof(G_ClearString(in[i+1].value));
-					break;
-				  default:
-				  case F_IGNORE:
-					break;
+					case F_STRING:
+						*(char **)(b+field->ofs) = G_NewString(G_ClearString(in[i+1].value));
+						break;
+					case F_VECTOR:
+						buf = in[i+1].value;
+						strcat(buf, " ");
+						strcat(buf, in[i+2].value);
+						strcat(buf, " ");
+						strcat(buf, in[i+3].value);
+						sscanf (G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
+						((float *)(b+field->ofs))[0] = vec[0];
+						((float *)(b+field->ofs))[1] = vec[1];
+						((float *)(b+field->ofs))[2] = vec[2];
+						break;
+					case F_INT:
+						*(int *)(b+field->ofs) = atoi(G_ClearString(in[i+1].value));
+						break;
+					case F_FLOAT:
+						*(float *)(b+field->ofs) = atof(G_ClearString(in[i+1].value));
+						break;
+					default:
+					case F_IGNORE:
+						break;
 				}
 				break;
 			}
@@ -334,7 +303,7 @@ static void G_LoadMapfileEntity( token_t *in, int min, int max ){
 	}
 }
 
-void G_LoadMapfile( char *filename ){
+static void G_LoadMapfile( char *filename ){
 	qboolean lastSpace = qtrue;
 	qboolean pgbreak = qfalse;
 	int i = 0;
@@ -381,7 +350,6 @@ void G_LoadMapfile( char *filename ){
 			}
 			pgbreak = qfalse;
 			lastSpace = qtrue;
-			//continue;
 		}
 		
 		if( SkippedChar( mapbuffer[i] ) ){
@@ -410,18 +378,14 @@ void G_LoadMapfile( char *filename ){
 	
 	for( tokenNum = 0; tokenNum < maxTokennum; tokenNum++ ){
 			if( strcmp( tokens2[tokenNum].value, "{" ) == 0 ){
-				//CG_Printf("lpar found\n");
 				lpar = tokenNum;
 				if( G_AbeforeB2((char*)"{",(char*)"}", tokens2, tokenNum+2)){
 					G_Printf("error: \"}\" expected at %s\n", tokens2[tokenNum].value);
 					break;
 				}
-				//CG_Printf("debug abeforeb\n");
 				rpar = G_FindNextToken2((char*)"}", tokens2, tokenNum+2 );
-				//CG_Printf("debug findnexttoken\n");
 				if( rpar != -1 ){
-					G_LoadMapfileEntity(tokens2, lpar+1, rpar-1);
-					//G_setHudElement(i, tokens, lpar+1, rpar-1);
+					G_LoadMapfileEntity(tokens2, lpar+1, rpar-1)
 					tokenNum = rpar;
 				}	
 			}	
@@ -475,7 +439,7 @@ void G_WriteMapfile_f( void ) {
 		if( !g_entities[i].inuse )
 			continue;
 		
-		if( !G_ClassnameAllowed(g_entities[i].classname, qtrue) )
+		if(!G_ClassnameAllowed(g_entities[i].classname))
 			continue;
 
 		if(g_gametype.integer == GT_MAPEDITOR){
@@ -558,7 +522,7 @@ void G_ClearMap_f( void ){
 		}
 	}
 	for( i = 0; i < MAX_GENTITIES; i++ ) {				//Items and Other
-		if( !G_ClassnameAllowed(g_entities[i].classname, qfalse) )
+		if(!G_ClassnameAllowed(g_entities[i].classname))
 			continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);

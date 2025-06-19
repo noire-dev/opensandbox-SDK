@@ -22,13 +22,11 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
-
 #define MAX_TEAMNAME 32
 
 #ifndef __attribute__
@@ -36,7 +34,6 @@
 #endif
 
 #define Q_EXPORT
-
 
 /**********************************************************************
   VM Considerations
@@ -51,7 +48,6 @@
 
   Remember, if you use a C library function that is not defined in bg_lib.c,
   you will have to add your own version for support in the VM.
-
  **********************************************************************/
 
 #include "../game/bg_lib.h"

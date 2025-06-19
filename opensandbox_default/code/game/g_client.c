@@ -297,68 +297,13 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 
 /*
 ===========
-FindTeleporterTarget
-
-Finds target location for holdable_teleporter if forced
-============
-*/
-gentity_t *FindTeleporterTarget ( gentity_t *ent, vec3_t origin, vec3_t angles ) {
-	gentity_t *target;
-	
-	target = G_PickTarget( ent->teleporterTarget );
-	
-	//target does not exist, so find a random spawnpoint
-	if ( !target ) {
-		return SelectSpawnPoint( ent->client->ps.origin, origin, angles);
-	}
-
-	VectorCopy (target->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (target->s.angles, angles);
-
-	return target;
-}
-
-/*
-===========
 SelectSpawnPoint
 
 Chooses a player start, deathmatch start, etc
 ============
 */
 gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
-	//return SelectRandomFurthestSpawnPoint( avoidPoint, origin, angles );
-
-
-	gentity_t	*spot;
-	gentity_t	*nearestSpot;
-
-	nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
-
-	spot = SelectRandomDeathmatchSpawnPoint ( );
-	if ( spot == nearestSpot ) {
-		// roll again if it would be real close to point of death
-		spot = SelectRandomDeathmatchSpawnPoint ( );
-		if ( spot == nearestSpot ) {
-			// last try
-			spot = SelectRandomDeathmatchSpawnPoint ( );
-		}
-	}
-
-	// find a single player start spot
-	if (!spot) {
-		if(g_gametype.integer != GT_MAPEDITOR){
-			G_Error( "Couldn't find a spawn point" );
-		} else {
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-		}
-	}
-
-	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (spot->s.angles, angles);
-
-	return spot;
+	return SelectRandomFurthestSpawnPoint( avoidPoint, origin, angles );
 }
 
 /*
@@ -1250,12 +1195,12 @@ void SetupCustomBot( gentity_t *bot ) {
 		return;
 
 	//give bot weapons
-	if (bot->botspawn->mtype <= 1) {
+	if (bot->botspawn->weapon <= 1) {
 	    Set_Weapon(bot, WP_GAUNTLET, 1);
 	}
-    Set_Weapon(bot, bot->botspawn->mtype, 1);
-	if (bot->swep_ammo[bot->botspawn->mtype] != -1){
-	Set_Ammo(bot, bot->botspawn->mtype, 9999);
+    Set_Weapon(bot, bot->botspawn->weapon, 1);
+	if (bot->swep_ammo[bot->botspawn->weapon] != -1){
+	Set_Ammo(bot, bot->botspawn->weapon, 9999);
 	}
 
 	bot->health = bot->client->ps.stats[STAT_HEALTH] = bot->client->ps.stats[STAT_MAX_HEALTH] = bot->botspawn->health;

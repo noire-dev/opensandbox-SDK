@@ -1223,9 +1223,7 @@ int BotAIStartFrame(int time) {
 	trap_Cvar_Update(&bot_pause);
 	trap_Cvar_Update(&bot_report);
 
-	if (bot_report.integer) {
-//		BotTeamplayReport();
-//		trap_Cvar_Set("bot_report", "0");
+	if(bot_report.integer) {
 		BotUpdateInfoConfigStrings();
 	}
 
