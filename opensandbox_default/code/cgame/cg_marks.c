@@ -22,7 +22,6 @@
 // 
 // Contact: opensandboxteam@gmail.com
 // 
-//
 // cg_marks.c -- wall marks
 
 #include "cg_local.h"
