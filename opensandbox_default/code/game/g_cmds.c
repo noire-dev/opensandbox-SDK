@@ -775,7 +775,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 		tent->s.eventParm = 24; //eventParm is used to determine the number of particles
 		tent->s.generic1 = 500; //generic1 is used to determine the speed of the particles
 		tent->s.generic2 = 16; //generic2 is used to determine the size of the particles
-		G_BuildPropSL( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
+		G_BuildProp( arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 		return;
 	}
 	if(!Q_stricmp (arg01, "npc")){

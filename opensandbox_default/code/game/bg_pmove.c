@@ -1415,7 +1415,7 @@ static void PM_BeginWeaponChange( int weapon ) {
 		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
-		item = BG_FindSwep(weapon);
+		item = BG_FindWeapon(weapon);
 		if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
 			return;
 		}
@@ -1442,9 +1442,9 @@ static void PM_FinishWeaponChange( void ) {
 		return;	
 	}
 	if ( weapon > WP_NONE || weapon < WEAPONS_NUM ) {
-		item = BG_FindSwep(weapon);
+		item = BG_FindWeapon(weapon);
 #ifdef GAME
-		if(G_CheckSwep(pm->ps->clientNum, weapon, 1)){
+		if(G_CheckWeapon(pm->ps->clientNum, weapon, 1)){
 			pm->ps->weapon = item->giTag;
 			pm->ps->weaponstate = WEAPON_RAISING;
 		}
@@ -1578,13 +1578,13 @@ static void PM_Weapon( void ) {
 	pm->ps->weaponstate = WEAPON_FIRING;
 
 #ifdef GAME
-	if(!G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->weapon)){
+	if(!G_CheckWeaponAmmo(pm->ps->clientNum, pm->ps->weapon)){
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 500;
 		return;
 	}
 #else
-	if(!pm->ps->stats[STAT_SWEPAMMO]){
+	if(!pm->ps->stats[STAT_AMMO]){
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 500;
 		return;
@@ -1592,95 +1592,15 @@ static void PM_Weapon( void ) {
 #endif
 
 #ifdef GAME
-	if( !(pm->ps->stats[STAT_SWEPAMMO] == -1 || pm->ps->stats[STAT_SWEPAMMO] >= 9999) ){
-		if(G_CheckSwepAmmo(pm->ps->clientNum, pm->ps->weapon) > 0 ){ 
+	if( !(pm->ps->stats[STAT_AMMO] == -1 || pm->ps->stats[STAT_AMMO] >= 9999) ){
+		if(G_CheckWeaponAmmo(pm->ps->clientNum, pm->ps->weapon) > 0 ){ 
 			PM_Add_SwepAmmo(pm->ps->clientNum, pm->ps->weapon, -1); 
 		}
 	}
 #endif
 	// fire weapon
 	PM_AddEvent( EV_FIRE_WEAPON );
-	switch( pm->ps->weapon ) {
-	default:
-	case WP_GAUNTLET:
-		addTime = 400;
-		break;
-	case WP_LIGHTNING:
-		addTime = 50;
-		break;
-	case WP_SHOTGUN:
-		addTime = 1000;
-		break;
-	case WP_MACHINEGUN:
-		addTime = 100;
-		break;
-	case WP_GRENADE_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_ROCKET_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_PLASMAGUN:
-		addTime = 100;
-		break;
-	case WP_RAILGUN:
-		addTime = 1500;
-		break;
-	case WP_BFG:
-		addTime = 200;
-		break;
-	case WP_GRAPPLING_HOOK:
-		addTime = 400;
-		break;
-	case WP_NAILGUN:
-		addTime = 1000;
-		break;
-	case WP_PROX_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_CHAINGUN:
-		addTime = 30;
-		break;
-	case WP_FLAMETHROWER:
-		addTime = 40;
-		break;
-	case WP_ANTIMATTER:
-		addTime = 40;
-		break;
-	case WP_TOOLGUN:
-		addTime = 200;
-		break;
-	case WP_PHYSGUN:
-		addTime = 100;
-		break;
-	case WP_GRAVITYGUN:
-		addTime = 100;
-		break;
-	case WP_THROWER:
-		addTime = 150;
-		break;
-	case WP_BOUNCER:
-		addTime = 1000;
-		break;
-	case WP_THUNDER:
-		addTime = 1000;
-		break;
-	case WP_EXPLODER:
-		addTime = 1600;
-		break;
-	case WP_KNOCKER:
-		addTime = 500;
-		break;
-	case WP_PROPGUN:
-		addTime = 1000;
-		break;
-	case WP_REGENERATOR:
-		addTime = 1000;
-		break;
-	case WP_NUKE:
-		addTime = 3000;
-		break;
-	}
+	addTime = gameInfoWeapons[pm->ps->weapon].delay;
 
 	if( gameInfoItems[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
 		addTime *= 0.65;
@@ -1699,10 +1619,8 @@ PM_Animate
 */
 
 static void PM_Animate( void ) {
-	if( BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR ) {
-		pm->ps->eFlags |= EF_HEARED;
+	if( BG_VehicleCheckClass(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR )
 		pm->ps->pm_time = 5;
-	}
 
 	if ( pm->cmd.buttons & BUTTON_GESTURE && pm->cmd.weapon != WP_PHYSGUN ) {
 		if(!pm->ps->stats[STAT_VEHICLE]){ //VEHICLE-SYSTEM: disable gesture for all
@@ -1761,7 +1679,6 @@ static void PM_DropTimers( void ) {
 	// drop misc timing counter
 	if ( pm->ps->pm_time ) {
 		if ( pml.msec >= pm->ps->pm_time ) {
-			pm->ps->eFlags &= ~EF_HEARED;		//hear update
 			pm->ps->pm_flags &= ~PMF_ALL_TIMES;
 			pm->ps->pm_time = 0;
 		} else {
@@ -1947,7 +1864,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// set the firing flag for continuous beam weapons
-	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->stats[STAT_SWEPAMMO] ) {
+	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->stats[STAT_AMMO] ) {
 		pm->ps->eFlags |= EF_FIRING;
 	} else {
 		pm->ps->eFlags &= ~EF_FIRING;

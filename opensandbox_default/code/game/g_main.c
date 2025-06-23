@@ -727,7 +727,6 @@ void CheckIntermissionExit( void ) {
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		cl->ps.stats[STAT_CLIENTS_READY] = readyMask;
 	}
 
 	// never exit in less than five seconds
@@ -807,11 +806,10 @@ void CheckExitRules( void ) {
 	} else {
             //sago: Find the reason for this to be neccesary.
             for (i=0 ; i< MAX_CLIENTS; i++) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-                }
-                cl->ps.stats[STAT_CLIENTS_READY] = 0;
+				cl = level.clients + i;
+				if ( cl->pers.connected != CON_CONNECTED ) {
+					continue;
+           		}
             }
         }
 

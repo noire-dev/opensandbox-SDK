@@ -627,7 +627,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	weaponInfo->loopFireSound = qfalse;
 
-	switch ( weaponNum ) {					//look for this to add new ones - WEAPONS_HYPER
+	switch ( weaponNum ) {
 	case WP_GAUNTLET:
 		//MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
 		//weaponInfo->readySound = trap_S_RegisterSound( "sound/weapons/bfg/bfg_humd.wav", qfalse );
@@ -1049,15 +1049,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
 
 	// project forward by the lightning range
-	if (cent->currentState.weapon == WP_LIGHTNING){
-	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
-	} else if (cent->currentState.weapon == WP_TOOLGUN){
-	VectorMA( muzzlePoint, TOOLGUN_RANGE, forward, endPoint );	
-	} else if (cent->currentState.weapon == WP_PHYSGUN){
-	VectorMA( muzzlePoint, PHYSGUN_RANGE, forward, endPoint );	
-	} else if (cent->currentState.weapon == WP_GRAVITYGUN){
-	VectorMA( muzzlePoint, GRAVITYGUN_RANGE, forward, endPoint );	
-	}
+	VectorMA( muzzlePoint, gameInfoWeapons[cent->currentState.weapon].range, forward, endPoint );
 
 	// see if it hit a wall
 	CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, 

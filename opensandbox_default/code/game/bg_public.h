@@ -41,7 +41,6 @@
 
 #define	ITEM_RADIUS			15		// item sizes are needed for client side pickup detection
 
-#define	LIGHTNING_RANGE		768
 #define	TOOLGUN_RANGE		4096
 #define	PHYSGUN_RANGE		8192
 #define	GRAVITYGUN_RANGE	1024
@@ -91,12 +90,15 @@
 #define NP_PICKUP					8
 #define NP_HARM						9
 
-//object type
-#define OT_VANILLAQ3				0
-#define OT_BASIC					1
-#define OT_VEHICLE					2
-#define OT_TNT						3
-#define OT_NUKE						4
+typedef enum {
+	OT_VANILLAQ3,
+	OT_BASIC,
+	OT_VEHICLE,
+	OT_TNT,
+	OT_NUKE,
+	
+	OBJECTTYPES_NUM
+} objectType_t;
 
 //phys type
 #define PHYS_STATIC					1
@@ -189,7 +191,7 @@ typedef enum {
 	IT_TEAM
 } itemType_t;
 
-typedef struct gitem_s {
+typedef struct item_s {
 	char			*classname;
 	char			*world_model;
 	char			*icon;
@@ -287,18 +289,14 @@ void Pmove (pmove_t *pmove);
 // NOTE: may not have more than 16
 typedef enum {
 	STAT_HEALTH,
+	STAT_ARMOR,
+	STAT_AMMO,
+	STAT_MAX_HEALTH,
 	STAT_HOLDABLE_ITEM,
 	STAT_PERSISTANT_POWERUP,
-	STAT_ARMOR,				
-	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH,				// health / armor limit
-	STAT_NO_PICKUP,					// for dropped ammo
-	STAT_MONEY,						// for buy activator funcs
-	STAT_SWEPAMMO,					// for SWEP WEAPONS ammo
-	STAT_VEHICLE,					// for vehicle system
-	STAT_VEHICLEHP					// for vehicle system
+	STAT_VEHICLE,	// for vehicle system
+	STAT_VEHICLEHP	// for vehicle system
 } statIndex_t;
-
 
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
@@ -311,9 +309,7 @@ typedef enum {
 	PERS_TEAM,						// player team
 	PERS_SPAWN_COUNT,				// incremented every respawn
 	PERS_ATTACKEE_ARMOR,			// health/armor of last person we attacked
-	PERS_KILLED,					// count of the number of times you died
 } persEnum_t;
-
 
 // entityState_t->eFlags
 #define	EF_DEAD				1			// don't draw a foe marker over players with EF_DEAD
@@ -321,12 +317,10 @@ typedef enum {
 #define	EF_TELEPORT_BIT		4			// toggled every time the origin abruptly changes
 #define EF_PLAYER_EVENT		8
 #define	EF_BOUNCE			16			// for missiles
-#define	EF_BOUNCE_HALF		32			// for missiles
-#define	EF_NODRAW			64			// may have an event, but no model (unspawned items)
-#define	EF_FIRING			128			// for lightning gun
-#define	EF_KAMIKAZE			256
-#define	EF_TALK				512			// draw a talk balloon
-#define EF_HEARED           1024      	// heard gunfire or sounds
+#define	EF_NODRAW			32			// may have an event, but no model (unspawned items)
+#define	EF_FIRING			64			// for lightning gun
+#define	EF_KAMIKAZE			128
+#define	EF_TALK				256			// draw a talk balloon
 
 // NOTE: may not have more than 16
 typedef enum {
@@ -381,6 +375,7 @@ typedef enum {
 typedef enum {
 	WP_NONE,
 
+	// Quake weapons here!
 	WP_GAUNTLET,
 	WP_MACHINEGUN,
 	WP_SHOTGUN,
@@ -394,10 +389,10 @@ typedef enum {
 	WP_NAILGUN,
 	WP_PROX_LAUNCHER,
 	WP_CHAINGUN,
-	WP_FLAMETHROWER,
-	WP_ANTIMATTER, //Vanilla q3 set
 
 	// New weapons here!
+	WP_FLAMETHROWER,
+	WP_ANTIMATTER,
 	WP_THROWER,
 	WP_BOUNCER,
 	WP_THUNDER,
@@ -407,12 +402,83 @@ typedef enum {
 	WP_REGENERATOR,
 	WP_NUKE,
 
+	// Sandbox weapons here!
 	WP_PHYSGUN,
 	WP_GRAVITYGUN,
-	WP_TOOLGUN, //Sandbox set
+	WP_TOOLGUN,
 	
-	WEAPONS_NUM		//look for this to add new ones - WEAPONS_HYPER
-} weapon_t;	
+	WEAPONS_NUM
+} weapon_t;
+
+typedef enum {
+	WT_NONE,
+
+	WT_MELEE,
+	WT_BULLET,
+	WT_SHOTGUN,
+	WT_LIGHTNING,
+	WT_RAILGUN,
+	WT_EMPTY,
+	WT_TOOLGUN,
+	WT_MISSILE,
+	
+	WEAPONTYPES_NUM
+} weaponType_t;
+
+typedef enum {
+	MT_NONE,
+
+	MT_GENERAL,
+	MT_HOOK,
+	MT_MINE,
+
+	MT_PROPS,
+
+	MT_PROPGUN,
+	MT_NUKE,
+	
+	MISSILETYPES_NUM
+} missileType_t;
+
+typedef struct weaponPropeties_s {
+	weaponType_t	wType;
+	missileType_t	mType;
+	weapon_t		mEffect;
+	char			*classname;
+	int				delay;
+	int				count;
+	int				damage;
+	int				splashDamage;
+	int				splashRadius;
+	int				range;
+	int				mod;
+	int				speed;
+	int				speedRandom;
+	int				spread;
+	int				timeout;
+	qboolean		guided;
+	qboolean		gravity;
+	qboolean		bounce;
+	float			bounceModifier;
+} weaponProperties_t;
+
+extern	weaponProperties_t	gameInfoWeapons[];
+extern	int					gameInfoWeaponsNum;
+
+typedef struct wPropPropeties_s {
+	objectType_t	oType;
+	char			*modelname;
+	int				mtMin;
+	int				mtMax;
+	int				health;
+	float			gravity;
+	float			scale;
+	float			colSize;
+	qboolean		solid;
+} wPropProperties_t;
+
+extern	wPropProperties_t	gameInfoWProps[];
+extern	int					gameInfoWPropsNum;
 
 // entityState_t->event values
 // entity events are for effects that take place reletive
@@ -680,24 +746,10 @@ typedef enum {
 // means of death
 typedef enum {
 	MOD_UNKNOWN,
-	MOD_SHOTGUN,
-	MOD_GAUNTLET,
-	MOD_MACHINEGUN,
-	MOD_GRENADE,
-	MOD_GRENADE_SPLASH,
-	MOD_ROCKET,
-	MOD_ROCKET_SPLASH,
-	MOD_PLASMA,
-	MOD_PLASMA_SPLASH,
-	MOD_RAILGUN,
-	MOD_LIGHTNING,
-	MOD_BFG,
-	MOD_BFG_SPLASH,
-	MOD_FLAME,
-	MOD_FLAME_SPLASH,
-	MOD_ANTIMATTER,
-	MOD_ANTIMATTER_SPLASH,
-	MOD_TOOLGUN,
+	//Weapons (check weapon_t)
+	MOD_WEAPONS = WEAPONS_NUM,
+
+	// Other
 	MOD_WATER,
 	MOD_SLIME,
 	MOD_LAVA,
@@ -705,27 +757,17 @@ typedef enum {
 	MOD_TELEFRAG,
 	MOD_FALLING,
 	MOD_SUICIDE,
-	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
-	MOD_NAIL,
-	MOD_CHAINGUN,
-	MOD_PROXIMITY_MINE,
 	MOD_KAMIKAZE,
 	MOD_JUICED,
-	MOD_GRAPPLE,
 	MOD_CAR,
 	MOD_CAREXPLODE,
-	MOD_PROP,
-	MOD_SWEP,
-	MOD_KNOCKER,
-	MOD_REGENERATOR,
-	MOD_NUKE
+	MOD_PROP
 } meansOfDeath_t;
 
-
 item_t	*BG_FindItem( const char *pickupName );
-item_t	*BG_FindSwep( int id );
-item_t	*BG_FindSwepAmmo( int id );
+item_t	*BG_FindWeapon( int id );
+item_t	*BG_FindAmmo( int id );
 item_t	*BG_FindItemForWeapon( weapon_t weapon );
 item_t	*BG_FindItemForPowerup( powerup_t pw );
 item_t	*BG_FindItemForHoldable( holdable_t pw );

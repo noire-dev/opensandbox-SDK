@@ -152,8 +152,6 @@ void CG_Respawn( void ) {
 	}
 }
 
-extern char *eventnames[];
-
 /*
 ==============
 CG_CheckPlayerstateEvents

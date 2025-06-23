@@ -24,8 +24,6 @@ g_combat
 g_items
 bg_alloc
 g_misc
-g_mapfiles
-g_missile
 g_mover
 g_physics
 g_playerstore

@@ -415,7 +415,7 @@ static void CG_DrawStatusBar( void ) {
 	//
 	if(!ps->stats[STAT_VEHICLE]){
 	if ( cent->currentState.weapon ) { //VEHICLE-SYSTEM: vehicle's speedmeter for all
-		value = ps->stats[STAT_SWEPAMMO];
+		value = ps->stats[STAT_AMMO];
 		if(value <= 0 && value != -1){	// OpenSandbox weapon predict
 			cg.swep_listcl[ps->weapon] = 2;
 		} else {

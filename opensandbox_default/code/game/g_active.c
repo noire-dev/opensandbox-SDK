@@ -375,8 +375,6 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
 
-		ent->s.eFlags &= ~EF_HEARED;		//hear update
-
 		if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN)
 			G_MakeUnlimitedAmmo(ent);
 
@@ -844,7 +842,7 @@ void ClientThink_real( gentity_t *ent ) {
 	ent->waterlevel = pm.waterlevel;
 	ent->watertype = pm.watertype;
 	ent->client->ps.weapon = ent->swep_id;
-	ent->client->ps.stats[STAT_SWEPAMMO] = ent->swep_ammo[ent->swep_id];
+	ent->client->ps.stats[STAT_AMMO] = ent->swep_ammo[ent->swep_id];
 	ent->s.weapon = ent->swep_ammo[ent->swep_id];
 
 	// execute client events
@@ -920,7 +918,7 @@ void G_RunClient( gentity_t *ent ) {
 	ClientThink_real( ent );
 }
 
-qboolean G_CheckSwep( int clientNum, int wp, int finish ) {
+qboolean G_CheckWeapon( int clientNum, int wp, int finish ) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
@@ -934,7 +932,7 @@ qboolean G_CheckSwep( int clientNum, int wp, int finish ) {
 	}
 }
 
-int G_CheckSwepAmmo( int clientNum, int wp ) {
+int G_CheckWeaponAmmo( int clientNum, int wp ) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;

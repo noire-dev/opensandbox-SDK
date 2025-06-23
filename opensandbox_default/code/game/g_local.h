@@ -162,7 +162,6 @@ struct gentity_s {
 	int			splashDamage;	// quad will increase this without increasing radius
 	int			splashRadius;
 	int			methodOfDeath;
-	int			splashMethodOfDeath;
 
 	int			count;
 
@@ -195,7 +194,7 @@ struct gentity_s {
 	// sandbox
 	int			sandboxObject;
 	
-	int			sb_coltype;
+	float		sb_coltype;
 	float		sb_gravity;
 	char		*sb_class;
 	char		*sb_sound;
@@ -594,7 +593,7 @@ void SP_script_cmd (gentity_t *ent);
 void SP_sandbox_prop (gentity_t *ent);
 void SP_sandbox_npc (gentity_t *ent);
 
-extern spawn_t spawns_table[];
+extern spawn_t gameInfoEntities[];
 
 //
 // g_cmds.c
@@ -699,29 +698,6 @@ void TossClientCubes( gentity_t *self );
 #define DAMAGE_NO_TEAM_PROTECTION	0x00000010  // armor, shields, invulnerability, and godmode have no effect
 
 //
-// g_missile.c
-//
-
-void G_RunMissile( gentity_t *ent );
-
-gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t aimdir );
-gentity_t *fire_flame (gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t *fire_antimatter (gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t *fire_thrower( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-gentity_t *fire_bouncer( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-gentity_t *fire_exploder (gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t *fire_knocker( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-gentity_t *fire_regenerator (gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t *fire_propgun( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-gentity_t *fire_nuke( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
-
-//
 // g_mover.c
 //
 
@@ -747,17 +723,13 @@ void DropPortalDestination( gentity_t *ent );
 // g_weapon.c
 //
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
-//unlagged - attack prediction #3
-// we're making this available to both games
 void SnapVectorTowards( vec3_t v, vec3_t to );
-//unlagged - attack prediction #3
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
-void Laser_Gen (gentity_t *ent);
-void Laser_Think( gentity_t *self );
-
+void G_RunMissile( gentity_t *ent );
 void Weapon_Toolgun_Info( gentity_t *ent );
+gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up, int weapon);
 
 //unlagged - g_unlagged.c
 void G_ResetHistory( gentity_t *ent );
@@ -868,8 +840,8 @@ void SetCustomWeapons( gentity_t *ent );
 void ClientThink( int clientNum );
 void ClientEndFrame( gentity_t *ent );
 void G_RunClient( gentity_t *ent );
-qboolean G_CheckSwep( int clientNum, int wp, int finish );
-int G_CheckSwepAmmo( int clientNum, int wp );
+qboolean G_CheckWeapon( int clientNum, int wp, int finish );
+int G_CheckWeaponAmmo( int clientNum, int wp );
 
 //
 // g_team.c
@@ -932,7 +904,7 @@ void PlayerStore_restore(char* guid, playerState_t *ps);
 // g_sandbox.c
 //
 
-void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
+void G_BuildProp( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
 void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 );
 void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 

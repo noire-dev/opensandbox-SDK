@@ -29,11 +29,6 @@
 void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum );
 void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
 
-// and this as well
-//Must be in sync with g_weapon.c
-#define MACHINEGUN_SPREAD	200
-#define CHAINGUN_SPREAD		600
-
 /*
 =======================
 CG_PredictWeaponEffects
@@ -118,7 +113,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum );
 	}
 	// was it a machinegun attack?
-	else if ( ent->weapon == WP_MACHINEGUN ) {
+	else if ( ent->weapon == WP_MACHINEGUN || ent->weapon == WP_CHAINGUN ) {
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;
@@ -128,56 +123,17 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 
 		// do everything exactly like the server does
 		r = Q_random(&seed) * M_PI * 2.0f;
-		u = sin(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
-		r = cos(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
+		u = sin(r) * Q_crandom(&seed) * gameInfoWeapons[ent->weapon].spread * 16;
+		r = cos(r) * Q_crandom(&seed) * gameInfoWeapons[ent->weapon].spread * 16;
 
-		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
+		VectorMA( muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint );
 		VectorMA( endPoint, r, right, endPoint );
 		VectorMA( endPoint, u, up, endPoint );
 
 		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
 
-		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+		if (tr.surfaceFlags & SURF_NOIMPACT)
 			return;
-		}
-
-		// snap the endpos to integers, but nudged towards the line
-		SnapVectorTowards( tr.endpos, muzzlePoint );
-
-		// do bullet impact
-		if ( tr.entityNum < MAX_CLIENTS ) {
-			flesh = qtrue;
-			fleshEntityNum = tr.entityNum;
-		} else {
-			flesh = qfalse;
-		}
-
-		// do the bullet impact
-		CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
-	}
-        // was it a chaingun attack?
-	else if ( ent->weapon == WP_CHAINGUN ) {
-		int seed = cg.oldTime % 256;
-		float r, u;
-		trace_t tr;
-		qboolean flesh;
-		int fleshEntityNum = 0;
-		vec3_t endPoint;
-
-		// do everything exactly like the server does
-		r = Q_random(&seed) * M_PI * 2.0f;
-		u = sin(r) * Q_crandom(&seed) * CHAINGUN_SPREAD * 16;
-		r = cos(r) * Q_crandom(&seed) * CHAINGUN_SPREAD * 16;
-
-		VectorMA( muzzlePoint, 8192*16, forward, endPoint );
-		VectorMA( endPoint, r, right, endPoint );
-		VectorMA( endPoint, u, up, endPoint );
-
-		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
-
-		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
-			return;
-		}
 
 		// snap the endpos to integers, but nudged towards the line
 		SnapVectorTowards( tr.endpos, muzzlePoint );

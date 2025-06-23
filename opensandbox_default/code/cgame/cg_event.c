@@ -150,9 +150,6 @@ static void CG_Obituary( entityState_t *ent ) {
         case MOD_LAVA:
                 message = "does a back flip into the lava";
                 break;
-        case MOD_TARGET_LASER:
-                message = "saw the light";
-                break;
         case MOD_TRIGGER_HURT:
                 message = "was in the wrong place";
                 break;
@@ -185,34 +182,7 @@ static void CG_Obituary( entityState_t *ent ) {
 		else
 			message = "was crushed by an object he threw himself";
 			break;
-		case MOD_GRENADE_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "tripped on her own grenade";
-			else if ( gender == GENDER_NEUTER )
-				message = "tripped on its own grenade";
-			else
-				message = "tripped on his own grenade";
-			break;
-		case MOD_ROCKET_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "blew herself up";
-			else if ( gender == GENDER_NEUTER )
-				message = "blew itself up";
-			else
-				message = "blew himself up";
-			break;
-		case MOD_PLASMA_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "melted herself";
-			else if ( gender == GENDER_NEUTER )
-				message = "melted itself";
-			else
-				message = "melted himself";
-			break;
-		case MOD_BFG_SPLASH:
-			message = "should have used a smaller gun";
-			break;
-		case MOD_PROXIMITY_MINE:
+		case WP_PROX_LAUNCHER:
 			if( gender == GENDER_FEMALE ) {
 				message = "found her prox mine";
 			} else if ( gender == GENDER_NEUTER ) {
@@ -221,23 +191,7 @@ static void CG_Obituary( entityState_t *ent ) {
 				message = "found his prox mine";
 			}
 			break;
-		case MOD_FLAME_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "burned herself up";
-			else if ( gender == GENDER_NEUTER )
-				message = "burned itself up";
-			else
-				message = "burned himself up";
-			break;
-		case MOD_ANTIMATTER_SPLASH:
-			if ( gender == GENDER_FEMALE )
-				message = "blew herself up";
-			else if ( gender == GENDER_NEUTER )
-				message = "blew itself up";
-			else
-				message = "blew himself up";
-			break;
-		default:
+			default:
 			if ( gender == GENDER_FEMALE )
 				message = "killed herself";
 			else if ( gender == GENDER_NEUTER )
@@ -306,61 +260,48 @@ static void CG_Obituary( entityState_t *ent ) {
         }
         else
 		switch (mod) {
-		case MOD_GRAPPLE:
+		case WP_GRAPPLING_HOOK:
 			message = "was caught by";
 			break;
-		case MOD_GAUNTLET:
+		case WP_GAUNTLET:
 			message = "was pummeled by";
 			break;
-		case MOD_MACHINEGUN:
+		case WP_MACHINEGUN:
 			message = "was machinegunned by";
 			break;
-		case MOD_SHOTGUN:
+		case WP_SHOTGUN:
 			message = "was gunned down by";
 			break;
-		case MOD_GRENADE:
+		case WP_GRENADE_LAUNCHER:
 			message = "ate";
 			message2 = "'s grenade";
 			break;
-		case MOD_GRENADE_SPLASH:
-			message = "was shredded by";
-			message2 = "'s shrapnel";
-			break;
-		case MOD_ROCKET:
+		case WP_ROCKET_LAUNCHER:
 			message = "ate";
 			message2 = "'s rocket";
 			break;
-		case MOD_ROCKET_SPLASH:
-			message = "almost dodged";
-			message2 = "'s rocket";
-			break;
-		case MOD_PLASMA:
+		case WP_PLASMAGUN:
 			message = "was melted by";
 			message2 = "'s plasmagun";
 			break;
-		case MOD_PLASMA_SPLASH:
-			message = "was melted by";
-			message2 = "'s plasmagun";
-			break;
-		case MOD_RAILGUN:
+		case WP_RAILGUN:
 			message = "was railed by";
 			break;
-		case MOD_LIGHTNING:
+		case WP_LIGHTNING:
 			message = "was electrocuted by";
 			break;
-		case MOD_BFG:
-		case MOD_BFG_SPLASH:
+		case WP_BFG:
 			message = "was blasted by";
 			message2 = "'s BFG";
 			break;
-		case MOD_NAIL:
+		case WP_NAILGUN:
 			message = "was nailed by";
 			break;
-		case MOD_CHAINGUN:
+		case WP_CHAINGUN:
 			message = "got lead poisoning from";
 			message2 = "'s Chaingun";
 			break;
-		case MOD_PROXIMITY_MINE:
+		case WP_PROX_LAUNCHER:
 			message = "was too close to";
 			message2 = "'s Prox Mine";
 			break;
@@ -385,22 +326,22 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "tried to invade";
 			message2 = "'s personal space";
 			break;
-                case MOD_LAVA:
-                        message = "was given a hot bath by";
-                        break;
-                case MOD_SLIME:
-                        message = "was given a acid bath by";
-                        break;
-                case MOD_FALLING:
-                        message = "was given a small push by";
-                        break;
-                case MOD_TRIGGER_HURT:
-                        message = "was helped on the way by";
-                        break;
-                case MOD_CRUSH:
-                        message = "was crushed in";
-                        message2 = "'s trap";
-                        break;
+        case MOD_LAVA:
+            message = "was given a hot bath by";
+            break;
+        case MOD_SLIME:
+            message = "was given a acid bath by";
+            break;
+        case MOD_FALLING:
+            message = "was given a small push by";
+            break;
+        case MOD_TRIGGER_HURT:
+            message = "was helped on the way by";
+            break;
+        case MOD_CRUSH:
+            message = "was crushed in";
+            message2 = "'s trap";
+            break;
 		default:
 			message = "was killed by";
 			break;

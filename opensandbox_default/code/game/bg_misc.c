@@ -94,10 +94,56 @@ item_t gameInfoItems[] = {
 	{ "team_CTF_neutralflag",		"models/flags/n_flag.md3",						"icons/iconf_neutral1",		"Neutral Flag",			0,		IT_TEAM,		PW_NEUTRALFLAG },
 	{ "item_redcube",				"models/powerups/orb/r_orb.md3",				"icons/iconh_rorb",			"Red Cube",				0,		IT_TEAM,		0 },
 	{ "item_bluecube",				"models/powerups/orb/b_orb.md3",				"icons/iconh_borb",			"Blue Cube",			0,		IT_TEAM,		0 },
-	{NULL}
 };
 
 int	gameInfoItemsNum = sizeof(gameInfoItems) / sizeof(gameInfoItems[0]) - 1;
+
+weaponProperties_t gameInfoWeapons[] = {
+// 	wType 			mType 			mEffect 				classname 		delay 	count 	dmg 	sDmg 	sRadius range 	mod 					speed	sRandom spread	timeout guided	gravity	bounce	bMod 
+	{ WT_NONE, 		MT_NONE, 		WP_NONE, 				NULL, 			0, 		0,		0, 		0, 		0,		0,		MOD_UNKNOWN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MELEE, 	MT_NONE, 		WP_GAUNTLET, 			NULL, 			400,	1, 		50, 	0, 		0,		64,		WP_GAUNTLET, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_BULLET, 	MT_NONE, 		WP_MACHINEGUN, 			NULL, 			100, 	1, 		7, 		0, 		0, 		131072, WP_MACHINEGUN, 			0, 		0, 		200, 	0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_SHOTGUN, 	MT_NONE, 		WP_SHOTGUN, 			NULL, 			1000, 	11, 	10, 	0, 		0,		8192,	WP_SHOTGUN, 			0, 		0, 		700, 	0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_GRENADE_LAUNCHER, 	"grenade", 		800, 	1, 		100, 	100, 	150,	0,		WP_GRENADE_LAUNCHER, 	700, 	0, 		0, 		2500, 	qfalse,	qtrue,	qtrue,	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_ROCKET_LAUNCHER, 	"rocket", 		800, 	1, 		100, 	100, 	120,	0,		WP_ROCKET_LAUNCHER, 	900, 	0, 		0, 		15000,	qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_LIGHTNING, MT_NONE, 		WP_LIGHTNING, 			NULL, 			50, 	1, 		8, 		0, 		0,		768,	WP_LIGHTNING, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_RAILGUN, 	MT_NONE, 		WP_RAILGUN, 			NULL, 			1500, 	1, 		100, 	0, 		0,		16384,	WP_RAILGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_PLASMAGUN, 			"plasma", 		100, 	1, 		20, 	15, 	20,		0,		WP_PLASMAGUN, 			2000, 	0, 		0, 		10000, 	qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_BFG, 				"bfg", 			200, 	1, 		100, 	100, 	120,	0,		WP_BFG, 				2000, 	0, 		0, 		10000, 	qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_HOOK, 		WP_GRAPPLING_HOOK, 		"hook", 		400, 	1, 		0, 		0, 		0,		0,		WP_GRAPPLING_HOOK, 		800, 	0, 		0, 		30000, 	qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_NAILGUN, 			"nail", 		1000, 	16, 	20, 	0, 		0,		0,		WP_NAILGUN, 			555, 	1800, 	500, 	10000, 	qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_MINE, 		WP_PROX_LAUNCHER, 		"mine", 		800, 	1, 		0, 		100, 	150,	0,		WP_PROX_LAUNCHER, 		700, 	0, 		0, 		3000, 	qfalse,	qtrue,	qfalse,	0.0 },
+	{ WT_BULLET, 	MT_GENERAL, 	WP_CHAINGUN, 			NULL, 			30, 	1, 		7, 		0, 		0,		131072,	WP_CHAINGUN, 			0, 		0, 		600, 	0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_FLAMETHROWER, 		"flame", 		40, 	1, 		20, 	15, 	30,		0,		WP_FLAMETHROWER, 		750, 	0, 		0, 		1500, 	qfalse,	qfalse,	qtrue, 	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_ANTIMATTER, 			"flare", 		40, 	1, 		6, 		6, 		20,		0,		WP_ANTIMATTER, 			1500, 	0, 		0, 		3500, 	qfalse,	qtrue,	qtrue, 	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_NAILGUN, 			"missile", 		150, 	1, 		25, 	0, 		0,		0,		WP_THROWER, 			3500, 	100, 	50, 	5000, 	qfalse,	qtrue,	qtrue,	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_NAILGUN, 			"missile", 		1000, 	11, 	16, 	0, 		0,		0,		WP_BOUNCER, 			2000, 	150, 	1000, 	5000, 	qfalse,	qtrue,	qtrue,	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_GRENADE_LAUNCHER, 	"missile", 		1000, 	6, 		100, 	100, 	150,	0,		WP_THUNDER, 			700, 	0, 		3000, 	2500, 	qfalse,	qtrue,	qtrue,	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_ROCKET_LAUNCHER, 	"missile", 		1600, 	1, 		150, 	150, 	300,	0,		WP_EXPLODER, 			200, 	0, 		0, 		30000, 	qtrue,	qfalse,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_ANTIMATTER, 			"missile", 		500, 	1, 		2, 		0, 		0,		0,		WP_KNOCKER, 			3500, 	0, 		0, 		5000, 	qfalse,	qtrue,	qtrue,	0.65 },
+	{ WT_MISSILE, 	MT_PROPGUN, 	WP_NONE, 				"sandbox_prop", 1000, 	1, 		0, 		0, 		0,		0,		WP_PROPGUN, 			2000, 	0, 		100, 	0, 		qfalse,	qfalse,	qfalse,	0.65 },
+	{ WT_MISSILE, 	MT_GENERAL, 	WP_PLASMAGUN, 			"missile", 		1000, 	1, 		2, 		2, 		80,		0,		WP_REGENERATOR, 		1800, 	0, 		0, 		10000, 	qfalse,	qtrue,	qfalse,	0.0 },
+	{ WT_MISSILE, 	MT_NUKE, 		WP_NONE, 				"hihihiha", 	3000, 	8, 		0, 		0, 		0,		0,		WP_NUKE, 				3000, 	0, 		777, 	0, 		qfalse,	qfalse,	qfalse,	0.65 },
+	{ WT_EMPTY, 	MT_NONE, 		WP_PHYSGUN, 			NULL, 			100, 	1, 		0, 		0, 		0,		8192,	WP_PHYSGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_EMPTY, 	MT_NONE, 		WP_GRAVITYGUN, 			NULL, 			100, 	1, 		0, 		0, 		0,		1024,	WP_GRAVITYGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+	{ WT_TOOLGUN, 	MT_NONE, 		WP_TOOLGUN, 			NULL, 			200, 	1, 		0, 		0, 		0,		4096,	WP_TOOLGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
+};
+
+int	gameInfoWeaponsNum = sizeof(gameInfoWeapons) / sizeof(gameInfoWeapons[0]) - 1;
+
+wPropProperties_t gameInfoWProps[] = {
+// 	oType 				modelname 								mtMin 		mtMax 		health 	gravity 	scale 		colSize		solid
+	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_NONE
+	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_GENERAL
+	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_HOOK
+	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_MINE
+	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_PROPS
+
+	{ OT_BASIC, 		"props/cube", 							1, 			15, 		-1, 	1.00,		0.50, 		25, 		qtrue }, //MT_PROPGUN
+	{ OT_NUKE, 			"models/ammo/rocket/rocket.md3", 		0, 			0, 			1, 		1.00,		4.00, 		25, 		qfalse }, //MT_NUKE
+};
+
+int	gameInfoWPropsNum = sizeof(gameInfoWProps) / sizeof(gameInfoWProps[0]) - 1;
 
 /*
 ==============
@@ -210,11 +256,11 @@ qboolean	BG_CheckClassname( const char *classname ) {
 
 /*
 ===============
-BG_FindSwep
+BG_FindWeapon
 
 ===============
 */
-item_t	*BG_FindSwep( int id ) {
+item_t	*BG_FindWeapon( int id ) {
 	item_t	*it;
 	
 	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
@@ -229,11 +275,11 @@ item_t	*BG_FindSwep( int id ) {
 
 /*
 ===============
-BG_FindSwepAmmo
+BG_FindAmmo
 
 ===============
 */
-item_t	*BG_FindSwepAmmo( int id ) {
+item_t	*BG_FindAmmo( int id ) {
 	item_t	*it;
 	
 	for ( it = gameInfoItems + 1 ; it->classname ; it++ ) {
@@ -260,12 +306,9 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 	BG_EvaluateTrajectory( &item->pos, atTime, origin );
 
 	// we are ignoring ducked differences here
-	if ( ps->origin[0] - origin[0] > 44
-		|| ps->origin[0] - origin[0] < -50
-		|| ps->origin[1] - origin[1] > 36
-		|| ps->origin[1] - origin[1] < -36
-		|| ps->origin[2] - origin[2] > 36
-		|| ps->origin[2] - origin[2] < -36 ) {
+	if ( ps->origin[0] - origin[0] > 44 || ps->origin[0] - origin[0] < -50
+		|| ps->origin[1] - origin[1] > 36 || ps->origin[1] - origin[1] < -36
+		|| ps->origin[2] - origin[2] > 36 || ps->origin[2] - origin[2] < -36 ) {
 		return qfalse;
 	}
 
@@ -295,7 +338,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;	// weapons are always picked up
 
 	case IT_AMMO:
-		if ( ps->stats[STAT_SWEPAMMO] >= 9000 ) {
+		if ( ps->stats[STAT_AMMO] >= 9000 ) {
 			return qfalse;		// can't hold any more
 		}
 		return qtrue;
@@ -617,100 +660,6 @@ void ST_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	}
 }
 
-char *eventnames[] = {
-	"EV_NONE",
-	"EV_FOOTSTEP",
-	"EV_FOOTSTEP_METAL",
-	"EV_FOOTSPLASH",
-	"EV_FOOTWADE",
-	"EV_SWIM",
-	"EV_STEP_4",
-	"EV_STEP_8",
-	"EV_STEP_12",
-	"EV_STEP_16",
-	"EV_FALL_SHORT",
-	"EV_FALL_MEDIUM",
-	"EV_FALL_FAR",
-	"EV_JUMP_PAD",			// boing sound at origin, jump sound on player
-	"EV_JUMP",                        //Event 14
-	"EV_WATER_TOUCH",	// foot touches
-	"EV_WATER_LEAVE",	// foot leaves
-	"EV_WATER_UNDER",	// head touches
-	"EV_WATER_CLEAR",	// head leaves
-	"EV_ITEM_PICKUP",			// normal item pickups are predictable
-	"EV_NOAMMO",
-	"EV_CHANGE_WEAPON",
-	"EV_FIRE_WEAPON",
-	"EV_USE_ITEM0",                   //Event 24
-	"EV_USE_ITEM1",
-	"EV_USE_ITEM2",
-	"EV_USE_ITEM3",
-	"EV_USE_ITEM4",
-	"EV_USE_ITEM5",
-	"EV_USE_ITEM6",
-	"EV_USE_ITEM7",
-	"EV_USE_ITEM8",
-	"EV_USE_ITEM9",
-	"EV_USE_ITEM10",
-	"EV_USE_ITEM11",
-	"EV_USE_ITEM12",
-	"EV_USE_ITEM13",
-	"EV_USE_ITEM14",
-	"EV_USE_ITEM15",
-	"EV_ITEM_RESPAWN",                //Event 40
-	"EV_ITEM_POP",
-	"EV_PLAYER_TELEPORT_IN",
-	"EV_PLAYER_TELEPORT_OUT",
-	"EV_GRENADE_BOUNCE",		// eventParm will be the soundindex
-	"EV_GENERAL_SOUND",
-	"EV_GLOBAL_SOUND",		// no attenuation
-	"EV_GLOBAL_TEAM_SOUND",
-	"EV_BULLET_HIT_FLESH",
-	"EV_BULLET_HIT_WALL",
-	"EV_MISSILE_HIT",                 //Event 50
-	"EV_MISSILE_MISS",
-	"EV_MISSILE_MISS_METAL",
-	"EV_RAILTRAIL",
-	"EV_SHOTGUN",
-	"EV_BULLET",				// otherEntity is the shooter
-	"EV_PAIN",
-	"EV_PAINVEHICLE",
-	"EV_DEATH1",
-	"EV_DEATH2",
-	"EV_DEATH3",
-	"EV_OBITUARY",                    //Event 60
-	"EV_GIB_PLAYER",			// gib a previously living player
-	"EV_PROXIMITY_MINE_STICK",
-	"EV_PROXIMITY_MINE_TRIGGER",
-	"EV_KAMIKAZE",			// kamikaze explodes
-	"EV_OBELISKEXPLODE",		// obelisk explodes
-	"EV_OBELISKPAIN",			// obelisk is in pain
-	"EV_INVUL_IMPACT",		// invulnerability sphere impact
-	"EV_JUICED",				// invulnerability juiced effect
-	"EV_LIGHTNINGBOLT",		// lightning bolt bounced of invulnerability sphere
-	"EV_DEBUG_LINE",
-	"EV_STOPLOOPINGSOUND",
-	"EV_TAUNT",
-	"EV_TAUNT_YES",
-	"EV_TAUNT_NO",
-	"EV_TAUNT_FOLLOWME",
-	"EV_TAUNT_GETFLAG",
-	"EV_TAUNT_GUARDBASE",
-	"EV_TAUNT_PATROL",
-	"EV_EXPLOSION",
-	"EV_PARTICLES_GRAVITY",
-	"EV_PARTICLES_LINEAR",
-	"EV_PARTICLES_LINEAR_UP",
-	"EV_PARTICLES_LINEAR_DOWN",
-	"EV_SMOKEPUFF",
-	"EV_WATERPUFF",
-	"EV_FOOTSTEP_FLESH",
-	"EV_HORN",		//VEHICLES
-	"EV_CRASH25",
-	"EV_OT1_IMPACT",
-	"EV_GRAVITYSOUND"
-};
-
 /*
 ===============
 BG_AddPredictableEventToPlayerstate
@@ -718,41 +667,7 @@ BG_AddPredictableEventToPlayerstate
 Handles the sequence numbers
 ===============
 */
-
-void	trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-
 void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps ) {
-
-	switch(newEvent) {
-		case EV_FOOTSTEP:
-		case EV_FOOTSTEP_METAL:
-		case EV_FOOTSTEP_FLESH:
-		case EV_FALL_MEDIUM:
-		case EV_FALL_FAR:
-		case EV_JUMP:
-		case EV_TAUNT:
-		case EV_HORN:
-		case EV_NOAMMO:
-		case EV_CHANGE_WEAPON:
-		case EV_FIRE_WEAPON:
-			ps->eFlags |= EF_HEARED;
-			ps->pm_time = 5;
-			break;
-	}
-
-#ifdef _DEBUG
-	{
-		char buf[256];
-		trap_Cvar_VariableStringBuffer("showevents", buf, sizeof(buf));
-		if ( atof(buf) != 0 ) {
-#ifdef GAME
-			Com_Printf(" game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);
-#else
-			Com_Printf("Cgame event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);
-#endif
-		}
-	}
-#endif
 	ps->events[ps->eventSequence & (MAX_PS_EVENTS-1)] = newEvent;
 	ps->eventParms[ps->eventSequence & (MAX_PS_EVENTS-1)] = eventParm;
 	ps->eventSequence++;

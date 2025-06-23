@@ -120,41 +120,7 @@ void SB_Shooter_Use( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	G_SetMovedir( ent->s.angles, ent->movedir );
 	VectorCopy( ent->movedir, dir );
 
-	switch ( ent->s.weapon ) {
-	case WP_GRENADE_LAUNCHER:
-		fire_grenade( ent, ent->s.origin, dir );
-		break;
-	case WP_ROCKET_LAUNCHER:
-		fire_rocket( ent, ent->s.origin, dir );
-		break;
-	case WP_PLASMAGUN:
-		fire_plasma( ent, ent->s.origin, dir );
-		break;
-	case WP_BFG:
-		fire_bfg( ent, ent->s.origin, dir );
-		break;
-	case WP_NAILGUN:
-		fire_nail( ent, ent->s.origin, dir, right, up );
-		break;
-	case WP_PROX_LAUNCHER:
-		fire_prox( ent, ent->s.origin, dir );
-		break;
-	case WP_FLAMETHROWER:
-		fire_flame( ent, ent->s.origin, dir );
-		break;
-	case WP_ANTIMATTER:
-		fire_antimatter( ent, ent->s.origin, dir );
-		break;
-	case WP_KNOCKER:
-		fire_knocker( ent, ent->s.origin, dir, right, up );
-		break;
-	case WP_PROPGUN:
-		fire_propgun( ent, ent->s.origin, dir, right, up );
-		break;
-	case WP_NUKE:
-		fire_nuke( ent, ent->s.origin, dir, right, up );
-		break;
-	}
+	fire_missile(ent, ent->s.origin, dir, right, up, ent->s.weapon);
 
 	G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
 }
@@ -173,7 +139,7 @@ void SB_Shooter( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-spawn_t	sandbox_spawns_table[] = {
+spawn_t	sandbox_gameInfoEntities[] = {
 	{"sb.shooter", SB_Shooter},
 
 	{NULL, 0}
@@ -185,10 +151,10 @@ spawn_t	sandbox_spawns_table[] = {
 
 void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
 	if(self->vehicle || self->objectType == OT_TNT){ //VEHICLE-SYSTEM: vehicle's explode for all
-	G_StartCarExplode(self);
+		G_StartCarExplode(self);
 	}
 	if(self->objectType == OT_NUKE){
-	G_StartNukeExplode(self);
+		G_StartNukeExplode(self);
 	}
 	G_FreeEntity( self );
 }
@@ -267,7 +233,7 @@ void SP_sandbox_prop( gentity_t *ent ) {
 	spawn_t	*s;
 	qboolean spawn_entity = qfalse;
 	
-	// Create entity
+	//Create entity
 	CopyAlloc(ent->classname, ent->sb_class);
 
 	//Origin
@@ -277,8 +243,8 @@ void SP_sandbox_prop( gentity_t *ent ) {
 	//Type
 	ent->sandboxObject = OBJ_SANDBOX;
 
-	// Classic entity spawn
-	for ( s=spawns_table ; s->name ; s++ ) {
+	//Classic entity spawn
+	for ( s=gameInfoEntities ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
 			s->spawn(ent);
 
@@ -286,8 +252,8 @@ void SP_sandbox_prop( gentity_t *ent ) {
 		}
 	}
 
-	// Sandbox entity spawn
-	for ( s=sandbox_spawns_table ; s->name ; s++ ) {
+	//Sandbox entity spawn
+	for ( s=sandbox_gameInfoEntities ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
 			s->spawn(ent);
 
@@ -356,7 +322,7 @@ void SP_sandbox_prop( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22) {
+void G_BuildProp( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22) {
 	gentity_t	*ent;
 	vec3_t		position;
 	spawn_t		*s;
@@ -371,10 +337,10 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 	if(atoi(arg09) <= 0){
 		position[2] = ((int)((xyz[2] + (xyz[2] < 0 ? -atoi(arg06) : atoi(arg06))) / (atoi(arg06) * 2)) * (atoi(arg06) * 2));
 	} else {
-		position[2] = xyz[2] + atoi(arg05);
+		position[2] = xyz[2] + atof(arg05);
 	}
 	
-	// Create entity
+	//Create entity
 	ent = G_Spawn();
 	CopyAlloc(ent->classname, arg03);
 	CopyAlloc(ent->sb_class, arg03);
@@ -471,7 +437,7 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		ent->s.angles2[A2_MASS] = atof(arg22);
 	}
 
-	// Item spawn
+	//Item spawn
 	for ( item=gameInfoItems+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
 			position[2] += 48;
@@ -483,8 +449,8 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		}
 	}
 
-	// Classic entity spawn
-	for ( s=spawns_table ; s->name ; s++ ) {
+	//Classic entity spawn
+	for ( s=gameInfoEntities ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
 			s->spawn(ent);
 
@@ -496,8 +462,8 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 		}
 	}
 
-	// Sandbox entity spawn
-	for ( s=sandbox_spawns_table ; s->name ; s++ ) {
+	//Sandbox entity spawn
+	for ( s=sandbox_gameInfoEntities ; s->name ; s++ ) {
 		if ( !strcmp(s->name, ent->classname) ) {
 			s->spawn(ent);
 
@@ -525,11 +491,11 @@ void G_BuildPropSL( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, cha
 
 	//Setting collsion
 	if(atoi(arg21) <= 0 || spawn_entity){
-		ent->sb_coltype = atoi(arg05);
+		ent->sb_coltype = atof(arg05);
 		VectorSet( ent->r.mins, -ent->sb_coltype*ent->s.scales[0], -ent->sb_coltype*ent->s.scales[1], -ent->sb_coltype*ent->s.scales[2]);
 		VectorSet( ent->r.maxs, ent->sb_coltype*ent->s.scales[0], ent->sb_coltype*ent->s.scales[1], ent->sb_coltype*ent->s.scales[2] );
 	} else {
-		ent->sb_coltype = atoi(arg05);
+		ent->sb_coltype = atof(arg05);
 		VectorSet( ent->r.mins, -25, -25, -15);
 		VectorSet( ent->r.maxs, 25, 25, 15 );
 	}

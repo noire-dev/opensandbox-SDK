@@ -277,7 +277,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
 	self->enemy = attacker;
-	self->client->ps.persistant[PERS_KILLED]++;
 
 	if (attacker && attacker->client) {
 		if ( attacker == self || OnSameTeam (self, attacker ) ) {
@@ -584,10 +583,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->npcType >= 1 && targ->npcType == attacker->npcType)
 		return;
 
-	if (!targ->takedamage && !targ->sandboxObject && mod == MOD_TOOLGUN && mod == MOD_GAUNTLET && attacker->health <= 0)
+	if (!targ->takedamage && !targ->sandboxObject && mod == WP_TOOLGUN && mod == WP_GAUNTLET && attacker->health <= 0)
 		return;
 
-	if (mod == MOD_GAUNTLET) {
+	if (mod == WP_GAUNTLET) {
 		if (targ->vehicle) {
 			if(G_EnterInCar(attacker, targ)){
 				return;
@@ -600,7 +599,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
  		targ = G_FindEntityForEntityNum(targ->client->vehiclenum);
 	}
 
-	if(mod == MOD_REGENERATOR && targ->client){
+	if(mod == WP_REGENERATOR && targ->client){
 		if (!targ->client->ps.powerups[PW_REGEN]) {
 			targ->client->ps.powerups[PW_REGEN] = level.time - ( level.time % 1000 );
 		}
@@ -661,9 +660,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	knockback = damage;
 
-	if ( mod == MOD_NUKE )
+	if ( mod == WP_NUKE )
 	knockback *= 3.00;
-	if ( mod == MOD_KNOCKER )
+	if ( mod == WP_KNOCKER )
 	knockback *= 200;
 
 	if ( targ->flags & FL_NO_KNOCKBACK ) {
@@ -739,7 +738,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				return;
 			}
 		}
-		if (mod == MOD_PROXIMITY_MINE) {
+		if (mod == WP_PROX_LAUNCHER) {
 			if (inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) {
 				return;
 			}

@@ -457,7 +457,7 @@ gentity_t *LaunchItem( item_t *item, vec3_t origin, vec3_t velocity ) {
 	dropped->s.pos.trTime = level.time;
 	VectorCopy( velocity, dropped->s.pos.trDelta );
 
-	dropped->s.eFlags |= EF_BOUNCE_HALF;
+	dropped->s.eFlags |= EF_BOUNCE;
 	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) && item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
