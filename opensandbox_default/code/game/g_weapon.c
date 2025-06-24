@@ -37,132 +37,131 @@ static vec3_t muzzle;
 General funcs
 ================
 */
-static void G_BounceProjectile( vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout ) {
-	vec3_t v, newv;
-	float dot;
+static void G_BounceProjectile(vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout) {
+    vec3_t v, newv;
+    float dot;
 
-	VectorSubtract( impact, start, v );
-	dot = DotProduct( v, dir );
-	VectorMA( v, -2*dot, dir, newv );
+    VectorSubtract(impact, start, v);
+    dot = DotProduct(v, dir);
+    VectorMA(v, -2 * dot, dir, newv);
 
-	VectorNormalize(newv);
-	VectorMA(impact, 8192, newv, endout);
+    VectorNormalize(newv);
+    VectorMA(impact, 8192, newv, endout);
 }
 
-void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint ) {
-	VectorCopy( ent->s.pos.trBase, muzzlePoint );
-	muzzlePoint[2] += ent->client->ps.viewheight;
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-	SnapVector( muzzlePoint );
+void CalcMuzzlePoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint) {
+    VectorCopy(ent->s.pos.trBase, muzzlePoint);
+    muzzlePoint[2] += ent->client->ps.viewheight;
+    VectorMA(muzzlePoint, 14, forward, muzzlePoint);
+    SnapVector(muzzlePoint);
 }
 
-static void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint ) {
-	VectorCopy( ent->s.pos.trBase, muzzlePoint );
-	muzzlePoint[2] += ent->client->ps.viewheight;
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-	SnapVector( muzzlePoint );
+static void CalcMuzzlePointOrigin(gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint) {
+    VectorCopy(ent->s.pos.trBase, muzzlePoint);
+    muzzlePoint[2] += ent->client->ps.viewheight;
+    VectorMA(muzzlePoint, 14, forward, muzzlePoint);
+    SnapVector(muzzlePoint);
 }
 
 static void G_BounceMissile(gentity_t *ent, trace_t *trace) {
-	vec3_t	velocity;
-	float	dot;
-	int		hitTime;
+    vec3_t velocity;
+    float dot;
+    int hitTime;
 
-	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
+    // reflect the velocity on the trace plane
+    hitTime = level.previousTime + (level.time - level.previousTime) * trace->fraction;
+    BG_EvaluateTrajectoryDelta(&ent->s.pos, hitTime, velocity);
+    dot = DotProduct(velocity, trace->plane.normal);
+    VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
-	VectorScale( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
-	// check for stop
-	if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 ) {
-		G_SetOrigin( ent, trace->endpos );
-		return;
-	}
+    VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
+    // check for stop
+    if(trace->plane.normal[2] > 0.2 && VectorLength(ent->s.pos.trDelta) < 40) {
+        G_SetOrigin(ent, trace->endpos);
+        return;
+    }
 
-	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
-	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
-	ent->s.pos.trTime = level.time;
+    VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
+    VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
+    ent->s.pos.trTime = level.time;
 }
 
 void G_ExplodeMissile(gentity_t *ent) {
-	vec3_t		dir;
-	vec3_t		origin;
+    vec3_t dir;
+    vec3_t origin;
 
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	SnapVector( origin );
-	G_SetOrigin( ent, origin );
+    BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);
+    SnapVector(origin);
+    G_SetOrigin(ent, origin);
 
-	// we don't have a valid direction, so just point straight up
-	dir[0] = dir[1] = 0;
-	dir[2] = 1;
+    // we don't have a valid direction, so just point straight up
+    dir[0] = dir[1] = 0;
+    dir[2] = 1;
 
-	ent->s.eType = ET_GENERAL;
-	G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( dir ) );
+    ent->s.eType = ET_GENERAL;
+    G_AddEvent(ent, EV_MISSILE_MISS, DirToByte(dir));
 
-	ent->freeAfterEvent = qtrue;
+    ent->freeAfterEvent = qtrue;
 
-	// splash damage
-	if ( ent->splashDamage ) {
-		G_RadiusDamage(ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, ent, ent->methodOfDeath);
-	}
+    // splash damage
+    if(ent->splashDamage) {
+        G_RadiusDamage(ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, ent, ent->methodOfDeath);
+    }
 
-	trap_LinkEntity( ent );
+    trap_LinkEntity(ent);
 }
 
 static void Guided_Missile_Think(gentity_t *missile) {
-	vec3_t forward, right, up;
-	vec3_t muzzle;
+    vec3_t forward, right, up;
+    vec3_t muzzle;
 
-	gentity_t *player = missile->parent;
+    gentity_t *player = missile->parent;
 
-	// If our owner can't be found, just return
-	if ( !player ) {
-		G_Printf ("Guided_Missile_Think : missile has no owner!\n");
-		return;
-	}
+    // If our owner can't be found, just return
+    if(!player) {
+        G_Printf("Guided_Missile_Think : missile has no owner!\n");
+        return;
+    }
 
-	// Get our forward, right, up vector from the view angle of the player
-	AngleVectors ( player->client->ps.viewangles, forward, right, up );
+    // Get our forward, right, up vector from the view angle of the player
+    AngleVectors(player->client->ps.viewangles, forward, right, up);
 
-	// Calculate the player's eyes origin, and store this origin in muzzle
-	CalcMuzzlePoint ( player, forward, right, up, muzzle );
+    // Calculate the player's eyes origin, and store this origin in muzzle
+    CalcMuzzlePoint(player, forward, right, up, muzzle);
 
-	// Tells the engine that our movement starts at the current missile's origin
-	VectorCopy ( missile->r.currentOrigin, missile->s.pos.trBase );
+    // Tells the engine that our movement starts at the current missile's origin
+    VectorCopy(missile->r.currentOrigin, missile->s.pos.trBase);
 
-	// Trajectory type setup (linear move - fly)
-	missile->s.pos.trType = TR_LINEAR;
-	missile->s.pos.trTime = level.time - 50;
+    // Trajectory type setup (linear move - fly)
+    missile->s.pos.trType = TR_LINEAR;
+    missile->s.pos.trTime = level.time - 50;
 
-	// Get the dir vector between the player's point of view and the rocket
-	// and store it into muzzle again
-	VectorSubtract( muzzle, missile->r.currentOrigin, muzzle );
+    // Get the dir vector between the player's point of view and the rocket
+    // and store it into muzzle again
+    VectorSubtract(muzzle, missile->r.currentOrigin, muzzle);
 
-    VectorScale( forward, gameInfoWeapons[missile->s.weapon].speed, forward );
+    VectorScale(forward, gameInfoWeapons[missile->s.weapon].speed, forward);
 
-	// line straight forward
-	VectorAdd( forward, muzzle, muzzle );
+    // line straight forward
+    VectorAdd(forward, muzzle, muzzle);
 
-	// Normalize the vector so it's 1 unit long, but keep its direction
-	VectorNormalize( muzzle );
+    // Normalize the vector so it's 1 unit long, but keep its direction
+    VectorNormalize(muzzle);
 
-	// Set the rockets's velocity so it'll move toward our new direction
-	VectorCopy( forward, missile->s.pos.trDelta );
+    // Set the rockets's velocity so it'll move toward our new direction
+    VectorCopy(forward, missile->s.pos.trDelta);
 
-	// Change the rocket's angle so it'll point toward the new direction
-	vectoangles( muzzle, missile->s.angles );
+    // Change the rocket's angle so it'll point toward the new direction
+    vectoangles(muzzle, missile->s.angles);
 
-	// This should "save net bandwidth" =D
-	SnapVector( missile->s.pos.trDelta );
-
+    // This should "save net bandwidth" =D
+    SnapVector(missile->s.pos.trDelta);
 
     missile->nextthink = level.time + 25;
 
-    if ( level.time > missile->wait ) {
-        G_ExplodeMissile( missile );
-	}
+    if(level.time > missile->wait) {
+        G_ExplodeMissile(missile);
+    }
 }
 
 /*
