@@ -827,25 +827,3 @@ void CG_Shutdown( void ) {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
 }
-
-/*
-======================
-SnapVectorTowards
-
-Round a vector to integers for more efficient network
-transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating
-into a wall.
-======================
-*/
-void SnapVectorTowards( vec3_t v, vec3_t to ) {
-	int		i;
-
-	for ( i = 0 ; i < 3 ; i++ ) {
-		if ( to[i] <= v[i] ) {
-			v[i] = (int)v[i];
-		} else {
-			v[i] = (int)v[i] + 1;
-		}
-	}
-}

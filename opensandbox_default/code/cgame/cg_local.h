@@ -1070,9 +1070,6 @@ void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString( void );
 
-//unlagged, sagos modfication
-void SnapVectorTowards( vec3_t v, vec3_t to );
-
 //
 // cg_view.c
 //

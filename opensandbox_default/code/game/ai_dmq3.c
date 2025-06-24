@@ -2478,7 +2478,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	//walk, crouch or jump
 	movetype = MOVE_WALK;
 
-	if (bs->cur_ps.weapon == WP_GAUNTLET) {
+	if (gameInfoWeapons[bs->cur_ps.weapon].wType == WT_MELEE) { 
 		attack_dist = 0;
 		attack_range = 0;
 		jumper = 0;
@@ -2563,14 +2563,12 @@ BotSameTeam
 int BotSameTeam(bot_state_t *bs, int entnum) {
 	char info1[1024], info2[1024];
 
-	if (bs->client < 0 || bs->client >= MAX_CLIENTS) {
-		//BotAI_Print(PRT_ERROR, "BotSameTeam: client out of range\n");
+	if (bs->client < 0 || bs->client >= MAX_CLIENTS)
 		return qfalse;
-	}
-	if (entnum < 0 || entnum >= MAX_CLIENTS) {
-		//BotAI_Print(PRT_ERROR, "BotSameTeam: client out of range\n");
+
+	if (entnum < 0 || entnum >= MAX_CLIENTS)
 		return qfalse;
-	}
+
 	if ( gametype >= GT_TEAM ) {
 		trap_GetConfigstring(CS_PLAYERS+bs->client, info1, sizeof(info1));
 		trap_GetConfigstring(CS_PLAYERS+entnum, info2, sizeof(info2));
@@ -3330,7 +3328,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	//
 	VectorSubtract(bs->aimtarget, bs->eye, dir);
 	//
-	if (bs->weaponnum == WP_GAUNTLET) {
+	if (gameInfoWeapons[bs->weaponnum].wType == WT_MELEE) {
 		if (VectorLengthSquared(dir) > Square(60)) {
 			return;
 		}

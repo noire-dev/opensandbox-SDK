@@ -777,9 +777,9 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if ( client->ps.weapon == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
+	if ( gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
-		pm.gauntletHit = CheckGauntletAttack( ent );
+		pm.gauntletHit = Melee_Fire( ent );
 	}
 
 	// check for invulnerability expansion before doing the Pmove

@@ -456,6 +456,7 @@ void RotateAroundDirection( vec3_t axis[3], float yaw );
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
 void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 void PerpendicularVector( vec3_t dst, const vec3_t src );
+void SnapVectorTowards( vec3_t v, vec3_t to );
 
 //=============================================
 

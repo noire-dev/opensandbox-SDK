@@ -723,10 +723,8 @@ void DropPortalDestination( gentity_t *ent );
 // g_weapon.c
 //
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
-void SnapVectorTowards( vec3_t v, vec3_t to );
-qboolean CheckGauntletAttack( gentity_t *ent );
+qboolean Melee_Fire( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
-void Weapon_HookThink (gentity_t *ent);
 void G_RunMissile( gentity_t *ent );
 void Weapon_Toolgun_Info( gentity_t *ent );
 gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up, int weapon);
@@ -776,10 +774,6 @@ gclient_t	*ClientForString( const char *s );
 //
 
 void FireWeapon( gentity_t *ent );
-void KamikazeDamage( gentity_t *self );
-void CarExplodeDamage( gentity_t *self );
-void KamikazeRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, int mod );
-void KamikazeShockWave( vec3_t origin, gentity_t *attacker, float damage, float push, float radius, int mod );
 void G_StartKamikaze( gentity_t *ent );
 void G_StartCarExplode( gentity_t *ent );
 void G_StartNukeExplode( gentity_t *ent );

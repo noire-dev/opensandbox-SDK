@@ -862,3 +862,15 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 
 	VectorNormalize( dst );
 }
+
+void SnapVectorTowards( vec3_t v, vec3_t to ) {
+	int		i;
+
+	for ( i = 0 ; i < 3 ; i++ ) {
+		if ( to[i] <= v[i] ) {
+			v[i] = (int)v[i];
+		} else {
+			v[i] = (int)v[i] + 1;
+		}
+	}
+}

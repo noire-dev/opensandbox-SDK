@@ -683,31 +683,19 @@ ClientUserInfoChanged
 Called from ClientConnect when the player first connects and
 directly by the server system when the player updates a userinfo variable.
 
-The game can override any of the settings and call trap_SetUserinfo
-if desired.
+The game can override any of the settings and call trap_SetUserinfo if desired.
 ============
 */
 void ClientUserinfoChanged( int clientNum ) {
 	gentity_t *ent;
 	int			teamTask, teamLeader, team;
-	int			npcType;
-	int			botskill;
+	int			npcType, botskill;
 	char		*s;
-	char		model[MAX_QPATH];
-	char		headModel[MAX_QPATH];
-	char		legsModel[MAX_QPATH];
-	char		headR[16];
-	char		headG[16];
-	char		headB[16];
-	char		modelR[16];
-	char		modelG[16];
-	char		modelB[16];
-	char		legsR[16];
-	char		legsG[16];
-	char		legsB[16];
-	char		physR[16];
-	char		physG[16];
-	char		physB[16];
+	char		model[MAX_QPATH], headModel[MAX_QPATH], legsModel[MAX_QPATH];
+	char		headR[16], headG[16], headB[16];
+	char		modelR[16], modelG[16], modelB[16];
+	char		legsR[16], legsG[16], legsB[16];
+	char		physR[16], physG[16], physB[16];
 	char		swep_id[16];
 	char		oldname[MAX_STRING_CHARS];
 	gclient_t	*client;
@@ -789,8 +777,7 @@ void ClientUserinfoChanged( int clientNum ) {
 			team = PickTeam( clientNum );
 		}
         client->sess.sessionTeam = team;
-	}
-	else {
+	} else {
 		team = client->sess.sessionTeam;
 	}
 
@@ -802,7 +789,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(swep_id, va("%i", ent->swep_id));
 
 	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\i\\%i\\s\\%s\\tt\\%d\\tl\\%d",
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\nt\\%i\\s\\%s\\tt\\%d\\tl\\%d",
 			client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehiclenum, ent->npcType, Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
 		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\tt\\%d\\tl\\%d\\f\\%i",
