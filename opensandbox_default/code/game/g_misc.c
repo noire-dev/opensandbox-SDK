@@ -25,7 +25,7 @@
 
 #include "g_local.h"
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback ) {
+void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback) {
 	gentity_t	*tent;
 
 	// use temp events at source and destination to prevent the effect
@@ -39,7 +39,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean n
 	}
 
 	// unlink to make sure it can't possibly interfere with G_KillBox
-	trap_UnlinkEntity (player);
+	trap_UnlinkEntity(player);
 
 	VectorCopy ( origin, player->client->ps.origin );
 	player->client->ps.origin[2] += 1;
@@ -56,33 +56,33 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean n
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 
 	// reset history for teleport
-	G_ResetHistory( player );
+	G_ResetHistory(player);
 
 	// set angles
-	SetClientViewAngle( player, angles );
+	SetClientViewAngle(player, angles);
 
 	// kill anything at the destination
 	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		G_KillBox (player);
+		G_KillBox(player);
 	}
 
 	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
+	BG_PlayerStateToEntityState(&player->client->ps, &player->s, qtrue);
 
 	// use the precise origin for linking
-	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
+	VectorCopy(player->client->ps.origin, player->r.currentOrigin);
 
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		trap_LinkEntity (player);
+	if (player->client->sess.sessionTeam != TEAM_SPECTATOR) {
+		trap_LinkEntity(player);
 	}
 }
 
-void locateCamera( gentity_t *ent ) {
+void locateCamera(gentity_t *ent) {
 	vec3_t		dir;
 	gentity_t	*target;
 	gentity_t	*owner;
 
-	owner = G_PickTarget( ent->target );
+	owner = G_PickTarget(ent->target);
 	if ( !owner ) {
 		G_Printf( "Couldn't find target for misc_partal_surface\n" );
 		G_FreeEntity( ent );
@@ -99,10 +99,8 @@ void locateCamera( gentity_t *ent ) {
 
 	// swing camera ?
 	if ( owner->spawnflags & 4 ) {
-		// set to 0 for no rotation at all
 		ent->s.powerups = 0;
-	}
-	else {
+	} else {
 		ent->s.powerups = 1;
 	}
 
@@ -207,17 +205,11 @@ void InitShooter( gentity_t *ent, int weapon ) {
 	trap_LinkEntity( ent );
 }
 
-void SP_shooter_rocket( gentity_t *ent ) {
-	InitShooter( ent, WP_ROCKET_LAUNCHER );
-}
+void SP_shooter_rocket(gentity_t *ent) { InitShooter(ent, WP_ROCKET_LAUNCHER); }
 
-void SP_shooter_plasma( gentity_t *ent ) {
-	InitShooter( ent, WP_PLASMAGUN);
-}
+void SP_shooter_plasma(gentity_t *ent) { InitShooter(ent, WP_PLASMAGUN); }
 
-void SP_shooter_grenade( gentity_t *ent ) {
-	InitShooter( ent, WP_GRENADE_LAUNCHER);
-}
+void SP_shooter_grenade(gentity_t *ent) { InitShooter(ent, WP_GRENADE_LAUNCHER); }
 
 static void PortalDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
 	G_FreeEntity( self );
@@ -265,19 +257,6 @@ static void PortalTouch( gentity_t *self, gentity_t *other, trace_t *trace) {
 	// see if we will even let other try to use it
 	if( other->health <= 0 || !other->client ) {
 		return;
-	}
-
-	if ( other->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_NEUTRALFLAG ) );
-		other->client->ps.powerups[PW_NEUTRALFLAG] = 0;
-	}
-	else if ( other->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_REDFLAG ) );
-		other->client->ps.powerups[PW_REDFLAG] = 0;
-	}
-	else if ( other->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
-		Drop_Item( other, BG_FindItemForPowerup( PW_BLUEFLAG ) );
-		other->client->ps.powerups[PW_BLUEFLAG] = 0;
 	}
 
 	// find the destination
