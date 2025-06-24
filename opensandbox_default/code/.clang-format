@@ -1,0 +1,24 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+SpaceBeforeParens: Never
+
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortCaseLabelsOnASingleLine: true
+
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Attach
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+PenaltyBreakBeforeFirstCallParameter: 10000
+PenaltyReturnTypeOnItsOwnLine: 10000
+ColumnLimit: 9999
+
+DisableFormat: false
