@@ -1,29 +1,8 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
-//
-// cg_players.c -- handle the media and animation for player entities
+// OpenSandbox — GPLv2; see LICENSE for details.
+
 #include "cg_local.h"
 
 char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
@@ -648,7 +627,7 @@ void CG_NewClientInfo( int clientNum ) {
 	Q_strncpyz( newInfo.name, v, sizeof( newInfo.name ) );
 	
 	v = Info_ValueForKey( configstring, "vn" );
-	newInfo.vehiclenum = atoi( v );
+	newInfo.vehicleNum = atoi( v );
 
 	// npc?
 	v = Info_ValueForKey( configstring, "i" );
@@ -1607,7 +1586,7 @@ void CG_Player( centity_t *cent ) {
 
 	VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
 	
-	if(ci->vehiclenum > 0){
+	if(ci->vehicleNum > 0){
 		VectorScale(legs.axis[0], 0, legs.axis[0]);
 		VectorScale(legs.axis[1], 0, legs.axis[1]);
 		VectorScale(legs.axis[2], 0, legs.axis[2]);

@@ -1,27 +1,7 @@
-//
-// OpenSandbox
-//
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-//
-// This file is part of OpenSandbox.
-//
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-//
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-//
-// Contact: opensandboxteam@gmail.com
-//
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
 
@@ -38,7 +18,7 @@ Works with player in car
 ================
 */
 void Phys_VehiclePlayer(gentity_t *self) {
-	if(!self->parent || !self || !self->parent->client->vehiclenum || self->parent->health <= 0 || self->health <= 0) {
+	if(!self || !self->parent || !self->parent->client->vehicleNum || self->parent->health <= 0 || self->health <= 0) {
 		self->think = 0;
 		self->nextthink = 0;
 		self->r.contents = CONTENTS_SOLID;
@@ -49,7 +29,7 @@ void Phys_VehiclePlayer(gentity_t *self) {
 		VectorSet(self->parent->r.mins, -15, -15, -24);
 		VectorSet(self->parent->r.maxs, 15, 15, 32);
 		VectorSet(self->parent->client->ps.origin, self->r.currentOrigin[0], self->r.currentOrigin[1], self->r.currentOrigin[2] + 40);
-		self->parent->client->vehiclenum = 0;
+		self->parent->client->vehicleNum = 0;
 		self->s.legsAnim = 0;
 		self->s.generic1 = 0;  // smooth vehicles
 		self->parent->client->ps.gravity = g_gravity.value;

@@ -1,27 +1,7 @@
-//
-// OpenSandbox
-//
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-//
-// This file is part of OpenSandbox.
-//
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-//
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-//
-// Contact: opensandboxteam@gmail.com
-//
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
 
@@ -123,8 +103,6 @@ static void SB_Shooter(gentity_t *ent) {
 		return;
 	}
 
-	RegisterItem(BG_FindItemForWeapon(ent->spawnflags));
-
 	trap_LinkEntity(ent);
 }
 
@@ -145,23 +123,25 @@ void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 }
 
 static void G_TouchProp(gentity_t *self, gentity_t *other, trace_t *trace) {
-	if(other->health <= 0 && !other->client && !other->npcType && other->client->vehiclenum && self->vehicle <= 0) {
-		return;
+	if(self->objectType == OT_VEHICLE) {
+		if(!other->health || !other->client || !other->npcType || other->client->vehicleNum) {
+			return;
+		}
+		if(self->parent && self->parent->client->vehicleNum) {
+			return;
+		}
+		other->client->vehicleNum = self->s.number;
+		self->parent = other;
+		ClientUserinfoChanged(other->s.clientNum);
+		VectorCopy(self->s.origin, other->s.origin);
+		VectorCopy(self->s.pos.trBase, other->s.pos.trBase);
+		other->s.apos.trBase[1] = self->s.apos.trBase[1];
+		VectorCopy(self->r.currentOrigin, other->r.currentOrigin);
+		VectorSet(other->r.mins, -25, -25, -15);
+		VectorSet(other->r.maxs, 25, 25, 15);
+		self->think = Phys_VehiclePlayer;
+		self->nextthink = level.time + 1;
 	}
-	if(self->parent && self->parent->client->vehiclenum) {
-		return;
-	}
-	other->client->vehiclenum = self->s.number;
-	self->parent = other;
-	ClientUserinfoChanged(other->s.clientNum);
-	VectorCopy(self->s.origin, other->s.origin);
-	VectorCopy(self->s.pos.trBase, other->s.pos.trBase);
-	other->s.apos.trBase[1] = self->s.apos.trBase[1];
-	VectorCopy(self->r.currentOrigin, other->r.currentOrigin);
-	VectorSet(other->r.mins, -25, -25, -15);
-	VectorSet(other->r.maxs, 25, 25, 15);
-	self->think = Phys_VehiclePlayer;
-	self->nextthink = level.time + 1;
 }
 
 static void setModel(gentity_t *ent, char *modelName) {

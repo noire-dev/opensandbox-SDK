@@ -179,8 +179,6 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	// reserve some spots for dead player bodies
 	InitBodyQue();
 
-	ClearRegisteredItems();
-
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
 
@@ -191,8 +189,6 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	if(g_gametype.integer >= GT_TEAM) {
 		G_CheckTeamItems();
 	}
-
-	SaveRegisteredItems();
 
 	G_Printf("-----------------------------------\n");
 
@@ -525,17 +521,14 @@ static void BeginIntermission(void) {
 
 /*
 =============
-ExitLevel
-
-When the intermission has been exited, the server is either killed
-or moved to a new level based on the "nextmap" cvar
+LevelRestart
 =============
 */
-static void ExitLevel(void) {
+static void LevelRestart(void) {
 	int i;
 	gclient_t *cl;
 
-	trap_SendConsoleCommand(EXEC_APPEND, "vstr nextmap\n");
+	trap_SendConsoleCommand(EXEC_APPEND, "map_restart\n");
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
@@ -666,7 +659,7 @@ static void CheckIntermissionExit(void) {
 
 		// if everyone wants to go, go now
 		if(!notReady) {
-			ExitLevel();
+			LevelRestart();
 			return;
 		}
 	}
@@ -683,7 +676,7 @@ static void CheckIntermissionExit(void) {
 		return;
 	}
 
-	ExitLevel();
+	LevelRestart();
 }
 
 /*

@@ -1,51 +1,18 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
-//
-
-/*****************************************************************************
- * name:		ai_main.c
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /MissionPack/code/game/ai_main.c $
- *
- *****************************************************************************/
-
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
 #include "../qcommon/q_shared.h"
 #include "botlib.h"		//bot lib interface
 
-//
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
 #include "ai_cmd.h"
 #include "ai_dmnet.h"
 
-//
 #include "chars.h"
 #include "inv.h"
 #include "syn.h"

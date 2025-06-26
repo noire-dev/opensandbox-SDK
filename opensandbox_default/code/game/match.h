@@ -1,27 +1,7 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 // make sure this is the same character as we use in chats in g_cmd.c
 #define EC	"\x19"
@@ -35,7 +15,6 @@
 #define MTCONTEXT_PATROLKEYAREA			64
 #define MTCONTEXT_REPLYCHAT				128
 #define MTCONTEXT_CTF					256
-#define MTCONTEXT_DD				512
 
 //message types
 #define MSG_NEWLEADER					1		//new leader
@@ -71,12 +50,7 @@
 #define MSG_ATTACKENEMYBASE				31		//attack the enemy base
 #define MSG_HARVEST						32		//go harvest
 #define MSG_SUICIDE						33		//order to suicide
-//
 
-//Double Domination messages
-#define MSG_TAKEA					90
-#define MSG_TAKEB					91
-//
 #define MSG_ME							100
 #define MSG_EVERYONE					101
 #define MSG_MULTIPLENAMES				102
@@ -87,14 +61,12 @@
 #define MSG_FOREVER						107
 #define MSG_FORALONGTIME				108
 #define MSG_FORAWHILE					109
-//
+
 #define MSG_CHATALL						200
 #define MSG_CHATTEAM					201
 #define MSG_CHATTELL					202
-//
-#define MSG_CTF							300		//ctf message
 
-
+#define MSG_CTF							300
 
 //command sub types
 #define ST_SOMEWHERE					0
@@ -116,12 +88,10 @@
 #define ST_TEAM							32768
 #define ST_1FCTFGOTFLAG					65535
 
-
 //ctf task preferences
 #define ST_DEFENDER						1
 #define ST_ATTACKER						2
 #define ST_ROAMER						4
-
 
 //word replacement variables
 #define THE_ENEMY						7

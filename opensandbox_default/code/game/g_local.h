@@ -1,29 +1,7 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
-//
-// g_local.h -- local definitions for game module
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -433,7 +411,7 @@ struct gclient_s {
 	// command (not in 50ms increments)
 	int			frameOffset;
 
-	int			vehiclenum;
+	int			vehicleNum;
 
 	// unlagged - smooth clients #1
 	// the last frame number we got an update from this client
@@ -524,72 +502,6 @@ typedef struct {
 	void	(*spawn)(gentity_t *ent);
 } spawn_t;
 
-void SP_info_player_start (gentity_t *ent);
-void SP_info_player_deathmatch (gentity_t *ent);
-
-//
-// g_cmds.c
-//
-
-void Cmd_Score_f (gentity_t *ent);
-void StopFollowing( gentity_t *ent );
-void BroadcastTeamChange( gclient_t *client, int oldTeam );
-void SetTeam( gentity_t *ent, char *s );
-void Cmd_FollowCycle_f( gentity_t *ent, int dir );  //KK-OAX Changed to match definition
-char *ConcatArgs( int start );  //KK-OAX This declaration moved from g_svccmds.c
-
-//
-// g_items.c
-//
-
-void G_CheckTeamItems( void );
-void G_RunItem( gentity_t *ent );
-void RespawnItem( gentity_t *ent );
-void UseHoldableItem( gentity_t *ent );
-void PrecacheItem (item_t *it);
-gentity_t *Drop_Item( gentity_t *ent, item_t *item );
-gentity_t *LaunchItem( item_t *item, vec3_t origin, vec3_t velocity );
-void SetRespawn (gentity_t *ent, float delay);
-void G_SpawnItem (gentity_t *ent, item_t *item);
-void FinishSpawningItem( gentity_t *ent );
-void Think_Weapon (gentity_t *ent);
-int ArmorIndex (gentity_t *ent);
-void	Add_Ammo (gentity_t *ent, int weapon, int count);
-void	Set_Ammo (gentity_t *ent, int weapon, int count);
-void	Set_Weapon (gentity_t *ent, int weapon, int count);
-void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace );
-void Touch_Item2(gentity_t *ent, gentity_t *other, trace_t *trace, qboolean allowBot);
-
-void ClearRegisteredItems( void );
-void RegisterItem( item_t *item );
-void SaveRegisteredItems( void );
-
-void	G_TouchTriggers (gentity_t *ent);
-
-char	*vtos( const vec3_t v );
-
-void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
-void G_AddEvent( gentity_t *ent, int event, int eventParm );
-void G_SetOrigin( gentity_t *ent, vec3_t origin );
-
-
-void target_finish_think(gentity_t* self);
-void target_finish_use (gentity_t *self, gentity_t *other, gentity_t *activator);
-
-//
-// g_combat.c
-//
-
-qboolean CanDamage (gentity_t *targ, vec3_t origin);
-void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
-void G_ExitVehicle (int num);
-void G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
-int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir );
-void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
-void TossClientItems( gentity_t *self );
-void TossClientPersistantPowerups( gentity_t *self );
-void TossClientCubes( gentity_t *self );
-
 // damage flags
 #define DAMAGE_RADIUS				0x00000001	// damage was indirect
 #define DAMAGE_NO_ARMOR				0x00000002	// armour does not protect from this damage
@@ -597,12 +509,77 @@ void TossClientCubes( gentity_t *self );
 #define DAMAGE_NO_PROTECTION		0x00000008  // armor, shields, invulnerability, and godmode have no effect
 #define DAMAGE_NO_TEAM_PROTECTION	0x00000010  // armor, shields, invulnerability, and godmode have no effect
 
-//
-// g_mover.c
-//
+// g_active.c
+void ClientThink(int clientNum);
+void G_RunClient(gentity_t *ent);
+qboolean G_CheckWeapon(int clientNum, int wp, int finish);
+int G_CheckWeaponAmmo(int clientNum, int wp);
+void PM_Add_SwepAmmo(int clientNum, int wp, int count);
+void ClientEndFrame(gentity_t *ent);
 
-void G_RunMover( gentity_t *ent );
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
+// g_bot.c
+qboolean G_BotConnect(int clientNum, qboolean restart);
+void G_AddBot(const char *name, float skill, const char *team, char *altname, gentity_t *spawn);
+void Svcmd_AddBot_f(void);
+void G_LoadBots(void);
+void SandboxBotSpawn(gentity_t *bot, char spawnid[]);
+
+// g_client.c
+void SP_info_player_deathmatch(gentity_t *ent);
+void SP_info_player_start(gentity_t *ent);
+qboolean SpotWouldTelefrag(gentity_t *spot);
+gentity_t *SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles);
+void InitBodyQue(void);
+void CopyToBodyQue(gentity_t *ent);
+void SetClientViewAngle(gentity_t *ent, vec3_t angle);
+void ClientRespawn(gentity_t *ent);
+int TeamLeader(int team);
+team_t PickTeam(int ignoreClientNum);
+void ClientUserinfoChanged(int clientNum);
+char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot);
+void ClientBegin(int clientNum);
+void ClientSpawn(gentity_t *ent);
+void ClientDisconnect(int clientNum);
+void DropClientSilently(int clientNum);
+void SetUnlimitedWeapons(gentity_t *ent);
+
+// g_cmds.c
+void DeathmatchScoreboardMessage(gentity_t *ent);
+void G_SendGameCvars(gentity_t *ent);
+void G_SendSwepWeapons(gentity_t *ent);
+void G_SendSpawnSwepWeapons(gentity_t *ent);
+void RespawnTimeMessage(gentity_t *ent, int time);
+void ObeliskHealthMessage(void);
+void Cmd_Score_f(gentity_t *ent);
+char *ConcatArgs(int start);
+void SetTeam(gentity_t *ent, char *s);
+void StopFollowing(gentity_t *ent);
+void Cmd_FollowCycle_f(gentity_t *ent, int dir);
+void ClientCommand(int clientNum);
+
+// g_combat.c
+void AddScore(gentity_t *ent, int score);
+void TossClientItems(gentity_t *self);
+void TossClientCubes(gentity_t *self);
+void TossClientPersistantPowerups(gentity_t *ent);
+void body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath);
+void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath);
+int G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir);
+void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
+qboolean CanDamage(gentity_t *targ, vec3_t origin);
+void G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
+
+// g_items.c
+void Set_Weapon(gentity_t *ent, int weapon, int status);
+void Set_Ammo(gentity_t *ent, int weapon, int count);
+void RespawnItem(gentity_t *ent);
+void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace);
+gentity_t *LaunchItem(item_t *item, vec3_t origin, vec3_t velocity);
+gentity_t *Drop_Item(gentity_t *ent, item_t *item);
+void FinishSpawningItem(gentity_t *ent);
+void G_CheckTeamItems(void);
+void G_SpawnItem(gentity_t *ent, item_t *item);
+void G_RunItem(gentity_t *ent);
 
 // g_main.c
 void QDECL G_Printf(const char *fmt, ...);
@@ -746,6 +723,7 @@ void G_KillBox(gentity_t *ent);
 void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm);
 void G_AddEvent(gentity_t *ent, int event, int eventParm);
 void G_Sound(gentity_t *ent, int channel, int soundIndex);
+void G_SetOrigin(gentity_t *ent, vec3_t origin);
 gentity_t *FindEntityForPhysgun(gentity_t *ent, int range);
 gentity_t *FindEntityForGravitygun(gentity_t *ent, int range);
 void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint);
@@ -768,90 +746,6 @@ void FireWeapon(gentity_t *ent);
 void G_StartKamikaze(gentity_t *ent);
 void G_StartCarExplode(gentity_t *ent);
 void G_StartNukeExplode(gentity_t *ent);
-
-//
-// g_client.c
-//
-
-team_t TeamCount( int ignoreClientNum, int team );
-int TeamLeader( int team );
-team_t PickTeam( int ignoreClientNum );
-void SetClientViewAngle( gentity_t *ent, vec3_t angle );
-gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
-void CopyToBodyQue( gentity_t *ent );
-void ClientRespawn(gentity_t *ent);
-void InitClientPersistant (gclient_t *client);
-void InitClientResp (gclient_t *client);
-void InitBodyQue (void);
-void ClientSpawn( gentity_t *ent );
-void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
-void AddScore( gentity_t *ent, int score );
-void CalculateRanks( void );
-qboolean SpotWouldTelefrag( gentity_t *spot );
-qboolean SpawnPointIsActive( gentity_t *spot );
-
-//
-// p_hud.c
-//
-
-void MoveClientToIntermission (gentity_t *client);
-void G_SetStats (gentity_t *ent);
-void DeathmatchScoreboardMessage (gentity_t *client);
-
-//
-// g_cmds.c
-//
-
-void DoubleDominationScoreTimeMessage( gentity_t *ent );
-void ObeliskHealthMessage( void );
-void DeathmatchScoreboardMessage (gentity_t *client);
-void RespawnTimeMessage(gentity_t *ent, int time);
-void DominationPointNamesMessage (gentity_t *client);
-void DominationPointStatusMessage( gentity_t *ent );
-
-//
-// g_client.c
-//
-
-char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
-void ClientUserinfoChanged( int clientNum );
-void ClientDisconnect( int clientNum );
-void ClientBegin( int clientNum );
-void ClientCommand( int clientNum );
-void DropClientSilently( int clientNum );
-void SetupCustomBot( gentity_t *bot );
-void SetUnlimitedWeapons( gentity_t *ent );
-void SetSandboxWeapons( gentity_t *ent );
-void SetCustomWeapons( gentity_t *ent );
-
-//
-// g_active.c
-//
-
-void ClientThink( int clientNum );
-void ClientEndFrame( gentity_t *ent );
-void G_RunClient( gentity_t *ent );
-qboolean G_CheckWeapon( int clientNum, int wp, int finish );
-int G_CheckWeaponAmmo( int clientNum, int wp );
-
-//
-// g_session.c
-//
-
-void G_ReadSessionData( gclient_t *client );
-void G_InitSessionData( gclient_t *client, char *userinfo );
-void G_InitWorldSession( void );
-void G_WriteSessionData( void );
-
-//
-// g_bot.c
-//
-
-qboolean G_BotConnect(int clientNum, qboolean restart);
-void G_AddBot(const char *name, float skill, const char *team, char *altname, gentity_t *spawn);
-void Svcmd_AddBot_f(void);
-void G_LoadBots(void);
-void SandboxBotSpawn(gentity_t *bot, char spawnid[]);
 
 // ai_main.c
 #define MAX_FILEPATH			144
@@ -879,14 +773,6 @@ extern	gentity_t		g_entities[MAX_GENTITIES];
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
 //CVARS
-void 	G_SendGameCvars( gentity_t *ent );
-void 	G_SendSwepWeapons( gentity_t *ent );
-void 	G_SendSpawnSwepWeapons( gentity_t *ent );
-void 	plasma_think( gentity_t *ent );
-void 	rocket_think( gentity_t *ent );
-void 	grenade_think( gentity_t *ent );
-void 	bfg_think( gentity_t *ent );
-void 	nailgun_think( gentity_t *ent );
 extern 	int 		mod_jumpheight;
 extern	int			mod_gravity;
 

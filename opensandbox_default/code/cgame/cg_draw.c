@@ -1,30 +1,7 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
-//
-// cg_draw.c -- draw all of the graphical elements during
-// active (after loading) gameplay
+// OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "../qcommon/ns_local.h"
 
@@ -477,7 +454,6 @@ static void CG_DrawCounters( void ) {
 	int			i, total;
 	int			mins, seconds, tens;
 	int			msec;
-	int 		rst;
 
 	y = 0;
 
@@ -1073,7 +1049,6 @@ CG_DrawCrosshair
 static void CG_DrawCrosshair(void) {
 	float		w, h;
 	qhandle_t	hShader;
-	float		f;
 	float		x, y;
 
 	if (!cg_drawCrosshair.integer || cg.renderingThirdPerson || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {

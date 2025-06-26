@@ -1,29 +1,8 @@
-// 
-// OpenSandbox
-// 
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2008-2012 OpenArena Team
-// Copyright (C) 2023-2024 Noire.dev
+// Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
-// This file is part of OpenSandbox.
-// 
-// OpenSandbox is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License, version 2,
-// as published by the Free Software Foundation.
-// 
-// This modified code is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
-// Contact: opensandboxteam@gmail.com
-// 
-//
-// cg_main.c -- initialization and primary entry point for cgame
+// OpenSandbox — GPLv2; see LICENSE for details.
+
 #include "../qcommon/ns_local.h"
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
@@ -338,7 +317,6 @@ This function may execute for a couple of minutes with a slow disk.
 */
 static void CG_RegisterGraphics( void ) {
 	int			i;
-	char		items[MAX_ITEMS+1];
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -522,18 +500,12 @@ static void CG_RegisterGraphics( void ) {
     cgs.media.notifyIcon = trap_R_RegisterShaderNoMip("menu/notifyicon");
     cgs.media.undoIcon = trap_R_RegisterShaderNoMip("menu/undoicon");
 
-
 	memset( cg_items, 0, sizeof( cg_items ) );
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
-	// only register the items that the server says we need
-	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
-
 	for ( i = 1 ; i < gameInfoItemsNum ; i++ ) {
-		if ( items[ i ] == '1' || 1 ) {
-			CG_LoadingItem( i );
-			CG_RegisterItemVisuals( i );
-		}
+		CG_LoadingItem(i);
+		CG_RegisterItemVisuals(i);
 	}
 
 	// wall marks
