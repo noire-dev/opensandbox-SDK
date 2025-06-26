@@ -4541,11 +4541,11 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 						bs->flagstatuschanged = qtrue;
 						break;
 					case GTS_RED_TAKEN:
-						bs->neutralflagstatus = BotTeam(bs) == TEAM_RED ? 2 : 1; //FIXME: check Team_TakeFlagSound in g_team.c
+						bs->neutralflagstatus = BotTeam(bs) == TEAM_RED ? 2 : 1;
 						bs->flagstatuschanged = qtrue;
 						break;
 					case GTS_BLUE_TAKEN:
-						bs->neutralflagstatus = BotTeam(bs) == TEAM_BLUE ? 2 : 1; //FIXME: check Team_TakeFlagSound in g_team.c
+						bs->neutralflagstatus = BotTeam(bs) == TEAM_BLUE ? 2 : 1;
 						bs->flagstatuschanged = qtrue;
 						break;
 				}

@@ -333,7 +333,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;		// dead people can't pickup
 
 	if(ent->npcType){
-		if(!G_NpcFactionProp(NP_PICKUP, ent))
+		if(!gameInfoNPCTypes[ent->npcType].canPickup)
 		return;		// npc can't pickup
 	}
 

@@ -35,7 +35,7 @@
 const char* operators[] = {
     "=", "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "/=", "*="
 };
-const int num_operators = sizeof(operators) / sizeof(operators[0]);
+const int num_operators = ARRAY_SIZE(operators);
 
 int is_operator(const char* token) {
     int i;

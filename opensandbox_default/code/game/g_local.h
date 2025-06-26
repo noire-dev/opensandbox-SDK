@@ -519,19 +519,6 @@ typedef struct {
 
 extern int				SourceTechEntityList[MAX_GENTITIES];
 
-//
-// g_spawn.c
-//
-
-qboolean	G_SpawnString( const char *key, const char *defaultString, char **out );
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
-qboolean	G_SpawnFloat( const char *key, const char *defaultString, float *out );
-qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out );
-qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out );
-qboolean	G_SpawnVector4( const char *key, const char *defaultString, float *out );
-void		G_SpawnEntitiesFromString( void );
-char 		*G_NewString( const char *string );
-
 typedef struct {
 	char	*name;
 	void	(*spawn)(gentity_t *ent);
@@ -539,61 +526,6 @@ typedef struct {
 
 void SP_info_player_start (gentity_t *ent);
 void SP_info_player_deathmatch (gentity_t *ent);
-
-void SP_func_plat (gentity_t *ent);
-void SP_func_static (gentity_t *ent);
-void SP_func_rotating (gentity_t *ent);
-void SP_func_bobbing (gentity_t *ent);
-void SP_func_pendulum( gentity_t *ent );
-void SP_func_button (gentity_t *ent);
-void SP_func_door (gentity_t *ent);
-void SP_func_train (gentity_t *ent);
-
-void SP_trigger_always (gentity_t *ent);
-void SP_trigger_multiple (gentity_t *ent);
-void SP_trigger_push (gentity_t *ent);
-void SP_trigger_teleport (gentity_t *ent);
-void SP_trigger_hurt (gentity_t *ent);
-
-void SP_target_give (gentity_t *ent);
-void SP_target_delay (gentity_t *ent);
-void SP_target_speaker (gentity_t *ent);
-void SP_target_print (gentity_t *ent);
-void SP_target_teleporter( gentity_t *ent );
-void SP_target_relay (gentity_t *ent);
-void SP_target_kill (gentity_t *ent);
-void SP_target_position (gentity_t *ent);
-void SP_target_location (gentity_t *ent);
-void SP_target_push (gentity_t *ent);
-
-void SP_path_corner (gentity_t *self);
-
-void SP_misc_portal_camera(gentity_t *ent);
-void SP_misc_portal_surface(gentity_t *ent);
-
-void SP_shooter_rocket( gentity_t *ent );
-void SP_shooter_plasma( gentity_t *ent );
-void SP_shooter_grenade( gentity_t *ent );
-
-void SP_team_CTF_redplayer( gentity_t *ent );
-void SP_team_CTF_blueplayer( gentity_t *ent );
-void SP_team_CTF_redspawn( gentity_t *ent );
-void SP_team_CTF_bluespawn( gentity_t *ent );
-void SP_team_blueobelisk( gentity_t *ent );
-void SP_team_redobelisk( gentity_t *ent );
-void SP_team_neutralobelisk( gentity_t *ent );
-
-void SP_info_player_dd (gentity_t *ent);
-void SP_info_player_dd_red (gentity_t *ent);
-void SP_info_player_dd_blue (gentity_t *ent);
-
-void SP_script_variable (gentity_t *ent);
-void SP_script_cmd (gentity_t *ent);
-
-void SP_sandbox_prop (gentity_t *ent);
-void SP_sandbox_npc (gentity_t *ent);
-
-extern spawn_t gameInfoEntities[];
 
 //
 // g_cmds.c
@@ -632,40 +564,8 @@ void ClearRegisteredItems( void );
 void RegisterItem( item_t *item );
 void SaveRegisteredItems( void );
 
-//
-// g_utils.c
-//
-
-int G_ModelIndex( char *name );
-int		G_SoundIndex( char *name );
-void	G_TeamCommand( team_t team, char *cmd );
-void	G_KillBox (gentity_t *ent);
-gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match);
-gentity_t *G_PickTarget (char *targetname);
-void G_PickAllTargets ( gentity_t *ent );
-void	G_UseTargets (gentity_t *ent, gentity_t *activator);
-void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
-void VehiclePhys( gentity_t *self );
-gentity_t *FindEntityForPhysgun( gentity_t *ent, int range );
-gentity_t *FindEntityForGravitygun( gentity_t *ent, int range );
-void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint);
-void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
-gentity_t *G_FindEntityForEntityNum(int entityn);
-gentity_t *G_FindEntityForClientNum(int entityn);
-
-qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
-gentity_t *G_FindWeldEntity(gentity_t *ent);
-
-void	G_InitGentity( gentity_t *e );
-gentity_t	*G_Spawn (void);
-gentity_t *G_TempEntity( vec3_t origin, int event );
-void	G_Sound( gentity_t *ent, int channel, int soundIndex );
-
-void	    G_FreeEntity( gentity_t *e );
-
 void	G_TouchTriggers (gentity_t *ent);
 
-float	*tv (float x, float y, float z);
 char	*vtos( const vec3_t v );
 
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
@@ -704,41 +604,170 @@ void TossClientCubes( gentity_t *self );
 void G_RunMover( gentity_t *ent );
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
 
-//
-// g_trigger.c
-//
+// g_main.c
+void QDECL G_Printf(const char *fmt, ...);
+void QDECL G_Error(const char *fmt, ...);
+void QDECL Com_Error(int level, const char *error, ...);
+void QDECL Com_Printf(const char *msg, ...);
+void CalculateRanks(void);
+void MoveClientToIntermission(gentity_t *ent);
+void FindIntermissionPoint(void);
+void SetLeader(int team, int client);
+void CheckTeamLeader(int team);
+void G_RunThink(gentity_t *ent);
 
-void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace );
-void lock_touch( gentity_t *self, gentity_t *other, trace_t *trace );
-
-//
 // g_misc.c
-//
+void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback);
+void SP_misc_portal_surface(gentity_t *ent);
+void SP_misc_portal_camera(gentity_t *ent);
+void SP_shooter_rocket(gentity_t *ent);
+void SP_shooter_plasma(gentity_t *ent);
+void SP_shooter_grenade(gentity_t *ent);
+void DropPortalDestination(gentity_t *player);
+void DropPortalSource(gentity_t *player);
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback );
-void DropPortalSource( gentity_t *ent );
-void DropPortalDestination( gentity_t *ent );
+// g_mover.c
+void G_RunMover(gentity_t *ent);
+void Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace);
+void SP_func_door(gentity_t *ent);
+void SP_func_plat(gentity_t *ent);
+void SP_func_button(gentity_t *ent);
+void SP_path_corner(gentity_t *self);
+void SP_func_train(gentity_t *self);
+void SP_func_static(gentity_t *ent);
+void SP_func_rotating(gentity_t *ent);
+void SP_func_bobbing(gentity_t *ent);
+void SP_func_pendulum(gentity_t *ent);
 
-//
-// g_weapon.c
-//
-void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
-qboolean Melee_Fire( gentity_t *ent );
-void Weapon_HookFree (gentity_t *ent);
-void G_RunMissile( gentity_t *ent );
-void Weapon_Toolgun_Info( gentity_t *ent );
+// g_physics.c
+void Phys_VehiclePlayer(gentity_t *self);
+void Phys_CheckCarCollisions(gentity_t *ent);
+void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity);
+void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
+void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun);
+void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
+void Phys_Disable(gentity_t *ent, vec3_t origin);
+void Phys_Enable(gentity_t *ent);
+void Phys_Unweld(gentity_t *ent);
+void Phys_Frame(gentity_t *ent);
+
+// g_sandbox.c
+void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+void SP_sandbox_npc(gentity_t *ent);
+void SP_sandbox_prop(gentity_t *ent);
+void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
+void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19);
+void Undo_AddElement(gentity_t *ent, int id, int type);
+qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved);
+void Undo_RemoveElement(gentity_t *ent);
+
+// g_session.c
+void G_ReadSessionData(gclient_t *client);
+void G_InitSessionData(gclient_t *client, char *userinfo);
+void G_InitWorldSession(void);
+void G_WriteSessionData(void);
+
+// g_spawn.c
+extern spawn_t gameInfoEntities[];
+qboolean G_SpawnString(const char *key, const char *defaultString, char **out);
+qboolean G_SpawnFloat(const char *key, const char *defaultString, float *out);
+qboolean G_SpawnInt(const char *key, const char *defaultString, int *out);
+qboolean G_SpawnVector(const char *key, const char *defaultString, float *out);
+void G_SpawnEntitiesFromString(void);
+void G_LoadMapfile_f(void);
+void G_WriteMapfile_f(void);
+void G_DeleteMapfile_f(void);
+void G_ClearMap_f(void);
+void G_ClearSandboxMap_f(void);
+
+// g_svcmds.c
+qboolean ConsoleCommand(void);
+
+// g_target.c
+void SP_target_give(gentity_t *ent);
+void SP_target_delay(gentity_t *ent);
+void SP_target_print(gentity_t *ent);
+void SP_target_speaker(gentity_t *ent);
+void SP_target_teleporter(gentity_t *self);
+void SP_target_relay(gentity_t *self);
+void SP_target_kill(gentity_t *self);
+void SP_target_position(gentity_t *self);
+void SP_target_location(gentity_t *self);
+void SP_script_variable(gentity_t *self);
+void SP_script_cmd(gentity_t *ent);
+
+// g_team.c
+void Team_InitGame(void);
+qboolean OnSameTeam(gentity_t *ent1, gentity_t *ent2);
+void Team_CheckDroppedItem(gentity_t *dropped);
+void Team_ReturnFlag(int team);
+void Team_FreeEntity(gentity_t *ent);
+void Team_DroppedFlagThink(gentity_t *ent);
+int Pickup_Team(gentity_t *ent, gentity_t *other);
+qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen);
+gentity_t *SelectCTFSpawnPoint(team_t team, int teamstate, vec3_t origin, vec3_t angles);
+void SP_team_redobelisk(gentity_t *ent);
+void SP_team_blueobelisk(gentity_t *ent);
+void SP_team_neutralobelisk(gentity_t *ent);
+qboolean CheckObeliskAttack(gentity_t *obelisk, gentity_t *attacker);
+
+// g_trigger.c
+void SP_trigger_multiple(gentity_t *ent);
+void SP_trigger_always(gentity_t *ent);
+void SP_trigger_push(gentity_t *self);
+void SP_target_push(gentity_t *self);
+void SP_trigger_teleport(gentity_t *self);
+void SP_trigger_hurt(gentity_t *self);
+
+//g_unlagged.c
+void G_ResetHistory(gentity_t *ent);
+void G_StoreHistory(gentity_t *ent);
+void G_TimeShiftAllClients(int time, gentity_t *skip);
+void G_DoTimeShiftFor(gentity_t *ent);
+void G_UnTimeShiftAllClients(gentity_t *skip);
+void G_UndoTimeShiftFor(gentity_t *ent);
+void G_PredictPlayerMove(gentity_t *ent, float frametime);
+
+// g_utils.c
+int G_ModelIndex(char *name);
+int G_SoundIndex(char *name);
+void G_TeamCommand(team_t team, char *cmd);
+gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match);
+gentity_t *G_PickTarget(char *targetname);
+void G_PickAllTargets(gentity_t *ent);
+void G_UseTargets(gentity_t *ent, gentity_t *activator);
+char *vtos(const vec3_t v);
+void G_SetMovedir(vec3_t angles, vec3_t movedir);
+void G_InitGentity(gentity_t *e);
+gentity_t *G_Spawn(void);
+void G_FreeEntity(gentity_t *ed);
+gentity_t *G_TempEntity(vec3_t origin, int event);
+void G_KillBox(gentity_t *ent);
+void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm);
+void G_AddEvent(gentity_t *ent, int event, int eventParm);
+void G_Sound(gentity_t *ent, int channel, int soundIndex);
+gentity_t *FindEntityForPhysgun(gentity_t *ent, int range);
+gentity_t *FindEntityForGravitygun(gentity_t *ent, int range);
+void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint);
+void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
+gentity_t *G_FindEntityForEntityNum(int entityNum);
+gentity_t *G_FindEntityForClientNum(int entityNum);
+qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
+gentity_t *G_FindWeldEntity(gentity_t *ent);
+
+//g_weapon.c
+void CalcMuzzlePoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);
+void G_ExplodeMissile(gentity_t *ent);
+qboolean Melee_Fire(gentity_t *ent);
+void Weapon_HookFree(gentity_t *ent);
+void Weapon_Toolgun_Info(gentity_t *ent);
+void ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace);
+void G_RunMissile(gentity_t *ent);
 gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up, int weapon);
-
-//unlagged - g_unlagged.c
-void G_ResetHistory( gentity_t *ent );
-void G_StoreHistory( gentity_t *ent );
-void G_TimeShiftAllClients( int time, gentity_t *skip );
-void G_UnTimeShiftAllClients( gentity_t *skip );
-void G_DoTimeShiftFor( gentity_t *ent );
-void G_UndoTimeShiftFor( gentity_t *ent );
-void G_UnTimeShiftClient( gentity_t *client );
-void G_PredictPlayerMove( gentity_t *ent, float frametime );
-//unlagged - g_unlagged.c
+void FireWeapon(gentity_t *ent);
+void G_StartKamikaze(gentity_t *ent);
+void G_StartCarExplode(gentity_t *ent);
+void G_StartNukeExplode(gentity_t *ent);
 
 //
 // g_client.c
@@ -751,7 +780,6 @@ void SetClientViewAngle( gentity_t *ent, vec3_t angle );
 gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 void CopyToBodyQue( gentity_t *ent );
 void ClientRespawn(gentity_t *ent);
-void BeginIntermission (void);
 void InitClientPersistant (gclient_t *client);
 void InitClientResp (gclient_t *client);
 void InitBodyQue (void);
@@ -761,22 +789,6 @@ void AddScore( gentity_t *ent, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
 qboolean SpawnPointIsActive( gentity_t *spot );
-
-//
-// g_svcmds.c
-//
-
-qboolean	ConsoleCommand( void );
-gclient_t	*ClientForString( const char *s );
-
-//
-// g_weapon.c
-//
-
-void FireWeapon( gentity_t *ent );
-void G_StartKamikaze( gentity_t *ent );
-void G_StartCarExplode( gentity_t *ent );
-void G_StartNukeExplode( gentity_t *ent );
 
 //
 // p_hud.c
@@ -796,21 +808,6 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 void RespawnTimeMessage(gentity_t *ent, int time);
 void DominationPointNamesMessage (gentity_t *client);
 void DominationPointStatusMessage( gentity_t *ent );
-
-//
-// g_main.c
-//
-
-void FindIntermissionPoint( void );
-void SetLeader(int team, int client);
-void CheckTeamLeader( int team );
-void G_RunThink (gentity_t *ent);
-void ExitLevel( void );
-void SendScoreboardMessageToAllClients( void );
-void QDECL G_Printf( const char *fmt, ... );
-void QDECL G_Error( const char *fmt, ... ) __attribute__((noreturn));
-void CheckTeamVote( int team );
-qboolean G_NpcFactionProp(int prop, gentity_t* ent);
 
 //
 // g_client.c
@@ -838,16 +835,6 @@ qboolean G_CheckWeapon( int clientNum, int wp, int finish );
 int G_CheckWeaponAmmo( int clientNum, int wp );
 
 //
-// g_team.c
-//
-
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
-void Team_CheckDroppedItem( gentity_t *dropped );
-qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker );
-//KK-OAX Added for Command Handling Changes (r24)
-team_t G_TeamFromString( char *str );
-
-//
 // g_session.c
 //
 
@@ -865,57 +852,6 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 void Svcmd_AddBot_f(void);
 void G_LoadBots(void);
 void SandboxBotSpawn(gentity_t *bot, char spawnid[]);
-
-//
-// g_physics.c
-//
-
-void Phys_CheckCarCollisions(gentity_t *ent);
-
-void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity);
-void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
-void Phys_HoldSetup(gentity_t *player, qboolean isPhysgun);
-void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun);
-
-void Phys_Disable( gentity_t *ent, vec3_t origin );
-void Phys_Enable( gentity_t *ent );
-void Phys_Unweld( gentity_t *ent );
-
-void Phys_Frame( gentity_t *ent );
-void Phys_Smoke( gentity_t *ent, float impact );
-void Phys_CarDamage (gentity_t *targ, gentity_t *attacker, int damage);
-
-
-//
-// g_playerstore.c
-//
-
-void PlayerStoreInit( void );
-void PlayerStore_store(char* guid, playerState_t ps);
-void PlayerStore_restore(char* guid, playerState_t *ps);
-
-//
-// g_sandbox.c
-//
-
-void G_BuildProp( char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
-void G_ModProp( gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19 );
-void G_DieProp (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
-
-void Undo_ShiftStack(gentity_t *ent);
-void Undo_AddElement(gentity_t *ent, int id, int type);
-qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved);
-void Undo_RemoveElement(gentity_t *ent);
-
-//
-// g_mapfiles.c
-//
-
-void G_WriteMapfile_f( void );
-void G_DeleteMapfile_f( void );
-void G_ClearMap_f( void );
-void G_ClearSandboxMap_f( void );
-void G_LoadMapfile_f( void );
 
 // ai_main.c
 #define MAX_FILEPATH			144
@@ -937,9 +873,6 @@ int BotAIShutdownClient( int client, qboolean restart );
 int BotAIStartFrame( int time );
 void BotTestAAS(vec3_t origin);
 
-#include "g_team.h" // teamplay specific stuff
-
-
 extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 
@@ -954,7 +887,6 @@ void 	rocket_think( gentity_t *ent );
 void 	grenade_think( gentity_t *ent );
 void 	bfg_think( gentity_t *ent );
 void 	nailgun_think( gentity_t *ent );
-void 	UpdateGameCvars( void );
 extern 	int 		mod_jumpheight;
 extern	int			mod_gravity;
 

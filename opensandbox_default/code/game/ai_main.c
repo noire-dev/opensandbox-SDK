@@ -71,10 +71,6 @@ cvar_t bot_testsolid;
 cvar_t bot_testclusters;
 cvar_t bot_developer;
 
-
-void ExitLevel( void );
-
-
 /*
 ==================
 BotAI_Print
@@ -1195,8 +1191,6 @@ int BotAILoadMap( int restart ) {
 
 	return qtrue;
 }
-
-void ProximityMine_Trigger( gentity_t *trigger, gentity_t *other, trace_t *trace );
 
 /*
 ==================

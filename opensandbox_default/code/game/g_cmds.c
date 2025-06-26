@@ -786,7 +786,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 		tent->classname = "sandbox_npc";
 		CopyAlloc(tent->clientname, arg02);
 
-		tent->type = NPC_ENEMY;
+		/*tent->type = NPC_ENEMY;
 		if(!Q_stricmp (arg03, "NPC_Enemy"))
 			tent->type = NPC_ENEMY;
 		if(!Q_stricmp (arg03, "NPC_Citizen"))
@@ -796,7 +796,7 @@ static void Cmd_SpawnList_Item_f( gentity_t *ent ){
 		if(!Q_stricmp (arg03, "NPC_Partner"))
 			tent->type = NPC_PARTNER;
 		if(!Q_stricmp (arg03, "NPC_PartnerEnemy"))
-			tent->type = NPC_PARTNERENEMY;
+			tent->type = NPC_PARTNERENEMY;*/
 
 		tent->skill = atof(arg04);
 		tent->health = atoi(arg05);
@@ -1067,7 +1067,7 @@ static void Cmd_ActivateTarget_f(gentity_t *ent) {
 }
 
 //This is the table that ClientCommands runs the console entry against.
-commands_t cmds[ ] = {
+commands_t cmds[] = {
   // can be used even during intermission
   { "say", CMD_MESSAGE|CMD_INTERMISSION, Cmd_RunSay_f },
   { "say_team", CMD_MESSAGE|CMD_INTERMISSION, Cmd_RunSayTeam_f },
@@ -1099,7 +1099,7 @@ commands_t cmds[ ] = {
   { "freespectator", CMD_NOTEAM, StopFollowing }
 };
 
-static int numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
+static int numCmds = ARRAY_SIZE(cmds);
 
 /*
 =================

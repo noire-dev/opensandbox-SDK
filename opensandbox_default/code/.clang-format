@@ -1,7 +1,7 @@
 BasedOnStyle: Google
 IndentWidth: 4
 TabWidth: 4
-UseTab: Never
+UseTab: ForIndentation
 
 SpaceBeforeParens: Never
 

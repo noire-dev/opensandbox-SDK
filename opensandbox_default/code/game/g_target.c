@@ -1,144 +1,134 @@
-// 
+//
 // OpenSandbox
-// 
+//
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2008-2012 OpenArena Team
 // Copyright (C) 2023-2024 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
+//
 // This file is part of OpenSandbox.
-// 
+//
 // OpenSandbox is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2,
 // as published by the Free Software Foundation.
-// 
+//
 // This modified code is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 // Contact: opensandboxteam@gmail.com
-// 
+//
 
 #include "g_local.h"
 
 //==========================================================
 
-void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	gentity_t	*t;
-	trace_t		trace;
+static void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	gentity_t *t;
+	trace_t trace;
 
-	if ( !activator->client || !ent->target )
-		return;
+	if(!activator->client || !ent->target) return;
 
-	memset( &trace, 0, sizeof( trace ) );
+	memset(&trace, 0, sizeof(trace));
 	t = NULL;
-	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
-		if ( !t->item )
-			continue;
+	while((t = G_Find(t, FOFS(targetname), ent->target)) != NULL) {
+		if(!t->item) continue;
 
-		Touch_Item( t, activator, &trace );
+		Touch_Item(t, activator, &trace);
 
 		// make sure it isn't going to respawn or show any events
 		t->nextthink = 0;
-		trap_UnlinkEntity( t );
+		trap_UnlinkEntity(t);
 	}
 }
 
-void SP_target_give( gentity_t *ent ) {
-	ent->use = Use_Target_Give;
-}
+void SP_target_give(gentity_t *ent) { ent->use = Use_Target_Give; }
 
 //==========================================================
 
-void Think_Target_Delay( gentity_t *ent ) {
-	G_UseTargets( ent, ent->activator );
-}
+static void Think_Target_Delay(gentity_t *ent) { G_UseTargets(ent, ent->activator); }
 
-void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
+static void Use_Target_Delay(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	ent->nextthink = level.time + (ent->wait + ent->random * crandom()) * 1000;
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
 }
 
-void SP_target_delay( gentity_t *ent ) {
+void SP_target_delay(gentity_t *ent) {
 	// check delay for backwards compatability
-	if ( !G_SpawnFloat( "delay", "0", &ent->wait ) ) {
-		G_SpawnFloat( "wait", "1", &ent->wait );
+	if(!G_SpawnFloat("delay", "0", &ent->wait)) {
+		G_SpawnFloat("wait", "1", &ent->wait);
 	}
 
-	if ( !ent->wait )
-		ent->wait = 1;
+	if(!ent->wait) ent->wait = 1;
 	ent->use = Use_Target_Delay;
 }
 
 //==========================================================
 
-void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if ( activator->client && ( ent->spawnflags & 4 ) ) {
-		trap_SendServerCommand( activator-g_entities, va("cp \"%s\"", ent->message ));
+static void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(activator->client && (ent->spawnflags & 4)) {
+		trap_SendServerCommand(activator - g_entities, va("cp \"%s\"", ent->message));
 		return;
 	}
 
-	if ( ent->spawnflags & 3 ) {
-		if ( ent->spawnflags & 1 ) {
-			G_TeamCommand( TEAM_RED, va("cp \"%s\"", ent->message) );
+	if(ent->spawnflags & 3) {
+		if(ent->spawnflags & 1) {
+			G_TeamCommand(TEAM_RED, va("cp \"%s\"", ent->message));
 		}
-		if ( ent->spawnflags & 2 ) {
-			G_TeamCommand( TEAM_BLUE, va("cp \"%s\"", ent->message) );
+		if(ent->spawnflags & 2) {
+			G_TeamCommand(TEAM_BLUE, va("cp \"%s\"", ent->message));
 		}
 		return;
 	}
 
-	trap_SendServerCommand( -1, va("cp \"%s\"", ent->message ));
+	trap_SendServerCommand(-1, va("cp \"%s\"", ent->message));
 }
 
-void SP_target_print( gentity_t *ent ) {
-	ent->use = Use_Target_Print;
-}
+void SP_target_print(gentity_t *ent) { ent->use = Use_Target_Print; }
 
 //==========================================================
 
-void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if (ent->spawnflags & 3) {	// looping sound toggles
-		if (ent->s.loopSound)
-			ent->s.loopSound = 0;	// turn it off
+static void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(ent->spawnflags & 3) {  // looping sound toggles
+		if(ent->s.loopSound)
+			ent->s.loopSound = 0;  // turn it off
 		else
-			ent->s.loopSound = ent->noise_index;	// start it
-	} else {	// normal sound
-		if ( ent->spawnflags & 8 ) {
-			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
-		} else if (ent->spawnflags & 4) {
-			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->noise_index );
+			ent->s.loopSound = ent->noise_index;  // start it
+	} else {                                      // normal sound
+		if(ent->spawnflags & 8) {
+			G_AddEvent(activator, EV_GENERAL_SOUND, ent->noise_index);
+		} else if(ent->spawnflags & 4) {
+			G_AddEvent(ent, EV_GLOBAL_SOUND, ent->noise_index);
 		} else {
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->noise_index );
+			G_AddEvent(ent, EV_GENERAL_SOUND, ent->noise_index);
 		}
 	}
 }
 
-void SP_target_speaker( gentity_t *ent ) {
-	char	buffer[MAX_QPATH];
-	char	*s;
+void SP_target_speaker(gentity_t *ent) {
+	char buffer[MAX_QPATH];
+	char *s;
 
-	G_SpawnFloat( "wait", "0", &ent->wait );
-	G_SpawnFloat( "random", "0", &ent->random );
+	G_SpawnFloat("wait", "0", &ent->wait);
+	G_SpawnFloat("random", "0", &ent->random);
 
-	if ( !G_SpawnString( "noise", "NOSOUND", &s ) ) {
-		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
+	if(!G_SpawnString("noise", "NOSOUND", &s)) {
+		G_Error("target_speaker without a noise key at %s", vtos(ent->s.origin));
 	}
 
 	// force all client reletive sounds to be "activator" speakers that
 	// play on the entity that activates it
-	if ( s[0] == '*' )
-		ent->spawnflags |= 8;
+	if(s[0] == '*') ent->spawnflags |= 8;
 
-	if (!strstr( s, ".wav" )) {
-		Com_sprintf (buffer, sizeof(buffer), "%s.wav", s );
+	if(!strstr(s, ".wav")) {
+		Com_sprintf(buffer, sizeof(buffer), "%s.wav", s);
 	} else {
-		Q_strncpyz( buffer, s, sizeof(buffer) );
+		Q_strncpyz(buffer, s, sizeof(buffer));
 	}
 	ent->noise_index = G_SoundIndex(buffer);
 
@@ -148,88 +138,73 @@ void SP_target_speaker( gentity_t *ent ) {
 	ent->s.frame = ent->wait * 10;
 	ent->s.clientNum = ent->random * 10;
 
-
 	// check for prestarted looping sound
-	if ( ent->spawnflags & 1 )
-		ent->s.loopSound = ent->noise_index;
+	if(ent->spawnflags & 1) ent->s.loopSound = ent->noise_index;
 
 	ent->use = Use_Target_Speaker;
 
-	if (ent->spawnflags & 4)
-		ent->r.svFlags |= SVF_BROADCAST;
+	if(ent->spawnflags & 4) ent->r.svFlags |= SVF_BROADCAST;
 
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
+	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
-	trap_LinkEntity( ent );
+	trap_LinkEntity(ent);
 }
 
 //==========================================================
 
-void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	gentity_t	*dest;
+static void target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
+	gentity_t *dest;
 
-	if (!activator->client)
-		return;
-	dest = 	G_PickTarget( self->target );
-	if (!dest) {
-		G_Printf ("Couldn't find teleporter destination\n");
+	if(!activator->client) return;
+	dest = G_PickTarget(self->target);
+	if(!dest) {
+		G_Printf("Couldn't find teleporter destination\n");
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles, qfalse );
+	TeleportPlayer(activator, dest->s.origin, dest->s.angles, qfalse);
 }
 
-void SP_target_teleporter( gentity_t *self ) {
-	if (!self->targetname)
-		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
+void SP_target_teleporter(gentity_t *self) {
+	if(!self->targetname) G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
 	self->use = target_teleporter_use;
 }
 
 //==========================================================
 
-void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	if ( ( self->spawnflags & 1 ) && activator->client 
-		&& activator->client->sess.sessionTeam != TEAM_RED ) {
+static void target_relay_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
+	if((self->spawnflags & 1) && activator->client && activator->client->sess.sessionTeam != TEAM_RED) {
 		return;
 	}
-	if ( ( self->spawnflags & 2 ) && activator->client 
-		&& activator->client->sess.sessionTeam != TEAM_BLUE ) {
+	if((self->spawnflags & 2) && activator->client && activator->client->sess.sessionTeam != TEAM_BLUE) {
 		return;
 	}
-	if ( self->spawnflags & 4 ) {
-		gentity_t	*ent;
+	if(self->spawnflags & 4) {
+		gentity_t *ent;
 
-		ent = G_PickTarget( self->target );
-		if ( ent && ent->use ) {
-			ent->use( ent, self, activator );
+		ent = G_PickTarget(self->target);
+		if(ent && ent->use) {
+			ent->use(ent, self, activator);
 		}
 		return;
 	}
-	G_UseTargets (self, activator);
+	G_UseTargets(self, activator);
 }
 
-void SP_target_relay (gentity_t *self) {
-	self->use = target_relay_use;
-}
+void SP_target_relay(gentity_t *self) { self->use = target_relay_use; }
 
 //==========================================================
 
-void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
-}
+static void target_kill_use(gentity_t *self, gentity_t *other, gentity_t *activator) { G_Damage(activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG); }
 
-void SP_target_kill( gentity_t *self ) {
-	self->use = target_kill_use;
-}
+void SP_target_kill(gentity_t *self) { self->use = target_kill_use; }
 
 //==========================================================
 
-void SP_target_position( gentity_t *self ){
-	G_SetOrigin( self, self->s.origin );
-}
+void SP_target_position(gentity_t *self) { G_SetOrigin(self, self->s.origin); }
 
 //==========================================================
 
@@ -237,22 +212,19 @@ static void target_location_linkup(gentity_t *ent) {
 	int i;
 	int n;
 
-	if (level.locationLinked) 
-		return;
+	if(level.locationLinked) return;
 
 	level.locationLinked = qtrue;
 
 	level.locationHead = NULL;
 
-	trap_SetConfigstring( CS_LOCATIONS, "unknown" );
+	trap_SetConfigstring(CS_LOCATIONS, "unknown");
 
-	for (i = 0, ent = g_entities, n = 1;
-			i < level.num_entities;
-			i++, ent++) {
-		if (ent->classname && !Q_stricmp(ent->classname, "target_location")) {
+	for(i = 0, ent = g_entities, n = 1; i < level.num_entities; i++, ent++) {
+		if(ent->classname && !Q_stricmp(ent->classname, "target_location")) {
 			// lets overload some variables!
-			ent->health = n; // use for location marking
-			trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
+			ent->health = n;  // use for location marking
+			trap_SetConfigstring(CS_LOCATIONS + n, ent->message);
 			n++;
 			ent->nextTrain = level.locationHead;
 			level.locationHead = ent;
@@ -260,100 +232,99 @@ static void target_location_linkup(gentity_t *ent) {
 	}
 }
 
-void SP_target_location( gentity_t *self ){
+void SP_target_location(gentity_t *self) {
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
 
-	G_SetOrigin( self, self->s.origin );
+	G_SetOrigin(self, self->s.origin);
 }
 
 //==========================================================
 
-void script_variable_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
+static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	char value[128];
 
-	if ( self->spawnflags & 1 || self->spawnflags & 2)
-	{
-		trap_Cvar_VariableStringBuffer(self->key, value, sizeof( value ));
-		
-		if ( (self->spawnflags & 1) && !strcmp(value, self->value) ) {
-			G_UseTargets (self, activator);
+	if(self->spawnflags & 1 || self->spawnflags & 2) {
+		trap_Cvar_VariableStringBuffer(self->key, value, sizeof(value));
+
+		if((self->spawnflags & 1) && !strcmp(value, self->value)) {
+			G_UseTargets(self, activator);
 		}
-		
-		if ( (self->spawnflags & 2) && strcmp(value, self->value) ) {
-			G_UseTargets (self, activator);
+
+		if((self->spawnflags & 2) && strcmp(value, self->value)) {
+			G_UseTargets(self, activator);
 		}
-		
-		if ( (self->spawnflags & 4) && (atoi(value) <= atoi(self->value)) ) {
-			G_UseTargets (self, activator);
+
+		if((self->spawnflags & 4) && (atoi(value) <= atoi(self->value))) {
+			G_UseTargets(self, activator);
 		}
-		
-		if ( (self->spawnflags & 8) && (atoi(value) >= atoi(self->value)) ) {
-			G_UseTargets (self, activator);
+
+		if((self->spawnflags & 8) && (atoi(value) >= atoi(self->value))) {
+			G_UseTargets(self, activator);
 		}
-		
+
 		return;
 	}
-	if ( self->spawnflags & 8192 ){
-		trap_SendConsoleCommand( EXEC_APPEND, va("seta %s %s\n", self->key, self->value) );
+	if(self->spawnflags & 8192) {
+		trap_SendConsoleCommand(EXEC_APPEND, va("seta %s %s\n", self->key, self->value));
 	} else {
-		trap_Cvar_Set( self->key, self->value );
+		trap_Cvar_Set(self->key, self->value);
 	}
 }
 
-//used for immediately spawnflag
-void script_variable_think (gentity_t *self) {
+// used for immediately spawnflag
+static void script_variable_think(gentity_t *self) {
 	self->nextthink = 0;
-	script_variable_use( self, NULL, self );
+	script_variable_use(self, NULL, self);
 }
 
-void SP_script_variable (gentity_t *self) {
-	if ( !self->key ) {
+void SP_script_variable(gentity_t *self) {
+	if(!self->key) {
 		G_Printf("WARNING: script_variable without key at %s\n", vtos(self->s.origin));
-		G_FreeEntity( self );
+		G_FreeEntity(self);
 		return;
 	}
 
-	if ( !self->key ) {
+	if(!self->key) {
 		G_Printf("WARNING: script_variable without value at %s\n", vtos(self->s.origin));
-		G_FreeEntity( self );
+		G_FreeEntity(self);
 		return;
 	}
-	
+
 	self->use = script_variable_use;
 
-	if ( ( self->spawnflags & 4096 ) ) {
-		self->nextthink = level.time + FRAMETIME * 3;	//trigger entities next frame so they can spawn first
+	if((self->spawnflags & 4096)) {
+		self->nextthink = level.time + FRAMETIME * 3;  // trigger entities next frame so they can spawn first
 		self->think = script_variable_think;
 	}
 }
 
 //==========================================================
 
-void use_script_cmd (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if (ent->spawnflags & 1) {
-	trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", ent->target) );
+static void use_script_cmd(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(ent->spawnflags & 1) {
+		trap_SendConsoleCommand(EXEC_APPEND, va("%s\n", ent->target));
 	}
-	if (ent->spawnflags & 2) {
-	trap_SendServerCommand( activator-g_entities, va("clcmd \"%s\"", ent->target ));	
+	if(ent->spawnflags & 2) {
+		trap_SendServerCommand(activator - g_entities, va("clcmd \"%s\"", ent->target));
 	}
-	if (ent->spawnflags & 4) {
-	trap_SendServerCommand( -1, va("clcmd \"%s\"", ent->target ));	
+	if(ent->spawnflags & 4) {
+		trap_SendServerCommand(-1, va("clcmd \"%s\"", ent->target));
 	}
 }
 
-//used for immediately spawnflag
-void script_cmd_think (gentity_t *ent) {
+// used for immediately spawnflag
+static void script_cmd_think(gentity_t *ent) {
 	ent->nextthink = 0;
-	use_script_cmd( ent, NULL, ent );
+	use_script_cmd(ent, NULL, ent);
 }
 
-void SP_script_cmd( gentity_t *ent ) {
-	if ( !ent->target ) {
-		G_Printf ("No target in script_cmd\n");
+void SP_script_cmd(gentity_t *ent) {
+	if(!ent->target) {
+		G_Printf("No target in script_cmd\n");
 	}
-	if ( ent->spawnflags & 4096 ) {
-		ent->nextthink = level.time + FRAMETIME * 10;	//trigger entities next frame so they can spawn first
+	if(ent->spawnflags & 4096) {
+		ent->nextthink = level.time + FRAMETIME * 10;  // trigger entities next frame so they can spawn first
 		ent->think = script_cmd_think;
 	}
 	ent->use = use_script_cmd;

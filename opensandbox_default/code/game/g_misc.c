@@ -77,7 +77,7 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles, qboolean no
     }
 }
 
-void locateCamera(gentity_t *ent) {
+static void locateCamera(gentity_t *ent) {
     vec3_t dir;
     gentity_t *target;
     gentity_t *owner;
@@ -149,7 +149,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
     ent->s.clientNum = roll / 360.0 * 256;
 }
 
-void Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+static void Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator) {
     vec3_t dir;
     float deg;
     vec3_t up, right;
@@ -185,7 +185,7 @@ static void InitShooter_Finish(gentity_t *ent) {
     ent->nextthink = 0;
 }
 
-void InitShooter(gentity_t *ent, int weapon) {
+static void InitShooter(gentity_t *ent, int weapon) {
     ent->use = Use_Shooter;
     ent->s.weapon = weapon;
 

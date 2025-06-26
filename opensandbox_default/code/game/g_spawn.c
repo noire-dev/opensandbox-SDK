@@ -1,39 +1,37 @@
-// 
+//
 // OpenSandbox
-// 
+//
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2008-2012 OpenArena Team
 // Copyright (C) 2023-2024 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
-// 
+//
 // This file is part of OpenSandbox.
-// 
+//
 // OpenSandbox is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2,
 // as published by the Free Software Foundation.
-// 
+//
 // This modified code is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this project. If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 // Contact: opensandboxteam@gmail.com
-// 
 //
 
 #include "g_local.h"
 
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out ) {
-	int		i;
+qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
+	int i;
 
-	if ( !level.spawning )
-		*out = (char *)defaultString;
+	if(!level.spawning) *out = (char *)defaultString;
 
-	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
-		if ( !Q_stricmp( key, level.spawnVars[i][0] ) ) {
+	for(i = 0; i < level.numSpawnVars; i++) {
+		if(!Q_stricmp(key, level.spawnVars[i][0])) {
 			*out = level.spawnVars[i][1];
 			return qtrue;
 		}
@@ -43,53 +41,46 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 	return qfalse;
 }
 
-qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out ) {
-	char		*s;
-	qboolean	present;
+qboolean G_SpawnFloat(const char *key, const char *defaultString, float *out) {
+	char *s;
+	qboolean present;
 
-	present = G_SpawnString( key, defaultString, &s );
-	*out = atof( s );
+	present = G_SpawnString(key, defaultString, &s);
+	*out = atof(s);
 	return present;
 }
 
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out ) {
-	char		*s;
-	qboolean	present;
+qboolean G_SpawnInt(const char *key, const char *defaultString, int *out) {
+	char *s;
+	qboolean present;
 
-	present = G_SpawnString( key, defaultString, &s );
-	*out = atoi( s );
+	present = G_SpawnString(key, defaultString, &s);
+	*out = atoi(s);
 	return present;
 }
 
-qboolean G_SpawnVector( const char *key, const char *defaultString, float *out ) {
-	char		*s;
-	qboolean	present;
+qboolean G_SpawnVector(const char *key, const char *defaultString, float *out) {
+	char *s;
+	qboolean present;
 
-	present = G_SpawnString( key, defaultString, &s );
-	sscanf( s, "%f %f %f", &out[0], &out[1], &out[2] );
+	present = G_SpawnString(key, defaultString, &s);
+	sscanf(s, "%f %f %f", &out[0], &out[1], &out[2]);
 	return present;
 }
 
-void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin( ent, ent->s.origin ); }
-void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
+static void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin(ent, ent->s.origin); }
+static void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 
-typedef enum {
-	F_INT, 
-	F_FLOAT,
-	F_STRING,
-	F_VECTOR,
-	F_ANGLEHACK,
-	F_IGNORE
-} fieldtype_t;
+typedef enum { F_INT, F_FLOAT, F_STRING, F_VECTOR, F_ANGLEHACK, F_IGNORE } fieldtype_t;
 
 typedef struct {
-	char	*name;
-	int		ofs;
-	fieldtype_t	type;
-	int		flags;
+	char *name;
+	int ofs;
+	fieldtype_t type;
+	int flags;
 } field_t;
 
-field_t gameInfoFields[] = {
+static field_t gameInfoFields[] = {
 	{"classname", 			FOFS(classname), 				F_STRING},
 	{"model", 				FOFS(model), 					F_STRING},
 	{"model2", 				FOFS(model2), 					F_STRING},
@@ -199,73 +190,72 @@ Finds the spawn function for the entity and calls it,
 returning qfalse if not found
 ===============
 */
-qboolean G_CallSpawn( gentity_t *ent ) {
-	spawn_t	*s;
-	item_t	*item;
-    char 	itemname[128];
-	
-	if( strcmp(ent->classname, "none") == 0 )
-		return qfalse;
+static qboolean G_CallSpawn(gentity_t *ent) {
+	spawn_t *s;
+	item_t *item;
+	char itemname[128];
 
-    Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
+	if(strcmp(ent->classname, "none") == 0) return qfalse;
 
-	if( g_gametype.integer == GT_OBELISK ) {
-		if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
+	Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
+
+	if(g_gametype.integer == GT_OBELISK) {
+		if(strcmp(itemname, "team_CTF_redflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
 		}
-		if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
+		if(strcmp(itemname, "team_CTF_blueflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
 		}
 	}
-	if( g_gametype.integer == GT_HARVESTER ) {
-		if( strcmp(itemname, "team_CTF_redflag") == 0 ) {
+	if(g_gametype.integer == GT_HARVESTER) {
+		if(strcmp(itemname, "team_CTF_redflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
 		}
-		if( strcmp(itemname, "team_CTF_blueflag") == 0 ) {
+		if(strcmp(itemname, "team_CTF_blueflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
 		}
-		if( strcmp(itemname, "team_CTF_neutralflag") == 0 ) {
+		if(strcmp(itemname, "team_CTF_neutralflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
 		}
 	}
-	if( g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM ) {
-		if( strcmp(itemname, "team_CTF_redplayer") == 0 ) {
+	if(g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM) {
+		if(strcmp(itemname, "team_CTF_redplayer") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
-		if( strcmp(itemname, "team_CTF_blueplayer") == 0 ) {
+		if(strcmp(itemname, "team_CTF_blueplayer") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
-		if( strcmp(itemname, "team_CTF_redspawn") == 0 ) {
+		if(strcmp(itemname, "team_CTF_redspawn") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
-		if( strcmp(itemname, "team_CTF_bluespawn") == 0 ) {
+		if(strcmp(itemname, "team_CTF_bluespawn") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
 	}
 
-	if ( itemname[0]==0) {
-        G_Printf ("G_CallSpawn: NULL classname\n");
+	if(itemname[0] == 0) {
+		G_Printf("G_CallSpawn: NULL classname\n");
 		return qfalse;
 	}
 
 	// check item spawn functions
-	for ( item=gameInfoItems+1 ; item->classname ; item++ ) {
-		if ( !strcmp(item->classname, itemname) ) {
-			G_SpawnItem( ent, item );
+	for(item = gameInfoItems + 1; item->classname; item++) {
+		if(!strcmp(item->classname, itemname)) {
+			G_SpawnItem(ent, item);
 			return qtrue;
 		}
 	}
 
 	// check normal spawn functions
-	for ( s=gameInfoEntities ; s->name ; s++ ) {
-		if ( !strcmp(s->name, itemname) ) {
+	for(s = gameInfoEntities; s->name; s++) {
+		if(!strcmp(s->name, itemname)) {
 			// found it
 			s->spawn(ent);
 			return qtrue;
 		}
 	}
 
-    G_Printf ("%s doesn't have a spawn function\n", itemname);
+	G_Printf("%s doesn't have a spawn function\n", itemname);
 	return qfalse;
 }
 
@@ -277,19 +267,19 @@ Builds a copy of the string, translating \n to real linefeeds
 so message texts can be multi-line
 =============
 */
-char *G_NewString( const char *string ) {
-	char	*newb, *new_p;
-	int		i,l;
-	
+static char *G_NewString(const char *string) {
+	char *newb, *new_p;
+	int i, l;
+
 	l = strlen(string) + 1;
-	newb = BG_Alloc( l );
+	newb = BG_Alloc(l);
 	new_p = newb;
 
 	// turn \n into a real linefeed
-	for ( i=0 ; i< l ; i++ ) {
-		if (string[i] == '\\' && i < l-1) {
+	for(i = 0; i < l; i++) {
+		if(string[i] == '\\' && i < l - 1) {
 			i++;
-			if (string[i] == 'n') {
+			if(string[i] == 'n') {
 				*new_p++ = '\n';
 			} else {
 				*new_p++ = '\\';
@@ -298,7 +288,7 @@ char *G_NewString( const char *string ) {
 			*new_p++ = string[i];
 		}
 	}
-	
+
 	return newb;
 }
 
@@ -310,42 +300,35 @@ Takes a key/value pair and sets the binary values
 in a gentity
 ===============
 */
-void G_ParseField( const char *key, const char *value, gentity_t *ent ) {
-	field_t	*f;
-	byte	*b;
-	float	v;
-	vec3_t	vec;
+static void G_ParseField(const char *key, const char *value, gentity_t *ent) {
+	field_t *f;
+	byte *b;
+	float v;
+	vec3_t vec;
 
-	for ( f=gameInfoFields ; f->name ; f++ ) {
-		if ( !Q_stricmp(f->name, key) ) {
+	for(f = gameInfoFields; f->name; f++) {
+		if(!Q_stricmp(f->name, key)) {
 			// found it
 			b = (byte *)ent;
 
-			switch( f->type ) {
-			case F_STRING:
-				*(char **)(b+f->ofs) = G_NewString (value);
-				break;
-			case F_VECTOR:
-				sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-				((float *)(b+f->ofs))[0] = vec[0];
-				((float *)(b+f->ofs))[1] = vec[1];
-				((float *)(b+f->ofs))[2] = vec[2];
-				break;
-			case F_INT:
-				*(int *)(b+f->ofs) = atoi(value);
-				break;
-			case F_FLOAT:
-				*(float *)(b+f->ofs) = atof(value);
-				break;
-			case F_ANGLEHACK:
-				v = atof(value);
-				((float *)(b+f->ofs))[0] = 0;
-				((float *)(b+f->ofs))[1] = v;
-				((float *)(b+f->ofs))[2] = 0;
-				break;
-			default:
-			case F_IGNORE:
-				break;
+			switch(f->type) {
+				case F_STRING: *(char **)(b + f->ofs) = G_NewString(value); break;
+				case F_VECTOR:
+					sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
+					((float *)(b + f->ofs))[0] = vec[0];
+					((float *)(b + f->ofs))[1] = vec[1];
+					((float *)(b + f->ofs))[2] = vec[2];
+					break;
+				case F_INT: *(int *)(b + f->ofs) = atoi(value); break;
+				case F_FLOAT: *(float *)(b + f->ofs) = atof(value); break;
+				case F_ANGLEHACK:
+					v = atof(value);
+					((float *)(b + f->ofs))[0] = 0;
+					((float *)(b + f->ofs))[1] = v;
+					((float *)(b + f->ofs))[2] = 0;
+					break;
+				default:
+				case F_IGNORE: break;
 			}
 			return;
 		}
@@ -360,70 +343,69 @@ Spawn an entity and fill in all of the level fields from
 level.spawnVars[], then call the class specfic spawn function
 ===================
 */
-void G_SpawnGEntityFromSpawnVars( void ) {
-	int			i;
-	gentity_t	*ent;
-	char		*s, *value, *gametypeName;
+static void G_SpawnGEntityFromSpawnVars(void) {
+	int i;
+	gentity_t *ent;
+	char *s, *value, *gametypeName;
 	static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "team", "ctf", "oneflag", "obelisk", "harvester"};
 
 	// get the next free entity
 	ent = G_Spawn();
 
-	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
-		G_ParseField( level.spawnVars[i][0], level.spawnVars[i][1], ent );
+	for(i = 0; i < level.numSpawnVars; i++) {
+		G_ParseField(level.spawnVars[i][0], level.spawnVars[i][1], ent);
 	}
 
-	if ( g_gametype.integer >= GT_TEAM ) {
-		G_SpawnInt( "notteam", "0", &i );
-		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
-			G_FreeEntity( ent );
+	if(g_gametype.integer >= GT_TEAM) {
+		G_SpawnInt("notteam", "0", &i);
+		if(i && g_gametype.integer != GT_MAPEDITOR) {
+			G_FreeEntity(ent);
 			return;
 		}
 	} else {
-		G_SpawnInt( "notfree", "0", &i );
-		if ( i && g_gametype.integer != GT_MAPEDITOR ) {
-			G_FreeEntity( ent );
+		G_SpawnInt("notfree", "0", &i);
+		if(i && g_gametype.integer != GT_MAPEDITOR) {
+			G_FreeEntity(ent);
 			return;
 		}
 	}
 
-	G_SpawnInt( "notta", "0", &i );
-	if ( i && g_gametype.integer != GT_MAPEDITOR ) {
-		G_FreeEntity( ent );
+	G_SpawnInt("notta", "0", &i);
+	if(i && g_gametype.integer != GT_MAPEDITOR) {
+		G_FreeEntity(ent);
 		return;
 	}
 
-    if( G_SpawnString( "!gametype", NULL, &value ) ) {
-		if( g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE ) {
+	if(G_SpawnString("!gametype", NULL, &value)) {
+		if(g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
-			s = strstr( value, gametypeName );
-			if( s && g_gametype.integer != GT_MAPEDITOR ) {
-				G_FreeEntity( ent );
+			s = strstr(value, gametypeName);
+			if(s && g_gametype.integer != GT_MAPEDITOR) {
+				G_FreeEntity(ent);
 				return;
 			}
 		}
 	}
 
-	if( G_SpawnString( "gametype", NULL, &value ) ) {
-		if( g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE ) {
+	if(G_SpawnString("gametype", NULL, &value)) {
+		if(g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
-			s = strstr( value, gametypeName );
-			if( !s && g_gametype.integer != GT_MAPEDITOR ) {
-				G_FreeEntity( ent );
+			s = strstr(value, gametypeName);
+			if(!s && g_gametype.integer != GT_MAPEDITOR) {
+				G_FreeEntity(ent);
 				return;
 			}
 		}
 	}
 
 	// move editor origin to pos
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy(ent->s.origin, ent->s.pos.trBase);
+	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 
 	// if we didn't get a classname, don't bother spawning anything
-	if ( !G_CallSpawn( ent ) )
-		G_FreeEntity( ent );
+	if(!G_CallSpawn(ent)) G_FreeEntity(ent);
 }
 
 /*
@@ -431,17 +413,17 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 G_AddSpawnVarToken
 ====================
 */
-char *G_AddSpawnVarToken( const char *string ) {
-	int		l;
-	char	*dest;
+static char *G_AddSpawnVarToken(const char *string) {
+	int l;
+	char *dest;
 
-	l = strlen( string );
-	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS ) {
-		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_VARS" );
+	l = strlen(string);
+	if(level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS) {
+		G_Error("G_AddSpawnVarToken: MAX_SPAWN_VARS");
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
-	memcpy( dest, string, l+1 );
+	memcpy(dest, string, l + 1);
 
 	level.numSpawnVarChars += l + 1;
 
@@ -458,86 +440,86 @@ level's entity strings into level.spawnVars[]
 This does not actually spawn an entity.
 ====================
 */
-qboolean G_ParseSpawnVars( void ) {
-	char		keyname[MAX_TOKEN_CHARS];
-	char		com_token[MAX_TOKEN_CHARS];
+static qboolean G_ParseSpawnVars(void) {
+	char keyname[MAX_TOKEN_CHARS];
+	char com_token[MAX_TOKEN_CHARS];
 
 	level.numSpawnVars = 0;
 	level.numSpawnVarChars = 0;
 
 	// parse the opening brace
-	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) ) {
+	if(!trap_GetEntityToken(com_token, sizeof(com_token))) {
 		// end of spawn string
 		return qfalse;
 	}
-	if ( com_token[0] != '{' ) {
-		G_Error( "G_ParseSpawnVars: found %s when expecting {",com_token );
+	if(com_token[0] != '{') {
+		G_Error("G_ParseSpawnVars: found %s when expecting {", com_token);
 	}
 
 	// go through all the key / value pairs
-	while ( 1 ) {	
+	while(1) {
 		// parse key
-		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) ) {
-			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
+		if(!trap_GetEntityToken(keyname, sizeof(keyname))) {
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
 		}
 
-		if ( keyname[0] == '}' ) {
+		if(keyname[0] == '}') {
 			break;
 		}
-		
-		// parse value	
-		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) ) {
-			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
+
+		// parse value
+		if(!trap_GetEntityToken(com_token, sizeof(com_token))) {
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
 		}
 
-		if ( com_token[0] == '}' ) {
-			G_Error( "G_ParseSpawnVars: closing brace without data" );
+		if(com_token[0] == '}') {
+			G_Error("G_ParseSpawnVars: closing brace without data");
 		}
-		if ( level.numSpawnVars == MAX_SPAWN_VARS ) {
-			G_Error( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
+		if(level.numSpawnVars == MAX_SPAWN_VARS) {
+			G_Error("G_ParseSpawnVars: MAX_SPAWN_VARS");
 		}
-		level.spawnVars[ level.numSpawnVars ][0] = G_AddSpawnVarToken( keyname );
-		level.spawnVars[ level.numSpawnVars ][1] = G_AddSpawnVarToken( com_token );
+		level.spawnVars[level.numSpawnVars][0] = G_AddSpawnVarToken(keyname);
+		level.spawnVars[level.numSpawnVars][1] = G_AddSpawnVarToken(com_token);
 		level.numSpawnVars++;
 	}
 
 	return qtrue;
 }
 
-void SP_worldspawn( void ) {
-	char	*s;
+static void SP_worldspawn(void) {
+	char *s;
 
-	G_SpawnString( "classname", "", &s );
-	if (Q_stricmp(s, "worldspawn")) {
+	G_SpawnString("classname", "", &s);
+	if(Q_stricmp(s, "worldspawn")) {
 		G_Error("SP_worldspawn: The first entity isn't 'worldspawn'");
 	}
 
 	// make some data visible to connecting client
-	trap_SetConfigstring( CS_GAME_VERSION, GAME_VERSION );
-	trap_SetConfigstring( CS_LEVEL_START_TIME, va("%i", level.startTime ) );
-	
-	G_SpawnString( "music", "", &s );
-	trap_SetConfigstring( CS_MUSIC, s );
+	trap_SetConfigstring(CS_GAME_VERSION, GAME_VERSION);
+	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 
-	G_SpawnString( "gravity", "800", &s );
-	trap_Cvar_Set( "g_gravity", s );
+	G_SpawnString("music", "", &s);
+	trap_SetConfigstring(CS_MUSIC, s);
 
-	G_SpawnString( "enableDust", "0", &s );
-	trap_Cvar_Set( "g_enableDust", s );
-    
-    G_SpawnString( "enableSnow", "0", &s );
-    trap_Cvar_Set( "g_enableSnow", s );
-    
-	G_SpawnString( "enableBreath", "0", &s );
-	trap_Cvar_Set( "g_enableBreath", s );
+	G_SpawnString("gravity", "800", &s);
+	trap_Cvar_Set("g_gravity", s);
+
+	G_SpawnString("enableDust", "0", &s);
+	trap_Cvar_Set("g_enableDust", s);
+
+	G_SpawnString("enableSnow", "0", &s);
+	trap_Cvar_Set("g_enableSnow", s);
+
+	G_SpawnString("enableBreath", "0", &s);
+	trap_Cvar_Set("g_enableBreath", s);
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
-    g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;
+	g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 
-    g_entities[ENTITYNUM_NONE].s.number = ENTITYNUM_NONE;
-    g_entities[ENTITYNUM_NONE].r.ownerNum = ENTITYNUM_NONE;
-    g_entities[ENTITYNUM_NONE].classname = "nothing";
+	g_entities[ENTITYNUM_NONE].s.number = ENTITYNUM_NONE;
+	g_entities[ENTITYNUM_NONE].r.ownerNum = ENTITYNUM_NONE;
+	g_entities[ENTITYNUM_NONE].classname = "nothing";
 }
 
 /*
@@ -547,7 +529,7 @@ G_SpawnEntitiesFromString
 Parses textual entity definitions out of an entstring and spawns gentities.
 ==============
 */
-void G_SpawnEntitiesFromString( void ) {
+void G_SpawnEntitiesFromString(void) {
 	// allow calls to G_Spawn*()
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
@@ -555,17 +537,17 @@ void G_SpawnEntitiesFromString( void ) {
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	if ( !G_ParseSpawnVars() ) {
-		G_Error( "SpawnEntities: no entities" );
+	if(!G_ParseSpawnVars()) {
+		G_Error("SpawnEntities: no entities");
 	}
 	SP_worldspawn();
 
 	// parse ents
-	while( G_ParseSpawnVars() ) {
+	while(G_ParseSpawnVars()) {
 		G_SpawnGEntityFromSpawnVars();
 	}
 
-	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
+	level.spawning = qfalse;  // any future calls to G_Spawn*() will be errors
 }
 
 /*
@@ -574,18 +556,11 @@ Sandbox sav files
 ==============
 */
 
-#define 		MAX_MAPFILE_LENGTH		2500000*6
-#define 		MAX_TOKENNUM 			524288*6
-static char 	mapbuffer[2500000*6];
+#define MAX_MAPFILE_LENGTH 2500000 * 6
+#define MAX_TOKENNUM 524288 * 6
+static char mapbuffer[2500000 * 6];
 
-typedef enum {
-	TOT_LPAREN,
-	TOT_RPAREN,
-	TOT_WORD,
-	TOT_NUMBER,
-	TOT_NIL,
-	TOT_MAX
-} tokenType_t;
+typedef enum { TOT_LPAREN, TOT_RPAREN, TOT_WORD, TOT_NUMBER, TOT_NIL, TOT_MAX } tokenType_t;
 
 #define TOKENVALUE_SIZE 128
 
@@ -600,12 +575,12 @@ static void G_RelinkEntities(void) {
 	int i, j;
 	int entNum, newEntNum;
 
-	for( i = 0; i < MAX_GENTITIES; i++ ) {
-		if(g_entities[i].sb_phys_parent){
+	for(i = 0; i < MAX_GENTITIES; i++) {
+		if(g_entities[i].sb_phys_parent) {
 			entNum = g_entities[i].sb_phys_parent;
 			newEntNum = g_entities[i].s.number;
-			for( j = 0; j < MAX_GENTITIES; j++ ) {
-				if(g_entities[j].sb_phys_welded == entNum){
+			for(j = 0; j < MAX_GENTITIES; j++) {
+				if(g_entities[j].sb_phys_welded == entNum) {
 					g_entities[j].phys_parent = G_FindEntityForEntityNum(newEntNum);
 					g_entities[i].phys_weldedObjectsNum += 1;
 				}
@@ -614,176 +589,157 @@ static void G_RelinkEntities(void) {
 	}
 }
 
-static qboolean SkippedChar (char in) {
-	return ( in == '\n' || in == '\r' || in == ';' || in == '\t' || in == ' ' );
-}
+static qboolean SkippedChar(char in) { return (in == '\n' || in == '\r' || in == ';' || in == '\t' || in == ' '); }
 
-static qboolean G_ClassnameAllowed(char *input){
+static qboolean G_ClassnameAllowed(char *input) {
 	int i;
-	char* 			classes_allowed[] = {
-		"sandbox_prop",
-		"sandbox_npc",
-		0
-	};
+	char *classes_allowed[] = {"sandbox_prop", "sandbox_npc", 0};
 
-	for (i = 0; classes_allowed[i] != 0; i++) {			//Allowed classlist
-		if (!strcmp(input, classes_allowed[i])) {
+	for(i = 0; classes_allowed[i] != 0; i++) {  // Allowed classlist
+		if(!strcmp(input, classes_allowed[i])) {
 			return qtrue;
 		}
 	}
 
-	return BG_CheckClassname(input);					//Items
+	return BG_CheckClassname(input);  // Items
 }
 
-static void G_ClearEntities(void){
+static void G_ClearEntities(void) {
 	int i;
-	for(i = 0; i < MAX_CLIENTS; i++){					//NPCs
-		if ( g_entities[i].npcType >= 1 ) {
-			DropClientSilently( g_entities[i].client->ps.clientNum );
+	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
+		if(g_entities[i].npcType >= 1) {
+			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
-	for(i = 0; i < MAX_GENTITIES; i++){					//Items and Other
-		if(!G_ClassnameAllowed(g_entities[i].classname))
-			continue;
+	for(i = 0; i < MAX_GENTITIES; i++) {  // Items and Other
+		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);
-		
 	}
 }
 
-static int G_setTokens2(char* in, char* out, int start){
+static int G_SetTokens2(char *in, char *out, int start) {
 	int i = 0;
-	while (in[start + i] != ' '){
-		if( in[start + i] == '\0' ){
-			out[i] = in[start+1];
+	while(in[start + i] != ' ') {
+		if(in[start + i] == '\0') {
+			out[i] = in[start + 1];
 			return MAX_MAPFILE_LENGTH;
 		}
-		out[i] = in[start+i];
+		out[i] = in[start + i];
 		i++;
 	}
 	out[i] = '\0';
-	return start+i+1;
+	return start + i + 1;
 }
 
-static int G_setTokenType2( char* value ){
+static int G_SetTokenType2(char *value) {
 	int count = 0;
-	qboolean lpar= qfalse,rpar= qfalse,number= qfalse, character = qfalse;
-	
-	while( value[count] != '\0' ){
-		if( value[count] == '{' )
+	qboolean lpar = qfalse, rpar = qfalse, number = qfalse, character = qfalse;
+
+	while(value[count] != '\0') {
+		if(value[count] == '{')
 			lpar = qtrue;
-		else if( value[count] == '}' )
+		else if(value[count] == '}')
 			rpar = qtrue;
-		else if( value[count] >= '0' && value[count] <= '9' )
+		else if(value[count] >= '0' && value[count] <= '9')
 			number = qtrue;
-		else if( ( value[count] >= 'a' && value[count] <= 'z' ) || ( value[count] >= 'A' && value[count] <= 'Z' ) )
+		else if((value[count] >= 'a' && value[count] <= 'z') || (value[count] >= 'A' && value[count] <= 'Z'))
 			character = qtrue;
 		count++;
 	}
-	
-	if( lpar && !( rpar || number || character ) )
+
+	if(lpar && !(rpar || number || character))
 		return TOT_LPAREN;
-	else if( rpar && !( lpar || number || character ) )
+	else if(rpar && !(lpar || number || character))
 		return TOT_RPAREN;
-	else if( number && !( lpar || rpar || character ) )
+	else if(number && !(lpar || rpar || character))
 		return TOT_NUMBER;
-	else if( character && !( lpar || rpar ) )
+	else if(character && !(lpar || rpar))
 		return TOT_WORD;
 	else
 		return TOT_NIL;
 }
 
-static int G_FindNextToken2( char *find, token_t *in, int start ){
+static int G_FindNextToken2(char *find, token_t *in, int start) {
 	int i;
 	int cmp;
-	
-	for( i = start; i < MAX_TOKENNUM; i++ ){
-		cmp= strcmp( in[i].value, find );
-		if( cmp == 0 )
-			return i;
+
+	for(i = start; i < MAX_TOKENNUM; i++) {
+		cmp = strcmp(in[i].value, find);
+		if(cmp == 0) return i;
 	}
 	return -1;
 }
 
-static qboolean G_AbeforeB2( char *A, char *B, token_t *in, int start ){
-	int a = G_FindNextToken2( A, in, start );
-	int b = G_FindNextToken2( B, in, start );
-	
-	if( b == -1 && a != -1 )
-		return qtrue;
-	if( a == -1 && b != -1 )
-		return qfalse;
-	if( a < b )
+static qboolean G_AbeforeB2(char *A, char *B, token_t *in, int start) {
+	int a = G_FindNextToken2(A, in, start);
+	int b = G_FindNextToken2(B, in, start);
+
+	if(b == -1 && a != -1) return qtrue;
+	if(a == -1 && b != -1) return qfalse;
+	if(a < b)
 		return qtrue;
 	else
 		return qfalse;
 }
 
-static char *G_ClearString( char *input ){
-	if( input[0] == '"' ){
+static char *G_ClearString(char *input) {
+	if(input[0] == '"') {
 		input[0] = '\0';
 		input++;
 	}
-	if( input[strlen(input)-1] == '"' ){
-		input[strlen(input)-1] = '\0';
+	if(input[strlen(input) - 1] == '"') {
+		input[strlen(input) - 1] = '\0';
 	}
 	return input;
 }
 
-static void G_LoadMapfileEntity( token_t *in, int min, int max ){
+static void G_LoadMapfileEntity(token_t *in, int min, int max) {
 	int i;
 	char *buf;
-	vec3_t	vec;
-	
+	vec3_t vec;
+
 	field_t *field;
-	byte	*b;
-	
+	byte *b;
+
 	gentity_t *ent;
 	ent = G_Spawn();
-	
+
 	b = (byte *)ent;
-	
-	for( i = min; i <= max ; i++ ) {
-		for( field = gameInfoFields; field->name; field++ ){
-			if( !strcmp(va("\"%s\"",field->name), in[i].value ) ) {
-				if (!strcmp(field->name, "team") || !strcmp(field->name, "angle"))
-            		break;
-				switch( field->type ) {
-					case F_STRING:
-						*(char **)(b+field->ofs) = G_NewString(G_ClearString(in[i+1].value));
-						break;
+
+	for(i = min; i <= max; i++) {
+		for(field = gameInfoFields; field->name; field++) {
+			if(!strcmp(va("\"%s\"", field->name), in[i].value)) {
+				if(!strcmp(field->name, "team") || !strcmp(field->name, "angle")) break;
+				switch(field->type) {
+					case F_STRING: *(char **)(b + field->ofs) = G_NewString(G_ClearString(in[i + 1].value)); break;
 					case F_VECTOR:
-						buf = in[i+1].value;
+						buf = in[i + 1].value;
 						strcat(buf, " ");
-						strcat(buf, in[i+2].value);
+						strcat(buf, in[i + 2].value);
 						strcat(buf, " ");
-						strcat(buf, in[i+3].value);
-						sscanf (G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
-						((float *)(b+field->ofs))[0] = vec[0];
-						((float *)(b+field->ofs))[1] = vec[1];
-						((float *)(b+field->ofs))[2] = vec[2];
+						strcat(buf, in[i + 3].value);
+						sscanf(G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
+						((float *)(b + field->ofs))[0] = vec[0];
+						((float *)(b + field->ofs))[1] = vec[1];
+						((float *)(b + field->ofs))[2] = vec[2];
 						break;
-					case F_INT:
-						*(int *)(b+field->ofs) = atoi(G_ClearString(in[i+1].value));
-						break;
-					case F_FLOAT:
-						*(float *)(b+field->ofs) = atof(G_ClearString(in[i+1].value));
-						break;
+					case F_INT: *(int *)(b + field->ofs) = atoi(G_ClearString(in[i + 1].value)); break;
+					case F_FLOAT: *(float *)(b + field->ofs) = atof(G_ClearString(in[i + 1].value)); break;
 					default:
-					case F_IGNORE:
-						break;
+					case F_IGNORE: break;
 				}
 				break;
 			}
 		}
 	}
-	
-	if ( !G_CallSpawn( ent ) ) {
-		G_FreeEntity( ent );
+
+	if(!G_CallSpawn(ent)) {
+		G_FreeEntity(ent);
 	}
 }
 
-static void G_LoadMapfile( char *filename ){
+static void G_LoadMapfile(char *filename) {
 	qboolean lastSpace = qtrue;
 	qboolean pgbreak = qfalse;
 	int i = 0;
@@ -792,236 +748,229 @@ static void G_LoadMapfile( char *filename ){
 	int maxTokennum;
 	int lpar, rpar;
 	int len;
-	fileHandle_t	f;
-	
-	len = trap_FS_FOpenFile ( filename, &f, FS_READ );
-	
-	if ( !f ) {
-		G_Printf( "%s",va( S_COLOR_YELLOW "mapfile not found: %s\n", filename ) );	
+	fileHandle_t f;
+
+	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+
+	if(!f) {
+		G_Printf("%s", va(S_COLOR_YELLOW "mapfile not found: %s\n", filename));
 		return;
 	}
 
-	if ( len >= 2500000*6 ) {
-		trap_Error( va( S_COLOR_RED "map file too large: %s is %i, max allowed is %i", filename, len, 2500000*6 ) );
-		trap_FS_FCloseFile( f );
+	if(len >= 2500000 * 6) {
+		trap_Error(va(S_COLOR_RED "map file too large: %s is %i, max allowed is %i", filename, len, 2500000 * 6));
+		trap_FS_FCloseFile(f);
 		return;
 	}
 
-	trap_FS_Read( mapbuffer, len, f );
-	if(len <= 10){
+	trap_FS_Read(mapbuffer, len, f);
+	if(len <= 10) {
 		return;
 	}
 	mapbuffer[len] = 0;
-	trap_FS_FCloseFile( f );
+	trap_FS_FCloseFile(f);
 
 	ClearRegisteredItems();
 	G_ClearEntities();
-	
+
 	COM_Compress(mapbuffer);
-	
-	for ( i = 0; i < MAX_MAPFILE_LENGTH; i++ ){
-		
-		//Filter comments( start at # and end at break )
-		if( mapbuffer[i] == '#' ){
-			while( i < MAX_MAPFILE_LENGTH && !pgbreak ){
-				if( mapbuffer[i] == '\n' || mapbuffer[i] == '\r' )
-					pgbreak = qtrue;
+
+	for(i = 0; i < MAX_MAPFILE_LENGTH; i++) {
+		// Filter comments( start at # and end at break )
+		if(mapbuffer[i] == '#') {
+			while(i < MAX_MAPFILE_LENGTH && !pgbreak) {
+				if(mapbuffer[i] == '\n' || mapbuffer[i] == '\r') pgbreak = qtrue;
 				i++;
 			}
 			pgbreak = qfalse;
 			lastSpace = qtrue;
 		}
-		
-		if( SkippedChar( mapbuffer[i] ) ){
-			if( !lastSpace ){
+
+		if(SkippedChar(mapbuffer[i])) {
+			if(!lastSpace) {
 				mapbuffer[charCount] = ' ';
 				charCount++;
 				lastSpace = qtrue;
 			}
 			continue;
 		}
-		
+
 		lastSpace = qfalse;
 		mapbuffer[charCount] = mapbuffer[i];
 		charCount++;
 	}
-	
+
 	i = 0;
-	while( i < MAX_MAPFILE_LENGTH && tokenNum < MAX_TOKENNUM){
-		i = G_setTokens2( mapbuffer, tokens2[tokenNum].value, i);
-		tokens2[tokenNum].type = G_setTokenType2( tokens2[tokenNum].value );
+	while(i < MAX_MAPFILE_LENGTH && tokenNum < MAX_TOKENNUM) {
+		i = G_SetTokens2(mapbuffer, tokens2[tokenNum].value, i);
+		tokens2[tokenNum].type = G_SetTokenType2(tokens2[tokenNum].value);
 		tokenNum++;
 	}
 	maxTokennum = tokenNum;
-	
-	G_Printf("Mapfile parser found %i tokens\n", maxTokennum );
-	
-	for( tokenNum = 0; tokenNum < maxTokennum; tokenNum++ ){
-			if( strcmp( tokens2[tokenNum].value, "{" ) == 0 ){
-				lpar = tokenNum;
-				if( G_AbeforeB2((char*)"{",(char*)"}", tokens2, tokenNum+2)){
-					G_Printf("error: \"}\" expected at %s\n", tokens2[tokenNum].value);
-					break;
-				}
-				rpar = G_FindNextToken2((char*)"}", tokens2, tokenNum+2 );
-				if( rpar != -1 ){
-					G_LoadMapfileEntity(tokens2, lpar+1, rpar-1);
-					tokenNum = rpar;
-				}	
-			}	
+
+	G_Printf("Mapfile parser found %i tokens\n", maxTokennum);
+
+	for(tokenNum = 0; tokenNum < maxTokennum; tokenNum++) {
+		if(strcmp(tokens2[tokenNum].value, "{") == 0) {
+			lpar = tokenNum;
+			if(G_AbeforeB2((char *)"{", (char *)"}", tokens2, tokenNum + 2)) {
+				G_Printf("error: \"}\" expected at %s\n", tokens2[tokenNum].value);
+				break;
+			}
+			rpar = G_FindNextToken2((char *)"}", tokens2, tokenNum + 2);
+			if(rpar != -1) {
+				G_LoadMapfileEntity(tokens2, lpar + 1, rpar - 1);
+				tokenNum = rpar;
+			}
+		}
 	}
 	SaveRegisteredItems();
 }
 
-void G_LoadMapfile_f( void ) {
+void G_LoadMapfile_f(void) {
 	char filename[MAX_QPATH];
 	char mapname[64];
-	
-	if ( trap_Argc() < 2 ) {
-    	G_Printf("Usage: loadmap <filename>\n");
+
+	if(trap_Argc() < 2) {
+		G_Printf("Usage: loadmap <filename>\n");
 		return;
 	}
-	
-	trap_Argv( 1, filename, sizeof( filename ) );
-	
+
+	trap_Argv(1, filename, sizeof(filename));
+
 	G_LoadMapfile(filename);
-	trap_Cvar_Set("mapfile",filename);
+	trap_Cvar_Set("mapfile", filename);
 	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, sizeof(mapname));
-	trap_Cvar_Set("lastmap",mapname);
+	trap_Cvar_Set("lastmap", mapname);
 
 	G_RelinkEntities();
 
-	trap_SendServerCommand( -1, "print \"^2Map loaded!\n\"" );
+	trap_SendServerCommand(-1, "print \"^2Map loaded!\n\"");
 }
 
-void G_WriteMapfile_f( void ) {
+void G_WriteMapfile_f(void) {
 	int i;
 	fileHandle_t f;
 	char *string;
 	char filename[MAX_QPATH];
 	field_t *field;
-	byte	*b;
-	
-	if ( trap_Argc() < 2 ) {
-    	G_Printf("Usage: savemap <filename>\n");
+	byte *b;
+
+	if(trap_Argc() < 2) {
+		G_Printf("Usage: savemap <filename>\n");
 		return;
 	}
-	
-	trap_Argv( 1, filename, sizeof( filename ) );
-	
-	trap_FS_FOpenFile(va("%s", filename ),&f,FS_WRITE);
+
+	trap_Argv(1, filename, sizeof(filename));
+
+	trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
 
 	string = va("//OpenSandbox Map File\n");
 	trap_FS_Write(string, strlen(string), f);
-	
-	for( i = 0; i < MAX_GENTITIES; i++ ){
-	  
-		if( !g_entities[i].inuse )
-			continue;
-		
-		if(!G_ClassnameAllowed(g_entities[i].classname))
-			continue;
 
-		if(g_gametype.integer == GT_MAPEDITOR){
-			if ( g_entities[i].sandboxObject && g_entities[i].s.eType == ET_ITEM ) {	//Remove sandbox flag from all items
+	for(i = 0; i < MAX_GENTITIES; i++) {
+		if(!g_entities[i].inuse) continue;
+
+		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
+
+		if(g_gametype.integer == GT_MAPEDITOR) {
+			if(g_entities[i].sandboxObject && g_entities[i].s.eType == ET_ITEM) {  // Remove sandbox flag from all items
 				g_entities[i].sandboxObject = OBJ_DEFAULT;
 			}
-			if ( g_entities[i].sandboxObject == OBJ_EDITOR ) {		//Remove sandbox flag from editor items
+			if(g_entities[i].sandboxObject == OBJ_EDITOR) {  // Remove sandbox flag from editor items
 				g_entities[i].sandboxObject = OBJ_DEFAULT;
 			}
 		}
-		b = (byte *) &g_entities[i];
-		
+		b = (byte *)&g_entities[i];
+
 		string = va("{\n");
 		trap_FS_Write(string, strlen(string), f);
-		
-		for( field=gameInfoFields; field->name; field++ ){
-			switch( field->type ) {
-			case F_STRING:
-				if( *(char **)(b+field->ofs) ){
-					string = va("   \"%s\"   \"%s\"\n", field->name, *(char **)(b+field->ofs) );
-					trap_FS_Write(string, strlen(string), f);
-				}
-				break;
-			case F_VECTOR:
-				if( (((float *)(b+field->ofs))[0] || ((float *)(b+field->ofs))[1] || ((float *)(b+field->ofs))[2]) ){
-					string = va("   \"%s\"   \"%f %f %f\"\n", field->name, ((float *)(b+field->ofs))[0], ((float *)(b+field->ofs))[1], ((float *)(b+field->ofs))[2] );
-					trap_FS_Write(string, strlen(string), f);
-				}
-				break;
-			case F_INT:
-				if( *(int *)(b+field->ofs) ){
-					string = va("   \"%s\"   \"%i\"\n", field->name, *(int *)(b+field->ofs) );
-					trap_FS_Write(string, strlen(string), f);
-				}
-				break;
-			case F_FLOAT:
-				if( *(float *)(b+field->ofs) ){
-					string = va("   \"%s\"   \"%f\"\n", field->name, *(float *)(b+field->ofs) );
-					trap_FS_Write(string, strlen(string), f);
-				}
-				break;
-			default:
-			case F_IGNORE:
-				break;
+
+		for(field = gameInfoFields; field->name; field++) {
+			switch(field->type) {
+				case F_STRING:
+					if(*(char **)(b + field->ofs)) {
+						string = va("   \"%s\"   \"%s\"\n", field->name, *(char **)(b + field->ofs));
+						trap_FS_Write(string, strlen(string), f);
+					}
+					break;
+				case F_VECTOR:
+					if((((float *)(b + field->ofs))[0] || ((float *)(b + field->ofs))[1] || ((float *)(b + field->ofs))[2])) {
+						string = va("   \"%s\"   \"%f %f %f\"\n", field->name, ((float *)(b + field->ofs))[0], ((float *)(b + field->ofs))[1], ((float *)(b + field->ofs))[2]);
+						trap_FS_Write(string, strlen(string), f);
+					}
+					break;
+				case F_INT:
+					if(*(int *)(b + field->ofs)) {
+						string = va("   \"%s\"   \"%i\"\n", field->name, *(int *)(b + field->ofs));
+						trap_FS_Write(string, strlen(string), f);
+					}
+					break;
+				case F_FLOAT:
+					if(*(float *)(b + field->ofs)) {
+						string = va("   \"%s\"   \"%f\"\n", field->name, *(float *)(b + field->ofs));
+						trap_FS_Write(string, strlen(string), f);
+					}
+					break;
+				default:
+				case F_IGNORE: break;
 			}
 		}
 		string = va("}\n\n");
 		trap_FS_Write(string, strlen(string), f);
 	}
 	trap_FS_FCloseFile(f);
-	trap_SendServerCommand( -1, "print \"^2Map saved!\n\"" );
+	trap_SendServerCommand(-1, "print \"^2Map saved!\n\"");
 }
 
 void G_DeleteMapfile_f(void) {
-    fileHandle_t f;
-    char filename[MAX_QPATH];
+	fileHandle_t f;
+	char filename[MAX_QPATH];
 	char *string;
 
-    if (trap_Argc() < 2) {
-        G_Printf("Usage: deletemap <filename>\n");
-        return;
-    }
+	if(trap_Argc() < 2) {
+		G_Printf("Usage: deletemap <filename>\n");
+		return;
+	}
 
-    trap_Argv(1, filename, sizeof(filename));
+	trap_Argv(1, filename, sizeof(filename));
 
-    trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
+	trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
 
 	string = va("deleted");
 	trap_FS_Write(string, strlen(string), f);
 
-    trap_FS_FCloseFile(f);
-	trap_SendServerCommand( -1, "print \"^2Map deleted!\n\"" );
+	trap_FS_FCloseFile(f);
+	trap_SendServerCommand(-1, "print \"^2Map deleted!\n\"");
 }
 
-void G_ClearMap_f( void ){
+void G_ClearMap_f(void) {
 	int i;
-	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
-		if ( g_entities[i].npcType >= 1 ) {
-			DropClientSilently( g_entities[i].client->ps.clientNum );
+	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
+		if(g_entities[i].npcType >= 1) {
+			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
-	for( i = 0; i < MAX_GENTITIES; i++ ) {				//Items and Other
-		if(!G_ClassnameAllowed(g_entities[i].classname))
-			continue;
+	for(i = 0; i < MAX_GENTITIES; i++) {  // Items and Other
+		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);
 	}
-	trap_SendServerCommand( -1, "print \"^2Map cleaned!\n\"" );
+	trap_SendServerCommand(-1, "print \"^2Map cleaned!\n\"");
 }
 
-void G_ClearSandboxMap_f( void ){
+void G_ClearSandboxMap_f(void) {
 	int i;
-	for (i = 0; i < MAX_CLIENTS; i++ ) {				//NPCs
-		if ( g_entities[i].npcType >= 1 ) {
-			DropClientSilently( g_entities[i].client->ps.clientNum );
+	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
+		if(g_entities[i].npcType >= 1) {
+			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
-	for (i = 0; i < MAX_GENTITIES; i++ ) {				//Sandbox objects
-		if ( g_entities[i].sandboxObject ) {
+	for(i = 0; i < MAX_GENTITIES; i++) {  // Sandbox objects
+		if(g_entities[i].sandboxObject) {
 			g_entities[i].nextthink = 0;
 			G_FreeEntity(&g_entities[i]);
 		}
 	}
-	trap_SendServerCommand( -1, "print \"^2Map cleaned!\n\"" );
+	trap_SendServerCommand(-1, "print \"^2Map cleaned!\n\"");
 }

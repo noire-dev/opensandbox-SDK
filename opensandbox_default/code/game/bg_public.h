@@ -113,14 +113,6 @@ typedef enum {
 //#define A2_UNUSED					1
 //#define A2_UNUSED					2
 
-//factions
-#define NPC_PLAYER					0
-#define NPC_ENEMY					1
-#define NPC_CITIZEN					2
-#define NPC_GUARD					3
-#define NPC_PARTNER					4
-#define NPC_PARTNERENEMY			5
-
 //tools
 #define TL_CREATE					0
 #define TL_MATERIAL					1
@@ -479,6 +471,39 @@ typedef struct wPropPropeties_s {
 
 extern	wPropProperties_t	gameInfoWProps[];
 extern	int					gameInfoWPropsNum;
+
+typedef enum {
+	NT_NONE,
+
+	NT_PLAYER,
+	NT_ENEMY,
+	NT_CITIZEN,
+	NT_GUARD,
+	NT_PARTNER,
+	
+	NPCTYPES_NUM
+} NPCType_t;
+
+typedef enum {
+    FRAC_NONE,
+
+    FRAC_PLAYER			= 1 << 0,
+    FRAC_ENEMY			= 1 << 1,
+    FRAC_CITIZEN		= 1 << 2,
+    FRAC_GUARD			= 1 << 3,
+    FRAC_PARTNER		= 1 << 4,
+} factionBits_t;
+
+typedef struct NPCTypeProperties_s {
+    factionBits_t 	faction;
+    factionBits_t	attackMask;
+    qboolean 		friendlyFire;
+    qboolean 		canPickup;
+    qboolean 		canChat;
+} NPCTypeProperties_t;
+
+extern	NPCTypeProperties_t	gameInfoNPCTypes[];
+extern	int					gameInfoNPCTypesNum;
 
 // entityState_t->event values
 // entity events are for effects that take place reletive

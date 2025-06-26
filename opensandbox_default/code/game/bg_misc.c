@@ -95,8 +95,7 @@ item_t gameInfoItems[] = {
 	{ "item_redcube",				"models/powerups/orb/r_orb.md3",				"icons/iconh_rorb",			"Red Cube",				0,		IT_TEAM,		0 },
 	{ "item_bluecube",				"models/powerups/orb/b_orb.md3",				"icons/iconh_borb",			"Blue Cube",			0,		IT_TEAM,		0 },
 };
-
-int	gameInfoItemsNum = sizeof(gameInfoItems) / sizeof(gameInfoItems[0]) - 1;
+int	gameInfoItemsNum = ARRAY_SIZE(gameInfoItems);
 
 weaponProperties_t gameInfoWeapons[] = {
 // 	wType 			mType 			mEffect 				classname 		delay 	count 	dmg 	sDmg 	sRadius range 	mod 					speed	sRandom spread	timeout guided	gravity	bounce	bMod 
@@ -128,8 +127,7 @@ weaponProperties_t gameInfoWeapons[] = {
 	{ WT_EMPTY, 	MT_NONE, 		WP_GRAVITYGUN, 			NULL, 			100, 	1, 		0, 		0, 		0,		1024,	WP_GRAVITYGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
 	{ WT_TOOLGUN, 	MT_NONE, 		WP_TOOLGUN, 			NULL, 			200, 	1, 		0, 		0, 		0,		4096,	WP_TOOLGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
 };
-
-int	gameInfoWeaponsNum = sizeof(gameInfoWeapons) / sizeof(gameInfoWeapons[0]) - 1;
+int	gameInfoWeaponsNum = ARRAY_SIZE(gameInfoWeapons);
 
 wPropProperties_t gameInfoWProps[] = {
 // 	oType 				modelname 								mtMin 		mtMax 		health 	gravity 	scale 		colSize		solid
@@ -142,9 +140,18 @@ wPropProperties_t gameInfoWProps[] = {
 	{ OT_BASIC, 		"props/cube", 							1, 			15, 		-1, 	1.00,		0.50, 		25, 		qtrue }, //MT_PROPGUN
 	{ OT_NUKE, 			"models/ammo/rocket/rocket.md3", 		0, 			0, 			1, 		1.00,		4.00, 		25, 		qfalse }, //MT_NUKE
 };
+int	gameInfoWPropsNum = ARRAY_SIZE(gameInfoWProps);
 
-int	gameInfoWPropsNum = sizeof(gameInfoWProps) / sizeof(gameInfoWProps[0]) - 1;
-
+NPCTypeProperties_t gameInfoNPCTypes[] = {
+//	faction				attackMask																				frFire		pickup		chat
+	{ FRAC_NONE,		FRAC_NONE,																				qtrue,		qtrue,		qtrue }, //NT_NONE
+	{ FRAC_PLAYER,		FRAC_PLAYER,																			qtrue,		qtrue,		qtrue }, //NT_PLAYER
+	{ FRAC_ENEMY,		FRAC_PLAYER|FRAC_CITIZEN|FRAC_GUARD|FRAC_PARTNER,										qfalse,		qfalse,		qfalse }, //NT_ENEMY
+	{ FRAC_CITIZEN,		FRAC_NONE,																				qfalse,		qfalse,		qtrue }, //NT_CITIZEN
+	{ FRAC_GUARD,		FRAC_ENEMY,																				qfalse,		qfalse,		qfalse }, //NT_GUARD
+	{ FRAC_PARTNER,		FRAC_ENEMY,																				qfalse,		qtrue,		qtrue }, //NT_PARTNER
+};
+int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 /*
 ==============
 BG_FindItemForPowerup

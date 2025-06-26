@@ -80,6 +80,7 @@ typedef int		clipHandle_t;
 #define	MIN_QINT			(-MAX_QINT-1)
 
 #define ARRAY_LEN(x)			(sizeof(x) / sizeof(*(x)))
+#define ARRAY_SIZE(x) 			(sizeof(x) / sizeof((x)[0]))
 #define STRARRAY_LEN(x)			(ARRAY_LEN(x) - 1)
 
 // angle indexes

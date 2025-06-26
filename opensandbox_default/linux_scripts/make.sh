@@ -49,7 +49,6 @@ $cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/g_misc.c
 $cc ../../../code/game/g_mover.c
 $cc ../../../code/game/g_physics.c
-$cc ../../../code/game/g_playerstore.c
 $cc ../../../code/game/g_sandbox.c
 $cc ../../../code/game/g_session.c
 $cc ../../../code/game/g_spawn.c

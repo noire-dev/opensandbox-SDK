@@ -487,55 +487,6 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 	}
 }
 
-int engine10hook(int value, int src_min, int src_max) {
-    return 10 * (value - src_min) / (src_max - src_min);
-}
-
-void VehiclePhys( gentity_t *self ) {
-	if(!self->parent || !self || !self->parent->client->vehiclenum || self->parent->health <= 0 || self->health <= 0){
-	self->think = 0;
-	self->nextthink = 0;
-	self->r.contents = CONTENTS_SOLID;
-	self->sb_coll = CONTENTS_SOLID;
-	self->s.pos.trType = TR_GRAVITY;
-	self->s.pos.trTime = level.time;
-	ClientUserinfoChanged( self->parent->s.clientNum );
-	VectorSet( self->parent->r.mins, -15, -15, -24 );
-	VectorSet( self->parent->r.maxs, 15, 15, 32 );
-	VectorSet( self->parent->client->ps.origin, self->r.currentOrigin[0], self->r.currentOrigin[1], self->r.currentOrigin[2] + 40);
-	self->parent->client->vehiclenum = 0;
-	self->s.legsAnim = 0;
-	self->s.generic1 = 0; 		//smooth vehicles
-	self->parent->client->ps.gravity = g_gravity.value;
-	return;
-	}
-	
-	self->s.pos.trType = TR_STATIONARY;
-	self->sb_phys = PHYS_STATIC;
-	
-	self->r.contents = CONTENTS_TRIGGER;
-	self->sb_coll = CONTENTS_TRIGGER;
-
-	trap_UnlinkEntity( self );
-	
-	VectorCopy(self->parent->s.origin, self->s.origin);
-	VectorCopy(self->parent->s.pos.trBase, self->s.pos.trBase);
-	if (VectorLength(self->parent->client->ps.velocity) > 5) {
-	self->s.apos.trBase[1] = self->parent->s.apos.trBase[1];
-	}
-	if(engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900) <= 10){ //900 is car speed
-	self->s.legsAnim = engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900); //900 is car speed
-	}
-	VectorCopy(self->parent->r.currentOrigin, self->r.currentOrigin);
-	self->parent->client->ps.stats[STAT_VEHICLEHP] = self->health; //VEHICLE-SYSTEM: vehicle's hp instead player
-	self->s.generic1 = self->parent->s.clientNum+1; 		//smooth vehicles
-	
-	trap_LinkEntity( self );
-	
-	self->think = VehiclePhys;
-	self->nextthink = level.time + 1;
-}
-
 qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
     // Validate conditions
     if (!player->client || !vehicle->vehicle || player->client->vehiclenum)
@@ -559,7 +510,7 @@ qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
     VectorSet(player->r.maxs, 25, 25, 15);
 
     // Activate vehicle physics
-    vehicle->think = VehiclePhys;
+    vehicle->think = Phys_VehiclePlayer;
     vehicle->nextthink = level.time + 1;
 
     return qtrue;
@@ -580,7 +531,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	vec3_t		bouncedir, impactpoint;
 	gentity_t 	*act;
 
-	if (!G_NpcFactionProp(NP_HARM, attacker) && attacker->npcType >= 1 && targ->npcType == attacker->npcType)
+	if (attacker->npcType && !gameInfoNPCTypes[attacker->npcType].friendlyFire && targ->npcType == attacker->npcType)
 		return;
 
 	if (!targ->takedamage && !targ->sandboxObject && mod == WP_TOOLGUN && mod == WP_GAUNTLET && attacker->health <= 0)
