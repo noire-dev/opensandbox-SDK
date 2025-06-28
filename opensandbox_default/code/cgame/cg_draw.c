@@ -1080,14 +1080,9 @@ CG_DrawCrosshair3D
 =================
 */
 static void CG_DrawCrosshair3D(void) {
-	float w, h;
-	qhandle_t hShader;
-	int ca;
 	trace_t trace;
-	vec3_t endpos;
-	float zProj, maxdist;
-	char rendererinfos[128];
-	refEntity_t ent;
+	vec3_t origin, endpos;
+	vec3_t		axis[3];
 
 	if (!cg_drawCrosshair.integer || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
 		return;
@@ -1095,44 +1090,13 @@ static void CG_DrawCrosshair3D(void) {
 	if (cg.predictedPlayerState.pm_type == PM_DEAD || cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 		return;
 
-	w = h = cg_crosshairScale.value;
+    VectorCopy(cg.predictedPlayerState.origin, origin );
+    origin[2] += cg.predictedPlayerState.viewheight;
+    AnglesToAxis(cg.predictedPlayerState.viewangles, axis);
+    VectorMA(origin, 65536, axis[0], endpos);
 
-	ca = cg_drawCrosshair.integer;
-	if (ca < 0) {
-		ca = 0;
-	}
-	hShader = cgs.media.crosshairSh3d[ ca % NUM_CROSSHAIRS ];
-
-	if (!hShader)
-		hShader = cgs.media.crosshairSh3d[ ca % 10 ];
-
-	// first get all the important renderer information
-	trap_Cvar_VariableStringBuffer("r_zProj", rendererinfos, sizeof (rendererinfos));
-	zProj = atof(rendererinfos);
-
-    maxdist = 65536;
-
-	memset(&ent, 0, sizeof (ent));
-	ent.reType = RT_SPRITE;
-	ent.renderfx = RF_DEPTHHACK | RF_CROSSHAIR | RF_FIRST_PERSON;
-
-    VectorCopy(cg.predictedPlayerState.origin, ent.origin );
-    ent.origin[2] = ent.origin[2]+cg.predictedPlayerState.viewheight;
-    AnglesToAxis(cg.predictedPlayerState.viewangles, ent.axis);
-    VectorMA(ent.origin, maxdist, ent.axis[0], endpos);
-
-	CG_Trace(&trace, ent.origin, NULL, NULL, endpos, 0, MASK_SHOT);
-
-	VectorCopy(trace.endpos, ent.origin);
-
-	// scale the crosshair so it appears the same size for all distances
-	ent.radius = w / 800 * zProj * tan(cg.refdef.fov_x * M_PI / 360.0f) * trace.fraction * maxdist / zProj;
-	ent.customShader = hShader;
-    ent.shaderRGBA[0] = cg_crosshairColorRed.value * 255;
-	ent.shaderRGBA[1] = cg_crosshairColorGreen.value * 255;
-	ent.shaderRGBA[2] = cg_crosshairColorBlue.value * 255;
-    ent.shaderRGBA[3] = 255;
-	trap_R_AddRefEntityToScene(&ent);
+	CG_Trace(&trace, origin, NULL, NULL, endpos, 0, MASK_SHOT);
+	CG_Draw3DString(trace.endpos[0], trace.endpos[1], trace.endpos[2]+10, "  +   ", UI_CENTER, customcolor_crosshair, 0.05*cg_crosshairScale.value, 65536, 65536*2, qfalse);
 }
 
 /*

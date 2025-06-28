@@ -5,11 +5,6 @@
 
 #include "../qcommon/ns_local.h"
 
-/*
-===================
-Svcmd_EntityList_f
-===================
-*/
 static void Svcmd_EntityList_f(void) {
 	int e;
 	gentity_t *check;
@@ -78,12 +73,6 @@ static void Svcmd_ForceTeam_f(void) {
 	SetTeam(&g_entities[cl - level.clients], str);
 }
 
-/*
-============
-Svcmd_NS_OpenScript_f
-Opens Noire.Script file
-============
-*/
 static void Svcmd_NS_OpenScript_f(void) {
 	char filename[64];
 	if(trap_Argc() == 1) {
@@ -96,12 +85,6 @@ static void Svcmd_NS_OpenScript_f(void) {
 	NS_OpenScript(filename, NULL, 0);
 }
 
-/*
-============
-Svcmd_NS_Interpret_f
-Show Noire.Script variables
-============
-*/
 static void Svcmd_NS_Interpret_f(void) {
 	if(trap_Argc() == 1) {
 		G_Printf("usage: ns_interpret <code>\n");
@@ -111,28 +94,10 @@ static void Svcmd_NS_Interpret_f(void) {
 	Interpret(ConcatArgs(1));
 }
 
-/*
-============
-Svcmd_NS_VariableList_f
-Show Noire.Script variables
-============
-*/
 static void Svcmd_NS_VariableList_f(void) { print_variables(); }
 
-/*
-============
-Svcmd_NS_ThreadList_f
-Show Noire.Script threads
-============
-*/
 static void Svcmd_NS_ThreadList_f(void) { print_threads(); }
 
-/*
-============
-Svcmd_NS_SendVariable_f
-Sends variable to Noire.Script vm
-============
-*/
 static void Svcmd_NS_SendVariable_f(void) {
 	char varName[MAX_VAR_NAME];
 	char varValue[MAX_VAR_CHAR_BUF];

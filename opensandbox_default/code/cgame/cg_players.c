@@ -175,25 +175,13 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 	for ( i = 0 ; i < MAX_ANIMATIONS ; i++ ) {
 
 		token = COM_Parse( &text_p );
-		if ( !*token ) {
-			if( i >= TORSO_GETFLAG && i <= TORSO_NEGATIVE ) {
-				animations[i].firstFrame = animations[TORSO_GESTURE].firstFrame;
-				animations[i].frameLerp = animations[TORSO_GESTURE].frameLerp;
-				animations[i].initialLerp = animations[TORSO_GESTURE].initialLerp;
-				animations[i].loopFrames = animations[TORSO_GESTURE].loopFrames;
-				animations[i].numFrames = animations[TORSO_GESTURE].numFrames;
-				animations[i].reversed = qfalse;
-				animations[i].flipflop = qfalse;
-				continue;
-			}
-			break;
-		}
+
 		animations[i].firstFrame = atoi( token );
 		// leg only frames are adjusted to not count the upper body only frames
 		if ( i == LEGS_WALKCR ) {
 			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
 		}
-		if ( i >= LEGS_WALKCR && i<TORSO_GETFLAG) {
+		if ( i >= LEGS_WALKCR && i<MAX_ANIMATIONS) {
 			animations[i].firstFrame -= skip;
 		}
 
@@ -240,36 +228,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 	// walk backward animation
 	memcpy(&animations[LEGS_BACKWALK], &animations[LEGS_WALK], sizeof(animation_t));
 	animations[LEGS_BACKWALK].reversed = qtrue;
-	// flag moving fast
-	animations[FLAG_RUN].firstFrame = 0;
-	animations[FLAG_RUN].numFrames = 16;
-	animations[FLAG_RUN].loopFrames = 16;
-	animations[FLAG_RUN].frameLerp = 1000 / 15;
-	animations[FLAG_RUN].initialLerp = 1000 / 15;
-	animations[FLAG_RUN].reversed = qfalse;
-	// flag not moving or moving slowly
-	animations[FLAG_STAND].firstFrame = 16;
-	animations[FLAG_STAND].numFrames = 5;
-	animations[FLAG_STAND].loopFrames = 0;
-	animations[FLAG_STAND].frameLerp = 1000 / 20;
-	animations[FLAG_STAND].initialLerp = 1000 / 20;
-	animations[FLAG_STAND].reversed = qfalse;
-	// flag speeding up
-	animations[FLAG_STAND2RUN].firstFrame = 16;
-	animations[FLAG_STAND2RUN].numFrames = 5;
-	animations[FLAG_STAND2RUN].loopFrames = 1;
-	animations[FLAG_STAND2RUN].frameLerp = 1000 / 15;
-	animations[FLAG_STAND2RUN].initialLerp = 1000 / 15;
-	animations[FLAG_STAND2RUN].reversed = qtrue;
-	//
-	// new anims changes
-	//
-	animations[TORSO_GETFLAG].flipflop = qtrue;
-	animations[TORSO_GUARDBASE].flipflop = qtrue;
-	animations[TORSO_PATROL].flipflop = qtrue;
-	animations[TORSO_AFFIRMATIVE].flipflop = qtrue;
-	animations[TORSO_NEGATIVE].flipflop = qtrue;
-	//
+
 	return qtrue;
 }
 

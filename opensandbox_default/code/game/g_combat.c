@@ -29,24 +29,22 @@ Toss the weapon and powerups for the killed player
 */
 void TossClientItems(gentity_t *self) {
 	item_t *item;
-	int weapon;
 	int i;
 	gentity_t *drop;
 
-	// drop the weapon if not a gauntlet or machinegun
-	weapon = self->s.weapon;
-
-	if(self->npcType >= 1) return;
+	if(!gameInfoNPCTypes[self->npcType].dropItems) return;
 
 	// drop all weapons
-	for(i = 1; i < WEAPONS_NUM; i++) {
-		if(self->swep_list[i] >= 1) {
-			item = BG_FindItemForWeapon(i);
-			if(!item || i == WP_GAUNTLET) continue;
-			drop = Drop_Item(self, item);
-			drop->count = (self->swep_ammo[i]);
-			if(drop->count < 1) {
-				drop->count = 1;
+	if(gameInfoItems[self->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag != PW_AMMOREGEN){
+		for(i = 1; i < WEAPONS_NUM; i++) {
+			if(self->swep_list[i] >= 1) {
+				item = BG_FindItemForWeapon(i);
+				if(!item || i == WP_GAUNTLET || i == WP_PHYSGUN || i == WP_GRAVITYGUN || i == WP_TOOLGUN) continue;
+				drop = Drop_Item(self, item);
+				drop->count = (self->swep_ammo[i]);
+				if(drop->count < 1) {
+					drop->count = 1;
+				}
 			}
 		}
 	}
@@ -65,16 +63,9 @@ void TossClientItems(gentity_t *self) {
 	}
 
 	// drop holdable
-	for(i = 1; i < PW_NUM_POWERUPS; i++) {
-		if(self->client->ps.powerups[i] > level.time) {
-			item = BG_FindItemForPowerup(i);
-			if(!item) continue;
-			drop = Drop_Item(self, item);
-			drop->count = (self->client->ps.powerups[i] - level.time) / 1000;
-			if(drop->count < 1) {
-				drop->count = 1;
-			}
-		}
+	if(self->client->ps.stats[STAT_HOLDABLE_ITEM]) {
+		item = BG_FindItemForHoldable(gameInfoItems[self->client->ps.stats[STAT_HOLDABLE_ITEM]].giTag);
+		if(item) drop = Drop_Item(self, item);
 	}
 }
 
@@ -442,7 +433,7 @@ int G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t im
 
 static qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
 	// Validate conditions
-	if(!player->client || !vehicle->vehicle || player->client->vehicleNum) return qtrue;
+	if(!player->client || !vehicle->sb_vehicle || player->client->vehicleNum) return qtrue;
 
 	// Assign vehicle to player
 	player->client->vehicleNum = vehicle->s.number;
@@ -470,11 +461,7 @@ static qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
 
 void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod) {
 	gclient_t *client;
-	int take;
-	int save;
-	int asave;
-	int knockback;
-	int max;
+	int take, save, asave, knockback;
 	vec3_t bouncedir, impactpoint;
 
 	if(attacker->npcType && !gameInfoNPCTypes[attacker->npcType].friendlyFire && targ->npcType == attacker->npcType) return;
@@ -482,17 +469,14 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	if(!targ->takedamage && !targ->sandboxObject && mod == WP_TOOLGUN && mod == WP_GAUNTLET && attacker->health <= 0) return;
 
 	if(mod == WP_GAUNTLET) {
-		if(targ->vehicle) {
+		if(targ->sb_vehicle) {
 			if(G_EnterInCar(attacker, targ)) {
 				return;
 			}
 		}
 	}
 
-	// damage car
-	if(targ->client && targ->client->vehicleNum) {  // VEHICLE-SYSTEM: damage vehicle instead player
-		targ = G_FindEntityForEntityNum(targ->client->vehicleNum);
-	}
+	if(targ->client && targ->client->vehicleNum) targ = G_FindEntityForEntityNum(targ->client->vehicleNum); // damage car
 
 	if(mod == WP_REGENERATOR && targ->client) {
 		if(!targ->client->ps.powerups[PW_REGEN]) {
@@ -503,9 +487,8 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
-	if(level.intermissionQueued) {
-		return;
-	}
+	if(level.intermissionQueued) return;
+
 	if(targ->client && mod != MOD_JUICED) {
 		if(targ->client->invulnerabilityTime > level.time) {
 			if(dir && point) {
@@ -514,12 +497,9 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 			return;
 		}
 	}
-	if(!inflictor) {
-		inflictor = &g_entities[ENTITYNUM_WORLD];
-	}
-	if(!attacker) {
-		attacker = &g_entities[ENTITYNUM_WORLD];
-	}
+
+	if(!inflictor) inflictor = &g_entities[ENTITYNUM_WORLD];
+	if(!attacker) attacker = &g_entities[ENTITYNUM_WORLD];
 
 	// shootable doors / buttons don't actually have any health
 	if(targ->s.eType == ET_MOVER) {
@@ -528,24 +508,11 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		}
 		return;
 	}
-	if(g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker)) {
-		return;
-	}
-	if(attacker->client && attacker != targ) {
-		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
-		if(gameInfoItems[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
-			max /= 2;
-		}
-		damage = damage * max / 100;
-	}
+	if(g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker)) return;
 
 	client = targ->client;
 
-	if(client) {
-		if(client->noclip) {
-			return;
-		}
-	}
+	if(client && client->noclip) return;
 
 	if(!dir) {
 		dflags |= DAMAGE_NO_KNOCKBACK;
@@ -558,12 +525,8 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	if(mod == WP_NUKE) knockback *= 3.00;
 	if(mod == WP_KNOCKER) knockback *= 200;
 
-	if(targ->flags & FL_NO_KNOCKBACK) {
-		knockback = 0;
-	}
-	if(dflags & DAMAGE_NO_KNOCKBACK) {
-		knockback = 0;
-	}
+	if(targ->flags & FL_NO_KNOCKBACK) knockback = 0;
+	if(dflags & DAMAGE_NO_KNOCKBACK) knockback = 0;
 
 	// figure momentum add, even if the damage won't be taken
 	if(knockback && targ->client || knockback && targ->sandboxObject) {
@@ -581,17 +544,17 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 			VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		}
 		if(targ->sandboxObject) {  // WELD-TOOL
-			if(!targ->phys_parent) {
+			if(!targ->physParentEnt) {
 				Phys_Enable(targ);
 				targ->lastPlayer = attacker;
 				VectorAdd(targ->s.pos.trDelta, kvel, targ->s.pos.trDelta);
 			} else {
-				Phys_Enable(targ->phys_parent);
-				targ->phys_parent->lastPlayer = attacker;
-				if(targ->phys_parent->phys_weldedObjectsNum > 0) {  // mass
-					VectorScale(kvel, 1.0f / targ->phys_parent->phys_weldedObjectsNum, kvel);
+				Phys_Enable(targ->physParentEnt);
+				targ->physParentEnt->lastPlayer = attacker;
+				if(targ->physParentEnt->phys_weldedObjectsNum > 0) {  // mass
+					VectorScale(kvel, 1.0f / targ->physParentEnt->phys_weldedObjectsNum, kvel);
 				}
-				VectorAdd(targ->phys_parent->s.pos.trDelta, kvel, targ->phys_parent->s.pos.trDelta);
+				VectorAdd(targ->physParentEnt->s.pos.trDelta, kvel, targ->physParentEnt->s.pos.trDelta);
 			}
 		}
 
@@ -614,44 +577,25 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		}
 	}
 
-	if(targ->sandboxObject && targ->health == -1) {
-		return;
-	}
-
-	if(targ->skill == 7) {
-		return;
-	}
+	if(targ->sandboxObject && targ->health == -1) return;
 
 	// check for completely getting out of the damage
 	if(!(dflags & DAMAGE_NO_PROTECTION)) {
-		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
-		// if the attacker was on the same team
 		if(mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam(targ, attacker)) {
-			if(!g_friendlyFire.integer) {
-				return;
-			}
+			if(!g_friendlyFire.integer) return;
 		}
 		if(mod == WP_PROX_LAUNCHER) {
-			if(inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) {
-				return;
-			}
-			if(targ == attacker) {
-				return;
-			}
+			if(inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) return;
+			if(targ == attacker) return;
 		}
 
-		// check for godmode
-		if(targ->flags & FL_GODMODE) {
-			return;
-		}
+		if(targ->flags & FL_GODMODE) return; // check for godmode
 	}
 
 	// battlesuit protects from all radius damage (but takes knockback)
 	// and protects 50% against all damage
 	if(client && client->ps.powerups[PW_BATTLESUIT]) {
-		if((dflags & DAMAGE_RADIUS) || (mod == MOD_FALLING)) {
-			return;
-		}
+		if((dflags & DAMAGE_RADIUS) || (mod == MOD_FALLING)) return;
 		damage *= 0.5;
 	}
 
@@ -667,13 +611,9 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
-	if(targ == attacker) {
-		damage *= 0.20;
-	}
+	if(targ == attacker) damage *= 0.20;
 
-	if(damage < 1) {
-		damage = 1;
-	}
+	if(damage < 1) damage = 1;
 	take = damage;
 	save = 0;
 

@@ -6,7 +6,7 @@
 #include "cg_local.h"
 
 // we'll need these prototypes
-void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum );
+void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum, int weapon );
 void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
 
 /*
@@ -35,13 +35,13 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
 
 	// was it a rail attack?
-	if ( ent->weapon == WP_RAILGUN ) {
+	if ( gameInfoWeapons[ent->weapon].wType == WT_RAILGUN ) {
 		// do we have it on for the rail gun?
 		trace_t trace;
 		vec3_t endPoint;
 
 		// trace forward
-		VectorMA( muzzlePoint, 8192, forward, endPoint );
+		VectorMA( muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint );
 
 		// find the rail's end point
 		CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID );
@@ -67,7 +67,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		}
 	}
 	// was it a shotgun attack?
-	else if ( ent->weapon == WP_SHOTGUN ) {
+	else if ( gameInfoWeapons[ent->weapon].wType == WT_SHOTGUN ) {
 		int contents;
 		vec3_t endPoint, v;
 		vec3_t			up;
@@ -75,7 +75,7 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		// do everything like the server does
 		SnapVector( muzzlePoint );
 
-		VectorScale( forward, 4096, endPoint );
+		VectorScale( forward, gameInfoWeapons[ent->weapon].range, endPoint );
 		SnapVector( endPoint );
 
 		VectorSubtract( endPoint, muzzlePoint, v );
@@ -90,10 +90,10 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		}
 
 		// do the shotgun pellets
-		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum );
+		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum, ent->weapon );
 	}
 	// was it a machinegun attack?
-	else if ( ent->weapon == WP_MACHINEGUN || ent->weapon == WP_CHAINGUN ) {
+	else if ( gameInfoWeapons[ent->weapon].wType == WT_BULLET ) {
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;

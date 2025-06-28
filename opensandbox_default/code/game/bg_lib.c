@@ -4,273 +4,246 @@
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "../qcommon/q_shared.h"
-
 #include "bg_lib.h"
 
-static char* med3(char *, char *, char *, cmp_t *);
-static void	 swapfunc(char *, char *, int, int);
+static char *med3(char *, char *, char *, cmp_t *);
+static void swapfunc(char *, char *, int, int);
 
-#ifndef min
-#define min(a, b)	((a) < (b) ? (a) : (b))
-#endif
+#define swapcode(TYPE, a, b, n)      \
+	{                                \
+		long i = (n) / sizeof(TYPE); \
+		TYPE *pa = (TYPE *)(a);      \
+		TYPE *pb = (TYPE *)(b);      \
+		do {                         \
+			TYPE tmp = *pa;          \
+			*pa++ = *pb;             \
+			*pb++ = tmp;             \
+		} while(--i > 0);            \
+	}
 
-#define swapcode(TYPE, a, b, n) {          \
-    long i = (n) / sizeof(TYPE);           \
-    TYPE *pa = (TYPE *)(a);                \
-    TYPE *pb = (TYPE *)(b);                \
-    do {                                   \
-        TYPE tmp = *pa;                    \
-        *pa++ = *pb;                       \
-        *pb++ = tmp;                       \
-    } while (--i > 0);                     \
-}
-
-#define SWAPINIT(a, es) \
-    swaptype = ((char *)(a) - (char *)0) % sizeof(long) || (es) % sizeof(long) ? 2 : ((es) == sizeof(long) ? 0 : 1)
+#define SWAPINIT(a, es) swaptype = ((char *)(a) - (char *)0) % sizeof(long) || (es) % sizeof(long) ? 2 : ((es) == sizeof(long) ? 0 : 1)
 
 static void swapfunc(char *a, char *b, int n, int swaptype) {
-    if (swaptype <= 1)
-        swapcode(long, a, b, n)
-    else
-        swapcode(char, a, b, n)
+	if(swaptype <= 1) swapcode(long, a, b, n) else swapcode(char, a, b, n)
 }
 
-#define swap(a, b)                        \
-    if (swaptype == 0) {                  \
-        long t = *(long *)(a);            \
-        *(long *)(a) = *(long *)(b);      \
-        *(long *)(b) = t;                 \
-    } else {                              \
-        swapfunc(a, b, es, swaptype);     \
-    }
+#define swap(a, b)                    \
+	if(swaptype == 0) {               \
+		long t = *(long *)(a);        \
+		*(long *)(a) = *(long *)(b);  \
+		*(long *)(b) = t;             \
+	} else {                          \
+		swapfunc(a, b, es, swaptype); \
+	}
 
 #define vecswap(a, b, n) \
-    if ((n) > 0) swapfunc(a, b, n, swaptype)
+	if((n) > 0) swapfunc(a, b, n, swaptype)
 
-static char *med3(char *a, char *b, char *c, cmp_t *cmp) {
-    return cmp(a, b) < 0 ?
-           (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) :
-           (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c));
-}
+static char *med3(char *a, char *b, char *c, cmp_t *cmp) { return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c)); }
 
 void qsort(void *a, size_t n, size_t es, cmp_t *cmp) {
-    char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
-    int d, r, swaptype, swap_cnt;
+	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
+	int d, r, swaptype, swap_cnt;
 
 loop:
-    SWAPINIT(a, es);
-    swap_cnt = 0;
+	SWAPINIT(a, es);
+	swap_cnt = 0;
 
-    if (n < 7) {
-        for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-            for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es)
-                swap(pl, pl - es);
-        return;
-    }
+	if(n < 7) {
+		for(pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
+			for(pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es) swap(pl, pl - es);
+		return;
+	}
 
-    pm = (char *)a + (n / 2) * es;
-    if (n > 7) {
-        pl = a;
-        pn = (char *)a + (n - 1) * es;
-        if (n > 40) {
-            d = (n / 8) * es;
-            pl = med3(pl, pl + d, pl + 2 * d, cmp);
-            pm = med3(pm - d, pm, pm + d, cmp);
-            pn = med3(pn - 2 * d, pn - d, pn, cmp);
-        }
-        pm = med3(pl, pm, pn, cmp);
-    }
+	pm = (char *)a + (n / 2) * es;
+	if(n > 7) {
+		pl = a;
+		pn = (char *)a + (n - 1) * es;
+		if(n > 40) {
+			d = (n / 8) * es;
+			pl = med3(pl, pl + d, pl + 2 * d, cmp);
+			pm = med3(pm - d, pm, pm + d, cmp);
+			pn = med3(pn - 2 * d, pn - d, pn, cmp);
+		}
+		pm = med3(pl, pm, pn, cmp);
+	}
 
-    swap(a, pm);
+	swap(a, pm);
 
-    pa = pb = (char *)a + es;
-    pc = pd = (char *)a + (n - 1) * es;
+	pa = pb = (char *)a + es;
+	pc = pd = (char *)a + (n - 1) * es;
 
-    while (1) {
-        while (pb <= pc && (r = cmp(pb, a)) <= 0) {
-            if (r == 0) {
-                swap_cnt = 1;
-                swap(pa, pb);
-                pa += es;
-            }
-            pb += es;
-        }
-        while (pb <= pc && (r = cmp(pc, a)) >= 0) {
-            if (r == 0) {
-                swap_cnt = 1;
-                swap(pc, pd);
-                pd -= es;
-            }
-            pc -= es;
-        }
-        if (pb > pc)
-            break;
-        swap(pb, pc);
-        swap_cnt = 1;
-        pb += es;
-        pc -= es;
-    }
+	while(1) {
+		while(pb <= pc && (r = cmp(pb, a)) <= 0) {
+			if(r == 0) {
+				swap_cnt = 1;
+				swap(pa, pb);
+				pa += es;
+			}
+			pb += es;
+		}
+		while(pb <= pc && (r = cmp(pc, a)) >= 0) {
+			if(r == 0) {
+				swap_cnt = 1;
+				swap(pc, pd);
+				pd -= es;
+			}
+			pc -= es;
+		}
+		if(pb > pc) break;
+		swap(pb, pc);
+		swap_cnt = 1;
+		pb += es;
+		pc -= es;
+	}
 
-    if (swap_cnt == 0) {
-        for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-            for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es)
-                swap(pl, pl - es);
-        return;
-    }
+	if(swap_cnt == 0) {
+		for(pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
+			for(pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es) swap(pl, pl - es);
+		return;
+	}
 
-    pn = (char *)a + n * es;
+	pn = (char *)a + n * es;
 
-    r = (int)(pa - (char *)a);
-    vecswap(a, pb - r, r);
+	r = (int)(pa - (char *)a);
+	vecswap(a, pb - r, r);
 
-    r = (int)(pd - pc);
-    vecswap(pb, pn - r, r);
+	r = (int)(pd - pc);
+	vecswap(pb, pn - r, r);
 
-    if ((r = (int)(pb - pa)) > (int)es)
-        qsort(a, r / es, es, cmp);
-    if ((r = (int)(pd - pc)) > (int)es) {
-        a = pn - r;
-        n = r / es;
-        goto loop;
-    }
+	if((r = (int)(pb - pa)) > (int)es) qsort(a, r / es, es, cmp);
+	if((r = (int)(pd - pc)) > (int)es) {
+		a = pn - r;
+		n = r / es;
+		goto loop;
+	}
 }
 
-size_t strlen( const char *string ) {
-	const char	*s;
+size_t strlen(const char *string) {
+	const char *s;
 
 	s = string;
-	while ( *s ) {
+	while(*s) {
 		s++;
 	}
 	return s - string;
 }
 
-int strlenru( const char *string ) {
-    int result = 0;
-    int i = 0;
-    
-    while (string[i] != '\0') {
-        unsigned char c = string[i];
-        
-        if (c <= 127) {
-            result += 1;
-            i += 1;
-        }
+int strlenru(const char *string) {
+	int result = 0;
+	int i = 0;
 
-        else if (c >= 192 && c <= 223) {
-            result += 1;
-            i += 2;
-        } else {
-            i += 1;
-        }
-    }
+	while(string[i] != '\0') {
+		unsigned char c = string[i];
 
-    return result;
+		if(c <= 127) {
+			result += 1;
+			i += 1;
+		}
+
+		else if(c >= 192 && c <= 223) {
+			result += 1;
+			i += 2;
+		} else {
+			i += 1;
+		}
+	}
+
+	return result;
 }
 
-int ifstrlenru( const char *string ) {
-	int		result;
-	int		n;
-	int 	i;
-	int		rucount;
-	const char	*s;
+int ifstrlenru(const char *string) {
+	int result;
+	int n;
+	int i;
+	int rucount;
+	const char *s;
 
 	s = string;
 	result = strlen(s);
-	
+
 	n = strlen(s);
 	rucount = 0;
-	
-	for(i=0; i<n; i++){
-	if(s[i] >= -64 && s[i] <= -1){	//ебаный unicode
-	rucount += 1;
-	}
+
+	for(i = 0; i < n; i++) {
+		if(s[i] >= -64 && s[i] <= -1) {  // ебаный unicode
+			rucount += 1;
+		}
 	}
 	return rucount;
 }
 
-char *strcat( char *strDestination, const char *strSource ) {
-	char	*s;
-
-	s = strDestination;
-	while ( *s ) {
-		s++;
-	}
-	while ( *strSource ) {
-		*s++ = *strSource++;
-	}
-	*s = 0;
-	return strDestination;
-}
-
-char *strcpy( char *strDestination, const char *strSource ) {
+char *strcat(char *strDestination, const char *strSource) {
 	char *s;
 
 	s = strDestination;
-	while ( *strSource ) {
+	while(*s) {
+		s++;
+	}
+	while(*strSource) {
 		*s++ = *strSource++;
 	}
 	*s = 0;
 	return strDestination;
 }
 
-int strcmp( const char *string1, const char *string2 ) {
-	while ( *string1 == *string2 && *string1 && *string2 ) {
+char *strcpy(char *strDestination, const char *strSource) {
+	char *s;
+
+	s = strDestination;
+	while(*strSource) {
+		*s++ = *strSource++;
+	}
+	*s = 0;
+	return strDestination;
+}
+
+int strcmp(const char *string1, const char *string2) {
+	while(*string1 == *string2 && *string1 && *string2) {
 		string1++;
 		string2++;
 	}
 	return *string1 - *string2;
 }
 
-int strcasecmp(const char *string1, const char *string2) {
-    while (tolower((unsigned char)*string1) == tolower((unsigned char)*string2) && *string1 && *string2) {
-        string1++;
-        string2++;
-    }
-    return tolower((unsigned char)*string1) - tolower((unsigned char)*string2);
-}
-
-char *strchr( const char *string, int c ) {
-	while ( *string ) {
-		if ( *string == c ) {
-			return ( char * )string;
+char *strchr(const char *string, int c) {
+	while(*string) {
+		if(*string == c) {
+			return (char *)string;
 		}
 		string++;
 	}
 	if(c)
-                return NULL;
-        else
-                return (char*) string;
+		return NULL;
+	else
+		return (char *)string;
 }
 
-char *strrchr(const char *string, int c)
-{
+char *strrchr(const char *string, int c) {
 	const char *found = NULL;
-	
-	while(*string)
-	{
-		if(*string == c)
-			found = string;
+
+	while(*string) {
+		if(*string == c) found = string;
 
 		string++;
 	}
-	
+
 	if(c)
-		return (char *) found;
+		return (char *)found;
 	else
-		return (char *) string;
+		return (char *)string;
 }
 
-char *strstr( const char *string, const char *strCharSet ) {
-	while ( *string ) {
-		int		i;
+char *strstr(const char *string, const char *strCharSet) {
+	while(*string) {
+		int i;
 
-		for ( i = 0 ; strCharSet[i] ; i++ ) {
-			if ( string[i] != strCharSet[i] ) {
+		for(i = 0; strCharSet[i]; i++) {
+			if(string[i] != strCharSet[i]) {
 				break;
 			}
 		}
-		if ( !strCharSet[i] ) {
+		if(!strCharSet[i]) {
 			return (char *)string;
 		}
 		string++;
@@ -278,110 +251,102 @@ char *strstr( const char *string, const char *strCharSet ) {
 	return (char *)0;
 }
 
-int tolower( int c ) {
-	if ( c >= 'A' && c <= 'Z' ) {
+int tolower(int c) {
+	if(c >= 'A' && c <= 'Z') {
 		c += 'a' - 'A';
 	}
 	return c;
 }
 
-int toupper( int c ) {
-	if ( c >= 'a' && c <= 'z' ) {
+int toupper(int c) {
+	if(c >= 'a' && c <= 'z') {
 		c += 'A' - 'a';
 	}
 	return c;
 }
 
-void *memmove( void *dest, const void *src, size_t count ) {
-	int		i;
+void *memmove(void *dest, const void *src, size_t count) {
+	int i;
 
-	if ( dest > src ) {
-		for ( i = count-1 ; i >= 0 ; i-- ) {
+	if(dest > src) {
+		for(i = count - 1; i >= 0; i--) {
 			((char *)dest)[i] = ((char *)src)[i];
 		}
 	} else {
-		for ( i = 0 ; i < count ; i++ ) {
+		for(i = 0; i < count; i++) {
 			((char *)dest)[i] = ((char *)src)[i];
 		}
 	}
 	return dest;
 }
 
-double tan( double x ) {
-	return sin(x) / cos(x);
-}
+double tan(double x) { return sin(x) / cos(x); }
 
 static int randSeed = 0;
 
-void	srand( unsigned seed ) {
-	randSeed = seed;
-}
+void srand(unsigned seed) { randSeed = seed; }
 
-int		rand( void ) {
+int rand(void) {
 	randSeed = (69069 * randSeed + 1);
 	return randSeed & 0x7fff;
 }
 
-double atof( const char *string ) {
+double atof(const char *string) {
 	float sign;
 	float value;
-	int		c;
-
+	int c;
 
 	// skip whitespace
-	while ( *string <= ' ' ) {
-		if ( !*string ) {
+	while(*string <= ' ') {
+		if(!*string) {
 			return 0;
 		}
 		string++;
 	}
 
 	// check sign
-	switch ( *string ) {
-	case '+':
-		string++;
-		sign = 1;
-		break;
-	case '-':
-		string++;
-		sign = -1;
-		break;
-	default:
-		sign = 1;
-		break;
+	switch(*string) {
+		case '+':
+			string++;
+			sign = 1;
+			break;
+		case '-':
+			string++;
+			sign = -1;
+			break;
+		default: sign = 1; break;
 	}
 
 	// read digits
 	value = 0;
 	c = string[0];
-	if ( c != '.' ) {
+	if(c != '.') {
 		do {
 			c = *string++;
-			if ( c < '0' || c > '9' ) {
+			if(c < '0' || c > '9') {
 				break;
 			}
 			c -= '0';
 			value = value * 10 + c;
-		} while ( 1 );
+		} while(1);
 	} else {
 		string++;
 	}
 
 	// check for decimal point
-	if ( c == '.' ) {
+	if(c == '.') {
 		double fraction;
 
 		fraction = 0.1;
 		do {
 			c = *string++;
-			if ( c < '0' || c > '9' ) {
+			if(c < '0' || c > '9') {
 				break;
 			}
 			c -= '0';
 			value += c * fraction;
 			fraction *= 0.1;
-		} while ( 1 );
-
+		} while(1);
 	}
 
 	// not handling 10e10 notation...
@@ -389,17 +354,17 @@ double atof( const char *string ) {
 	return value * sign;
 }
 
-double _atof( const char **stringPtr ) {
-	const char	*string;
+static double _atof(const char **stringPtr) {
+	const char *string;
 	float sign;
 	float value;
-	int		c = '0';
+	int c = '0';
 
 	string = *stringPtr;
 
 	// skip whitespace
-	while ( *string <= ' ' ) {
-		if ( !*string ) {
+	while(*string <= ' ') {
+		if(!*string) {
 			*stringPtr = string;
 			return 0;
 		}
@@ -407,48 +372,45 @@ double _atof( const char **stringPtr ) {
 	}
 
 	// check sign
-	switch ( *string ) {
-	case '+':
-		string++;
-		sign = 1;
-		break;
-	case '-':
-		string++;
-		sign = -1;
-		break;
-	default:
-		sign = 1;
-		break;
+	switch(*string) {
+		case '+':
+			string++;
+			sign = 1;
+			break;
+		case '-':
+			string++;
+			sign = -1;
+			break;
+		default: sign = 1; break;
 	}
 
 	// read digits
 	value = 0;
-	if ( string[0] != '.' ) {
+	if(string[0] != '.') {
 		do {
 			c = *string++;
-			if ( c < '0' || c > '9' ) {
+			if(c < '0' || c > '9') {
 				break;
 			}
 			c -= '0';
 			value = value * 10 + c;
-		} while ( 1 );
+		} while(1);
 	}
 
 	// check for decimal point
-	if ( c == '.' ) {
+	if(c == '.') {
 		double fraction;
 
 		fraction = 0.1;
 		do {
 			c = *string++;
-			if ( c < '0' || c > '9' ) {
+			if(c < '0' || c > '9') {
 				break;
 			}
 			c -= '0';
 			value += c * fraction;
 			fraction *= 0.1;
-		} while ( 1 );
-
+		} while(1);
 	}
 
 	// not handling 10e10 notation...
@@ -457,322 +419,87 @@ double _atof( const char **stringPtr ) {
 	return value * sign;
 }
 
-/*
-==============
-strtod
-
-Without an errno variable, this is a fair bit less useful than it is in libc
-but it's still a fair bit more capable than atof or _atof
-Handles inf[inity], nan (ignoring case), hexadecimals, and decimals
-Handles decimal exponents like 10e10 and hex exponents like 0x7f8p20
-10e10 == 10000000000 (power of ten)
-0x7f8p20 == 0x7f800000 (decimal power of two)
-The variable pointed to by endptr will hold the location of the first character
-in the nptr string that was not used in the conversion
-==============
-*/
-double strtod( const char *nptr, const char **endptr ){
-	double res;
-	qboolean neg = qfalse;
+int atoi(const char *string) {
+	int sign;
+	int value;
+	int c;
 
 	// skip whitespace
-	while( isspace( *nptr ) )
-		nptr++;
-
-	// special string parsing
-	if( Q_stricmpn( nptr, "nan", 3 ) == 0 )
-	{
-		floatint_t nan;
-		if( endptr == NULL )
-		{
-			nan.ui = 0x7fffffff;
-			return nan.f;
-		}
-		*endptr = &nptr[3];
-		// nan can be followed by a bracketed number (in hex, octal,
-		// or decimal) which is then put in the mantissa
-		// this can be used to generate signalling or quiet NaNs, for
-		// example (though I doubt it'll ever be used)
-		// note that nan(0) is infinity!
-		if( nptr[3] == '(' )
-		{
-			const char *end;
-			int mantissa = strtol( &nptr[4], &end, 0 );
-			if( *end == ')' )
-			{
-				nan.ui = 0x7f800000 | ( mantissa & 0x7fffff );
-				if( endptr )
-					*endptr = &end[1];
-				return nan.f;
-			}
-		}
-		nan.ui = 0x7fffffff;
-		return nan.f;
-	}
-	if( Q_stricmpn( nptr, "inf", 3 ) == 0 )
-	{
-		floatint_t inf;
-		inf.ui = 0x7f800000;
-		if( endptr == NULL )
-			return inf.f;
-		if( Q_stricmpn( &nptr[3], "inity", 5 ) == 0 )
-			*endptr = &nptr[8];
-		else
-			*endptr = &nptr[3];
-		return inf.f;
-	}
-
-	// normal numeric parsing
-	// sign
-	if( *nptr == '-' )
-	{
-		nptr++;
-		neg = qtrue;
-	}
-	else if( *nptr == '+' )
-		nptr++;
-	// hex
-	if( Q_stricmpn( nptr, "0x", 2 ) == 0 )
-	{
-		// track if we use any digits
-		const char *s = &nptr[1], *end = s;
-		nptr += 2;
-		res = 0;
-		while( qtrue )
-		{
-			if( isdigit( *nptr ) )
-				res = 16 * res + ( *nptr++ - '0' );
-			else if( *nptr >= 'A' && *nptr <= 'F' )
-				res = 16 * res + 10 + *nptr++ - 'A';
-			else if( *nptr >= 'a' && *nptr <= 'f' )
-				res = 16 * res + 10 + *nptr++ - 'a';
-			else
-				break;
-		}
-		// if nptr moved, save it
-		if( end + 1 < nptr )
-			end = nptr;
-		if( *nptr == '.' )
-		{
-			float place;
-			nptr++;
-			// 1.0 / 16.0 == 0.0625
-			// I don't expect the float accuracy to hold out for
-			// very long but since we need to know the length of
-			// the string anyway we keep on going regardless
-			for( place = 0.0625;; place /= 16.0 )
-			{
-				if( isdigit( *nptr ) )
-					res += place * ( *nptr++ - '0' );
-				else if( *nptr >= 'A' && *nptr <= 'F' )
-					res += place * ( 10 + *nptr++ - 'A' );
-				else if( *nptr >= 'a' && *nptr <= 'f' )
-					res += place * ( 10 + *nptr++ - 'a' );
-				else
-					break;
-			}
-			if( end < nptr )
-				end = nptr;
-		}
-		// parse an optional exponent, representing multiplication
-		// by a power of two
-		// exponents are only valid if we encountered at least one
-		// digit already (and have therefore set end to something)
-		if( end != s && tolower( *nptr ) == 'p' )
-		{
-			int exp;
-			float res2;
-			// apparently (confusingly) the exponent should be
-			// decimal
-			exp = strtol( &nptr[1], &end, 10 );
-			if( &nptr[1] == end )
-			{
-				// no exponent
-				if( endptr )
-					*endptr = nptr;
-				return res;
-			}
-			if( exp > 0 )
-			{
-				while( exp-- > 0 )
-				{
-					res2 = res * 2;
-					// check for infinity
-					if( res2 <= res )
-						break;
-					res = res2;
-				}
-			}
-			else
-			{
-				while( exp++ < 0 )
-				{
-					res2 = res / 2;
-					// check for underflow
-					if( res2 >= res )
-						break;
-					res = res2;
-				}
-			}
-		}
-		if( endptr )
-			*endptr = end;
-		return res;
-	}
-	// decimal
-	else
-	{
-		// track if we find any digits
-		const char *end = nptr, *p = nptr;
-		// this is most of the work
-		for( res = 0; isdigit( *nptr );
-			res = 10 * res + *nptr++ - '0' );
-		// if nptr moved, we read something
-		if( end < nptr )
-			end = nptr;
-		if( *nptr == '.' )
-		{
-			// fractional part
-			float place;
-			nptr++;
-			for( place = 0.1; isdigit( *nptr ); place /= 10.0 )
-				res += ( *nptr++ - '0' ) * place;
-			// if nptr moved, we read something
-			if( end + 1 < nptr )
-				end = nptr;
-		}
-		// exponent
-		// meaningless without having already read digits, so check
-		// we've set end to something
-		if( p != end && tolower( *nptr ) == 'e' )
-		{
-			int exp;
-			float res10;
-			exp = strtol( &nptr[1], &end, 10 );
-			if( &nptr[1] == end )
-			{
-				// no exponent
-				if( endptr )
-					*endptr = nptr;
-				return res;
-			}
-			if( exp > 0 )
-			{
-				while( exp-- > 0 )
-				{
-					res10 = res * 10;
-					// check for infinity to save us time
-					if( res10 <= res )
-						break;
-					res = res10;
-				}
-			}
-			else if( exp < 0 )
-			{
-				while( exp++ < 0 )
-				{
-					res10 = res / 10;
-					// check for underflow
-					// (test for 0 would probably be just
-					// as good)
-					if( res10 >= res )
-						break;
-					res = res10;
-				}
-			}
-		}
-		if( endptr )
-			*endptr = end;
-		return res;
-	}
-}
-
-int atoi( const char *string ) {
-	int		sign;
-	int		value;
-	int		c;
-
-
-	// skip whitespace
-	while ( *string <= ' ' ) {
-		if ( !*string ) {
+	while(*string <= ' ') {
+		if(!*string) {
 			return 0;
 		}
 		string++;
 	}
 
 	// check sign
-	switch ( *string ) {
-	case '+':
-		string++;
-		sign = 1;
-		break;
-	case '-':
-		string++;
-		sign = -1;
-		break;
-	default:
-		sign = 1;
-		break;
+	switch(*string) {
+		case '+':
+			string++;
+			sign = 1;
+			break;
+		case '-':
+			string++;
+			sign = -1;
+			break;
+		default: sign = 1; break;
 	}
 
 	// read digits
 	value = 0;
 	do {
 		c = *string++;
-		if ( c < '0' || c > '9' ) {
+		if(c < '0' || c > '9') {
 			break;
 		}
 		c -= '0';
 		value = value * 10 + c;
-	} while ( 1 );
+	} while(1);
 
 	// not handling 10e10 notation...
 
 	return value * sign;
 }
 
-int _atoi( const char **stringPtr ) {
-	int		sign;
-	int		value;
-	int		c;
-	const char	*string;
+static int _atoi(const char **stringPtr) {
+	int sign;
+	int value;
+	int c;
+	const char *string;
 
 	string = *stringPtr;
 
 	// skip whitespace
-	while ( *string <= ' ' ) {
-		if ( !*string ) {
+	while(*string <= ' ') {
+		if(!*string) {
 			return 0;
 		}
 		string++;
 	}
 
 	// check sign
-	switch ( *string ) {
-	case '+':
-		string++;
-		sign = 1;
-		break;
-	case '-':
-		string++;
-		sign = -1;
-		break;
-	default:
-		sign = 1;
-		break;
+	switch(*string) {
+		case '+':
+			string++;
+			sign = 1;
+			break;
+		case '-':
+			string++;
+			sign = -1;
+			break;
+		default: sign = 1; break;
 	}
 
 	// read digits
 	value = 0;
 	do {
 		c = *string++;
-		if ( c < '0' || c > '9' ) {
+		if(c < '0' || c > '9') {
 			break;
 		}
 		c -= '0';
 		value = value * 10 + c;
-	} while ( 1 );
+	} while(1);
 
 	// not handling 10e10 notation...
 
@@ -781,105 +508,11 @@ int _atoi( const char **stringPtr ) {
 	return value * sign;
 }
 
+int abs(int n) { return n < 0 ? -n : n; }
+
+double fabs(double x) { return x < 0 ? -x : x; }
+
 /*
-==============
-strtol
-
-Handles any base from 2 to 36. If base is 0 then it guesses
-decimal, hex, or octal based on the format of the number (leading 0 or 0x)
-Will not overflow - returns LONG_MIN or LONG_MAX as appropriate
-*endptr is set to the location of the first character not used
-==============
-*/
-long strtol( const char *nptr, const char **endptr, int base ){
-	long res;
-	qboolean pos = qtrue;
-
-	if( endptr )
-		*endptr = nptr;
-	// bases other than 0, 2, 8, 16 are very rarely used, but they're
-	// not much extra effort to support
-	if( base < 0 || base == 1 || base > 36 )
-		return 0;
-	// skip leading whitespace
-	while( isspace( *nptr ) )
-		nptr++;
-	// sign
-	if( *nptr == '-' )
-	{
-		nptr++;
-		pos = qfalse;
-	}
-	else if( *nptr == '+' )
-		nptr++;
-	// look for base-identifying sequences e.g. 0x for hex, 0 for octal
-	if( nptr[0] == '0' )
-	{
-		nptr++;
-		// 0 is always a valid digit
-		if( endptr )
-			*endptr = nptr;
-		if( *nptr == 'x' || *nptr == 'X' )
-		{
-			if( base != 0 && base != 16 )
-			{
-				// can't be hex, reject x (accept 0)
-				if( endptr )
-					*endptr = nptr;
-				return 0;
-			}
-			nptr++;
-			base = 16;
-		}
-		else if( base == 0 )
-			base = 8;
-	}
-	else if( base == 0 )
-		base = 10;
-	res = 0;
-	while( qtrue )
-	{
-		int val;
-		if( isdigit( *nptr ) )
-			val = *nptr - '0';
-		else if( islower( *nptr ) )
-			val = 10 + *nptr - 'a';
-		else if( isupper( *nptr ) )
-			val = 10 + *nptr - 'A';
-		else
-			break;
-		if( val >= base )
-			break;
-		// we go negative because LONG_MIN is further from 0 than
-		// LONG_MAX
-		if( res < ( LONG_MIN + val ) / base )
-			res = LONG_MIN; // overflow
-		else
-			res = res * base - val;
-		nptr++;
-		if( endptr )
-			*endptr = nptr;
-	}
-	if( pos )
-	{
-		// can't represent LONG_MIN positive
-		if( res == LONG_MIN )
-			res = LONG_MAX;
-		else
-			res = -res;
-	}
-	return res;
-}
-
-int abs( int n ) {
-	return n < 0 ? -n : n;
-}
-
-double fabs( double x ) {
-	return x < 0 ? -x : x;
-}
-
-/* 
  * Copyright Patrick Powell 1995
  * This code is based on code written by Patrick Powell (papowell@astart.com)
  * It may be used for any purpose as long as this notice remains intact
@@ -888,19 +521,14 @@ double fabs( double x ) {
  * Supports length checking in strings.
  */
 
-
 #define LDOUBLE double
 #define LLONG long
 
-static int dopr (char *buffer, size_t maxlen, const char *format, 
-                 va_list args);
-static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-		   char *value, int flags, int min, int max);
-static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
-		   LLONG value, int base, int min, int max, int flags);
-static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-		  LDOUBLE fvalue, int min, int max, int flags);
-static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
+static int dopr(char *buffer, size_t maxlen, const char *format, va_list args);
+static int fmtstr(char *buffer, size_t *currlen, size_t maxlen, char *value, int flags, int min, int max);
+static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int base, int min, int max, int flags);
+static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, int min, int max, int flags);
+static int dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c);
 
 /*
  * dopr(): poor man's version of doprintf
@@ -908,649 +536,534 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
 
 /* format read states */
 #define DP_S_DEFAULT 0
-#define DP_S_FLAGS   1
-#define DP_S_MIN     2
-#define DP_S_DOT     3
-#define DP_S_MAX     4
-#define DP_S_MOD     5
-#define DP_S_MOD_L   6
-#define DP_S_CONV    7
-#define DP_S_DONE    8
+#define DP_S_FLAGS 1
+#define DP_S_MIN 2
+#define DP_S_DOT 3
+#define DP_S_MAX 4
+#define DP_S_MOD 5
+#define DP_S_MOD_L 6
+#define DP_S_CONV 7
+#define DP_S_DONE 8
 
 /* format flags - Bits */
-#define DP_F_MINUS 	(1 << 0)
-#define DP_F_PLUS  	(1 << 1)
-#define DP_F_SPACE 	(1 << 2)
-#define DP_F_NUM   	(1 << 3)
-#define DP_F_ZERO  	(1 << 4)
-#define DP_F_UP    	(1 << 5)
-#define DP_F_UNSIGNED 	(1 << 6)
+#define DP_F_MINUS (1 << 0)
+#define DP_F_PLUS (1 << 1)
+#define DP_F_SPACE (1 << 2)
+#define DP_F_NUM (1 << 3)
+#define DP_F_ZERO (1 << 4)
+#define DP_F_UP (1 << 5)
+#define DP_F_UNSIGNED (1 << 6)
 
 /* Conversion Flags */
-#define DP_C_SHORT   1
-#define DP_C_LONG    2
-#define DP_C_LLONG   3
+#define DP_C_SHORT 1
+#define DP_C_LONG 2
+#define DP_C_LLONG 3
 #define DP_C_LDOUBLE 4
 
 #define char_to_int(p) (p - '0')
-#define MAX(p,q) ((p >= q) ? p : q)
-#define MIN(p,q) ((p <= q) ? p : q)
+#define MAX(p, q) ((p >= q) ? p : q)
+#define MIN(p, q) ((p <= q) ? p : q)
 
-static int dopr (char *buffer, size_t maxlen, const char *format, va_list args){
-  char ch;
-  LLONG value;
-  LDOUBLE fvalue;
-  char *strvalue;
-  int min;
-  int max;
-  int state;
-  int flags;
-  int cflags;
-  int total;
-  size_t currlen;
-  
-  state = DP_S_DEFAULT;
-  currlen = flags = cflags = min = 0;
-  max = -1;
-  ch = *format++;
-  total = 0;
+static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
+	char ch;
+	LLONG value;
+	LDOUBLE fvalue;
+	char *strvalue;
+	int min;
+	int max;
+	int state;
+	int flags;
+	int cflags;
+	int total;
+	size_t currlen;
 
-  while (state != DP_S_DONE)
-  {
-    if (ch == '\0')
-      state = DP_S_DONE;
+	state = DP_S_DEFAULT;
+	currlen = flags = cflags = min = 0;
+	max = -1;
+	ch = *format++;
+	total = 0;
 
-    switch(state) 
-    {
-    case DP_S_DEFAULT:
-      if (ch == '%') 
-	state = DP_S_FLAGS;
-      else 
-	total += dopr_outch (buffer, &currlen, maxlen, ch);
-      ch = *format++;
-      break;
-    case DP_S_FLAGS:
-      switch (ch) 
-      {
-      case '-':
-	flags |= DP_F_MINUS;
-        ch = *format++;
-	break;
-      case '+':
-	flags |= DP_F_PLUS;
-        ch = *format++;
-	break;
-      case ' ':
-	flags |= DP_F_SPACE;
-        ch = *format++;
-	break;
-      case '#':
-	flags |= DP_F_NUM;
-        ch = *format++;
-	break;
-      case '0':
-	flags |= DP_F_ZERO;
-        ch = *format++;
-	break;
-      default:
-	state = DP_S_MIN;
-	break;
-      }
-      break;
-    case DP_S_MIN:
-      if ('0' <= ch && ch <= '9')
-      {
-	min = 10*min + char_to_int (ch);
-	ch = *format++;
-      } 
-      else if (ch == '*') 
-      {
-	min = va_arg (args, int);
-	ch = *format++;
-	state = DP_S_DOT;
-      } 
-      else 
-	state = DP_S_DOT;
-      break;
-    case DP_S_DOT:
-      if (ch == '.') 
-      {
-	state = DP_S_MAX;
-	ch = *format++;
-      } 
-      else 
-	state = DP_S_MOD;
-      break;
-    case DP_S_MAX:
-      if ('0' <= ch && ch <= '9')
-      {
-	if (max < 0)
-	  max = 0;
-	max = 10*max + char_to_int (ch);
-	ch = *format++;
-      } 
-      else if (ch == '*') 
-      {
-	max = va_arg (args, int);
-	ch = *format++;
-	state = DP_S_MOD;
-      } 
-      else 
-	state = DP_S_MOD;
-      break;
-    case DP_S_MOD:
-      switch (ch) 
-      {
-      case 'h':
-	cflags = DP_C_SHORT;
-	ch = *format++;
-	break;
-      case 'l':
-	cflags = DP_C_LONG;
-	ch = *format++;
-	break;
-      case 'L':
-	cflags = DP_C_LDOUBLE;
-	ch = *format++;
-	break;
-      default:
-	break;
-      }
-      if (cflags != DP_C_LONG)
-	state = DP_S_CONV;
-      else
-	state = DP_S_MOD_L;
-      break;
-    case DP_S_MOD_L:
-      switch (ch)
-	{
-	case 'l':
-	  cflags = DP_C_LLONG;
-	  ch = *format++;
-	  break;
-	default:
-	  break;
+	while(state != DP_S_DONE) {
+		if(ch == '\0') state = DP_S_DONE;
+
+		switch(state) {
+			case DP_S_DEFAULT:
+				if(ch == '%')
+					state = DP_S_FLAGS;
+				else
+					total += dopr_outch(buffer, &currlen, maxlen, ch);
+				ch = *format++;
+				break;
+			case DP_S_FLAGS:
+				switch(ch) {
+					case '-':
+						flags |= DP_F_MINUS;
+						ch = *format++;
+						break;
+					case '+':
+						flags |= DP_F_PLUS;
+						ch = *format++;
+						break;
+					case ' ':
+						flags |= DP_F_SPACE;
+						ch = *format++;
+						break;
+					case '#':
+						flags |= DP_F_NUM;
+						ch = *format++;
+						break;
+					case '0':
+						flags |= DP_F_ZERO;
+						ch = *format++;
+						break;
+					default: state = DP_S_MIN; break;
+				}
+				break;
+			case DP_S_MIN:
+				if('0' <= ch && ch <= '9') {
+					min = 10 * min + char_to_int(ch);
+					ch = *format++;
+				} else if(ch == '*') {
+					min = va_arg(args, int);
+					ch = *format++;
+					state = DP_S_DOT;
+				} else
+					state = DP_S_DOT;
+				break;
+			case DP_S_DOT:
+				if(ch == '.') {
+					state = DP_S_MAX;
+					ch = *format++;
+				} else
+					state = DP_S_MOD;
+				break;
+			case DP_S_MAX:
+				if('0' <= ch && ch <= '9') {
+					if(max < 0) max = 0;
+					max = 10 * max + char_to_int(ch);
+					ch = *format++;
+				} else if(ch == '*') {
+					max = va_arg(args, int);
+					ch = *format++;
+					state = DP_S_MOD;
+				} else
+					state = DP_S_MOD;
+				break;
+			case DP_S_MOD:
+				switch(ch) {
+					case 'h':
+						cflags = DP_C_SHORT;
+						ch = *format++;
+						break;
+					case 'l':
+						cflags = DP_C_LONG;
+						ch = *format++;
+						break;
+					case 'L':
+						cflags = DP_C_LDOUBLE;
+						ch = *format++;
+						break;
+					default: break;
+				}
+				if(cflags != DP_C_LONG)
+					state = DP_S_CONV;
+				else
+					state = DP_S_MOD_L;
+				break;
+			case DP_S_MOD_L:
+				switch(ch) {
+					case 'l':
+						cflags = DP_C_LLONG;
+						ch = *format++;
+						break;
+					default: break;
+				}
+				state = DP_S_CONV;
+				break;
+			case DP_S_CONV:
+				switch(ch) {
+					case 'd':
+					case 'i':
+						if(cflags == DP_C_SHORT)
+							value = (short int)va_arg(args, int);
+						else if(cflags == DP_C_LONG)
+							value = va_arg(args, long int);
+						else if(cflags == DP_C_LLONG)
+							value = va_arg(args, LLONG);
+						else
+							value = va_arg(args, int);
+						total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
+						break;
+					case 'o':
+						flags |= DP_F_UNSIGNED;
+						if(cflags == DP_C_SHORT)
+							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+						else if(cflags == DP_C_LONG)
+							value = va_arg(args, unsigned long int);
+						else if(cflags == DP_C_LLONG)
+							value = va_arg(args, unsigned LLONG);
+						else
+							value = va_arg(args, unsigned int);
+						total += fmtint(buffer, &currlen, maxlen, value, 8, min, max, flags);
+						break;
+					case 'u':
+						flags |= DP_F_UNSIGNED;
+						if(cflags == DP_C_SHORT)
+							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+						else if(cflags == DP_C_LONG)
+							value = va_arg(args, unsigned long int);
+						else if(cflags == DP_C_LLONG)
+							value = va_arg(args, unsigned LLONG);
+						else
+							value = va_arg(args, unsigned int);
+						total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
+						break;
+					case 'X': flags |= DP_F_UP;
+					case 'x':
+						flags |= DP_F_UNSIGNED;
+						if(cflags == DP_C_SHORT)
+							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+						else if(cflags == DP_C_LONG)
+							value = va_arg(args, unsigned long int);
+						else if(cflags == DP_C_LLONG)
+							value = va_arg(args, unsigned LLONG);
+						else
+							value = va_arg(args, unsigned int);
+						total += fmtint(buffer, &currlen, maxlen, value, 16, min, max, flags);
+						break;
+					case 'f':
+						if(cflags == DP_C_LDOUBLE)
+							fvalue = va_arg(args, LDOUBLE);
+						else
+							fvalue = va_arg(args, double);
+						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+						break;
+					case 'E': flags |= DP_F_UP;
+					case 'e':
+						if(cflags == DP_C_LDOUBLE)
+							fvalue = va_arg(args, LDOUBLE);
+						else
+							fvalue = va_arg(args, double);
+						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+						break;
+					case 'G': flags |= DP_F_UP;
+					case 'g':
+						if(cflags == DP_C_LDOUBLE)
+							fvalue = va_arg(args, LDOUBLE);
+						else
+							fvalue = va_arg(args, double);
+						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+						break;
+					case 'c': total += dopr_outch(buffer, &currlen, maxlen, va_arg(args, int)); break;
+					case 's':
+						strvalue = va_arg(args, char *);
+						total += fmtstr(buffer, &currlen, maxlen, strvalue, flags, min, max);
+						break;
+					case 'p':
+						strvalue = va_arg(args, void *);
+						total += fmtint(buffer, &currlen, maxlen, (long)strvalue, 16, min, max, flags);
+						break;
+					case 'n':
+						if(cflags == DP_C_SHORT) {
+							short int *num;
+							num = va_arg(args, short int *);
+							*num = currlen;
+						} else if(cflags == DP_C_LONG) {
+							long int *num;
+							num = va_arg(args, long int *);
+							*num = currlen;
+						} else if(cflags == DP_C_LLONG) {
+							LLONG *num;
+							num = va_arg(args, LLONG *);
+							*num = currlen;
+						} else {
+							int *num;
+							num = va_arg(args, int *);
+							*num = currlen;
+						}
+						break;
+					case '%': total += dopr_outch(buffer, &currlen, maxlen, ch); break;
+					case 'w':
+						ch = *format++;
+						break;
+					default:
+						break;
+				}
+				ch = *format++;
+				state = DP_S_DEFAULT;
+				flags = cflags = min = 0;
+				max = -1;
+				break;
+			case DP_S_DONE: break;
+			default:
+				break;
+		}
 	}
-      state = DP_S_CONV;
-      break;
-    case DP_S_CONV:
-      switch (ch) 
-      {
-      case 'd':
-      case 'i':
-	if (cflags == DP_C_SHORT) 
-	  value = (short int)va_arg (args, int);
-	else if (cflags == DP_C_LONG)
-	  value = va_arg (args, long int);
-	else if (cflags == DP_C_LLONG)
-	  value = va_arg (args, LLONG);
+	if(buffer != NULL) {
+		if(currlen < maxlen - 1)
+			buffer[currlen] = '\0';
+		else
+			buffer[maxlen - 1] = '\0';
+	}
+	return total;
+}
+
+static int fmtstr(char *buffer, size_t *currlen, size_t maxlen, char *value, int flags, int min, int max) {
+	int padlen, strln;
+	int cnt = 0;
+	int total = 0;
+
+	if(value == 0) {
+		value = "<NULL>";
+	}
+
+	for(strln = 0; value[strln]; ++strln);
+	if(max >= 0 && max < strln) strln = max;
+	padlen = min - strln;
+	if(padlen < 0) padlen = 0;
+	if(flags & DP_F_MINUS) padlen = -padlen;
+
+	while(padlen > 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		--padlen;
+	}
+	while(*value && ((max < 0) || (cnt < max))) {
+		total += dopr_outch(buffer, currlen, maxlen, *value++);
+		++cnt;
+	}
+	while(padlen < 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		++padlen;
+	}
+	return total;
+}
+
+static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int base, int min, int max, int flags) {
+	int signvalue = 0;
+	unsigned LLONG uvalue;
+	char convert[24];
+	int place = 0;
+	int spadlen = 0;
+	int zpadlen = 0;
+	const char *digits;
+	int total = 0;
+
+	if(max < 0) max = 0;
+
+	uvalue = value;
+
+	if(!(flags & DP_F_UNSIGNED)) {
+		if(value < 0) {
+			signvalue = '-';
+			uvalue = -value;
+		} else if(flags & DP_F_PLUS)
+			signvalue = '+';
+		else if(flags & DP_F_SPACE)
+			signvalue = ' ';
+	}
+
+	if(flags & DP_F_UP)
+		digits = "0123456789ABCDEF";
 	else
-	  value = va_arg (args, int);
-	total += fmtint (buffer, &currlen, maxlen, value, 10, min, max, flags);
-	break;
-      case 'o':
-	flags |= DP_F_UNSIGNED;
-	if (cflags == DP_C_SHORT)
-	  value = va_arg (args, unsigned int) & ( (1 << sizeof(unsigned short int) * 8) - 1); // Using this workaround instead.
-	else if (cflags == DP_C_LONG)
-	  value = va_arg (args, unsigned long int);
-	else if (cflags == DP_C_LLONG)
-	  value = va_arg (args, unsigned LLONG);
-	else
-	  value = va_arg (args, unsigned int);
-	total += fmtint (buffer, &currlen, maxlen, value, 8, min, max, flags);
-	break;
-      case 'u':
-	flags |= DP_F_UNSIGNED;
-	if (cflags == DP_C_SHORT)
-	  value = va_arg (args, unsigned int) & ( (1 << sizeof(unsigned short int) * 8) - 1);
-	else if (cflags == DP_C_LONG)
-	  value = va_arg (args, unsigned long int);
-	else if (cflags == DP_C_LLONG)
-	  value = va_arg (args, unsigned LLONG);
-	else
-	  value = va_arg (args, unsigned int);
-	total += fmtint (buffer, &currlen, maxlen, value, 10, min, max, flags);
-	break;
-      case 'X':
-	flags |= DP_F_UP;
-      case 'x':
-	flags |= DP_F_UNSIGNED;
-	if (cflags == DP_C_SHORT)
-	  value = va_arg (args, unsigned int) & ( (1 << sizeof(unsigned short int) * 8) - 1);
-	else if (cflags == DP_C_LONG)
-	  value = va_arg (args, unsigned long int);
-	else if (cflags == DP_C_LLONG)
-	  value = va_arg (args, unsigned LLONG);
-	else
-	  value = va_arg (args, unsigned int);
-	total += fmtint (buffer, &currlen, maxlen, value, 16, min, max, flags);
-	break;
-      case 'f':
-	if (cflags == DP_C_LDOUBLE)
-	  fvalue = va_arg (args, LDOUBLE);
-	else
-	  fvalue = va_arg (args, double);
-	/* um, floating point? */
-	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
-	break;
-      case 'E':
-	flags |= DP_F_UP;
-      case 'e':
-	if (cflags == DP_C_LDOUBLE)
-	  fvalue = va_arg (args, LDOUBLE);
-	else
-	  fvalue = va_arg (args, double);
-	/* um, floating point? */
-	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
-	break;
-      case 'G':
-	flags |= DP_F_UP;
-      case 'g':
-	if (cflags == DP_C_LDOUBLE)
-	  fvalue = va_arg (args, LDOUBLE);
-	else
-	  fvalue = va_arg (args, double);
-	/* um, floating point? */
-	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
-	break;
-      case 'c':
-	total += dopr_outch (buffer, &currlen, maxlen, va_arg (args, int));
-	break;
-      case 's':
-	strvalue = va_arg (args, char *);
-	total += fmtstr (buffer, &currlen, maxlen, strvalue, flags, min, max);
-	break;
-      case 'p':
-	strvalue = va_arg (args, void *);
-	total += fmtint (buffer, &currlen, maxlen, (long) strvalue, 16, min,
-                         max, flags);
-	break;
-      case 'n':
-	if (cflags == DP_C_SHORT) 
-	{
-	  short int *num;
-	  num = va_arg (args, short int *);
-	  *num = currlen;
-        }
-	else if (cflags == DP_C_LONG) 
-	{
-	  long int *num;
-	  num = va_arg (args, long int *);
-	  *num = currlen;
-        } 
-	else if (cflags == DP_C_LLONG) 
-	{
-	  LLONG *num;
-	  num = va_arg (args, LLONG *);
-	  *num = currlen;
-        } 
-	else 
-	{
-	  int *num;
-	  num = va_arg (args, int *);
-	  *num = currlen;
-        }
-	break;
-      case '%':
-	total += dopr_outch (buffer, &currlen, maxlen, ch);
-	break;
-      case 'w':
-	/* not supported yet, treat as next char */
-	ch = *format++;
-	break;
-      default:
-	/* Unknown, skip */
-	break;
-      }
-      ch = *format++;
-      state = DP_S_DEFAULT;
-      flags = cflags = min = 0;
-      max = -1;
-      break;
-    case DP_S_DONE:
-      break;
-    default:
-      /* hmm? */
-      break; /* some picky compilers need this */
-    }
-  }
-  if (buffer != NULL)
-  {
-    if (currlen < maxlen - 1) 
-      buffer[currlen] = '\0';
-    else 
-      buffer[maxlen - 1] = '\0';
-  }
-  return total;
+		digits = "0123456789abcdef";
+
+	do {
+		convert[place++] = digits[uvalue % (unsigned)base];
+		uvalue = (uvalue / (unsigned)base);
+	} while(uvalue && (place < sizeof(convert)));
+	if(place == sizeof(convert)) place--;
+	convert[place] = 0;
+
+	zpadlen = max - place;
+	spadlen = min - MAX(max, place) - (signvalue ? 1 : 0);
+	if(zpadlen < 0) zpadlen = 0;
+	if(spadlen < 0) spadlen = 0;
+	if(flags & DP_F_ZERO) {
+		zpadlen = MAX(zpadlen, spadlen);
+		spadlen = 0;
+	}
+	if(flags & DP_F_MINUS) spadlen = -spadlen; /* Left Justifty */
+
+	while(spadlen > 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		--spadlen;
+	}
+
+	if(signvalue) total += dopr_outch(buffer, currlen, maxlen, signvalue);
+
+	if(zpadlen > 0) {
+		while(zpadlen > 0) {
+			total += dopr_outch(buffer, currlen, maxlen, '0');
+			--zpadlen;
+		}
+	}
+
+	while(place > 0) total += dopr_outch(buffer, currlen, maxlen, convert[--place]);
+
+	while(spadlen < 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		++spadlen;
+	}
+
+	return total;
 }
 
-static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-                   char *value, int flags, int min, int max){
-  int padlen, strln;     /* amount to pad */
-  int cnt = 0;
-  int total = 0;
-  
-  if (value == 0)
-  {
-    value = "<NULL>";
-  }
+static LDOUBLE abs_val(LDOUBLE value) {
+	LDOUBLE result = value;
 
-  for (strln = 0; value[strln]; ++strln); /* strlen */
-  if (max >= 0 && max < strln)
-    strln = max;
-  padlen = min - strln;
-  if (padlen < 0) 
-    padlen = 0;
-  if (flags & DP_F_MINUS) 
-    padlen = -padlen; /* Left Justify */
+	if(value < 0) result = -value;
 
-  while (padlen > 0)
-  {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    --padlen;
-  }
-  while (*value && ((max < 0) || (cnt < max)))
-  {
-    total += dopr_outch (buffer, currlen, maxlen, *value++);
-    ++cnt;
-  }
-  while (padlen < 0)
-  {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    ++padlen;
-  }
-  return total;
+	return result;
 }
 
-/* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
+static LDOUBLE pow10(int exp) {
+	LDOUBLE result = 1;
 
-static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
-		   LLONG value, int base, int min, int max, int flags){
-  int signvalue = 0;
-  unsigned LLONG uvalue;
-  char convert[24];
-  int place = 0;
-  int spadlen = 0; /* amount to space pad */
-  int zpadlen = 0; /* amount to zero pad */
-  const char *digits;
-  int total = 0;
-  
-  if (max < 0)
-    max = 0;
+	while(exp) {
+		result *= 10;
+		exp--;
+	}
 
-  uvalue = value;
-
-  if(!(flags & DP_F_UNSIGNED))
-  {
-    if( value < 0 ) {
-      signvalue = '-';
-      uvalue = -value;
-    }
-    else
-      if (flags & DP_F_PLUS)  /* Do a sign (+/i) */
-	signvalue = '+';
-    else
-      if (flags & DP_F_SPACE)
-	signvalue = ' ';
-  }
-  
-  if (flags & DP_F_UP)
-    /* Should characters be upper case? */
-    digits = "0123456789ABCDEF";
-  else
-    digits = "0123456789abcdef";
-
-  do {
-    convert[place++] = digits[uvalue % (unsigned)base];
-    uvalue = (uvalue / (unsigned)base );
-  } while(uvalue && (place < sizeof (convert)));
-  if (place == sizeof (convert)) place--;
-  convert[place] = 0;
-
-  zpadlen = max - place;
-  spadlen = min - MAX (max, place) - (signvalue ? 1 : 0);
-  if (zpadlen < 0) zpadlen = 0;
-  if (spadlen < 0) spadlen = 0;
-  if (flags & DP_F_ZERO)
-  {
-    zpadlen = MAX(zpadlen, spadlen);
-    spadlen = 0;
-  }
-  if (flags & DP_F_MINUS) 
-    spadlen = -spadlen; /* Left Justifty */
-
-  /* Spaces */
-  while (spadlen > 0) 
-  {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    --spadlen;
-  }
-
-  /* Sign */
-  if (signvalue) 
-    total += dopr_outch (buffer, currlen, maxlen, signvalue);
-
-  /* Zeros */
-  if (zpadlen > 0) 
-  {
-    while (zpadlen > 0)
-    {
-      total += dopr_outch (buffer, currlen, maxlen, '0');
-      --zpadlen;
-    }
-  }
-
-  /* Digits */
-  while (place > 0) 
-    total += dopr_outch (buffer, currlen, maxlen, convert[--place]);
-  
-  /* Left Justified spaces */
-  while (spadlen < 0) {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    ++spadlen;
-  }
-
-  return total;
+	return result;
 }
 
-static LDOUBLE abs_val (LDOUBLE value){
-  LDOUBLE result = value;
+static long round(LDOUBLE value) {
+	long intpart;
 
-  if (value < 0)
-    result = -value;
+	intpart = value;
+	value = value - intpart;
+	if(value >= 0.5) intpart++;
 
-  return result;
+	return intpart;
 }
 
-static LDOUBLE pow10 (int exp){
-  LDOUBLE result = 1;
+static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, int min, int max, int flags) {
+	int signvalue = 0;
+	LDOUBLE ufvalue;
+	char iconvert[20];
+	char fconvert[20];
+	int iplace = 0;
+	int fplace = 0;
+	int padlen = 0;
+	int zpadlen = 0;
+	int caps = 0;
+	int total = 0;
+	long intpart;
+	long fracpart;
 
-  while (exp)
-  {
-    result *= 10;
-    exp--;
-  }
-  
-  return result;
+	if(max < 0) max = 6;
+
+	ufvalue = abs_val(fvalue);
+
+	if(fvalue < 0)
+		signvalue = '-';
+	else if(flags & DP_F_PLUS)
+		signvalue = '+';
+	else if(flags & DP_F_SPACE)
+		signvalue = ' ';
+
+	intpart = ufvalue;
+
+	if(max > 9) max = 9;
+
+	fracpart = round((pow10(max)) * (ufvalue - intpart));
+
+	if(fracpart >= pow10(max)) {
+		intpart++;
+		fracpart -= pow10(max);
+	}
+
+	do {
+		iconvert[iplace++] = (caps ? "0123456789ABCDEF" : "0123456789abcdef")[intpart % 10];
+		intpart = (intpart / 10);
+	} while(intpart && (iplace < 20));
+	if(iplace == 20) iplace--;
+	iconvert[iplace] = 0;
+
+	do {
+		fconvert[fplace++] = (caps ? "0123456789ABCDEF" : "0123456789abcdef")[fracpart % 10];
+		fracpart = (fracpart / 10);
+	} while(fracpart && (fplace < 20));
+	if(fplace == 20) fplace--;
+	fconvert[fplace] = 0;
+
+	padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0);
+	zpadlen = max - fplace;
+	if(zpadlen < 0) zpadlen = 0;
+	if(padlen < 0) padlen = 0;
+	if(flags & DP_F_MINUS) padlen = -padlen;
+
+	if((flags & DP_F_ZERO) && (padlen > 0)) {
+		if(signvalue) {
+			total += dopr_outch(buffer, currlen, maxlen, signvalue);
+			--padlen;
+			signvalue = 0;
+		}
+		while(padlen > 0) {
+			total += dopr_outch(buffer, currlen, maxlen, '0');
+			--padlen;
+		}
+	}
+	while(padlen > 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		--padlen;
+	}
+	if(signvalue) total += dopr_outch(buffer, currlen, maxlen, signvalue);
+
+	while(iplace > 0) total += dopr_outch(buffer, currlen, maxlen, iconvert[--iplace]);
+
+	/*
+	 * Decimal point.  This should probably use locale to find the correct
+	 * char to print out.
+	 */
+	if(max > 0) {
+		total += dopr_outch(buffer, currlen, maxlen, '.');
+
+		while(zpadlen-- > 0) total += dopr_outch(buffer, currlen, maxlen, '0');
+
+		while(fplace > 0) total += dopr_outch(buffer, currlen, maxlen, fconvert[--fplace]);
+	}
+
+	while(padlen < 0) {
+		total += dopr_outch(buffer, currlen, maxlen, ' ');
+		++padlen;
+	}
+
+	return total;
 }
 
-static long round (LDOUBLE value){
-  long intpart;
-
-  intpart = value;
-  value = value - intpart;
-  if (value >= 0.5)
-    intpart++;
-
-  return intpart;
+static int dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c) {
+	if(*currlen + 1 < maxlen) buffer[(*currlen)++] = c;
+	return 1;
 }
 
-static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-		  LDOUBLE fvalue, int min, int max, int flags){
-  int signvalue = 0;
-  LDOUBLE ufvalue;
-  char iconvert[20];
-  char fconvert[20];
-  int iplace = 0;
-  int fplace = 0;
-  int padlen = 0; /* amount to pad */
-  int zpadlen = 0; 
-  int caps = 0;
-  int total = 0;
-  long intpart;
-  long fracpart;
-  
-  /* 
-   * AIX manpage says the default is 0, but Solaris says the default
-   * is 6, and sprintf on AIX defaults to 6
-   */
-  if (max < 0)
-    max = 6;
-
-  ufvalue = abs_val (fvalue);
-
-  if (fvalue < 0)
-    signvalue = '-';
-  else
-    if (flags & DP_F_PLUS)  /* Do a sign (+/i) */
-      signvalue = '+';
-    else
-      if (flags & DP_F_SPACE)
-	signvalue = ' ';
-
-  intpart = ufvalue;
-
-  /* 
-   * Sorry, we only support 9 digits past the decimal because of our 
-   * conversion method
-   */
-  if (max > 9)
-    max = 9;
-
-  /* We "cheat" by converting the fractional part to integer by
-   * multiplying by a factor of 10
-   */
-  fracpart = round ((pow10 (max)) * (ufvalue - intpart));
-
-  if (fracpart >= pow10 (max))
-  {
-    intpart++;
-    fracpart -= pow10 (max);
-  }
-
-  /* Convert integer part */
-  do {
-    iconvert[iplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[intpart % 10];
-    intpart = (intpart / 10);
-  } while(intpart && (iplace < 20));
-  if (iplace == 20) iplace--;
-  iconvert[iplace] = 0;
-
-  /* Convert fractional part */
-  do {
-    fconvert[fplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
-    fracpart = (fracpart / 10);
-  } while(fracpart && (fplace < 20));
-  if (fplace == 20) fplace--;
-  fconvert[fplace] = 0;
-
-  /* -1 for decimal point, another -1 if we are printing a sign */
-  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0); 
-  zpadlen = max - fplace;
-  if (zpadlen < 0)
-    zpadlen = 0;
-  if (padlen < 0) 
-    padlen = 0;
-  if (flags & DP_F_MINUS) 
-    padlen = -padlen; /* Left Justifty */
-
-  if ((flags & DP_F_ZERO) && (padlen > 0)) 
-  {
-    if (signvalue) 
-    {
-      total += dopr_outch (buffer, currlen, maxlen, signvalue);
-      --padlen;
-      signvalue = 0;
-    }
-    while (padlen > 0)
-    {
-      total += dopr_outch (buffer, currlen, maxlen, '0');
-      --padlen;
-    }
-  }
-  while (padlen > 0)
-  {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    --padlen;
-  }
-  if (signvalue) 
-    total += dopr_outch (buffer, currlen, maxlen, signvalue);
-
-  while (iplace > 0) 
-    total += dopr_outch (buffer, currlen, maxlen, iconvert[--iplace]);
-
-  /*
-   * Decimal point.  This should probably use locale to find the correct
-   * char to print out.
-   */
-  if (max > 0)
-  {
-    total += dopr_outch (buffer, currlen, maxlen, '.');
-
-    while (zpadlen-- > 0)
-      total += dopr_outch (buffer, currlen, maxlen, '0');
-
-    while (fplace > 0) 
-      total += dopr_outch (buffer, currlen, maxlen, fconvert[--fplace]);
-  }
-
-  while (padlen < 0) 
-  {
-    total += dopr_outch (buffer, currlen, maxlen, ' ');
-    ++padlen;
-  }
-
-  return total;
-}
-
-static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c){
-  if (*currlen + 1 < maxlen)
-    buffer[(*currlen)++] = c;
-  return 1;
-}
-
-int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args){
-	if (str != NULL)
-		str[0] = 0;
+int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args) {
+	if(str != NULL) str[0] = 0;
 	return dopr(str, length, fmt, args);
 }
 
-int Q_snprintf(char *str, size_t length, const char *fmt, ...){
+int Q_snprintf(char *str, size_t length, const char *fmt, ...) {
 	va_list ap;
 	int retval;
 
 	va_start(ap, fmt);
 	retval = Q_vsnprintf(str, length, fmt, ap);
 	va_end(ap);
-	
+
 	return retval;
 }
 
-/* this is really crappy */
-int sscanf( const char *buffer, const char *fmt, ... ) {
-	int		cmd;
-	va_list		ap;
-	int		count;
-	size_t		len;
+int sscanf(const char *buffer, const char *fmt, ...) {
+	int cmd;
+	va_list ap;
+	int count;
+	size_t len;
 
-	va_start (ap, fmt);
+	va_start(ap, fmt);
 	count = 0;
 
-	while ( *fmt ) {
-		if ( fmt[0] != '%' ) {
+	while(*fmt) {
+		if(fmt[0] != '%') {
 			fmt++;
 			continue;
 		}
@@ -1558,36 +1071,29 @@ int sscanf( const char *buffer, const char *fmt, ... ) {
 		fmt++;
 		cmd = *fmt;
 
-		if (isdigit (cmd)) {
-			len = (size_t)_atoi (&fmt);
+		if(isdigit(cmd)) {
+			len = (size_t)_atoi(&fmt);
 			cmd = *(fmt - 1);
 		} else {
 			len = MAX_STRING_CHARS - 1;
 			fmt++;
 		}
 
-		switch ( cmd ) {
-		case 'i':
-		case 'd':
-		case 'u':
-			*(va_arg (ap, int *)) = _atoi( &buffer );
-			break;
-		case 'f':
-			*(va_arg (ap, float *)) = _atof( &buffer );
-			break;
-		case 's':
-			{
-			char *s = va_arg (ap, char *);
-			while (isspace (*buffer))
-				buffer++;
-			while (*buffer && !isspace (*buffer) && len-- > 0 )
-				*s++ = *buffer++;
-			*s++ = '\0';
-			break;
+		switch(cmd) {
+			case 'i':
+			case 'd':
+			case 'u': *(va_arg(ap, int *)) = _atoi(&buffer); break;
+			case 'f': *(va_arg(ap, float *)) = _atof(&buffer); break;
+			case 's': {
+				char *s = va_arg(ap, char *);
+				while(isspace(*buffer)) buffer++;
+				while(*buffer && !isspace(*buffer) && len-- > 0) *s++ = *buffer++;
+				*s++ = '\0';
+				break;
 			}
 		}
 	}
 
-	va_end (ap);
+	va_end(ap);
 	return count;
 }

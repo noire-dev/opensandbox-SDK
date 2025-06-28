@@ -279,7 +279,7 @@ typedef struct {
 
 #ifdef GAME
 #define CopyAlloc(dest, src) do {\
-    dest = BG_Alloc(sizeof(src)); \
+    dest = G_Alloc(sizeof(src)); \
     if (dest != NULL) { \
         strcpy(dest, src); \
     } \
@@ -295,8 +295,7 @@ typedef struct {
 #endif
 
 #ifdef GAME
-#define Q_malloc(size) BG_Alloc(size)
-#define Q_free(ptr) BG_Free(ptr)
+#define Q_malloc(size) G_Alloc(size)
 #endif
 
 #ifdef UI

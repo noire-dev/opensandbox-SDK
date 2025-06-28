@@ -732,9 +732,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	// get the gamestate from the client system
 	trap_GetGameState( &cgs.gameState );
 
-	// check version
-	s = CG_ConfigString( CS_GAME_VERSION );
-
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
 

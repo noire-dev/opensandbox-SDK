@@ -84,8 +84,7 @@ static field_t gameInfoFields[] = {
 	{"sb_class", 			FOFS(sb_class), 				F_STRING},
 	{"sb_sound", 			FOFS(sb_sound), 				F_STRING},
 	{"sb_coltype", 			FOFS(sb_coltype), 				F_FLOAT},
-	{"physicsBounce", 		FOFS(physicsBounce),			F_FLOAT},
-	{"vehicle", 			FOFS(vehicle), 					F_INT},
+	{"sb_vehicle", 			FOFS(sb_vehicle), 				F_INT},
 	{"sb_material", 		FOFS(sb_material), 				F_INT},
 	{"sb_gravity", 			FOFS(sb_gravity), 				F_FLOAT},
 	{"sb_phys", 			FOFS(sb_phys), 					F_INT},
@@ -95,14 +94,14 @@ static field_t gameInfoFields[] = {
 	{"sb_blue", 			FOFS(sb_blue), 					F_INT},
 	{"sb_radius", 			FOFS(sb_radius), 				F_INT},
 	{"sb_isnpc", 			FOFS(sb_isnpc), 				F_INT},
-	{"objectType", 			FOFS(objectType), 				F_INT},
 	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), 		F_VECTOR},
 	{"phys_rv_0", 			FOFS(phys_rv_0), 				F_VECTOR},
 	{"phys_rv_1", 			FOFS(phys_rv_1), 				F_VECTOR},
 	{"phys_rv_2", 			FOFS(phys_rv_2), 				F_VECTOR},
-	{"sb_phys_welded", 		FOFS(sb_phys_welded), 			F_INT},
-	{"sb_phys_parent", 		FOFS(sb_phys_parent), 			F_INT},
-	{"distance", 			FOFS(distance), 				F_FLOAT},
+	{"phys_bounce", 		FOFS(phys_bounce),				F_FLOAT},
+	{"phys_welded", 		FOFS(phys_welded), 				F_INT},
+	{"phys_parent", 		FOFS(phys_parent), 				F_INT},
+	{"objectType", 			FOFS(objectType), 				F_INT},
 	{"type", 				FOFS(type), 					F_INT},
 	{NULL}
 };
@@ -252,7 +251,7 @@ static char *G_NewString(const char *string) {
 	int i, l;
 
 	l = strlen(string) + 1;
-	newb = BG_Alloc(l);
+	newb = G_Alloc(l);
 	new_p = newb;
 
 	// turn \n into a real linefeed
@@ -475,7 +474,6 @@ static void SP_worldspawn(void) {
 	}
 
 	// make some data visible to connecting client
-	trap_SetConfigstring(CS_GAME_VERSION, GAME_VERSION);
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 
 	G_SpawnString("music", "", &s);
@@ -556,12 +554,12 @@ static void G_RelinkEntities(void) {
 	int entNum, newEntNum;
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
-		if(g_entities[i].sb_phys_parent) {
-			entNum = g_entities[i].sb_phys_parent;
+		if(g_entities[i].phys_parent) {
+			entNum = g_entities[i].phys_parent;
 			newEntNum = g_entities[i].s.number;
 			for(j = 0; j < MAX_GENTITIES; j++) {
-				if(g_entities[j].sb_phys_welded == entNum) {
-					g_entities[j].phys_parent = G_FindEntityForEntityNum(newEntNum);
+				if(g_entities[j].phys_welded == entNum) {
+					g_entities[j].physParentEnt = G_FindEntityForEntityNum(newEntNum);
 					g_entities[i].phys_weldedObjectsNum += 1;
 				}
 			}
@@ -587,7 +585,7 @@ static qboolean G_ClassnameAllowed(char *input) {
 static void G_ClearEntities(void) {
 	int i;
 	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
-		if(g_entities[i].npcType >= 1) {
+		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
@@ -925,7 +923,7 @@ void G_DeleteMapfile_f(void) {
 void G_ClearMap_f(void) {
 	int i;
 	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
-		if(g_entities[i].npcType >= 1) {
+		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
@@ -940,7 +938,7 @@ void G_ClearMap_f(void) {
 void G_ClearSandboxMap_f(void) {
 	int i;
 	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
-		if(g_entities[i].npcType >= 1) {
+		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}

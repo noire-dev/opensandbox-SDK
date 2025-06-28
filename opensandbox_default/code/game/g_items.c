@@ -51,7 +51,14 @@ static int Pickup_PersistantPowerup(gentity_t *ent, gentity_t *other) {
 			break;
 
 		case PW_DOUBLER: other->client->pers.maxHealth = 100; break;
-		case PW_AMMOREGEN: other->client->pers.maxHealth = 100; break;
+		case PW_AMMOREGEN:
+		 	if(other->health > 100){
+				other->health = 100;
+				other->client->ps.stats[STAT_HEALTH] = 100;
+			}
+			other->client->ps.stats[STAT_MAX_HEALTH] = 50;
+			other->client->pers.maxHealth = 50; 
+			break;
 		default: other->client->pers.maxHealth = 100; break;
 	}
 
@@ -240,7 +247,7 @@ void RespawnItem(gentity_t *ent) {
 			0
 		};
 
-		spawn_item = rq3_random(1, 55);
+		spawn_item = (rand() % (55 - 1 + 1)) + 1;
 
 		for(item = gameInfoItems + 1, i = 1; item->classname; item++, i++) {
 			if(!strcmp(item->classname, randomitem[spawn_item])) {
@@ -290,11 +297,8 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 	qboolean predict;
 
 	if(!other->client) return;
-	if(other->health < 1) return;  // dead people can't pickup
-
-	if(ent->npcType) {
-		if(!gameInfoNPCTypes[ent->npcType].canPickup) return;  // npc can't pickup
-	}
+	if(other->health < 1) return;
+	if(!gameInfoNPCTypes[other->npcType].canPickup) return;
 
 	// the same pickup rules are used for client side and server side
 	if(!BG_CanItemBeGrabbed(g_gametype.integer, &ent->s, &other->client->ps)) {
@@ -628,7 +632,7 @@ void G_SpawnItem(gentity_t *ent, item_t *item) {
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
 	ent->think = FinishSpawningItem;
-	ent->physicsBounce = 0.50;  // items are bouncy
+	ent->phys_bounce = 0.50;  // items are bouncy
 
 	if(item->giType == IT_RUNE) {
 		ent->s.generic1 = ent->spawnflags;
@@ -652,7 +656,7 @@ static void G_BounceItem(gentity_t *ent, trace_t *trace) {
 	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	// cut the velocity to keep from bouncing forever
-	VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
+	VectorScale(ent->s.pos.trDelta, ent->phys_bounce, ent->s.pos.trDelta);
 
 	// check for stop
 	if(trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40) {

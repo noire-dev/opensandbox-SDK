@@ -140,7 +140,7 @@ static void G_SetClientSound(gentity_t *ent) {
 	} else if(ent->waterlevel && (ent->watertype & (CONTENTS_LAVA | CONTENTS_SLIME))) {
 		ent->client->ps.loopSound = level.snd_fry;
 	} else {
-		if(ent->npcType) {
+		if(ent->npcType > NT_PLAYER) {
 			ent->client->ps.loopSound = G_SoundIndex(va("bots/%s", ent->target));
 		} else {
 			ent->client->ps.loopSound = 0;
@@ -363,7 +363,7 @@ static void SendEntityInfoToClient(gentity_t *ent, int msec) {
 
 	while(client->timeEntityInfo >= 100) {
 		client->timeEntityInfo -= 100;
-		Weapon_Toolgun_Info(ent);  // send entity info to client for sync
+		Weapon_Toolgun_Info(ent); // send entity info to client for sync
 	}
 }
 
@@ -519,10 +519,10 @@ static void PhysgunHold(gentity_t *player) {
 
 	if(player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
 		if(!player->grabbedEntity) {
-			findent = FindEntityForPhysgun(player, PHYSGUN_RANGE);
+			findent = FindEntityForPhysgun(player, gameInfoWeapons[WP_PHYSGUN].range);
 			if(findent && findent->isGrabbed == qfalse) {
 				if(!G_PlayerIsOwner(player, findent)) return;
-				if(!findent->client || findent->npcType || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
+				if(!findent->client || findent->npcType > NT_PLAYER || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
 					player->grabbedEntity = findent;
 				}
 			}
@@ -554,10 +554,10 @@ static void GravitygunHold(gentity_t *player) {
 
 	if(player->client->buttons & BUTTON_ATTACK && player->client->ps.stats[STAT_HEALTH] && player->client->ps.pm_type != PM_DEAD) {
 		if(!player->grabbedEntity) {
-			findent = FindEntityForGravitygun(player, GRAVITYGUN_RANGE);
+			findent = FindEntityForGravitygun(player, gameInfoWeapons[WP_GRAVITYGUN].range);
 			if(findent && findent->isGrabbed == qfalse) {
 				if(!G_PlayerIsOwner(player, findent)) return;
-				if(!findent->client || findent->npcType || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
+				if(!findent->client || findent->npcType > NT_PLAYER || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
 					player->grabbedEntity = findent;
 				}
 			}
@@ -646,31 +646,26 @@ static void ClientThink_real(gentity_t *ent) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 
-	client->ps.gravity = g_gravity.value;
+	client->ps.gravity = g_gravity.value * gameInfoNPCTypes[ent->npcType].gravity;
 
 	if(client->vehicleNum) {  // VEHICLE-SYSTEM: setup physics for all
 		if(G_FindEntityForEntityNum(client->vehicleNum)) {
 			vehicle = G_FindEntityForEntityNum(client->vehicleNum);
-			client->ps.stats[STAT_VEHICLE] = vehicle->vehicle;
-			if(BG_VehicleCheckClass(vehicle->vehicle)) {
-				client->ps.speed = BG_GetVehicleSettings(vehicle->vehicle, VSET_SPEED);
-				client->ps.gravity *= BG_GetVehicleSettings(vehicle->vehicle, VSET_GRAVITY);
+			client->ps.stats[STAT_VEHICLE] = vehicle->sb_vehicle;
+			if(BG_InVehicle(vehicle->sb_vehicle)) {
+				client->ps.speed = 900;
+				client->ps.gravity *= 0.4;
 			}
 		}
 	} else {
-		client->ps.speed = g_speed.value;
+		client->ps.speed = g_speed.value * gameInfoNPCTypes[ent->npcType].speed;
 		client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
 	}
 
-	if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
-		client->ps.speed *= 1.5;
-	}
-	if(client->ps.powerups[PW_HASTE]) {
-		client->ps.speed *= 1.3;
-	}
-	if(ent->skill == 9) {
-		client->ps.speed *= 2.0;
-	}
+	if(ent->client->noclip) client->ps.speed *= 2.50;
+
+	if(gameInfoItems[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) client->ps.speed *= 1.5;
+	if(client->ps.powerups[PW_HASTE]) client->ps.speed *= 1.3;
 
 	// Let go of the hook if we aren't firing
 	if(client->ps.weapon == WP_GRAPPLING_HOOK && client->hook && !(ucmd->buttons & BUTTON_ATTACK)) {
@@ -685,7 +680,7 @@ static void ClientThink_real(gentity_t *ent) {
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
 	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0) {
-		pm.gauntletHit = Melee_Fire(ent);
+		pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
 	}
 
 	// check for invulnerability expansion before doing the Pmove

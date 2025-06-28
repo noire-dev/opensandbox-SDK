@@ -104,7 +104,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 	vec3_t impactVector;
 	vec3_t end, start, forward, up, right;
 
-	if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && ent->skill != 9) {
+	if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && !gameInfoNPCTypes[ent->npcType].canPush) {
 		return;
 	}
 
@@ -145,13 +145,13 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 			}
 			if(impactForce > VEHICLE_DAMAGESENS) {
 				if(hit->grabbedEntity != ent) {
-					if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (ent->skill == 9 && hit->skill != 9)) {
+					if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (gameInfoNPCTypes[ent->npcType].friendlyFire || ent->npcType != hit->npcType)) {
 						Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
 					}
 				}
 			}
 			if(impactForce > VEHICLE_DAMAGESENS * 6) {
-				if(BG_VehicleCheckClass(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR) {
+				if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR) {
 					Phys_Smoke(ent, impactForce * 0.20);
 				}
 			}
@@ -254,7 +254,7 @@ static void Phys_CheckWeldedEntities(gentity_t *ent) {
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		object = &g_entities[i];
-		if(ent == object->phys_parent) {
+		if(ent == object->physParentEnt) {
 			trap_UnlinkEntity(object);
 			j++;
 		}
@@ -280,7 +280,7 @@ static void Phys_RestoreWeldedEntities(gentity_t *ent) {
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		object = &g_entities[i];
-		if(ent == object->phys_parent) {
+		if(ent == object->physParentEnt) {
 			vec3_t forward, right, up;
 			vec3_t rotatedOffset, finalPos;
 			vec3_t entForward, entRight, entUp;
@@ -289,10 +289,7 @@ static void Phys_RestoreWeldedEntities(gentity_t *ent) {
 			float matrix[3][3];
 			vec3_t newAngles;
 
-			//
 			// Origin
-			//
-
 			AngleVectors(ent->s.apos.trBase, forward, right, up);
 			rotatedOffset[0] = forward[0] * object->phys_relativeOrigin[0] + right[0] * object->phys_relativeOrigin[1] + up[0] * object->phys_relativeOrigin[2];
 			rotatedOffset[1] = forward[1] * object->phys_relativeOrigin[0] + right[1] * object->phys_relativeOrigin[1] + up[1] * object->phys_relativeOrigin[2];
@@ -304,10 +301,7 @@ static void Phys_RestoreWeldedEntities(gentity_t *ent) {
 			VectorCopy(finalPos, object->r.currentOrigin);
 			VectorCopy(finalPos, object->s.pos.trBase);
 
-			//
 			// Angles
-			//
-
 			AngleVectors(ent->s.apos.trBase, entForward, entRight, entUp);
 
 			VectorCopy(object->phys_rv_0, relForward);
@@ -348,10 +342,7 @@ static void Phys_RestoreWeldedEntities(gentity_t *ent) {
 			VectorCopy(newAngles, object->s.apos.trBase);
 			VectorCopy(newAngles, object->r.currentAngles);
 
-			//
 			// Disable phys
-			//
-
 			object->s.pos.trType = TR_STATIONARY;
 			object->sb_phys = PHYS_STATIC;
 			object->s.otherEntityNum = ent->s.number;
@@ -379,7 +370,7 @@ void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun) {
 	if(isPhysgun) {
 		CrosshairPointPhys(player, player->grabDist, end);
 	} else {
-		CrosshairPointGravity(player, GRAVITYGUN_DIST, end);
+		CrosshairPointGravity(player, 128, end);
 	}
 	trap_LinkEntity(ent);
 	Phys_RestoreWeldedEntities(ent);
@@ -492,7 +483,7 @@ void Phys_Unweld(gentity_t *ent) {
 	if(ent->phys_weldedObjectsNum) {
 		for(i = 0; i < MAX_GENTITIES; i++) {
 			object = &g_entities[i];
-			if(ent->s.number == object->phys_parent->s.number) {
+			if(ent->s.number == object->physParentEnt->s.number) {
 				ent->s.pos.trType = TR_GRAVITY;
 				ent->s.pos.trTime = level.time;
 				ent->sb_phys = PHYS_DYNAMIC;
@@ -501,7 +492,7 @@ void Phys_Unweld(gentity_t *ent) {
 				object->s.pos.trTime = level.time;
 				object->sb_phys = PHYS_DYNAMIC;
 				Phys_Enable(object);
-				object->phys_parent = NULL;
+				object->physParentEnt = NULL;
 				VectorClear(object->phys_relativeOrigin);
 				VectorClear(object->phys_rv_0);
 				VectorClear(object->phys_rv_1);
@@ -511,12 +502,12 @@ void Phys_Unweld(gentity_t *ent) {
 		return;
 	}
 
-	if(ent->phys_parent) {
+	if(ent->physParentEnt) {
 		ent->s.pos.trType = TR_GRAVITY;
 		ent->s.pos.trTime = level.time;
 		ent->sb_phys = PHYS_DYNAMIC;
 		Phys_Enable(ent);
-		ent->phys_parent = NULL;
+		ent->physParentEnt = NULL;
 		VectorClear(ent->phys_relativeOrigin);
 		VectorClear(ent->phys_rv_0);
 		VectorClear(ent->phys_rv_1);
@@ -567,15 +558,12 @@ static void Phys_SmoothReturnToNearestAngle(gentity_t *ent) {
 		speed = 25.00;
 	}
 
-	// Плавное движение для X и Z
 	ent->s.apos.trBase[0] += (Phys_SnapToNearestAngle(ent->s.apos.trBase[0]) - ent->s.apos.trBase[0]) * speed;
 	ent->s.apos.trBase[2] += (Phys_SnapToNearestAngle(ent->s.apos.trBase[2]) - ent->s.apos.trBase[2]) * speed;
 
-	// Проверка, если значения достаточно близки к целям, чтобы остановиться
 	if(fabs(ent->s.apos.trBase[0] - Phys_SnapToNearestAngle(ent->s.apos.trBase[0])) < 0.01f) ent->s.apos.trBase[0] = Phys_SnapToNearestAngle(ent->s.apos.trBase[0]);
 	if(fabs(ent->s.apos.trBase[2] - Phys_SnapToNearestAngle(ent->s.apos.trBase[2])) < 0.01f) ent->s.apos.trBase[2] = Phys_SnapToNearestAngle(ent->s.apos.trBase[2]);
 
-	// Если объект еще не достиг угла, продолжаем его двигать
 	if(ent->s.apos.trBase[0] != Phys_SnapToNearestAngle(ent->s.apos.trBase[0]) || ent->s.apos.trBase[2] != Phys_SnapToNearestAngle(ent->s.apos.trBase[2])) {
 		ent->phys_nextthink = level.time + 1;
 		ent->phys_think = Phys_SmoothReturnToNearestAngle;
@@ -630,7 +618,7 @@ static void Phys_Bounce(gentity_t *ent, trace_t *tr) {
 	dot = DotProduct(velocity, tr->plane.normal);
 	VectorMA(velocity, -2 * dot, tr->plane.normal, ent->s.pos.trDelta);
 
-	VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
+	VectorScale(ent->s.pos.trDelta, ent->phys_bounce, ent->s.pos.trDelta);
 
 	// check for stop
 	if(tr->plane.normal[2] > 0.2 && VectorLength(ent->s.pos.trDelta) < 40 && !ent->isGrabbed) {
@@ -877,8 +865,7 @@ static void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	if(tr->fraction < 1.0f && tr->entityNum != ENTITYNUM_NONE) {
 		hit = &g_entities[tr->entityNum];
 
-		if(hit->s.number != ent->s.number) {  // Ignore self
-			                                  // Optionally apply a force or velocity to the hit entity to simulate the push
+		if(hit->s.number != ent->s.number) {  // Ignore self, optionally apply a force or velocity to the hit entity to simulate the push
 			if(impactForce > PHYS_SENS) {
 				if(!hit->client) {
 					Phys_Enable(hit);
@@ -888,7 +875,7 @@ static void Phys_Impact(gentity_t *ent, trace_t *tr) {
 				if(!hit->client) {
 					VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
 				} else {
-					if(hit->grabbedEntity != ent && hit->skill != 9) {
+					if(hit->grabbedEntity != ent) {
 						VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
 					}
 				}
@@ -937,19 +924,19 @@ void Phys_Frame(gentity_t *ent) {
 		return;
 	}
 
-	if(ent->phys_parent) {
-		ent->sb_phys_welded = ent->phys_parent->s.number;
+	if(ent->physParentEnt) {
+		ent->phys_welded = ent->physParentEnt->s.number;
 		return;
 	} else {
-		ent->sb_phys_welded = 0;
+		ent->phys_welded = 0;
 		ent->s.otherEntityNum = 0;
 		VectorClear(ent->s.origin2);
 	}
 
 	if(ent->phys_weldedObjectsNum) {
-		ent->sb_phys_parent = ent->s.number;
+		ent->phys_parent = ent->s.number;
 	} else {
-		ent->sb_phys_parent = 0;
+		ent->phys_parent = 0;
 	}
 
 	// Unlink the entity so that it won't interact with other entities during the calculation

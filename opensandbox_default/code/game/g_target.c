@@ -5,8 +5,6 @@
 
 #include "g_local.h"
 
-//==========================================================
-
 static void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	gentity_t *t;
 	trace_t trace;
@@ -28,8 +26,6 @@ static void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activat
 
 void SP_target_give(gentity_t *ent) { ent->use = Use_Target_Give; }
 
-//==========================================================
-
 static void Think_Target_Delay(gentity_t *ent) { G_UseTargets(ent, ent->activator); }
 
 static void Use_Target_Delay(gentity_t *ent, gentity_t *other, gentity_t *activator) {
@@ -47,8 +43,6 @@ void SP_target_delay(gentity_t *ent) {
 	if(!ent->wait) ent->wait = 1;
 	ent->use = Use_Target_Delay;
 }
-
-//==========================================================
 
 static void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(activator->client && (ent->spawnflags & 4)) {
@@ -70,8 +64,6 @@ static void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activa
 }
 
 void SP_target_print(gentity_t *ent) { ent->use = Use_Target_Print; }
-
-//==========================================================
 
 static void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(ent->spawnflags & 3) {  // looping sound toggles
@@ -132,8 +124,6 @@ void SP_target_speaker(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-//==========================================================
-
 static void target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	gentity_t *dest;
 
@@ -152,8 +142,6 @@ void SP_target_teleporter(gentity_t *self) {
 
 	self->use = target_teleporter_use;
 }
-
-//==========================================================
 
 static void target_relay_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	if((self->spawnflags & 1) && activator->client && activator->client->sess.sessionTeam != TEAM_RED) {
@@ -176,17 +164,11 @@ static void target_relay_use(gentity_t *self, gentity_t *other, gentity_t *activ
 
 void SP_target_relay(gentity_t *self) { self->use = target_relay_use; }
 
-//==========================================================
-
 static void target_kill_use(gentity_t *self, gentity_t *other, gentity_t *activator) { G_Damage(activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG); }
 
 void SP_target_kill(gentity_t *self) { self->use = target_kill_use; }
 
-//==========================================================
-
 void SP_target_position(gentity_t *self) { G_SetOrigin(self, self->s.origin); }
-
-//==========================================================
 
 static void target_location_linkup(gentity_t *ent) {
 	int i;
@@ -219,8 +201,6 @@ void SP_target_location(gentity_t *self) {
 	G_SetOrigin(self, self->s.origin);
 }
 
-//==========================================================
-
 static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	char value[128];
 
@@ -252,7 +232,6 @@ static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *ac
 	}
 }
 
-// used for immediately spawnflag
 static void script_variable_think(gentity_t *self) {
 	self->nextthink = 0;
 	script_variable_use(self, NULL, self);
@@ -279,8 +258,6 @@ void SP_script_variable(gentity_t *self) {
 	}
 }
 
-//==========================================================
-
 static void use_script_cmd(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(ent->spawnflags & 1) {
 		trap_SendConsoleCommand(EXEC_APPEND, va("%s\n", ent->target));
@@ -293,7 +270,6 @@ static void use_script_cmd(gentity_t *ent, gentity_t *other, gentity_t *activato
 	}
 }
 
-// used for immediately spawnflag
 static void script_cmd_think(gentity_t *ent) {
 	ent->nextthink = 0;
 	use_script_cmd(ent, NULL, ent);

@@ -186,7 +186,7 @@ void CopyToBodyQue(gentity_t *ent) {
 	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
-	body->physicsBounce = 0;  // don't bounce
+	body->phys_bounce = 0;  // don't bounce
 	if(body->s.groundEntityNum == ENTITYNUM_NONE) {
 		body->s.pos.trType = TR_GRAVITY;
 		body->s.pos.trTime = level.time;
@@ -251,7 +251,7 @@ void SetClientViewAngle(gentity_t *ent, vec3_t angle) {
 void ClientRespawn(gentity_t *ent) {
 	gentity_t *tent;
 
-	if(ent->npcType >= 1) {
+	if(ent->npcType > NT_PLAYER) {
 		DropClientSilently(ent->client->ps.clientNum);
 		return;
 	}
@@ -481,8 +481,13 @@ void ClientUserinfoChanged(int clientNum) {
 
 		botskill = atoi(Info_ValueForKey(userinfo, "skill"));
 		ent->skill = botskill;
-		npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
+	}
+
+	npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
+	if(npcType && ent->r.svFlags & SVF_BOT){
 		ent->npcType = npcType;
+	} else {
+		ent->npcType = NT_PLAYER;
 	}
 
 	strcpy(legsR, Info_ValueForKey(userinfo, "legsR"));
@@ -505,7 +510,7 @@ void ClientUserinfoChanged(int clientNum) {
 			team = TEAM_RED;
 		} else if(!Q_stricmp(s, "blue") || !Q_stricmp(s, "b")) {
 			team = TEAM_BLUE;
-		} else if(!Q_stricmp(s, "free") && ent->npcType) {  // FREE_TEAM
+		} else if(!Q_stricmp(s, "free") && ent->npcType > NT_PLAYER) {  // FREE_TEAM
 			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
@@ -526,7 +531,7 @@ void ClientUserinfoChanged(int clientNum) {
 	if(ent->r.svFlags & SVF_BOT) {
 		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\nt\\%i\\s\\%s\\tt\\%d\\tl\\%d", client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehicleNum, ent->npcType, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
 	} else {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\tt\\%d\\tl\\%d\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehicleNum, teamTask, teamLeader, ent->flashlight);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\nt\\%i\\tt\\%d\\tl\\%d\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehicleNum, ent->npcType, teamTask, teamLeader, ent->flashlight);
 	}
 
 	trap_SetConfigstring(CS_PLAYERS + clientNum, s);
@@ -585,7 +590,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	ClientUserinfoChanged(clientNum);
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
-	if(firstTime && (!ent->npcType)) {
+	if(firstTime && (ent->npcType <= NT_PLAYER)) {
 		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " connected\n\"", client->pers.netname));
 	}
 
@@ -639,7 +644,7 @@ void ClientBegin(int clientNum) {
 }
 
 static void SetupCustomBot(gentity_t *bot) {
-	if(!bot->npcType || !(bot->botspawn)) return;
+	if(!bot->botspawn) return;
 
 	// give bot weapons
 	if(bot->botspawn->weapon <= 1) {
@@ -651,11 +656,6 @@ static void SetupCustomBot(gentity_t *bot) {
 	}
 
 	bot->health = bot->client->ps.stats[STAT_HEALTH] = bot->client->ps.stats[STAT_MAX_HEALTH] = bot->botspawn->health;
-
-	// set walking behavior
-	if(bot->botspawn->spawnflags & 1 || bot->botspawn->spawnflags & 2) bot->client->ps.pm_flags |= PMF_FORCE_WALK;
-
-	if(bot->botspawn->spawnflags & 1 && !(bot->botspawn->spawnflags & 2)) bot->client->ps.pm_flags |= PMF_ATTACK_RUN;
 
 	// use targets of target_botspawn
 	if(bot->botspawn->target) {

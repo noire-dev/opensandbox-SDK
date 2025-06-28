@@ -1301,7 +1301,7 @@ void ST_DrawString(float x, float y, const char* str, int style, vec4_t color, f
 	int		charh;
 	float	*drawcolor;
 	vec4_t	dropcolor;
-	int 	len = strlen(str);
+	int 	len = strlenru(str);
 	int 	esc = ST_ColorEscapes(str);
 
 	if(!str)

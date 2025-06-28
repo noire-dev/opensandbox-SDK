@@ -2537,11 +2537,13 @@ int BotSameTeam(bot_state_t *bs, int entnum) {
 	if (entnum < 0 || entnum >= MAX_CLIENTS)
 		return qfalse;
 
-	if ( gametype >= GT_TEAM ) {
-		trap_GetConfigstring(CS_PLAYERS+bs->client, info1, sizeof(info1));
-		trap_GetConfigstring(CS_PLAYERS+entnum, info2, sizeof(info2));
-		//
+	trap_GetConfigstring(CS_PLAYERS+bs->client, info1, sizeof(info1));
+	trap_GetConfigstring(CS_PLAYERS+entnum, info2, sizeof(info2));
+
+	if ( gametype >= GT_TEAM && atoi(Info_ValueForKey(info1, "nt")) <= NT_PLAYER ) {
 		if (atoi(Info_ValueForKey(info1, "t")) == atoi(Info_ValueForKey(info2, "t"))) return qtrue;
+	} else {
+		if(!BG_FactionShouldAttack(gameInfoNPCTypes[atoi(Info_ValueForKey(info1, "nt"))].faction, gameInfoNPCTypes[atoi(Info_ValueForKey(info2, "nt"))].faction)) return qtrue;
 	}
 	return qfalse;
 }
@@ -4550,7 +4552,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_FOOTSTEP:
 		case EV_FOOTSTEP_METAL:
 		case EV_FOOTSPLASH:
-		case EV_FOOTWADE:
 		case EV_SWIM:
 		case EV_FALL_SHORT:
 		case EV_FALL_MEDIUM:

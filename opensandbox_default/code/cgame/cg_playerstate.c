@@ -260,7 +260,7 @@ void CG_CheckLocalSoundsVeh( playerState_t *ps, playerState_t *ops ) {
 	// health changes of more than -1 should make pain sounds
 	if ( ps->stats[STAT_VEHICLEHP] < ops->stats[STAT_VEHICLEHP] - 1 ) {
 		if ( ps->stats[STAT_VEHICLEHP] > 0 ) {
-			CG_PainVehicleEvent( &cg.predictedPlayerEntity, ps->stats[STAT_VEHICLEHP] );
+			trap_S_StartSound (NULL, cg.predictedPlayerEntity.currentState.number, CHAN_VOICE, CG_CustomSound(cg.predictedPlayerEntity.currentState.number, "sound/vehicle/damage50.ogg") );
 		}
 	}
 

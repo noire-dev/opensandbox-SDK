@@ -769,38 +769,6 @@ static void CG_Mover(centity_t *cent) {
 
 /*
 ===============
-CG_Beam
-
-Also called as an event
-===============
-*/
-void CG_Beam( centity_t *cent ) {
-	refEntity_t			ent;
-	entityState_t		*s1;
-
-	s1 = &cent->currentState;
-
-	// create the render entity
-	memset(&ent, 0, sizeof(ent));
-	VectorCopy(s1->pos.trBase, ent.origin);
-	VectorCopy(s1->origin2, ent.oldorigin);
-	AxisClear(ent.axis);
-	ent.reType = RT_RAIL_CORE;
-	ent.customShader = cgs.media.railCoreShader;
-	ent.shaderRGBA[0] = s1->constantLight & 255;
-	ent.shaderRGBA[1] = (s1->constantLight >> 8) & 255;
-	ent.shaderRGBA[2] = (s1->constantLight >> 16) & 255;
-	ent.shaderRGBA[3] = 255;
-
-	// add to refresh list
-	trap_R_AddRefEntityToScene(&ent);
-
-	//CG_Particles(origin, count, speed, lifetime, radius, type, r, g, b)
-	CG_Particles(s1->origin2, 1, (int)((random() * 50) + 50), 300, 3, PT_GRAVITY, 255, (byte)((random() * 155) + 100), 0);
-}
-
-/*
-===============
 CG_Portal
 ===============
 */
@@ -1164,9 +1132,6 @@ static void CG_AddCEntity( centity_t *cent ) {
 		break;
 	case ET_MOVER:
 		CG_Mover( cent );
-		break;
-	case ET_BEAM:
-		CG_Beam( cent );
 		break;
 	case ET_PORTAL:
 		CG_Portal( cent );

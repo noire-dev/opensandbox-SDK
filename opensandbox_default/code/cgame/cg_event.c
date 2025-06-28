@@ -512,10 +512,6 @@ void CG_PainEvent( centity_t *cent, int health ) {
 	cent->pe.painDirection ^= 1;
 }
 
-void CG_PainVehicleEvent( centity_t *cent, int health ) {
-	trap_S_StartSound (NULL, cent->currentState.number, CHAN_VOICE, CG_CustomSound(cent->currentState.number, "sound/vehicle/damage50.ogg") );
-}
-
 /*
 ==============
 CG_EntityEvent
@@ -571,10 +567,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
 	case EV_FOOTSPLASH:
 		DEBUGNAME("EV_FOOTSPLASH");
-		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
-		break;
-	case EV_FOOTWADE:
-		DEBUGNAME("EV_FOOTWADE");
 		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		break;
 	case EV_SWIM:
@@ -957,7 +949,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if ( es->otherEntityNum == cg.predictedPlayerState.clientNum ) {
 			// do nothing, because it was already predicted
 		} else {
-			CG_ShotgunFire( es );
+			CG_ShotgunFire( es, es->weapon );
 		}
 		break;
 
@@ -1103,15 +1095,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			CG_PainEvent( cent, es->eventParm );
 		}
 		break;
-		
-	case EV_PAINVEHICLE:
-		// local player sounds are triggered in CG_CheckLocalSounds,
-		// so ignore events on the player
-		DEBUGNAME("EV_PAINVEHICLE");
-		if ( cent->currentState.number != cg.snap->ps.clientNum ) {
-			CG_PainVehicleEvent( cent, es->eventParm );
-		}
-		break;
 
 	case EV_DEATH1:
 	case EV_DEATH2:
@@ -1147,11 +1130,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_STOPLOOPINGSOUND");
 		trap_S_StopLoopingSound( es->number );
 		es->loopSound = 0;
-		break;
-
-	case EV_DEBUG_LINE:
-		DEBUGNAME("EV_DEBUG_LINE");
-		CG_Beam( cent );
 		break;
 
 	case EV_EXPLOSION:

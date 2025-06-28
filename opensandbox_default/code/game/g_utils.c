@@ -286,7 +286,7 @@ void G_FreeEntity(gentity_t *ed) {
 
 	if(ed->neverFree) return;
 
-	if(ed->vehicle && ed->parent && ed->parent->client->vehicleNum == ed->s.number) {  // Reset vehicle
+	if(ed->sb_vehicle && ed->parent && ed->parent->client->vehicleNum == ed->s.number) {  // Reset vehicle
 		ed->parent->client->vehicleNum = 0;
 		ClientUserinfoChanged(ed->parent->s.clientNum);
 		VectorSet(ed->parent->r.mins, -15, -15, -24);
@@ -454,14 +454,14 @@ gentity_t *FindEntityForPhysgun(gentity_t *ent, int range) {
 			return NULL;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->npcType) {
+		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
 			return NULL;
 		}
 	}
 
-	if(traceEnt->phys_parent) {  // WELD-TOOL
-		VectorSubtract(traceEnt->phys_parent->r.currentOrigin, tr.endpos, ent->grabOffset);
-		return traceEnt->phys_parent;
+	if(traceEnt->physParentEnt) {  // WELD-TOOL
+		VectorSubtract(traceEnt->physParentEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
+		return traceEnt->physParentEnt;
 	} else {
 		VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
 	}
@@ -495,12 +495,12 @@ gentity_t *FindEntityForGravitygun(gentity_t *ent, int range) {
 			return NULL;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->npcType) {
+		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
 			return NULL;
 		}
 	}
 
-	if(traceEnt->phys_weldedObjectsNum || traceEnt->phys_parent) {  // WELD-TOOL
+	if(traceEnt->phys_weldedObjectsNum || traceEnt->physParentEnt) {  // WELD-TOOL
 		return NULL;
 	}
 
@@ -584,8 +584,8 @@ qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
 }
 
 gentity_t *G_FindWeldEntity(gentity_t *ent) {
-	if(ent->phys_parent) {
-		return ent->phys_parent;
+	if(ent->physParentEnt) {
+		return ent->physParentEnt;
 	} else {
 		return ent;
 	}

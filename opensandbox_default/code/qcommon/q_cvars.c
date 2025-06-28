@@ -60,7 +60,7 @@ cvar_t    g_spawn_holdable;
 cvar_t    sv_fps;
 
 static cvarTable_t cvarTable[] = {
-	{ NULL,                         "gamename",                     GAME_VERSION,   CVAR_ROM },
+	{ NULL,                         "gamename",                     "opensandbox",  CVAR_ROM },
 	{ NULL,                         "gamedate",                     __DATE__,       CVAR_ROM },
 	{ &sv_cheats,                   "sv_cheats",                  	"0",            0 },
 	{ &g_maxClients,                "g_maxClients",                 "128",          CVAR_SERVERINFO|CVAR_ARCHIVE },

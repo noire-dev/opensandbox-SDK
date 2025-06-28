@@ -1119,7 +1119,6 @@ void CG_CheckEvents( centity_t *cent );
 const char	*CG_PlaceString( int rank );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
-void CG_PainVehicleEvent( centity_t *cent, int health );
 
 
 //
@@ -1127,7 +1126,6 @@ void CG_PainVehicleEvent( centity_t *cent, int health );
 //
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
-void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
 
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
@@ -1150,7 +1148,7 @@ void CG_RegisterItemVisuals( int itemNum );
 void CG_FireWeapon( centity_t *cent );
 void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType );
 void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum );
-void CG_ShotgunFire( entityState_t *es );
+void CG_ShotgunFire( entityState_t *es, int weapon );
 void CG_Bullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
 
 void CG_RailTrail( clientInfo_t *ci, vec3_t start, vec3_t end );

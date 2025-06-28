@@ -51,7 +51,7 @@ static void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 	dot = DotProduct(velocity, trace->plane.normal);
 	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
-	VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
+	VectorScale(ent->s.pos.trDelta, ent->phys_bounce, ent->s.pos.trDelta);
 	// check for stop
 	if(trace->plane.normal[2] > 0.2 && VectorLength(ent->s.pos.trDelta) < 40) {
 		G_SetOrigin(ent, trace->endpos);
@@ -126,18 +126,17 @@ static void Guided_Missile_Think(gentity_t *missile) {
 Melee type
 ===============
 */
-qboolean Melee_Fire(gentity_t *ent) {
+qboolean Melee_Fire(gentity_t *ent, int weapon) {
 	trace_t tr;
 	vec3_t end;
 	gentity_t *tent;
 	gentity_t *traceEnt;
-	int damage;
 
 	// set aiming directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-	VectorMA(muzzle, 64, forward, end);
+	VectorMA(muzzle, gameInfoWeapons[weapon].range, forward, end);
 	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	if(tr.surfaceFlags & SURF_NOIMPACT) {
@@ -161,15 +160,11 @@ qboolean Melee_Fire(gentity_t *ent) {
 	} else {
 		s_quadFactor = 1;
 	}
-	if(ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER) {
-		s_quadFactor *= 2.0;
-	}
-	if(ent->skill == 9) {
-		s_quadFactor *= 5;
-	}
+	if(ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER) s_quadFactor *= 2.0;
+	
+	s_quadFactor *= gameInfoNPCTypes[ent->npcType].damage;
 
-	damage = 50 * s_quadFactor;
-	G_Damage(traceEnt, ent, ent, forward, tr.endpos, damage, 0, WP_GAUNTLET);
+	G_Damage(traceEnt, ent, ent, forward, tr.endpos, gameInfoWeapons[weapon].damage * s_quadFactor, 0, WP_GAUNTLET);
 
 	return qtrue;
 }
@@ -272,6 +267,7 @@ static void Shotgun_Fire(gentity_t *ent, int weapon) {
 	gentity_t *tent;
 
 	tent = G_TempEntity(muzzle, EV_SHOTGUN);
+	tent->s.weapon = weapon;
 	VectorScale(forward, gameInfoWeapons[weapon].range, tent->s.origin2);
 	SnapVector(tent->s.origin2);
 	tent->s.eventParm = ent->client->attackTime % 256;
@@ -461,7 +457,7 @@ static void Toolgun_Fire(gentity_t *ent, int weapon) {
 			return;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->npcType) {
+		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
 			return;
 		}
 	}
@@ -481,7 +477,7 @@ void Weapon_Toolgun_Info(gentity_t *ent) {
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-	VectorMA(muzzle, TOOLGUN_RANGE, forward, end);
+	VectorMA(muzzle, gameInfoWeapons[ent->swep_id].range, forward, end);
 	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
 	traceEnt = &g_entities[tr.entityNum];
@@ -492,7 +488,7 @@ void Weapon_Toolgun_Info(gentity_t *ent) {
 			return;
 		}
 	} else {
-		if(!traceEnt->sandboxObject && !traceEnt->npcType) {
+		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
 			trap_SendServerCommand(ent->s.clientNum, va("t_info \"%s\"", ""));
 			return;
 		}
@@ -913,7 +909,7 @@ gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t ri
 		bolt->sb_material = random_mt;
 		bolt->s.pos.trType = TR_GRAVITY;
 		bolt->s.pos.trTime = level.time;
-		bolt->physicsBounce = gameInfoWeapons[weapon].bounceModifier;
+		bolt->phys_bounce = gameInfoWeapons[weapon].bounceModifier;
 		bolt->sb_phys = PHYS_DYNAMIC;
 		bolt->s.modelindex = G_ModelIndex(gameInfoWProps[gameInfoWeapons[weapon].mType].modelname);
 		bolt->model = gameInfoWProps[gameInfoWeapons[weapon].mType].modelname;
@@ -976,7 +972,7 @@ gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t ri
 		// physics
 		if(gameInfoWeapons[weapon].bounce) {
 			bolt->s.eFlags = EF_BOUNCE;
-			bolt->physicsBounce = gameInfoWeapons[weapon].bounceModifier;
+			bolt->phys_bounce = gameInfoWeapons[weapon].bounceModifier;
 		}
 		if(gameInfoWeapons[weapon].gravity) {
 			bolt->s.pos.trType = TR_GRAVITY;
@@ -1053,12 +1049,9 @@ void FireWeapon(gentity_t *ent) {
 	} else {
 		s_quadFactor = 1;
 	}
-	if(ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER) {
-		s_quadFactor *= 2.0;
-	}
-	if(ent->skill == 9) {
-		s_quadFactor *= 5;
-	}
+	if(ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER) s_quadFactor *= 2.0;
+
+	s_quadFactor *= gameInfoNPCTypes[ent->npcType].damage;
 
 	if(ent->client->spawnprotected) ent->client->spawnprotected = qfalse;
 

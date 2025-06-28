@@ -59,7 +59,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	VectorCopy( cg.refdef.vieworg, view );
 
 	view[2] += 8;
-	if(!BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE])){
+	if(!BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])){
 	VectorMA( view, cg_thirdPersonOffset.value, right, view );
 	} else {
 	VectorMA( view, 0, right, view );		
@@ -71,7 +71,7 @@ static void CG_OffsetThirdPersonView( void ) {
 
 	forwardScale = cos( 0 / 180 * M_PI );
 	sideScale = sin( 0 / 180 * M_PI );
-	if(!BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE])){
+	if(!BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])){
 		VectorMA( view, -cg_thirdPersonRange.value * forwardScale, forward, view );
 		VectorMA( view, -cg_thirdPersonRange.value * sideScale, right, view );
 	} else {

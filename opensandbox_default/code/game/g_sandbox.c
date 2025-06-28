@@ -113,7 +113,7 @@ static spawn_t gameInfoSandboxEntities[] = {
 };
 
 void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
-	if(self->vehicle || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all
+	if(self->sb_vehicle || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all
 		G_StartCarExplode(self);
 	}
 	if(self->objectType == OT_NUKE) {
@@ -124,7 +124,7 @@ void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 
 static void G_TouchProp(gentity_t *self, gentity_t *other, trace_t *trace) {
 	if(self->objectType == OT_VEHICLE) {
-		if(!other->health || !other->client || !other->npcType || other->client->vehicleNum) {
+		if(!other->health || !other->client || other->npcType <= NT_PLAYER || other->client->vehicleNum) {
 			return;
 		}
 		if(self->parent && self->parent->client->vehicleNum) {
@@ -213,7 +213,7 @@ void SP_sandbox_prop(gentity_t *ent) {
 	ent->s.loopSound = G_SoundIndex(ent->sb_sound);
 
 	// Setting collision
-	if(ent->vehicle <= 0 || spawn_entity) {
+	if(ent->sb_vehicle <= 0 || spawn_entity) {
 		VectorSet(ent->r.mins, -ent->sb_coltype * ent->s.scales[0], -ent->sb_coltype * ent->s.scales[1], -ent->sb_coltype * ent->s.scales[2]);
 		VectorSet(ent->r.maxs, ent->sb_coltype * ent->s.scales[0], ent->sb_coltype * ent->s.scales[1], ent->sb_coltype * ent->s.scales[2]);
 	} else {
@@ -346,13 +346,13 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 		if(atoi(arg09) == 0) {
 			ent->s.pos.trType = TR_STATIONARY;
 			ent->s.pos.trTime = level.time;
-			ent->physicsBounce = atof(arg21);
+			ent->phys_bounce = atof(arg21);
 			ent->sb_phys = PHYS_STATIC;
 		}
 		if(atoi(arg09) == 1) {
 			ent->s.pos.trType = TR_GRAVITY;
 			ent->s.pos.trTime = level.time;
-			ent->physicsBounce = atof(arg21);
+			ent->phys_bounce = atof(arg21);
 			ent->sb_phys = PHYS_DYNAMIC;
 		}
 
@@ -383,9 +383,9 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 		ent->objectType = atoi(arg20);
 		ent->s.torsoAnim = atoi(arg20);
 		if(atoi(arg20) == OT_VEHICLE) {
-			ent->vehicle = 1;
+			ent->sb_vehicle = 1;
 		} else {
-			ent->vehicle = 0;
+			ent->sb_vehicle = 0;
 		}
 
 		// Mass
@@ -467,13 +467,9 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	gentity_t *entity;
 
 	entity = targ;
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) {
-		return;
-	}
+	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) return;
 
-	if(entity->client && !entity->npcType) {
-		return;
-	}
+	if(entity->client && entity->npcType <= NT_PLAYER) return;
 
 	if(!G_PlayerIsOwner(attacker, entity)) return;
 
@@ -487,7 +483,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_DELETE) {
-		if(!entity->npcType) {
+		if(!entity->client) {
 			G_FreeEntity(entity);
 		} else {
 			DropClientSilently(entity->client->ps.clientNum);
@@ -633,7 +629,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 				}
 			} else {
 				entity = G_FindWeldEntity(entity);  // find weld root or return ent
-				attacker->tool_entity->phys_parent = entity;
+				attacker->tool_entity->physParentEnt = entity;
 
 				// Save origin
 				VectorSubtract(attacker->tool_entity->r.currentOrigin, entity->r.currentOrigin, attacker->tool_entity->phys_relativeOrigin);

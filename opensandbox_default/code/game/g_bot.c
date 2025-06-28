@@ -49,7 +49,7 @@ static int G_ParseInfos(char *buf, int max, char *infos[]) {
 			}
 			Info_SetValueForKey(info, key, token);
 		}
-		infos[count] = BG_Alloc(strlen(info) + 1);
+		infos[count] = G_Alloc(strlen(info) + 1);
 		if(infos[count]) {
 			strcpy(infos[count], info);
 			count++;
@@ -233,7 +233,7 @@ void Svcmd_AddBot_f(void) {
 	// skill
 	trap_Argv(2, string, sizeof(string));
 	if(!string[0]) {
-		skill = 4;
+		skill = 5;
 	} else {
 		skill = atof(string);
 	}

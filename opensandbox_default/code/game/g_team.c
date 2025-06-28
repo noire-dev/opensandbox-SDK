@@ -373,7 +373,6 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 			// hey, its not home.  return it by teleporting it back
 			PrintMsg(NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n", cl->pers.netname, TeamName(team));
 			AddScore(other, CTF_RECOVERY_BONUS);
-			other->client->pers.teamState.flagrecovery++;
 			other->client->pers.teamState.lastreturnedflag = level.time;
 			// ResetFlag will remove this entity!  We must return zero
 			Team_ReturnFlagSound(Team_ResetFlag(team), team);
@@ -398,8 +397,6 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	// Increase the team's score
 	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
 
-	other->client->pers.teamState.captures++;
-
 	// other gets another 10 frag bonus
 	AddScore(other, CTF_CAPTURE_BONUS);
 
@@ -410,18 +407,14 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 		player = &g_entities[i];
 		if(!player->inuse) continue;
 
-		if(player->client->sess.sessionTeam != cl->sess.sessionTeam) {
-			player->client->pers.teamState.lasthurtcarrier = -5;
-		} else if(player->client->sess.sessionTeam == cl->sess.sessionTeam) {
+		if(player->client->sess.sessionTeam == cl->sess.sessionTeam) {
 			if(player != other) AddScore(player, CTF_TEAM_BONUS);
 			// award extra points for capture assists
 			if(player->client->pers.teamState.lastreturnedflag + CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.time) {
 				AddScore(player, CTF_RETURN_FLAG_ASSIST_BONUS);
-				other->client->pers.teamState.assists++;
 
 			} else if(player->client->pers.teamState.lastfraggedcarrier + CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.time) {
 				AddScore(player, CTF_FRAG_CARRIER_ASSIST_BONUS);
-				other->client->pers.teamState.assists++;
 			}
 		}
 	}
@@ -457,7 +450,6 @@ static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 	}
 
 	AddScore(other, CTF_FLAG_BONUS);
-	cl->pers.teamState.flagsince = level.time;
 	Team_TakeFlagSound(ent, team);
 
 	return -1;  // Do not respawn this automatically, but do delete it if it was FL_DROPPED

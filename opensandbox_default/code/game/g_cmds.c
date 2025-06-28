@@ -23,7 +23,7 @@ void DeathmatchScoreboardMessage(gentity_t *ent) {
 		cl = &level.clients[level.sortedClients[i]];
 		client = g_entities + cl->ps.clientNum;
 
-		if(client->npcType) {
+		if(client->npcType > NT_PLAYER) {
 			continue;
 		}
 
@@ -409,7 +409,7 @@ void Cmd_FollowCycle_f(gentity_t *ent, int dir) {
 		if(level.clients[clientnum].sess.sessionTeam == TEAM_SPECTATOR) continue;
 
 		// can't follow npc
-		if(checkNPC->npcType) continue;
+		if(checkNPC->npcType > NT_PLAYER) continue;
 
 		// this is good, we can use it
 		ent->client->sess.spectatorClient = clientnum;
@@ -490,6 +490,8 @@ static void Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0) {
 	char *p;
 
 	if(trap_Argc() < 2 && !arg0) return;
+
+	if(!gameInfoNPCTypes[ent->npcType].canChat) return;
 
 	if(arg0) {
 		p = ConcatArgs(0);
@@ -593,7 +595,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 	// Set Aiming Directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 	CalcMuzzlePoint(ent, forward, right, up, start);
-	VectorMA(start, TOOLGUN_RANGE, forward, end);
+	VectorMA(start, gameInfoWeapons[WP_TOOLGUN].range, forward, end);
 
 	// Trace Position
 	trap_Trace(&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT);
@@ -614,19 +616,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 		tent->s.origin[2] += 25;
 		tent->classname = "sandbox_npc";
 		CopyAlloc(tent->clientname, arg02);
-
-		/*tent->type = NPC_ENEMY;
-		if(!Q_stricmp (arg03, "NPC_Enemy"))
-		    tent->type = NPC_ENEMY;
-		if(!Q_stricmp (arg03, "NPC_Citizen"))
-		    tent->type = NPC_CITIZEN;
-		if(!Q_stricmp (arg03, "NPC_Guard"))
-		    tent->type = NPC_GUARD;
-		if(!Q_stricmp (arg03, "NPC_Partner"))
-		    tent->type = NPC_PARTNER;
-		if(!Q_stricmp (arg03, "NPC_PartnerEnemy"))
-		    tent->type = NPC_PARTNERENEMY;*/
-
+		tent->type = BG_FindNPCTypeID(arg03);
 		tent->skill = atof(arg04);
 		tent->health = atoi(arg05);
 		CopyAlloc(tent->message, arg06);
@@ -704,14 +694,14 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	// Set Aiming Directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 	CalcMuzzlePoint(ent, forward, right, up, start);
-	VectorMA(start, TOOLGUN_RANGE, forward, end);
+	VectorMA(start, gameInfoWeapons[WP_TOOLGUN].range, forward, end);
 
 	// Trace Position
 	trap_Trace(&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
 	traceEnt = &g_entities[tr.entityNum];  // entity for modding
 
-	if(!traceEnt->sandboxObject && !traceEnt->npcType && ent->s.eType != ET_ITEM) return;
+	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && ent->s.eType != ET_ITEM) return;
 
 	tent = G_TempEntity(tr.endpos, EV_PARTICLES_GRAVITY);
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8) | rand() % 256 << 16) | (255 << 24));

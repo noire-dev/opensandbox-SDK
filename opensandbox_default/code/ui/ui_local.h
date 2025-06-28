@@ -242,10 +242,6 @@ extern void	ScrollList_Init( menuelement_s *l );
 extern void	RadioButton_Init( menuelement_s *rb );
 extern void	SpinControl_Init( menuelement_s *s );
 
-extern char	*ui_medalNames[];
-extern char	*ui_medalPicNames[];
-extern char	*ui_medalSounds[];
-
 //
 // ui_mfield.c
 //

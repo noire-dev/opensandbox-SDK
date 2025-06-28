@@ -1478,7 +1478,7 @@ void CG_NextWeapon_f( void ) {
 	qboolean	weaponFound = qfalse;
 	int			original, i;
 
-	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
 	
 	if ( cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
@@ -1519,7 +1519,7 @@ void CG_PrevWeapon_f( void ) {
 	qboolean	weaponFound = qfalse;
 	int			original, i;
 
-	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
 
 	if ( cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING ){
@@ -1559,7 +1559,7 @@ CG_Weapon_f
 void CG_Weapon_f( void ) {
 	int		num;
 
-	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_VehicleCheckClass(cg.snap->ps.stats[STAT_VEHICLE]))
+	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE]))
 		return;
 
 	num = atoi( CG_Argv( 1 ) );
@@ -1979,9 +1979,7 @@ Perform the same traces the server did to locate the
 hit splashes
 ================
 */
-//unlagged - attack prediction
-// made this non-static for access from cg_unlagged.c
-void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum ) {
+void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum, int weapon ) {
 	int			i;
 	float		r, u;
 	vec3_t		end;
@@ -1994,10 +1992,10 @@ void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum
 	CrossProduct( forward, right, up );
 
 	// generate the "random" spread pattern
-	for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
-		r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
-		VectorMA( origin, 8192 * 16, forward, end);
+	for ( i = 0 ; i < gameInfoWeapons[weapon].count ; i++ ) {
+		r = Q_crandom( &seed ) * gameInfoWeapons[weapon].spread * 16;
+		u = Q_crandom( &seed ) * gameInfoWeapons[weapon].spread * 16;
+		VectorMA( origin, gameInfoWeapons[weapon].range * 16, forward, end);
 		VectorMA (end, r, right, end);
 		VectorMA (end, u, up, end);
 
@@ -2010,7 +2008,7 @@ void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum
 CG_ShotgunFire
 ==============
 */
-void CG_ShotgunFire( entityState_t *es ) {
+void CG_ShotgunFire( entityState_t *es, int weapon ) {
 	vec3_t	v;
 	int		contents;
 	vec3_t			up;
@@ -2024,7 +2022,7 @@ void CG_ShotgunFire( entityState_t *es ) {
 		VectorSet( up, 0, 0, 8 );
 		CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
 	}
-	CG_ShotgunPattern( es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum );
+	CG_ShotgunPattern( es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum, weapon );
 }
 
 /*

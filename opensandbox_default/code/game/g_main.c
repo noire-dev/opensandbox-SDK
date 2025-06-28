@@ -138,14 +138,13 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, 64);
 
 	G_Printf("------- Game Initialization -------\n");
-	G_Printf("gamename: %s\n", GAME_VERSION);
 	G_Printf("gamedate: %s\n", __DATE__);
 
 	srand(randomSeed);
 
 	ST_RegisterCvars();
 	G_CheckCvars();
-	BG_InitMemory();
+	G_InitMemory();
 
 	// set some level globals
 	memset(&level, 0, sizeof(level));
@@ -217,7 +216,7 @@ static void G_ShutdownGame(int restart) {
 
 	// drop all bots from game in single player
 	for(i = 0; i < MAX_CLIENTS; i++) {
-		if(g_entities[i].npcType >= 1) {
+		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
