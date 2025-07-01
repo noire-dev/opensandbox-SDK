@@ -44,7 +44,6 @@ static char* sandbox_class_allowed[] = { //classes allowed in Sandbox
 	"ammo_nails",
 	"ammo_mines",
 	"ammo_belt",
-	"ammo_flame",
 	"item_armor_shard",
 	"item_armor_combat",
 	"item_armor_body",
@@ -69,14 +68,6 @@ static char* sandbox_class_allowed[] = { //classes allowed in Sandbox
 	"holdable_portal",
 
 	"sb.shooter",
-	0
-};
-
-static char* editor_class_allowed[] = { //classes allowed in Map Editor
-	0
-};
-
-static char* standard_class_spawn[] = { //classes spawned without sandbox settings
 	0
 };
 
@@ -113,7 +104,7 @@ static spawn_t gameInfoSandboxEntities[] = {
 };
 
 void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
-	if(self->sb_vehicle || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all
+	if(self->objectType == OT_VEHICLE || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all
 		G_StartCarExplode(self);
 	}
 	if(self->objectType == OT_NUKE) {
@@ -160,15 +151,12 @@ static void setModel(gentity_t *ent, char *modelName) {
 	ent->s.modelindex = G_ModelIndex(modelName);
 	CopyAlloc(ent->model, modelName);
 
-	if(len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3")) {
-		Com_Printf("Mesh load: '%s'\n", ent->model);
-		ent->model[len - 4] = '\0';          // Убираем расширение
-		memset(ent->model + len - 3, 0, 4);  // Удаляем остатки
-	}
+	if(len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3"))
+		ent->model[len - 4] = '\0';
 
-	if(FS_FileExists(va("%s.bsp", ent->model))) {           // Проверка модели коллизии
-		trap_SetBrushModel(ent, va("%s.bsp", ent->model));  // Загружаем если есть
-		ent->s.modelindex2 = G_ModelIndex(modelName);       // Коллизия созраняется в первый слот а модель теперь в втором слоте
+	if(FS_FileExists(va("%s.bsp", ent->model))) {
+		trap_SetBrushModel(ent, va("%s.bsp", ent->model));
+		ent->s.modelindex2 = G_ModelIndex(modelName);
 	}
 }
 
@@ -186,7 +174,7 @@ void SP_sandbox_prop(gentity_t *ent) {
 	VectorCopy(ent->s.origin, ent->r.currentOrigin);  // Physics
 
 	// Type
-	ent->sandboxObject = OBJ_SANDBOX;
+	ent->sandboxObject = qtrue;
 
 	// Classic entity spawn
 	for(s = gameInfoEntities; s->name; s++) {
@@ -213,7 +201,7 @@ void SP_sandbox_prop(gentity_t *ent) {
 	ent->s.loopSound = G_SoundIndex(ent->sb_sound);
 
 	// Setting collision
-	if(ent->sb_vehicle <= 0 || spawn_entity) {
+	if(ent->objectType != OT_VEHICLE || spawn_entity) {
 		VectorSet(ent->r.mins, -ent->sb_coltype * ent->s.scales[0], -ent->sb_coltype * ent->s.scales[1], -ent->sb_coltype * ent->s.scales[2]);
 		VectorSet(ent->r.maxs, ent->sb_coltype * ent->s.scales[0], ent->sb_coltype * ent->s.scales[1], ent->sb_coltype * ent->s.scales[2]);
 	} else {
@@ -294,31 +282,19 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	ent = G_Spawn();
 	CopyAlloc(ent->classname, arg03);
 	CopyAlloc(ent->sb_class, arg03);
-	for(i = 0; standard_class_spawn[i] != 0; i++) {  // Classlist for standard spawn
-		if(!strcmp(ent->classname, standard_class_spawn[i])) {
-			extended_spawn = qfalse;
-		}
-	}
 	for(i = 0; sandbox_class_allowed[i] != 0; i++) {  // Check allowed sandbox list
 		if(!strcmp(ent->classname, sandbox_class_allowed[i])) {
 			allow_spawn = qtrue;
 		}
 	}
-	if(g_gametype.integer == GT_MAPEDITOR) {
-		for(i = 0; editor_class_allowed[i] != 0; i++) {  // Check allowed editor list
-			if(!strcmp(ent->classname, editor_class_allowed[i])) {
-				allow_spawn = qtrue;
-			}
-		}
-	}
 
 	if(!allow_spawn) {
 		G_FreeEntity(ent);
-		trap_SendServerCommand(player->s.clientNum, "cllp \"Spawning of this class is not allowed\n\"");
+		trap_SendServerCommand(player->s.clientNum, "lp \"Spawning of this class is not allowed\n\"");
 		return;
 	}
 
-	Undo_AddElement(player, ent->s.number, UNDO_PROPSPAWN);
+	Undo_AddElement(player, ent->s.number);
 
 	// Origin
 	VectorCopy(position, ent->s.origin);
@@ -326,7 +302,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	VectorCopy(position, ent->r.currentOrigin);
 
 	// Basic
-	ent->sandboxObject = OBJ_SANDBOX;
+	ent->sandboxObject = qtrue;
 	ent->spawnflags = atoi(arg07);
 
 	if(extended_spawn) {
@@ -382,11 +358,6 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 		// Type
 		ent->objectType = atoi(arg20);
 		ent->s.torsoAnim = atoi(arg20);
-		if(atoi(arg20) == OT_VEHICLE) {
-			ent->sb_vehicle = 1;
-		} else {
-			ent->sb_vehicle = 0;
-		}
 
 		// Mass
 		ent->sb_gravity = atof(arg22);
@@ -467,9 +438,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	gentity_t *entity;
 
 	entity = targ;
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) return;
-
-	if(entity->client && entity->npcType <= NT_PLAYER) return;
+	if(g_gametype.integer != GT_SANDBOX) return;
 
 	if(!G_PlayerIsOwner(attacker, entity)) return;
 
@@ -517,10 +486,10 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 		}
 		if(atoi(arg19) == 2) {
 			if(entity->owner) {
-				trap_SendServerCommand(attacker->s.clientNum, va("cllp \"Owned by %s\n\"", entity->owner->client->pers.netname));
+				trap_SendServerCommand(attacker->s.clientNum, va("lp \"Owned by %s\n\"", entity->owner->client->pers.netname));
 			}
 			if(!entity->owner) {
-				trap_SendServerCommand(attacker->s.clientNum, "cllp \"Not owned\n\"");
+				trap_SendServerCommand(attacker->s.clientNum, "lp \"Not owned\n\"");
 			}
 		}
 	}
@@ -591,7 +560,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 		item_t *item;
 		int i;
 		if(entity->s.eType != ET_ITEM) {
-			trap_SendServerCommand(attacker->s.clientNum, "cllp \"This must be the item\n\"");
+			trap_SendServerCommand(attacker->s.clientNum, "lp \"This must be the item\n\"");
 			return;
 		}
 		for(item = gameInfoItems + 1, i = 1; item->classname; item++, i++) {
@@ -614,7 +583,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 		vec3_t relForward, relRight, relUp;
 
 		if(entity->client) {
-			trap_SendServerCommand(attacker->s.clientNum, "cllp \"This is not prop\n\"");
+			trap_SendServerCommand(attacker->s.clientNum, "lp \"This is not prop\n\"");
 			return;
 		}
 
@@ -622,9 +591,9 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 			if(!attacker->tool_entity) {
 				if(!entity->phys_weldedObjectsNum) {
 					attacker->tool_entity = entity;
-					trap_SendServerCommand(attacker->s.clientNum, "cllp \"Сlick on the second object\n\"");
+					trap_SendServerCommand(attacker->s.clientNum, "lp \"Сlick on the second object\n\"");
 				} else {
-					trap_SendServerCommand(attacker->s.clientNum, "cllp \"This is root object\n\"");
+					trap_SendServerCommand(attacker->s.clientNum, "lp \"This is root object\n\"");
 					return;
 				}
 			} else {
@@ -665,8 +634,8 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 		if(atoi(arg19) == 1) {  // Unweld
 			attacker->tool_entity = NULL;
 
-			if(!entity->phys_weldedObjectsNum && !entity->phys_parent) {
-				trap_SendServerCommand(attacker->s.clientNum, "cllp \"This prop not welded\n\"");
+			if(!entity->phys_weldedObjectsNum && !entity->physParentEnt) {
+				trap_SendServerCommand(attacker->s.clientNum, "lp \"This prop not welded\n\"");
 				return;
 			}
 
@@ -687,44 +656,34 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 static void Undo_ShiftStack(gentity_t *ent) {
 	int i;
 
-	for(i = MAX_UNDO_STACK - 1; i > 0; i--) {
-		ent->client->undoStack[i] = ent->client->undoStack[i - 1];
-	}
+	for(i = MAX_UNDO_STACK - 1; i > 0; i--)
+		ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i - 1];
 }
 
-void Undo_AddElement(gentity_t *ent, int id, int type) {
+void Undo_AddElement(gentity_t *ent, int id) {
 	Undo_ShiftStack(ent);
 
-	ent->client->undoStack[0].id = id;
-	ent->client->undoStack[0].type = type;
-	ent->client->undoStack[0].isRemoved = qfalse;
+	ent->client->pers.undoStack[0].id = id;
+	ent->client->pers.undoStack[0].isRemoved = qfalse;
 }
 
-qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved) {
+qboolean Undo_LastElement(gentity_t *ent, int *id, qboolean *isRemoved) {
 	int i;
 	gentity_t *pent;
 
 	for(i = 0; i < MAX_UNDO_STACK - 1; i++) {
-		if(ent->client->undoStack[i].type == UNDO_PROPSPAWN) {
-			pent = G_FindEntityForEntityNum(ent->client->undoStack[i].id);
-		}
-		if(ent->client->undoStack[i].type == UNDO_NPCSPAWN) {
-			pent = G_FindEntityForClientNum(ent->client->undoStack[i].id);
-		}
+		pent = G_FindEntityForEntityNum(ent->client->pers.undoStack[i].id);
 		if(pent) {
-			ent->client->undoStack[i].isRemoved = qfalse;
+			ent->client->pers.undoStack[i].isRemoved = qfalse;
 		} else {
-			ent->client->undoStack[i].isRemoved = qtrue;
+			ent->client->pers.undoStack[i].isRemoved = qtrue;
 		}
 	}
 
-	if(ent->client->undoStack[0].id == 0 && ent->client->undoStack[0].type == 0 && ent->client->undoStack[0].isRemoved == qfalse) {
-		return qfalse;
-	}
+	if(ent->client->pers.undoStack[0].id == 0 && ent->client->pers.undoStack[0].isRemoved == qfalse) return qfalse;
 
-	*id = ent->client->undoStack[0].id;
-	*type = ent->client->undoStack[0].type;
-	*isRemoved = ent->client->undoStack[0].isRemoved;
+	*id = ent->client->pers.undoStack[0].id;
+	*isRemoved = ent->client->pers.undoStack[0].isRemoved;
 
 	return qtrue;
 }
@@ -732,11 +691,9 @@ qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemove
 void Undo_RemoveElement(gentity_t *ent) {
 	int i;
 
-	for(i = 0; i < MAX_UNDO_STACK - 1; i++) {
-		ent->client->undoStack[i] = ent->client->undoStack[i + 1];
-	}
+	for(i = 0; i < MAX_UNDO_STACK - 1; i++)
+		ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i + 1];
 
-	ent->client->undoStack[MAX_UNDO_STACK - 1].id = 0;
-	ent->client->undoStack[MAX_UNDO_STACK - 1].type = 0;
-	ent->client->undoStack[MAX_UNDO_STACK - 1].isRemoved = qfalse;
+	ent->client->pers.undoStack[MAX_UNDO_STACK - 1].id = 0;
+	ent->client->pers.undoStack[MAX_UNDO_STACK - 1].isRemoved = qfalse;
 }

@@ -5,95 +5,76 @@
 
 #include "cg_local.h"
 
-// we'll need these prototypes
-void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum, int weapon );
-void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
-
-/*
-=======================
-CG_PredictWeaponEffects
-
-Draws predicted effects for the railgun, shotgun, and machinegun.  The
-lightning gun is done in CG_LightningBolt, since it was just a matter
-of setting the right origin and angles.
-=======================
-*/
-void CG_PredictWeaponEffects( centity_t *cent ) {
-	vec3_t		muzzlePoint, forward, right, up;
+void CG_PredictWeaponEffects(centity_t *cent) {
+	vec3_t muzzlePoint, forward, right, up;
 	entityState_t *ent = &cent->currentState;
 
 	// if the client isn't us, forget it
-	if ( cent->currentState.number != cg.predictedPlayerState.clientNum )
-		return;
+	if(cent->currentState.number != cg.predictedPlayerState.clientNum) return;
 
 	// get the muzzle point
-	VectorCopy( cg.predictedPlayerState.origin, muzzlePoint );
+	VectorCopy(cg.predictedPlayerState.origin, muzzlePoint);
 	muzzlePoint[2] += cg.predictedPlayerState.viewheight;
 
 	// get forward, right, and up
-	AngleVectors( cg.predictedPlayerState.viewangles, forward, right, up );
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
+	AngleVectors(cg.predictedPlayerState.viewangles, forward, right, up);
+	VectorMA(muzzlePoint, 14, forward, muzzlePoint);
 
-	// was it a rail attack?
-	if ( gameInfoWeapons[ent->weapon].wType == WT_RAILGUN ) {
+	if(gameInfoWeapons[ent->weapon].wType == WT_RAILGUN) { // was it a rail attack?
 		// do we have it on for the rail gun?
 		trace_t trace;
 		vec3_t endPoint;
 
 		// trace forward
-		VectorMA( muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint );
+		VectorMA(muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint);
 
 		// find the rail's end point
-		CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID );
+		CG_Trace(&trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID);
 
 		// do the magic-number adjustment
-		VectorMA( muzzlePoint, 4, right, muzzlePoint );
-		VectorMA( muzzlePoint, -1, up, muzzlePoint );
+		VectorMA(muzzlePoint, 4, right, muzzlePoint);
+		VectorMA(muzzlePoint, -1, up, muzzlePoint);
 
-        if(!cg.renderingThirdPerson) {
-        	if(cg_drawGun.integer == 2)
+		if(!cg.renderingThirdPerson) {
+			if(cg_drawGun.integer == 2)
 				VectorMA(muzzlePoint, 8, cg.refdef.viewaxis[1], muzzlePoint);
-        	else if(cg_drawGun.integer == 3)
+			else if(cg_drawGun.integer == 3)
 				VectorMA(muzzlePoint, 4, cg.refdef.viewaxis[1], muzzlePoint);
-        }
+		}
 
 		// draw a rail trail
-		CG_RailTrail( &cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos );
+		CG_RailTrail(&cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos, ent->weapon);
 
 		// explosion at end if not SURF_NOIMPACT
-		if ( !(trace.surfaceFlags & SURF_NOIMPACT) ) {
+		if(!(trace.surfaceFlags & SURF_NOIMPACT)) {
 			// predict an explosion
-			CG_MissileHitWall( ent->weapon, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT );
+			CG_MissileHitWall(ent->weapon, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT);
 		}
-	}
-	// was it a shotgun attack?
-	else if ( gameInfoWeapons[ent->weapon].wType == WT_SHOTGUN ) {
+	} else if(gameInfoWeapons[ent->weapon].wType == WT_SHOTGUN) {  // was it a shotgun attack?
 		int contents;
 		vec3_t endPoint, v;
-		vec3_t			up;
+		vec3_t up;
 
 		// do everything like the server does
-		SnapVector( muzzlePoint );
+		SnapVector(muzzlePoint);
 
-		VectorScale( forward, gameInfoWeapons[ent->weapon].range, endPoint );
-		SnapVector( endPoint );
+		VectorScale(forward, gameInfoWeapons[ent->weapon].range, endPoint);
+		SnapVector(endPoint);
 
-		VectorSubtract( endPoint, muzzlePoint, v );
-		VectorNormalize( v );
-		VectorScale( v, 32, v );
-		VectorAdd( muzzlePoint, v, v );
+		VectorSubtract(endPoint, muzzlePoint, v);
+		VectorNormalize(v);
+		VectorScale(v, 32, v);
+		VectorAdd(muzzlePoint, v, v);
 
-		contents = trap_CM_PointContents( muzzlePoint, 0 );
-		if ( !( contents & CONTENTS_WATER ) ) {
-			VectorSet( up, 0, 0, 8 );
-			CG_SmokePuff( v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
+		contents = trap_CM_PointContents(muzzlePoint, 0);
+		if(!(contents & CONTENTS_WATER)) {
+			VectorSet(up, 0, 0, 8);
+			CG_SmokePuff(v, up, 32, 1, 1, 1, 0.33f, 900, cg.time, 0, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader);
 		}
 
 		// do the shotgun pellets
-		CG_ShotgunPattern( muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum, ent->weapon );
-	}
-	// was it a machinegun attack?
-	else if ( gameInfoWeapons[ent->weapon].wType == WT_BULLET ) {
+		CG_ShotgunPattern(muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum, ent->weapon);
+	} else if(gameInfoWeapons[ent->weapon].wType == WT_BULLET) {  // was it a machinegun attack?
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;
@@ -106,27 +87,24 @@ void CG_PredictWeaponEffects( centity_t *cent ) {
 		u = sin(r) * Q_crandom(&seed) * gameInfoWeapons[ent->weapon].spread * 16;
 		r = cos(r) * Q_crandom(&seed) * gameInfoWeapons[ent->weapon].spread * 16;
 
-		VectorMA( muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint );
-		VectorMA( endPoint, r, right, endPoint );
-		VectorMA( endPoint, u, up, endPoint );
+		VectorMA(muzzlePoint, gameInfoWeapons[ent->weapon].range, forward, endPoint);
+		VectorMA(endPoint, r, right, endPoint);
+		VectorMA(endPoint, u, up, endPoint);
 
-		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+		CG_Trace(&tr, muzzlePoint, NULL, NULL, endPoint, cg.predictedPlayerState.clientNum, MASK_SHOT);
 
-		if (tr.surfaceFlags & SURF_NOIMPACT)
-			return;
+		if(tr.surfaceFlags & SURF_NOIMPACT) return;
 
 		// snap the endpos to integers, but nudged towards the line
-		SnapVectorTowards( tr.endpos, muzzlePoint );
+		SnapVectorTowards(tr.endpos, muzzlePoint);
 
-		// do bullet impact
-		if ( tr.entityNum < MAX_CLIENTS ) {
+		if(tr.entityNum < MAX_CLIENTS) {
 			flesh = qtrue;
 			fleshEntityNum = tr.entityNum;
 		} else {
 			flesh = qfalse;
 		}
 
-		// do the bullet impact
-		CG_Bullet( tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum );
+		CG_Bullet(tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum);
 	}
 }

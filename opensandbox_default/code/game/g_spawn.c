@@ -84,7 +84,6 @@ static field_t gameInfoFields[] = {
 	{"sb_class", 			FOFS(sb_class), 				F_STRING},
 	{"sb_sound", 			FOFS(sb_sound), 				F_STRING},
 	{"sb_coltype", 			FOFS(sb_coltype), 				F_FLOAT},
-	{"sb_vehicle", 			FOFS(sb_vehicle), 				F_INT},
 	{"sb_material", 		FOFS(sb_material), 				F_INT},
 	{"sb_gravity", 			FOFS(sb_gravity), 				F_FLOAT},
 	{"sb_phys", 			FOFS(sb_phys), 					F_INT},
@@ -326,44 +325,30 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 	int i;
 	gentity_t *ent;
 	char *s, *value, *gametypeName;
-	static char *gametypeNames[] = {"sandbox", "mapeditor", "ffa", "team", "ctf", "oneflag", "obelisk", "harvester"};
+	static char *gametypeNames[] = {"sandbox", "ffa", "team", "ctf", "oneflag", "obelisk", "harvester"};
 
 	// get the next free entity
 	ent = G_Spawn();
 
-	for(i = 0; i < level.numSpawnVars; i++) {
-		G_ParseField(level.spawnVars[i][0], level.spawnVars[i][1], ent);
-	}
+	for(i = 0; i < level.numSpawnVars; i++) G_ParseField(level.spawnVars[i][0], level.spawnVars[i][1], ent);
 
 	if(g_gametype.integer >= GT_TEAM) {
 		G_SpawnInt("notteam", "0", &i);
-		if(i && g_gametype.integer != GT_MAPEDITOR) {
-			G_FreeEntity(ent);
-			return;
-		}
+		if(i){ G_FreeEntity(ent); return; }
 	} else {
 		G_SpawnInt("notfree", "0", &i);
-		if(i && g_gametype.integer != GT_MAPEDITOR) {
-			G_FreeEntity(ent);
-			return;
-		}
+		if(i){ G_FreeEntity(ent); return; }
 	}
 
 	G_SpawnInt("notta", "0", &i);
-	if(i && g_gametype.integer != GT_MAPEDITOR) {
-		G_FreeEntity(ent);
-		return;
-	}
+	if(i){ G_FreeEntity(ent); return; }
 
 	if(G_SpawnString("!gametype", NULL, &value)) {
 		if(g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
 			s = strstr(value, gametypeName);
-			if(s && g_gametype.integer != GT_MAPEDITOR) {
-				G_FreeEntity(ent);
-				return;
-			}
+			if(s){ G_FreeEntity(ent); return; }
 		}
 	}
 
@@ -372,10 +357,7 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 			gametypeName = gametypeNames[g_gametype.integer];
 
 			s = strstr(value, gametypeName);
-			if(!s && g_gametype.integer != GT_MAPEDITOR) {
-				G_FreeEntity(ent);
-				return;
-			}
+			if(!s){ G_FreeEntity(ent); return; }
 		}
 	}
 
@@ -387,11 +369,6 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 	if(!G_CallSpawn(ent)) G_FreeEntity(ent);
 }
 
-/*
-====================
-G_AddSpawnVarToken
-====================
-*/
 static char *G_AddSpawnVarToken(const char *string) {
 	int l;
 	char *dest;
@@ -527,12 +504,6 @@ void G_SpawnEntitiesFromString(void) {
 
 	level.spawning = qfalse;  // any future calls to G_Spawn*() will be errors
 }
-
-/*
-==============
-Sandbox sav files
-==============
-*/
 
 #define MAX_MAPFILE_LENGTH 2500000 * 6
 #define MAX_TOKENNUM 524288 * 6
@@ -848,15 +819,8 @@ void G_WriteMapfile_f(void) {
 		if(!g_entities[i].inuse) continue;
 
 		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
+		if(g_entities[i].flags & FL_DROPPED_ITEM) continue;
 
-		if(g_gametype.integer == GT_MAPEDITOR) {
-			if(g_entities[i].sandboxObject && g_entities[i].s.eType == ET_ITEM) {  // Remove sandbox flag from all items
-				g_entities[i].sandboxObject = OBJ_DEFAULT;
-			}
-			if(g_entities[i].sandboxObject == OBJ_EDITOR) {  // Remove sandbox flag from editor items
-				g_entities[i].sandboxObject = OBJ_DEFAULT;
-			}
-		}
 		b = (byte *)&g_entities[i];
 
 		string = va("{\n");
@@ -921,21 +885,6 @@ void G_DeleteMapfile_f(void) {
 }
 
 void G_ClearMap_f(void) {
-	int i;
-	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
-		if(g_entities[i].npcType > NT_PLAYER) {
-			DropClientSilently(g_entities[i].client->ps.clientNum);
-		}
-	}
-	for(i = 0; i < MAX_GENTITIES; i++) {  // Items and Other
-		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
-		g_entities[i].nextthink = 0;
-		G_FreeEntity(&g_entities[i]);
-	}
-	trap_SendServerCommand(-1, "print \"^2Map cleaned!\n\"");
-}
-
-void G_ClearSandboxMap_f(void) {
 	int i;
 	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
 		if(g_entities[i].npcType > NT_PLAYER) {

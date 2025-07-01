@@ -40,7 +40,6 @@ cvar_t bot_rocketjump;
 cvar_t bot_fastchat;
 cvar_t bot_nochat;
 cvar_t bot_testrchat;
-cvar_t bot_challenge;
 cvar_t bot_predictobstacles;
 
 extern cvar_t bot_developer;
@@ -1509,15 +1508,51 @@ int BotSynonymContext(bot_state_t *bs) {
 	return context;
 }
 
+int weaponOrder[] = {
+	WP_NONE,
+
+	// Quake weapons here!
+	WP_GRAPPLING_HOOK,
+	WP_GAUNTLET,
+	WP_GRENADE_LAUNCHER,
+	WP_PROX_LAUNCHER,
+	WP_MACHINEGUN,
+	WP_LIGHTNING,
+	WP_PLASMAGUN,
+	WP_ROCKET_LAUNCHER,
+	WP_SHOTGUN,
+	WP_CHAINGUN,
+	WP_NAILGUN,
+	WP_RAILGUN,
+	WP_BFG,
+
+	// New weapons here!
+	WP_FLAMETHROWER,
+	WP_ANTIMATTER,
+	WP_THROWER,
+	WP_BOUNCER,
+	WP_THUNDER,
+	WP_EXPLODER,
+	WP_KNOCKER,
+	WP_PROPGUN,
+	WP_REGENERATOR,
+	WP_NUKE,
+
+	// Sandbox weapons here!
+	WP_PHYSGUN,
+	WP_GRAVITYGUN,
+	WP_TOOLGUN,
+	
+	WEAPONS_NUM
+};
+
 int BotSelectOpenSandboxWeapon(bot_state_t *bs) {
-	int i;
-	for (i = WEAPONS_NUM; i > 0; i--) {
-		if(bs->swep_list[WP_BFG] == 1 && bs->swep_ammo[WP_BFG] > 0){
-			return WP_BFG;
-		}
-		if(bs->swep_list[i] == 1 && (bs->swep_ammo[i] > 0 || bs->swep_ammo[i] == -1)){
-		if(i != WP_NONE && i != WP_GRAPPLING_HOOK && i != WP_PHYSGUN && i != WP_GRAVITYGUN && i != WP_TOOLGUN && i != WP_REGENERATOR){
-			return i;
+	int i, weaponID;
+	for (i = WEAPONS_NUM - 1; i > 0; i--) {
+		weaponID = weaponOrder[i];
+		if(bs->swep_list[weaponID] == WS_HAVE && (bs->swep_ammo[weaponID] > 0 || bs->swep_ammo[weaponID] == -1)){
+		if(weaponID != WP_NONE && weaponID != WP_GRAPPLING_HOOK && weaponID != WP_PHYSGUN && weaponID != WP_GRAVITYGUN && weaponID != WP_TOOLGUN && weaponID != WP_REGENERATOR){
+			return weaponID;
 		}
 		}
 	}
@@ -1581,8 +1616,8 @@ BotCheckItemPickup
 void BotCheckItemPickup(bot_state_t *bs, int *oldinventory) {
 	int offence, leader;
 
-	if (gametype <= GT_TEAM)
-		return;
+	if(!gameInfoNPCTypes[bs->npcType].canPickup) return;
+	if (gametype <= GT_TEAM) return;
 
 	offence = -1;
 	// go into offence if picked up the kamikaze or invulnerability
@@ -2218,9 +2253,9 @@ int BotCanAndWantsToRocketJump(bot_state_t *bs) {
 	//if rocket jumping is disabled
 	if (!bot_rocketjump.integer) return qfalse;
 	//if no rocket launcher
-	if (bs->swep_list[WP_ROCKET_LAUNCHER] <= 0) return qfalse;
+	if (bs->swep_list[WP_ROCKET_LAUNCHER] == WS_NONE) return qfalse;
 	//if low on rockets
-	if (bs->swep_list[WP_ROCKET_LAUNCHER] <= 0) return qfalse;
+	if (bs->swep_list[WP_ROCKET_LAUNCHER] == WS_NONE) return qfalse;
 	//never rocket jump with the Quad
 	if (bs->inventory[INVENTORY_QUAD]) return qfalse;
 	//if low on health
@@ -2988,8 +3023,8 @@ BotAimAtEnemy
 ==================
 */
 void BotAimAtEnemy(bot_state_t *bs) {
-	int i, enemyvisible;
-	float dist, f, aim_skill, aim_accuracy, speed, reactiontime;
+	int enemyvisible;
+	float dist, f, aim_skill, aim_accuracy, speed;
 	vec3_t dir, bestorigin, end, start, groundtarget, cmdmove, enemyvelocity;
 	vec3_t mins = {-4,-4,-4}, maxs = {4, 4, 4};
 	weaponinfo_t wi;
@@ -3020,32 +3055,18 @@ void BotAimAtEnemy(bot_state_t *bs) {
 		VectorCopy(target, bs->aimtarget);
 		return;
 	}
-	//
-	//BotAI_Print(PRT_MESSAGE, "client %d: aiming at client %d\n", bs->entitynum, bs->enemy);
-	//
-	aim_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_SKILL, 0, 1);
-	aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY, 0, 1);
-	//
-	if (aim_skill > 0.95) {
-		//don't aim too early
-		reactiontime = 0.5 * trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_REACTIONTIME, 0, 1);
-		if (bs->enemysight_time > FloatTime() - reactiontime) return;
-		if (bs->teleport_time > FloatTime() - reactiontime) return;
-	}
+
+	aim_skill = 1.00;
+	aim_accuracy = 1.00;
 
 	//get the weapon information
 	FillWeaponInfo(&wi);
-	aim_accuracy = 1.0;		//OpenSandbox SIMPLE
-	aim_skill = 1.0;		//OpenSandbox SIMPLE
-	//
-	if (aim_accuracy <= 0) aim_accuracy = 0.0001f;
 	//get the enemy entity information
 	BotEntityInfo(bs->enemy, &entinfo);
 	//if the enemy is invisible then shoot crappy most of the time
 	if (EntityIsInvisible(&entinfo)) {
 		if (random() > 0.1) aim_accuracy *= 0.4f;
 	}
-	//
 	VectorSubtract(entinfo.origin, entinfo.lastvisorigin, enemyvelocity);
 	VectorScale(enemyvelocity, 1 / entinfo.update_time, enemyvelocity);
 	//enemy origin and velocity is remembered every 0.5 seconds
@@ -3220,11 +3241,6 @@ void BotAimAtEnemy(bot_state_t *bs) {
 		f = 0.6 + dist / 150 * 0.4;
 		aim_accuracy *= f;
 	}
-	//add some random stuff to the aim direction depending on the aim accuracy
-	if (aim_accuracy < 0.8) {
-		VectorNormalize(dir);
-		for (i = 0; i < 3; i++) dir[i] += 0.3 * crandom() * (1 - aim_accuracy);
-	}
 	//set the ideal view angles
 	vectoangles(dir, bs->ideal_viewangles);
 	//take the weapon spread into account for lower skilled bots
@@ -3232,15 +3248,12 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	bs->ideal_viewangles[PITCH] = AngleMod(bs->ideal_viewangles[PITCH]);
 	bs->ideal_viewangles[YAW] += 6 * wi.hspread * crandom() * (1 - aim_accuracy);
 	bs->ideal_viewangles[YAW] = AngleMod(bs->ideal_viewangles[YAW]);
-	//if the bots should be really challenging
-	if (bot_challenge.integer) {
-		//if the bot is really accurate and has the enemy in view for some time
-		if (aim_accuracy > 0.9 && bs->enemysight_time < FloatTime() - 1) {
-			//set the view angles directly
-			if (bs->ideal_viewangles[PITCH] > 180) bs->ideal_viewangles[PITCH] -= 360;
-			VectorCopy(bs->ideal_viewangles, bs->viewangles);
-			trap_EA_View(bs->client, bs->viewangles);
-		}
+	//if the bot is really accurate and has the enemy in view for some time
+	if (aim_accuracy > 0.9 && bs->enemysight_time < FloatTime() - 1) {
+		//set the view angles directly
+		if (bs->ideal_viewangles[PITCH] > 180) bs->ideal_viewangles[PITCH] -= 360;
+		VectorCopy(bs->ideal_viewangles, bs->viewangles);
+		trap_EA_View(bs->client, bs->viewangles);
 	}
 }
 
@@ -4396,8 +4409,8 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		{
 			int target, attacker, mod;
 
-			target = state->otherEntityNum;
-			attacker = state->otherEntityNum2;
+			attacker = state->otherEntityNum;
+			target = state->otherEntityNum2;
 			mod = state->eventParm;
 			//
 			if (target == bs->client) {
@@ -4841,6 +4854,9 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 		//do team AI
 		BotTeamAI(bs);
 	}
+
+	if(!gameInfoNPCTypes[bs->npcType].canPickup) bs->ltgtype = LTG_CAMP;
+
 	//if the bot has no ai node
 	if (!bs->ainode) {
 		AIEnter_Seek_LTG(bs, "BotDeathmatchAI: no ai node");
@@ -4979,7 +4995,6 @@ void BotSetupDeathmatchAI(void) {
 	trap_Cvar_Register(&bot_fastchat, "bot_fastchat", "0", 0);
 	trap_Cvar_Register(&bot_nochat, "bot_nochat", "0", 0);
 	trap_Cvar_Register(&bot_testrchat, "bot_testrchat", "0", 0);
-	trap_Cvar_Register(&bot_challenge, "bot_challenge", "0", 0);
 	trap_Cvar_Register(&bot_predictobstacles, "bot_predictobstacles", "1", 0);
 	//
 	if (gametype == GT_CTF) {

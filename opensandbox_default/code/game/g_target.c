@@ -177,14 +177,13 @@ static void target_location_linkup(gentity_t *ent) {
 	if(level.locationLinked) return;
 
 	level.locationLinked = qtrue;
-
 	level.locationHead = NULL;
-
 	trap_SetConfigstring(CS_LOCATIONS, "unknown");
 
 	for(i = 0, ent = g_entities, n = 1; i < level.num_entities; i++, ent++) {
 		if(ent->classname && !Q_stricmp(ent->classname, "target_location")) {
 			// lets overload some variables!
+			if(CS_LOCATIONS + n >= MAX_CONFIGSTRINGS) return;
 			ent->health = n;  // use for location marking
 			trap_SetConfigstring(CS_LOCATIONS + n, ent->message);
 			n++;

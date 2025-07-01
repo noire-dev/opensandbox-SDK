@@ -14,13 +14,9 @@ void SP_info_player_deathmatch(gentity_t *ent) {
 	int i;
 
 	G_SpawnInt("nobots", "0", &i);
-	if(i) {
-		ent->flags |= FL_NO_BOTS;
-	}
+	if(i) ent->flags |= FL_NO_BOTS;
 	G_SpawnInt("nohumans", "0", &i);
-	if(i) {
-		ent->flags |= FL_NO_HUMANS;
-	}
+	if(i) ent->flags |= FL_NO_HUMANS;
 }
 
 void SP_info_player_start(gentity_t *ent) {
@@ -60,9 +56,7 @@ static gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origi
 	spot = NULL;
 
 	while((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if(SpotWouldTelefrag(spot)) {
-			continue;
-		}
+		if(SpotWouldTelefrag(spot)) continue;
 		VectorSubtract(spot->s.origin, avoidPoint, delta);
 		dist = VectorLength(delta);
 		for(i = 0; i < numSpots; i++) {
@@ -156,9 +150,7 @@ void CopyToBodyQue(gentity_t *ent) {
 
 	// if client is in a nodrop area, don't leave the body
 	contents = trap_PointContents(ent->s.origin, -1);
-	if(contents & CONTENTS_NODROP) {
-		return;
-	}
+	if(contents & CONTENTS_NODROP) return;
 
 	// grab a body que and cycle to the next one
 	body = level.bodyQue[level.bodyQueIndex];
@@ -276,20 +268,10 @@ static team_t TeamCount(int ignoreClientNum, int team) {
 	int count = 0;
 
 	for(i = 0; i < level.maxclients; i++) {
-		if(i == ignoreClientNum) {
-			continue;
-		}
-		if(level.clients[i].pers.connected == CON_DISCONNECTED) {
-			continue;
-		}
-
-		if(level.clients[i].pers.connected == CON_CONNECTING) {
-			continue;
-		}
-
-		if(level.clients[i].sess.sessionTeam == team) {
-			count++;
-		}
+		if(i == ignoreClientNum) continue;
+		if(level.clients[i].pers.connected == CON_DISCONNECTED) continue;
+		if(level.clients[i].pers.connected == CON_CONNECTING) continue;
+		if(level.clients[i].sess.sessionTeam == team) count++;
 	}
 
 	return count;
@@ -323,16 +305,9 @@ team_t PickTeam(int ignoreClientNum) {
 	counts[TEAM_BLUE] = TeamCount(ignoreClientNum, TEAM_BLUE);
 	counts[TEAM_RED] = TeamCount(ignoreClientNum, TEAM_RED);
 
-	if(counts[TEAM_BLUE] > counts[TEAM_RED]) {
-		return TEAM_RED;
-	}
-	if(counts[TEAM_RED] > counts[TEAM_BLUE]) {
-		return TEAM_BLUE;
-	}
-	// equal team count, so join the team with the lowest score
-	if(level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]) {
-		return TEAM_RED;
-	}
+	if(counts[TEAM_BLUE] > counts[TEAM_RED]) return TEAM_RED;
+	if(counts[TEAM_RED] > counts[TEAM_BLUE]) return TEAM_BLUE;
+	if(level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]) return TEAM_RED;
 	return TEAM_BLUE;
 }
 
@@ -353,9 +328,7 @@ static void ClientCleanName(const char *in, char *out, int outSize) {
 
 	while(1) {
 		ch = *in++;
-		if(!ch) {
-			break;
-		}
+		if(!ch) break;
 
 		// don't allow leading spaces
 		if(!*p && ch == ' ') {
@@ -365,9 +338,7 @@ static void ClientCleanName(const char *in, char *out, int outSize) {
 		// check colors
 		if(ch == Q_COLOR_ESCAPE) {
 			// solo trailing carat is not a color prefix
-			if(!*in) {
-				break;
-			}
+			if(!*in) break;
 
 			// don't allow black in a name, period
 			if(ColorIndex(*in) == 0) {
@@ -376,9 +347,7 @@ static void ClientCleanName(const char *in, char *out, int outSize) {
 			}
 
 			// make sure room in dest for both chars
-			if(len > outSize - 2) {
-				break;
-			}
+			if(len > outSize - 2) break;
 
 			*out++ = ch;
 			*out++ = *in++;
@@ -396,9 +365,7 @@ static void ClientCleanName(const char *in, char *out, int outSize) {
 			spaces = 0;
 		}
 
-		if(len > outSize - 1) {
-			break;
-		}
+		if(len > outSize - 1) break;
 
 		*out++ = ch;
 		colorlessLen++;
@@ -443,9 +410,7 @@ void ClientUserinfoChanged(int clientNum) {
 	trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
 
 	// check for malformed or illegal info strings
-	if(!Info_Validate(userinfo)) {
-		strcpy(userinfo, "\\name\\badinfo");
-	}
+	if(!Info_Validate(userinfo)) strcpy(userinfo, "\\name\\badinfo");
 
 	// set name
 	Q_strncpyz(oldname, client->pers.netname, sizeof(oldname));
@@ -574,9 +539,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
-	if(firstTime || level.newSession) {
-		G_InitSessionData(client, userinfo);
-	}
+	if(firstTime || level.newSession) G_InitSessionData(client, userinfo);
 	G_ReadSessionData(client);
 
 	if(isBot) {
@@ -584,19 +547,15 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 		ent->inuse = qtrue;
 		if(!G_BotConnect(clientNum, !firstTime)) return "BotConnectfailed";
 
-		if(ent) SandboxBotSpawn(ent, Info_ValueForKey(userinfo, "spawnid"));
+		SandboxBotSpawn(ent, Info_ValueForKey(userinfo, "spawnid"));
 	}
 
 	ClientUserinfoChanged(clientNum);
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
-	if(firstTime && (ent->npcType <= NT_PLAYER)) {
-		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " connected\n\"", client->pers.netname));
-	}
+	if(firstTime && (ent->npcType <= NT_PLAYER)) trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " connected\n\"", client->pers.netname));
 
-	if(g_gametype.integer >= GT_TEAM && client->sess.sessionTeam != TEAM_SPECTATOR) {
-		BroadcastTeamChange(client, -1);
-	}
+	if(g_gametype.integer >= GT_TEAM && client->sess.sessionTeam != TEAM_SPECTATOR) BroadcastTeamChange(client, -1);
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
@@ -621,7 +580,6 @@ void ClientBegin(int clientNum) {
 	ent->client = client;
 
 	client->pers.connected = CON_CONNECTED;
-	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
 
 	flags = client->ps.eFlags;
@@ -648,19 +606,14 @@ static void SetupCustomBot(gentity_t *bot) {
 
 	// give bot weapons
 	if(bot->botspawn->weapon <= 1) {
-		Set_Weapon(bot, WP_GAUNTLET, 1);
+		Set_Weapon(bot, WP_GAUNTLET, WS_HAVE);
 	}
-	Set_Weapon(bot, bot->botspawn->weapon, 1);
+	Set_Weapon(bot, bot->botspawn->weapon, WS_HAVE);
 	if(bot->swep_ammo[bot->botspawn->weapon] != -1) {
 		Set_Ammo(bot, bot->botspawn->weapon, 9999);
 	}
 
 	bot->health = bot->client->ps.stats[STAT_HEALTH] = bot->client->ps.stats[STAT_MAX_HEALTH] = bot->botspawn->health;
-
-	// use targets of target_botspawn
-	if(bot->botspawn->target) {
-		G_UseTargets(bot->botspawn, bot);
-	}
 
 	CopyAlloc(bot->target, bot->botspawn->target);  // noire.dev bot->target
 }
@@ -674,10 +627,10 @@ void SetUnlimitedWeapons(gentity_t *ent) {
 }
 
 static void SetSandboxWeapons(gentity_t *ent) {
-	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR) {
-		Set_Weapon(ent, WP_TOOLGUN, 1);
-		Set_Weapon(ent, WP_PHYSGUN, 1);
-		Set_Weapon(ent, WP_GRAVITYGUN, 1);
+	if(g_gametype.integer == GT_SANDBOX) {
+		Set_Weapon(ent, WP_TOOLGUN, WS_HAVE);
+		Set_Weapon(ent, WP_PHYSGUN, WS_HAVE);
+		Set_Weapon(ent, WP_GRAVITYGUN, WS_HAVE);
 	}
 }
 
@@ -689,115 +642,67 @@ static void SetCustomWeapons(gentity_t *ent) {
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
 	if(g_spawn_gauntlet.integer) {
-		Set_Weapon(ent, WP_GAUNTLET, 1);
+		Set_Weapon(ent, WP_GAUNTLET, WS_HAVE);
 	}
 	if(g_spawn_machinegun.integer > 0) {
-		Set_Weapon(ent, WP_MACHINEGUN, 1);
+		Set_Weapon(ent, WP_MACHINEGUN, WS_HAVE);
 		Set_Ammo(ent, WP_MACHINEGUN, g_spawn_machinegun.integer);
 	}
 	if(g_spawn_shotgun.integer > 0) {
-		Set_Weapon(ent, WP_SHOTGUN, 1);
+		Set_Weapon(ent, WP_SHOTGUN, WS_HAVE);
 		Set_Ammo(ent, WP_SHOTGUN, g_spawn_shotgun.integer);
 	}
 	if(g_spawn_grenade.integer > 0) {
-		Set_Weapon(ent, WP_GRENADE_LAUNCHER, 1);
+		Set_Weapon(ent, WP_GRENADE_LAUNCHER, WS_HAVE);
 		Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_spawn_grenade.integer);
 	}
 	if(g_spawn_rocket.integer > 0) {
-		Set_Weapon(ent, WP_ROCKET_LAUNCHER, 1);
+		Set_Weapon(ent, WP_ROCKET_LAUNCHER, WS_HAVE);
 		Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_spawn_rocket.integer);
 	}
 	if(g_spawn_lightning.integer > 0) {
-		Set_Weapon(ent, WP_LIGHTNING, 1);
+		Set_Weapon(ent, WP_LIGHTNING, WS_HAVE);
 		Set_Ammo(ent, WP_LIGHTNING, g_spawn_lightning.integer);
 	}
 	if(g_spawn_railgun.integer > 0) {
-		Set_Weapon(ent, WP_RAILGUN, 1);
+		Set_Weapon(ent, WP_RAILGUN, WS_HAVE);
 		Set_Ammo(ent, WP_RAILGUN, g_spawn_railgun.integer);
 	}
 	if(g_spawn_plasmagun.integer > 0) {
-		Set_Weapon(ent, WP_PLASMAGUN, 1);
+		Set_Weapon(ent, WP_PLASMAGUN, WS_HAVE);
 		Set_Ammo(ent, WP_PLASMAGUN, g_spawn_plasmagun.integer);
 	}
 	if(g_spawn_bfg.integer > 0) {
-		Set_Weapon(ent, WP_BFG, 1);
+		Set_Weapon(ent, WP_BFG, WS_HAVE);
 		Set_Ammo(ent, WP_BFG, g_spawn_bfg.integer);
 	}
 	if(g_spawn_grapple.integer) {
-		Set_Weapon(ent, WP_GRAPPLING_HOOK, 1);
+		Set_Weapon(ent, WP_GRAPPLING_HOOK, WS_HAVE);
 	}
-	if(g_spawn_nail.integer > 0) {
-		Set_Weapon(ent, WP_NAILGUN, 1);
-		Set_Ammo(ent, WP_NAILGUN, g_spawn_nail.integer);
+	if(g_spawn_nailgun.integer > 0) {
+		Set_Weapon(ent, WP_NAILGUN, WS_HAVE);
+		Set_Ammo(ent, WP_NAILGUN, g_spawn_nailgun.integer);
 	}
-	if(g_spawn_mine.integer > 0) {
-		Set_Weapon(ent, WP_PROX_LAUNCHER, 1);
-		Set_Ammo(ent, WP_PROX_LAUNCHER, g_spawn_mine.integer);
+	if(g_spawn_prox.integer > 0) {
+		Set_Weapon(ent, WP_PROX_LAUNCHER, WS_HAVE);
+		Set_Ammo(ent, WP_PROX_LAUNCHER, g_spawn_prox.integer);
 	}
-	if(g_spawn_chain.integer > 0) {
-		Set_Weapon(ent, WP_CHAINGUN, 1);
-		Set_Ammo(ent, WP_CHAINGUN, g_spawn_chain.integer);
-	}
-	if(g_spawn_flame.integer > 0) {
-		Set_Weapon(ent, WP_FLAMETHROWER, 1);
-		Set_Ammo(ent, WP_FLAMETHROWER, g_spawn_flame.integer);
-	}
-	if(g_spawn_antimatter.integer > 0) {
-		Set_Weapon(ent, WP_ANTIMATTER, 1);
-		Set_Ammo(ent, WP_ANTIMATTER, g_spawn_antimatter.integer);
-	}
-	if(g_spawn_quad.integer) {
-		ent->client->ps.powerups[PW_QUAD] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_QUAD] += g_spawn_quad.integer * 1000;
-	}
-	if(g_spawn_regen.integer) {
-		ent->client->ps.powerups[PW_REGEN] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_REGEN] += g_spawn_regen.integer * 1000;
-	}
-	if(g_spawn_haste.integer) {
-		ent->client->ps.powerups[PW_HASTE] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_HASTE] += g_spawn_haste.integer * 1000;
-	}
-	if(g_spawn_bsuit.integer) {
-		ent->client->ps.powerups[PW_BATTLESUIT] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_BATTLESUIT] += g_spawn_bsuit.integer * 1000;
-	}
-	if(g_spawn_invis.integer) {
-		ent->client->ps.powerups[PW_INVIS] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_INVIS] += g_spawn_invis.integer * 1000;
-	}
-	if(g_spawn_flight.integer) {
-		ent->client->ps.powerups[PW_FLIGHT] = level.time - (level.time % 1000);
-		ent->client->ps.powerups[PW_FLIGHT] += g_spawn_flight.integer * 1000;
-	}
-	if(g_spawn_holdable.integer == 1) {
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_TELEPORTER;
-	}
-	if(g_spawn_holdable.integer == 2) {
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_MEDKIT;
-	}
-	if(g_spawn_holdable.integer == 3) {
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_KAMIKAZE;
-		ent->client->ps.eFlags |= EF_KAMIKAZE;
-	}
-	if(g_spawn_holdable.integer == 4) {
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_INVULNERABILITY;
-	}
-	if(g_spawn_holdable.integer == 5) {
-		ent->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_PORTAL;
+	if(g_spawn_chaingun.integer > 0) {
+		Set_Weapon(ent, WP_CHAINGUN, WS_HAVE);
+		Set_Ammo(ent, WP_CHAINGUN, g_spawn_chaingun.integer);
 	}
 
 	ent->health = ent->client->ps.stats[STAT_ARMOR] = g_spawn_armor.integer;
 	ent->health = ent->client->ps.stats[STAT_HEALTH] = g_spawn_health.integer;
 	// Set spawnweapon
-	if(g_gametype.integer == GT_SANDBOX || g_gametype.integer == GT_MAPEDITOR) {
+	if(g_gametype.integer == GT_SANDBOX) {
 		ent->swep_id = WP_PHYSGUN;
 		ent->client->ps.weapon = WP_PHYSGUN;
 		ClientUserinfoChanged(ent->s.clientNum);
 		return;
 	} else {
 		for(i = WEAPONS_NUM; i > 1; i--) {
-			if(ent->swep_list[i] == 1) {
+			if(ent->swep_list[i] == WS_HAVE) {
 				ent->swep_id = i;
 				ent->client->ps.weapon = i;
 				ClientUserinfoChanged(ent->s.clientNum);
@@ -883,15 +788,11 @@ void ClientSpawn(gentity_t *ent) {
 	// increment the spawncount so the client will detect the respawn
 	client->ps.persistant[PERS_SPAWN_COUNT]++;
 	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
-
 	client->airOutTime = level.time + 12000;
 
 	trap_GetUserinfo(index, userinfo, sizeof(userinfo));
 	// set max health
 	client->pers.maxHealth = 100;
-	if(client->pers.maxHealth < 1 || client->pers.maxHealth > 100) {
-		client->pers.maxHealth = 100;
-	}
 	// clear entity values
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	client->ps.eFlags = flags;
@@ -931,7 +832,7 @@ void ClientSpawn(gentity_t *ent) {
 
 		client->ps.weaponstate = WEAPON_READY;
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			ent->swep_list[i] = 0;
+			ent->swep_list[i] = WS_NONE;
 			ent->swep_ammo[i] = 0;
 		}
 		SetUnlimitedWeapons(ent);
@@ -959,7 +860,6 @@ void ClientSpawn(gentity_t *ent) {
 	if(level.intermissiontime) {
 		MoveClientToIntermission(ent);
 	} else {
-		// fire the targets of the spawn point
 		G_UseTargets(spawnPoint, ent);
 	}
 
@@ -983,6 +883,8 @@ void ClientSpawn(gentity_t *ent) {
 	BG_PlayerStateToEntityState(&client->ps, &ent->s, qtrue);
 
 	RespawnTimeMessage(ent, 0);
+
+	G_SendGameCvars(ent);
 }
 
 void ClientDisconnect(int clientNum) {
@@ -991,9 +893,7 @@ void ClientDisconnect(int clientNum) {
 	int i;
 
 	ent = g_entities + clientNum;
-	if(!ent->client) {
-		return;
-	}
+	if(!ent->client) return;
 
 	// stop any following clients
 	for(i = 0; i < level.maxclients; i++) {
@@ -1011,9 +911,7 @@ void ClientDisconnect(int clientNum) {
 		// Especially important for stuff like CTF flags
 		TossClientItems(ent);
 		TossClientPersistantPowerups(ent);
-		if(g_gametype.integer == GT_HARVESTER) {
-			TossClientCubes(ent);
-		}
+		if(g_gametype.integer == GT_HARVESTER) TossClientCubes(ent);
 	}
 
 	trap_UnlinkEntity(ent);
@@ -1028,9 +926,9 @@ void ClientDisconnect(int clientNum) {
 
 	CalculateRanks();
 
-	if(ent->r.svFlags & SVF_BOT) {
-		BotAIShutdownClient(clientNum, qfalse);
-	}
+	if(ent->r.svFlags & SVF_BOT) BotAIShutdownClient(clientNum, qfalse);
 }
 
-void DropClientSilently(int clientNum) { trap_DropClient(clientNum, "DR_SILENT_DROP"); }
+void DropClientSilently(int clientNum) { 
+	if(g_entities[clientNum].npcType > NT_PLAYER) trap_DropClient(clientNum, "DR_SILENT_DROP");
+}

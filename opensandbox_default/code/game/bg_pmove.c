@@ -165,7 +165,7 @@ static void PM_Friction(void) {
 				}
 			}
 		}
-		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: turn vehicle phys
+		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: turn vehicle phys
 			if(pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK)) {
 				// if getting knocked back, no friction
 				if(!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)) {
@@ -236,7 +236,7 @@ static void PM_Accelerate(vec3_t wishdir, float wishspeed, float accel) {
 		for(i = 0; i < 3; i++) {
 			pm->ps->velocity[i] += accelspeed * wishdir[i];
 		}
-	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: accelerate for 1
+	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: accelerate for 1
 		// vehicle
 		int i;
 		float addspeed, accelspeed, currentspeed;
@@ -340,7 +340,7 @@ static void PM_SetMovementDir(void) {
 }
 
 static qboolean PM_CheckJump(void) {
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: disable jump for 1
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: disable jump for 1
 		return qfalse;                                             // don't allow jump for vehicle
 	}
 
@@ -458,7 +458,7 @@ static void PM_WaterMove(void) {
 	//
 	// user intentions
 	//
-	if(!scale || BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: disable water move for 1
+	if(!scale || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: disable water move for 1
 		wishvel[0] = 0;
 		wishvel[1] = 0;
 		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: water slow move for all
@@ -764,7 +764,7 @@ static void PM_WalkMove(void) {
 	// full control, which allows them to be moved a bit
 	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK) {
 		accelerate = pm_airaccelerate;
-	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: accelerate for 1
+	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: accelerate for 1
 		accelerate = pm_veh00001accelerate;
 	} else {
 		accelerate = pm_accelerate;
@@ -772,7 +772,7 @@ static void PM_WalkMove(void) {
 
 	PM_Accelerate(wishdir, wishspeed, accelerate);
 
-	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: slick move for 1
+	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: slick move for 1
 		pm->ps->velocity[2] -= (pm->ps->gravity * pml.frametime);
 	}
 
@@ -1227,7 +1227,7 @@ static void PM_WaterEvents(void) {
 
 static void PM_BeginWeaponChange(int weapon) {
 	item_t *item;
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {
 		return;
 	}
 	if(weapon > WP_NONE || weapon < WEAPONS_NUM) {
@@ -1249,7 +1249,7 @@ static void PM_FinishWeaponChange(void) {
 	int weapon;
 
 	weapon = pm->cmd.weapon;
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {
 		return;
 	}
 	if(weapon > WP_NONE || weapon < WEAPONS_NUM) {
@@ -1290,14 +1290,10 @@ static void PM_Weapon(void) {
 	int addTime;
 
 	// don't allow attack until all buttons are up
-	if(pm->ps->pm_flags & PMF_RESPAWNED) {
-		return;
-	}
+	if(pm->ps->pm_flags & PMF_RESPAWNED) return;
 
 	// ignore if spectator
-	if(pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR || pm->ps->pm_type == PM_SPECTATOR) {
-		return;
-	}
+	if(pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR || pm->ps->pm_type == PM_SPECTATOR) return;
 
 	// check for dead player
 	if(pm->ps->stats[STAT_HEALTH] <= 0) {
@@ -1322,9 +1318,7 @@ static void PM_Weapon(void) {
 	}
 
 	// make weapon function
-	if(pm->ps->weaponTime > 0) {
-		pm->ps->weaponTime -= pml.msec;
-	}
+	if(pm->ps->weaponTime > 0) pm->ps->weaponTime -= pml.msec;
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
@@ -1335,9 +1329,7 @@ static void PM_Weapon(void) {
 		}
 	}
 
-	if(pm->ps->weaponTime > 0) {
-		return;
-	}
+	if(pm->ps->weaponTime > 0) return;
 
 	// change weapon if time
 	if(pm->ps->weaponstate == WEAPON_DROPPING) {
@@ -1362,9 +1354,7 @@ static void PM_Weapon(void) {
 		return;
 	}
 
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {
-		return;
-	}
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) return;
 
 	// start the animation even if out of ammo
 	if(pm->ps->weapon == WP_GAUNTLET) {
@@ -1406,18 +1396,14 @@ static void PM_Weapon(void) {
 	PM_AddEvent(EV_FIRE_WEAPON);
 	addTime = gameInfoWeapons[pm->ps->weapon].delay;
 
-	if(gameInfoItems[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
-		addTime *= 0.65;
-	}
-	if(pm->ps->powerups[PW_HASTE]) {
-		addTime *= 0.65;
-	}
+	if(gameInfoItems[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) addTime *= 0.65;
+	if(pm->ps->powerups[PW_HASTE]) addTime *= 0.65;
 
 	pm->ps->weaponTime += addTime;
 }
 
 static void PM_Animate(void) {
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) pm->ps->pm_time = 5;
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) pm->ps->pm_time = 5;
 
 	if(pm->cmd.buttons & (BUTTON_GESTURE | BUTTON_GETFLAG | BUTTON_GUARDBASE | BUTTON_PATROL | BUTTON_FOLLOWME | BUTTON_AFFIRMATIVE | BUTTON_NEGATIVE) && pm->cmd.weapon != WP_PHYSGUN) {
 		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable gesture for all
@@ -1427,7 +1413,7 @@ static void PM_Animate(void) {
 				PM_AddEvent(EV_TAUNT);
 			}
 		}
-		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE]) == VCLASS_CAR) {  // VEHICLE-SYSTEM: horn for 1
+		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: horn for 1
 			if(pm->ps->torsoTimer == 0) {
 				pm->ps->torsoTimer = 300;
 				PM_AddEvent(EV_HORN);

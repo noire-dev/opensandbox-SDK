@@ -128,7 +128,6 @@ struct {
     {"savemap", G_WriteMapfile_f},
     {"deletemap", G_DeleteMapfile_f},
     {"clearmap", G_ClearMap_f},
-    {"clearmap_sandbox", G_ClearSandboxMap_f},
     {"loadmap", G_LoadMapfile_f},
 
     // Noire.Script

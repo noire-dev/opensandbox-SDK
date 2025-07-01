@@ -144,7 +144,7 @@ struct gentity_s {
 	gentity_t *owner;
 
 	// sandbox
-	int sandboxObject;
+	qboolean sandboxObject;
 
 	float sb_coltype;
 	float sb_gravity;
@@ -158,7 +158,6 @@ struct gentity_s {
 	int sb_green;
 	int sb_blue;
 	int sb_radius;
-	int sb_vehicle;
 
 	int npcType;
 
@@ -250,6 +249,11 @@ typedef struct {
 	qboolean teamLeader;  // true when this client is a team leader
 } clientSession_t;
 
+typedef struct {
+	int id;
+	qboolean isRemoved;
+} undo_stack_t;
+
 #define NUM_PING_SAMPLES 64
 
 // client data that stays across multiple respawns, but is cleared
@@ -259,18 +263,12 @@ typedef struct {
 	usercmd_t cmd;  // we would lose angles if not persistant
 	char netname[MAX_NETNAME];
 	int maxHealth;
-	int enterTime;                // level.time the client entered the game
 	playerTeamState_t teamState;  // status in teamplay games
 
 	int pingsamples[NUM_PING_SAMPLES];
 	int samplehead;
+	undo_stack_t undoStack[MAX_UNDO_STACK];
 } clientPersistant_t;
-
-typedef struct {
-	int id;
-	int type;
-	qboolean isRemoved;
-} undo_stack_t;
 
 // the size of history we'll keep
 #define NUM_CLIENT_HISTORY 17
@@ -353,8 +351,6 @@ struct gclient_s {
 	// the last frame number we got an update from this client
 	int lastUpdateFrame;
 	qboolean spawnprotected;
-
-	undo_stack_t undoStack[MAX_UNDO_STACK];
 };
 
 //
@@ -567,8 +563,8 @@ void SP_sandbox_npc(gentity_t *ent);
 void SP_sandbox_prop(gentity_t *ent);
 void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19, char *arg20, char *arg21, char *arg22);
 void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19);
-void Undo_AddElement(gentity_t *ent, int id, int type);
-qboolean Undo_LastElement(gentity_t *ent, int *id, int *type, qboolean *isRemoved);
+void Undo_AddElement(gentity_t *ent, int id);
+qboolean Undo_LastElement(gentity_t *ent, int *id, qboolean *isRemoved);
 void Undo_RemoveElement(gentity_t *ent);
 
 // g_session.c
@@ -588,7 +584,6 @@ void G_LoadMapfile_f(void);
 void G_WriteMapfile_f(void);
 void G_DeleteMapfile_f(void);
 void G_ClearMap_f(void);
-void G_ClearSandboxMap_f(void);
 
 // g_svcmds.c
 qboolean ConsoleCommand(void);
@@ -662,7 +657,6 @@ gentity_t *FindEntityForGravitygun(gentity_t *ent, int range);
 void CrosshairPointPhys(gentity_t *ent, int range, vec3_t outPoint);
 void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
 gentity_t *G_FindEntityForEntityNum(int entityNum);
-gentity_t *G_FindEntityForClientNum(int entityNum);
 qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
 gentity_t *G_FindWeldEntity(gentity_t *ent);
 

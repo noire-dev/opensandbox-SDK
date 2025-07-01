@@ -33,10 +33,10 @@
 //entity info
 #define MAX_ENTITYINFO 	4
 
-//objects properties
-#define OBJ_DEFAULT					0
-#define OBJ_SANDBOX					1
-#define OBJ_EDITOR					2
+//weapon status
+#define WS_NONE						0
+#define WS_HAVE						1
+#define WS_NOAMMO					2
 
 typedef enum {
 	OT_VANILLAQ3,
@@ -78,10 +78,6 @@ typedef enum {
 #define TL_WELD						13
 #define TL_BIND						14
 
-//undo
-#define UNDO_PROPSPAWN				1
-#define UNDO_NPCSPAWN				2
-
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define	CS_MUSIC				2
 #define	CS_SCORES1				3
@@ -103,7 +99,6 @@ typedef enum {
 typedef enum {
 	//FFA GAMEMODES
 	GT_SANDBOX,
-	GT_MAPEDITOR,
 	GT_FFA,
 	//TEAM GAMEMODES
 	GT_TEAM,
@@ -629,13 +624,6 @@ typedef enum {
 } team_t;
 
 #define TEAM_NONE TEAM_SPECTATOR
-
-typedef enum {
-	VCLASS_NONE,
-	VCLASS_CAR,
-
-	VCLASS_NUM
-} vehclass_t;
 
 typedef enum {
 	TEAMTASK_NONE,

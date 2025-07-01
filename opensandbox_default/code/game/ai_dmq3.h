@@ -154,7 +154,6 @@ extern cvar_t bot_rocketjump;
 extern cvar_t bot_fastchat;
 extern cvar_t bot_nochat;
 extern cvar_t bot_testrchat;
-extern cvar_t bot_challenge;
 
 extern bot_goal_t ctf_redflag;
 extern bot_goal_t ctf_blueflag;

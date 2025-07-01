@@ -555,8 +555,7 @@ float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
 	}
 	if (move > 0) {
 		if (move > speed) move = speed;
-	}
-	else {
+	} else {
 		if (move < -speed) move = -speed;
 	}
 	return AngleMod(angle + move);
@@ -568,7 +567,7 @@ BotChangeViewAngles
 ==============
 */
 void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
-	float diff, factor, maxchange, anglespeed, disired_speed;
+	float diff, factor, maxchange, anglespeed;
 	int i;
 
 	if (bs->ideal_viewangles[PITCH] > 180) bs->ideal_viewangles[PITCH] -= 360;
@@ -584,34 +583,11 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 	if (maxchange < 240) maxchange = 240;
 	maxchange *= thinktime;
 	for (i = 0; i < 2; i++) {
-		//
-		if (bot_challenge.integer) {
-			//smooth slowdown view model
-			diff = abs(AngleDifference(bs->viewangles[i], bs->ideal_viewangles[i]));
-			anglespeed = diff * factor;
-			if (anglespeed > maxchange) anglespeed = maxchange;
-			bs->viewangles[i] = BotChangeViewAngle(bs->viewangles[i],
-											bs->ideal_viewangles[i], anglespeed);
-		}
-		else {
-			//over reaction view model
-			bs->viewangles[i] = AngleMod(bs->viewangles[i]);
-			bs->ideal_viewangles[i] = AngleMod(bs->ideal_viewangles[i]);
-			diff = AngleDifference(bs->viewangles[i], bs->ideal_viewangles[i]);
-			disired_speed = diff * factor;
-			bs->viewanglespeed[i] += (bs->viewanglespeed[i] - disired_speed);
-			if (bs->viewanglespeed[i] > 180) bs->viewanglespeed[i] = maxchange;
-			if (bs->viewanglespeed[i] < -180) bs->viewanglespeed[i] = -maxchange;
-			anglespeed = bs->viewanglespeed[i];
-			if (anglespeed > maxchange) anglespeed = maxchange;
-			if (anglespeed < -maxchange) anglespeed = -maxchange;
-			bs->viewangles[i] += anglespeed;
-			bs->viewangles[i] = AngleMod(bs->viewangles[i]);
-			//demping
-			bs->viewanglespeed[i] *= 0.45 * (1 - factor);
-		}
-		//BotAI_Print(PRT_MESSAGE, "ideal_angles %f %f\n", bs->ideal_viewangles[0], bs->ideal_viewangles[1], bs->ideal_viewangles[2]);`
-		//bs->viewangles[i] = bs->ideal_viewangles[i];
+		//smooth slowdown view model
+		diff = abs(AngleDifference(bs->viewangles[i], bs->ideal_viewangles[i]));
+		anglespeed = diff * factor;
+		if (anglespeed > maxchange) anglespeed = maxchange;
+		bs->viewangles[i] = BotChangeViewAngle(bs->viewangles[i], bs->ideal_viewangles[i], anglespeed);
 	}
 	//bs->viewangles[PITCH] = 0;
 	if (bs->viewangles[PITCH] > 180) bs->viewangles[PITCH] -= 360;
@@ -951,6 +927,7 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 	char filename[MAX_PATH], name[MAX_PATH], gender[MAX_PATH];
 	bot_state_t *bs;
 	int errnum;
+	char userinfo[MAX_INFO_STRING];
 
 	if (!botstates[client]) botstates[client] = G_Alloc(sizeof(bot_state_t));
 	bs = botstates[client];
@@ -1018,6 +995,10 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 	bs->entergame_time = FloatTime();
 	bs->ms = trap_BotAllocMoveState();
 	bs->walker = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_WALKER, 0, 1);
+
+	trap_GetUserinfo(bs->client, userinfo, sizeof(userinfo));
+	bs->npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
+
 	numbots++;
 
 	if (trap_Cvar_VariableIntegerValue("bot_testichat")) {

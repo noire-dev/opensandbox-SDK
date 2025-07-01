@@ -37,7 +37,7 @@ void TossClientItems(gentity_t *self) {
 	// drop all weapons
 	if(gameInfoItems[self->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag != PW_AMMOREGEN){
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			if(self->swep_list[i] >= 1) {
+			if(self->swep_list[i] >= WS_HAVE) {
 				item = BG_FindItemForWeapon(i);
 				if(!item || i == WP_GAUNTLET || i == WP_PHYSGUN || i == WP_GRAVITYGUN || i == WP_TOOLGUN) continue;
 				drop = Drop_Item(self, item);
@@ -220,6 +220,8 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 	if(self->client && self->client->hook) Weapon_HookFree(self->client->hook);
 
+	self->client->noclip = 0;
+
 	if((self->client->ps.eFlags & EF_TICKING) && self->activator) {
 		self->client->ps.eFlags &= ~EF_TICKING;
 		self->activator->think = G_FreeEntity;
@@ -228,11 +230,13 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 	self->client->ps.pm_type = PM_DEAD;
 
+	if (attacker) killer = attacker->s.number;
+
 	// broadcast the death event to everyone
 	ent = G_TempEntity(self->r.currentOrigin, EV_OBITUARY);
 	ent->s.eventParm = meansOfDeath;
-	ent->s.otherEntityNum = self->s.number;
-	ent->s.otherEntityNum2 = killer;
+	ent->s.otherEntityNum = killer;
+	ent->s.otherEntityNum2 = self->s.number;
 	ent->r.svFlags = SVF_BROADCAST;  // send to everyone
 
 	self->enemy = attacker;
@@ -433,7 +437,7 @@ int G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t im
 
 static qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
 	// Validate conditions
-	if(!player->client || !vehicle->sb_vehicle || player->client->vehicleNum) return qtrue;
+	if(!player->client || vehicle->objectType != OT_VEHICLE || player->client->vehicleNum) return qtrue;
 
 	// Assign vehicle to player
 	player->client->vehicleNum = vehicle->s.number;
@@ -466,10 +470,10 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	if(attacker->npcType && !gameInfoNPCTypes[attacker->npcType].friendlyFire && targ->npcType == attacker->npcType) return;
 
-	if(!targ->takedamage && !targ->sandboxObject && mod == WP_TOOLGUN && mod == WP_GAUNTLET && attacker->health <= 0) return;
+	if(!targ->takedamage && !targ->sandboxObject && mod == WP_TOOLGUN) return;
 
 	if(mod == WP_GAUNTLET) {
-		if(targ->sb_vehicle) {
+		if(targ->objectType == OT_VEHICLE) {
 			if(G_EnterInCar(attacker, targ)) {
 				return;
 			}

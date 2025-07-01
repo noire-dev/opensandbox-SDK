@@ -439,32 +439,6 @@ static void Lightning_Fire(gentity_t *ent, int weapon) {
 Toolgun type
 ===============
 */
-static void Toolgun_Fire(gentity_t *ent, int weapon) {
-	trace_t tr;
-	vec3_t end;
-	gentity_t *traceEnt;
-
-	AngleVectors(ent->client->ps.viewangles, forward, right, up);
-
-	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-	VectorMA(muzzle, gameInfoWeapons[weapon].range, forward, end);
-	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SELECT);
-
-	traceEnt = &g_entities[tr.entityNum];
-
-	if(g_extendedsandbox.integer) {
-		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER) {
-			return;
-		}
-	} else {
-		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
-			return;
-		}
-	}
-
-	G_Damage(traceEnt, ent, ent, forward, tr.endpos, gameInfoWeapons[weapon].damage * s_quadFactor, 0, gameInfoWeapons[weapon].mod);
-}
-
 void Weapon_Toolgun_Info(gentity_t *ent) {
 	trace_t tr;
 	vec3_t end;
@@ -482,19 +456,12 @@ void Weapon_Toolgun_Info(gentity_t *ent) {
 
 	traceEnt = &g_entities[tr.entityNum];
 
-	if(g_extendedsandbox.integer) {
-		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER) {
-			trap_SendServerCommand(ent->s.clientNum, va("t_info \"%s\"", ""));
-			return;
-		}
-	} else {
-		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
-			trap_SendServerCommand(ent->s.clientNum, va("t_info \"%s\"", ""));
-			return;
-		}
+	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) {
+		trap_SendServerCommand(ent->s.clientNum, va("t_info \"%s\"", ""));
+		return;
 	}
 
-	if(ent->swep_id == WP_TOOLGUN) {
+	if(gameInfoWeapons[ent->swep_id].wType == WT_TOOLGUN) {
 		// Classname
 		if(!strcmp(traceEnt->sb_class, "none") || !strcmp(traceEnt->sb_class, "")) {
 			strcpy(info_entity[0], traceEnt->classname);
@@ -901,7 +868,7 @@ gentity_t *fire_missile(gentity_t *self, vec3_t start, vec3_t forward, vec3_t ri
 	if(gameInfoWeapons[weapon].mType > MT_PROPS) {
 		bolt->s.eType = ET_GENERAL;
 		bolt->spawnflags = 0;
-		bolt->sandboxObject = OBJ_SANDBOX;
+		bolt->sandboxObject = qtrue;
 
 		bolt->objectType = gameInfoWProps[gameInfoWeapons[weapon].mType].oType;
 		bolt->s.torsoAnim = gameInfoWProps[gameInfoWeapons[weapon].mType].oType;
@@ -1020,7 +987,7 @@ static void Missile_Fire(gentity_t *ent, int weapon) {
 
 		ent->client->fireHeld = qtrue;
 	} else {
-		if(gameInfoWeapons[weapon].gravity) {  // extra vertical velocity
+		if(weapon == WP_GRENADE_LAUNCHER || weapon == WP_PROX_LAUNCHER) {  // extra vertical velocity
 			forward[2] += 0.2f;
 			VectorNormalize(forward);
 		}
@@ -1066,7 +1033,7 @@ void FireWeapon(gentity_t *ent) {
 		case WT_LIGHTNING: Lightning_Fire(ent, ent->swep_id); break;
 		case WT_RAILGUN: Railgun_Fire(ent, ent->swep_id); break;
 		case WT_EMPTY: break;
-		case WT_TOOLGUN: Toolgun_Fire(ent, ent->swep_id); break;
+		case WT_TOOLGUN: break;
 		case WT_MISSILE: Missile_Fire(ent, ent->swep_id); break;
 		default: break;
 	}

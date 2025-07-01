@@ -14,14 +14,12 @@ void *G_Alloc(int size) {
 	char *p;
 
 	if(allocPoint + size > POOLSIZE) {
-		G_Error("G_Alloc: failed on allocation of %i bytes\n", size);  // bk010103 - was %u, but is signed
+		G_Error("G_Alloc: failed on allocation of %i bytes\n", size);
 		return NULL;
 	}
 
 	p = &memoryPool[allocPoint];
-
 	allocPoint += (size + 31) & ~31;
-
 	return p;
 }
 

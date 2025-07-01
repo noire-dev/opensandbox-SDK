@@ -18,23 +18,13 @@ void DeathmatchScoreboardMessage(gentity_t *ent) {
 	stringlength = 0;
 
 	for(i = 0; i < level.numConnectedClients; i++) {
-		int ping;
 
 		cl = &level.clients[level.sortedClients[i]];
 		client = g_entities + cl->ps.clientNum;
 
-		if(client->npcType > NT_PLAYER) {
-			continue;
-		}
+		if(client->npcType > NT_PLAYER) continue;
 
-		if(cl->pers.connected == CON_CONNECTING) {
-			ping = -1;
-		} else {
-			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
-			ping += 1;
-		}
-
-		Com_sprintf(entry, sizeof(entry), " %i %i %i %i", level.sortedClients[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime) / 60000);
+		Com_sprintf(entry, sizeof(entry), " %i %i", level.sortedClients[i], cl->ps.persistant[PERS_SCORE]);
 		j = strlen(entry);
 		if(stringlength + j >= sizeof(string)) break;
 		strcpy(string + stringlength, entry);
@@ -56,18 +46,18 @@ void G_SendSwepWeapons(gentity_t *ent) {
 	int len;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
-		if(ent->swep_list[i] > 0) {
+		if(ent->swep_list[i] >= WS_HAVE) {
 			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = 1;  // we have weapon and ammo
+				ent->swep_list[i] = WS_HAVE;  // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = 2;  // we have weapon only
+				ent->swep_list[i] = WS_NOAMMO;  // we have weapon only
 			}
 		}
-		if(ent->swep_list[i] == 1) {
+		if(ent->swep_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
-		if(ent->swep_list[i] == 2) {
-			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send 2
+		if(ent->swep_list[i] == WS_NOAMMO) {
+			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send WS_NOAMMO
 		}
 	}
 	len = strlen(string);
@@ -84,18 +74,18 @@ void G_SendSpawnSwepWeapons(gentity_t *ent) {
 	int len;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
-		if(ent->swep_list[i] > 0) {
+		if(ent->swep_list[i] >= WS_HAVE) {
 			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = 1;  // we have weapon and ammo
+				ent->swep_list[i] = WS_HAVE;  // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = 2;  // we have weapon only
+				ent->swep_list[i] = WS_NOAMMO;  // we have weapon only
 			}
 		}
-		if(ent->swep_list[i] == 1) {
+		if(ent->swep_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
-		if(ent->swep_list[i] == 2) {
-			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send 2
+		if(ent->swep_list[i] == WS_NOAMMO) {
+			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send WS_NOAMMO
 		}
 	}
 	len = strlen(string);
@@ -161,7 +151,7 @@ static void Cmd_Give_f(gentity_t *ent) {
 	gentity_t *it_ent;
 	trace_t trace;
 
-	if((g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) && !CheatsOk(ent)) return;
+	if(g_gametype.integer != GT_SANDBOX && !CheatsOk(ent)) return;
 
 	name = ConcatArgs(1);
 
@@ -177,7 +167,7 @@ static void Cmd_Give_f(gentity_t *ent) {
 
 	if(give_all || Q_strequal(name, "weapons")) {
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			ent->swep_list[i] = 1;
+			ent->swep_list[i] = WS_HAVE;
 			ent->swep_ammo[i] = 9999;
 		}
 		SetUnlimitedWeapons(ent);
@@ -240,7 +230,7 @@ static void Cmd_God_f(gentity_t *ent) {
 }
 
 static void Cmd_Noclip_f(gentity_t *ent) {
-	if((g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) && !CheatsOk(ent)) return;
+	if(g_gametype.integer != GT_SANDBOX && !CheatsOk(ent)) return;
 
 	ent->client->noclip = !ent->client->noclip;
 }
@@ -427,7 +417,7 @@ static void G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const
 	if(!other->inuse) return;
 	if(!other->client) return;
 	if(other->client->pers.connected != CON_CONNECTED) return;
-	if(mode == SAY_TEAM && !OnSameTeam(ent, other)) return;
+	if(mode == SAY_TEAM && (g_gametype.integer != GT_SANDBOX && !OnSameTeam(ent, other))) return;
 
 	trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\"", mode == SAY_TEAM ? "tchat" : "chat", name, Q_COLOR_ESCAPE, color, message));
 }
@@ -443,8 +433,6 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 	char text[MAX_SAY_TEXT];
 	char location[64];
 
-	if(g_gametype.integer < GT_TEAM && mode == SAY_TEAM) mode = SAY_ALL;
-
 	switch(mode) {
 		default:
 		case SAY_ALL:
@@ -459,7 +447,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 			color = COLOR_CYAN;
 			break;
 		case SAY_TELL:
-			if(target && g_gametype.integer >= GT_TEAM && target->client->sess.sessionTeam == ent->client->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location)))
+			if(target && target->client->sess.sessionTeam == ent->client->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location)))
 				Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "] (%s)" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 			else
 				Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "]" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
@@ -475,9 +463,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 	}
 
 	// echo the text to the console
-	if(g_dedicated.integer) {
-		G_Printf("%s%s\n", name, text);
-	}
+	if(g_dedicated.integer) G_Printf("%s%s\n", name, text);
 
 	// send it to all the apropriate clients
 	for(j = 0; j < level.maxclients; j++) {
@@ -508,15 +494,11 @@ static void Cmd_Tell_f(gentity_t *ent) {
 	char *p;
 	char arg[MAX_TOKEN_CHARS];
 
-	if(trap_Argc() < 2) {
-		return;
-	}
+	if(trap_Argc() < 2) return;
 
 	trap_Argv(1, arg, sizeof(arg));
 	targetNum = atoi(arg);
-	if(targetNum < 0 || targetNum >= level.maxclients) {
-		return;
-	}
+	if(targetNum < 0 || targetNum >= level.maxclients) return;
 
 	target = &g_entities[targetNum];
 	if(!target || !target->inuse || !target->client) {
@@ -564,7 +546,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 	char arg21[64];
 	char arg22[64];
 
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) return;
+	if(g_gametype.integer != GT_SANDBOX) return;
 
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) return;
 
@@ -610,6 +592,11 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 		return;
 	}
 	if(!Q_stricmp(arg01, "npc")) {
+		if(level.numConnectedClients >= g_maxClients.integer) {
+			G_Printf(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
+			return;
+		}
+
 		tent = G_Spawn();
 		tent->sb_isnpc = 1;
 		VectorCopy(tr.endpos, tent->s.origin);
@@ -636,7 +623,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 
 		G_AddBot(tent->clientname, tent->skill, "Blue", tent->message, tent);
 
-		if(tent->parent) Undo_AddElement(ent, tent->parent->s.clientNum, UNDO_NPCSPAWN);
+		if(tent->parent) Undo_AddElement(ent, tent->s.number);
 		return;
 	}
 }
@@ -666,7 +653,7 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	char arg18[64];
 	char arg19[64];
 
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) return;
+	if(g_gametype.integer != GT_SANDBOX) return;
 
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) return;
 
@@ -701,7 +688,7 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 
 	traceEnt = &g_entities[tr.entityNum];  // entity for modding
 
-	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && ent->s.eType != ET_ITEM) return;
+	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return;
 
 	tent = G_TempEntity(tr.endpos, EV_PARTICLES_GRAVITY);
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8) | rand() % 256 << 16) | (255 << 24));
@@ -733,18 +720,12 @@ static void Cmd_PhysgunDist_f(gentity_t *ent) {
 				if(atoi(mode) == 0) {
 					ent->grabDist -= 20;
 					if(ent->grabbedEntity->sb_coltype) {
-						if(ent->grabDist < ent->grabbedEntity->sb_coltype + 1) {
-							ent->grabDist = ent->grabbedEntity->sb_coltype + 1;
-						}
+						if(ent->grabDist < ent->grabbedEntity->sb_coltype + 1) ent->grabDist = ent->grabbedEntity->sb_coltype + 1;
 					} else {
-						if(ent->grabDist < 100) {
-							ent->grabDist = 100;
-						}
+						if(ent->grabDist < 100) ent->grabDist = 100;
 					}
 				}
-				if(atoi(mode) == 1) {
-					ent->grabDist += 20;
-				}
+				if(atoi(mode) == 1) ent->grabDist += 20;
 			}
 		}
 	}
@@ -768,36 +749,28 @@ static void Cmd_Flashlight_f(gentity_t *ent) {
 }
 
 static void Cmd_Undo_f(gentity_t *ent) {
-	int id, type;
+	int id;
 	qboolean isRemoved;
+	gentity_t *prop;
 
-	if(g_gametype.integer != GT_SANDBOX && g_gametype.integer != GT_MAPEDITOR) {
-		return;
-	}
+	if(g_gametype.integer != GT_SANDBOX) return;
 
-	while(Undo_LastElement(ent, &id, &type, &isRemoved)) {
-		if(isRemoved || id == 0) {
+	while(Undo_LastElement(ent, &id, &isRemoved)) {
+		if(isRemoved) {
 			Undo_RemoveElement(ent);
 			continue;
 		}
 
-		switch(type) {
-			case UNDO_PROPSPAWN: {
-				gentity_t *prop = G_FindEntityForEntityNum(id);
-				if(prop) {
-					G_FreeEntity(prop);
-					trap_SendServerCommand(ent - g_entities, "undoProp \n");
-				}
-				return;
-			}
-
-			case UNDO_NPCSPAWN:
-				DropClientSilently(id);
-				trap_SendServerCommand(ent - g_entities, "undoNPC \n");
-				return;
-
-			default: return;
+		prop = G_FindEntityForEntityNum(id);
+		if(prop) {
+			if(!strcmp(prop->sb_class, "sb.shooter")) trap_SendServerCommand(ent - g_entities, "undo \"Undone Shooter\"\n");
+			else if(prop->objectType == OT_VEHICLE) trap_SendServerCommand(ent - g_entities, "undo \"Undone Vehicle\"\n");
+			else if(!strcmp(prop->classname, "sandbox_npc")) trap_SendServerCommand(ent - g_entities, "undo \"Undone NPC\"\n");
+			else if(!strcmp(prop->classname, "sandbox_prop")) trap_SendServerCommand(ent - g_entities, "undo \"Undone Prop\"\n");
+			else if(prop->s.eType == ET_ITEM) trap_SendServerCommand(ent - g_entities, va("undo \"Undone %s\"\n", prop->item->pickup_name ));
+			G_FreeEntity(prop);
 		}
+		return;
 	}
 }
 
@@ -857,13 +830,15 @@ commands_t cmds[] = {
     // interaction
     {"exitvehicle", CMD_LIVING, Cmd_VehicleExit_f},
     {"kill", CMD_TEAM | CMD_LIVING, Cmd_Kill_f},
-    {"sl", CMD_LIVING, Cmd_SpawnList_Item_f},
-    {"tm", CMD_LIVING, Cmd_Modify_Prop_f},
-    {"altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f},
-    {"physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f},
     {"flashlight", CMD_LIVING, Cmd_Flashlight_f},
     {"undo", CMD_LIVING, Cmd_Undo_f},
     {"activate", CMD_LIVING, Cmd_ActivateTarget_f},
+
+	// internal
+	{"sl", CMD_LIVING, Cmd_SpawnList_Item_f},
+    {"tm", CMD_LIVING, Cmd_Modify_Prop_f},
+    {"altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f},
+    {"physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f},
 
     // game commands
     {"follownext", CMD_NOTEAM, Cmd_RunFollowNext_f},

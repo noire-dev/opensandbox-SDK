@@ -522,24 +522,16 @@ static void PhysgunHold(gentity_t *player) {
 			findent = FindEntityForPhysgun(player, gameInfoWeapons[WP_PHYSGUN].range);
 			if(findent && findent->isGrabbed == qfalse) {
 				if(!G_PlayerIsOwner(player, findent)) return;
-				if(!findent->client || findent->npcType > NT_PLAYER || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
-					player->grabbedEntity = findent;
-				}
+				if(findent) player->grabbedEntity = findent;
 			}
-			if(player->grabbedEntity) {
-				Phys_HoldSetup(player, qtrue);
-			}
+			if(player->grabbedEntity) Phys_HoldSetup(player, qtrue);
 		} else {
 			Phys_HoldFrame(player, velocity, qtrue);
 		}
 	} else if(player->grabbedEntity) {
 		ent->isGrabbed = qfalse;
-		if(ent->grabNewPhys == PHYS_STATIC) {
-			Phys_HoldDropStatic(player, velocity);
-		}
-		if(ent->grabNewPhys == PHYS_DYNAMIC) {
-			Phys_HoldDropDynamic(player, velocity, qtrue);
-		}
+		if(ent->grabNewPhys == PHYS_STATIC) Phys_HoldDropStatic(player, velocity);
+		if(ent->grabNewPhys == PHYS_DYNAMIC) Phys_HoldDropDynamic(player, velocity, qtrue);
 		VectorClear(player->grabOffset);
 		player->grabbedEntity = 0;
 	}
@@ -557,13 +549,9 @@ static void GravitygunHold(gentity_t *player) {
 			findent = FindEntityForGravitygun(player, gameInfoWeapons[WP_GRAVITYGUN].range);
 			if(findent && findent->isGrabbed == qfalse) {
 				if(!G_PlayerIsOwner(player, findent)) return;
-				if(!findent->client || findent->npcType > NT_PLAYER || g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
-					player->grabbedEntity = findent;
-				}
+				if(findent) player->grabbedEntity = findent;
 			}
-			if(player->grabbedEntity) {
-				Phys_HoldSetup(player, qfalse);
-			}
+			if(player->grabbedEntity) Phys_HoldSetup(player, qfalse);
 		} else {
 			Phys_HoldFrame(player, velocity, qfalse);
 		}
@@ -651,15 +639,15 @@ static void ClientThink_real(gentity_t *ent) {
 	if(client->vehicleNum) {  // VEHICLE-SYSTEM: setup physics for all
 		if(G_FindEntityForEntityNum(client->vehicleNum)) {
 			vehicle = G_FindEntityForEntityNum(client->vehicleNum);
-			client->ps.stats[STAT_VEHICLE] = vehicle->sb_vehicle;
-			if(BG_InVehicle(vehicle->sb_vehicle)) {
+			client->ps.stats[STAT_VEHICLE] = vehicle->objectType;
+			if(BG_InVehicle(vehicle->objectType)) {
 				client->ps.speed = 900;
 				client->ps.gravity *= 0.4;
 			}
 		}
 	} else {
 		client->ps.speed = g_speed.value * gameInfoNPCTypes[ent->npcType].speed;
-		client->ps.stats[STAT_VEHICLE] = VCLASS_NONE;
+		client->ps.stats[STAT_VEHICLE] = 0;
 	}
 
 	if(ent->client->noclip) client->ps.speed *= 2.50;
@@ -668,9 +656,8 @@ static void ClientThink_real(gentity_t *ent) {
 	if(client->ps.powerups[PW_HASTE]) client->ps.speed *= 1.3;
 
 	// Let go of the hook if we aren't firing
-	if(client->ps.weapon == WP_GRAPPLING_HOOK && client->hook && !(ucmd->buttons & BUTTON_ATTACK)) {
+	if(client->ps.weapon == WP_GRAPPLING_HOOK && client->hook && !(ucmd->buttons & BUTTON_ATTACK))
 		Weapon_HookFree(client->hook);
-	}
 
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
@@ -679,9 +666,8 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0) {
+	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0 && client->ps.pm_type != PM_DEAD)
 		pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
-	}
 
 	// check for invulnerability expansion before doing the Pmove
 	if(client->ps.powerups[PW_INVULNERABILITY]) {
@@ -766,9 +752,8 @@ static void ClientThink_real(gentity_t *ent) {
 	ClientImpacts(ent, &pm);
 
 	// save results of triggers and client events
-	if(ent->client->ps.eventSequence != oldEventSequence) {
+	if(ent->client->ps.eventSequence != oldEventSequence)
 		ent->eventTime = level.time;
-	}
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
@@ -782,9 +767,8 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for respawning
 	if(client->ps.stats[STAT_HEALTH] <= 0) {
-		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE)) {
+		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE))
 			ClientRespawn(ent);
-		}
 		return;
 	}
 
@@ -823,7 +807,7 @@ qboolean G_CheckWeapon(int clientNum, int wp, int finish) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
-	if(ent->swep_list[wp] >= 1) {
+	if(ent->swep_list[wp] >= WS_HAVE) {
 		if(finish) ent->swep_id = wp;
 		ClientUserinfoChanged(clientNum);
 		return qtrue;

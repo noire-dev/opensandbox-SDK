@@ -75,13 +75,7 @@ static int Pickup_Holdable(gentity_t *ent, gentity_t *other) {
 	return RESPAWN_HOLDABLE;
 }
 
-void Set_Weapon(gentity_t *ent, int weapon, int status) {
-	if(status == 1) {
-		ent->swep_list[weapon] = 1;
-	} else {
-		ent->swep_list[weapon] = 0;
-	}
-}
+void Set_Weapon(gentity_t *ent, int weapon, int status) { ent->swep_list[weapon] = status; }
 
 static void Add_Ammo(gentity_t *ent, int weapon, int count) {
 	if(count == 9999) {
@@ -179,11 +173,6 @@ static int Pickup_Armor(gentity_t *ent, gentity_t *other) {
 	return RESPAWN_ARMOR;
 }
 
-/*
-===============
-RespawnItem
-===============
-*/
 void RespawnItem(gentity_t *ent) {
 	int spawn_item;
 	item_t *item;
@@ -225,7 +214,6 @@ void RespawnItem(gentity_t *ent) {
 			"ammo_nails",
 			"ammo_mines",
 			"ammo_belt",
-			"ammo_flame",
 			"item_armor_shard",
 			"item_armor_combat",
 			"item_armor_body",
@@ -287,23 +275,15 @@ void RespawnItem(gentity_t *ent) {
 	ent->nextthink = 0;
 }
 
-/*
-===============
-Touch_Item
-===============
-*/
 void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 	int respawn;
-	qboolean predict;
 
 	if(!other->client) return;
 	if(other->health < 1) return;
 	if(!gameInfoNPCTypes[other->npcType].canPickup) return;
 
 	// the same pickup rules are used for client side and server side
-	if(!BG_CanItemBeGrabbed(g_gametype.integer, &ent->s, &other->client->ps)) {
-		return;
-	}
+	if(!BG_CanItemBeGrabbed(g_gametype.integer, &ent->s, &other->client->ps)) return;
 
 	// call the item-specific pickup function
 	switch(ent->item->giType) {
@@ -311,26 +291,16 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 		case IT_AMMO: respawn = Pickup_Ammo(ent, other); break;
 		case IT_ARMOR: respawn = Pickup_Armor(ent, other); break;
 		case IT_HEALTH: respawn = Pickup_Health(ent, other); break;
-		case IT_POWERUP:
-			respawn = Pickup_Powerup(ent, other);
-			predict = qfalse;
-			break;
+		case IT_POWERUP: respawn = Pickup_Powerup(ent, other); break;
 		case IT_RUNE: respawn = Pickup_PersistantPowerup(ent, other); break;
 		case IT_TEAM: respawn = Pickup_Team(ent, other); break;
 		case IT_HOLDABLE: respawn = Pickup_Holdable(ent, other); break;
 		default: return;
 	}
 
-	if(!respawn) {
-		return;
-	}
+	if(!respawn) return;
 
-	// play the normal pickup sound
-	if(predict) {
-		G_AddPredictableEvent(other, EV_ITEM_PICKUP, ent->s.modelindex);
-	} else {
-		G_AddEvent(other, EV_ITEM_PICKUP, ent->s.modelindex);
-	}
+	G_AddPredictableEvent(other, EV_ITEM_PICKUP, ent->s.modelindex);
 
 	// fire item targets
 	G_UseTargets(ent, other);
@@ -345,9 +315,7 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	// non zero wait overrides respawn time
-	if(ent->wait) {
-		respawn = ent->wait;
-	}
+	if(ent->wait) respawn = ent->wait;
 
 	// random can be used to vary the respawn time
 	if(ent->random) {
@@ -358,9 +326,7 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	// dropped items will not respawn
-	if(ent->flags & FL_DROPPED_ITEM) {
-		ent->freeAfterEvent = qtrue;
-	}
+	if(ent->flags & FL_DROPPED_ITEM) ent->freeAfterEvent = qtrue;
 
 	ent->r.svFlags |= SVF_NOCLIENT;
 	ent->s.eFlags |= EF_NODRAW;
@@ -503,26 +469,9 @@ void FinishSpawningItem(gentity_t *ent) {
 		return;
 	}
 
-	// powerups don't spawn in for a while
-	if(ent->item->giType == IT_POWERUP) {
-		float respawn;
-
-		respawn = 45 + crandom() * 15;
-		ent->s.eFlags |= EF_NODRAW;
-		ent->r.contents = 0;
-		ent->nextthink = level.time + respawn * 1000;
-		ent->think = RespawnItem;
-		return;
-	}
-
 	trap_LinkEntity(ent);
 }
 
-/*
-==================
-G_CheckTeamItems
-==================
-*/
 void G_CheckTeamItems(void) {
 	// Set up team stuff
 	Team_InitGame();
@@ -600,11 +549,6 @@ void G_CheckTeamItems(void) {
 	}
 }
 
-/*
-============
-G_ItemDisabled
-============
-*/
 static int G_ItemDisabled(item_t *item) {
 	char name[128];
 
@@ -634,16 +578,9 @@ void G_SpawnItem(gentity_t *ent, item_t *item) {
 	ent->think = FinishSpawningItem;
 	ent->phys_bounce = 0.50;  // items are bouncy
 
-	if(item->giType == IT_RUNE) {
-		ent->s.generic1 = ent->spawnflags;
-	}
+	if(item->giType == IT_RUNE) ent->s.generic1 = ent->spawnflags;
 }
 
-/*
-================
-G_BounceItem
-================
-*/
 static void G_BounceItem(gentity_t *ent, trace_t *trace) {
 	vec3_t velocity;
 	float dot;
@@ -672,11 +609,6 @@ static void G_BounceItem(gentity_t *ent, trace_t *trace) {
 	ent->s.pos.trTime = level.time;
 }
 
-/*
-================
-G_RunItem
-================
-*/
 void G_RunItem(gentity_t *ent) {
 	vec3_t origin;
 	trace_t tr;
@@ -710,18 +642,14 @@ void G_RunItem(gentity_t *ent) {
 
 	VectorCopy(tr.endpos, ent->r.currentOrigin);
 
-	if(tr.startsolid) {
-		tr.fraction = 0;
-	}
+	if(tr.startsolid) tr.fraction = 0;
 
 	trap_LinkEntity(ent);  // FIXME: avoid this for stationary?
 
 	// check think function
 	G_RunThink(ent);
 
-	if(tr.fraction == 1) {
-		return;
-	}
+	if(tr.fraction == 1) return;
 
 	// if it is in a nodrop volume, remove it
 	contents = trap_PointContents(ent->r.currentOrigin, -1);

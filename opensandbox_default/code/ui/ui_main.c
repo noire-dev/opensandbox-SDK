@@ -63,7 +63,6 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 
 const char *gametype_items[GT_MAX_GAME_TYPE+1] = {
 	"Sandbox",
-	"Map Editor",
 	"Free For All",
 	"Team Deathmatch",
 	"Capture the Flag",

@@ -82,7 +82,6 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 			switch(g_gametype.integer) {
 				default:
 				case GT_SANDBOX:
-				case GT_MAPEDITOR:
 				case GT_FFA: sess->sessionTeam = TEAM_FREE; break;
 			}
 		}

@@ -5,11 +5,6 @@
 
 #include "g_local.h"
 
-/*
-================
-G_FindConfigstringIndex
-================
-*/
 static int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
 	int i;
 	char s[MAX_STRING_CHARS];
@@ -286,7 +281,7 @@ void G_FreeEntity(gentity_t *ed) {
 
 	if(ed->neverFree) return;
 
-	if(ed->sb_vehicle && ed->parent && ed->parent->client->vehicleNum == ed->s.number) {  // Reset vehicle
+	if(ed->objectType == OT_VEHICLE && ed->parent && ed->parent->client->vehicleNum == ed->s.number) {  // Reset vehicle
 		ed->parent->client->vehicleNum = 0;
 		ClientUserinfoChanged(ed->parent->s.clientNum);
 		VectorSet(ed->parent->r.mins, -15, -15, -24);
@@ -295,6 +290,10 @@ void G_FreeEntity(gentity_t *ed) {
 	}
 
 	Phys_Unweld(ed);
+
+	if(!strcmp(ed->classname, "sandbox_npc")){
+		if(ed->parent && ed->parent->client && ed->parent->client->pers.connected == CON_CONNECTED) DropClientSilently(ed->parent->s.clientNum);
+	}
 
 	memset(ed, 0, sizeof(*ed));
 	ed->classname = "freed";
@@ -329,11 +328,6 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 	return e;
 }
 
-/*
-=================
-G_KillBox
-=================
-*/
 void G_KillBox(gentity_t *ent) {
 	int i, num;
 	gentity_t *hit;
@@ -399,11 +393,6 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	ent->eventTime = level.time;
 }
 
-/*
-=============
-G_Sound
-=============
-*/
 void G_Sound(gentity_t *ent, int channel, int soundIndex) {
 	gentity_t *te;
 
@@ -445,19 +434,9 @@ gentity_t *FindEntityForPhysgun(gentity_t *ent, int range) {
 
 	traceEnt = &g_entities[tr.entityNum];  // entity for return
 
-	if(traceEnt->grabbedEntity == ent && g_gametype.integer > GT_MAPEDITOR) {
-		return NULL;
-	}
+	if(traceEnt->grabbedEntity == ent) return NULL;
 
-	if(g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
-		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER) {
-			return NULL;
-		}
-	} else {
-		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
-			return NULL;
-		}
-	}
+	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return NULL;
 
 	if(traceEnt->physParentEnt) {  // WELD-TOOL
 		VectorSubtract(traceEnt->physParentEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
@@ -490,19 +469,9 @@ gentity_t *FindEntityForGravitygun(gentity_t *ent, int range) {
 
 	traceEnt = &g_entities[tr.entityNum];  // entity for return
 
-	if(g_extendedsandbox.integer || g_gametype.integer > GT_MAPEDITOR) {
-		if(!traceEnt->sandboxObject && traceEnt->s.eType != ET_PLAYER) {
-			return NULL;
-		}
-	} else {
-		if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER) {
-			return NULL;
-		}
-	}
+	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return NULL;
 
-	if(traceEnt->phys_weldedObjectsNum || traceEnt->physParentEnt) {  // WELD-TOOL
-		return NULL;
-	}
+	if(traceEnt->phys_weldedObjectsNum || traceEnt->physParentEnt) return NULL;
 
 	VectorSubtract(traceEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
 
@@ -551,20 +520,7 @@ gentity_t *G_FindEntityForEntityNum(int entityNum) {
 	gentity_t *ent;
 
 	for(i = 0, ent = g_entities; i < level.num_entities; i++, ent++) {
-		if(ent && ent->s.number == entityNum && ent->inuse) {
-			return ent;
-		}
-	}
-
-	return NULL;
-}
-
-gentity_t *G_FindEntityForClientNum(int entityNum) {
-	gentity_t *ent;
-
-	ent = &g_entities[entityNum];
-	if(ent && ent->client && ent->inuse) {
-		return ent;
+		if(ent && ent->s.number == entityNum && ent->inuse) return ent;
 	}
 
 	return NULL;
@@ -573,7 +529,7 @@ gentity_t *G_FindEntityForClientNum(int entityNum) {
 qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
 	if(ent->owner) {
 		if(ent->owner != player) {
-			trap_SendServerCommand(player->s.clientNum, va("cllp \"Owned by %s\n\"", ent->owner->client->pers.netname));
+			trap_SendServerCommand(player->s.clientNum, va("lp \"Owned by %s\n\"", ent->owner->client->pers.netname));
 			return qfalse;  // ent owned by another player
 		} else {
 			return qtrue;  // ent owned by this player

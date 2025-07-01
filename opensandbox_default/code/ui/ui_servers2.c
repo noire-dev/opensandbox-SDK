@@ -76,19 +76,12 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 #define GAMES_ALL			0
 #define GAMES_SANDBOX		1
-#define GAMES_MAPEDITOR		2
-#define GAMES_FFA			3
-#define GAMES_TEAMPLAY		4
-#define GAMES_TOURNEY		5
-#define GAMES_CTF			6
-#define GAMES_ONEFLAG		7
-#define GAMES_OBELISK		8
-#define GAMES_HARVESTER		9
-#define GAMES_ELIMINATION	10
-#define GAMES_ELIM_CTF		11
-#define GAMES_LMS			12
-#define GAMES_DD			13
-#define GAMES_DOM			14
+#define GAMES_FFA			2
+#define GAMES_TEAMPLAY		3
+#define GAMES_CTF			4
+#define GAMES_ONEFLAG		5
+#define GAMES_OBELISK		6
+#define GAMES_HARVESTER		7
 
 static const char *master_items[] = {
 	"Local",
@@ -100,7 +93,6 @@ static const char *master_items[] = {
 static const char *servertype_items[] = {
 	"All",
 	"Sandbox",
-	"Map Editor",
 	"Free For All",
 	"Team Deathmatch",
 	"Capture the Flag",
@@ -501,12 +493,6 @@ static void ArenaServers_UpdateMenu( void ) {
 			
 		case GAMES_SANDBOX:
 			if( servernodeptr->gametype != GT_SANDBOX ) {
-				continue;
-			}
-			break;
-
-		case GAMES_MAPEDITOR:
-			if( servernodeptr->gametype != GT_MAPEDITOR ) {
 				continue;
 			}
 			break;
@@ -1042,20 +1028,12 @@ static void ArenaServers_StartRefresh( void )
 			strcpy( myargs, " sandbox" );
 			break;
 
-		case GAMES_MAPEDITOR:
-			strcpy( myargs, " mapeditor" );
-			break;
-
 		case GAMES_FFA:
 			strcpy( myargs, " ffa" );
 			break;
 
 		case GAMES_TEAMPLAY:
 			strcpy( myargs, " team" );
-			break;
-
-		case GAMES_TOURNEY:
-			strcpy( myargs, " tourney" );
 			break;
 
 		case GAMES_CTF:
@@ -1072,26 +1050,6 @@ static void ArenaServers_StartRefresh( void )
 			
 		case GAMES_HARVESTER:
 			strcpy( myargs, " harvester" );
-			break;
-			
-		case GAMES_ELIMINATION:
-			strcpy( myargs, " elimination" );
-			break;
-			
-		case GAMES_ELIM_CTF:
-			strcpy( myargs, " ctfelimination" );
-			break;
-			
-		case GAMES_LMS:
-			strcpy( myargs, " lms" );
-			break;
-			
-		case GAMES_DD:
-			strcpy( myargs, " dd" );
-			break;
-		
-		case GAMES_DOM:
-			strcpy( myargs, " dom" );
 			break;
 		}
 

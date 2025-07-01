@@ -62,7 +62,7 @@ static void Main_MenuDraw( void ) {
 	if (strlen(main.error)){
 		ST_DrawString( 0-uis.wideoffset, 0, main.error, UI_SMALLFONT|UI_DROPSHADOW, color, 1.00 );
 	}
-	ST_DrawString( 610 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color, 1.00 );
+	ST_DrawString( 635 + uis.wideoffset, 2, "2025.04.14", UI_RIGHT|UI_SMALLFONT, color, 1.00 );
 }
 
 void UI_MainMenu( void ) {

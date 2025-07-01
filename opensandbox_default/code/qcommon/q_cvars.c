@@ -21,7 +21,6 @@ cvar_t    g_timelimit;
 cvar_t    g_capturelimit;
 cvar_t    g_gametype;
 cvar_t    g_entitypack;
-cvar_t    g_extendedsandbox;
 cvar_t    g_randomItems;
 cvar_t    g_jumpheight;
 cvar_t    g_friendlyFire;
@@ -45,18 +44,9 @@ cvar_t    g_spawn_railgun;
 cvar_t    g_spawn_plasmagun;
 cvar_t    g_spawn_bfg;
 cvar_t    g_spawn_grapple;
-cvar_t    g_spawn_nail;
-cvar_t    g_spawn_mine;
-cvar_t    g_spawn_chain;
-cvar_t    g_spawn_flame;
-cvar_t    g_spawn_antimatter;
-cvar_t    g_spawn_quad;
-cvar_t    g_spawn_haste;
-cvar_t    g_spawn_bsuit;
-cvar_t    g_spawn_invis;
-cvar_t    g_spawn_regen;
-cvar_t    g_spawn_flight;
-cvar_t    g_spawn_holdable;
+cvar_t    g_spawn_nailgun;
+cvar_t    g_spawn_prox;
+cvar_t    g_spawn_chaingun;
 cvar_t    sv_fps;
 
 static cvarTable_t cvarTable[] = {
@@ -70,7 +60,6 @@ static cvarTable_t cvarTable[] = {
 	{ &g_capturelimit,              "capturelimit",                 "8",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_gametype,                  "g_gametype",                   "0",            CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH },
 	{ &g_entitypack,                "g_entitypack",                 "default",      0 },
-	{ &g_extendedsandbox,           "g_extendedsandbox",            "0",            0 },
 	{ &g_randomItems,               "g_randomItems",                "0",            0 },
 	{ &g_jumpheight,                "g_jumpheight",                 "270",          0 },
 	{ &g_friendlyFire,              "g_friendlyFire",               "0",            CVAR_ARCHIVE },
@@ -85,7 +74,7 @@ static cvarTable_t cvarTable[] = {
 	{ &g_spawn_health,           	"g_spawn_health",            	"100",          CVAR_NORESTART },
 	{ &g_spawn_armor,            	"g_spawn_armor",             	"0",            CVAR_NORESTART },
 	{ &g_spawn_gauntlet,         	"g_spawn_gauntlet",          	"1",            CVAR_NORESTART },
-	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        	"500",          CVAR_NORESTART },
+	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        	"100",          CVAR_NORESTART },
 	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           	"0",            CVAR_NORESTART },
 	{ &g_spawn_grenade,          	"g_spawn_grenade",           	"0",            CVAR_NORESTART },
 	{ &g_spawn_rocket,           	"g_spawn_rocket",            	"0",            CVAR_NORESTART },
@@ -94,18 +83,9 @@ static cvarTable_t cvarTable[] = {
 	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         	"0",            CVAR_NORESTART },
 	{ &g_spawn_bfg,              	"g_spawn_bfg",               	"0",            CVAR_NORESTART },
     { &g_spawn_grapple,          	"g_spawn_grapple",           	"0",            CVAR_NORESTART },
-	{ &g_spawn_nail,             	"g_spawn_nail",              	"0",            CVAR_NORESTART },
-	{ &g_spawn_mine,             	"g_spawn_mine",              	"0",            CVAR_NORESTART },
-	{ &g_spawn_chain,            	"g_spawn_chain",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_flame,            	"g_spawn_flame",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_antimatter,       	"g_spawn_antimatter",        	"0",            CVAR_NORESTART },
-	{ &g_spawn_quad,             	"g_spawn_quad",              	"0",            CVAR_NORESTART },
-	{ &g_spawn_haste,            	"g_spawn_haste",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_bsuit,            	"g_spawn_bsuit",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_invis,            	"g_spawn_invis",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_regen,            	"g_spawn_regen",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_flight,           	"g_spawn_flight",            	"0",            CVAR_NORESTART },
-	{ &g_spawn_holdable,         	"g_spawn_holdable",          	"0",            CVAR_NORESTART },
+	{ &g_spawn_nailgun,             "g_spawn_nailgun",              "0",            CVAR_NORESTART },
+	{ &g_spawn_prox,             	"g_spawn_prox",              	"0",            CVAR_NORESTART },
+	{ &g_spawn_chaingun,            "g_spawn_chaingun",             "0",            CVAR_NORESTART },
 	{ &sv_fps,                      "sv_fps",                    	"60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE }
 };
 #endif

@@ -1168,6 +1168,50 @@ void ST_UpdateColors(void){
 #endif
 }
 
+int ST_StringCount(const char* str) {
+	const char* s;
+	char 		ch;
+	int 		prev_unicode = 0;
+	int			i;
+
+	s = str;
+	i = 0;
+	while (*s) {
+		if (Q_IsColorString(s))  {
+			s += 2;
+			continue;
+		}
+
+		ch = *s & 255;
+
+		// Unicode Russian support
+		if (ch < 0) {
+			if ((ch == -48) || (ch == -47)) {
+				prev_unicode = ch;
+				s++;
+				continue;
+			}
+			if (ch >= -112) {
+				if ((ch == -111) && (prev_unicode == -47)) {
+					ch = ch - 13;
+				} else {
+					ch = ch + 48;
+				}
+			} else {
+				if ((ch == -127) && (prev_unicode == -48)) {
+					// ch = ch +
+				} else {
+					ch = ch + 112; // +64 offset of damn unicode
+				}
+			}
+		}
+		i++;
+		s++;
+	}
+
+	return i;
+}
+
 static void ST_DrawChars(int x, int y, const char* str, vec4_t color, int charw, int charh, int style, qboolean drawShadow) {
 	const char* s;
 	char 		ch;
@@ -1297,11 +1341,11 @@ float ST_StringWidth(const char* str, float size) {
 }
 
 void ST_DrawString(float x, float y, const char* str, int style, vec4_t color, float fontSize) {
-	int		charw;
-	int		charh;
+	float	charw;
+	float	charh;
 	float	*drawcolor;
 	vec4_t	dropcolor;
-	int 	len = strlenru(str);
+	int 	len = ST_StringCount(str);
 	int 	esc = ST_ColorEscapes(str);
 
 	if(!str)

@@ -104,9 +104,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 	vec3_t impactVector;
 	vec3_t end, start, forward, up, right;
 
-	if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) != VCLASS_CAR && !gameInfoNPCTypes[ent->npcType].canPush) {
-		return;
-	}
+	if(!BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) && !gameInfoNPCTypes[ent->npcType].canPush) return;
 
 	// Set Aiming Directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
@@ -145,13 +143,13 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 			}
 			if(impactForce > VEHICLE_DAMAGESENS) {
 				if(hit->grabbedEntity != ent) {
-					if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR || (gameInfoNPCTypes[ent->npcType].friendlyFire || ent->npcType != hit->npcType)) {
+					if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) || (gameInfoNPCTypes[ent->npcType].friendlyFire || ent->npcType != hit->npcType)) {
 						Phys_CarDamage(hit, ent, (int)(impactForce * VEHICLE_DAMAGE));
 					}
 				}
 			}
 			if(impactForce > VEHICLE_DAMAGESENS * 6) {
-				if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE]) == VCLASS_CAR) {
+				if(BG_InVehicle(ent->client->ps.stats[STAT_VEHICLE])) {
 					Phys_Smoke(ent, impactForce * 0.20);
 				}
 			}

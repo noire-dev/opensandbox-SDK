@@ -6,9 +6,9 @@
 #include "g_local.h"
 
 #define OBELISK_HEALTH 2500
-#define OBELISK_REGEN 2500
-#define OBELISK_REGENTIME 2500
-#define OBELISK_RESPAWN 2500
+#define OBELISK_REGEN 15
+#define OBELISK_REGENTIME 1
+#define OBELISK_RESPAWN 10
 
 #define CTF_CAPTURE_BONUS 100
 #define CTF_TEAM_BONUS 25
@@ -180,17 +180,11 @@ OnSameTeam
 ==============
 */
 qboolean OnSameTeam(gentity_t *ent1, gentity_t *ent2) {
-	if(!ent1->client || !ent2->client) {
-		return qfalse;
-	}
+	if(!ent1->client || !ent2->client) return qfalse;
 
-	if(g_gametype.integer < GT_TEAM) {
-		return qfalse;
-	}
+	if(g_gametype.integer < GT_TEAM) return qfalse;
 
-	if(ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam) {
-		return qtrue;
-	}
+	if(ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam) return qtrue;
 
 	return qfalse;
 }
@@ -628,7 +622,7 @@ Obelisks
 */
 static void ObeliskHealthChange(int team, int health) {
 	int currentPercentage;
-	int percentage = (health * 100) / 2500;
+	int percentage = (health * 100) / OBELISK_HEALTH;
 	if(percentage < 0) percentage = 0;
 	currentPercentage = level.healthRedObelisk;
 	if(team != TEAM_RED) currentPercentage = level.healthBlueObelisk;
@@ -645,7 +639,7 @@ static void ObeliskHealthChange(int team, int health) {
 
 static void ObeliskRegen(gentity_t *self) {
 	self->nextthink = level.time + OBELISK_REGENTIME * 1000;
-	ObeliskHealthChange(self->spawnflags,self->health);
+	ObeliskHealthChange(self->spawnflags, self->health);
 	if(self->health >= OBELISK_HEALTH) {
 		return;
 	}
@@ -688,7 +682,7 @@ static void ObeliskDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 
 	AddScore(attacker, CTF_CAPTURE_BONUS);
 
-	ObeliskHealthChange(self->spawnflags,self->health);
+	ObeliskHealthChange(self->spawnflags, self->health);
 	teamgame.redObeliskAttackedTime = 0;
 	teamgame.blueObeliskAttackedTime = 0;
 }

@@ -103,7 +103,6 @@ char* 			entity_items[] = {
 	"ammo_nails",
 	"ammo_mines",
 	"ammo_belt",
-	"ammo_flame",
 	"item_armor_shard",
 	"item_armor_combat",
 	"item_armor_body",
@@ -130,8 +129,6 @@ char* 			entity_items[] = {
 	//Sandbox things
 //	"sb.shooter",
 
-	//Editor things
-//	...
 	0
 };
 
@@ -1456,7 +1453,7 @@ UI_SandboxMainMenu
 ===============
 */
 void UI_SandboxMainMenu( void ) {
-	if(UI_ServerGametype() == GT_SANDBOX || UI_ServerGametype() == GT_MAPEDITOR){
+	if(UI_ServerGametype() == GT_SANDBOX){
 	if(!uis.sb_tab){ uis.sb_tab = 1;}
 	SandboxMain_MenuInit();
 	UI_PushMenu ( &s_sandboxmain.menu );

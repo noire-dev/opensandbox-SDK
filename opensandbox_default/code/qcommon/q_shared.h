@@ -279,9 +279,14 @@ typedef struct {
 
 #ifdef GAME
 #define CopyAlloc(dest, src) do {\
-    dest = G_Alloc(sizeof(src)); \
-    if (dest != NULL) { \
-        strcpy(dest, src); \
+    if(src) { \
+        int len = strlen(src) + 1; \
+        dest = G_Alloc(len); \
+        if (dest != NULL) { \
+            strcpy(dest, src); \
+        } \
+    } else { \
+        dest = NULL; \
     } \
 } while(0)
 #endif
@@ -995,6 +1000,7 @@ extern qhandle_t defaultFont[5];
 
 void ST_RegisterFont(const char* font);
 void ST_UpdateColors(void);
+int ST_StringCount(const char* str);
 void ST_DrawChar(float x, float y, int ch, int style, vec4_t color, float size);
 float ST_StringWidth(const char* str, float size);
 void ST_DrawString(float x, float y, const char* str, int style, vec4_t color, float fontSize);

@@ -24,7 +24,6 @@ typedef struct bot_ctftaskpreference_s
 
 bot_ctftaskpreference_t ctftaskpreferences[MAX_CLIENTS];
 
-
 /*
 ==================
 BotValidTeamLeader

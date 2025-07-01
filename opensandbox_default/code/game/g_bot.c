@@ -89,10 +89,9 @@ static char *G_GetBotInfoByName(const char *name) {
 }
 
 static void G_BotSandboxCheck(gentity_t *self) {
-	if(self->parent && self->parent->health <= 0) {
-		self->think = 0;
-		self->nextthink = level.time + 1;
+	if(!self->parent || !self->parent->client || self->parent->client->pers.connected == CON_DISCONNECTED) {
 		G_FreeEntity(self);
+		return;
 	}
 	VectorCopy(self->parent->s.pos.trBase, self->s.origin);
 	self->think = G_BotSandboxCheck;
@@ -201,7 +200,10 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 		Info_SetValueForKey(userinfo, "npcType", va("%i", spawn->type));
 		spawn->parent = bot;
 		spawn->think = G_BotSandboxCheck;
-		spawn->nextthink = level.time + 1;
+		spawn->nextthink = level.time;
+	} else {
+		Info_SetValueForKey(userinfo, "spawnid", "");
+		Info_SetValueForKey(userinfo, "npcType", "");
 	}
 
 	// register the userinfo
@@ -233,7 +235,7 @@ void Svcmd_AddBot_f(void) {
 	// skill
 	trap_Argv(2, string, sizeof(string));
 	if(!string[0]) {
-		skill = 5;
+		skill = 5.00;
 	} else {
 		skill = atof(string);
 	}
@@ -295,7 +297,8 @@ void SandboxBotSpawn(gentity_t *bot, char spawnid[]) {
 	gentity_t *t;
 	int entityNum;
 
-	if(!bot || !spawnid || !strcmp(spawnid, "")) return;
+	if(!bot || !spawnid) return;
+	if(!strcmp(spawnid, "")) bot->botspawn = NULL;
 
 	entityNum = atoi(spawnid);
 
