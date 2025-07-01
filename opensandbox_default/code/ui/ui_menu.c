@@ -19,19 +19,14 @@ typedef struct {
 static mainmenu_t main;
 
 static void MainMenu_ReloadAction( qboolean result ) {
-	if( !result ) { return; }
+	if( !result ) return;
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, "game_restart;" );
 }
 
 static void MainMenu_ReloadGame( void )
 {
-	if(cl_language.integer == 0){
-		UI_ConfirmMenu( "RELOAD GAME?", MainMenu_ReloadAction );
-	}
-	if(cl_language.integer == 1){
-		UI_ConfirmMenu( "ПЕРЕЗАГРУЗИТЬ ИГРУ?", MainMenu_ReloadAction );
-	}
+		UI_ConfirmMenu( "RELOAD GAME?", MainMenu_ReloadAction )
 }
 
 static void Main_MenuEvent (void* ptr, int event) {

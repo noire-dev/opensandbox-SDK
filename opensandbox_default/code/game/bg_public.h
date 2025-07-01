@@ -424,6 +424,9 @@ typedef struct NPCFactions_s {
 extern	NPCFactions_t		gameInfoFactions[];
 extern	int					gameInfoFactionsNum;
 
+extern	char*				gameInfoSandboxSpawns[];
+extern	int					gameInfoSandboxSpawnsNum;
+
 // entityState_t->event values
 // entity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.

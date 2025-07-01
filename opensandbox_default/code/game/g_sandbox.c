@@ -5,72 +5,6 @@
 
 #include "g_local.h"
 
-static char* sandbox_class_allowed[] = { //classes allowed in Sandbox
-	"",
-	"none",
-	"weapon_machinegun",
-	"weapon_shotgun",
-	"weapon_grenadelauncher",
-	"weapon_rocketlauncher",
-	"weapon_lightning",
-	"weapon_railgun",
-	"weapon_plasmagun",
-	"weapon_bfg",
-	"weapon_grapplinghook",
-	"weapon_nailgun",
-	"weapon_prox_launcher",
-	"weapon_chaingun",
-	"weapon_flamethrower",
-	"weapon_antimatter",
-	"weapon_physgun",
-	"weapon_gravitygun",
-	"weapon_toolgun",
-	"weapon_thrower",
-	"weapon_bouncer",
-	"weapon_thunder",
-	"weapon_exploder",
-	"weapon_knocker",
-	"weapon_propgun",
-	"weapon_regenerator",
-	"weapon_nuke",
-	"ammo_bullets",
-	"ammo_shells",
-	"ammo_grenades",
-	"ammo_cells",
-	"ammo_lightning",
-	"ammo_rockets",
-	"ammo_slugs",
-	"ammo_bfg",
-	"ammo_nails",
-	"ammo_mines",
-	"ammo_belt",
-	"item_armor_shard",
-	"item_armor_combat",
-	"item_armor_body",
-	"item_health_small",
-	"item_health",
-	"item_health_large",
-	"item_health_mega",
-	"item_quad",
-	"item_enviro",
-	"item_haste",
-	"item_invis",
-	"item_regen",
-	"item_flight",
-	"item_scout",
-	"item_doubler",
-	"item_ammoregen",
-	"item_guard",
-	"holdable_teleporter",
-	"holdable_medkit",
-	"holdable_kamikaze",
-	"holdable_invulnerability",
-	"holdable_portal",
-
-	"sb.shooter",
-	0
-};
-
 static void SB_Shooter_Use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	vec3_t dir;
 	vec3_t up, right;
@@ -282,8 +216,8 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	ent = G_Spawn();
 	CopyAlloc(ent->classname, arg03);
 	CopyAlloc(ent->sb_class, arg03);
-	for(i = 0; sandbox_class_allowed[i] != 0; i++) {  // Check allowed sandbox list
-		if(!strcmp(ent->classname, sandbox_class_allowed[i])) {
+	for(i = 0; i < gameInfoSandboxSpawnsNum; i++) {  // Check allowed sandbox list
+		if(!strcmp(ent->classname, gameInfoSandboxSpawns[i])) {
 			allow_spawn = qtrue;
 		}
 	}

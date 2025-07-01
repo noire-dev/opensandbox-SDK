@@ -190,7 +190,7 @@ static void CG_ServerCommand(void) {
 	}
 
 	if(!strcmp(cmd, "lp")) {
-		CG_CenterPrint(CG_Argv(1), SCREEN_HEIGHT * 0.90, BASEFONT_INDENT);
+		CG_CenterPrint(CG_Argv(1), SCREEN_HEIGHT * 0.85, BASEFONT_INDENT);
 		return;
 	}
 

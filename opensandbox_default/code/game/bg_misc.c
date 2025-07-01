@@ -133,7 +133,7 @@ NPCTypes_t gameInfoNPCTypes[] = {
 };
 int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 
-NPCFactions_t gameInfoNPCFactions[] = {
+NPCFactions_t gameInfoFactions[] = {
 //	faction				attackMask																				
 	{ FRAC_NONE,		FRAC_NONE,																											}, //NT_NONE
 	{ FRAC_PLAYER,		0xFFFFFFFF,																											}, //NT_PLAYER
@@ -143,7 +143,73 @@ NPCFactions_t gameInfoNPCFactions[] = {
 	{ FRAC_PARTNER,		FRAC_ENEMY,																											}, //NT_PARTNER
 	{ FRAC_NEXTBOT,		FRAC_PLAYER|FRAC_ENEMY|FRAC_CITIZEN|FRAC_GUARD|FRAC_PARTNER,														}, //NT_NEXTBOT
 };
-int	gameInfoNPCFactionsNum = ARRAY_SIZE(gameInfoNPCFactions);
+int	gameInfoFactionsNum = ARRAY_SIZE(gameInfoFactions);
+
+char* gameInfoSandboxSpawns[] = {
+	"",
+	"none",
+	"weapon_machinegun",
+	"weapon_shotgun",
+	"weapon_grenadelauncher",
+	"weapon_rocketlauncher",
+	"weapon_lightning",
+	"weapon_railgun",
+	"weapon_plasmagun",
+	"weapon_bfg",
+	"weapon_grapplinghook",
+	"weapon_nailgun",
+	"weapon_prox_launcher",
+	"weapon_chaingun",
+	"weapon_flamethrower",
+	"weapon_antimatter",
+	"weapon_physgun",
+	"weapon_gravitygun",
+	"weapon_toolgun",
+	"weapon_thrower",
+	"weapon_bouncer",
+	"weapon_thunder",
+	"weapon_exploder",
+	"weapon_knocker",
+	"weapon_propgun",
+	"weapon_regenerator",
+	"weapon_nuke",
+	"ammo_bullets",
+	"ammo_shells",
+	"ammo_grenades",
+	"ammo_cells",
+	"ammo_lightning",
+	"ammo_rockets",
+	"ammo_slugs",
+	"ammo_bfg",
+	"ammo_nails",
+	"ammo_mines",
+	"ammo_belt",
+	"item_armor_shard",
+	"item_armor_combat",
+	"item_armor_body",
+	"item_health_small",
+	"item_health",
+	"item_health_large",
+	"item_health_mega",
+	"item_quad",
+	"item_enviro",
+	"item_haste",
+	"item_invis",
+	"item_regen",
+	"item_flight",
+	"item_scout",
+	"item_doubler",
+	"item_ammoregen",
+	"item_guard",
+	"holdable_teleporter",
+	"holdable_medkit",
+	"holdable_kamikaze",
+	"holdable_invulnerability",
+	"holdable_portal",
+
+	"sb.shooter",
+};
+int	gameInfoSandboxSpawnsNum = ARRAY_SIZE(gameInfoSandboxSpawns);
 
 int BG_FindNPCTypeID(const char *name) {
 	int i;
@@ -160,9 +226,9 @@ int BG_FindNPCTypeID(const char *name) {
 qboolean BG_FactionShouldAttack(int attackerFaction, int targetFaction) {
 	int i;
 
-	for(i = 0; i < gameInfoNPCFactionsNum; i++) {
-		if(gameInfoNPCFactions[i].faction == attackerFaction) {
-			if(gameInfoNPCFactions[i].attackMask & targetFaction) return qtrue;
+	for(i = 0; i < gameInfoFactionsNum; i++) {
+		if(gameInfoFactions[i].faction == attackerFaction) {
+			if(gameInfoFactions[i].attackMask & targetFaction) return qtrue;
 			break;
 		}
 	}
