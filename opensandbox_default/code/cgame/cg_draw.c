@@ -64,8 +64,8 @@ static void CG_Draw3DModelToolgun(float x, float y, float w, float h, qhandle_t 
 	refdef.fov_y = 90;
 
 	ent.reType = RT_MODEL;
-	ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%s.skin", texlocation, material));
-	if(atoi(material) > 0) ent.customShader = trap_R_RegisterShader(va("ptex/%s/%s", texlocation, material));
+	ent.customSkin = trap_R_RegisterSkin(va("mtr/%s/%s.skin", texlocation, material));
+	if(atoi(material) > 0) ent.customShader = trap_R_RegisterShader(va("mtr/%s/%s", texlocation, material));
 	if(atoi(material) == 255) ent.customShader = cgs.media.ptexShader[1];
 
 	refdef.x = x;
@@ -214,13 +214,13 @@ static void CG_DrawToolgun() {
 
 	CG_DrawPic(-1 - cgs.wideoffset, 40, 300, 125, trap_R_RegisterShaderNoMip("menu/assets/blacktrans"));
 	ST_DrawString(0 - cgs.wideoffset, 42, toolgun_tooltext.string, UI_LEFT, color_white, 2.50);
-	if(toolgun_mod19.integer == 0) {
+	if(toolgun_mod5.integer == 0) {
 		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode1.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod19.integer == 1) {
+	} else if(toolgun_mod5.integer == 1) {
 		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode2.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod19.integer == 2) {
+	} else if(toolgun_mod5.integer == 2) {
 		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode3.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod19.integer == 3) {
+	} else if(toolgun_mod5.integer == 3) {
 		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode4.string, UI_LEFT, color_white, 1.32);
 	}
 	y = 90;
@@ -577,7 +577,7 @@ static void CG_DrawPowerups(void) {
 	playerState_t *ps = &cg.snap->ps;
 	item_t *item;
 	int i, t;
-	float y = 125;
+	float y = 150;
 
 	if(ps->stats[STAT_HEALTH] <= 0) return;
 
@@ -990,34 +990,35 @@ static void CG_Draw2D(void) {
 	if(!cg_draw2D.integer) return;
 
 	if(!(catcher & KEYCATCH_MESSAGE)) CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cgs.wideoffset, 0, 1.00);
-	CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cgs.wideoffset, 80, 1.00);
-	CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cgs.wideoffset, 350, 1.00);
+	if(!(catcher & KEYCATCH_UI)){
+		CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cgs.wideoffset, 80, 1.00);
+		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cgs.wideoffset, 350, 1.00);
+	}
 
 	CG_DrawCrosshair();
-	CG_ScanForCrosshairEntity();
 	CG_DrawCounters();
-	CG_DrawPowerups();
-	CG_DrawFollow();
-	CG_Notify();
-
-	if(!cg.scoreBoardShowing) CG_Draw1FCTF();
-
-	CG_NSErrors();
+	if(!(catcher & KEYCATCH_UI)){
+		CG_ScanForCrosshairEntity();
+		CG_DrawPowerups();
+		CG_DrawFollow();
+		CG_Notify();
+		if(!cg.scoreBoardShowing) CG_Draw1FCTF();
+		CG_NSErrors();
+	}
 
 	if(cg.snap->ps.pm_type == PM_INTERMISSION) {
 		CG_DrawIntermission();
 		return;
 	}
 
-	if(!cg.scoreBoardShowing) CG_DrawCenterString();
-
 	if(cg.snap->ps.pm_type != PM_INTERMISSION && cg.snap->ps.pm_type != PM_DEAD && cg.snap->ps.pm_type != PM_SPECTATOR) CG_DrawStatusBar();
 
-	cg.scoreBoardShowing = CG_DrawScoreboard();
-
-	if(cgs.gametype != GT_SANDBOX) CG_DrawScores();
-
-	if(cg.snap->ps.pm_type == PM_DEAD) CG_DrawDeathMessage();
+	if(!(catcher & KEYCATCH_UI)){
+		if(!cg.scoreBoardShowing) CG_DrawCenterString();
+		cg.scoreBoardShowing = CG_DrawScoreboard();
+		if(cgs.gametype != GT_SANDBOX) CG_DrawScores();
+		if(cg.snap->ps.pm_type == PM_DEAD) CG_DrawDeathMessage();
+	}
 }
 
 static char cgameThreadBuffer[MAX_CYCLE_SIZE];

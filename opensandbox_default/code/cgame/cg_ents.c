@@ -120,15 +120,15 @@ static void CG_General(centity_t *cent) {
 	}
 	ent.reType = RT_MODEL;
 	if(!s1->modelindex2) {
-		ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString(CS_MODELS + s1->modelindex), s1->generic2));
+		ent.customSkin = trap_R_RegisterSkin(va("mtr/%s/%i.skin", CG_ConfigString(CS_MODELS + s1->modelindex), s1->generic2));
 	} else {
-		ent.customSkin = trap_R_RegisterSkin(va("ptex/%s/%i.skin", CG_ConfigString(CS_MODELS + s1->modelindex2), s1->generic2));
+		ent.customSkin = trap_R_RegisterSkin(va("mtr/%s/%i.skin", CG_ConfigString(CS_MODELS + s1->modelindex2), s1->generic2));
 	}
 	if(s1->generic2 > 0) {
 		if(!s1->modelindex2) {
-			ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString(CS_MODELS + s1->modelindex), s1->generic2));
+			ent.customShader = trap_R_RegisterShader(va("mtr/%s/%i", CG_ConfigString(CS_MODELS + s1->modelindex), s1->generic2));
 		} else {
-			ent.customShader = trap_R_RegisterShader(va("ptex/%s/%i", CG_ConfigString(CS_MODELS + s1->modelindex2), s1->generic2));
+			ent.customShader = trap_R_RegisterShader(va("mtr/%s/%i", CG_ConfigString(CS_MODELS + s1->modelindex2), s1->generic2));
 		}
 	}
 	if(s1->generic2 == 255) {

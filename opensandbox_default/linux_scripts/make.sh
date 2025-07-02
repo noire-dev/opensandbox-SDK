@@ -171,33 +171,21 @@ cd linux/build/ui
 # Files to compile to               ui.qvm
 # ########################################
 
-$cc ../../../code/ui/ui_addbots.c
 $cc ../../../code/ui/ui_atoms.c
-$cc ../../../code/ui/ui_confirm.c
 $cc ../../../code/ui/ui_connect.c
 $cc ../../../code/ui/ui_controls2.c
-$cc ../../../code/ui/ui_demo2.c
-$cc ../../../code/ui/ui_display.c
 $cc ../../../code/ui/ui_gameinfo.c
-$cc ../../../code/ui/ui_loadconfig.c
-$cc ../../../code/ui/ui_loadconfiged.c
 $cc ../../../code/ui/ui_main.c
 $cc ../../../code/ui/ui_menu.c
-$cc ../../../code/ui/ui_mods.c
-$cc ../../../code/ui/ui_network.c
+$cc ../../../code/ui/ui_newgame.c
 $cc ../../../code/ui/ui_options.c
 $cc ../../../code/ui/ui_playermodel.c
 $cc ../../../code/ui/ui_players.c
-$cc ../../../code/ui/ui_playersettings.c
-$cc ../../../code/ui/ui_preferences.c
 $cc ../../../code/ui/ui_qmenu.c
-$cc ../../../code/ui/ui_removebots.c
-$cc ../../../code/ui/ui_sandbox.c
-$cc ../../../code/ui/ui_saveconfiged.c
+$cc ../../../code/ui/ui_spawnmenu.c
 $cc ../../../code/ui/ui_servers2.c
-$cc ../../../code/ui/ui_sound.c
+$cc ../../../code/ui/ui_settings.c
 $cc ../../../code/ui/ui_specifyserver.c
-$cc ../../../code/ui/ui_video.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 

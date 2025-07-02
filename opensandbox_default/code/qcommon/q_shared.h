@@ -290,23 +290,6 @@ typedef struct {
     } \
 } while(0)
 #endif
-#ifdef UI
-#define CopyAlloc(dest, src) do {\
-    dest = UI_Alloc(sizeof(src)); \
-    if (dest != NULL) { \
-        strcpy(dest, src); \
-    } \
-} while(0)
-#endif
-
-#ifdef GAME
-#define Q_malloc(size) G_Alloc(size)
-#endif
-
-#ifdef UI
-#define Q_malloc(size) UI_Alloc(size)
-#define Q_free(ptr) UI_Free(ptr)
-#endif
 
 #define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
 // just in case you do't want to use the macros

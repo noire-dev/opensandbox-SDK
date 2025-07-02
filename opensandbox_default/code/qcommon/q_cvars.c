@@ -21,7 +21,6 @@ cvar_t    g_timelimit;
 cvar_t    g_capturelimit;
 cvar_t    g_gametype;
 cvar_t    g_entitypack;
-cvar_t    g_randomItems;
 cvar_t    g_jumpheight;
 cvar_t    g_friendlyFire;
 cvar_t    g_password;
@@ -34,7 +33,6 @@ cvar_t    g_enableDust;
 cvar_t    g_enableBreath;
 cvar_t    g_spawn_health;
 cvar_t    g_spawn_armor;
-cvar_t    g_spawn_gauntlet;
 cvar_t    g_spawn_machinegun;
 cvar_t    g_spawn_shotgun;
 cvar_t    g_spawn_grenade;
@@ -54,38 +52,36 @@ static cvarTable_t cvarTable[] = {
 	{ NULL,                         "gamedate",                     __DATE__,       CVAR_ROM },
 	{ &sv_cheats,                   "sv_cheats",                  	"0",            0 },
 	{ &g_maxClients,                "g_maxClients",                 "128",          CVAR_SERVERINFO|CVAR_ARCHIVE },
-	{ &g_maxEntities,               "g_maxEntities",                "1024",         CVAR_SERVERINFO|CVAR_ARCHIVE },
+	{ &g_maxEntities,               "g_maxEntities",                "4096",         CVAR_SERVERINFO|CVAR_ARCHIVE },
 	{ &g_fraglimit,                 "fraglimit",                    "20",           CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_timelimit,                 "timelimit",                    "0",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_capturelimit,              "capturelimit",                 "8",            CVAR_SERVERINFO|CVAR_ARCHIVE|CVAR_NORESTART },
 	{ &g_gametype,                  "g_gametype",                   "0",            CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH },
-	{ &g_entitypack,                "g_entitypack",                 "default",      0 },
-	{ &g_randomItems,               "g_randomItems",                "0",            0 },
+	{ &g_entitypack,                "g_entitypack",                 "default",      CVAR_ARCHIVE },
 	{ &g_jumpheight,                "g_jumpheight",                 "270",          0 },
 	{ &g_friendlyFire,              "g_friendlyFire",               "0",            CVAR_ARCHIVE },
 	{ &g_password,                  "g_password",                   "",             CVAR_USERINFO },
 	{ &g_dedicated,                 "dedicated",                    "0",            0 },
-	{ &g_speed,                     "g_speed",                      "320",          0 },
-	{ &g_gravity,                   "g_gravity",                    "800",          0 },
+	{ &g_speed,                     "g_speed",                      "320",          CVAR_ARCHIVE },
+	{ &g_gravity,                   "g_gravity",                    "800",          CVAR_ARCHIVE },
 	{ &g_knockback,                 "g_knockback",                  "1000",         0 },
 	{ &g_blood,                     "com_blood",                    "1",            0 },
 	{ &g_enableDust,                "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &g_enableBreath,              "g_enableBreath",               "0",            CVAR_SERVERINFO },
-	{ &g_spawn_health,           	"g_spawn_health",            	"100",          CVAR_NORESTART },
-	{ &g_spawn_armor,            	"g_spawn_armor",             	"0",            CVAR_NORESTART },
-	{ &g_spawn_gauntlet,         	"g_spawn_gauntlet",          	"1",            CVAR_NORESTART },
-	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        	"100",          CVAR_NORESTART },
-	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           	"0",            CVAR_NORESTART },
-	{ &g_spawn_grenade,          	"g_spawn_grenade",           	"0",            CVAR_NORESTART },
-	{ &g_spawn_rocket,           	"g_spawn_rocket",            	"0",            CVAR_NORESTART },
-	{ &g_spawn_lightning,        	"g_spawn_lightning",         	"0",            CVAR_NORESTART },
-	{ &g_spawn_railgun,          	"g_spawn_railgun",           	"0",            CVAR_NORESTART },
-	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         	"0",            CVAR_NORESTART },
-	{ &g_spawn_bfg,              	"g_spawn_bfg",               	"0",            CVAR_NORESTART },
-    { &g_spawn_grapple,          	"g_spawn_grapple",           	"0",            CVAR_NORESTART },
-	{ &g_spawn_nailgun,             "g_spawn_nailgun",              "0",            CVAR_NORESTART },
-	{ &g_spawn_prox,             	"g_spawn_prox",              	"0",            CVAR_NORESTART },
-	{ &g_spawn_chaingun,            "g_spawn_chaingun",             "0",            CVAR_NORESTART },
+	{ &g_spawn_health,           	"g_spawn_health",            	"100",          CVAR_ARCHIVE },
+	{ &g_spawn_armor,            	"g_spawn_armor",             	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_machinegun,       	"g_spawn_machinegun",        	"100",          CVAR_ARCHIVE },
+	{ &g_spawn_shotgun,          	"g_spawn_shotgun",           	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_grenade,          	"g_spawn_grenade",           	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_rocket,           	"g_spawn_rocket",            	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_lightning,        	"g_spawn_lightning",         	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_railgun,          	"g_spawn_railgun",           	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_plasmagun,        	"g_spawn_plasmagun",         	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_bfg,              	"g_spawn_bfg",               	"0",            CVAR_ARCHIVE },
+    { &g_spawn_grapple,          	"g_spawn_grapple",           	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_nailgun,             "g_spawn_nailgun",              "0",            CVAR_ARCHIVE },
+	{ &g_spawn_prox,             	"g_spawn_prox",              	"0",            CVAR_ARCHIVE },
+	{ &g_spawn_chaingun,            "g_spawn_chaingun",             "0",            CVAR_ARCHIVE },
 	{ &sv_fps,                      "sv_fps",                    	"60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE }
 };
 #endif
@@ -107,30 +103,14 @@ cvar_t    physB;
 cvar_t    cg_effectsTime;
 cvar_t    cg_effectsLimit;
 cvar_t    cg_effectsGibs;
+cvar_t    spawn_cmd;
+cvar_t    toolgun_cmd;
 cvar_t    toolgun_mod1;
 cvar_t    toolgun_mod2;
 cvar_t    toolgun_mod3;
 cvar_t    toolgun_mod4;
 cvar_t    toolgun_mod5;
-cvar_t    toolgun_mod6;
-cvar_t    toolgun_mod7;
-cvar_t    toolgun_mod8;
-cvar_t    toolgun_mod9;
-cvar_t    toolgun_mod10;
-cvar_t    toolgun_mod11;
-cvar_t    toolgun_mod12;
-cvar_t    toolgun_mod13;
-cvar_t    toolgun_mod14;
-cvar_t    toolgun_mod15;
-cvar_t    toolgun_mod16;
-cvar_t    toolgun_mod17;
-cvar_t    toolgun_mod18;
-cvar_t    toolgun_mod19;
 cvar_t    toolgun_tool;
-cvar_t    toolgun_toolcmd1;
-cvar_t    toolgun_toolcmd2;
-cvar_t    toolgun_toolcmd3;
-cvar_t    toolgun_toolcmd4;
 cvar_t    toolgun_tooltext;
 cvar_t    toolgun_tooltip1;
 cvar_t    toolgun_tooltip2;
@@ -143,15 +123,13 @@ cvar_t    toolgun_toolmode4;
 cvar_t    cg_hide255;
 cvar_t    ns_haveerror;
 cvar_t    cg_postprocess;
-cvar_t    cl_language;
-cvar_t    cg_disableBobbing;
+cvar_t    cg_enableBobbing;
 cvar_t    cg_shadows;
 cvar_t    cg_drawTimer;
 cvar_t    cg_drawFPS;
 cvar_t    cg_drawCrosshair;
 cvar_t    cg_crosshairScale;
 cvar_t    cg_draw2D;
-cvar_t    cg_debugEvents;
 cvar_t    cg_addMarks;
 cvar_t    cg_drawGun;
 cvar_t    cg_fov;
@@ -162,7 +140,6 @@ cvar_t    cg_thirdPersonOffset;
 cvar_t    cg_drawSpeed;
 cvar_t    cg_paused;
 cvar_t    cg_blood;
-cvar_t    cg_drawFriend;
 cvar_t    cg_cameraEyes;
 cvar_t    cg_cameraEyes_Fwd;
 cvar_t    cg_cameraEyes_Up;
@@ -170,12 +147,9 @@ cvar_t    cg_noProjectileTrail;
 cvar_t    cg_enableDust;
 cvar_t    cg_enableBreath;
 cvar_t    sv_fps;
-cvar_t    cg_atmosphericLevel;
 cvar_t    cg_crosshairColorRed;
 cvar_t    cg_crosshairColorGreen;
 cvar_t    cg_crosshairColorBlue;
-cvar_t    cg_chatBeep;
-cvar_t    cg_teamChatBeep;
 
 static cvarTable_t cvarTable[] = {
 	{ &g_gametype,                      "g_gametype",                    "0",           0 },
@@ -194,30 +168,14 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_effectsTime,                  "cg_effectsTime",               "10",           CVAR_ARCHIVE },
 	{ &cg_effectsLimit,                 "cg_effectsLimit",              "4096",         CVAR_ARCHIVE },
 	{ &cg_effectsGibs,                  "cg_effectsGibs",               "1",            CVAR_ARCHIVE },
+	{ &spawn_cmd,                    	"spawn_cmd",                 	"0",            0 },
+	{ &toolgun_cmd,                    	"toolgun_cmd",                 	"0",            0 },
 	{ &toolgun_mod1,                    "toolgun_mod1",                 "0",            0 },
 	{ &toolgun_mod2,                    "toolgun_mod2",                 "0",            0 },
 	{ &toolgun_mod3,                    "toolgun_mod3",                 "0",            0 },
 	{ &toolgun_mod4,                    "toolgun_mod4",                 "0",            0 },
 	{ &toolgun_mod5,                    "toolgun_mod5",                 "0",            0 },
-	{ &toolgun_mod6,                    "toolgun_mod6",                 "0",            0 },
-	{ &toolgun_mod7,                    "toolgun_mod7",                 "0",            0 },
-	{ &toolgun_mod8,                    "toolgun_mod8",                 "0",            0 },
-	{ &toolgun_mod9,                    "toolgun_mod9",                 "0",            0 },
-	{ &toolgun_mod10,                   "toolgun_mod10",                "0",            0 },
-	{ &toolgun_mod11,                   "toolgun_mod11",                "0",            0 },
-	{ &toolgun_mod12,                   "toolgun_mod12",                "0",            0 },
-	{ &toolgun_mod13,                   "toolgun_mod13",                "0",            0 },
-	{ &toolgun_mod14,                   "toolgun_mod14",                "0",            0 },
-	{ &toolgun_mod15,                   "toolgun_mod15",                "0",            0 },
-	{ &toolgun_mod16,                   "toolgun_mod16",                "0",            0 },
-	{ &toolgun_mod17,                   "toolgun_mod17",                "0",            0 },
-	{ &toolgun_mod18,                   "toolgun_mod18",                "0",            0 },
-	{ &toolgun_mod19,                   "toolgun_mod19",                "0",            0 },
 	{ &toolgun_tool,                    "toolgun_tool",                 "0",            CVAR_USERINFO },
-	{ &toolgun_toolcmd1,                "toolgun_toolcmd1",             "",             0 },
-	{ &toolgun_toolcmd2,                "toolgun_toolcmd2",             "",             0 },
-	{ &toolgun_toolcmd3,                "toolgun_toolcmd3",             "",             0 },
-	{ &toolgun_toolcmd4,                "toolgun_toolcmd4",             "",             0 },
 	{ &toolgun_tooltext,                "toolgun_tooltext",             "",             0 },
 	{ &toolgun_tooltip1,                "toolgun_tooltip1",             "",             0 },
 	{ &toolgun_tooltip2,                "toolgun_tooltip2",             "",             0 },
@@ -230,7 +188,6 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_hide255,                      "cg_hide255",                   "0",            0 },
 	{ &ns_haveerror,                    "ns_haveerror",                 "0",            0 },
 	{ &cg_postprocess,                  "cg_postprocess",               "",             0 },
-	{ &cl_language,                     "cl_language",                  "0",            CVAR_ARCHIVE },
 	{ &cg_drawGun,                      "cg_drawGun",                   "1",            CVAR_ARCHIVE },
 	{ &cg_zoomFov,                      "cg_zoomfov",                   "22",           CVAR_ARCHIVE },
 	{ &cg_fov,                          "cg_fov",                       "110",          CVAR_ARCHIVE },
@@ -242,97 +199,33 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawCrosshair,                "cg_drawCrosshair",             "4",            CVAR_ARCHIVE },
 	{ &cg_crosshairScale,               "cg_crosshairScale",            "24",           CVAR_ARCHIVE },
 	{ &cg_addMarks,                     "cg_addMarks",                  "1",            CVAR_ARCHIVE },
-	{ &cg_disableBobbing,               "cg_disableBobbing",            "0",            CVAR_ARCHIVE },
-	{ &cg_debugEvents,                  "cg_debugevents",               "0",            CVAR_CHEAT },
+	{ &cg_enableBobbing,               	"cg_enableBobbing",            	"1",            CVAR_ARCHIVE },
 	{ &cg_thirdPersonRange,             "cg_thirdPersonRange",          "65",           CVAR_ARCHIVE },
 	{ &cg_thirdPersonOffset,            "cg_thirdPersonOffset",         "25",           CVAR_ARCHIVE },
 	{ &cg_thirdPerson,                  "cg_thirdPerson",               "0",            CVAR_ARCHIVE},
-	{ &cg_atmosphericLevel,             "cg_atmosphericLevel",          "1",            CVAR_ARCHIVE },
-	{ &cg_drawFriend,                   "cg_drawFriend",                "1",            CVAR_ARCHIVE },
 	{ &cg_paused,                       "cl_paused",                    "0",            CVAR_ROM },
 	{ &cg_blood,                        "com_blood",                    "1",            CVAR_ARCHIVE },
 	{ &cg_enableDust,                   "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ &cg_enableBreath,                 "g_enableBreath",               "0",            CVAR_SERVERINFO },
 	{ &cg_noProjectileTrail,            "cg_noProjectileTrail",         "0",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes,                   "cg_cameraEyes",                "0",            CVAR_ARCHIVE },
-	{ &cg_cameraEyes_Fwd,               "cg_cameraEyes_Fwd",            "0",            CVAR_ARCHIVE },
+	{ &cg_cameraEyes_Fwd,               "cg_cameraEyes_Fwd",            "-2",            CVAR_ARCHIVE },
 	{ &cg_cameraEyes_Up,                "cg_cameraEyes_Up",             "7",            CVAR_ARCHIVE },
 	{ &sv_fps,                          "sv_fps",                       "60",           CVAR_SYSTEMINFO },
 	{ &cg_crosshairColorRed,            "cg_crosshairColorRed",         "0.5",          CVAR_ARCHIVE|CVAR_USERINFO },
     { &cg_crosshairColorGreen,          "cg_crosshairColorGreen",       "0.75",         CVAR_ARCHIVE|CVAR_USERINFO },
-    { &cg_crosshairColorBlue,           "cg_crosshairColorBlue",        "1.0",          CVAR_ARCHIVE|CVAR_USERINFO },
-    { &cg_chatBeep,                     "cg_chatBeep",                  "1",            CVAR_ARCHIVE },
-    { &cg_teamChatBeep,                 "cg_teamChatBeep",              "1",            CVAR_ARCHIVE }
+    { &cg_crosshairColorBlue,           "cg_crosshairColorBlue",        "1.0",          CVAR_ARCHIVE|CVAR_USERINFO }
 };
 #endif
 
 #ifdef UI
-cvar_t    sb_private;
-cvar_t    sb_texture;
-cvar_t    sb_grid;
-cvar_t    sb_modelnum;
-cvar_t    sb_classnum;
-cvar_t    sb_texturenum;
-cvar_t    sb_tab;
 cvar_t    spawn_preset;
-cvar_t    tool_spawnpreset;
-cvar_t    tool_modifypreset;
-cvar_t    tool_modifypreset2;
-cvar_t    tool_modifypreset3;
-cvar_t    tool_modifypreset4;
-cvar_t    sb_ctab_1;
-cvar_t    sb_ctab_2;
-cvar_t    sb_ctab_3;
-cvar_t    sb_ctab_4;
-cvar_t    sb_ctab_5;
-cvar_t    sb_ctab_6;
-cvar_t    sb_ctab_7;
-cvar_t    sb_ctab_8;
-cvar_t    sb_ctab_9;
-cvar_t    sb_ctab_10;
 cvar_t    toolgun_toolset1;
 cvar_t    toolgun_toolset2;
 cvar_t    toolgun_toolset3;
 cvar_t    toolgun_toolset4;
-cvar_t    toolgun_toolset5;
-cvar_t    toolgun_toolset6;
-cvar_t    toolgun_toolset7;
-cvar_t    toolgun_toolset8;
-cvar_t    toolgun_toolset9;
-cvar_t    toolgun_toolset10;
-cvar_t    toolgun_toolset11;
-cvar_t    toolgun_toolset12;
-cvar_t    toolgun_toolset13;
-cvar_t    toolgun_toolset14;
-cvar_t    toolgun_toolset15;
-cvar_t    toolgun_toolset16;
-cvar_t    toolgun_toolset17;
-cvar_t    toolgun_toolset18;
-cvar_t    toolgun_disabledarg1;
-cvar_t    toolgun_disabledarg2;
-cvar_t    toolgun_disabledarg3;
-cvar_t    toolgun_disabledarg4;
-cvar_t    sbt_color0_0;
-cvar_t    sbt_color0_1;
-cvar_t    sbt_color0_2;
-cvar_t    sbt_color0_3;
-cvar_t    sbt_color1_0;
-cvar_t    sbt_color1_1;
-cvar_t    sbt_color1_2;
-cvar_t    sbt_color1_3;
-cvar_t    sbt_color2_0;
-cvar_t    sbt_color2_1;
-cvar_t    sbt_color2_2;
-cvar_t    sbt_color2_3;
-cvar_t    sbt_color3_0;
-cvar_t    sbt_color3_1;
-cvar_t    sbt_color3_2;
-cvar_t    sbt_color3_3;
-cvar_t    sbt_wallpaper;
-cvar_t    ui_3dmap;
 cvar_t    ui_effectslevel;
 cvar_t    cl_selectedmod;
-cvar_t    cl_language;
 cvar_t    ui_loaded;
 cvar_t    sensitivitymenu;
 cvar_t    ui_browserMaster;
@@ -385,73 +278,14 @@ cvar_t    gui_bot_multisel;
 cvar_t    gui_bot_list;
 
 static cvarTable_t cvarTable[] = {
-	{ &sb_private,                      "sb_private",                   "0",            0 },
-	{ &sb_grid,                         "sb_grid",                      "25",           0 },
-	{ &sb_texture,                      "sb_texture",                   "0",            0 },
-	{ &sb_modelnum,                     "sb_modelnum",                  "0",            CVAR_ARCHIVE },
-	{ &sb_classnum,                     "sb_classnum",                  "0",            CVAR_ARCHIVE },
-	{ &sb_texturenum,                   "sb_texturenum",                "0",            CVAR_ARCHIVE },
-	{ &sb_tab,                          "sb_tab",                       "1",            0 },
-	{ &spawn_preset,                    "spawn_preset",                 "set toolcmd_spawn sl prop %s %s %i 25 %s 0 %s 1 0 \"none\" -1 0 0 0 0 1 1 1 0 0 0.5",  0 },
-	{ &tool_spawnpreset,                "tool_spawnpreset",             "set toolcmd_spawn sl prop %s %s %i 25 %s 0 %s 1 0 \"none\" -1 0 0 0 0 1 1 1 0 0 0.5",  0 },
-	{ &tool_modifypreset,               "tool_modifypreset",            "set toolcmd_modify tm %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s 0",        0 },
-	{ &tool_modifypreset2,              "tool_modifypreset2",           "set toolcmd_modify2 tm %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s 1",       0 },
-	{ &tool_modifypreset3,              "tool_modifypreset3",           "set toolcmd_modify3 tm %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s 2",       0 },
-	{ &tool_modifypreset4,              "tool_modifypreset4",           "set toolcmd_modify4 tm %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s 3",       0 },
-	{ &sb_ctab_1,                       "sb_ctab_1",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_2,                       "sb_ctab_2",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_3,                       "sb_ctab_3",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_4,                       "sb_ctab_4",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_5,                       "sb_ctab_5",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_6,                       "sb_ctab_6",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_7,                       "sb_ctab_7",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_8,                       "sb_ctab_8",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_9,                       "sb_ctab_9",                    "",             CVAR_ARCHIVE },
-	{ &sb_ctab_10,                      "sb_ctab_10",                   "",             CVAR_ARCHIVE },
+	{ &spawn_preset,                    "spawn_preset",                 "set spawn_cmd sl prop props/%s %s 0 25 25 0 %s 1 1 \"none\" -1 0 0 0 0 1 1 1 1 0.40 1.00",  0 },
 	{ &toolgun_toolset1,                "toolgun_toolset1",             "--------:",    0 },
 	{ &toolgun_toolset2,                "toolgun_toolset2",             "--------:",    0 },
 	{ &toolgun_toolset3,                "toolgun_toolset3",             "--------:",    0 },
 	{ &toolgun_toolset4,                "toolgun_toolset4",             "--------:",    0 },
-	{ &toolgun_toolset5,                "toolgun_toolset5",             "--------:",    0 },
-	{ &toolgun_toolset6,                "toolgun_toolset6",             "--------:",    0 },
-	{ &toolgun_toolset7,                "toolgun_toolset7",             "--------:",    0 },
-	{ &toolgun_toolset8,                "toolgun_toolset8",             "--------:",    0 },
-	{ &toolgun_toolset9,                "toolgun_toolset9",             "--------:",    0 },
-	{ &toolgun_toolset10,               "toolgun_toolset10",            "--------:",    0 },
-	{ &toolgun_toolset11,               "toolgun_toolset11",            "--------:",    0 },
-	{ &toolgun_toolset12,               "toolgun_toolset12",            "--------:",    0 },
-	{ &toolgun_toolset13,               "toolgun_toolset13",            "--------:",    0 },
-	{ &toolgun_toolset14,               "toolgun_toolset14",            "--------:",    0 },
-	{ &toolgun_toolset15,               "toolgun_toolset15",            "--------:",    0 },
-	{ &toolgun_toolset16,               "toolgun_toolset16",            "--------:",    0 },
-	{ &toolgun_toolset17,               "toolgun_toolset17",            "--------:",    0 },
-	{ &toolgun_toolset18,               "toolgun_toolset18",            "--------:",    0 },
-	{ &toolgun_disabledarg1,            "toolgun_disabledarg1",         "0",            0 },
-	{ &toolgun_disabledarg2,            "toolgun_disabledarg2",         "0",            0 },
-	{ &toolgun_disabledarg3,            "toolgun_disabledarg3",         "0",            0 },
-	{ &toolgun_disabledarg4,            "toolgun_disabledarg4",         "0",            0 },
-	{ &sbt_color0_0,                    "sbt_color0_0",                 "0.00", 	    CVAR_ARCHIVE },
-	{ &sbt_color0_1,                    "sbt_color0_1",                 "0.00", 	    CVAR_ARCHIVE },
-	{ &sbt_color0_2,                    "sbt_color0_2",                 "0.00", 	    CVAR_ARCHIVE },
-	{ &sbt_color0_3,                    "sbt_color0_3",                 "0.45",         CVAR_ARCHIVE },
-	{ &sbt_color1_0,                    "sbt_color1_0",                 "0.25",         CVAR_ARCHIVE },
-	{ &sbt_color1_1,                    "sbt_color1_1",                 "0.25",         CVAR_ARCHIVE },
-	{ &sbt_color1_2,                    "sbt_color1_2",                 "0.25",         CVAR_ARCHIVE },
-	{ &sbt_color1_3,                    "sbt_color1_3",                 "0.45",         CVAR_ARCHIVE },
-	{ &sbt_color2_0,                    "sbt_color2_0",                 "0.30",         CVAR_ARCHIVE },
-	{ &sbt_color2_1,                    "sbt_color2_1",                 "0.10",         CVAR_ARCHIVE },
-	{ &sbt_color2_2,                    "sbt_color2_2",                 "0.90",         CVAR_ARCHIVE },
-	{ &sbt_color2_3,                    "sbt_color2_3",                 "0.90",         CVAR_ARCHIVE },
-	{ &sbt_color3_0,                    "sbt_color3_0",                 "0.90", 	    CVAR_ARCHIVE },
-	{ &sbt_color3_1,                    "sbt_color3_1",                 "1.00", 	    CVAR_ARCHIVE },
-	{ &sbt_color3_2,                    "sbt_color3_2",                 "1.00", 	    CVAR_ARCHIVE },
-	{ &sbt_color3_3,                    "sbt_color3_3",                 "1.00", 	    CVAR_ARCHIVE },
-	{ &sbt_wallpaper,                   "sbt_wallpaper",                "trans", 	    CVAR_ARCHIVE },
-	{ &ui_3dmap,                        "ui_3dmap",                     "",             CVAR_ARCHIVE },
 	{ &ui_effectslevel,                 "ui_effectslevel",              "0",            CVAR_ARCHIVE },
 	{ &ui_loaded,                       "ui_loaded",                    "0",            0 },
 	{ &cl_selectedmod,                  "cl_selectedmod",               "default",      CVAR_ARCHIVE },
-	{ &cl_language,                     "cl_language",                  "0",            CVAR_ARCHIVE },
 	{ &sensitivitymenu,                 "sensitivitymenu",              "1",            CVAR_ARCHIVE },
 	{ &ui_browserMaster,                "ui_browserMaster",             "0",            CVAR_ARCHIVE },
 	{ &ui_browserGameType,              "ui_browserGameType",           "0",            CVAR_ARCHIVE },

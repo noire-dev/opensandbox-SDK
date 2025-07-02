@@ -1104,7 +1104,7 @@ vec4_t color_black	    	= {0.00f, 0.00f, 0.00f, 1.00f};
 vec4_t color_white	    	= {1.00f, 1.00f, 1.00f, 1.00f};
 vec4_t color_yellow	    	= {1.00f, 1.00f, 0.00f, 1.00f};
 vec4_t color_blue	    	= {0.00f, 0.00f, 1.00f, 1.00f};
-vec4_t color_grey	    	= {0.30f, 0.45f, 0.58f, 1.00f};
+vec4_t color_grey	    	= {0.30f, 0.30f, 0.30f, 1.00f};
 vec4_t color_red			= {1.00f, 0.00f, 0.00f, 1.00f};
 vec4_t color_dim	    	= {0.00f, 0.00f, 0.00f, 0.40f};
 vec4_t color_green	    	= {0.00f, 1.00f, 0.00f, 1.00f};
@@ -1112,8 +1112,8 @@ vec4_t color_emerald    	= {0.50f, 0.85f, 0.00f, 1.00f};
 vec4_t color_lightyellow 	= {1.00f, 0.90f, 0.45f, 1.00f};
 vec4_t color_disabled  		= {0.10f, 0.10f, 0.20f, 1.00f};
 vec4_t color_bluo    		= {0.53f, 0.62f, 0.82f, 1.00f};
-vec4_t color_select_bluo    = {0.53f, 0.62f, 0.82f, 0.25f};
-vec4_t color_highlight		= {0.53f, 0.62f, 0.82f, 1.00f};
+vec4_t color_select_bluo    = {0.35f, 0.45f, 0.95f, 0.40f};
+vec4_t color_highlight		= {0.50f, 0.50f, 0.50f, 1.00f};
 
 vec4_t customcolor_crosshair = {1.00f, 1.00f, 1.00f, 1.00f};
 

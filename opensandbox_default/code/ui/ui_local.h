@@ -50,8 +50,9 @@ typedef void (*voidfunc_f)(void);
 #define LST_ICONS 		1
 #define LST_GRID 		2
 
-#define RBT_NORMAL 		0
-#define RBT_INVERSE 	1
+#define RBT_NONE 		0
+#define RBT_NORMAL 		1
+#define RBT_INVERSE 	2
 
 #define AST_BACK 		0
 
@@ -70,7 +71,7 @@ typedef void (*voidfunc_f)(void);
 #define	MAX_EDIT_LINE			256
 
 #define MAX_MENUDEPTH			8
-#define MAX_MENUITEMS			256
+#define MAX_MENUITEMS			128
 
 #define MTYPE_NULL				0
 
@@ -184,6 +185,7 @@ typedef struct {
 	char*			string;
 	int				style;
 	float			size;
+	float*			curColor;
 	float*			color;
 	float*			color2;
 
@@ -211,6 +213,10 @@ typedef struct {
 	mfield_t		field;
 
 	int				corner;
+
+	qboolean		drawText;
+	float 			padding_x;
+	float 			padding_y;
 
 	botskill_t* 	data;
 
@@ -248,22 +254,10 @@ extern void	SpinControl_Init( menuelement_s *s );
 extern void			MField_Clear( mfield_t *edit );
 extern void			MField_KeyDownEvent( mfield_t *edit, int key );
 extern void			MField_CharEvent( mfield_t *edit, int ch );
-extern void			MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color, float size );
+extern void			MField_Draw( mfield_t *edit, int x, int y, qboolean focus, vec4_t color, float size );
 extern void			MenuField_Init( menuelement_s* m );
 extern void			MenuField_Draw( menuelement_s *f );
 extern sfxHandle_t	MenuField_Key( menuelement_s* m, int* key );
-
-//
-// ui_confirm.c
-//
-extern void ConfirmMenu_Cache( void );
-extern void UI_ConfirmMenu( const char *question, void (*action)( qboolean result ) );
-extern void UI_ConfirmMenu_Style( const char *question, int style, void (*action)( qboolean result ) );
-
-//
-// ui_sandbox.c
-//
-extern void UI_SandboxMainMenu(void);
 
 //
 // ui_options.c
@@ -281,29 +275,10 @@ extern void UI_DrawConnectScreen( qboolean overlay );
 extern void UI_Controls( void );
 
 //
-// ui_demo2.c
-//
-extern void UI_DemosMenu( void );
-extern void Demos_Cache( void );
-
-//
-// ui_mods.c
-//
-extern void UI_ModsMenu( void );
-extern void UI_ModsMenu_Cache( void );
-
-//
 // ui_playermodel.c
 //
 #define LOW_MEMORY			(5 * 1024 * 1024)
-
 extern void UI_PlayerModelMenu( void );
-
-//
-// ui_preferences.c
-//
-extern void UI_PreferencesMenu( void );
-extern void Preferences_Cache( void );
 
 //
 // ui_specifyserver.c
@@ -319,12 +294,7 @@ extern void SpecifyServer_Cache( void );
 extern void UI_ArenaServersMenu( void );
 extern void ArenaServers_Cache( void );
 
-//
-// ui_video.c
-//
-extern void UI_GraphicsOptionsMenu( void );
-extern void GraphicsOptions_Cache( void );
-extern void DriverInfo_Cache( void );
+void UI_NewGame( void );
 
 //
 // ui_players.c
@@ -492,6 +462,91 @@ typedef struct {
 	qboolean			postfx_status;
 } uiStatic_t;
 
+// ui_atoms.c  
+void QDECL Com_Error(int level, const char *error, ...);
+void QDECL Com_Printf(const char *msg, ...);
+void UI_UpdateState(void);
+void UI_PushMenu(menuframework_s *menu);
+void UI_PopMenu(void);
+void UI_ForceMenuOff(void);
+qboolean UI_IsFullscreen(void);
+void UI_SetActiveMenu(uiMenuCommand_t menu);
+void UI_KeyEvent(int key, int down);
+void UI_MouseEvent(int dx, int dy);
+char *UI_Cvar_VariableString(const char *var_name);
+qboolean UI_ConsoleCommand(int realTime);
+void UI_Shutdown(void);
+void UI_Init(void);
+void UI_AdjustFrom640(float *x, float *y, float *w, float *h);
+void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader);
+void UI_DrawPictureElement(float x, float y, float w, float h, const char *file);
+void UI_DrawModelElement(float x, float y, float w, float h, const char *model, float scale);
+void UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
+
+// ui_connect.c
+void UI_DrawConnectScreen(qboolean overlay);
+
+// ui_controls.c
+void UI_Controls(void);
+
+// ui_gameinfo.c
+void* UI_Alloc(int size);
+void UI_InitMemory(void);
+void UI_LoadArenas(void);
+void UI_LoadBots(void);
+char* UI_GetBotInfoByName(const char* name);
+int UI_GetNumBots(void);
+void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesSize, char** configlist);
+void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** configlist);
+int UI_CountOfMaps(char* gametype);
+
+// ui_main.c
+void UI_CreateCvars(void);
+
+// ui_menu.c
+void UI_MainMenu(void);
+
+// ui_newgame.c
+void UI_NewGame(void);
+
+// ui_options.c
+void UI_Options(void);
+
+// ui_playermodel.c
+void UI_PlayerModelMenu(void);
+
+// ui_players.c
+void GUI_PlayerInfo_InitModel(modelAnim_t *m);
+void GUI_PlayerInfo_DrawTeamModel(modelAnim_t *m, qboolean teamModel);
+const char *GUI_ModelName(const char *modelname);
+void GUI_PlayerInfo_AnimateModel(modelAnim_t *m);
+
+// ui_qmenu.c
+sfxHandle_t ScrollList_Key(menuelement_s *l, int key);
+void Menu_AddItem(menuframework_s *menu, menuelement_s *item);
+void Menu_SetCursor(menuframework_s *m, int cursor);
+void Menu_Draw(menuframework_s *menu);
+void *Menu_ItemAtCursor(menuframework_s *m);
+sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key);
+void Menu_Cache(void);
+void UI_FillList(menuelement_s *e, char *location, char *itemsLocation, char *extension, char *names, int namesSize, char **configlist);
+int UI_CountFiles(const char *location, const char *extension);
+void UI_FillListFromArray(menuelement_s *e, char **configlist, char **items, int maxItems);
+void UI_FillListOfItems(menuelement_s *e, char *names, int namesSize, char **configlist);
+void UI_FillListPlayers(menuelement_s *e, char **configlist, char *names, int namesSize);
+int UI_ListPlayerCount(void);
+void UI_SetHitbox(menuelement_s *e, float x, float y, float w, float h);
+void UI_CreateUI(menuframework_s *menu, menuelement_s *e);
+void UI_CButton(menuelement_s *e, float x, float y, char *text, int style, float size, float *color, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
+void UI_CSlider(menuelement_s *e, float x, float y, char *text, char *var, float min, float max, float mod, void (*callback)(void *self, int event), int callid);
+void UI_CRadioButton(menuelement_s *e, float x, float y, char *text, char *var, int mod, void (*callback)(void *self, int event), int callid);
+void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char **list, void (*callback)(void *self, int event), int callid);
+void UI_CList(menuelement_s *e, float x, float y, float size, int h, int w, float pad_x, float pad_y, int style, qboolean drawText, int corner, float *color, void (*callback)(void *self, int event), int callid);
+void UI_CField(menuelement_s *e, float x, float y, char *text, int w, int maxchars, float *color, char *var, void (*callback)(void *self, int event), int callid);
+void UI_CText(menuelement_s *e, float x, float y, char *text, int style, float size);
+void UI_CBitmap(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
+void UI_CPicture(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
+
 extern void			UI_Init( void );
 extern void			UI_Shutdown( void );
 extern void			UI_KeyEvent( int key, int down );
@@ -501,8 +556,6 @@ extern qboolean		UI_ConsoleCommand( int realTime );
 extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
 extern void 		UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
-extern void			UI_FillRect( float x, float y, float width, float height, const float *color );
-extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
 extern void			UI_UpdateScreen( void );
 extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
@@ -515,64 +568,22 @@ extern void			UI_ForceMenuOff (void);
 extern char			*UI_Argv( int arg );
 extern char			*UI_Cvar_VariableString( const char *var_name );
 extern void			UI_Refresh( int time );
-extern qboolean		m_entersound;
 extern uiStatic_t	uis;
 
 extern void			UI_DrawPictureElement( float x, float y, float w, float h, const char* file );
-extern void 		UI_DrawModelElement( float x, float y, float w, float h, const char* model, int scale );
-
-//
-// ui_addbots.c
-//
-void UI_AddBots_Cache( void );
-void UI_AddBotsMenu( void );
-void UI_RemoveBots_Cache( void );
-void UI_RemoveBotsMenu( int menutype );
-
-//
-// ui_loadconfig.c
-//
-typedef qboolean (*configCallback)(const char* filename);
-
-void LoadConfig_SetStatusText(const char* text);
-void UI_LoadConfig_Cache( void );
-void UI_LoadConfigMenu( void );
-void UI_SaveConfigMenu( void );
-void UI_ConfigMenu(const char* title, qboolean load, configCallback handler);
-
-//
-// ui_display.c
-//
-void UI_DisplayOptionsMenu_Cache( void );
-void UI_DisplayOptionsMenu( void );
-
-//
-// ui_sound.c
-//
-void UI_SoundOptionsMenu_Cache( void );
-void UI_SoundOptionsMenu( void );
-
-//
-// ui_network.c
-//
-void UI_NetworkOptionsMenu_Cache( void );
-void UI_NetworkOptionsMenu( void );
-
-
+extern void 		UI_DrawModelElement( float x, float y, float w, float h, const char* model, float scale );
 
 //
 // ui_menu.c
 //
 extern void UI_MainMenu(void);
-extern void MainMenu_ReloadGame(void);
 extern void UI_CreateCvars( void );
-extern void UI_SetDefaultCvar(const char* cvar, const char* value);
+
+void UI_Settings(void);
 
 //
 // ui_gameinfo.c
 //
-const char *UI_GetArenaInfoByNumber( int num );
-const char *UI_GetArenaInfoByMap( const char *map );
 int UI_GetNumArenas( void );
 
 char *UI_GetBotInfoByNumber( int num );
@@ -580,35 +591,23 @@ char *UI_GetBotInfoByName( const char *name );
 int UI_GetBotNumByName( const char *name );
 int UI_GetNumBots( void );
 
-void UI_InitGameinfo( void );
-
-//
-// ui_loadMAP.c
-//
-void UI_loadMapEd_Cache( void );
-void UI_loadMapEdMenu( void );
-
-//
-// ui_saveMAP.c
-//
-void UI_saveMapEdMenu_Cache( void );
-void UI_saveMapEdMenu( void );
-
 extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
 
 int UI_CurrentPlayerTeam(void);
 int UI_ServerGametype(void);
 
+void UI_SetHitbox(menuelement_s *e, float x, float y, float w, float h);
+
 //SourceTech UI Framework
 void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
 
-void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
+void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, float* color, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 
 void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
 
 void UI_CSlider(menuelement_s* e, float x, float y, char* text, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid);
 
-void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, char* var, float mod, void (*callback)( void *self, int event ), int callid);
+void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, char* var, int mod, void (*callback)( void *self, int event ), int callid);
 
 void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, const char **list, void (*callback)( void *self, int event ), int callid);
 
@@ -616,10 +615,17 @@ void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, 
 
 void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
 
-void UI_CList(menuelement_s* e, float x, float y, float w, float h, int style, float size, int col, void (*callback)( void *self, int event ), int callid);
-void UI_FillList(menuelement_s* e, char* location, char* extension, char* names, int namesSize, char** configlist);
-
-void UI_CField(menuelement_s* e, float x, float y, char* text, int w, int maxchars, int style, void (*callback)( void *self, int event ), int callid);
+void UI_CList(menuelement_s* e, float x, float y, float size, int h, int w, float pad_x, float pad_y, int style, qboolean drawText, int corner, float* color, void (*callback)( void *self, int event ), int callid);
+void UI_FillList(menuelement_s* e, char* location, char* itemsLocation, char* extension, char* names, int namesSize, char** configlist);
+void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesSize, char** configlist);
+void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** configlist);
+void UI_FillListOfItems(menuelement_s* e, char* names, int namesSize, char** configlist);
+void UI_FillListFromArray(menuelement_s* e, char** configlist, char** items, int maxItems);
+int UI_CountOfMaps(char* gametype);
+int UI_CountFiles(const char* location, const char* extension);
+void UI_FillListPlayers(menuelement_s* e, char** configlist, char* names, int namesSize);
+int UI_ListPlayerCount(void);
+void UI_CField(menuelement_s* e, float x, float y, char* text, int w, int maxchars, float* color, char* var, void (*callback)( void *self, int event ), int callid);
 
 //SYSCALLS
 void			trap_Error( const char *string );

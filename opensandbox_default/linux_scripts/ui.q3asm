@@ -14,6 +14,7 @@ ui_loadconfiged
 ui_menu
 ui_mods
 ui_network
+ui_newgame
 ui_options
 ui_playermodel
 ui_players
@@ -22,9 +23,11 @@ ui_preferences
 ui_qmenu
 ui_removebots
 ui_sandbox
+ui_spawnmenu
 ui_saveconfiged
 ui_servers2
 ui_sound
+ui_settings
 ui_specifyserver
 ui_video
 bg_misc

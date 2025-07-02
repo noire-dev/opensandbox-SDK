@@ -641,9 +641,7 @@ static void SetCustomWeapons(gentity_t *ent) {
 	Set_Ammo(ent, WP_TOOLGUN, -1);
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
-	if(g_spawn_gauntlet.integer) {
-		Set_Weapon(ent, WP_GAUNTLET, WS_HAVE);
-	}
+	Set_Weapon(ent, WP_GAUNTLET, WS_HAVE);
 	if(g_spawn_machinegun.integer > 0) {
 		Set_Weapon(ent, WP_MACHINEGUN, WS_HAVE);
 		Set_Ammo(ent, WP_MACHINEGUN, g_spawn_machinegun.integer);

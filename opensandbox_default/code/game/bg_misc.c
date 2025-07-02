@@ -146,7 +146,6 @@ NPCFactions_t gameInfoFactions[] = {
 int	gameInfoFactionsNum = ARRAY_SIZE(gameInfoFactions);
 
 char* gameInfoSandboxSpawns[] = {
-	"",
 	"none",
 	"weapon_machinegun",
 	"weapon_shotgun",
@@ -210,6 +209,26 @@ char* gameInfoSandboxSpawns[] = {
 	"sb.shooter",
 };
 int	gameInfoSandboxSpawnsNum = ARRAY_SIZE(gameInfoSandboxSpawns);
+
+char* gametypes_names[] = {
+	"Sandbox",
+	"Free for All",
+	"Team Deathmatch",
+	"Capture the Flag",
+	"One Flag Capture",
+	"Overload",
+	"Harvester",
+};
+
+char* gametypes_mapnames[] = {
+	"sandbox",
+	"ffa",
+	"team",
+	"ctf",
+	"oneflag",
+	"overload",
+	"harvester",
+};
 
 int BG_FindNPCTypeID(const char *name) {
 	int i;

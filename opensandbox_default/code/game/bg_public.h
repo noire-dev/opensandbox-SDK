@@ -65,18 +65,17 @@ typedef enum {
 #define TL_CREATE					0
 #define TL_MATERIAL					1
 #define TL_DELETE					2
-#define TL_MODEL					3
-#define TL_PHYSICS					4
-#define TL_PRIVATE					5
-#define TL_COLLISION				6
-#define TL_HEALTH					7
-#define TL_COLOR					8
-#define TL_ANGLE					9
-#define TL_SCALE					10
-#define TL_REPLACEITEM				11
-#define TL_COUNT					12
-#define TL_WELD						13
-#define TL_BIND						14
+#define TL_PHYSICS					3
+#define TL_PRIVATE					4
+#define TL_COLLISION				5
+#define TL_HEALTH					6
+#define TL_COLOR					7
+#define TL_ANGLE					8
+#define TL_SCALE					9
+#define TL_REPLACEITEM				10
+#define TL_COUNT					11
+#define TL_WELD						12
+#define TL_BIND						13
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define	CS_MUSIC				2
@@ -110,6 +109,9 @@ typedef enum {
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
+extern char* gametypes_names[];
+extern char* gametypes_mapnames[];
+
 typedef enum { 
 	GENDER_MALE, 
 	GENDER_FEMALE, 
@@ -138,8 +140,8 @@ typedef struct item_s {
 	int				giTag;
 } item_t;
 
-extern	item_t	gameInfoItems[];
-extern	int		gameInfoItemsNum;
+extern item_t	gameInfoItems[];
+extern int		gameInfoItemsNum;
 
 typedef enum {
 	PM_NORMAL,		// can accelerate and turn

@@ -100,22 +100,12 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.banner.generic.type	 = MTYPE_TEXT;
 	s_specifyserver.banner.generic.x     = 320;
 	s_specifyserver.banner.generic.y     = 16;
-	if(cl_language.integer == 0){
 	s_specifyserver.banner.string		 = "ADD TO FAVORITES";
-	}
-	if(cl_language.integer == 1){
-	s_specifyserver.banner.string		 = "ДОБАВИТЬ В ЛЮБИМЫЕ";
-	}
 	s_specifyserver.banner.color  		 = color_white;
 	s_specifyserver.banner.style  		 = UI_CENTER;
 
 	s_specifyserver.domain.generic.type       = MTYPE_FIELD;
-	if(cl_language.integer == 0){
 	s_specifyserver.domain.string       = "Address:";
-	}
-	if(cl_language.integer == 1){
-	s_specifyserver.domain.string       = "Адрес:";
-	}
 	s_specifyserver.domain.generic.flags      = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_specifyserver.domain.generic.x	      = 206;
 	s_specifyserver.domain.generic.y	      = 220;
@@ -123,12 +113,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.domain.field.maxchars     = 80;
 
 	s_specifyserver.port.generic.type       = MTYPE_FIELD;
-	if(cl_language.integer == 0){
 	s_specifyserver.port.string	    = "Port:";
-	}
-	if(cl_language.integer == 1){
-	s_specifyserver.port.string	    = "Порт:";
-	}
 	s_specifyserver.port.generic.flags	    = QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NUMBERSONLY;
 	s_specifyserver.port.generic.x	        = 206;
 	s_specifyserver.port.generic.y	        = 250;

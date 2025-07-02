@@ -638,20 +638,6 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	char arg03[64];
 	char arg04[64];
 	char arg05[64];
-	char arg06[64];
-	char arg07[64];
-	char arg08[64];
-	char arg09[64];
-	char arg10[64];
-	char arg11[64];
-	char arg12[64];
-	char arg13[64];
-	char arg14[64];
-	char arg15[64];
-	char arg16[64];
-	char arg17[64];
-	char arg18[64];
-	char arg19[64];
 
 	if(g_gametype.integer != GT_SANDBOX) return;
 
@@ -663,20 +649,6 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	trap_Argv(3, arg03, sizeof(arg03));
 	trap_Argv(4, arg04, sizeof(arg04));
 	trap_Argv(5, arg05, sizeof(arg05));
-	trap_Argv(6, arg06, sizeof(arg06));
-	trap_Argv(7, arg07, sizeof(arg07));
-	trap_Argv(8, arg08, sizeof(arg08));
-	trap_Argv(9, arg09, sizeof(arg09));
-	trap_Argv(10, arg10, sizeof(arg10));
-	trap_Argv(11, arg11, sizeof(arg11));
-	trap_Argv(12, arg12, sizeof(arg12));
-	trap_Argv(13, arg13, sizeof(arg13));
-	trap_Argv(14, arg14, sizeof(arg14));
-	trap_Argv(15, arg15, sizeof(arg15));
-	trap_Argv(16, arg16, sizeof(arg16));
-	trap_Argv(17, arg17, sizeof(arg17));
-	trap_Argv(18, arg18, sizeof(arg18));
-	trap_Argv(19, arg19, sizeof(arg19));
 
 	// Set Aiming Directions
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
@@ -695,7 +667,7 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	tent->s.eventParm = 24;  // eventParm is used to determine the number of particles
 	tent->s.generic1 = 125;  // generic1 is used to determine the speed of the particles
 	tent->s.generic2 = 3;    // generic2 is used to determine the size of the particles
-	G_ModProp(traceEnt, ent, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19);
+	G_ModProp(traceEnt, ent, arg01, arg02, arg03, arg04, arg05);
 	return;
 }
 

@@ -368,7 +368,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	trap_LinkEntity(ent);
 }
 
-void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05, char *arg06, char *arg07, char *arg08, char *arg09, char *arg10, char *arg11, char *arg12, char *arg13, char *arg14, char *arg15, char *arg16, char *arg17, char *arg18, char *arg19) {  // tool_id
+void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, char *arg03, char *arg04, char *arg05) { // tool_id
 	gentity_t *entity;
 
 	entity = targ;
@@ -393,17 +393,13 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 		}
 	}
 
-	if(attacker->tool_id == TL_MODEL) {
-		setModel(entity, arg01);
-	}
-
 	if(attacker->tool_id == TL_PHYSICS) {
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			entity->s.pos.trType = TR_STATIONARY;
 			entity->sb_phys = PHYS_STATIC;
 			Phys_Disable(entity, entity->s.pos.trBase);
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->s.pos.trType = TR_GRAVITY;
 			entity->s.pos.trTime = level.time;
 			entity->sb_phys = PHYS_DYNAMIC;
@@ -412,13 +408,13 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_PRIVATE) {
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			entity->owner = 0;
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->owner = attacker;
 		}
-		if(atoi(arg19) == 2) {
+		if(atoi(arg05) == 2) {
 			if(entity->owner) {
 				trap_SendServerCommand(attacker->s.clientNum, va("lp \"Owned by %s\n\"", entity->owner->client->pers.netname));
 			}
@@ -429,11 +425,11 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_COLLISION) {
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			entity->r.contents = CONTENTS_SOLID;
 			entity->sb_coll = CONTENTS_SOLID;
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->r.contents = CONTENTS_TRIGGER;
 			entity->sb_coll = CONTENTS_TRIGGER;
 		}
@@ -453,16 +449,16 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 
 	if(attacker->tool_id == TL_ANGLE) {
 		entity = G_FindWeldEntity(entity);  // find weld root or return ent
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			entity->s.apos.trBase[0] += atof(arg01);
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->s.apos.trBase[1] += atof(arg01);
 		}
-		if(atoi(arg19) == 2) {
+		if(atoi(arg05) == 2) {
 			entity->s.apos.trBase[2] += atof(arg01);
 		}
-		if(atoi(arg19) == 3) {
+		if(atoi(arg05) == 3) {
 			entity->s.apos.trBase[0] = 0.0;
 			entity->s.apos.trBase[1] = 0.0;
 			entity->s.apos.trBase[2] = 0.0;
@@ -472,16 +468,16 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_SCALE) {
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			entity->s.scales[0] = atof(arg01);
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->s.scales[1] = atof(arg01);
 		}
-		if(atoi(arg19) == 2) {
+		if(atoi(arg05) == 2) {
 			entity->s.scales[2] = atof(arg01);
 		}
-		if(atoi(arg19) == 3) {
+		if(atoi(arg05) == 3) {
 			entity->s.scales[0] = 1.0;
 			entity->s.scales[1] = 1.0;
 			entity->s.scales[2] = 1.0;
@@ -521,7 +517,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 			return;
 		}
 
-		if(atoi(arg19) == 0) {  // Weld
+		if(atoi(arg05) == 0) {  // Weld
 			if(!attacker->tool_entity) {
 				if(!entity->phys_weldedObjectsNum) {
 					attacker->tool_entity = entity;
@@ -565,7 +561,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 				attacker->tool_entity = NULL;
 			}
 		}
-		if(atoi(arg19) == 1) {  // Unweld
+		if(atoi(arg05) == 1) {  // Unweld
 			attacker->tool_entity = NULL;
 
 			if(!entity->phys_weldedObjectsNum && !entity->physParentEnt) {
@@ -578,10 +574,10 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_BIND) {
-		if(atoi(arg19) == 0) {
+		if(atoi(arg05) == 0) {
 			CopyAlloc(entity->targetname, va("activate_%i_%s", attacker->s.clientNum, arg01));
 		}
-		if(atoi(arg19) == 1) {
+		if(atoi(arg05) == 1) {
 			entity->targetname = NULL;
 		}
 	}

@@ -2,13 +2,6 @@
 // Copyright (C) 2023-2025 Noire.dev
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
-/*
-=======================================================================
-
-USER INTERFACE MAIN
-
-=======================================================================
-*/
 
 #include "ui_local.h"
 
@@ -72,28 +65,8 @@ const char *gametype_items[GT_MAX_GAME_TYPE+1] = {
 	0
 };
 
-int 	mod_gravity = 800;
+int mod_gravity = 800;
 
-/*
-=================
-UI_CreateCvars
-=================
-*/
-void UI_CreateCvars( void ) {
-	trap_Cmd_ExecuteText( EXEC_APPEND, "exec uiautoexec.cfg\n");
+void UI_CreateCvars(void) {
+	trap_Cmd_ExecuteText(EXEC_APPEND, "exec uiautoexec.cfg\n");
 }
-
-/*
-==================
- * UI_SetDefaultCvar
- * If the cvar is blank it will be set to value
- * This is only good for cvars that cannot naturally be blank
-==================
- */
-void UI_SetDefaultCvar(const char* cvar, const char* value) {
-    if(strlen(UI_Cvar_VariableString(cvar)) == 0)
-        trap_Cvar_Set(cvar,value);
-}
-
-
-

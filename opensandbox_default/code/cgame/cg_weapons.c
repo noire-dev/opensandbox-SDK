@@ -693,7 +693,7 @@ static void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles) {
 	VectorCopy(cg.refdef.vieworg, origin);
 	VectorCopy(cg.refdefViewAngles, angles);
 
-	if(cg_disableBobbing.integer) return;
+	if(!cg_enableBobbing.integer) return;
 
 	// on odd legs, invert some angles
 	if(cg.bobcycle & 1) {
@@ -1224,14 +1224,10 @@ void CG_FireWeapon(centity_t *cent) {
 	}
 
 	if(ent->weapon == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
-		if(toolgun_mod19.integer == 1) {
-			trap_SendConsoleCommand("vstr toolgun_toolcmd2\n");
-		} else if(toolgun_mod19.integer == 2) {
-			trap_SendConsoleCommand("vstr toolgun_toolcmd3\n");
-		} else if(toolgun_mod19.integer == 3) {
-			trap_SendConsoleCommand("vstr toolgun_toolcmd4\n");
+		if(toolgun_tool.integer <= TL_CREATE){
+			trap_SendConsoleCommand(va("%s\n", spawn_cmd.string));
 		} else {
-			trap_SendConsoleCommand("vstr toolgun_toolcmd1\n");
+			trap_SendConsoleCommand(va("%s %s\n", toolgun_cmd.string, toolgun_mod5.string));
 		}
 	}
 

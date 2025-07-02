@@ -110,7 +110,7 @@ static void CG_OffsetFirstPersonView(void) {
 	// add angles based on velocity
 	VectorCopy(cg.predictedPlayerState.velocity, predictedVelocity);
 
-	if(cg_disableBobbing.integer) {
+	if(!cg_enableBobbing.integer) {
 		angles[PITCH] += DotProduct(predictedVelocity, cg.refdef.viewaxis[0]);
 		angles[ROLL] -= DotProduct(predictedVelocity, cg.refdef.viewaxis[1]);
 	} else {
@@ -138,7 +138,7 @@ static void CG_OffsetFirstPersonView(void) {
 	if(timeDelta < DUCK_TIME) cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
 
 	// add bob height
-	if(cg_disableBobbing.integer) {
+	if(!cg_enableBobbing.integer) {
 		bob = 0.0f;
 	} else {
 		bob = cg.bobfracsin * cg.xyspeed * 0.002;
