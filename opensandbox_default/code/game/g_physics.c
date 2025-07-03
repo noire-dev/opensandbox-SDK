@@ -455,7 +455,7 @@ Enables physics
 ================
 */
 void Phys_Enable(gentity_t *ent) {
-	if(ent->sb_phys == PHYS_STATIC) {  // if it's static object, not turn phys
+	if(ent->sb_phys == PHYS_STATIC || !ent->sandboxObject) {  // if it's static object, not turn phys
 		return;
 	}
 	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);  // restore client origin from physics origin
