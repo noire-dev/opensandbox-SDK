@@ -1961,7 +1961,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 		}
 	}
 	//if the enemy is not visible
-	if (!BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy)) {
+	if (!BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy) && bs->npcType != NT_NEXTBOT) {
 		if (BotWantsToChase(bs)) {
 			AIEnter_Battle_Chase(bs, "battle fight: enemy out of sight");
 			return qfalse;
