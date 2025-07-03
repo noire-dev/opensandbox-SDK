@@ -3,7 +3,7 @@ ui_main
 ..\ui_syscalls
 ui_atoms
 ui_connect
-ui_controls2
+ui_controls
 ui_gameinfo
 ui_menu
 ui_newgame
@@ -12,9 +12,8 @@ ui_playermodel
 ui_players
 ui_qmenu
 ui_spawnmenu
-ui_servers2
+ui_servers
 ui_settings
-ui_specifyserver
 ui_video
 bg_misc
 bg_lib

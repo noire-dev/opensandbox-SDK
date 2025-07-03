@@ -163,7 +163,7 @@ cp linux_scripts/ui.q3asm linux/build/
 LIBRARY=""
 INCLUDE=""
 
-cc="./lcc -w -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
+cc="./lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/ui
 
@@ -173,7 +173,7 @@ cd linux/build/ui
 
 $cc ../../../code/ui/ui_atoms.c
 $cc ../../../code/ui/ui_connect.c
-$cc ../../../code/ui/ui_controls2.c
+$cc ../../../code/ui/ui_controls.c
 $cc ../../../code/ui/ui_gameinfo.c
 $cc ../../../code/ui/ui_main.c
 $cc ../../../code/ui/ui_menu.c
@@ -183,9 +183,8 @@ $cc ../../../code/ui/ui_playermodel.c
 $cc ../../../code/ui/ui_players.c
 $cc ../../../code/ui/ui_qmenu.c
 $cc ../../../code/ui/ui_spawnmenu.c
-$cc ../../../code/ui/ui_servers2.c
+$cc ../../../code/ui/ui_servers.c
 $cc ../../../code/ui/ui_settings.c
-$cc ../../../code/ui/ui_specifyserver.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 

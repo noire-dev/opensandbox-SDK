@@ -12,30 +12,7 @@
 #include "../client/keycodes.h"
 #include "../game/bg_public.h"
 
-typedef void (*voidfunc_f)(void);
-
-// OpenSandbox version string
-#define SANDBOX_VERSION "SourceTech"
-
-// An additional font size tag for use with
-// proportional strings. The original values are
-// in q_shared.h, but a UI only mod shouldn't really
-// be touching that file
-#define UI_MEDIUMFONT 0x000080
-
-
-// model screen position
-#define PLAYERMODEL_X 385
-#define PLAYERMODEL_Y  32
-#define PLAYERMODEL_WIDTH 32*8
-#define PLAYERMODEL_HEIGHT 56*8
-
-// status bar text buffer
-#define MAX_STATUSBAR_TEXT 120
-#define STATUSBAR_FADETIME 1500
-
-// map lists
-#define MAX_MAPS_LIST 1024
+#define LOW_MEMORY			(5 * 1024 * 1024)
 
 #define	OSUI_LOGO_X 		58 - uis.wideoffset
 #define	OSUI_LOGO_Y 		64
@@ -54,18 +31,9 @@ typedef void (*voidfunc_f)(void);
 #define RBT_NORMAL 		1
 #define RBT_INVERSE 	2
 
-#define AST_BACK 		0
-
-#define AST_OSLOGO 		1000
-#define AST_MOD 		1001
-#define AST_LINK 		1002
-
-//
-// ui_qmenu.c
-//
-
-#define RCOLUMN_OFFSET			( BIGCHAR_WIDTH )
-#define LCOLUMN_OFFSET			(-BIGCHAR_WIDTH )
+#define AST_OSLOGO 		1
+#define AST_MOD 		2
+#define AST_LINK 		3
 
 #define SLIDER_RANGE			8
 #define	MAX_EDIT_LINE			256
@@ -87,29 +55,19 @@ typedef void (*voidfunc_f)(void);
 
 #define MTYPE_MAX				10
 
-#define QMF_BLINK				0x00000001
-#define QMF_SMALLFONT			0x00000002
-#define QMF_LEFT_JUSTIFY		0x00000004
-#define QMF_CENTER_JUSTIFY		0x00000008
-#define QMF_RIGHT_JUSTIFY		0x00000010
-#define QMF_NUMBERSONLY			0x00000020	// edit field is only numbers
-#define QMF_HIGHLIGHT			0x00000040
-#define QMF_HIGHLIGHT_IF_FOCUS	0x00000080	// steady focus
-#define QMF_PULSEIFFOCUS		0x00000100	// pulse if focus
-#define QMF_HASMOUSEFOCUS		0x00000200
-#define QMF_NOONOFFTEXT			0x00000400
-#define QMF_MOUSEONLY			0x00000800	// only mouse input allowed
-#define QMF_HIDDEN				0x00001000	// skips drawing
-#define QMF_GRAYED				0x00002000	// grays and disables
-#define QMF_INACTIVE			0x00004000	// disables any input
-#define QMF_NODEFAULTINIT		0x00008000	// skip default initialization
-#define QMF_OWNERDRAW			0x00010000
-#define QMF_PULSE				0x00020000
-#define QMF_LOWERCASE			0x00040000	// edit field is all lower case
-#define QMF_UPPERCASE			0x00080000	// edit field is all upper case
-#define QMF_SILENT				0x00100000
+#define QMF_LEFT_JUSTIFY		(1U << 0)
+#define QMF_CENTER_JUSTIFY		(1U << 1)
+#define QMF_RIGHT_JUSTIFY		(1U << 2)
+#define QMF_HIGHLIGHT			(1U << 3)
+#define QMF_HIGHLIGHT_IF_FOCUS	(1U << 4)	// steady focus
+#define QMF_PULSEIFFOCUS		(1U << 5)	// pulse if focus
+#define QMF_HASMOUSEFOCUS		(1U << 6)
+#define QMF_HIDDEN				(1U << 7)	// skips drawing
+#define QMF_GRAYED				(1U << 8)	// grays and disables
+#define QMF_INACTIVE			(1U << 9)	// disables any input
+#define QMF_NODEFAULTINIT		(1U << 10)	// skip default initialization
+#define QMF_PULSE				(1U << 11)
 
-// callback notifications
 #define QM_GOTFOCUS				1
 #define QM_LOSTFOCUS			2
 #define QM_ACTIVATED			3
@@ -151,7 +109,6 @@ typedef struct {
 	int				top;
 	int				right;
 	int				bottom;
-	float 			heightmod;
 	menuframework_s *parent;
 	int 			menuPosition;
 	unsigned 		flags;
@@ -172,13 +129,6 @@ typedef struct {
 	char	buffer[MAX_EDIT_LINE];
 	int		maxchars;
 } mfield_t;
-
-typedef struct botskill_s {
-	int low;
-	int high;
-	int value;
-	qboolean range;
-} botskill_t;
 
 typedef struct {
 	menucommon_s	generic;
@@ -217,90 +167,13 @@ typedef struct {
 	qboolean		drawText;
 	float 			padding_x;
 	float 			padding_y;
-
-	botskill_t* 	data;
-
 } menuelement_s;
 
-extern void			Menu_Cache( void );
-extern void			Menu_Focus( menucommon_s *m );
-extern void			Menu_AddItem( menuframework_s *menu, menuelement_s *item );
-extern void			Menu_AdjustCursor( menuframework_s *menu, int dir );
-extern void			Menu_Draw( menuframework_s *menu );
-extern void			*Menu_ItemAtCursor( menuframework_s *m );
-extern sfxHandle_t	Menu_ActivateItem( menuframework_s *s, menucommon_s* item );
-extern void			Menu_SetCursor( menuframework_s *s, int cursor );
-extern void			Menu_SetCursorToItem( menuframework_s *m, void* ptr );
-extern sfxHandle_t	Menu_DefaultKey( menuframework_s *s, int key );
-extern void			Bitmap_Init( menuelement_s *b );
-extern void			Bitmap_Draw( menuelement_s *b );
-extern void			ScrollList_Draw( menuelement_s *l );
-extern sfxHandle_t	ScrollList_Key( menuelement_s *l, int key );
-extern sfxHandle_t	menu_in_sound;
 extern sfxHandle_t	menu_move_sound;
 extern sfxHandle_t	menu_out_sound;
 extern sfxHandle_t	menu_buzz_sound;
 extern sfxHandle_t	menu_null_sound;
-extern sfxHandle_t	weaponChangeSound;
 
-extern void PText_Init( menuelement_s *b );
-extern void	ScrollList_Init( menuelement_s *l );
-extern void	RadioButton_Init( menuelement_s *rb );
-extern void	SpinControl_Init( menuelement_s *s );
-
-//
-// ui_mfield.c
-//
-extern void			MField_Clear( mfield_t *edit );
-extern void			MField_KeyDownEvent( mfield_t *edit, int key );
-extern void			MField_CharEvent( mfield_t *edit, int ch );
-extern void			MField_Draw( mfield_t *edit, int x, int y, qboolean focus, vec4_t color, float size );
-extern void			MenuField_Init( menuelement_s* m );
-extern void			MenuField_Draw( menuelement_s *f );
-extern sfxHandle_t	MenuField_Key( menuelement_s* m, int* key );
-
-//
-// ui_options.c
-//
-extern void UI_Options(void);
-
-//
-// ui_connect.c
-//
-extern void UI_DrawConnectScreen( qboolean overlay );
-
-//
-// ui_controls2.c
-//
-extern void UI_Controls( void );
-
-//
-// ui_playermodel.c
-//
-#define LOW_MEMORY			(5 * 1024 * 1024)
-extern void UI_PlayerModelMenu( void );
-
-//
-// ui_specifyserver.c
-//
-extern void UI_SpecifyServerMenu( void );
-extern void SpecifyServer_Cache( void );
-
-//
-// ui_servers2.c
-//
-#define MAX_FAVORITESERVERS 32
-
-extern void UI_ArenaServersMenu( void );
-extern void ArenaServers_Cache( void );
-
-void UI_NewGame( void );
-
-//
-// ui_players.c
-//
-
-//FIXME ripped from cg_local.h
 typedef struct {
 	int			oldFrame;
 	int			oldFrameTime;		// time when ->oldFrame was exactly on
@@ -338,43 +211,16 @@ typedef struct {
 
 	animation_t		animations[MAX_ANIMATIONS];
 
-	qhandle_t		weaponModel;
-	qhandle_t		barrelModel;
-	qhandle_t		flashModel;
-	vec3_t			flashDlightColor;
-	int				muzzleFlashTime;
-	int				humTimer;
-	int				delayFireTimer;
-
 	// currently in use drawing parms
 	vec3_t			viewAngles;
 	vec3_t			moveAngles;
-	weapon_t		currentWeapon;
 	int				legsAnim;
 	int				torsoAnim;
-
-	// animation vars
-	weapon_t		weapon;
-	weapon_t		lastWeapon;
-	weapon_t		pendingWeapon;
-	int				weaponTimer;
-	int				pendingLegsAnim;
-	int				torsoAnimationTimer;
-
-	int				pendingTorsoAnim;
-	int				legsAnimationTimer;
 
 	qboolean		fixedlegs;		// true if legs yaw is always the same as torso yaw
 	qboolean		fixedtorso;		// true if torso never changes yaw
 
-	qboolean		chat;
 	qboolean		newModel;
-
-	qboolean		barrelSpinning;
-	float			barrelAngle;
-	int				barrelTime;
-
-	int				realWeapon;
 
 	int 			oldFrame;
 } playerInfo_t;
@@ -409,31 +255,13 @@ typedef struct {
 	qboolean bForceUpdate;
 } modelAnim_t;
 
-// these enums are used in several places
-// and match the items on drawmodel_list[]
 enum {
 	DRAWMODEL_DM,
 	DRAWMODEL_TEAM
 };
 
-typedef void (*callbackOwnerDraw)(void* self);
-
-// finally: function declarations
-//extern void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time );
-//extern void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat );
-
-extern void GUI_PlayerInfo_InitModel(modelAnim_t* m);
-extern void GUI_PlayerInfo_AnimateModel( modelAnim_t* m);
-
-extern const char* GUI_ModelName( const char* modelname );
-extern const char* GUI_ModelSkin( const char* modelname );
-
-extern void GUI_PlayerInfo_DrawTeamModel( modelAnim_t* m, qboolean teamModel );
 extern qboolean drawTeamModel;
 
-//
-// ui_atoms.c
-//
 typedef struct {
 	int					frametime;
 	int					realtime;
@@ -444,9 +272,7 @@ typedef struct {
 	menuframework_s*	stack[MAX_MENUDEPTH];
 	qboolean			debug;
 	qhandle_t			whiteShader;
-	qhandle_t			menuBlack;
 	qhandle_t			menuWallpapers;
-	qhandle_t			menuLoadingIcon;
 	qhandle_t			cursor;
 	qhandle_t			corner;
 	qhandle_t			rb_on;
@@ -454,9 +280,6 @@ typedef struct {
 	float				scale;
 	float				bias;
 	float				wideoffset;
-	int					sb_tab;
-	int					spawnlist_folder;
-	int					texturelist_folder;
 	qboolean			firstdraw;
 	qboolean			onmap;
 	qboolean			postfx_status;
@@ -547,85 +370,17 @@ void UI_CText(menuelement_s *e, float x, float y, char *text, int style, float s
 void UI_CBitmap(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
 void UI_CPicture(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
 
-extern void			UI_Init( void );
-extern void			UI_Shutdown( void );
-extern void			UI_KeyEvent( int key, int down );
-extern void			UI_MouseEvent( int dx, int dy );
-extern void			UI_Refresh( int realtime );
-extern qboolean		UI_ConsoleCommand( int realTime );
-extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
-extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
-extern void 		UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
-extern void			UI_UpdateScreen( void );
-extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
-extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
-extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
-extern qboolean		UI_IsFullscreen( void );
-extern void			UI_SetActiveMenu( uiMenuCommand_t menu );
-extern void			UI_PushMenu ( menuframework_s *menu );
-extern void			UI_PopMenu (void);
-extern void			UI_ForceMenuOff (void);
-extern char			*UI_Argv( int arg );
-extern char			*UI_Cvar_VariableString( const char *var_name );
-extern void			UI_Refresh( int time );
-extern uiStatic_t	uis;
+// ui_servers.c
+void UI_ArenaServersMenu(void);
 
-extern void			UI_DrawPictureElement( float x, float y, float w, float h, const char* file );
-extern void 		UI_DrawModelElement( float x, float y, float w, float h, const char* model, float scale );
-
-//
-// ui_menu.c
-//
-extern void UI_MainMenu(void);
-extern void UI_CreateCvars( void );
-
+// ui_settings.c
 void UI_Settings(void);
 
-//
-// ui_gameinfo.c
-//
-int UI_GetNumArenas( void );
+// ui_spawnmenu.c
+void UI_SpawnMenu(void);
 
-char *UI_GetBotInfoByNumber( int num );
-char *UI_GetBotInfoByName( const char *name );
-int UI_GetBotNumByName( const char *name );
-int UI_GetNumBots( void );
-
+extern uiStatic_t uis;
 extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
-
-int UI_CurrentPlayerTeam(void);
-int UI_ServerGametype(void);
-
-void UI_SetHitbox(menuelement_s *e, float x, float y, float w, float h);
-
-//SourceTech UI Framework
-void UI_CreateUI(menuframework_s* menu, menuelement_s* e);
-
-void UI_CButton(menuelement_s* e, float x, float y, char* text, int style, float size, float* color, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
-
-void UI_CBitmap(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
-
-void UI_CSlider(menuelement_s* e, float x, float y, char* text, char* var, float min, float max, float mod, void (*callback)( void *self, int event ), int callid);
-
-void UI_CRadioButton(menuelement_s* e, float x, float y, char* text, char* var, int mod, void (*callback)( void *self, int event ), int callid);
-
-void UI_CSpinControl(menuelement_s* e, float x, float y, char* text, const char **list, void (*callback)( void *self, int event ), int callid);
-
-void UI_CPicture(menuelement_s* e, float x, float y, float w, float h, int pic, int flags, char* cmd, char* var, void (*func)(void), void (*callback)( void *self, int event ), int callid);
-
-void UI_CText(menuelement_s* e, float x, float y, char* text, int style, float size);
-
-void UI_CList(menuelement_s* e, float x, float y, float size, int h, int w, float pad_x, float pad_y, int style, qboolean drawText, int corner, float* color, void (*callback)( void *self, int event ), int callid);
-void UI_FillList(menuelement_s* e, char* location, char* itemsLocation, char* extension, char* names, int namesSize, char** configlist);
-void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesSize, char** configlist);
-void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** configlist);
-void UI_FillListOfItems(menuelement_s* e, char* names, int namesSize, char** configlist);
-void UI_FillListFromArray(menuelement_s* e, char** configlist, char** items, int maxItems);
-int UI_CountOfMaps(char* gametype);
-int UI_CountFiles(const char* location, const char* extension);
-void UI_FillListPlayers(menuelement_s* e, char** configlist, char* names, int namesSize);
-int UI_ListPlayerCount(void);
-void UI_CField(menuelement_s* e, float x, float y, char* text, int w, int maxchars, float* color, char* var, void (*callback)( void *self, int event ), int callid);
 
 //SYSCALLS
 void			trap_Error( const char *string );

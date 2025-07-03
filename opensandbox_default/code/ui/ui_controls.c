@@ -175,24 +175,24 @@ static void Controls_DrawKeyBinding(void* self) {
 
 	if(c) {
 		UI_DrawRoundedRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, 0, color_select_bluo);
-		ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT | UI_SMALLFONT, color_highlight, 1.00);
-		ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT | UI_SMALLFONT | UI_PULSE, color_highlight, 1.00);
+		ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT, color_highlight, 1.00);
+		ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT, color_highlight, 1.00);
 
 		if(controls.waitingforkey) {
-			ST_DrawChar(x, y, '=', UI_CENTER | UI_BLINK | UI_SMALLFONT, color_highlight, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT | UI_CENTER | UI_PULSE, colorWhite, 1.00);
+			ST_DrawChar(x, y, '=', UI_CENTER, color_highlight, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_CENTER, colorWhite, 1.00);
 		} else {
-			ST_DrawChar(x, y, 13, UI_CENTER | UI_BLINK | UI_SMALLFONT, color_highlight, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_SMALLFONT | UI_CENTER, colorWhite, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_SMALLFONT | UI_CENTER, colorWhite, 1.00);
+			ST_DrawChar(x, y, 13, UI_CENTER, color_highlight, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_CENTER, colorWhite, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_CENTER, colorWhite, 1.00);
 		}
 	} else {
 		if(a->generic.flags & QMF_GRAYED) {
-			ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT | UI_SMALLFONT, color_disabled, 1.00);
-			ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT | UI_SMALLFONT, color_disabled, 1.00);
+			ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT, color_disabled, 1.00);
+			ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT, color_disabled, 1.00);
 		} else {
-			ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT | UI_SMALLFONT, color_white, 1.00);
-			ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT | UI_SMALLFONT, color_white, 1.00);
+			ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT, color_white, 1.00);
+			ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT, color_white, 1.00);
 		}
 	}
 }

@@ -12,8 +12,6 @@
 
 #define MODELDIR "models/players"
 
-static char* playermodel_artlist[] = {MODEL_ARROWSL, MODEL_ARROWSR, MODEL_ARROWSB, MODEL_ARROWST, NULL};
-
 // common string names for all dm/team model changing
 const char* drawmodel_list[] = {
 	"DM",    // DRAWMODEL_DM
@@ -25,6 +23,11 @@ const char* drawmodel_list[] = {
 #define PLAYERGRID_ROWS 4
 #define MAX_MODELSPERPAGE (PLAYERGRID_ROWS * PLAYERGRID_COLS)
 #define MAX_SKINSPERPAGE 10
+
+#define PLAYERMODEL_X 385
+#define PLAYERMODEL_Y 32
+#define PLAYERMODEL_WIDTH 32 * 8
+#define PLAYERMODEL_HEIGHT 56 * 8
 
 #define MAX_PLAYERMODELS 8192
 #define MAX_PLAYERSKINS 4096
@@ -341,7 +344,6 @@ static qboolean PlayerModel_SetModelIconSelection(qboolean samepage) {
 	qboolean found;
 	qboolean teamModel;
 	int modelBody;
-	int modelLegs;
 	int oldmodel_page;
 
 	teamModel = drawTeamModel;
@@ -572,8 +574,6 @@ static void PlayerModel_PicDraw(void* self) {
 	float y;
 	float w;
 	float h;
-	vec4_t tempcolor;
-	float* color;
 	menuelement_s* b;
 
 	b = (menuelement_s*)self;
@@ -598,10 +598,8 @@ static void PlayerModel_PicDraw(void* self) {
 }
 
 static qboolean PlayerModel_SetModelFromSelection(char* model) {
-	int maxlen;
 	char* buffptr;
 	char* pdest;
-	int i;
 	char* headmodel;
 	char* bodymodel;
 	char* legsmodel;

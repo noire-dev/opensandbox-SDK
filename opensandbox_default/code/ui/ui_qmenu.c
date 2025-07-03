@@ -9,11 +9,12 @@ sfxHandle_t menu_move_sound;
 sfxHandle_t menu_out_sound;
 sfxHandle_t menu_buzz_sound;
 sfxHandle_t menu_null_sound;
-sfxHandle_t weaponChangeSound;
 
 static qhandle_t sliderBar;
 static qhandle_t sliderButton_0;
 static qhandle_t sliderButton_1;
+
+static void MField_CharEvent(mfield_t *edit, int ch);
 
 static item_t *UI_FindItem(const char *pickupName) {
 	item_t *it;
@@ -33,6 +34,19 @@ static item_t *UI_FindItemClassname(const char *classname) {
 	}
 
 	return NULL;
+}
+
+static sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s *item) {
+	if(item->callback){
+		item->callback(item, QM_ACTIVATED);
+		return menu_move_sound;
+	}
+	if(item->excallback){
+		item->excallback(item, QM_ACTIVATED);
+		return menu_move_sound;
+	}
+
+	return 0;
 }
 
 static void BText_Init(menuelement_s *t) { t->generic.flags |= QMF_INACTIVE; }
@@ -72,13 +86,8 @@ static void PText_Init(menuelement_s *t) {
 
 	t->generic.left = x;
 	t->generic.right = x + w;
-	if(t->generic.heightmod) {
-		t->generic.top = y - (t->generic.heightmod * h);
-		t->generic.bottom = y + (t->generic.heightmod * h);
-	} else {
-		t->generic.top = y;
-		t->generic.bottom = y + h;
-	}
+	t->generic.top = y;
+	t->generic.bottom = y + h;
 }
 
 static void PText_Draw(menuelement_s *t) {
@@ -111,8 +120,6 @@ static void PText_Draw(menuelement_s *t) {
 		t->curColor = t->color;
 		if(Menu_ItemAtCursor(t->generic.parent) == t) {
 			style |= UI_PULSE;
-		} else {
-			style |= UI_INVERSE;
 		}
 	}
 
@@ -232,9 +239,6 @@ static void Action_Draw(menuelement_s *a) {
 		style = UI_PULSE;
 	} else if((a->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (a->generic.parent->cursor == a->generic.menuPosition)) {
 		color = color_highlight;
-	} else if(a->generic.flags & QMF_BLINK) {
-		style = UI_BLINK;
-		color = color_highlight;
 	}
 
 	x = a->generic.x;
@@ -244,7 +248,7 @@ static void Action_Draw(menuelement_s *a) {
 
 	if(a->generic.parent->cursor == a->generic.menuPosition) {
 		// draw cursor
-		ST_DrawChar(x - BIGCHAR_WIDTH, y, 13, UI_LEFT | UI_BLINK, color, 1.00);
+		ST_DrawChar(x - BIGCHAR_WIDTH, y, 13, UI_LEFT, color, 1.00);
 	}
 }
 
@@ -293,20 +297,20 @@ static void RadioButton_Draw(menuelement_s *rb) {
 
 	if(rb->generic.flags & QMF_GRAYED) {
 		color = color_disabled;
-		style = UI_LEFT | UI_SMALLFONT;
+		style = UI_LEFT;
 	} else if(focus) {
 		color = color_highlight;
-		style = UI_LEFT | UI_PULSE | UI_SMALLFONT;
+		style = UI_LEFT | UI_PULSE;
 	} else {
 		if(!rb->color) {
 			color = color_white;
 		} else {
 			color = rb->color;
 		}
-		style = UI_LEFT | UI_SMALLFONT;
+		style = UI_LEFT;
 	}
 
-	if(rb->string) ST_DrawString(x - BASEFONT_INDENT, y, rb->string, UI_RIGHT | UI_SMALLFONT, color, 1.00);
+	if(rb->string) ST_DrawString(x - BASEFONT_INDENT, y, rb->string, UI_RIGHT, color, 1.00);
 
 	if(!rb->curvalue) {
 		UI_DrawHandlePic(x, y + 1, 10, 10, uis.rb_off);
@@ -396,13 +400,13 @@ static void Slider_Draw(menuelement_s *s) {
 
 	if(s->generic.flags & QMF_GRAYED) {
 		color = color_disabled;
-		style = UI_SMALLFONT;
+		style = 0;
 	} else if(focus) {
 		color = color_highlight;
-		style = UI_SMALLFONT | UI_PULSE;
+		style = UI_PULSE;
 	} else {
 		color = color_white;
-		style = UI_SMALLFONT;
+		style = 0;
 	}
 
 	// draw label
@@ -427,7 +431,7 @@ static void Slider_Draw(menuelement_s *s) {
 	}
 
 	// draw thumb
-	if(style & UI_PULSE) {
+	if(focus) {
 		button = sliderButton_1;
 	} else {
 		button = sliderButton_0;
@@ -499,25 +503,24 @@ static sfxHandle_t SpinControl_Key(menuelement_s *s, int key) {
 static void SpinControl_Draw(menuelement_s *s) {
 	float *color;
 	int x, y;
-	int style;
 	qboolean focus;
+	int style = 0;
+
+	style = 0;
 
 	x = s->generic.x;
 	y = s->generic.y;
 
-	style = UI_SMALLFONT;
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
-	if(s->generic.flags & QMF_GRAYED)
+	if(s->generic.flags & QMF_GRAYED) {
 		color = color_disabled;
-	else if(focus) {
+	} else if(focus) {
 		color = color_highlight;
 		style |= UI_PULSE;
-	} else if(s->generic.flags & QMF_BLINK) {
-		color = color_highlight;
-		style |= UI_BLINK;
-	} else
+	} else {
 		color = color_white;
+	}
 
 	ST_DrawString(x - BASEFONT_INDENT, y, s->string, style | UI_RIGHT, color, 1.00);
 	ST_DrawString(x, y, s->itemnames[s->curvalue], style | UI_LEFT, color, 1.00);
@@ -648,6 +651,25 @@ sfxHandle_t ScrollList_Key(menuelement_s *l, int key) {
 	return (menu_buzz_sound);
 }
 
+static void UI_ServerPlayerIcon(const char *modelAndSkin, char *iconName, int iconNameMaxSize) {
+	char *skin;
+	char model[MAX_QPATH];
+
+	Q_strncpyz(model, modelAndSkin, sizeof(model));
+	skin = strrchr(model, '/');
+	if(skin) {
+		*skin++ = '\0';
+	} else {
+		skin = "default";
+	}
+
+	Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_%s.tga", model, skin);
+
+	if(!trap_R_RegisterShaderNoMip(iconName) && Q_stricmp(skin, "default") != 0) {
+		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model);
+	}
+}
+
 static void DrawListItemImage(int x, int y, int w, int h, const char *path, menuelement_s *l, const char *itemname) {
 	const char *info;
 	char pic[MAX_QPATH];
@@ -728,7 +750,7 @@ static void ScrollList_Draw(menuelement_s *l) {
 			if(i >= l->numitems) break;
 
 			item = l->itemnames[i];
-			style = UI_LEFT | UI_SMALLFONT;
+			style = UI_LEFT;
 			if(l->generic.flags & QMF_CENTER_JUSTIFY) style |= UI_CENTER;
 			color = l->color;
 
@@ -774,6 +796,237 @@ static void ScrollList_Draw(menuelement_s *l) {
 		UI_DrawRoundedRect((uis.cursorx - BASEFONT_INDENT) + 18, uis.cursory - (4 + 18), ((ST_StringCount(item) + 1) * BASEFONT_INDENT) + BASEFONT_WIDTH, wordsize + 8, 5, color_dim);
 		ST_DrawString(uis.cursorx + 18, uis.cursory - 18, item, style | UI_DROPSHADOW, color_white, l->size);
 	}
+}
+
+static void MField_Draw(mfield_t *edit, int x, int y, qboolean focus, vec4_t color, float size) {
+	int len;
+	int drawLen;
+	int prestep;
+	char str[MAX_STRING_CHARS];
+
+	drawLen = edit->widthInChars;
+	len = strlen(edit->buffer) + 1;
+
+	// guarantee that cursor will be visible
+	if(len <= drawLen) {
+		prestep = 0;
+	} else {
+		if(edit->scroll + drawLen > len) {
+			edit->scroll = len - drawLen;
+			if(edit->scroll < 0) {
+				edit->scroll = 0;
+			}
+		}
+		prestep = edit->scroll;
+	}
+
+	if(prestep + drawLen > len) {
+		drawLen = len - prestep;
+	}
+
+	if(drawLen >= MAX_STRING_CHARS) trap_Error("drawLen >= MAX_STRING_CHARS");
+	memcpy(str, edit->buffer + prestep, drawLen);
+	str[drawLen] = 0;
+
+	ST_DrawString(x, y, str, UI_LEFT, color, size);
+
+	// draw the cursor
+	if(!focus) return;
+
+	ST_DrawChar(x + (edit->cursor - prestep) * BASEFONT_INDENT, y, 10, UI_LEFT, color, 1.00);
+}
+
+static void MField_Paste(mfield_t *edit) {
+	char pasteBuffer[64];
+	int pasteLen, i;
+
+	trap_GetClipboardData(pasteBuffer, 64);
+
+	// send as if typed, so insert / overstrike works properly
+	pasteLen = strlen(pasteBuffer);
+	for(i = 0; i < pasteLen; i++) {
+		MField_CharEvent(edit, pasteBuffer[i]);
+	}
+}
+
+static void MField_Clear(mfield_t *edit) {
+	edit->buffer[0] = 0;
+	edit->cursor = 0;
+	edit->scroll = 0;
+}
+
+static void MField_CharEvent(mfield_t *edit, int ch) {
+	int len;
+
+	if(ch == 'v' - 'a' + 1) {  // ctrl-v is paste
+		MField_Paste(edit);
+		return;
+	}
+
+	if(ch == 'c' - 'a' + 1) {  // ctrl-c clears the field
+		MField_Clear(edit);
+		return;
+	}
+
+	len = strlen(edit->buffer);
+
+	if(ch == 'h' - 'a' + 1) {  // ctrl-h is backspace
+		if(edit->cursor > 0) {
+			memmove(edit->buffer + edit->cursor - 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
+			edit->cursor--;
+			if(edit->cursor < edit->scroll) {
+				edit->scroll--;
+			}
+		}
+		return;
+	}
+
+	if(ch == 'a' - 'a' + 1) {  // ctrl-a is home
+		edit->cursor = 0;
+		edit->scroll = 0;
+		return;
+	}
+
+	if(ch == 'e' - 'a' + 1) {  // ctrl-e is end
+		edit->cursor = len;
+		edit->scroll = edit->cursor - edit->widthInChars + 1;
+		if(edit->scroll < 0) edit->scroll = 0;
+		return;
+	}
+
+	//
+	// ignore any other non printable chars
+	//
+	if(ch == -48) {
+		return;
+	}
+
+	if(!trap_Key_GetOverstrikeMode()) {
+		if((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars)) return;
+	} else {
+		// insert mode
+		if((len == MAX_EDIT_LINE - 1) || (edit->maxchars && len >= edit->maxchars)) return;
+		memmove(edit->buffer + edit->cursor + 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
+	}
+
+	edit->buffer[edit->cursor] = ch;
+	if(!edit->maxchars || edit->cursor < edit->maxchars - 1) edit->cursor++;
+
+	if(edit->cursor >= edit->widthInChars) {
+		edit->scroll++;
+	}
+
+	if(edit->cursor == len + 1) {
+		edit->buffer[edit->cursor] = 0;
+	}
+}
+
+static void MField_KeyDownEvent(mfield_t *edit, int key) {
+	int len;
+
+	// shift-insert is paste
+	if(((key == K_INS) || (key == K_KP_INS)) && trap_Key_IsDown(K_SHIFT)) {
+		MField_Paste(edit);
+		return;
+	}
+
+	len = strlen(edit->buffer);
+
+	if(key == K_DEL || key == K_KP_DEL) {
+		if(edit->cursor < len) {
+			memmove(edit->buffer + edit->cursor, edit->buffer + edit->cursor + 1, len - edit->cursor);
+		}
+		return;
+	}
+
+	if(key == K_RIGHTARROW) {
+		if(edit->cursor < len) {
+			edit->cursor++;
+		}
+		if(edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len) {
+			edit->scroll++;
+		}
+		return;
+	}
+
+	if(key == K_LEFTARROW) {
+		if(edit->cursor > 0) {
+			edit->cursor--;
+		}
+		if(edit->cursor < edit->scroll) {
+			edit->scroll--;
+		}
+		return;
+	}
+
+	if(key == K_INS || key == K_KP_INS) {
+		trap_Key_SetOverstrikeMode(!trap_Key_GetOverstrikeMode());
+		return;
+	}
+}
+
+static void MenuField_Init(menuelement_s *m) {
+	int w, h;
+
+	w = BASEFONT_INDENT * m->size;
+	h = BASEFONT_HEIGHT * m->size;
+
+	m->generic.left = m->generic.x - (strlen(m->generic.name) + 1) * w;
+	m->generic.top = m->generic.y;
+	m->generic.right = m->generic.x + w + m->field.widthInChars * w;
+	m->generic.bottom = m->generic.y + h;
+}
+
+static void MenuField_Draw(menuelement_s *f) {
+	int x;
+	int y;
+	float *color;
+	qboolean focus = qfalse;
+
+	x = f->generic.x;
+	y = f->generic.y;
+
+	if(Menu_ItemAtCursor(f->generic.parent) == f) {
+		focus = qtrue;
+	}
+
+	if(f->generic.flags & QMF_GRAYED) {
+		color = color_disabled;
+	} else {
+		color = f->color;
+	}
+
+	if(f->string) ST_DrawString(x - BASEFONT_INDENT, y, f->string, UI_RIGHT, color, 1.00);
+
+	MField_Draw(&f->field, x, y, focus, color, 1.00);
+}
+
+static sfxHandle_t MenuField_Key(menuelement_s *m, int *key) {
+	int keycode;
+	static int lastKeypress = 0;
+
+	keycode = *key;
+
+	switch(keycode) {
+		case K_ENTER:
+		case K_MOUSE1: break;
+
+		case K_TAB:
+		case K_DOWNARROW:
+		case K_UPARROW: break;
+
+		default:
+			if(keycode & K_CHAR_FLAG) {
+				keycode &= ~K_CHAR_FLAG;
+				MField_CharEvent(&m->field, keycode);
+			} else {
+				MField_KeyDownEvent(&m->field, keycode);
+			}
+			break;
+	}
+	lastKeypress = uis.realtime;
+
+	return (0);
 }
 
 void Menu_AddItem(menuframework_s *menu, menuelement_s *item) {
@@ -852,7 +1105,7 @@ static void Menu_AdjustCursor(menuframework_s *m, int dir) {
 wrap:
 	while(m->cursor >= 0 && m->cursor < m->nitems) {
 		item = (menucommon_s *)m->items[m->cursor];
-		if((item->flags & (QMF_GRAYED | QMF_MOUSEONLY | QMF_INACTIVE))) {
+		if((item->flags & (QMF_GRAYED | QMF_INACTIVE))) {
 			m->cursor += dir;
 		} else {
 			break;
@@ -868,7 +1121,6 @@ wrap:
 			m->cursor = 0;
 			wrapped = qtrue;
 			goto wrap;
-			m->cursor = m->cursor_prev;
 		}
 	} else {
 		if(m->cursor < 0) {
@@ -879,7 +1131,6 @@ wrap:
 			m->cursor = m->nitems - 1;
 			wrapped = qtrue;
 			goto wrap;
-			m->cursor = m->cursor_prev;
 		}
 	}
 }
@@ -941,24 +1192,6 @@ void *Menu_ItemAtCursor(menuframework_s *m) {
 	if(m->cursor < 0 || m->cursor >= m->nitems) return 0;
 
 	return m->items[m->cursor];
-}
-
-static sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s *item) {
-	if(item->callback) {
-		item->callback(item, QM_ACTIVATED);
-		if(!(item->flags & QMF_SILENT)) {
-			return menu_move_sound;
-		}
-	}
-
-	if(item->excallback) {
-		item->excallback(item, QM_ACTIVATED);
-		if(!(item->flags & QMF_SILENT)) {
-			return menu_move_sound;
-		}
-	}
-
-	return 0;
 }
 
 sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
@@ -1040,7 +1273,7 @@ sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
 
 		case K_ENTER:
 			if(item)
-				if(!(item->flags & (QMF_MOUSEONLY | QMF_GRAYED | QMF_INACTIVE))) return (Menu_ActivateItem(m, item));
+				if(!(item->flags & (QMF_GRAYED | QMF_INACTIVE))) return (Menu_ActivateItem(m, item));
 			break;
 	}
 
@@ -1048,285 +1281,19 @@ sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
 }
 
 void Menu_Cache(void) {
-	int i;
 	uis.cursor = trap_R_RegisterShaderNoMip("menu/assets/3_cursor2");
 	uis.corner = trap_R_RegisterShaderNoMip("menu/corner");
 	uis.rb_on = trap_R_RegisterShaderNoMip("menu/assets/switch_on");
 	uis.rb_off = trap_R_RegisterShaderNoMip("menu/assets/switch_off");
 	uis.whiteShader = trap_R_RegisterShaderNoMip("white");
-	uis.menuBlack = trap_R_RegisterShaderNoMip("menu/assets/blacktrans");
 	uis.menuWallpapers = trap_R_RegisterShaderNoMip("menu/animbg");
-	uis.menuLoadingIcon = trap_R_RegisterShaderNoMip("menu/assets/loading");
 	menu_move_sound = trap_S_RegisterSound("sound/misc/menu2.wav", qfalse);
 	menu_out_sound = trap_S_RegisterSound("sound/misc/menu3.wav", qfalse);
 	menu_buzz_sound = trap_S_RegisterSound("sound/misc/menu4.wav", qfalse);
-	weaponChangeSound = trap_S_RegisterSound("sound/weapons/change.wav", qfalse);
 	menu_null_sound = -1;
 	sliderBar = trap_R_RegisterShaderNoMip("menu/assets/slider2");
 	sliderButton_0 = trap_R_RegisterShaderNoMip("menu/assets/sliderbutt_0");
 	sliderButton_1 = trap_R_RegisterShaderNoMip("menu/assets/sliderbutt_1");
-}
-
-static void MField_Draw(mfield_t *edit, int x, int y, qboolean focus, vec4_t color, float size) {
-	int len;
-	int drawLen;
-	int prestep;
-	char str[MAX_STRING_CHARS];
-
-	drawLen = edit->widthInChars;
-	len = strlen(edit->buffer) + 1;
-
-	// guarantee that cursor will be visible
-	if(len <= drawLen) {
-		prestep = 0;
-	} else {
-		if(edit->scroll + drawLen > len) {
-			edit->scroll = len - drawLen;
-			if(edit->scroll < 0) {
-				edit->scroll = 0;
-			}
-		}
-		prestep = edit->scroll;
-	}
-
-	if(prestep + drawLen > len) {
-		drawLen = len - prestep;
-	}
-
-	if(drawLen >= MAX_STRING_CHARS) trap_Error("drawLen >= MAX_STRING_CHARS");
-	memcpy(str, edit->buffer + prestep, drawLen);
-	str[drawLen] = 0;
-
-	ST_DrawString(x, y, str, UI_LEFT, color, size);
-
-	// draw the cursor
-	if(!focus) return;
-
-	ST_DrawChar(x + (edit->cursor - prestep) * BASEFONT_INDENT, y, 10, UI_LEFT, color, 1.00);
-}
-
-static void MField_Paste(mfield_t *edit) {
-	char pasteBuffer[64];
-	int pasteLen, i;
-
-	trap_GetClipboardData(pasteBuffer, 64);
-
-	// send as if typed, so insert / overstrike works properly
-	pasteLen = strlen(pasteBuffer);
-	for(i = 0; i < pasteLen; i++) {
-		MField_CharEvent(edit, pasteBuffer[i]);
-	}
-}
-
-static void MField_KeyDownEvent(mfield_t *edit, int key) {
-	int len;
-
-	// shift-insert is paste
-	if(((key == K_INS) || (key == K_KP_INS)) && trap_Key_IsDown(K_SHIFT)) {
-		MField_Paste(edit);
-		return;
-	}
-
-	len = strlen(edit->buffer);
-
-	if(key == K_DEL || key == K_KP_DEL) {
-		if(edit->cursor < len) {
-			memmove(edit->buffer + edit->cursor, edit->buffer + edit->cursor + 1, len - edit->cursor);
-		}
-		return;
-	}
-
-	if(key == K_RIGHTARROW) {
-		if(edit->cursor < len) {
-			edit->cursor++;
-		}
-		if(edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len) {
-			edit->scroll++;
-		}
-		return;
-	}
-
-	if(key == K_LEFTARROW) {
-		if(edit->cursor > 0) {
-			edit->cursor--;
-		}
-		if(edit->cursor < edit->scroll) {
-			edit->scroll--;
-		}
-		return;
-	}
-
-	if(key == K_INS || key == K_KP_INS) {
-		trap_Key_SetOverstrikeMode(!trap_Key_GetOverstrikeMode());
-		return;
-	}
-}
-
-static void MField_CharEvent(mfield_t *edit, int ch) {
-	int len;
-
-	if(ch == 'v' - 'a' + 1) {  // ctrl-v is paste
-		MField_Paste(edit);
-		return;
-	}
-
-	if(ch == 'c' - 'a' + 1) {  // ctrl-c clears the field
-		MField_Clear(edit);
-		return;
-	}
-
-	len = strlen(edit->buffer);
-
-	if(ch == 'h' - 'a' + 1) {  // ctrl-h is backspace
-		if(edit->cursor > 0) {
-			memmove(edit->buffer + edit->cursor - 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
-			edit->cursor--;
-			if(edit->cursor < edit->scroll) {
-				edit->scroll--;
-			}
-		}
-		return;
-	}
-
-	if(ch == 'a' - 'a' + 1) {  // ctrl-a is home
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if(ch == 'e' - 'a' + 1) {  // ctrl-e is end
-		edit->cursor = len;
-		edit->scroll = edit->cursor - edit->widthInChars + 1;
-		if(edit->scroll < 0) edit->scroll = 0;
-		return;
-	}
-
-	//
-	// ignore any other non printable chars
-	//
-	if(ch == -48) {
-		return;
-	}
-
-	if(!trap_Key_GetOverstrikeMode()) {
-		if((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars)) return;
-	} else {
-		// insert mode
-		if((len == MAX_EDIT_LINE - 1) || (edit->maxchars && len >= edit->maxchars)) return;
-		memmove(edit->buffer + edit->cursor + 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
-	}
-
-	edit->buffer[edit->cursor] = ch;
-	if(!edit->maxchars || edit->cursor < edit->maxchars - 1) edit->cursor++;
-
-	if(edit->cursor >= edit->widthInChars) {
-		edit->scroll++;
-	}
-
-	if(edit->cursor == len + 1) {
-		edit->buffer[edit->cursor] = 0;
-	}
-}
-
-static void MField_Clear(mfield_t *edit) {
-	edit->buffer[0] = 0;
-	edit->cursor = 0;
-	edit->scroll = 0;
-}
-
-static void MenuField_Init(menuelement_s *m) {
-	int l;
-	int w;
-	int h;
-
-	w = BASEFONT_INDENT * m->size;
-	h = BASEFONT_HEIGHT * m->size;
-
-	m->generic.left = m->generic.x - (strlen(m->generic.name) + 1) * w;
-	;
-	m->generic.top = m->generic.y;
-	m->generic.right = m->generic.x + w + m->field.widthInChars * w;
-	m->generic.bottom = m->generic.y + h;
-}
-
-static void MenuField_Draw(menuelement_s *f) {
-	int x;
-	int y;
-	int style;
-	float *color;
-	qboolean focus = qfalse;
-
-	x = f->generic.x;
-	y = f->generic.y;
-
-	if(Menu_ItemAtCursor(f->generic.parent) == f) {
-		focus = qtrue;
-	}
-
-	if(f->generic.flags & QMF_GRAYED) {
-		color = color_disabled;
-	} else {
-		color = f->color;
-	}
-
-	if(f->string) ST_DrawString(x - BASEFONT_INDENT, y, f->string, UI_RIGHT, color, 1.00);
-
-	MField_Draw(&f->field, x + BASEFONT_INDENT, y, focus, color, 1.00);
-}
-
-static sfxHandle_t MenuField_Key(menuelement_s *m, int *key) {
-	int keycode;
-	static int lastKeypress = 0;
-
-	keycode = *key;
-
-	switch(keycode) {
-		case K_ENTER:
-		case K_MOUSE1: break;
-
-		case K_TAB:
-		case K_DOWNARROW:
-		case K_UPARROW: break;
-
-		default:
-			if(keycode & K_CHAR_FLAG) {
-				keycode &= ~K_CHAR_FLAG;
-
-				if((m->generic.flags & QMF_UPPERCASE) && Q_islower(keycode))
-					keycode -= 'a' - 'A';
-				else if((m->generic.flags & QMF_LOWERCASE) && Q_isupper(keycode))
-					keycode -= 'A' - 'a';
-				else if((m->generic.flags & QMF_NUMBERSONLY) && Q_isalpha(keycode))
-					return (menu_buzz_sound);
-
-				MField_CharEvent(&m->field, keycode);
-			} else {
-				MField_KeyDownEvent(&m->field, keycode);
-			}
-			break;
-	}
-	lastKeypress = uis.realtime;
-
-	return (0);
-}
-
-static void UI_ServerPlayerIcon(const char *modelAndSkin, char *iconName, int iconNameMaxSize) {
-	char *skin;
-	char model[MAX_QPATH];
-
-	Q_strncpyz(model, modelAndSkin, sizeof(model));
-	skin = strrchr(model, '/');
-	if(skin) {
-		*skin++ = '\0';
-	} else {
-		skin = "default";
-	}
-
-	Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_%s.tga", model, skin);
-
-	if(!trap_R_RegisterShaderNoMip(iconName) && Q_stricmp(skin, "default") != 0) {
-		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model);
-	}
 }
 
 #define CB_COMMAND 0
@@ -1335,10 +1302,6 @@ static void UI_ServerPlayerIcon(const char *modelAndSkin, char *iconName, int ic
 
 static void UI_FindButtonPic(menuelement_s *e, int pic) {
 	switch(pic) {
-		case AST_BACK:
-			e->string = "menu/assets/back_0";
-			e->focuspic = "menu/assets/back_1";
-			break;
 		case AST_OSLOGO:
 			e->string = "menu/sandbox_logo";
 			e->focuspic = "menu/sandbox_logo";

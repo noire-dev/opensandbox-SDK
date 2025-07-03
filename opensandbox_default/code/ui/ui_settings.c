@@ -6,7 +6,7 @@
 #include "ui_local.h"
 
 #define MAX_RESOLUTIONS 64
-#define RESBUF_SIZE     1024
+#define RESBUF_SIZE 1024
 
 typedef struct {
 	menuframework_s menu;
@@ -76,84 +76,83 @@ static void Settings_MenuEvent(void* ptr, int event) {
 	if(event != QM_ACTIVATED) return;
 	if(((menucommon_s*)ptr)->id == 3) trap_Cvar_Set("r_resolution", resolutions[settings.e[3].curvalue]);
 	if(((menucommon_s*)ptr)->id == 4) trap_Cvar_SetValue("r_fullscreen", settings.e[4].curvalue);
-	if(((menucommon_s*)ptr)->id == 8){
-		if(settings.e[8].curvalue == 0){
-			trap_Cvar_SetValue( "ui_effectslevel", 0 );
-			trap_Cvar_SetValue( "cg_effectsTime", 10 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 4096 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 1 );
+	if(((menucommon_s*)ptr)->id == 8) {
+		if(settings.e[8].curvalue == 0) {
+			trap_Cvar_SetValue("ui_effectslevel", 0);
+			trap_Cvar_SetValue("cg_effectsTime", 10);
+			trap_Cvar_SetValue("cg_effectsLimit", 4096);
+			trap_Cvar_SetValue("cg_effectsGibs", 1);
 		}
-		if(settings.e[8].curvalue == 1){
-			trap_Cvar_SetValue( "ui_effectslevel", 1 );
-			trap_Cvar_SetValue( "cg_effectsTime", 30 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 5120 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 3 );
+		if(settings.e[8].curvalue == 1) {
+			trap_Cvar_SetValue("ui_effectslevel", 1);
+			trap_Cvar_SetValue("cg_effectsTime", 30);
+			trap_Cvar_SetValue("cg_effectsLimit", 5120);
+			trap_Cvar_SetValue("cg_effectsGibs", 3);
 		}
-		if(settings.e[8].curvalue == 2){
-			trap_Cvar_SetValue( "ui_effectslevel", 2 );
-			trap_Cvar_SetValue( "cg_effectsTime", 60 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 6144 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 6 );
+		if(settings.e[8].curvalue == 2) {
+			trap_Cvar_SetValue("ui_effectslevel", 2);
+			trap_Cvar_SetValue("cg_effectsTime", 60);
+			trap_Cvar_SetValue("cg_effectsLimit", 6144);
+			trap_Cvar_SetValue("cg_effectsGibs", 6);
 		}
-		if(settings.e[8].curvalue == 3){
-			trap_Cvar_SetValue( "ui_effectslevel", 3 );
-			trap_Cvar_SetValue( "cg_effectsTime", 90 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 7168 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 3 );
+		if(settings.e[8].curvalue == 3) {
+			trap_Cvar_SetValue("ui_effectslevel", 3);
+			trap_Cvar_SetValue("cg_effectsTime", 90);
+			trap_Cvar_SetValue("cg_effectsLimit", 7168);
+			trap_Cvar_SetValue("cg_effectsGibs", 3);
 		}
-		if(settings.e[8].curvalue == 4){
-			trap_Cvar_SetValue( "ui_effectslevel", 4 );
-			trap_Cvar_SetValue( "cg_effectsTime", 300 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 9 );
+		if(settings.e[8].curvalue == 4) {
+			trap_Cvar_SetValue("ui_effectslevel", 4);
+			trap_Cvar_SetValue("cg_effectsTime", 300);
+			trap_Cvar_SetValue("cg_effectsLimit", 8192);
+			trap_Cvar_SetValue("cg_effectsGibs", 9);
 		}
-		if(settings.e[8].curvalue == 5){
-			trap_Cvar_SetValue( "ui_effectslevel", 5 );
-			trap_Cvar_SetValue( "cg_effectsTime", 600 );
-			trap_Cvar_SetValue( "cg_effectsLimit", 8192 );
-			trap_Cvar_SetValue( "cg_effectsGibs", 16 );
+		if(settings.e[8].curvalue == 5) {
+			trap_Cvar_SetValue("ui_effectslevel", 5);
+			trap_Cvar_SetValue("cg_effectsTime", 600);
+			trap_Cvar_SetValue("cg_effectsLimit", 8192);
+			trap_Cvar_SetValue("cg_effectsGibs", 16);
 		}
 	}
 	if(((menucommon_s*)ptr)->id == 9) trap_Cvar_SetValue("r_picmip", settings.e[9].curvalue);
-	if(((menucommon_s*)ptr)->id == 10) trap_Cvar_SetValue("r_ext_multisample", settings.e[10].curvalue*2);
-	if(((menucommon_s*)ptr)->id == 11) trap_Cvar_SetValue("r_bloom_intensity", settings.e[11].curvalue*0.05);
+	if(((menucommon_s*)ptr)->id == 10) trap_Cvar_SetValue("r_ext_multisample", settings.e[10].curvalue * 2);
+	if(((menucommon_s*)ptr)->id == 11) trap_Cvar_SetValue("r_bloom_intensity", settings.e[11].curvalue * 0.05);
 	if(((menucommon_s*)ptr)->id == 32) trap_Cvar_Set("s_driver", sdriverList[settings.e[32].curvalue]);
 }
 
-static void Settings_GetResolutions( void ) {
-    trap_Cvar_VariableStringBuffer("r_availableModes", resbuf, sizeof(resbuf));
+static void Settings_GetResolutions(void) {
+	trap_Cvar_VariableStringBuffer("r_availableModes", resbuf, sizeof(resbuf));
 
-    if (*resbuf) {
-        char* s = resbuf;
-        unsigned int i = 0;
+	if(*resbuf) {
+		char* s = resbuf;
+		unsigned int i = 0;
 		unsigned int j = 0;
 
-        while (s && i < MAX_RESOLUTIONS - 1) {
-            detectedResolutions[i++] = s;
-            s = strchr(s, ' ');
-            if (s) {
-                *s = '\0';
-                s++;
-            }
-        }
-        detectedResolutions[i] = NULL;
+		while(s && i < MAX_RESOLUTIONS - 1) {
+			detectedResolutions[i++] = s;
+			s = strchr(s, ' ');
+			if(s) {
+				*s = '\0';
+				s++;
+			}
+		}
+		detectedResolutions[i] = NULL;
 
-        if (i < MAX_RESOLUTIONS - 1) {
-            Com_sprintf(currentResolution, sizeof(currentResolution), "%dx%d", glconfig.vidWidth, glconfig.vidHeight);
+		if(i < MAX_RESOLUTIONS - 1) {
+			Com_sprintf(currentResolution, sizeof(currentResolution), "%dx%d", glconfig.vidWidth, glconfig.vidHeight);
 
-            for (j = 0; j < i; j++) {
-                if (!strcmp(detectedResolutions[j], currentResolution))
-                    goto done;
-            }
+			for(j = 0; j < i; j++) {
+				if(!strcmp(detectedResolutions[j], currentResolution)) goto done;
+			}
 
-            detectedResolutions[i++] = currentResolution;
-            detectedResolutions[i] = NULL;
-        }
+			detectedResolutions[i++] = currentResolution;
+			detectedResolutions[i] = NULL;
+		}
 
-    done:
-        resolutions = detectedResolutions;
-        resolutionsDetected = qtrue;
-    }
+	done:
+		resolutions = detectedResolutions;
+		resolutionsDetected = qtrue;
+	}
 }
 
 void UI_Settings(void) {
@@ -171,8 +170,8 @@ void UI_Settings(void) {
 	y = 30;
 	x = 120;
 	UI_CSpinControl(&settings.e[3], x, y, "Resolution:", (const char**)resolutions, Settings_MenuEvent, 0); y += 12;
-	for (i = 0; resolutions[i]; i++) {
-		if (!strcmp(resolutions[i], UI_Cvar_VariableString("r_resolution"))) {
+	for(i = 0; resolutions[i]; i++) {
+		if(!strcmp(resolutions[i], UI_Cvar_VariableString("r_resolution"))) {
 			settings.e[3].curvalue = i;
 			break;
 		}
@@ -205,8 +204,8 @@ void UI_Settings(void) {
 	UI_CSlider(&settings.e[31], x, y, "Music volume", "s_musicVolume", 0, 100, 100, NULL, 0); y += 12;
 
 	UI_CSpinControl(&settings.e[32], x, y, "Sound driver:", sdriverList, Settings_MenuEvent, 0); y += 12;
-	for (i = 0; sdriverList[i]; i++) {
-		if (!strcmp(sdriverList[i], UI_Cvar_VariableString("s_driver"))) {
+	for(i = 0; sdriverList[i]; i++) {
+		if(!strcmp(sdriverList[i], UI_Cvar_VariableString("s_driver"))) {
 			settings.e[32].curvalue = i;
 			break;
 		}
