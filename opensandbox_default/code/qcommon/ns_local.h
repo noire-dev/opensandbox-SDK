@@ -151,7 +151,6 @@ Noire.Script API
 void NS_getCvar(VarValue *modify, VarType type, const char *cvarName);
 int get_cvar_int(const char *name);
 float get_cvar_float(const char *name);
-char* get_cvar_char(const char *name);
 void NS_setCvar(const char *cvarName, const char *cvarValue);
 void NS_createCvar(const char *cvarName, const char *cvarValue);
 

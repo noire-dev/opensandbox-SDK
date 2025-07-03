@@ -46,7 +46,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 	char dlSizeBuf[64], totalSizeBuf[64], xferRateBuf[64], dlTimeBuf[64];
 	int xferRate;
 	int width, leftWidth;
-	int style = UI_LEFT | UI_SMALLFONT | UI_DROPSHADOW;
+	int style = UI_LEFT | UI_DROPSHADOW;
 	const char *s;
 
 	downloadSize = trap_Cvar_VariableValue("cl_downloadSize");
@@ -125,7 +125,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	char *s;
 	uiClientState_t cstate;
 	char info[MAX_INFO_VALUE];
-	int strWidth;
 	qhandle_t black;
 	qhandle_t logo;
 	qhandle_t loading;
@@ -147,7 +146,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 
 	// print any server info (server full, bad version, etc)
 	if(cstate.connState < CA_CONNECTED) {
-		ST_DrawString(2 - uis.wideoffset, 2, cstate.messageString, UI_CENTER | UI_SMALLFONT | UI_DROPSHADOW, color_white, 1.00);
+		ST_DrawString(2 - uis.wideoffset, 2, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
 	}
 	if(lastConnState > cstate.connState) {
 		lastLoadingText[0] = '\0';
@@ -177,5 +176,5 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	UI_DrawHandlePic(320 - 50, 240 - 75, 100, 100, logo);
 	UI_DrawHandlePic(320 - 24, 320 - 48, 48, 48, loading);
 
-	ST_DrawString(2 - uis.wideoffset, 2, s, UI_SMALLFONT | UI_DROPSHADOW, color_white, 1.00);
+	ST_DrawString(2 - uis.wideoffset, 2, s, UI_DROPSHADOW, color_white, 1.00);
 }

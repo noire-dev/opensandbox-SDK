@@ -893,11 +893,6 @@ void G_RunThink(gentity_t *ent) {
 	ent->think(ent);
 }
 
-/*
-###############
-Noire.Script API - Threads
-###############
-*/
 static char qagameThreadBuffer[MAX_CYCLE_SIZE];
 static void RunScriptThreads(int time) {
 	int i;

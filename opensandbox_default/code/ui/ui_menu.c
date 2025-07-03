@@ -34,8 +34,8 @@ static void Main_MenuDraw(void) {
 
 	Menu_Draw(&main.menu);
 
-	if(strlen(main.error)) ST_DrawString(0 - uis.wideoffset, 0, main.error, UI_SMALLFONT | UI_DROPSHADOW, color, 1.00);
-	ST_DrawString(635 + uis.wideoffset, 2, "2025.07.02", UI_RIGHT | UI_SMALLFONT, color, 1.00);
+	if(strlen(main.error)) ST_DrawString(0 - uis.wideoffset, 0, main.error, UI_DROPSHADOW, color, 1.00);
+	ST_DrawString(635 + uis.wideoffset, 2, "2025.07.02", UI_RIGHT, color, 1.00);
 }
 
 void UI_MainMenu(void) {

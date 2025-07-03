@@ -96,7 +96,7 @@ void UI_PushMenu(menuframework_s *menu) {
 	// force first available item to have focus
 	for(i = 0; i < menu->nitems; i++) {
 		item = (menucommon_s *)menu->items[i];
-		if(!(item->flags & (QMF_GRAYED | QMF_MOUSEONLY | QMF_INACTIVE))) {
+		if(!(item->flags & (QMF_GRAYED | QMF_INACTIVE))) {
 			menu->cursor_prev = -1;
 			Menu_SetCursor(menu, i);
 			break;
@@ -210,10 +210,6 @@ void UI_MouseEvent(int dx, int dy) {
 		if(uis.activemenu->cursor != i) {
 			Menu_SetCursor(uis.activemenu, i);
 			((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor_prev]))->flags &= ~QMF_HASMOUSEFOCUS;
-
-			if(!(((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags & QMF_SILENT)) {
-				trap_S_StartLocalSound(menu_move_sound, CHAN_LOCAL_SOUND);
-			}
 		}
 
 		((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags |= QMF_HASMOUSEFOCUS;
@@ -269,7 +265,6 @@ char *UI_Cvar_VariableString(const char *var_name) {
 }
 
 qboolean UI_ConsoleCommand(int realTime) {
-	int i;
 	char *cmd;
 	cmd = UI_Argv(0);
 
@@ -513,7 +508,7 @@ void UI_DrawRoundedRect(float x, float y, float width, float height, float radiu
 
 void UI_UpdateScreen(void) { trap_UpdateScreen(); }
 
-char uiThreadBuffer[MAX_CYCLE_SIZE];
+static char uiThreadBuffer[MAX_CYCLE_SIZE];
 void RunScriptThreads(int time) {
 	int i;
 
@@ -572,9 +567,9 @@ void UI_Refresh(int realtime) {
 
 	if(uis.debug) {
 		x = 0 - uis.wideoffset;
-		ST_DrawString(x, 0, va("cursor xy: (%d,%d)", uis.cursorx, uis.cursory), UI_LEFT | UI_SMALLFONT, colorRed, 1.00);
-		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT | UI_SMALLFONT, colorRed, 1.00);
-		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT | UI_SMALLFONT, colorRed, 1.00);
+		ST_DrawString(x, 0, va("cursor xy: (%d,%d)", uis.cursorx, uis.cursory), UI_LEFT, colorRed, 1.00);
+		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT, colorRed, 1.00);
+		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT, colorRed, 1.00);
 	}
 }
 

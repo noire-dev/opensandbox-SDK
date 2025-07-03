@@ -109,11 +109,6 @@ static void UI_RunLerpFrame(playerInfo_t *ci, lerpFrame_t *lf, int newAnimation)
 }
 
 static void UI_PlayerAnimation(playerInfo_t *pi, int *legsOld, int *legs, float *legsBackLerp, int *torsoOld, int *torso, float *torsoBackLerp) {
-	// legs animation
-	pi->legsAnimationTimer -= uis.frametime;
-	if(pi->legsAnimationTimer < 0) {
-		pi->legsAnimationTimer = 0;
-	}
 
 	if(pi->legs.yawing && (pi->legsAnim & ~ANIM_TOGGLEBIT) == LEGS_IDLE) {
 		UI_RunLerpFrame(pi, &pi->legs, LEGS_TURN);
@@ -123,12 +118,6 @@ static void UI_PlayerAnimation(playerInfo_t *pi, int *legsOld, int *legs, float 
 	*legsOld = pi->legs.oldFrame;
 	*legs = pi->legs.frame;
 	*legsBackLerp = pi->legs.backlerp;
-
-	// torso animation
-	pi->torsoAnimationTimer -= uis.frametime;
-	if(pi->torsoAnimationTimer < 0) {
-		pi->torsoAnimationTimer = 0;
-	}
 
 	UI_RunLerpFrame(pi, &pi->torso, pi->torsoAnim);
 	*torsoOld = pi->torso.oldFrame;
@@ -149,9 +138,7 @@ static void UI_SwingAngles(float destination, float swingTolerance, float clampT
 		}
 	}
 
-	if(!*swinging) {
-		return;
-	}
+	if(!*swinging) return;
 
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
@@ -233,7 +220,6 @@ static void UI_PlayerAngles(modelAnim_t *m, vec3_t legs[3], vec3_t torso[3], vec
 	vec3_t legsAngles, torsoAngles, headAngles;
 	float dest;
 	float adjust;
-	float delta;
 	playerInfo_t *pi;
 
 	pi = &m->player;
@@ -299,9 +285,6 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 	refEntity_t legs;
 	refEntity_t torso;
 	refEntity_t head;
-	refEntity_t gun;
-	refEntity_t barrel;
-	refEntity_t flash;
 	vec3_t origin;
 	int renderfx;
 	vec3_t mins = {-16, -16, -24};
@@ -743,7 +726,6 @@ static qboolean UI_PlayerInfo_SetModel(modelAnim_t *m) {
 	pi = &m->player;
 	if(!UI_RegisterClientModelname(m)) return qfalse;
 
-	pi->chat = qfalse;
 	pi->newModel = qtrue;
 
 	return qtrue;
@@ -761,12 +743,10 @@ static void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim,
 	if(pi->newModel) {
 		pi->newModel = qfalse;
 
-		pi->pendingLegsAnim = 0;
 		pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | legsAnim;
 		pi->legs.yawAngle = viewAngles[YAW];
 		pi->legs.yawing = qfalse;
 
-		pi->pendingTorsoAnim = 0;
 		pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | torsoAnim;
 		pi->torso.yawAngle = viewAngles[YAW];
 		pi->torso.yawing = qfalse;
@@ -777,7 +757,6 @@ static void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim,
 
 	// leg animation
 	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
-	pi->pendingLegsAnim = legsAnim;
 
 	// torso animation
 	if(torsoAnim == TORSO_STAND || torsoAnim == TORSO_STAND2) {
@@ -785,22 +764,6 @@ static void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim,
 	}
 
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
-}
-
-static qboolean PlayerInfo_CursorChanged(modelAnim_t *m) {
-	// check for cursor position change
-	if(uis.cursorx != m->cursorx || uis.cursory != m->cursory) {
-		if(m->bDoingIdleAnim) {
-			GUI_PlayerInfo_UpdateAnimation(m);
-			m->bDoingIdleAnim = qfalse;
-		}
-		m->cursorx = uis.cursorx;
-		m->cursory = uis.cursory;
-
-		return qtrue;
-	}
-
-	return qfalse;
 }
 
 static void PlayerInfo_ModelTrackCursor(modelAnim_t *m) {
@@ -835,12 +798,31 @@ static void PlayerInfo_ModelTrackCursor(modelAnim_t *m) {
 	VectorCopy(m->moveangles, m->player.moveAngles);
 }
 
+static void GUI_PlayerInfo_UpdateAnimation(modelAnim_t *m) {
+	m->playerLegs = LEGS_IDLE;
+	m->playerTorso = TORSO_STAND2;
+	PlayerInfo_ModelTrackCursor(m);
+
+	UI_PlayerInfo_SetInfo(&m->player, m->playerLegs, m->playerTorso, m->viewangles, m->moveangles);
+}
+
+static qboolean PlayerInfo_CursorChanged(modelAnim_t *m) {
+	// check for cursor position change
+	if(uis.cursorx != m->cursorx || uis.cursory != m->cursory) {
+		if(m->bDoingIdleAnim) {
+			GUI_PlayerInfo_UpdateAnimation(m);
+			m->bDoingIdleAnim = qfalse;
+		}
+		m->cursorx = uis.cursorx;
+		m->cursory = uis.cursory;
+
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 static void PlayerInfo_SetupNewModel(modelAnim_t *m) {
-	char dir[MODELNAME_BUFFER];
-	int i;
-	char *fallback;
-	char *slash;
-	char *str;
 	vec3_t tmp_view;
 	vec3_t tmp_move;
 
@@ -876,17 +858,8 @@ static void PlayerInfo_SetupNewModel(modelAnim_t *m) {
 	m->cursorx = m->cursory = -1;
 }
 
-static void GUI_PlayerInfo_UpdateAnimation(modelAnim_t *m) {
-	m->playerLegs = LEGS_IDLE;
-	m->playerTorso = TORSO_STAND2;
-	PlayerInfo_ModelTrackCursor(m);
-
-	UI_PlayerInfo_SetInfo(&m->player, m->playerLegs, m->playerTorso, m->viewangles, m->moveangles);
-}
-
 void GUI_PlayerInfo_InitModel(modelAnim_t *m) {
 	char buffer[MODELNAME_BUFFER];
-	int i;
 
 	trap_Cvar_VariableStringBuffer("model", buffer, MODELNAME_BUFFER);
 	strcpy(m->modelskin, buffer);
@@ -939,9 +912,7 @@ const char *GUI_ModelName(const char *modelname) {
 
 void GUI_PlayerInfo_AnimateModel(modelAnim_t *m) {
 	menuelement_s *b;
-	char buffer[MODELNAME_BUFFER];
 	int modelchange, team_modelchange, draw_team;
-	float f;
 
 	b = &m->bitmap;
 

@@ -6,8 +6,6 @@
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
-#define MAX_TEAMNAME 32
-
 #ifndef __attribute__
 #define __attribute__(x)
 #endif
@@ -36,9 +34,9 @@ typedef int intptr_t;
 #include "q_platform.h"
 #include "q_cvars.h"
 
-typedef unsigned char 		byte;
+typedef unsigned char byte;
 
-typedef enum {qfalse, qtrue}	qboolean;
+typedef enum {qfalse, qtrue} qboolean;
 
 typedef union {
 	float f;
@@ -83,8 +81,6 @@ typedef int		clipHandle_t;
 
 #define	MAX_QPATH			256		// max length of a quake game pathname
 
-#define	MAX_NAME_LENGTH		32		// max length of a client name
-
 #define	MAX_SAY_TEXT	150
 
 // paramters for command buffer stuffing
@@ -116,14 +112,13 @@ typedef enum {
 	ERR_DISCONNECT
 } errorParm_t;
 
-#define BLINK_DIVISOR			200
 #define PULSE_DIVISOR			75
 
-#define UI_LEFT			0x00000000	// default
+#define UI_LEFT			0x00000000	// format mask
 #define UI_CENTER		0x00000001
 #define UI_RIGHT		0x00000002
 #define UI_FORMATMASK	0x00000007
-#define UI_SMALLFONT	0x00000010	// default
+#define UI_SMALLFONT	0x00000010	// other
 #define UI_BIGFONT		0x00000020
 #define UI_GIANTFONT	0x00000040
 #define UI_DROPSHADOW	0x00000800
