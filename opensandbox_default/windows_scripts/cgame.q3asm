@@ -1,7 +1,6 @@
 -o "../../game/qvm/cgame"
 cg_main
 ..\cg_syscalls
-cg_atmospheric
 cg_consolecmds
 cg_draw
 cg_drawtools
@@ -20,11 +19,12 @@ cg_snapshot
 cg_unlagged
 cg_view
 cg_weapons
-bg_slidemove
-bg_pmove
 bg_lib
 bg_misc
+bg_pmove
+bg_slidemove
+ns_func_cgame
+ns_main
+q_cvars
 q_math
 q_shared
-ns_main
-ns_func_cgame

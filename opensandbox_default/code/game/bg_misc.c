@@ -129,7 +129,7 @@ NPCTypes_t gameInfoNPCTypes[] = {
 	{ "citizen",		FRAC_CITIZEN,		1.00,		1.00,		1.00,		qfalse,		qfalse,		qfalse,		qfalse,		qtrue }, //NT_CITIZEN
 	{ "guard",			FRAC_GUARD,			1.00,		1.00,		1.00,		qfalse,		qfalse,		qfalse,		qfalse,		qfalse }, //NT_GUARD
 	{ "partner",		FRAC_PARTNER,		1.00,		1.00,		1.00,		qtrue,		qfalse,		qfalse,		qtrue,		qtrue }, //NT_PARTNER
-	{ "nextbot",		FRAC_NEXTBOT,		1.00,		5.00,		2.50,		qfalse,		qtrue,		qfalse,		qfalse,		qfalse }, //NT_NEXTBOT
+	{ "nextbot",		FRAC_NEXTBOT,		1.00,		5.00,		1.80,		qfalse,		qtrue,		qfalse,		qfalse,		qfalse }, //NT_NEXTBOT
 };
 int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 

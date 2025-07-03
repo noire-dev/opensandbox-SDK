@@ -34,6 +34,7 @@ $cc ../../../code/game/ai_dmnet.c
 $cc ../../../code/game/ai_dmq3.c
 $cc ../../../code/game/ai_main.c
 $cc ../../../code/game/ai_team.c
+$cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 $cc ../../../code/game/bg_pmove.c
@@ -45,7 +46,6 @@ $cc ../../../code/game/g_cmds.c
 $cc ../../../code/game/g_combat.c
 $cc ../../../code/game/g_items.c
 $cc ../../../code/game/g_main.c
-$cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/g_misc.c
 $cc ../../../code/game/g_mover.c
 $cc ../../../code/game/g_physics.c
@@ -53,7 +53,6 @@ $cc ../../../code/game/g_sandbox.c
 $cc ../../../code/game/g_session.c
 $cc ../../../code/game/g_spawn.c
 $cc ../../../code/game/g_svcmds.c
-cp ../../../code/game/g_syscalls.asm ..
 $cc ../../../code/game/g_target.c
 $cc ../../../code/game/g_team.c
 $cc ../../../code/game/g_trigger.c
@@ -61,11 +60,14 @@ $cc ../../../code/game/g_unlagged.c
 $cc ../../../code/game/g_utils.c
 $cc ../../../code/game/g_weapon.c
 
+cp ../../../code/game/g_syscalls.asm ..
+
+$cc ../../../code/qcommon/ns_func_game.c
+$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
-$cc ../../../code/qcommon/ns_main.c
-$cc ../../../code/qcommon/ns_func_game.c
+
 
 echo "-----------------"
 echo "game.qvm compiled"
@@ -129,12 +131,11 @@ $cc ../../../code/game/bg_slidemove.c
 
 cp ../../../code/cgame/cg_syscalls.asm ..
 
+$cc ../../../code/qcommon/ns_func_cgame.c
+$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
-
-$cc ../../../code/qcommon/ns_main.c
-$cc ../../../code/qcommon/ns_func_cgame.c
 
 echo "-----------------"
 echo "cgame.qvm compiled"
@@ -182,20 +183,20 @@ $cc ../../../code/ui/ui_options.c
 $cc ../../../code/ui/ui_playermodel.c
 $cc ../../../code/ui/ui_players.c
 $cc ../../../code/ui/ui_qmenu.c
-$cc ../../../code/ui/ui_spawnmenu.c
 $cc ../../../code/ui/ui_servers.c
 $cc ../../../code/ui/ui_settings.c
+$cc ../../../code/ui/ui_spawnmenu.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 
+$cc ../../../code/qcommon/ns_func_ui.c
+$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
-$cc ../../../code/qcommon/ns_main.c
-$cc ../../../code/qcommon/ns_func_ui.c
 
 echo "-----------------"
 echo "ui.qvm compiled"
