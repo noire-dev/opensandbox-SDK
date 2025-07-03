@@ -63,7 +63,7 @@ static int CG_TeamScoreboard(int y, team_t team, int maxClients, int lineHeight)
 		score = &cg.scores[i];
 		ci = &cgs.clientinfo[score->client];
 		if(team != ci->team) continue;
-		if(score->client == cg.snap->ps.clientNum) {
+		if(score->client == 0) {
 			if(localFinded) continue;
 			localFinded = qtrue;
 		}
