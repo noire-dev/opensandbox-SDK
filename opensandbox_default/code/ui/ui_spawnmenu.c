@@ -161,7 +161,7 @@ static void SpawnMenu_Event(void* ptr, int event) {
 			trap_Cmd_ExecuteText(EXEC_INSERT, "menuback\n");
 		}
 		if(spawnmenu_tab == TB_ADDBOTS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu.e[30].field.buffer, spawnmenu.e[31].field.buffer));
+			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_skill[spawnmenu.e[30].curvalue], spawnmenu_team[spawnmenu.e[31].curvalue]));
 		}
 		if(spawnmenu_tab == TB_REMOVEBOTS) {
 			trap_Cmd_ExecuteText(EXEC_NOW, va("kick %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
