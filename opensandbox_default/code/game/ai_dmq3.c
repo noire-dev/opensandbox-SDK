@@ -2451,7 +2451,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 
 	attackentity = bs->enemy;
 	//
-	if (bs->attackchase_time > FloatTime()) {
+	if (bs->attackchase_time > FloatTime() || bs->npcType == NT_NEXTBOT) {
 		//create the chase goal
 		goal.entitynum = attackentity;
 		goal.areanum = bs->lastenemyareanum;
@@ -2803,7 +2803,11 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		//if on the same team
 		if (BotSameTeam(bs, i)) continue;
 		//check if the enemy is visible
-		vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, i);
+		if(bs->npcType != NT_NEXTBOT){
+			vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, i);
+		} else {
+			vis = 1;
+		}
 		if (vis <= 0) continue;
 		//found an enemy
 		bs->enemy = entinfo.number;
