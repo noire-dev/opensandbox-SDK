@@ -89,7 +89,6 @@ void CG_Respawn(void) {
 	// select WP_NONE for updating from server
 	cg.weaponSelect = 0;
 	cg.zoomed = qfalse;
-	if(cgs.gametype == GT_SANDBOX) trap_Cvar_Set("cg_hide255", "1");
 }
 
 static void CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops) {

@@ -59,7 +59,7 @@ void CG_DrawInformation(void) {
 
 	CG_DrawRoundedRect(410 + cgs.wideoffset, 445, 220, 30, 1, color_lightgrey);
 	CG_DrawProgressBar(415 + cgs.wideoffset, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
-	ST_DrawString(413 + cgs.wideoffset, 449, cg.infoScreenText, UI_LEFT, color_whiteblack, 0.80);
+	ST_DrawString(415 + cgs.wideoffset, 449, cg.infoScreenText, UI_LEFT, color_whiteblack, 0.80);
 
 	CG_DrawPic(320 - 50, 240 - 75, 100, 100, logo);
 	CG_DrawPic(320 - 24, 320 - 48, 48, 48, loading);

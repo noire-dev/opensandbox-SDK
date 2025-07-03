@@ -35,7 +35,7 @@ static void Main_MenuDraw(void) {
 	Menu_Draw(&main.menu);
 
 	if(strlen(main.error)) ST_DrawString(0 - uis.wideoffset, 0, main.error, UI_DROPSHADOW, color, 1.00);
-	ST_DrawString(635 + uis.wideoffset, 2, "2025.07.02", UI_RIGHT, color, 1.00);
+	ST_DrawString(635 + uis.wideoffset, 2, "2025.07.03", UI_RIGHT, color, 1.00);
 }
 
 void UI_MainMenu(void) {
@@ -65,14 +65,14 @@ void UI_MainMenu(void) {
 		y = OSUI_STANDARD_Y-64;
 		trap_Cvar_VariableStringBuffer( "g_entitypack", stp_entitypack, 64 );
 		trap_Cvar_VariableStringBuffer( "sv_mapname", stp_mapname, 64 );
-		UI_CButton(&main.e[20], 600 + uis.wideoffset, y, "^1Red team", UI_RIGHT, 1.00, color_white, "team r; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-		UI_CButton(&main.e[21], 600 + uis.wideoffset, y, "^4Blue team", UI_RIGHT, 1.00, color_white, "team b; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-		UI_CButton(&main.e[22], 600 + uis.wideoffset, y, "^3Free team", UI_RIGHT, 1.00, color_white, "team f; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-		UI_CButton(&main.e[23], 600 + uis.wideoffset, y, "^2Spectator", UI_RIGHT, 1.00, color_white, "team s; menuback\n", NULL, NULL, NULL, 0); y += OSUI_BIGSPACING_Y;
-		UI_CButton(&main.e[24], 600 + uis.wideoffset, y, "Restart", UI_RIGHT, 1.00, color_white, "map_restart; menuback\n", NULL, NULL, NULL, 0); y += OSUI_BIGSPACING_Y;
-		UI_CButton(&main.e[26], 600 + uis.wideoffset, y, "Save map", UI_RIGHT, 1.00, color_white, va("savemap maps/%s/%s.ent; menuback\n", stp_entitypack, stp_mapname), NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-		UI_CButton(&main.e[27], 600 + uis.wideoffset, y, "Delete map", UI_RIGHT, 1.00, color_white, va("deletemap maps/%s/%s.ent; menuback; wait 25; map_restart\n", stp_entitypack, stp_mapname), NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
-		UI_CButton(&main.e[28], 600 + uis.wideoffset, y, "Clear map", UI_RIGHT, 1.00, color_white, "clearmap; menuback\n", NULL, NULL, NULL, 0);
+		UI_CButton(&main.e[20], 630 + uis.wideoffset, y, "^1Red team", UI_RIGHT, 1.00, color_white, "team r; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[21], 630 + uis.wideoffset, y, "^4Blue team", UI_RIGHT, 1.00, color_white, "team b; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[22], 630 + uis.wideoffset, y, "^3Free team", UI_RIGHT, 1.00, color_white, "team f; menuback\n", NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[23], 630 + uis.wideoffset, y, "^2Spectator", UI_RIGHT, 1.00, color_white, "team s; menuback\n", NULL, NULL, NULL, 0); y += OSUI_BIGSPACING_Y;
+		UI_CButton(&main.e[24], 630 + uis.wideoffset, y, "Restart", UI_RIGHT, 1.00, color_white, "map_restart; menuback\n", NULL, NULL, NULL, 0); y += OSUI_BIGSPACING_Y;
+		UI_CButton(&main.e[26], 630 + uis.wideoffset, y, "Save map", UI_RIGHT, 1.00, color_white, va("savemap maps/%s/%s.ent; menuback\n", stp_entitypack, stp_mapname), NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[27], 630 + uis.wideoffset, y, "Delete map", UI_RIGHT, 1.00, color_white, va("deletemap maps/%s/%s.ent; menuback; wait 25; map_restart\n", stp_entitypack, stp_mapname), NULL, NULL, NULL, 0); y += OSUI_SPACING_Y;
+		UI_CButton(&main.e[28], 630 + uis.wideoffset, y, "Clear map", UI_RIGHT, 1.00, color_white, "clearmap; menuback\n", NULL, NULL, NULL, 0);
 	}
 
 	UI_CPicture(&main.e[7], OSUI_LOGO_X, OSUI_LOGO_Y, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, NULL, 0);

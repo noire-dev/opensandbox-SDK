@@ -5,10 +5,10 @@
 
 #include "ui_local.h"
 
-#define MODEL_ARROWSL "menu/assets/gs_arrows_l"
-#define MODEL_ARROWSR "menu/assets/gs_arrows_r"
-#define MODEL_ARROWSB "menu/assets/arrows_vert_bot"
-#define MODEL_ARROWST "menu/assets/arrows_vert_top"
+#define MODEL_ARROWSL "menu/assets/arrow-left"
+#define MODEL_ARROWSR "menu/assets/arrow-right"
+#define MODEL_ARROWSB "menu/assets/arrow-down"
+#define MODEL_ARROWST "menu/assets/arrow-up"
 
 #define MODELDIR "models/players"
 
@@ -37,9 +37,9 @@ const char* drawmodel_list[] = {
 #define PICTURE_GAP 8
 #define ICON_SIZE 48
 
-#define MODELARROWS_X 8
-#define MODELARROWS_Y 176
-#define SKINARROWS_X 160
+#define MODELARROWS_X 16
+#define MODELARROWS_Y 220
+#define SKINARROWS_X 180
 
 // each id starts a list of controls
 #define ID_PLAYERPIC0 0
@@ -791,22 +791,24 @@ static void PlayerModel_MenuInit(void) {
 
 	UI_CText(&s_playermodel.e[0], 320, 12, "PLAYER MODEL", UI_CENTER, 1.00);
 
+	UI_CField(&s_playermodel.e[100], 60, 48, "Name:", 24, 24, color_white, "name", NULL, 0); y += 12;
+
 	y = 68;
-	UI_CSlider(&s_playermodel.e[1], 60, y, "^1Head:  ", "headR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[2], 60, y, "^2Head:  ", "headG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[3], 60, y, "^4Head:  ", "headB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[1], 60, y, "^1Head:", "headR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[2], 60, y, "^2Head:", "headG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[3], 60, y, "^4Head:", "headB", 0, 255, 1, NULL, 0); y = 68;
 
-	UI_CSlider(&s_playermodel.e[4], 185, y, "^1Torso:  ", "modelR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[5], 185, y, "^2Torso:  ", "modelG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[6], 185, y, "^4Torso:  ", "modelB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[4], 185, y, "^1Torso:", "modelR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[5], 185, y, "^2Torso:", "modelG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[6], 185, y, "^4Torso:", "modelB", 0, 255, 1, NULL, 0); y = 68;
 
-	UI_CSlider(&s_playermodel.e[7], 310, y, "^1Legs:  ", "legsR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[8], 310, y, "^2Legs:  ", "legsG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[9], 310, y, "^4Legs:  ", "legsB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[7], 310, y, "^1Legs:", "legsR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[8], 310, y, "^2Legs:", "legsG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[9], 310, y, "^4Legs:", "legsB", 0, 255, 1, NULL, 0); y = 68;
 
-	UI_CSlider(&s_playermodel.e[10], 435, y, "^1Phys:  ", "physR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[11], 435, y, "^2Phys:  ", "physG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[12], 435, y, "^4Phys:  ", "physB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[10], 435, y, "^1Phys:", "physR", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[11], 435, y, "^2Phys:", "physG", 0, 255, 1, NULL, 0); y += 18;
+	UI_CSlider(&s_playermodel.e[12], 435, y, "^4Phys:", "physB", 0, 255, 1, NULL, 0); y = 68;
 
 	y = MODELARRAY_Y;
 	for(i = 0, k = 0; i < PLAYERGRID_ROWS; i++) {
@@ -852,7 +854,7 @@ static void PlayerModel_MenuInit(void) {
 	s_playermodel.skinleft.generic.id = ID_PREVSKINPAGE;
 	s_playermodel.skinleft.generic.x = SKINARROWS_X;
 	s_playermodel.skinleft.generic.y = y;
-	s_playermodel.skinleft.width = 64;
+	s_playermodel.skinleft.width = 32;
 	s_playermodel.skinleft.height = 32;
 	s_playermodel.skinleft.string = MODEL_ARROWSL;
 	s_playermodel.skinleft.focuspic = MODEL_ARROWSL;
@@ -861,9 +863,9 @@ static void PlayerModel_MenuInit(void) {
 	s_playermodel.skinright.generic.flags = QMF_LEFT_JUSTIFY | QMF_PULSEIFFOCUS;
 	s_playermodel.skinright.generic.callback = PlayerModel_MenuEvent;
 	s_playermodel.skinright.generic.id = ID_NEXTSKINPAGE;
-	s_playermodel.skinright.generic.x = SKINARROWS_X + 64;
+	s_playermodel.skinright.generic.x = SKINARROWS_X + 32;
 	s_playermodel.skinright.generic.y = y;
-	s_playermodel.skinright.width = 64;
+	s_playermodel.skinright.width = 32;
 	s_playermodel.skinright.height = 32;
 	s_playermodel.skinright.string = MODEL_ARROWSR;
 	s_playermodel.skinright.focuspic = MODEL_ARROWSR;
@@ -882,8 +884,8 @@ static void PlayerModel_MenuInit(void) {
 	s_playermodel.modelup.generic.id = ID_PREVPAGE;
 	s_playermodel.modelup.generic.x = MODELARROWS_X;
 	s_playermodel.modelup.generic.y = MODELARROWS_Y;
-	s_playermodel.modelup.width = 48;
-	s_playermodel.modelup.height = 64;
+	s_playermodel.modelup.width = 32;
+	s_playermodel.modelup.height = 32;
 	s_playermodel.modelup.string = MODEL_ARROWST;
 	s_playermodel.modelup.focuspic = MODEL_ARROWST;
 
@@ -892,9 +894,9 @@ static void PlayerModel_MenuInit(void) {
 	s_playermodel.modeldown.generic.callback = PlayerModel_MenuEvent;
 	s_playermodel.modeldown.generic.id = ID_NEXTPAGE;
 	s_playermodel.modeldown.generic.x = MODELARROWS_X;
-	s_playermodel.modeldown.generic.y = MODELARROWS_Y + 64;
-	s_playermodel.modeldown.width = 48;
-	s_playermodel.modeldown.height = 64;
+	s_playermodel.modeldown.generic.y = MODELARROWS_Y + 32;
+	s_playermodel.modeldown.width = 32;
+	s_playermodel.modeldown.height = 32;
 	s_playermodel.modeldown.string = MODEL_ARROWSB;
 	s_playermodel.modeldown.focuspic = MODEL_ARROWSB;
 

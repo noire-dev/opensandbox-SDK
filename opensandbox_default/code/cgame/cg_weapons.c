@@ -422,10 +422,7 @@ void CG_RegisterWeapon(int weaponNum) {
 	weaponInfo->loopFireSound = qfalse;
 
 	switch(weaponNum) {
-		case WP_GAUNTLET:
-			weaponInfo->firingSound = trap_S_RegisterSound("sound/weapons/melee/fstrun.wav", qfalse);
-			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/melee/fstatck.wav", qfalse);
-			break;
+		case WP_GAUNTLET: break;
 
 		case WP_LIGHTNING:
 			MAKERGB(weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f);

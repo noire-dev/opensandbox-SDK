@@ -156,14 +156,14 @@ void UI_NewGame(void) {
 	UI_CButton(&newgame.e[2], (640+uis.wideoffset-155)+60, 418, "Start game", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, NewGame_Event, 0);
 
 	y = 18;
-	UI_CField(&newgame.e[1], 640+uis.wideoffset-175, y, "", 25, 25, color_black, "sv_hostname", NULL, 0); y += 12;
+	UI_CField(&newgame.e[1], 640+uis.wideoffset-170, y, "", 25, 25, color_black, "sv_hostname", NULL, 0); y += 12;
 	if(newgame_mode == NTB_NONE) {
 		y += 8;
 		UI_CField(&newgame.e[10], 640+uis.wideoffset-90, y, "Save file:", 16, 16, color_black, "g_entitypack", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[11], 640+uis.wideoffset-90, y, "Frag limit:", 5, 5, color_black, "fraglimit", NULL, 0); y += 12;
-		UI_CField(&newgame.e[12], 640+uis.wideoffset-90, y, "Capture limit:", 5, 5, color_black, "capturelimit", NULL, 0); y += 12;
-		UI_CField(&newgame.e[13], 640+uis.wideoffset-90, y, "Time limit:", 5, 5, color_black, "timelimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[11], 640+uis.wideoffset-90, y, "Fraglimit:", 5, 5, color_black, "fraglimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[12], 640+uis.wideoffset-90, y, "Capturelimit:", 5, 5, color_black, "capturelimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[13], 640+uis.wideoffset-90, y, "Timelimit:", 5, 5, color_black, "timelimit", NULL, 0); y += 12;
 		y += 8;
 		UI_CField(&newgame.e[14], 640+uis.wideoffset-90, y, "Max entities:", 4, 4, color_black, "g_maxEntities", NULL, 0); y += 12;
 		UI_CField(&newgame.e[15], 640+uis.wideoffset-90, y, "Max clients:", 3, 3, color_black, "g_maxClients", NULL, 0); y += 12;

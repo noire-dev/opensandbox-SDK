@@ -16,7 +16,7 @@ item_t gameInfoItems[] = {
 	{ "item_health",				"models/powerups/health/medium_cross.md3",		"icons/iconh_yellow",		"Health 25",			25,		IT_HEALTH,		0 },
 	{ "item_health_large",			"models/powerups/health/large_cross.md3",		"icons/iconh_red",			"Health 50",			50,		IT_HEALTH,		0 },
 	{ "item_health_mega",			"models/powerups/health/mega_cross.md3",		"icons/iconh_mega",			"Mega Health",			100,	IT_HEALTH,		0 },
-	{ "weapon_gauntlet",			"models/weapons2/gauntlet/gauntlet.md3",		"icons/iconw_gauntlet",		"Melee",				0,		IT_WEAPON,		WP_GAUNTLET },
+	{ "weapon_gauntlet",			NULL,											"icons/iconw_gauntlet",		"Melee",				0,		IT_WEAPON,		WP_GAUNTLET },
 	{ "weapon_machinegun",			"models/weapons2/machinegun/machinegun.md3",	"icons/iconw_machinegun",	"Machinegun",			40,		IT_WEAPON,		WP_MACHINEGUN },
 	{ "weapon_shotgun",				"models/weapons2/shotgun/shotgun.md3",			"icons/iconw_shotgun",		"Shotgun",				10,		IT_WEAPON,		WP_SHOTGUN },
 	{ "weapon_grenadelauncher",		"models/weapons2/grenadel/grenadel.md3",		"icons/iconw_grenade",		"Grenade Launcher",		10,		IT_WEAPON,		WP_GRENADE_LAUNCHER },
@@ -129,7 +129,7 @@ NPCTypes_t gameInfoNPCTypes[] = {
 	{ "citizen",		FRAC_CITIZEN,		1.00,		1.00,		1.00,		qfalse,		qfalse,		qfalse,		qfalse,		qtrue }, //NT_CITIZEN
 	{ "guard",			FRAC_GUARD,			1.00,		1.00,		1.00,		qfalse,		qfalse,		qfalse,		qfalse,		qfalse }, //NT_GUARD
 	{ "partner",		FRAC_PARTNER,		1.00,		1.00,		1.00,		qtrue,		qfalse,		qfalse,		qtrue,		qtrue }, //NT_PARTNER
-	{ "nextbot",		FRAC_NEXTBOT,		0.40,		5.00,		2.50,		qfalse,		qtrue,		qfalse,		qfalse,		qfalse }, //NT_NEXTBOT
+	{ "nextbot",		FRAC_NEXTBOT,		1.00,		5.00,		2.50,		qfalse,		qtrue,		qfalse,		qfalse,		qfalse }, //NT_NEXTBOT
 };
 int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 
@@ -368,7 +368,7 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 	int upperBound;
 
 	if(ent->modelindex < 1 || ent->modelindex >= gameInfoItemsNum) {
-		Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: index out of range");
+		//Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: index out of range");
 	}
 
 	item = &gameInfoItems[ent->modelindex];
@@ -465,7 +465,6 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 			}
 			return qtrue;
 
-		case IT_NULL: Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: IT_NULL");
 		default: Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType); break;
 	}
 

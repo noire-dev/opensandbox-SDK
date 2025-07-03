@@ -22,7 +22,7 @@ typedef struct {
 #define ID_KEYS 90
 #define ID_SETTINGS 91
 
-#define KEYS_NUM 20
+#define KEYS_NUM 23
 #define SETTINGS_NUM KEYS_NUM + 5
 
 typedef struct {
@@ -49,14 +49,17 @@ static bind_t g_bindings[] = {
 	{"+attack", 				"attack",				10,	-1, -1},
 	{"weapprev",				"prev weapon",			11,	-1, -1},
 	{"weapnext", 				"next weapon",			12,	-1, -1},
-	{"+button3", 				"gesture / horn",		13,	-1, -1},
+	{"+button3", 				"gesture / rotate",		13,	-1, -1},
 	{"messagemode", 			"chat",					14,	-1, -1},
 	{"messagemode2", 			"chat - team",			15,	-1, -1},
 	{"messagemode3", 			"chat - target",		16,	-1, -1},
 	{"flashlight", 				"flashlight",			17,	-1, -1},
-	{"ui_sandbox", 				"sandbox menu",			18,	-1, -1},
-	{"vstr uitoolmode", 		"sandbox tool mode",	19,	-1, -1},
-	{"exitvehicle", 			"exit vehicle",			20,	-1, -1},
+	{"ui_spawnmenu", 			"sandbox menu",			18,	-1, -1},
+	{"undo", 					"undone",				19,	-1, -1},
+	{"noclip", 					"toggle noclip",		20,	-1, -1},
+	{"toggle cl_run", 			"toggle run",			21,	-1, -1},
+	{"vstr uitoolmode", 		"switch toolgun mode",	22,	-1, -1},
+	{"exitvehicle", 			"exit vehicle",			23,	-1, -1},
 	{(char*)NULL,				(char*)NULL,			-1,	-1,	-1},
 };
 
@@ -174,17 +177,17 @@ static void Controls_DrawKeyBinding(void* self) {
 	}
 
 	if(c) {
-		UI_DrawRoundedRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, 0, color_select_bluo);
+		UI_DrawRoundedRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, 0, color_select);
 		ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT, color_highlight, 1.00);
 		ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT, color_highlight, 1.00);
 
 		if(controls.waitingforkey) {
 			ST_DrawChar(x, y, '=', UI_CENTER, color_highlight, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_CENTER, colorWhite, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Waiting for new key ... ESCAPE to cancel", UI_CENTER, color_white, 1.00);
 		} else {
 			ST_DrawChar(x, y, 13, UI_CENTER, color_highlight, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_CENTER, colorWhite, 1.00);
-			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_CENTER, colorWhite, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.90, "Press ENTER or CLICK to change", UI_CENTER, color_white, 1.00);
+			ST_DrawString(SCREEN_WIDTH * 0.64, SCREEN_HEIGHT * 0.95, "Press BACKSPACE to clear", UI_CENTER, color_white, 1.00);
 		}
 	} else {
 		if(a->generic.flags & QMF_GRAYED) {

@@ -189,7 +189,7 @@ static void Bitmap_Draw(menuelement_s *b) {
 
 	if(b->generic.flags & QMF_GRAYED) {
 		if(b->shader) {
-			trap_R_SetColor(colorMdGrey);
+			trap_R_SetColor(color_disabled);
 			UI_DrawHandlePic(x, y, w, h, b->shader);
 			trap_R_SetColor(NULL);
 		}
@@ -248,7 +248,7 @@ static void Action_Draw(menuelement_s *a) {
 
 	if(a->generic.parent->cursor == a->generic.menuPosition) {
 		// draw cursor
-		ST_DrawChar(x - BIGCHAR_WIDTH, y, 13, UI_LEFT, color, 1.00);
+		ST_DrawChar(x - BASEFONT_INDENT*2, y, 13, UI_LEFT, color, 1.00);
 	}
 }
 
@@ -310,7 +310,7 @@ static void RadioButton_Draw(menuelement_s *rb) {
 		style = UI_LEFT;
 	}
 
-	if(rb->string) ST_DrawString(x - BASEFONT_INDENT, y, rb->string, UI_RIGHT, color, 1.00);
+	if(rb->string) ST_DrawString(x - BASEFONT_INDENT*2, y, rb->string, UI_RIGHT, color, 1.00);
 
 	if(!rb->curvalue) {
 		UI_DrawHandlePic(x, y + 1, 10, 10, uis.rb_off);
@@ -410,7 +410,7 @@ static void Slider_Draw(menuelement_s *s) {
 	}
 
 	// draw label
-	ST_DrawString(x - BASEFONT_INDENT, y, s->string, UI_RIGHT | style, color, 1.00);
+	ST_DrawString(x - BASEFONT_INDENT*2, y, s->string, UI_RIGHT | style, color, 1.00);
 	ST_DrawString(x + (SLIDER_RANGE * BASEFONT_INDENT) + BASEFONT_INDENT, y, va("%i", val), UI_LEFT | style, color, 1.00);
 
 	// draw slider
@@ -504,7 +504,7 @@ static void SpinControl_Draw(menuelement_s *s) {
 	float *color;
 	int x, y;
 	qboolean focus;
-	int style = 0;
+	int style;
 
 	style = 0;
 
@@ -522,7 +522,7 @@ static void SpinControl_Draw(menuelement_s *s) {
 		color = color_white;
 	}
 
-	ST_DrawString(x - BASEFONT_INDENT, y, s->string, style | UI_RIGHT, color, 1.00);
+	ST_DrawString(x - BASEFONT_INDENT*2, y, s->string, style | UI_RIGHT, color, 1.00);
 	ST_DrawString(x, y, s->itemnames[s->curvalue], style | UI_LEFT, color, 1.00);
 }
 
@@ -723,9 +723,9 @@ static void UI_DrawListItemSelection(menuelement_s *l, int i, int x, int y, int 
 	}
 
 	if(l->generic.style <= LST_ICONS) {
-		UI_DrawRoundedRect(u, y, (l->width * BASEFONT_INDENT) * l->size, item_h, 0, color_select_bluo);
+		UI_DrawRoundedRect(u, y, (l->width * BASEFONT_INDENT) * l->size, item_h, 0, color_select);
 	} else if(l->generic.style == LST_GRID) {
-		UI_DrawRoundedRect(u, y, grid_w, grid_w, l->corner, color_select_bluo);
+		UI_DrawRoundedRect(u, y, grid_w, grid_w, l->corner, color_select);
 	}
 }
 
@@ -799,13 +799,14 @@ static void ScrollList_Draw(menuelement_s *l) {
 }
 
 static void MField_Draw(mfield_t *edit, int x, int y, qboolean focus, vec4_t color, float size) {
-	int len;
+	int len, esc;
 	int drawLen;
 	int prestep;
 	char str[MAX_STRING_CHARS];
 
 	drawLen = edit->widthInChars;
 	len = strlen(edit->buffer) + 1;
+	esc = ST_ColorEscapes(edit->buffer)*2;
 
 	// guarantee that cursor will be visible
 	if(len <= drawLen) {
@@ -820,9 +821,7 @@ static void MField_Draw(mfield_t *edit, int x, int y, qboolean focus, vec4_t col
 		prestep = edit->scroll;
 	}
 
-	if(prestep + drawLen > len) {
-		drawLen = len - prestep;
-	}
+	if(prestep + drawLen > len) drawLen = len - prestep;
 
 	if(drawLen >= MAX_STRING_CHARS) trap_Error("drawLen >= MAX_STRING_CHARS");
 	memcpy(str, edit->buffer + prestep, drawLen);
@@ -833,7 +832,7 @@ static void MField_Draw(mfield_t *edit, int x, int y, qboolean focus, vec4_t col
 	// draw the cursor
 	if(!focus) return;
 
-	ST_DrawChar(x + (edit->cursor - prestep) * BASEFONT_INDENT, y, 10, UI_LEFT, color, 1.00);
+	ST_DrawChar(x + (edit->cursor - prestep-esc) * BASEFONT_INDENT, y, 10, UI_LEFT, color, 1.00);
 }
 
 static void MField_Paste(mfield_t *edit) {
@@ -996,7 +995,7 @@ static void MenuField_Draw(menuelement_s *f) {
 		color = f->color;
 	}
 
-	if(f->string) ST_DrawString(x - BASEFONT_INDENT, y, f->string, UI_RIGHT, color, 1.00);
+	if(f->string) ST_DrawString(x - BASEFONT_INDENT*2, y, f->string, UI_RIGHT, color, 1.00);
 
 	MField_Draw(&f->field, x, y, focus, color, 1.00);
 }
@@ -1211,7 +1210,7 @@ sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor(m);
 	b = (menuelement_s *)item;
-	if(item && (item->flags & (QMF_HASMOUSEFOCUS)) && !(item->flags & (QMF_GRAYED | QMF_INACTIVE))) {
+	if(item && !(item->flags & (QMF_GRAYED | QMF_INACTIVE))) {
 		switch(item->type) {
 			case MTYPE_SPINCONTROL: sound = SpinControl_Key((menuelement_s *)item, key); break;
 
@@ -1238,9 +1237,7 @@ sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
 
 	// default handling
 	switch(key) {
-		case K_F10: trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n"); break;
 		case K_F11: uis.debug ^= 1; break;
-
 		case K_F12: trap_Cmd_ExecuteText(EXEC_APPEND, "screenshotJPEG\n"); break;
 
 		case K_UPARROW:
@@ -1318,8 +1315,9 @@ static void UI_FindButtonPic(menuelement_s *e, int pic) {
 }
 
 void UI_FillList(menuelement_s *e, char *location, char *itemsLocation, char *extension, char *names, int namesSize, char **configlist) {
-	int i, len;
+	int i, len, validItems = 0;
 	char *configname;
+	qboolean skip = qfalse;
 
 	e->string = itemsLocation;
 	if(!strcmp(extension, "$image") || !strcmp(extension, "$sound")) {
@@ -1338,34 +1336,63 @@ void UI_FillList(menuelement_s *e, char *location, char *itemsLocation, char *ex
 
 	configname = names;
 	for(i = 0; i < e->numitems; i++) {
-		e->itemnames[i] = configname;
-
 		len = strlen(configname);
+
+		skip = qfalse;
+
 		if(!strcmp(extension, "$image")) {
-			if(!Q_stricmp(configname + len - strlen(".png"), ".png")) configname[len - strlen(".png")] = '\0';
-			if(!Q_stricmp(configname + len - strlen(".jpg"), ".jpg")) configname[len - strlen(".jpg")] = '\0';
-			if(!Q_stricmp(configname + len - strlen(".tga"), ".tga")) configname[len - strlen(".tga")] = '\0';
-			if(!Q_stricmp(configname + len - strlen(".bmp"), ".bmp")) configname[len - strlen(".bmp")] = '\0';
+			if(!(Q_stricmp(configname + len - 4, ".png") == 0 || Q_stricmp(configname + len - 4, ".jpg") == 0 || Q_stricmp(configname + len - 4, ".tga") == 0 || Q_stricmp(configname + len - 4, ".bmp") == 0))
+				skip = qtrue;
 		} else if(!strcmp(extension, "$sound")) {
-			if(!Q_stricmp(configname + len - strlen(".wav"), ".wav")) configname[len - strlen(".wav")] = '\0';
-			if(!Q_stricmp(configname + len - strlen(".ogg"), ".ogg")) configname[len - strlen(".ogg")] = '\0';
-			if(!Q_stricmp(configname + len - strlen(".mp3"), ".mp3")) configname[len - strlen(".mp3")] = '\0';
-		} else {
-			if(!Q_stricmp(configname + len - strlen(extension), extension)) configname[len - strlen(extension)] = '\0';
+			if(!(Q_stricmp(configname + len - 4, ".wav") == 0 || Q_stricmp(configname + len - 4, ".ogg") == 0 || Q_stricmp(configname + len - 4, ".mp3") == 0))
+				skip = qtrue;
 		}
 
+		if(skip) {
+			configname += len + 1;
+			continue;
+		}
+
+		if(!strcmp(extension, "$image")) {
+			if(Q_stricmp(configname + len - 4, ".png") == 0) configname[len - 4] = '\0';
+			if(Q_stricmp(configname + len - 4, ".jpg") == 0) configname[len - 4] = '\0';
+			if(Q_stricmp(configname + len - 4, ".tga") == 0) configname[len - 4] = '\0';
+			if(Q_stricmp(configname + len - 4, ".bmp") == 0) configname[len - 4] = '\0';
+		} else if(!strcmp(extension, "$sound")) {
+			if(Q_stricmp(configname + len - 4, ".wav") == 0) configname[len - 4] = '\0';
+			if(Q_stricmp(configname + len - 4, ".ogg") == 0) configname[len - 4] = '\0';
+			if(Q_stricmp(configname + len - 4, ".mp3") == 0) configname[len - 4] = '\0';
+		} else {
+			if(Q_stricmp(configname + len - strlen(extension), extension) == 0)
+				configname[len - strlen(extension)] = '\0';
+		}
+
+		e->itemnames[validItems++] = configname;
 		configname += len + 1;
 	}
+
+	e->numitems = UI_CountFiles(location, extension);
 }
 
 int UI_CountFiles(const char *location, const char *extension) {
 	char tempNames[32000];
+	int count = 0;
 
-	if(!strcmp(extension, "$image") || !strcmp(extension, "$sound")) {
-		return trap_FS_GetFileList(location, "", tempNames, sizeof(tempNames));
-	} else {
-		return trap_FS_GetFileList(location, extension, tempNames, sizeof(tempNames));
+	if(!strcmp(extension, "$image")){
+		count += trap_FS_GetFileList(location, ".png", tempNames, sizeof(tempNames));
+		count += trap_FS_GetFileList(location, ".jpg", tempNames, sizeof(tempNames));
+		count += trap_FS_GetFileList(location, ".tga", tempNames, sizeof(tempNames));
+		count += trap_FS_GetFileList(location, ".bmp", tempNames, sizeof(tempNames));
+		return count;
 	}
+	if(!strcmp(extension, "$sound")){
+		count += trap_FS_GetFileList(location, ".wav", tempNames, sizeof(tempNames));
+		count += trap_FS_GetFileList(location, ".ogg", tempNames, sizeof(tempNames));
+		count += trap_FS_GetFileList(location, ".mp3", tempNames, sizeof(tempNames));
+		return count;
+	}
+
+	return trap_FS_GetFileList(location, extension, tempNames, sizeof(tempNames));
 }
 
 void UI_FillListFromArray(menuelement_s *e, char **configlist, char **items, int maxItems) {

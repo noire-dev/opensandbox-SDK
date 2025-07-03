@@ -47,7 +47,9 @@ void Phys_VehiclePlayer(gentity_t *self) {
 	VectorCopy(self->parent->s.origin, self->s.origin);
 	VectorCopy(self->parent->s.pos.trBase, self->s.pos.trBase);
 	if(VectorLength(self->parent->client->ps.velocity) > 5) {
+		self->s.apos.trBase[0] = 0;
 		self->s.apos.trBase[1] = self->parent->s.apos.trBase[1];
+		self->s.apos.trBase[2] = 0;
 	}
 	if(engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900) <= 10) {              // 900 is car speed
 		self->s.legsAnim = engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900);  // 900 is car speed

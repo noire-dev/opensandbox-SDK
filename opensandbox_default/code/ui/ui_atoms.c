@@ -402,14 +402,7 @@ void UI_DrawPictureElement(float x, float y, float w, float h, const char *file)
 
 	file_len = strlen(file);
 
-	hShader = trap_R_RegisterShaderNoMip("menu/nsgui_e");
-	if(Q_stricmp(file + file_len - 4, ".ogg") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_m");
-	if(Q_stricmp(file + file_len - 4, ".wav") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_m");
-	if(Q_stricmp(file + file_len - 5, ".opus") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_m");
-	if(Q_stricmp(file + file_len - 7, ".shader") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_s");
-	if(Q_stricmp(file + file_len - 8, ".shaderx") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_s");
-	if(Q_stricmp(file + file_len - 3, ".ns") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_s");
-	if(Q_stricmp(file + file_len - 4, ".cfg") == 0) hShader = trap_R_RegisterShaderNoMip("menu/nsgui_s");
+	hShader = trap_R_RegisterShaderNoMip("menu/element");
 
 	if(w < 0) {  // flip about vertical
 		w = -w;
@@ -567,9 +560,9 @@ void UI_Refresh(int realtime) {
 
 	if(uis.debug) {
 		x = 0 - uis.wideoffset;
-		ST_DrawString(x, 0, va("cursor xy: (%d,%d)", uis.cursorx, uis.cursory), UI_LEFT, colorRed, 1.00);
-		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT, colorRed, 1.00);
-		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT, colorRed, 1.00);
+		ST_DrawString(x, 0, va("cursor xy: (%d,%d)", uis.cursorx, uis.cursory), UI_LEFT, color_white, 1.00);
+		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT, color_white, 1.00);
+		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT, color_white, 1.00);
 	}
 }
 

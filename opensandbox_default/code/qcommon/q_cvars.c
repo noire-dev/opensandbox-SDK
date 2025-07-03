@@ -120,7 +120,6 @@ cvar_t    toolgun_toolmode1;
 cvar_t    toolgun_toolmode2;
 cvar_t    toolgun_toolmode3;
 cvar_t    toolgun_toolmode4;
-cvar_t    cg_hide255;
 cvar_t    ns_haveerror;
 cvar_t    cg_postprocess;
 cvar_t    cg_enableBobbing;
@@ -185,7 +184,6 @@ static cvarTable_t cvarTable[] = {
 	{ &toolgun_toolmode2,               "toolgun_toolmode2",            "",             0 },
 	{ &toolgun_toolmode3,               "toolgun_toolmode3",            "",             0 },
 	{ &toolgun_toolmode4,               "toolgun_toolmode4",            "",             0 },
-	{ &cg_hide255,                      "cg_hide255",                   "0",            0 },
 	{ &ns_haveerror,                    "ns_haveerror",                 "0",            0 },
 	{ &cg_postprocess,                  "cg_postprocess",               "",             0 },
 	{ &cg_drawGun,                      "cg_drawGun",                   "1",            CVAR_ARCHIVE },
@@ -224,6 +222,7 @@ cvar_t    toolgun_toolset1;
 cvar_t    toolgun_toolset2;
 cvar_t    toolgun_toolset3;
 cvar_t    toolgun_toolset4;
+cvar_t    toolgun_tooltext;
 cvar_t    ui_effectslevel;
 cvar_t    cl_selectedmod;
 cvar_t    ui_loaded;
@@ -283,6 +282,7 @@ static cvarTable_t cvarTable[] = {
 	{ &toolgun_toolset2,                "toolgun_toolset2",             "--------:",    0 },
 	{ &toolgun_toolset3,                "toolgun_toolset3",             "--------:",    0 },
 	{ &toolgun_toolset4,                "toolgun_toolset4",             "--------:",    0 },
+	{ &toolgun_tooltext,                "toolgun_tooltext",             "",             0 },
 	{ &ui_effectslevel,                 "ui_effectslevel",              "0",            CVAR_ARCHIVE },
 	{ &ui_loaded,                       "ui_loaded",                    "0",            0 },
 	{ &cl_selectedmod,                  "cl_selectedmod",               "default",      CVAR_ARCHIVE },

@@ -157,7 +157,8 @@ static void SpawnMenu_Event(void* ptr, int event) {
 			UI_SpawnMenu();
 		}
 		if(spawnmenu_tab == TB_SAVES) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("loadmap maps/%s.ent; menuback\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd_ExecuteText(EXEC_NOW, va("loadmap maps/%s.ent\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd_ExecuteText(EXEC_INSERT, "menuback\n");
 		}
 		if(spawnmenu_tab == TB_ADDBOTS) {
 			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu.e[40].field.buffer, spawnmenu.e[41].field.buffer));
@@ -181,7 +182,7 @@ static void SpawnMenu_Event(void* ptr, int event) {
 	}
 
 	if(((menucommon_s*)ptr)->callid == 3 && spawnmenu_tab == TB_SAVES) {
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("savemap maps/%s.ent \n", spawnmenu.e[30].field.buffer));
+		trap_Cmd_ExecuteText(EXEC_APPEND, va("savemap maps/%s.ent\n", spawnmenu.e[30].field.buffer));
 		UI_ForceMenuOff();
 		trap_Cmd_ExecuteText(EXEC_APPEND, "set cg_draw2D 0\n");
 		trap_Cmd_ExecuteText(EXEC_APPEND, "wait 10\n");
@@ -251,20 +252,23 @@ static void SpawnMenu_Draw(void) {
 	int y, i;
 	vec4_t color = {1.00, 1.00, 1.00, 1.00};
 	vec4_t color2 = {0.85, 0.90, 1.00, 0.20};
-	vec4_t color2_active = {0.60, 0.75, 1.00, 0.40};
+	vec4_t color3 = {0.60, 0.75, 1.00, 0.40};
 	vec4_t color4 = {0.50, 0.60, 0.80, 1.00};
 
 	UI_DrawRoundedRect(10 - uis.wideoffset, 10, 440 + uis.wideoffset * 2, 480 - 38, 4, color_dim);
 	UI_DrawRoundedRect(640 + uis.wideoffset - 180, 10, 170, 480 - 38, 4, color_dim);
 
+	UI_DrawRoundedRect(640+uis.wideoffset-175, 15, 160, 16, 3, color3);
+	ST_DrawString(640+uis.wideoffset-95, 18, toolgun_tooltext.string, UI_CENTER, color_white, 1.00);
+
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
 		if(i == spawnmenu_tab) {
-			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2_active);
+			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color3);
 		} else {
 			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
 		}
-		UI_DrawRoundedRect(125 - uis.wideoffset, y + 2, 12, 12, 2, color_dim);
+		UI_DrawRoundedRect(124 - uis.wideoffset, y + 2, 14, 12, 2, color_dim);
 		if(i == TB_PROPS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("props", ".md3")), UI_CENTER, color_white, 0.65);
 		if(i == TB_ENTITIES) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", gameInfoSandboxSpawnsNum), UI_CENTER, color_white, 0.65);
 		if(i == TB_NPCS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_GetNumBots()), UI_CENTER, color_white, 0.65);
@@ -357,7 +361,7 @@ void UI_SpawnMenu(void) {
 		y += 20;
 	}
 	if(spawnmenu_tab == TB_SAVES) {
-		UI_CField(&spawnmenu.e[30], (640 + uis.wideoffset - 155) + 14, 350, "Name:", 16, 16, color_white, "uis_sv1", NULL, 0);
+		UI_CField(&spawnmenu.e[30], (640 + uis.wideoffset - 150) + 14, 350, "Name:", 16, 16, color_white, "uis_sv1", NULL, 0);
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {

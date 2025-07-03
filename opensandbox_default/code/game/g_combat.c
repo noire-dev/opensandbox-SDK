@@ -516,8 +516,6 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	client = targ->client;
 
-	if(client && client->noclip) return;
-
 	if(!dir) {
 		dflags |= DAMAGE_NO_KNOCKBACK;
 	} else {

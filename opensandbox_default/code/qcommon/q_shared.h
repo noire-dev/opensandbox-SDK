@@ -112,48 +112,21 @@ typedef enum {
 	ERR_DISCONNECT
 } errorParm_t;
 
-#define PULSE_DIVISOR			75
+#define PULSE_DIVISOR	75
 
 #define UI_LEFT			0x00000000	// format mask
 #define UI_CENTER		0x00000001
 #define UI_RIGHT		0x00000002
 #define UI_FORMATMASK	0x00000007
-#define UI_SMALLFONT	0x00000010	// other
-#define UI_BIGFONT		0x00000020
-#define UI_GIANTFONT	0x00000040
-#define UI_DROPSHADOW	0x00000800
-#define UI_BLINK		0x00001000
-#define UI_INVERSE		0x00002000
-#define UI_PULSE		0x00004000
-#define UI_SCROLL		0x00008000
-#define UI_RUSSIAN		0x00016000
-#define UI_TINYFONT		0x00020000
-
-#if defined(_DEBUG) && !defined(BSPC)
-	#define HUNK_DEBUG
-#endif
-
-typedef enum {
-	h_high,
-	h_low,
-	h_dontcare
-} ha_pref;
-
-#ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference )				Hunk_AllocDebug(size, preference, #size, __FILE__, __LINE__)
-void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
-#else
-void *Hunk_Alloc( int size, ha_pref preference );
-#endif
+#define UI_DROPSHADOW	0x00000010 // other
+#define UI_PULSE		0x00000020
 
 #define Com_Memset memset
 #define Com_Memcpy memcpy
 
 /*
 ==============================================================
-
 MATHLIB
-
 ==============================================================
 */
 
@@ -179,28 +152,8 @@ extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 #define	SCREEN_WIDTH		640
 #define	SCREEN_HEIGHT		480
 
-#define TINYCHAR_WIDTH		6
-#define TINYCHAR_HEIGHT		8
-
 #define BIGCHAR_WIDTH		12
 #define BIGCHAR_HEIGHT		12
-
-#define	GIANTCHAR_WIDTH		20
-#define	GIANTCHAR_HEIGHT	32
-
-#define PROP_HEIGHT				16
-
-extern	vec4_t		colorBlack;
-extern	vec4_t		colorRed;
-extern	vec4_t		colorGreen;
-extern	vec4_t		colorBlue;
-extern	vec4_t		colorYellow;
-extern	vec4_t		colorMagenta;
-extern	vec4_t		colorCyan;
-extern	vec4_t		colorWhite;
-extern	vec4_t		colorLtGrey;
-extern	vec4_t		colorMdGrey;
-extern	vec4_t		colorDkGrey;
 
 #define Q_COLOR_ESCAPE	'^'
 #define Q_IsColorString(p)      ((p) && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) >= '0' && *((p)+1) <= '9') // ^[0-9]
@@ -359,19 +312,12 @@ ID_INLINE void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
 #else
 
 int VectorCompare( const vec3_t v1, const vec3_t v2 );
-
 vec_t VectorLength( const vec3_t v );
-
 vec_t VectorLengthSquared( const vec3_t v );
-
 vec_t Distance( const vec3_t p1, const vec3_t p2 );
-
 vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
-
 void VectorNormalizeFast( vec3_t v );
-
 void VectorInverse( vec3_t v );
-
 void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
 
 #endif
@@ -419,8 +365,6 @@ void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
 void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 void PerpendicularVector( vec3_t dst, const vec3_t src );
 void SnapVectorTowards( vec3_t v, vec3_t to );
-
-//=============================================
 
 float Com_Clamp( float min, float max, float value );
 
@@ -477,41 +421,14 @@ char	*Q_strupr( char *s1 );
 const char	*Q_stristr( const char *s, const char *find);
 
 // buffer size safe library replacements
-/**
- * Copies a string from one array to another in a safe way
- *
- * @param dest (out) pointer to destination array
- * @param src (in) pointer to source array
- * @param destsize size of the destination array, at most destsize-1 will be copied
- */
 void	Q_strncpyz( char *dest, const char *src, int destsize );
-/**
- * Appends a string to another string. The function protects against overflow.
- * The size is the max size of the destination AFTER the string has been appended
- * If the length of dest is larger or equal to destsize then nothing will be appended.
- *
- * @param dest (in/out) pointer to the string that will be appended to
- * @param size size of the destination array
- * @param src (in) the string to append
- */
 void	Q_strcat( char *dest, int size, const char *src );
-
-/**
- * Removes all colors from a string.
- *
- * @param string (in/out) the string to make color less
- * @return pointer to the string
- */
-char *Q_CleanStr( char *string );
-
-//=============================================
+char 	*Q_CleanStr( char *string );
 
 char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
 
 float	AngleDifference(float ang1, float ang2);
 float	VectorToYaw( const vec3_t vec );
-
-//=============================================
 
 //
 // key / value info strings
@@ -935,17 +852,10 @@ OpenSandbox UI colors
 */
 extern vec4_t color_black;
 extern vec4_t color_white;
-extern vec4_t color_yellow;
-extern vec4_t color_blue;
 extern vec4_t color_grey;
-extern vec4_t color_red;
 extern vec4_t color_dim;
-extern vec4_t color_green;
-extern vec4_t color_emerald;
-extern vec4_t color_lightyellow;
 extern vec4_t color_disabled;
-extern vec4_t color_bluo;
-extern vec4_t color_select_bluo;
+extern vec4_t color_select;
 extern vec4_t color_highlight;
 
 extern vec4_t customcolor_crosshair;
@@ -974,6 +884,7 @@ extern qhandle_t defaultFont[5];
 #define FONT_WIDTH 			0.64
 #define BASEFONT_INDENT 	(BASEFONT_WIDTH*FONT_WIDTH)
 
+int ST_ColorEscapes(const char *str);
 void ST_RegisterFont(const char* font);
 void ST_UpdateColors(void);
 int ST_StringCount(const char* str);

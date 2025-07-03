@@ -84,9 +84,10 @@ qboolean CG_DrawScoreboard(void) {
 	CG_DrawRoundedRect(320-(SB_WIDTH/2), 50-8, SB_WIDTH, SB_INTER_HEIGHT*26, 6, color_dim);
 
 	y = 50;
-	maxClients = 25;
 	lineHeight = SB_INTER_HEIGHT;
 	if(cgs.gametype >= GT_TEAM) {
+		maxClients = 24;
+		y -= 5;
 		y += lineHeight / 2;
 
 		if(cg.teamScores[0] >= cg.teamScores[1]) {
@@ -108,6 +109,7 @@ qboolean CG_DrawScoreboard(void) {
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 	} else {
+		maxClients = 25;
 		n1 = CG_TeamScoreboard(y, TEAM_FREE, maxClients, lineHeight);
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 		n2 = CG_TeamScoreboard(y, TEAM_SPECTATOR, maxClients - n1, lineHeight);

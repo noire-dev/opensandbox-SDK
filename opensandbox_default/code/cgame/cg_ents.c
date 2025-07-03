@@ -132,10 +132,10 @@ static void CG_General(centity_t *cent) {
 		}
 	}
 	if(s1->generic2 == 255) {
-		if(cg_hide255.integer) {
-			ent.customShader = cgs.media.ptexShader[0];
-		} else {
+		if(cg.snap->ps.weapon == WP_PHYSGUN || cg.snap->ps.weapon == WP_GRAVITYGUN || cg.snap->ps.weapon == WP_TOOLGUN) {
 			ent.customShader = cgs.media.ptexShader[1];
+		} else {
+			ent.customShader = cgs.media.ptexShader[0];
 		}
 	}
 

@@ -196,12 +196,15 @@ void UI_Settings(void) {
 	UI_CSpinControl(&settings.e[11], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
 	settings.e[11].curvalue = trap_Cvar_VariableValue("r_bloom_intensity")/0.05;
 
-	UI_CSlider(&settings.e[12], x, y, "Gamma", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[12], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
+	y += 12;
+	UI_CRadioButton(&settings.e[13], x, y, "V-Sync:", "r_swapInterval", RBT_NORMAL, NULL, 0); y += 12;
+	UI_CField(&settings.e[14], x, y, "Max FPS:", 4, 4, color_white, "com_maxfps", NULL, 0); y += 12;
 
 	y = 30;
 	x = 330;
-	UI_CSlider(&settings.e[30], x, y, "Sound volume", "s_volume", 0, 100, 100, NULL, 0); y += 12;
-	UI_CSlider(&settings.e[31], x, y, "Music volume", "s_musicVolume", 0, 100, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[30], x, y, "Sound volume:", "s_volume", 0, 100, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[31], x, y, "Music volume:", "s_musicVolume", 0, 100, 100, NULL, 0); y += 12;
 
 	UI_CSpinControl(&settings.e[32], x, y, "Sound driver:", sdriverList, Settings_MenuEvent, 0); y += 12;
 	for(i = 0; sdriverList[i]; i++) {
@@ -217,9 +220,9 @@ void UI_Settings(void) {
 	UI_CRadioButton(&settings.e[61], x, y, "Draw FPS:", "cg_drawFPS", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[62], x, y, "Draw Timer:", "cg_drawTimer", RBT_NORMAL, NULL, 0); y += 12;
 	y += 12;
-	UI_CSlider(&settings.e[63], x, y, "^1Hud:  ", "cg_crosshairColorRed", 0, 100, 100, NULL, 0); y += 12;
-	UI_CSlider(&settings.e[64], x, y, "^2Hud:  ", "cg_crosshairColorGreen", 0, 100, 100, NULL, 0); y += 12;
-	UI_CSlider(&settings.e[65], x, y, "^4Hud:  ", "cg_crosshairColorBlue", 0, 100, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[63], x, y, "^1Hud:", "cg_crosshairColorRed", 0, 100, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[64], x, y, "^2Hud:", "cg_crosshairColorGreen", 0, 100, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[65], x, y, "^4Hud:", "cg_crosshairColorBlue", 0, 100, 100, NULL, 0); y += 12;
 	y += 12;
 	UI_CSlider(&settings.e[66], x, y, "Crosshair size:", "cg_crosshairScale", 10, 100, 1, NULL, 0); y += 12;
 	UI_CSlider(&settings.e[67], x, y, "Crosshair type:", "cg_drawCrosshair", 0, 9, 1, NULL, 0); y += 12;
@@ -237,7 +240,7 @@ void UI_Settings(void) {
 	UI_CField(&settings.e[75], x, y, "FoV:", 4, 4, color_white, "cg_fov", NULL, 0); y += 12;
 	UI_CField(&settings.e[76], x, y, "Zoom FoV:", 4, 4, color_white, "cg_zoomfov", NULL, 0); y += 12;
 
-	UI_CButton(&settings.e[100], 320, 460, "Apply", UI_LEFT, 1.00, color_white, "vid_restart;", NULL, NULL, NULL, 0);
+	UI_CButton(&settings.e[100], 320, 450, "Apply", UI_CENTER, 1.50, color_white, "vid_restart;", NULL, NULL, NULL, 0);
 
 	UI_CreateUI(&settings.menu, settings.e);
 	UI_PushMenu(&settings.menu);

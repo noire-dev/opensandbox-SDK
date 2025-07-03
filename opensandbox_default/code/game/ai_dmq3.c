@@ -2481,10 +2481,11 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	//walk, crouch or jump
 	movetype = MOVE_WALK;
 
-	if (gameInfoWeapons[bs->cur_ps.weapon].wType == WT_MELEE) { 
+	if(gameInfoWeapons[bs->cur_ps.weapon].wType == WT_MELEE) { 
 		attack_dist = 0;
 		attack_range = 0;
 		jumper = 0;
+		croucher = 0;
 	} else {
 		attack_dist = IDEAL_ATTACKDIST;
 		attack_range = 40;
@@ -2530,21 +2531,26 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 		hordir[1] = forward[1];
 		hordir[2] = 0;
 		VectorNormalize(hordir);
-		//get the sideward vector
-		CrossProduct(hordir, up, sideward);
-		//reverse the vector depending on the strafe direction
-		if (bs->flags & BFL_STRAFERIGHT) VectorNegate(sideward, sideward);
-		//randomly go back a little
-		if (random() > 0.9) {
-			VectorAdd(sideward, backward, sideward);
-		} else {
-			//walk forward or backward to get at the ideal attack distance
-			if (dist > attack_dist + attack_range) {
-				VectorAdd(sideward, forward, sideward);
-			}
-			else if (dist < attack_dist - attack_range) {
+		if(gameInfoWeapons[bs->cur_ps.weapon].wType != WT_MELEE) {
+			//get the sideward vector
+			CrossProduct(hordir, up, sideward);
+			//reverse the vector depending on the strafe direction
+			if (bs->flags & BFL_STRAFERIGHT) VectorNegate(sideward, sideward);
+			//randomly go back a little
+			if (random() > 0.9) {
 				VectorAdd(sideward, backward, sideward);
+			} else {
+				//walk forward or backward to get at the ideal attack distance
+				if (dist > attack_dist + attack_range) {
+					VectorAdd(sideward, forward, sideward);
+				}
+				else if (dist < attack_dist - attack_range) {
+					VectorAdd(sideward, backward, sideward);
+				}
 			}
+		} else {
+			VectorCopy(forward, sideward);
+			VectorNormalize(sideward);
 		}
 		//perform the movement
 		if (trap_BotMoveInDirection(bs->ms, sideward, 400, movetype))
@@ -2554,7 +2560,6 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 		bs->attackstrafe_time = 0;
 	}
 	//bot couldn't do any usefull movement
-//	bs->attackchase_time = AAS_Time() + 6;
 	return moveresult;
 }
 
