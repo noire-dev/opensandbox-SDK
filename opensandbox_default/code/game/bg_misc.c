@@ -367,9 +367,7 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 	item_t *item;
 	int upperBound;
 
-	if(ent->modelindex < 1 || ent->modelindex >= gameInfoItemsNum) {
-		//Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: index out of range");
-	}
+	if(ent->modelindex < 1 || ent->modelindex >= gameInfoItemsNum) return qfalse;
 
 	item = &gameInfoItems[ent->modelindex];
 
@@ -464,6 +462,8 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 				return qfalse;
 			}
 			return qtrue;
+
+		case IT_NULL: return qfalse;
 
 		default: Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType); break;
 	}

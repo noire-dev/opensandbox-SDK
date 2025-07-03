@@ -161,7 +161,7 @@ static void SpawnMenu_Event(void* ptr, int event) {
 			trap_Cmd_ExecuteText(EXEC_INSERT, "menuback\n");
 		}
 		if(spawnmenu_tab == TB_ADDBOTS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu.e[40].field.buffer, spawnmenu.e[41].field.buffer));
+			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu.e[30].field.buffer, spawnmenu.e[31].field.buffer));
 		}
 		if(spawnmenu_tab == TB_REMOVEBOTS) {
 			trap_Cmd_ExecuteText(EXEC_NOW, va("kick %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
@@ -365,8 +365,8 @@ void UI_SpawnMenu(void) {
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 110, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Skill:", spawnmenu_skill, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 110, y, "Skill:", spawnmenu_skill, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
 		y += 20;
 	}
 	UI_CField(&spawnmenu.e[40], 640 + uis.wideoffset - 110, y, toolgun_toolset1.string, 16, 16, color_white, "uis_tg1", NULL, 0); y += 12;
