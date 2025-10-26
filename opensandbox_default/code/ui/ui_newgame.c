@@ -5,6 +5,8 @@
 
 #include "ui_local.h"
 
+#define BROWSERGRID_GRID 100
+
 #define ID_GAMETYPE_SELECT 50
 #define ID_MODE_SELECT (ID_GAMETYPE_SELECT+GT_MAX_GAME_TYPE)
 #define ID_GAMETYPE_ALLMAPS 100
@@ -69,46 +71,55 @@ static void NewGame_Event (void* ptr, int event) {
 static void NewGame_Draw(void) {
 	int y, i;
 	vec4_t color = {1.00, 1.00, 1.00, 1.00};
-	vec4_t color2 = {0.70, 0.85, 1.00, 1.00};
-	vec4_t color2all = {1.00, 0.70, 0.85, 1.00};
-	vec4_t color2mode = {0.85, 1.00, 0.80, 1.00};
-	vec4_t color3 = {0.35, 0.85, 0.35, 1.00};
+	vec4_t color2 = {0.85, 0.90, 1.00, 0.20};
+	vec4_t color2all = {0.35, 0.25, 0.30, 1.00};
+    vec4_t color2allselected = {0.50, 0.20, 0.30, 1.00};
+	vec4_t color2mode = {0.25, 0.45, 0.30, 1.00};
+	vec4_t color3 = {0.60, 0.75, 1.00, 0.40};
 	vec4_t color4 = {0.50, 0.60, 0.80, 1.00};
 
-	UI_DrawRoundedRect(10-uis.wideoffset, 10, 440+uis.wideoffset*2, 480-38, 4, color);
-	UI_DrawRoundedRect(640+uis.wideoffset-180, 10, 170, 480-38, 4, color);
+	UI_DrawRoundedRect(10-uis.wideoffset, 10, 440+uis.wideoffset*2, 480-38, 4, color_dim);
+	UI_DrawRoundedRect(640+uis.wideoffset-180, 10, 170, 480-38, 4, color_dim);
 
 	y = 15;
 	for(i = 0; i < GT_MAX_GAME_TYPE; i++) {
-		UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
-		UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color);
-		ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps(gametypes_mapnames[i])), UI_CENTER, color_grey, 0.65);
+	    if(i == newgame_gametype) {
+    	    UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color3);
+	    } else {
+	        UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
+    	}
+		UI_DrawRoundedRect(124 - uis.wideoffset, y + 2, 14, 12, 2, color_dim);
+		ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps(gametypes_mapnames[i])), UI_CENTER, color_white, 0.65);
 		y += 20;
 	}
-		y += 20;
-		UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2all);
-		UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color);
-		ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps("all")), UI_CENTER, color_grey, 0.65);
-		y += 40;
+
+	y += 20;
+	if(newgame_allmaps){
+	    UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2allselected);
+	} else {
+	    UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2all);
+	}
+	UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color_dim);
+	ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps("all")), UI_CENTER, color_white, 0.65);
+	y += 40;
 
 	for(i = 1; i < NTB_MAX; i++) {
 		UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2mode);
-		UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color);
-		if(i == NTB_ADDONS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("addons", ".cfg")), UI_CENTER, color_grey, 0.65);
-		if(i == NTB_DEMOS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("demos", ".demo")), UI_CENTER, color_grey, 0.65);
+		UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color_dim);
+		if(i == NTB_ADDONS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("addons", ".cfg")), UI_CENTER, color_white, 0.65);
+		if(i == NTB_DEMOS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("demos", ".demo")), UI_CENTER, color_white, 0.65);
 		y += 20;
 	}
 
 	if(newgame_mode == NTB_NONE) {
-		ST_DrawString(148 - uis.wideoffset, 20, gametypes_names[newgame_gametype], UI_LEFT, color_black, 1.50);
+		ST_DrawString(148 - uis.wideoffset, 20, gametypes_names[newgame_gametype], UI_LEFT, color_white, 1.50);
 		ST_DrawString(152+(BASEFONT_INDENT*ST_StringCount(gametypes_names[newgame_gametype])*1.50) - uis.wideoffset, 26, va("%i maps", newgame.e[0].numitems), UI_LEFT, color_grey, 0.80);
 	} else {
-		ST_DrawString(148 - uis.wideoffset, 20, newgame_tabnames[newgame_mode], UI_LEFT, color_black, 1.50);
+		ST_DrawString(148 - uis.wideoffset, 20, newgame_tabnames[newgame_mode], UI_LEFT, color_white, 1.50);
 		ST_DrawString(152+(BASEFONT_INDENT*ST_StringCount(newgame_tabnames[newgame_mode])*1.50) - uis.wideoffset, 26, va("%i items", newgame.e[0].numitems), UI_LEFT, color_grey, 0.80);
 	}
 
 	UI_DrawRoundedRect(640+uis.wideoffset-175, 15, 160, 16, 3, color3);
-
 	UI_DrawRoundedRect(640+uis.wideoffset-155, 410, 120, 32, 3, color4);
 
 	Menu_Draw(&newgame.menu);
@@ -124,7 +135,7 @@ void UI_NewGame(void) {
 	if(newgame_mode == NTB_DEMOS) {
 		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, (((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / BASEFONT_INDENT)-2, 36, 1, 0, 0, LST_SIMPLE, qfalse, 0, color_white, NewGame_Event, 0);
 	} else {
-		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, 100, 4, ((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / 100, 4, 10, LST_GRID, qtrue, 4, color_black, NewGame_Event, 0);
+		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, BROWSERGRID_GRID, 4, ((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / BROWSERGRID_GRID, 4, 10, LST_GRID, qtrue, 4, color_white, NewGame_Event, 0);
 	}
 	if(newgame_mode == NTB_NONE) {
 		if(newgame_allmaps){
@@ -142,50 +153,50 @@ void UI_NewGame(void) {
 
 	y = 15;
 	for(i = 0; i < GT_MAX_GAME_TYPE; i++) {
-		UI_CButton(&newgame.e[ID_GAMETYPE_SELECT+i], 18 - uis.wideoffset, y+4, gametypes_names[i], UI_LEFT, 0.78, color_black, NULL, NULL, NULL, NewGame_Event, ID_GAMETYPE_SELECT+i);
+		UI_CButton(&newgame.e[ID_GAMETYPE_SELECT+i], 18 - uis.wideoffset, y+4, gametypes_names[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, NewGame_Event, ID_GAMETYPE_SELECT+i);
 		y += 20;
 	}
 	y += 20;
-	UI_CButton(&newgame.e[ID_GAMETYPE_ALLMAPS], 18 - uis.wideoffset, y+4, "All", UI_LEFT, 0.78, color_black, NULL, NULL, NULL, NewGame_Event, ID_GAMETYPE_ALLMAPS);
+	UI_CButton(&newgame.e[ID_GAMETYPE_ALLMAPS], 18 - uis.wideoffset, y+4, "All", UI_LEFT, 0.78, color_white, NULL, NULL, NULL, NewGame_Event, ID_GAMETYPE_ALLMAPS);
 	y += 40;
 	for(i = 1; i < NTB_MAX; i++) {
-		UI_CButton(&newgame.e[ID_MODE_SELECT+i], 18 - uis.wideoffset, y+4, newgame_tabnames[i], UI_LEFT, 0.78, color_black, NULL, NULL, NULL, NewGame_Event, ID_MODE_SELECT+i);
+		UI_CButton(&newgame.e[ID_MODE_SELECT+i], 18 - uis.wideoffset, y+4, newgame_tabnames[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, NewGame_Event, ID_MODE_SELECT+i);
 		y += 20;
 	}
 
 	UI_CButton(&newgame.e[2], (640+uis.wideoffset-155)+60, 418, "Start game", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, NewGame_Event, 0);
 
 	y = 18;
-	UI_CField(&newgame.e[1], 640+uis.wideoffset-170, y, "", 25, 25, color_black, "sv_hostname", NULL, 0); y += 12;
+	UI_CField(&newgame.e[1], 640+uis.wideoffset-170, y, "", 25, 25, color_white, "sv_hostname", NULL, 0); y += 12;
 	if(newgame_mode == NTB_NONE) {
 		y += 8;
-		UI_CField(&newgame.e[10], 640+uis.wideoffset-90, y, "Save file:", 16, 16, color_black, "g_entitypack", NULL, 0); y += 12;
+		UI_CField(&newgame.e[10], 640+uis.wideoffset-90, y, "Save file:", 16, 16, color_white, "g_entitypack", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[11], 640+uis.wideoffset-90, y, "Fraglimit:", 5, 5, color_black, "fraglimit", NULL, 0); y += 12;
-		UI_CField(&newgame.e[12], 640+uis.wideoffset-90, y, "Capturelimit:", 5, 5, color_black, "capturelimit", NULL, 0); y += 12;
-		UI_CField(&newgame.e[13], 640+uis.wideoffset-90, y, "Timelimit:", 5, 5, color_black, "timelimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[11], 640+uis.wideoffset-90, y, "Fraglimit:", 5, 5, color_white, "fraglimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[12], 640+uis.wideoffset-90, y, "Capturelimit:", 5, 5, color_white, "capturelimit", NULL, 0); y += 12;
+		UI_CField(&newgame.e[13], 640+uis.wideoffset-90, y, "Timelimit:", 5, 5, color_white, "timelimit", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[14], 640+uis.wideoffset-90, y, "Max entities:", 4, 4, color_black, "g_maxEntities", NULL, 0); y += 12;
-		UI_CField(&newgame.e[15], 640+uis.wideoffset-90, y, "Max clients:", 3, 3, color_black, "g_maxClients", NULL, 0); y += 12;
+		UI_CField(&newgame.e[14], 640+uis.wideoffset-90, y, "Max entities:", 4, 4, color_white, "g_maxEntities", NULL, 0); y += 12;
+		UI_CField(&newgame.e[15], 640+uis.wideoffset-90, y, "Max clients:", 3, 3, color_white, "g_maxClients", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[16], 640+uis.wideoffset-90, y, "Speed:", 9, 9, color_black, "g_speed", NULL, 0); y += 12;
-		UI_CField(&newgame.e[17], 640+uis.wideoffset-90, y, "Gravity:", 9, 9, color_black, "g_gravity", NULL, 0); y += 12;
+		UI_CField(&newgame.e[16], 640+uis.wideoffset-90, y, "Speed:", 9, 9, color_white, "g_speed", NULL, 0); y += 12;
+		UI_CField(&newgame.e[17], 640+uis.wideoffset-90, y, "Gravity:", 9, 9, color_white, "g_gravity", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[18], 640+uis.wideoffset-90, y, "Health:", 4, 4, color_black, "g_spawn_health", NULL, 0); y += 12;
-		UI_CField(&newgame.e[19], 640+uis.wideoffset-90, y, "Armor:", 4, 4, color_black, "g_spawn_armor", NULL, 0); y += 12;
+		UI_CField(&newgame.e[18], 640+uis.wideoffset-90, y, "Health:", 4, 4, color_white, "g_spawn_health", NULL, 0); y += 12;
+		UI_CField(&newgame.e[19], 640+uis.wideoffset-90, y, "Armor:", 4, 4, color_white, "g_spawn_armor", NULL, 0); y += 12;
 		y += 8;
-		UI_CField(&newgame.e[20], 640+uis.wideoffset-90, y, "Machinegun:", 4, 4, color_black, "g_spawn_machinegun", NULL, 0); y += 12;
-		UI_CField(&newgame.e[21], 640+uis.wideoffset-90, y, "Shotgun:", 4, 4, color_black, "g_spawn_shotgun", NULL, 0); y += 12;
-		UI_CField(&newgame.e[22], 640+uis.wideoffset-90, y, "Grenade:", 4, 4, color_black, "g_spawn_grenade", NULL, 0); y += 12;
-		UI_CField(&newgame.e[23], 640+uis.wideoffset-90, y, "Rocket:", 4, 4, color_black, "g_spawn_rocket", NULL, 0); y += 12;
-		UI_CField(&newgame.e[24], 640+uis.wideoffset-90, y, "Lightning:", 4, 4, color_black, "g_spawn_lightning", NULL, 0); y += 12;
-		UI_CField(&newgame.e[25], 640+uis.wideoffset-90, y, "Railgun:", 4, 4, color_black, "g_spawn_railgun", NULL, 0); y += 12;
-		UI_CField(&newgame.e[26], 640+uis.wideoffset-90, y, "Plasmagun:", 4, 4, color_black, "g_spawn_plasmagun", NULL, 0); y += 12;
-		UI_CField(&newgame.e[27], 640+uis.wideoffset-90, y, "BFG:", 4, 4, color_black, "g_spawn_bfg", NULL, 0); y += 12;
-		UI_CField(&newgame.e[28], 640+uis.wideoffset-90, y, "Hook:", 4, 4, color_black, "g_spawn_grapple", NULL, 0); y += 12;
-		UI_CField(&newgame.e[29], 640+uis.wideoffset-90, y, "Nailgun:", 4, 4, color_black, "g_spawn_nailgun", NULL, 0); y += 12;
-		UI_CField(&newgame.e[30], 640+uis.wideoffset-90, y, "Mines:", 4, 4, color_black, "g_spawn_prox", NULL, 0); y += 12;
-		UI_CField(&newgame.e[31], 640+uis.wideoffset-90, y, "Chaingun:", 4, 4, color_black, "g_spawn_chaingun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[20], 640+uis.wideoffset-90, y, "Machinegun:", 4, 4, color_white, "g_spawn_machinegun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[21], 640+uis.wideoffset-90, y, "Shotgun:", 4, 4, color_white, "g_spawn_shotgun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[22], 640+uis.wideoffset-90, y, "Grenade:", 4, 4, color_white, "g_spawn_grenade", NULL, 0); y += 12;
+		UI_CField(&newgame.e[23], 640+uis.wideoffset-90, y, "Rocket:", 4, 4, color_white, "g_spawn_rocket", NULL, 0); y += 12;
+		UI_CField(&newgame.e[24], 640+uis.wideoffset-90, y, "Lightning:", 4, 4, color_white, "g_spawn_lightning", NULL, 0); y += 12;
+		UI_CField(&newgame.e[25], 640+uis.wideoffset-90, y, "Railgun:", 4, 4, color_white, "g_spawn_railgun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[26], 640+uis.wideoffset-90, y, "Plasmagun:", 4, 4, color_white, "g_spawn_plasmagun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[27], 640+uis.wideoffset-90, y, "BFG:", 4, 4, color_white, "g_spawn_bfg", NULL, 0); y += 12;
+		UI_CField(&newgame.e[28], 640+uis.wideoffset-90, y, "Hook:", 4, 4, color_white, "g_spawn_grapple", NULL, 0); y += 12;
+		UI_CField(&newgame.e[29], 640+uis.wideoffset-90, y, "Nailgun:", 4, 4, color_white, "g_spawn_nailgun", NULL, 0); y += 12;
+		UI_CField(&newgame.e[30], 640+uis.wideoffset-90, y, "Mines:", 4, 4, color_white, "g_spawn_prox", NULL, 0); y += 12;
+		UI_CField(&newgame.e[31], 640+uis.wideoffset-90, y, "Chaingun:", 4, 4, color_white, "g_spawn_chaingun", NULL, 0); y += 12;
 	}
 
 	UI_CreateUI(&newgame.menu, newgame.e);

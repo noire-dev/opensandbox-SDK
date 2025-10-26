@@ -102,6 +102,7 @@ typedef struct {
 } spawnmenu_t;
 
 static spawnmenu_t spawnmenu;
+int menu_tab = 0;
 int spawnmenu_tab = 0;
 char spawnmenu_folder[32] = "";
 char spawnmenu_path_folder[32] = "";
