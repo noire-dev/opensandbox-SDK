@@ -24,7 +24,7 @@ void UI_Options(void) {
 	memset(&options, 0, sizeof(options));
 	options.menu.fullscreen = qtrue;
 
-	UI_CText(&options.e[0], OSUI_LOGO_X, OSUI_LOGO_Y + 24, "OPTIONS", UI_LEFT, 1.80);
+	UI_CText(&options.e[0], 58 - uis.wideoffset, 64 + 24, "OPTIONS", UI_LEFT, 1.80);
 
 	y = OSUI_STANDARD_Y;
 	UI_CButton(&options.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, color_white, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;

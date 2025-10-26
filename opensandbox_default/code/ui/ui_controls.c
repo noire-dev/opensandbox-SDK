@@ -388,7 +388,7 @@ void UI_Controls(void) {
 	controls.menu.key = Controls_MenuKey;
 	controls.menu.fullscreen = qtrue;
 
-	UI_CText(&controls.e[89], OSUI_LOGO_X, OSUI_LOGO_Y + 24, "CONTROLS", UI_LEFT, 1.80);
+	UI_CText(&controls.e[89], 58 - uis.wideoffset, 64 + 24, "CONTROLS", UI_LEFT, 1.80);
 	y = OSUI_STANDARD_Y;
 	UI_CButton(&controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS); y += OSUI_SPACING_Y;
 	UI_CButton(&controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS); y += OSUI_BIGSPACING_Y;

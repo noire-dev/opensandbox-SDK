@@ -14,9 +14,6 @@
 
 #define LOW_MEMORY			(5 * 1024 * 1024)
 
-#define	OSUI_LOGO_X 		58 - uis.wideoffset
-#define	OSUI_LOGO_Y 		64
-
 #define	OSUI_STANDARD_Y 	145
 #define	OSUI_SPACING_Y 		18
 #define	OSUI_BIGSPACING_Y 	36

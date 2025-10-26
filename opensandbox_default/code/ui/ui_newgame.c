@@ -5,7 +5,7 @@
 
 #include "ui_local.h"
 
-#define BROWSERGRID_GRID 100
+#define BROWSERGRID_SIZE 100
 
 #define ID_GAMETYPE_SELECT 50
 #define ID_MODE_SELECT (ID_GAMETYPE_SELECT+GT_MAX_GAME_TYPE)
@@ -135,7 +135,7 @@ void UI_NewGame(void) {
 	if(newgame_mode == NTB_DEMOS) {
 		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, (((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / BASEFONT_INDENT)-2, 36, 1, 0, 0, LST_SIMPLE, qfalse, 0, color_white, NewGame_Event, 0);
 	} else {
-		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, BROWSERGRID_GRID, 4, ((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / BROWSERGRID_GRID, 4, 10, LST_GRID, qtrue, 4, color_white, NewGame_Event, 0);
+		UI_CList(&newgame.e[0], 150 - uis.wideoffset, 42, BROWSERGRID_SIZE, 4, ((10-uis.wideoffset + 440+uis.wideoffset*2)-150 + uis.wideoffset) / BROWSERGRID_SIZE, 4, 10, LST_GRID, qtrue, 4, color_white, NewGame_Event, 0);
 	}
 	if(newgame_mode == NTB_NONE) {
 		if(newgame_allmaps){

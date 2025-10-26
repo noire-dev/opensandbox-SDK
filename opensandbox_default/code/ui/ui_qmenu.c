@@ -1536,7 +1536,7 @@ void UI_CreateUI(menuframework_s *menu, menuelement_s *e) {
 	int i;
 
 	for(i = 0; i <= OSUI_MAX_ELEMENTS - 1; i++) {
-		if(e[i].generic.type != MTYPE_NULL) {
+		if(e[i].generic.type) {
 			// ID
 			e[i].generic.id = i;
 
@@ -1702,30 +1702,6 @@ void UI_CText(menuelement_s *e, float x, float y, char *text, int style, float s
 	}
 }
 
-void UI_CBitmap(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid) {
-	UI_FindButtonPic(e, pic);
-
-	e->generic.type = MTYPE_BITMAP;
-	e->generic.flags = flags;
-	e->generic.callback = callback;
-	e->generic.callid = callid;
-	e->generic.excallback = UI_GeneralCallback;
-	if(cmd) {
-		e->generic.excallbacktype = CB_COMMAND;
-		e->generic.cmd = cmd;
-	} else if(var) {
-		e->generic.excallbacktype = CB_VARIABLE;
-		e->generic.var = var;
-	} else if(func) {
-		e->generic.excallbacktype = CB_FUNC;
-		e->generic.func = func;
-	}
-	e->generic.x = x;
-	e->generic.y = y;
-	e->width = w;
-	e->height = h;
-}
-
 void UI_CPicture(menuelement_s *e, float x, float y, float w, float h, int pic, int flags, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid) {
 	UI_FindButtonPic(e, pic);
 
@@ -1744,7 +1720,6 @@ void UI_CPicture(menuelement_s *e, float x, float y, float w, float h, int pic, 
 		e->generic.excallbacktype = CB_FUNC;
 		e->generic.func = func;
 	}
-	e->generic.flags |= QMF_INACTIVE;
 	e->generic.x = x;
 	e->generic.y = y;
 	e->width = w;
