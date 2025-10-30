@@ -26,7 +26,7 @@
 #define	MAX_STEP_CHANGE		32
 
 #define	MAX_VERTS_ON_POLY	128*1
-#define	MAX_MARK_POLYS		1024*16
+#define	MAX_MARK_POLYS		1024*8
 
 #define	ICON_SIZE			16
 
