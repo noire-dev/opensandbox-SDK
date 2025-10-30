@@ -307,9 +307,7 @@ static void CG_TouchTriggerPrediction(void) {
 			continue;
 		}
 
-		if(ent->eType == ET_TELEPORT_TRIGGER) {
-			cg.hyperspace = qtrue;
-		} else if(ent->eType == ET_PUSH_TRIGGER) {
+		if(ent->eType == ET_PUSH_TRIGGER) {
 			BG_TouchJumpPad(&cg.predictedPlayerState, ent);
 		}
 	}
@@ -335,8 +333,6 @@ void CG_PredictPlayerState(void) {
 	qboolean moved;
 	usercmd_t oldestCmd;
 	usercmd_t latestCmd;
-
-	cg.hyperspace = qfalse;  // will be set if touching a trigger_teleport
 
 	// if this is the first frame we must guarantee
 	// predictedPlayerState is valid even if there is some

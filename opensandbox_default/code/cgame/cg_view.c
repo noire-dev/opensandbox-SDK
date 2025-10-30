@@ -338,8 +338,6 @@ static void CG_CalcViewValues(void) {
 	// position eye reletive to origin
 	AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
 
-	if(cg.hyperspace) cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;
-
 	// field of view
 	CG_CalcFov();
 	return;
@@ -411,11 +409,9 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	if(!cg.renderingThirdPerson) CG_DamageBlendBlob();
 
 	// build the render lists
-	if(!cg.hyperspace) {
-		CG_AddPacketEntities();
-		CG_AddMarks();
-		CG_AddLocalEntities();
-	}
+	CG_AddPacketEntities();
+	CG_AddMarks();
+	CG_AddLocalEntities();
 
 	CG_AddViewWeapon(&cg.predictedPlayerState);
 	CG_PlayBufferedSounds();
