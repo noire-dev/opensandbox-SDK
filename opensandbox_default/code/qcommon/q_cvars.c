@@ -277,7 +277,7 @@ cvar_t    gui_bot_multisel;
 cvar_t    gui_bot_list;
 
 static cvarTable_t cvarTable[] = {
-	{ &spawn_preset,                    "spawn_preset",                 "set spawn_cmd sl prop props/%s %s 0 25 25 0 %s 1 1 \"none\" -1 0 0 0 0 1 1 1 1 0.40 1.00",  0 },
+	{ &spawn_preset,                    "spawn_preset",                 "spawn_cmd = sl prop props/%s %s 0 25 25 0 %s 1 1 \"none\" -1 0 0 0 0 1 1 1 1 0.40 1.00",  0 },
 	{ &toolgun_toolset1,                "toolgun_toolset1",             "--------:",    0 },
 	{ &toolgun_toolset2,                "toolgun_toolset2",             "--------:",    0 },
 	{ &toolgun_toolset3,                "toolgun_toolset3",             "--------:",    0 },
