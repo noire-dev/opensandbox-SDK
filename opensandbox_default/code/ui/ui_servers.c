@@ -106,7 +106,7 @@ static void ArenaServers_Go(void) {
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if(servernode) {
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("set cl_selectedmod %s\n", servernode->addonname));
+		trap_Cmd_ExecuteText(EXEC_APPEND, va("cl_selectedmod = %s\n", servernode->addonname));
 		trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", servernode->adrstr));
 	}
 }
