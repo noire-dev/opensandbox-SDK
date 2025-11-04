@@ -63,6 +63,7 @@ cd windows\build\game
 %cc% ../../../code/game/g_weapon.c
 
 copy ..\..\..\code\game\g_syscalls.asm ..
+copy ..\..\..\code\q_sharedsyscalls.asm ..
 
 %cc% ../../../code/qcommon/ns_func_game.c
 %cc% ../../../code/qcommon/ns_main.c
@@ -133,6 +134,8 @@ cd windows\build\cgame
 %cc% ../../../code/game/bg_slidemove.c
 
 copy  ..\..\..\code\cgame\cg_syscalls.asm ..
+copy ..\..\..\code\q_sharedsyscalls.asm ..
+copy ..\..\..\code\q_sharedsyscalls_client.asm ..
 
 %cc% ../../../code/qcommon/ns_func_cgame.c
 %cc% ../../../code/qcommon/ns_main.c
@@ -193,6 +196,8 @@ cd windows\build\ui
 %cc% ../../../code/ui/ui_spawnmenu.c
 
 copy  ..\..\..\code\ui\ui_syscalls.asm ..
+copy ..\..\..\code\q_sharedsyscalls.asm ..
+copy ..\..\..\code\q_sharedsyscalls_client.asm ..
 
 %cc% ../../../code/game/bg_lib.c
 %cc% ../../../code/game/bg_misc.c

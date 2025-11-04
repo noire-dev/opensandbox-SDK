@@ -1,6 +1,8 @@
 -o "../../game/qvm/ui"
 ui_main
 ..\ui_syscalls
+..\q_sharedsyscalls
+..\q_sharedsyscalls_client
 ui_atoms
 ui_connect
 ui_controls
