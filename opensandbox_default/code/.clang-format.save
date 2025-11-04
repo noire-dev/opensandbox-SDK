@@ -1,9 +1,0 @@
-BasedOnStyle: Google
-IndentWidth: 4
-UseTab: Never
-ColumnLimit: 0
-SpaceBeforeParens: Never
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: true
-BreakBeforeBraces: Attach
-
