@@ -1,6 +1,8 @@
 -o "../../game/qvm/cgame"
 cg_main
 ..\cg_syscalls
+..\q_sharedsyscalls
+..\q_sharedsyscalls_client
 cg_consolecmds
 cg_draw
 cg_drawtools
@@ -23,8 +25,6 @@ bg_lib
 bg_misc
 bg_pmove
 bg_slidemove
-ns_func_cgame
-ns_main
 q_cvars
 q_math
 q_shared

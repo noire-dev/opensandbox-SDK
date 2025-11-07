@@ -1,6 +1,7 @@
 -o "../../game/qvm/qagame"
 g_main
 ..\g_syscalls
+..\q_sharedsyscalls
 ai_chat
 ai_cmd
 ai_dmnet
@@ -31,8 +32,6 @@ g_trigger
 g_unlagged
 g_utils
 g_weapon
-ns_func_game
-ns_main
 q_cvars
 q_math
 q_shared

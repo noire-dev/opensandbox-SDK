@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "g_local.h"
 
 /*
 ================
@@ -19,7 +19,7 @@ static void G_WriteClientSessionData(gclient_t *client) {
 	s = va("%i %i %i %i %i", client->sess.sessionTeam, client->sess.spectatorNum, client->sess.spectatorState, client->sess.spectatorClient, client->sess.teamLeader);
 
 	var = va("session%i", (int)(client - level.clients));
-	trap_Cvar_Set(var, s);
+	cvarSet(var, s);
 }
 
 /*
@@ -70,7 +70,7 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 	sess = &client->sess;
 
 	// initial team determination
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		sess->sessionTeam = PickTeam(-1);
 		BroadcastTeamChange(client, -1);
 	} else {
@@ -79,7 +79,7 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 			// a willing spectator, not a waiting-in-line
 			sess->sessionTeam = TEAM_SPECTATOR;
 		} else {
-			switch(g_gametype.integer) {
+			switch(cvarInt("g_gametype")) {
 				default:
 				case GT_SANDBOX:
 				case GT_FFA: sess->sessionTeam = TEAM_FREE; break;
@@ -101,7 +101,7 @@ void G_InitWorldSession(void) {
 	gt = atoi(s);
 
 	// if the gametype changed since the last session, don't use any client sessions
-	if(g_gametype.integer != gt) {
+	if(cvarInt("g_gametype") != gt) {
 		level.newSession = qtrue;
 		G_Printf("Gametype changed, clearing session data.\n");
 	}
@@ -110,7 +110,7 @@ void G_InitWorldSession(void) {
 void G_WriteSessionData(void) {
 	int i;
 
-	trap_Cvar_Set("session", va("%i", g_gametype.integer));
+	cvarSet("session", va("%i", cvarInt("g_gametype")));
 
 	for(i = 0; i < level.maxclients; i++) {
 		if(level.clients[i].pers.connected == CON_CONNECTED) {

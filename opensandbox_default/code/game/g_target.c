@@ -227,7 +227,7 @@ static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *ac
 	if(self->spawnflags & 8192) {
 		trap_SendConsoleCommand(EXEC_APPEND, va("%s - %s\n", self->key, self->value));
 	} else {
-		trap_Cvar_Set(self->key, self->value);
+		cvarSet(self->key, self->value);
 	}
 }
 

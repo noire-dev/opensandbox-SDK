@@ -13,9 +13,9 @@ typedef struct {
 static options_t options;
 
 static void Options_Defaults_Action(void) {
-	trap_Cmd_ExecuteText(EXEC_APPEND, "exec default.cfg\n");
-	trap_Cmd_ExecuteText(EXEC_APPEND, "cvar_restart\n");
-	trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
+	trap_Cmd(EXEC_APPEND, "exec default.cfg\n");
+	trap_Cmd(EXEC_APPEND, "cvar_restart\n");
+	trap_Cmd(EXEC_APPEND, "vid_restart\n");
 }
 
 void UI_Options(void) {

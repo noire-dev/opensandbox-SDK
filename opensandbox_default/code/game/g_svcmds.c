@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "g_local.h"
 
 static void Svcmd_EntityList_f(void) {
 	int e;
@@ -73,45 +73,6 @@ static void Svcmd_ForceTeam_f(void) {
 	SetTeam(&g_entities[cl - level.clients], str);
 }
 
-static void Svcmd_NS_OpenScript_f(void) {
-	char filename[64];
-	if(trap_Argc() == 1) {
-		G_Printf("usage: ns_openscript <filename>\n");
-		return;
-	}
-
-	trap_Argv(1, filename, sizeof(filename));
-
-	NS_OpenScript(filename, NULL, 0);
-}
-
-static void Svcmd_NS_Interpret_f(void) {
-	if(trap_Argc() == 1) {
-		G_Printf("usage: ns_interpret <code>\n");
-		return;
-	}
-
-	Interpret(ConcatArgs(1));
-}
-
-static void Svcmd_NS_VariableList_f(void) { print_variables(); }
-
-static void Svcmd_NS_ThreadList_f(void) { print_threads(); }
-
-static void Svcmd_NS_SendVariable_f(void) {
-	char varName[MAX_VAR_NAME];
-	char varValue[MAX_VAR_CHAR_BUF];
-	char varType[8];
-
-	trap_Argv(1, varName, sizeof(varName));
-	trap_Argv(2, varValue, sizeof(varValue));
-	trap_Argv(3, varType, sizeof(varType));
-
-	if(!variable_exists(varName)) create_variable(varName, varValue, atoi(varType));
-
-	set_variable_value(varName, varValue, atoi(varType));
-}
-
 /*
 ===============
 Server Command Table
@@ -129,13 +90,6 @@ struct {
     {"deletemap", G_DeleteMapfile_f},
     {"clearmap", G_ClearMap_f},
     {"loadmap", G_LoadMapfile_f},
-
-    // Noire.Script
-    {"ns_openscript", Svcmd_NS_OpenScript_f},
-    {"ns_interpret", Svcmd_NS_Interpret_f},
-    {"ns_variablelist", Svcmd_NS_VariableList_f},
-    {"ns_threadlist", Svcmd_NS_ThreadList_f},
-    {"ns_sendvariable", Svcmd_NS_SendVariable_f},
 };
 
 /*
@@ -156,7 +110,7 @@ qboolean ConsoleCommand(void) {
 		}
 	}
 
-	if(g_dedicated.integer) G_Printf("unknown command: %s\n", cmd);
+	if(cvarInt("g_dedicated")) G_Printf("unknown command: %s\n", cmd);
 
 	return qfalse;
 }

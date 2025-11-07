@@ -427,7 +427,7 @@ void ClientUserinfoChanged(int clientNum) {
 	}
 
 	// set model
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		Q_strncpyz(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
 		Q_strncpyz(headModel, Info_ValueForKey(userinfo, "team_headmodel"), sizeof(headModel));
 		Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "team_legsmodel"), sizeof(legsModel));
@@ -438,7 +438,7 @@ void ClientUserinfoChanged(int clientNum) {
 	}
 
 	if(ent->r.svFlags & SVF_BOT) {
-		if(g_gametype.integer >= GT_TEAM) {
+		if(cvarInt("g_gametype") >= GT_TEAM) {
 			Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "team_model"), sizeof(legsModel));
 		} else {
 			Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
@@ -469,7 +469,7 @@ void ClientUserinfoChanged(int clientNum) {
 	strcpy(physB, Info_ValueForKey(userinfo, "physB"));
 
 	// set team
-	if(g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
+	if(cvarInt("g_gametype") >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
 		s = Info_ValueForKey(userinfo, "team");
 		if(!Q_stricmp(s, "red") || !Q_stricmp(s, "r")) {
 			team = TEAM_RED;
@@ -516,7 +516,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	char userinfo[MAX_INFO_STRING];
 	gentity_t *ent;
 
-	if(clientNum >= g_maxClients.integer) return "Server is full, increase g_maxClients.";
+	if(clientNum >= cvarInt("g_maxClients")) return "Server is full, increase g_maxClients.";
 
 	ent = &g_entities[clientNum];
 
@@ -525,7 +525,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	if(!isBot) {
 		// check for a password
 		value = Info_ValueForKey(userinfo, "password");
-		if(g_password.string[0] && Q_stricmp(g_password.string, "none") && strcmp(g_password.string, value) != 0) {
+		if(cvarString("g_password")[0] && Q_stricmp(cvarString("g_password"), "none") && strcmp(cvarString("g_password"), value) != 0) {
 			return "Invalid password";
 		}
 	}
@@ -555,7 +555,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if(firstTime && (ent->npcType <= NT_PLAYER)) trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " connected\n\"", client->pers.netname));
 
-	if(g_gametype.integer >= GT_TEAM && client->sess.sessionTeam != TEAM_SPECTATOR) BroadcastTeamChange(client, -1);
+	if(cvarInt("g_gametype") >= GT_TEAM && client->sess.sessionTeam != TEAM_SPECTATOR) BroadcastTeamChange(client, -1);
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
@@ -627,7 +627,7 @@ void SetUnlimitedWeapons(gentity_t *ent) {
 }
 
 static void SetSandboxWeapons(gentity_t *ent) {
-	if(g_gametype.integer == GT_SANDBOX) {
+	if(cvarInt("g_gametype") == GT_SANDBOX) {
 		Set_Weapon(ent, WP_TOOLGUN, WS_HAVE);
 		Set_Weapon(ent, WP_PHYSGUN, WS_HAVE);
 		Set_Weapon(ent, WP_GRAVITYGUN, WS_HAVE);
@@ -642,58 +642,13 @@ static void SetCustomWeapons(gentity_t *ent) {
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
 	Set_Weapon(ent, WP_GAUNTLET, WS_HAVE);
-	if(g_spawn_machinegun.integer > 0) {
 		Set_Weapon(ent, WP_MACHINEGUN, WS_HAVE);
-		Set_Ammo(ent, WP_MACHINEGUN, g_spawn_machinegun.integer);
-	}
-	if(g_spawn_shotgun.integer > 0) {
-		Set_Weapon(ent, WP_SHOTGUN, WS_HAVE);
-		Set_Ammo(ent, WP_SHOTGUN, g_spawn_shotgun.integer);
-	}
-	if(g_spawn_grenade.integer > 0) {
-		Set_Weapon(ent, WP_GRENADE_LAUNCHER, WS_HAVE);
-		Set_Ammo(ent, WP_GRENADE_LAUNCHER, g_spawn_grenade.integer);
-	}
-	if(g_spawn_rocket.integer > 0) {
-		Set_Weapon(ent, WP_ROCKET_LAUNCHER, WS_HAVE);
-		Set_Ammo(ent, WP_ROCKET_LAUNCHER, g_spawn_rocket.integer);
-	}
-	if(g_spawn_lightning.integer > 0) {
-		Set_Weapon(ent, WP_LIGHTNING, WS_HAVE);
-		Set_Ammo(ent, WP_LIGHTNING, g_spawn_lightning.integer);
-	}
-	if(g_spawn_railgun.integer > 0) {
-		Set_Weapon(ent, WP_RAILGUN, WS_HAVE);
-		Set_Ammo(ent, WP_RAILGUN, g_spawn_railgun.integer);
-	}
-	if(g_spawn_plasmagun.integer > 0) {
-		Set_Weapon(ent, WP_PLASMAGUN, WS_HAVE);
-		Set_Ammo(ent, WP_PLASMAGUN, g_spawn_plasmagun.integer);
-	}
-	if(g_spawn_bfg.integer > 0) {
-		Set_Weapon(ent, WP_BFG, WS_HAVE);
-		Set_Ammo(ent, WP_BFG, g_spawn_bfg.integer);
-	}
-	if(g_spawn_grapple.integer) {
-		Set_Weapon(ent, WP_GRAPPLING_HOOK, WS_HAVE);
-	}
-	if(g_spawn_nailgun.integer > 0) {
-		Set_Weapon(ent, WP_NAILGUN, WS_HAVE);
-		Set_Ammo(ent, WP_NAILGUN, g_spawn_nailgun.integer);
-	}
-	if(g_spawn_prox.integer > 0) {
-		Set_Weapon(ent, WP_PROX_LAUNCHER, WS_HAVE);
-		Set_Ammo(ent, WP_PROX_LAUNCHER, g_spawn_prox.integer);
-	}
-	if(g_spawn_chaingun.integer > 0) {
-		Set_Weapon(ent, WP_CHAINGUN, WS_HAVE);
-		Set_Ammo(ent, WP_CHAINGUN, g_spawn_chaingun.integer);
-	}
+		Set_Ammo(ent, WP_MACHINEGUN, 100);
 
-	ent->health = ent->client->ps.stats[STAT_ARMOR] = g_spawn_armor.integer;
-	ent->health = ent->client->ps.stats[STAT_HEALTH] = g_spawn_health.integer;
+	ent->health = ent->client->ps.stats[STAT_ARMOR] = 0;
+	ent->health = ent->client->ps.stats[STAT_HEALTH] = 100;
 	// Set spawnweapon
-	if(g_gametype.integer == GT_SANDBOX) {
+	if(cvarInt("g_gametype") == GT_SANDBOX) {
 		ent->swep_id = WP_PHYSGUN;
 		ent->client->ps.weapon = WP_PHYSGUN;
 		ClientUserinfoChanged(ent->s.clientNum);
@@ -737,7 +692,7 @@ void ClientSpawn(gentity_t *ent) {
 		VectorCopy(ent->botspawn->s.angles, spawn_angles);
 	} else if(client->sess.sessionTeam == TEAM_SPECTATOR) {
 		spawnPoint = SelectSpectatorSpawnPoint(spawn_origin, spawn_angles);
-	} else if(g_gametype.integer >= GT_CTF) {
+	} else if(cvarInt("g_gametype") >= GT_CTF) {
 		// all base oriented team games use the CTF spawn points
 		spawnPoint = SelectCTFSpawnPoint(client->sess.sessionTeam, client->pers.teamState.state, spawn_origin, spawn_angles);
 	} else {
@@ -905,7 +860,7 @@ void ClientDisconnect(int clientNum) {
 		// Especially important for stuff like CTF flags
 		TossClientItems(ent);
 		TossClientPersistantPowerups(ent);
-		if(g_gametype.integer == GT_HARVESTER) TossClientCubes(ent);
+		if(cvarInt("g_gametype") == GT_HARVESTER) TossClientCubes(ent);
 	}
 
 	trap_UnlinkEntity(ent);

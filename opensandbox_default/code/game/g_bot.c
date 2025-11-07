@@ -139,12 +139,12 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 
 	s = Info_ValueForKey(botinfo, "aifile");
 	if(!*s) {
-		trap_Printf(S_COLOR_RED "Error: bot has no aifile specified\n");
+		trap_Print(S_COLOR_RED "Error: bot has no aifile specified\n");
 		return;
 	}
 
 	// dynamic limit
-	if(level.numConnectedClients >= g_maxClients.integer) {
+	if(level.numConnectedClients >= cvarInt("g_maxClients")) {
 		G_Printf(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
 		return;
 	}
@@ -158,7 +158,7 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 
 	// initialize the bot settings
 	if(!team || !*team) {
-		if(g_gametype.integer >= GT_TEAM) {
+		if(cvarInt("g_gametype") >= GT_TEAM) {
 			if(PickTeam(clientNum) == TEAM_RED) {
 				team = "red";
 			} else {
@@ -205,12 +205,12 @@ void Svcmd_AddBot_f(void) {
 	char team[MAX_TOKEN_CHARS];
 
 	// are bots enabled?
-	if(!trap_Cvar_VariableIntegerValue("bot_enable")) return;
+	if(!cvarInt("bot_enable")) return;
 
 	// name
 	trap_Argv(1, name, sizeof(name));
 	if(!name[0]) {
-		trap_Printf("Usage: Addbot <botname> [skill 1-5] [team] [altname]\n");
+		trap_Print("Usage: Addbot <botname> [skill 1-5] [team] [altname]\n");
 		return;
 	}
 
@@ -235,19 +235,19 @@ static void G_LoadBotsFromFile(char *filename) {
 	fileHandle_t f;
 	char buf[MAX_BOTS_TEXT];
 
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	len = FS_Open(filename, &f, FS_READ);
 
 	if(!f) return;
 
 	if(len >= MAX_BOTS_TEXT) {
-		trap_Printf(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_BOTS_TEXT));
-		trap_FS_FCloseFile(f);
+		trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_BOTS_TEXT));
+		FS_Close(f);
 		return;
 	}
 
-	trap_FS_Read(buf, len, f);
+	FS_Read(buf, len, f);
 	buf[len] = 0;
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 
 	g_numBots += G_ParseInfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
 }
@@ -259,7 +259,7 @@ void G_LoadBots(void) {
 
 	g_numBots = 0;
 
-	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, 1024);
+	numdirs = FS_List("scripts", ".bot", dirlist, 1024);
 	dirptr = dirlist;
 	for(i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);

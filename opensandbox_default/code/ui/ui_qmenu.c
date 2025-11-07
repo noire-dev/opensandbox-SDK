@@ -1238,7 +1238,7 @@ sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
 	// default handling
 	switch(key) {
 		case K_F11: uis.debug ^= 1; break;
-		case K_F12: trap_Cmd_ExecuteText(EXEC_APPEND, "screenshotJPEG\n"); break;
+		case K_F12: trap_Cmd(EXEC_APPEND, "screenshotJPEG\n"); break;
 
 		case K_UPARROW:
 			cursor_prev = m->cursor;
@@ -1321,9 +1321,9 @@ void UI_FillList(menuelement_s *e, char *location, char *itemsLocation, char *ex
 
 	e->string = itemsLocation;
 	if(!strcmp(extension, "$image") || !strcmp(extension, "$sound")) {
-		e->numitems = trap_FS_GetFileList(location, "", names, namesSize);
+		e->numitems = FS_List(location, "", names, namesSize);
 	} else {
-		e->numitems = trap_FS_GetFileList(location, extension, names, namesSize);
+		e->numitems = FS_List(location, extension, names, namesSize);
 	}
 	e->itemnames = (const char **)configlist;
 
@@ -1379,20 +1379,20 @@ int UI_CountFiles(const char *location, const char *extension) {
 	int count = 0;
 
 	if(!strcmp(extension, "$image")){
-		count += trap_FS_GetFileList(location, ".png", tempNames, sizeof(tempNames));
-		count += trap_FS_GetFileList(location, ".jpg", tempNames, sizeof(tempNames));
-		count += trap_FS_GetFileList(location, ".tga", tempNames, sizeof(tempNames));
-		count += trap_FS_GetFileList(location, ".bmp", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".png", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".jpg", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".tga", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".bmp", tempNames, sizeof(tempNames));
 		return count;
 	}
 	if(!strcmp(extension, "$sound")){
-		count += trap_FS_GetFileList(location, ".wav", tempNames, sizeof(tempNames));
-		count += trap_FS_GetFileList(location, ".ogg", tempNames, sizeof(tempNames));
-		count += trap_FS_GetFileList(location, ".mp3", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".wav", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".ogg", tempNames, sizeof(tempNames));
+		count += FS_List(location, ".mp3", tempNames, sizeof(tempNames));
 		return count;
 	}
 
-	return trap_FS_GetFileList(location, extension, tempNames, sizeof(tempNames));
+	return FS_List(location, extension, tempNames, sizeof(tempNames));
 }
 
 void UI_FillListFromArray(menuelement_s *e, char **configlist, char **items, int maxItems) {
@@ -1509,21 +1509,21 @@ static void UI_GeneralCallback(void *ptr, int event) {
 	}
 
 	switch(((menucommon_s *)ptr)->excallbacktype) {
-		case CB_COMMAND: trap_Cmd_ExecuteText(EXEC_INSERT, ((menucommon_s *)ptr)->cmd); break;
+		case CB_COMMAND: trap_Cmd(EXEC_INSERT, ((menucommon_s *)ptr)->cmd); break;
 
 		case CB_VARIABLE:
 			if(((menucommon_s *)ptr)->type == MTYPE_SLIDER) {
-				trap_Cvar_SetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value / (float)((menucommon_s *)ptr)->mode);
+				cvarSetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value / (float)((menucommon_s *)ptr)->mode);
 			}
 			if(((menucommon_s *)ptr)->type == MTYPE_FIELD) {
-				trap_Cvar_Set(((menucommon_s *)ptr)->var, ((menucommon_s *)ptr)->buffer);
+				cvarSet(((menucommon_s *)ptr)->var, ((menucommon_s *)ptr)->buffer);
 			}
 			if(((menucommon_s *)ptr)->type == MTYPE_RADIOBUTTON) {
 				if(((menucommon_s *)ptr)->mode == RBT_NORMAL) {
-					trap_Cvar_SetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value);
+					cvarSetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value);
 				}
 				if(((menucommon_s *)ptr)->mode == RBT_INVERSE) {
-					trap_Cvar_SetValue(((menucommon_s *)ptr)->var, -(float)*((menucommon_s *)ptr)->value);
+					cvarSetValue(((menucommon_s *)ptr)->var, -(float)*((menucommon_s *)ptr)->value);
 				}
 			}
 			break;

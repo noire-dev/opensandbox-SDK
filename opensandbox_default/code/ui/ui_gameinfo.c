@@ -77,20 +77,20 @@ static void UI_LoadArenasFromFile(char* filename) {
 	fileHandle_t f;
 	char buf[MAX_ARENAS_TEXT];
 
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	len = FS_Open(filename, &f, FS_READ);
 	if(!f) {
 		trap_Print(va(S_COLOR_RED "file not found: %s\n", filename));
 		return;
 	}
 	if(len >= MAX_ARENAS_TEXT) {
 		trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT));
-		trap_FS_FCloseFile(f);
+		FS_Close(f);
 		return;
 	}
 
-	trap_FS_Read(buf, len, f);
+	FS_Read(buf, len, f);
 	buf[len] = 0;
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 
 	ui_numArenas += UI_ParseInfos(buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas], qtrue);
 }
@@ -102,7 +102,7 @@ void UI_LoadArenas(void) {
 
 	ui_numArenas = 0;
 
-	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, 1024);
+	numdirs = FS_List("scripts", ".arena", dirlist, 1024);
 	dirptr = dirlist;
 	for(i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);
@@ -117,18 +117,18 @@ static void UI_LoadBotsFromFile(char* filename) {
 	fileHandle_t f;
 	char buf[MAX_BOTS_TEXT];
 
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	len = FS_Open(filename, &f, FS_READ);
 	if(!f)
 
 		if(len >= MAX_BOTS_TEXT) {
 			trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT));
-			trap_FS_FCloseFile(f);
+			FS_Close(f);
 			return;
 		}
 
-	trap_FS_Read(buf, len, f);
+	FS_Read(buf, len, f);
 	buf[len] = 0;
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 
 	ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots], qfalse);
 }
@@ -142,7 +142,7 @@ void UI_LoadBots(void) {
 
 	ui_numBots = 0;
 
-	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, DIRLIST_SIZE);
+	numdirs = FS_List("scripts", ".bot", dirlist, DIRLIST_SIZE);
 	dirptr = dirlist;
 	for(i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);

@@ -199,8 +199,6 @@ void BotTestAAS(vec3_t origin) {
 	int areanum;
 	aas_areainfo_t info;
 
-	trap_Cvar_Update(&bot_testsolid);
-	trap_Cvar_Update(&bot_testclusters);
 	if (bot_testsolid.integer) {
 		if (!trap_AAS_Initialized()) return;
 		areanum = BotPointAreaNum(origin);
@@ -878,7 +876,7 @@ void BotWriteSessionData(bot_state_t *bs) {
 
 	var = va( "botsession%i", bs->client );
 
-	trap_Cvar_Set( var, s );
+	cvarSet( var, s );
 }
 
 /*
@@ -1001,7 +999,7 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 
 	numbots++;
 
-	if (trap_Cvar_VariableIntegerValue("bot_testichat")) {
+	if (cvarInt("bot_testichat")) {
 		trap_BotLibVarSet("bot_testichat", "1");
 		BotChatTest(bs);
 	}
@@ -1121,11 +1119,9 @@ BotAILoadMap
 */
 int BotAILoadMap( int restart ) {
 	int			i;
-	cvar_t	mapname;
 
 	if (!restart) {
-		trap_Cvar_Register( &mapname, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM );
-		trap_BotLibLoadMap( mapname.string );
+		trap_BotLibLoadMap( cvarString("sv_mapname") );
 	}
 
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -1154,17 +1150,6 @@ int BotAIStartFrame(int time) {
 	static int botlib_residual;
 	static int lastbotthink_time;
 
-	trap_Cvar_Update(&bot_rocketjump);
-	trap_Cvar_Update(&bot_grapple);
-	trap_Cvar_Update(&bot_fastchat);
-	trap_Cvar_Update(&bot_nochat);
-	trap_Cvar_Update(&bot_testrchat);
-	trap_Cvar_Update(&bot_thinktime);
-	trap_Cvar_Update(&bot_memorydump);
-	trap_Cvar_Update(&bot_saveroutingcache);
-	trap_Cvar_Update(&bot_pause);
-	trap_Cvar_Update(&bot_report);
-
 	if(bot_report.integer) {
 		BotUpdateInfoConfigStrings();
 	}
@@ -1190,15 +1175,15 @@ int BotAIStartFrame(int time) {
 
 	if (bot_memorydump.integer) {
 		trap_BotLibVarSet("memorydump", "1");
-		trap_Cvar_Set("bot_memorydump", "0");
+		cvarSet("bot_memorydump", "0");
 	}
 	if (bot_saveroutingcache.integer) {
 		trap_BotLibVarSet("saveroutingcache", "1");
-		trap_Cvar_Set("bot_saveroutingcache", "0");
+		cvarSet("bot_saveroutingcache", "0");
 	}
 	//cap the bot think time
 	if (bot_thinktime.integer > 200) {
-		trap_Cvar_Set("bot_thinktime", "200");
+		cvarSet("bot_thinktime", "200");
 	}
 	//if the bot think time changed we should reschedule the bots
 	if (bot_thinktime.integer != lastbotthink_time) {
@@ -1403,14 +1388,14 @@ BotAISetup
 int BotAISetup( int restart ) {
 	int			errnum;
 
-	trap_Cvar_Register(&bot_thinktime, "bot_thinktime", "100", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_memorydump, "bot_memorydump", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_saveroutingcache, "bot_saveroutingcache", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_pause, "bot_pause", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_report, "bot_report", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_testsolid, "bot_testsolid", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_testclusters, "bot_testclusters", "0", CVAR_CHEAT);
-	trap_Cvar_Register(&bot_developer, "bot_developer", "0", CVAR_CHEAT);
+	cvarRegister("bot_thinktime", "100", CVAR_CHEAT);
+	cvarRegister("bot_memorydump", "0", CVAR_CHEAT);
+	cvarRegister("bot_saveroutingcache", "0", CVAR_CHEAT);
+	cvarRegister("bot_pause", "0", CVAR_CHEAT);
+	cvarRegister("bot_report", "0", CVAR_CHEAT);
+	cvarRegister("bot_testsolid", "0", CVAR_CHEAT);
+	cvarRegister("bot_testclusters", "0", CVAR_CHEAT);
+	cvarRegister("bot_developer", "0", CVAR_CHEAT);
 
 	//if the game is restarted for a tournament
 	if (restart) {

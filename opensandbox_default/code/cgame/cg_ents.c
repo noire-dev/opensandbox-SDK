@@ -683,7 +683,7 @@ static void CG_CalcEntityLerpPositions(centity_t *cent, qboolean STPhys) {
 	if(cent->currentState.number < MAX_CLIENTS && cent->currentState.clientNum != cg.predictedPlayerState.clientNum) {
 		cent->currentState.pos.trType = TR_LINEAR_STOP;
 		cent->currentState.pos.trTime = cg.snap->serverTime;
-		cent->currentState.pos.trDuration = 1000 / sv_fps.integer;
+		cent->currentState.pos.trDuration = 1000 / cvarInt("sv_fps");
 	}
 
 	// just use the current frame and evaluate as best we can

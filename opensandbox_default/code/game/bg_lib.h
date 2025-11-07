@@ -68,13 +68,4 @@ int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args);
 int Q_snprintf(char *str, size_t length, const char *fmt, ...);
 int sscanf(const char *buffer, const char *fmt, ...);
 
-// SHARED SYSCALLS
-void *memset(void *dest, int c, size_t count);
-void *memcpy(void *dest, const void *src, size_t count);
-char *strncpy(char *strDest, const char *strSource, size_t count);
-double sin(double x);
-double cos(double x);
-double atan2(double y, double x);
-double sqrt(double x);
-
 #endif  // BG_LIB_H

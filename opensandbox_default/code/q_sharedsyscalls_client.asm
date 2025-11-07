@@ -15,7 +15,7 @@ equ trap_R_AddLinearLightToScene            -1512
 equ trap_R_RenderScene                      -1513
 equ trap_R_SetColor                         -1514
 equ trap_R_DrawStretchPic                   -1515
-equ trap_CM_LerpTag                         -1516
+equ trap_R_LerpTag                          -1516
 equ trap_GetGlconfig                        -1517
 equ trap_Key_GetCatcher                     -1518
 equ trap_R_RemapShader                      -1519

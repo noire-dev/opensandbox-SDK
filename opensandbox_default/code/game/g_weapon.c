@@ -536,7 +536,7 @@ void ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace)
 		return;
 	}
 
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		if(trigger->parent->s.generic1 == other->client->sess.sessionTeam) {
 			return;
 		}

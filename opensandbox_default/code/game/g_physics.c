@@ -32,7 +32,7 @@ void Phys_VehiclePlayer(gentity_t *self) {
 		self->parent->client->vehicleNum = 0;
 		self->s.legsAnim = 0;
 		self->s.generic1 = 0;  // smooth vehicles
-		self->parent->client->ps.gravity = g_gravity.value;
+		self->parent->client->ps.gravity = cvarFloat("g_gravity");
 		return;
 	}
 
@@ -677,7 +677,7 @@ Phys model for physic object
 static void Phys_SelectPhysModel(gentity_t *ent) {
 	float impactForceFixed;
 
-	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + g_gravity.integer * g_gravity.integer);
+	impactForceFixed = sqrt(ent->s.pos.trDelta[0] * ent->s.pos.trDelta[0] + ent->s.pos.trDelta[1] * ent->s.pos.trDelta[1] + cvarInt("g_gravity") * cvarInt("g_gravity"));
 
 	impactForceFixed *= ent->s.angles2[A2_MASS];
 

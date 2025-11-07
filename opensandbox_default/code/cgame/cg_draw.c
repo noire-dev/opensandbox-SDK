@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "cg_local.h"
 
 static queued3DString_t queued3DStrings[MAX_3D_STRING_QUEUE];
 static int queued3DStringCount = 0;
@@ -416,7 +416,7 @@ static void CG_DrawCounters(void) {
 		if(!total) total = 1;
 		value = 1000 * FPS_FRAMES / total;
 	}
-	if(value <= 15 && seconds >= 3) trap_Cvar_Set("ns_haveerror", "2");
+	if(value <= 15 && seconds >= 3) cvarSet("ns_haveerror", "2");
 	if(cg_drawFPS.integer == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i", value), "FPS");
 		y += 20;
@@ -873,7 +873,7 @@ static void CG_NSErrors(void) {
 	elapsed = cg.time - NSErrorTime;
 
 	if(elapsed >= fadeInDuration + visibleDuration + fadeOutDuration) {
-		trap_Cvar_Set("ns_haveerror", "0");
+		cvarSet("ns_haveerror", "0");
 		NSErrorTime = 0;
 		return;
 	}
@@ -1018,23 +1018,6 @@ static void CG_Draw2D(void) {
 		cg.scoreBoardShowing = CG_DrawScoreboard();
 		if(cgs.gametype != GT_SANDBOX) CG_DrawScores();
 		if(cg.snap->ps.pm_type == PM_DEAD) CG_DrawDeathMessage();
-	}
-}
-
-static char cgameThreadBuffer[MAX_CYCLE_SIZE];
-static void RunScriptThreads(int time) {
-	int i;
-
-	for(i = 0; i < threadsCount; i++) {
-		ScriptLoop *script = &threadsLoops[i];
-		if(time - script->lastRunTime >= script->interval) {
-			script->lastRunTime = time;
-
-			Q_strncpyz(cgameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
-			cgameThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0';
-
-			Interpret(cgameThreadBuffer);
-		}
 	}
 }
 

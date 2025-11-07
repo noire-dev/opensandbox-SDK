@@ -69,7 +69,7 @@ static void Team_SetFlagStatus(int team, flagStatus_t status) {
 	if(modified) {
 		char st[4];
 
-		if(g_gametype.integer == GT_CTF) {
+		if(cvarInt("g_gametype") == GT_CTF) {
 			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
 			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
 			st[2] = 0;
@@ -85,7 +85,7 @@ static void Team_SetFlagStatus(int team, flagStatus_t status) {
 void Team_InitGame(void) {
 	memset(&teamgame, 0, sizeof teamgame);
 
-	switch(g_gametype.integer) {
+	switch(cvarInt("g_gametype")) {
 		case GT_CTF:
 			teamgame.redStatus = teamgame.blueStatus = -1;  // Invalid to force update
 			Team_SetFlagStatus(TEAM_RED, FLAG_ATBASE);
@@ -182,7 +182,7 @@ OnSameTeam
 qboolean OnSameTeam(gentity_t *ent1, gentity_t *ent2) {
 	if(!ent1->client || !ent2->client) return qfalse;
 
-	if(g_gametype.integer < GT_TEAM) return qfalse;
+	if(cvarInt("g_gametype") < GT_TEAM) return qfalse;
 
 	if(ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam) return qtrue;
 
@@ -226,10 +226,10 @@ static gentity_t *Team_ResetFlag(int team) {
 }
 
 static void Team_ResetFlags(void) {
-	if(g_gametype.integer == GT_CTF) {
+	if(cvarInt("g_gametype") == GT_CTF) {
 		Team_ResetFlag(TEAM_RED);
 		Team_ResetFlag(TEAM_BLUE);
-	} else if(g_gametype.integer == GT_1FCTF) {
+	} else if(cvarInt("g_gametype") == GT_1FCTF) {
 		Team_ResetFlag(TEAM_FREE);
 	}
 }
@@ -354,7 +354,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	gclient_t *cl = other->client;
 	int enemy_flag;
 
-	if(g_gametype.integer == GT_1FCTF) {
+	if(cvarInt("g_gametype") == GT_1FCTF) {
 		enemy_flag = PW_NEUTRALFLAG;
 	} else {
 		if(cl->sess.sessionTeam == TEAM_RED) {
@@ -377,7 +377,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	// the flag is at home base.  if the player has the enemy
 	// flag, he's just won!
 	if(!cl->ps.powerups[enemy_flag]) return 0;  // We don't have the flag
-	if(g_gametype.integer == GT_1FCTF) {
+	if(cvarInt("g_gametype") == GT_1FCTF) {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname);
 	} else {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
@@ -397,7 +397,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	Team_CaptureFlagSound(ent, team);
 
 	// Ok, let's do the player loop, hand out the bonuses
-	for(i = 0; i < g_maxClients.integer; i++) {
+	for(i = 0; i < cvarInt("g_maxClients"); i++) {
 		player = &g_entities[i];
 		if(!player->inuse) continue;
 
@@ -422,7 +422,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 	gclient_t *cl = other->client;
 
-	if(g_gametype.integer == GT_1FCTF) {
+	if(cvarInt("g_gametype") == GT_1FCTF) {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname);
 
 		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX;  // flags never expire
@@ -453,13 +453,13 @@ int Pickup_Team(gentity_t *ent, gentity_t *other) {
 	int team;
 	gclient_t *cl = other->client;
 
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		// there are no team items that can be picked up in obelisk
 		G_FreeEntity(ent);
 		return 0;
 	}
 
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		// the only team items that can be picked up in harvester are the cubes
 		if(ent->spawnflags != cl->sess.sessionTeam) {
 			cl->ps.generic1 += 1;
@@ -478,7 +478,7 @@ int Pickup_Team(gentity_t *ent, gentity_t *other) {
 		PrintMsg(other, "Don't know what team the flag is on.\n");
 		return 0;
 	}
-	if(g_gametype.integer == GT_1FCTF) {
+	if(cvarInt("g_gametype") == GT_1FCTF) {
 		if(team == TEAM_FREE) {
 			return Team_TouchEnemyFlag(ent, other, cl->sess.sessionTeam);
 		}
@@ -745,7 +745,7 @@ static gentity_t *SpawnObelisk(vec3_t origin, int team, int spawnflags) {
 	ent->s.eType = ET_GENERAL;
 	ent->flags = FL_NO_KNOCKBACK;
 
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		ent->r.contents = CONTENTS_SOLID;
 		ent->takedamage = qtrue;
 		ent->health = OBELISK_HEALTH;
@@ -754,7 +754,7 @@ static gentity_t *SpawnObelisk(vec3_t origin, int team, int spawnflags) {
 		ent->think = ObeliskRegen;
 		ent->nextthink = level.time + OBELISK_REGENTIME * 1000;
 	}
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		ent->r.contents = CONTENTS_TRIGGER;
 		ent->touch = ObeliskTouch;
 	}
@@ -793,19 +793,19 @@ static gentity_t *SpawnObelisk(vec3_t origin, int team, int spawnflags) {
 void SP_team_redobelisk(gentity_t *ent) {
 	gentity_t *obelisk;
 
-	if(g_gametype.integer <= GT_TEAM) {
+	if(cvarInt("g_gametype") <= GT_TEAM) {
 		G_FreeEntity(ent);
 		return;
 	}
 	ent->s.eType = ET_TEAM;
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		obelisk = SpawnObelisk(ent->s.origin, TEAM_RED, ent->spawnflags);
 		obelisk->activator = ent;
 		// initial obelisk health value
 		ent->s.modelindex2 = 0xff;
 		ent->s.frame = 0;
 	}
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		obelisk = SpawnObelisk(ent->s.origin, TEAM_RED, ent->spawnflags);
 		obelisk->activator = ent;
 	}
@@ -816,19 +816,19 @@ void SP_team_redobelisk(gentity_t *ent) {
 void SP_team_blueobelisk(gentity_t *ent) {
 	gentity_t *obelisk;
 
-	if(g_gametype.integer <= GT_TEAM) {
+	if(cvarInt("g_gametype") <= GT_TEAM) {
 		G_FreeEntity(ent);
 		return;
 	}
 	ent->s.eType = ET_TEAM;
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		obelisk = SpawnObelisk(ent->s.origin, TEAM_BLUE, ent->spawnflags);
 		obelisk->activator = ent;
 		// initial obelisk health value
 		ent->s.modelindex2 = 0xff;
 		ent->s.frame = 0;
 	}
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		obelisk = SpawnObelisk(ent->s.origin, TEAM_BLUE, ent->spawnflags);
 		obelisk->activator = ent;
 	}
@@ -837,12 +837,12 @@ void SP_team_blueobelisk(gentity_t *ent) {
 }
 
 void SP_team_neutralobelisk(gentity_t *ent) {
-	if(g_gametype.integer != GT_1FCTF && g_gametype.integer != GT_HARVESTER) {
+	if(cvarInt("g_gametype") != GT_1FCTF && cvarInt("g_gametype") != GT_HARVESTER) {
 		G_FreeEntity(ent);
 		return;
 	}
 	ent->s.eType = ET_TEAM;
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		neutralObelisk = SpawnObelisk(ent->s.origin, TEAM_FREE, ent->spawnflags);
 		neutralObelisk->spawnflags = TEAM_FREE;
 	}

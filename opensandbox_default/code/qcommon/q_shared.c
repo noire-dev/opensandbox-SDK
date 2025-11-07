@@ -1088,7 +1088,7 @@ FS_FileExists
 qboolean FS_FileExists(const char *filename) {
 	int len;
 
-	len = trap_FS_FOpenFile( filename, NULL, FS_READ );
+	len = FS_Open( filename, NULL, FS_READ );
 	if (len>0) {
 		return qtrue;
 	}

@@ -319,7 +319,7 @@ localEntity_t *CG_MakeExplosion(vec3_t origin, vec3_t dir, qhandle_t hModel, qha
 void CG_Bleed(vec3_t origin, int entityNum) {
 	localEntity_t *ex;
 
-	if(!cg_blood.integer) return;
+	if(!ccvarInt("g_blood")) return;
 
 	ex = CG_AllocLocalEntity();
 	ex->leType = LE_EXPLOSION;
@@ -371,7 +371,7 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
 	int j;
 
-	if(!cg_blood.integer) return;
+	if(!ccvarInt("g_blood")) return;
 
 	VectorCopy(playerOrigin, origin);
 	velocity[0] = crandom() * GIB_VELOCITY;

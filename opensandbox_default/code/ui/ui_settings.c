@@ -74,50 +74,50 @@ static qboolean resolutionsDetected = qfalse;
 
 static void Settings_MenuEvent(void* ptr, int event) {
 	if(event != QM_ACTIVATED) return;
-	if(((menucommon_s*)ptr)->id == 3) trap_Cvar_Set("r_resolution", resolutions[settings.e[3].curvalue]);
-	if(((menucommon_s*)ptr)->id == 4) trap_Cvar_SetValue("r_fullscreen", settings.e[4].curvalue);
+	if(((menucommon_s*)ptr)->id == 3) cvarSet("r_resolution", resolutions[settings.e[3].curvalue]);
+	if(((menucommon_s*)ptr)->id == 4) cvarSetValue("r_fullscreen", settings.e[4].curvalue);
 	if(((menucommon_s*)ptr)->id == 8) {
 		if(settings.e[8].curvalue == 0) {
-			trap_Cvar_SetValue("ui_effectslevel", 0);
-			trap_Cvar_SetValue("cg_effectsTime", 10);
-			trap_Cvar_SetValue("cg_effectsLimit", 4096);
-			trap_Cvar_SetValue("cg_effectsGibs", 1);
+			cvarSetValue("ui_effectslevel", 0);
+			cvarSetValue("cg_effectsTime", 10);
+			cvarSetValue("cg_effectsLimit", 4096);
+			cvarSetValue("cg_effectsGibs", 1);
 		}
 		if(settings.e[8].curvalue == 1) {
-			trap_Cvar_SetValue("ui_effectslevel", 1);
-			trap_Cvar_SetValue("cg_effectsTime", 30);
-			trap_Cvar_SetValue("cg_effectsLimit", 5120);
-			trap_Cvar_SetValue("cg_effectsGibs", 3);
+			cvarSetValue("ui_effectslevel", 1);
+			cvarSetValue("cg_effectsTime", 30);
+			cvarSetValue("cg_effectsLimit", 5120);
+			cvarSetValue("cg_effectsGibs", 3);
 		}
 		if(settings.e[8].curvalue == 2) {
-			trap_Cvar_SetValue("ui_effectslevel", 2);
-			trap_Cvar_SetValue("cg_effectsTime", 60);
-			trap_Cvar_SetValue("cg_effectsLimit", 6144);
-			trap_Cvar_SetValue("cg_effectsGibs", 6);
+			cvarSetValue("ui_effectslevel", 2);
+			cvarSetValue("cg_effectsTime", 60);
+			cvarSetValue("cg_effectsLimit", 6144);
+			cvarSetValue("cg_effectsGibs", 6);
 		}
 		if(settings.e[8].curvalue == 3) {
-			trap_Cvar_SetValue("ui_effectslevel", 3);
-			trap_Cvar_SetValue("cg_effectsTime", 90);
-			trap_Cvar_SetValue("cg_effectsLimit", 7168);
-			trap_Cvar_SetValue("cg_effectsGibs", 3);
+			cvarSetValue("ui_effectslevel", 3);
+			cvarSetValue("cg_effectsTime", 90);
+			cvarSetValue("cg_effectsLimit", 7168);
+			cvarSetValue("cg_effectsGibs", 3);
 		}
 		if(settings.e[8].curvalue == 4) {
-			trap_Cvar_SetValue("ui_effectslevel", 4);
-			trap_Cvar_SetValue("cg_effectsTime", 300);
-			trap_Cvar_SetValue("cg_effectsLimit", 8192);
-			trap_Cvar_SetValue("cg_effectsGibs", 9);
+			cvarSetValue("ui_effectslevel", 4);
+			cvarSetValue("cg_effectsTime", 300);
+			cvarSetValue("cg_effectsLimit", 8192);
+			cvarSetValue("cg_effectsGibs", 9);
 		}
 		if(settings.e[8].curvalue == 5) {
-			trap_Cvar_SetValue("ui_effectslevel", 5);
-			trap_Cvar_SetValue("cg_effectsTime", 600);
-			trap_Cvar_SetValue("cg_effectsLimit", 8192);
-			trap_Cvar_SetValue("cg_effectsGibs", 16);
+			cvarSetValue("ui_effectslevel", 5);
+			cvarSetValue("cg_effectsTime", 600);
+			cvarSetValue("cg_effectsLimit", 8192);
+			cvarSetValue("cg_effectsGibs", 16);
 		}
 	}
-	if(((menucommon_s*)ptr)->id == 9) trap_Cvar_SetValue("r_picmip", settings.e[9].curvalue);
-	if(((menucommon_s*)ptr)->id == 10) trap_Cvar_SetValue("r_ext_multisample", settings.e[10].curvalue * 2);
-	if(((menucommon_s*)ptr)->id == 11) trap_Cvar_SetValue("r_bloom_intensity", settings.e[11].curvalue * 0.05);
-	if(((menucommon_s*)ptr)->id == 32) trap_Cvar_Set("s_driver", sdriverList[settings.e[32].curvalue]);
+	if(((menucommon_s*)ptr)->id == 9) cvarSetValue("r_picmip", settings.e[9].curvalue);
+	if(((menucommon_s*)ptr)->id == 10) cvarSetValue("r_ext_multisample", settings.e[10].curvalue * 2);
+	if(((menucommon_s*)ptr)->id == 11) cvarSetValue("r_bloom_intensity", settings.e[11].curvalue * 0.05);
+	if(((menucommon_s*)ptr)->id == 32) cvarSet("s_driver", sdriverList[settings.e[32].curvalue]);
 }
 
 static void Settings_GetResolutions(void) {

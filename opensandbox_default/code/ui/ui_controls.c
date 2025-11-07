@@ -367,8 +367,8 @@ static void Controls_MenuEvent(void* ptr, int event) {
 			break;
 
 		case KEYS_NUM + 1:
-			trap_Cvar_SetValue("in_mouse", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1);
-			trap_Cmd_ExecuteText(EXEC_APPEND, "in_restart\n");
+			cvarSetValue("in_mouse", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1);
+			trap_Cmd(EXEC_APPEND, "in_restart\n");
 			break;
 	}
 }

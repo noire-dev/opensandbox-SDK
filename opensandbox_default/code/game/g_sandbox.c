@@ -372,7 +372,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	gentity_t *entity;
 
 	entity = targ;
-	if(g_gametype.integer != GT_SANDBOX) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX) return;
 
 	if(!G_PlayerIsOwner(attacker, entity)) return;
 

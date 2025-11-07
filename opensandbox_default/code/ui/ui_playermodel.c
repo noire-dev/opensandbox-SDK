@@ -203,7 +203,7 @@ static void PlayerModel_BuildList(void) {
 	s_playermodel.nummodels = 0;
 
 	// iterate directory of all player models
-	numdirs = trap_FS_GetFileList(MODELDIR, "/", pm_dirlist, 131072);
+	numdirs = FS_List(MODELDIR, "/", pm_dirlist, 131072);
 	dirptr = pm_dirlist;
 	for(i = 0; i < numdirs && s_playermodel.nummodels < MAX_PLAYERMODELS; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);
@@ -214,7 +214,7 @@ static void PlayerModel_BuildList(void) {
 
 		// iterate all skin tga files in directory
 		defaultskin = NULL;
-		numfiles = trap_FS_GetFileList(va(MODELDIR "/%s", dirptr), "", pm_filelist, 131072);
+		numfiles = FS_List(va(MODELDIR "/%s", dirptr), "", pm_filelist, 131072);
 		fileptr = pm_filelist;
 		for(j = 0; j < numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS; j++, fileptr += filelen + 1) {
 			filelen = strlen(fileptr);
@@ -254,7 +254,7 @@ static void PlayerModel_LoadSkins(int modelnum) {
 	fullmodelname = s_playermodel.modelnames[modelnum] + strlen(MODELDIR) + 1;
 
 	// iterate all skin files in directory
-	numfiles = trap_FS_GetFileList(va(MODELDIR "/%s", GUI_ModelName(fullmodelname)), "", pm_filelist, 131072);
+	numfiles = FS_List(va(MODELDIR "/%s", GUI_ModelName(fullmodelname)), "", pm_filelist, 131072);
 	fileptr = pm_filelist;
 
 	for(i = 0; i < numfiles && s_playermodel.numskins < MAX_PLAYERSKINS; i++, fileptr += filelen + 1) {
@@ -280,29 +280,29 @@ static void PlayerModel_SaveChanges(void) {
 
 	strcpy(model, s_playermodel.model.team_modelskin);
 	Q_strlwr(model);
-	trap_Cvar_Set("team_model", model);
+	cvarSet("team_model", model);
 
 	strcpy(model, s_playermodel.model.team_headskin);
 	Q_strlwr(model);
-	trap_Cvar_Set("team_headmodel", model);
+	cvarSet("team_headmodel", model);
 
 	strcpy(model, s_playermodel.model.team_legsskin);
 	Q_strlwr(model);
 	legs = strchr(model, '/');
-	trap_Cvar_Set("team_legsmodel", model);
+	cvarSet("team_legsmodel", model);
 
 	strcpy(model, s_playermodel.model.modelskin);
 	Q_strlwr(model);
-	trap_Cvar_Set("model", model);
+	cvarSet("model", model);
 
 	strcpy(model, s_playermodel.model.headskin);
 	Q_strlwr(model);
-	trap_Cvar_Set("headmodel", model);
+	cvarSet("headmodel", model);
 
 	strcpy(model, s_playermodel.model.legsskin);
 	Q_strlwr(model);
 	legs = strchr(model, '/');
-	trap_Cvar_Set("legsmodel", model);
+	cvarSet("legsmodel", model);
 }
 
 static void PlayerModel_ShowControls(void) {

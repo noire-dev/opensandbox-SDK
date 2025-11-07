@@ -232,7 +232,7 @@ static snapshot_t *CG_ReadNextSnapshot(void) {
 	net_error_count++;
 	if(net_error_count >= NET_ERROR_LIMIT) {
 		trap_SendConsoleCommand("neterror");
-		trap_Cvar_Set("ns_haveerror", "3");
+		cvarSet("ns_haveerror", "3");
 		net_error_count = 0;
 	}
 

@@ -16,7 +16,7 @@ void AddScore(gentity_t *ent, int score) {
 	if(!ent->client) return;
 
 	ent->client->ps.persistant[PERS_SCORE] += score;
-	if(g_gametype.integer == GT_TEAM) level.teamScores[ent->client->ps.persistant[PERS_TEAM]] += score;
+	if(cvarInt("g_gametype") == GT_TEAM) level.teamScores[ent->client->ps.persistant[PERS_TEAM]] += score;
 	CalculateRanks();
 }
 
@@ -168,7 +168,7 @@ void body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int da
 	if(self->health > GIB_HEALTH) {
 		return;
 	}
-	if(!g_blood.integer) {
+	if(!cvarInt("g_blood")) {
 		self->health = GIB_HEALTH + 1;
 		return;
 	}
@@ -266,7 +266,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	}
 
 	TossClientPersistantPowerups(self);
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		TossClientCubes(self);
 	}
 
@@ -305,7 +305,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	memset(self->client->ps.powerups, 0, sizeof(self->client->ps.powerups));
 
 	// never gib in a nodrop
-	if((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE) {
+	if((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && cvarInt("g_blood")) || meansOfDeath == MOD_SUICIDE) {
 		// gib death
 		GibEntity(self, killer);
 	} else {
@@ -512,7 +512,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		}
 		return;
 	}
-	if(g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker)) return;
+	if(cvarInt("g_gametype") == GT_OBELISK && CheckObeliskAttack(targ, attacker)) return;
 
 	client = targ->client;
 
@@ -538,9 +538,9 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		mass = 200;
 
 		if(targ->sandboxObject) {
-			VectorScale(dir, g_knockback.value * 3 * (float)knockback / mass, kvel);
+			VectorScale(dir, cvarFloat("g_knockback") * 3 * (float)knockback / mass, kvel);
 		} else {
-			VectorScale(dir, g_knockback.value * (float)knockback / mass, kvel);
+			VectorScale(dir, cvarFloat("g_knockback") * (float)knockback / mass, kvel);
 		}
 		if(targ->client) {
 			VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
@@ -584,7 +584,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	// check for completely getting out of the damage
 	if(!(dflags & DAMAGE_NO_PROTECTION)) {
 		if(mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam(targ, attacker)) {
-			if(!g_friendlyFire.integer) return;
+			if(!cvarInt("g_friendlyFire")) return;
 		}
 		if(mod == WP_PROX_LAUNCHER) {
 			if(inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) return;

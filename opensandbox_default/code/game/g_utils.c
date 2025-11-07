@@ -250,11 +250,11 @@ gentity_t *G_Spawn(void) {
 			G_InitGentity(e);
 			return e;
 		}
-		if(i != g_maxEntities.integer - 1) {
+		if(i != cvarInt("g_maxEntities") - 1) {
 			break;
 		}
 	}
-	if(i >= g_maxEntities.integer - 1) {
+	if(i >= cvarInt("g_maxEntities") - 1) {
 		G_Printf("G_Spawn: no free entities. Check g_maxEntities cvar\n");
 		G_FreeEntity(e);
 		return e;
@@ -286,7 +286,7 @@ void G_FreeEntity(gentity_t *ed) {
 		ClientUserinfoChanged(ed->parent->s.clientNum);
 		VectorSet(ed->parent->r.mins, -15, -15, -24);
 		VectorSet(ed->parent->r.maxs, 15, 15, 32);
-		ed->parent->client->ps.gravity = g_gravity.value;
+		ed->parent->client->ps.gravity = cvarFloat("g_gravity");
 	}
 
 	Phys_Unweld(ed);

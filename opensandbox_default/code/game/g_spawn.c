@@ -177,7 +177,7 @@ static qboolean G_CallSpawn(gentity_t *ent) {
 
 	Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
 
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		if(strcmp(itemname, "team_CTF_redflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
 		}
@@ -185,7 +185,7 @@ static qboolean G_CallSpawn(gentity_t *ent) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
 		}
 	}
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		if(strcmp(itemname, "team_CTF_redflag") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
 		}
@@ -196,7 +196,7 @@ static qboolean G_CallSpawn(gentity_t *ent) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
 		}
 	}
-	if(g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM) {
+	if(cvarInt("g_gametype") == GT_FFA || cvarInt("g_gametype") == GT_TEAM) {
 		if(strcmp(itemname, "team_CTF_redplayer") == 0) {
 			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
 		}
@@ -332,7 +332,7 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 
 	for(i = 0; i < level.numSpawnVars; i++) G_ParseField(level.spawnVars[i][0], level.spawnVars[i][1], ent);
 
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		G_SpawnInt("notteam", "0", &i);
 		if(i){ G_FreeEntity(ent); return; }
 	} else {
@@ -344,8 +344,8 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 	if(i){ G_FreeEntity(ent); return; }
 
 	if(G_SpawnString("!gametype", NULL, &value)) {
-		if(g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE) {
-			gametypeName = gametypeNames[g_gametype.integer];
+		if(cvarInt("g_gametype") >= GT_SANDBOX && cvarInt("g_gametype") < GT_MAX_GAME_TYPE) {
+			gametypeName = gametypeNames[cvarInt("g_gametype")];
 
 			s = strstr(value, gametypeName);
 			if(s){ G_FreeEntity(ent); return; }
@@ -353,8 +353,8 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 	}
 
 	if(G_SpawnString("gametype", NULL, &value)) {
-		if(g_gametype.integer >= GT_SANDBOX && g_gametype.integer < GT_MAX_GAME_TYPE) {
-			gametypeName = gametypeNames[g_gametype.integer];
+		if(cvarInt("g_gametype") >= GT_SANDBOX && cvarInt("g_gametype") < GT_MAX_GAME_TYPE) {
+			gametypeName = gametypeNames[cvarInt("g_gametype")];
 
 			s = strstr(value, gametypeName);
 			if(!s){ G_FreeEntity(ent); return; }
@@ -457,16 +457,16 @@ static void SP_worldspawn(void) {
 	trap_SetConfigstring(CS_MUSIC, s);
 
 	G_SpawnString("gravity", "800", &s);
-	trap_Cvar_Set("g_gravity", s);
+	cvarSet("g_gravity", s);
 
 	G_SpawnString("enableDust", "0", &s);
-	trap_Cvar_Set("g_enableDust", s);
+	cvarSet("g_enableDust", s);
 
 	G_SpawnString("enableSnow", "0", &s);
-	trap_Cvar_Set("g_enableSnow", s);
+	cvarSet("g_enableSnow", s);
 
 	G_SpawnString("enableBreath", "0", &s);
-	trap_Cvar_Set("g_enableBreath", s);
+	cvarSet("g_enableBreath", s);
 
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
 	g_entities[ENTITYNUM_WORLD].r.ownerNum = ENTITYNUM_NONE;
@@ -699,7 +699,7 @@ static void G_LoadMapfile(char *filename) {
 	int len;
 	fileHandle_t f;
 
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	len = FS_Open(filename, &f, FS_READ);
 
 	if(!f) {
 		G_Printf("%s", va(S_COLOR_YELLOW "mapfile not found: %s\n", filename));
@@ -708,16 +708,16 @@ static void G_LoadMapfile(char *filename) {
 
 	if(len >= 2500000 * 6) {
 		trap_Error(va(S_COLOR_RED "map file too large: %s is %i, max allowed is %i", filename, len, 2500000 * 6));
-		trap_FS_FCloseFile(f);
+		FS_Close(f);
 		return;
 	}
 
-	trap_FS_Read(mapbuffer, len, f);
+	FS_Read(mapbuffer, len, f);
 	if(len <= 10) {
 		return;
 	}
 	mapbuffer[len] = 0;
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 
 	G_ClearEntities();
 
@@ -786,9 +786,9 @@ void G_LoadMapfile_f(void) {
 	trap_Argv(1, filename, sizeof(filename));
 
 	G_LoadMapfile(filename);
-	trap_Cvar_Set("mapfile", filename);
+	cvarSet("mapfile", filename);
 	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, sizeof(mapname));
-	trap_Cvar_Set("lastmap", mapname);
+	cvarSet("lastmap", mapname);
 
 	G_RelinkEntities();
 
@@ -810,10 +810,10 @@ void G_WriteMapfile_f(void) {
 
 	trap_Argv(1, filename, sizeof(filename));
 
-	trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
+	FS_Open(va("%s", filename), &f, FS_WRITE);
 
 	string = va("//OpenSandbox Map File\n");
-	trap_FS_Write(string, strlen(string), f);
+	FS_Write(string, strlen(string), f);
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if(!g_entities[i].inuse) continue;
@@ -824,32 +824,32 @@ void G_WriteMapfile_f(void) {
 		b = (byte *)&g_entities[i];
 
 		string = va("{\n");
-		trap_FS_Write(string, strlen(string), f);
+		FS_Write(string, strlen(string), f);
 
 		for(field = gameInfoFields; field->name; field++) {
 			switch(field->type) {
 				case F_STRING:
 					if(*(char **)(b + field->ofs)) {
 						string = va("   \"%s\"   \"%s\"\n", field->name, *(char **)(b + field->ofs));
-						trap_FS_Write(string, strlen(string), f);
+						FS_Write(string, strlen(string), f);
 					}
 					break;
 				case F_VECTOR:
 					if((((float *)(b + field->ofs))[0] || ((float *)(b + field->ofs))[1] || ((float *)(b + field->ofs))[2])) {
 						string = va("   \"%s\"   \"%f %f %f\"\n", field->name, ((float *)(b + field->ofs))[0], ((float *)(b + field->ofs))[1], ((float *)(b + field->ofs))[2]);
-						trap_FS_Write(string, strlen(string), f);
+						FS_Write(string, strlen(string), f);
 					}
 					break;
 				case F_INT:
 					if(*(int *)(b + field->ofs)) {
 						string = va("   \"%s\"   \"%i\"\n", field->name, *(int *)(b + field->ofs));
-						trap_FS_Write(string, strlen(string), f);
+						FS_Write(string, strlen(string), f);
 					}
 					break;
 				case F_FLOAT:
 					if(*(float *)(b + field->ofs)) {
 						string = va("   \"%s\"   \"%f\"\n", field->name, *(float *)(b + field->ofs));
-						trap_FS_Write(string, strlen(string), f);
+						FS_Write(string, strlen(string), f);
 					}
 					break;
 				default:
@@ -857,9 +857,9 @@ void G_WriteMapfile_f(void) {
 			}
 		}
 		string = va("}\n\n");
-		trap_FS_Write(string, strlen(string), f);
+		FS_Write(string, strlen(string), f);
 	}
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 	trap_SendServerCommand(-1, "print \"^2Map saved!\n\"");
 }
 
@@ -875,12 +875,12 @@ void G_DeleteMapfile_f(void) {
 
 	trap_Argv(1, filename, sizeof(filename));
 
-	trap_FS_FOpenFile(va("%s", filename), &f, FS_WRITE);
+	FS_Open(va("%s", filename), &f, FS_WRITE);
 
 	string = va("deleted");
-	trap_FS_Write(string, strlen(string), f);
+	FS_Write(string, strlen(string), f);
 
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 	trap_SendServerCommand(-1, "print \"^2Map deleted!\n\"");
 }
 

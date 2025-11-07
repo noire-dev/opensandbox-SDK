@@ -106,8 +106,8 @@ static void ArenaServers_Go(void) {
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if(servernode) {
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("cl_selectedmod = %s\n", servernode->addonname));
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", servernode->adrstr));
+		trap_Cmd(EXEC_APPEND, va("cl_selectedmod = %s\n", servernode->addonname));
+		trap_Cmd(EXEC_APPEND, va("connect %s\n", servernode->adrstr));
 	}
 }
 
@@ -335,7 +335,7 @@ static void ArenaServers_DoRefresh(void) {
 		strcpy(g_arenaservers.pinglist[j].adrstr, adrstr);
 		g_arenaservers.pinglist[j].start = uis.realtime;
 
-		trap_Cmd_ExecuteText(EXEC_NOW, va("ping %s\n", adrstr));
+		trap_Cmd(EXEC_NOW, va("ping %s\n", adrstr));
 
 		// advance to next server
 		g_arenaservers.currentping++;
@@ -375,13 +375,13 @@ static void ArenaServers_StartRefresh(void) {
 	ArenaServers_UpdateMenu();
 
 	if(g_servertype == AS_LOCAL) {
-		trap_Cmd_ExecuteText(EXEC_APPEND, "localservers\n");
+		trap_Cmd(EXEC_APPEND, "localservers\n");
 		return;
 	}
 
 	if(g_servertype == AS_GLOBAL) {
 		i = 0;
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("globalservers %d %d%s\n", i, (int)trap_Cvar_VariableValue("protocol"), myargs));
+		trap_Cmd(EXEC_APPEND, va("globalservers %d %d%s\n", i, (int)trap_Cvar_VariableValue("protocol"), myargs));
 	}
 }
 
@@ -429,11 +429,11 @@ static void ArenaServers_Event(void* ptr, int event) {
 	switch(id) {
 		case ID_MASTER:
 			value = g_arenaservers.master.curvalue;
-			trap_Cvar_SetValue("ui_browserMaster", value);
+			cvarSetValue("ui_browserMaster", value);
 			ArenaServers_SetType(value);
 			break;
 
-		case ID_CONNECT: trap_Cmd_ExecuteText( EXEC_INSERT, va("connect %s\n", g_arenaservers.domain.field.buffer)); break;
+		case ID_CONNECT: trap_Cmd( EXEC_INSERT, va("connect %s\n", g_arenaservers.domain.field.buffer)); break;
 
 		case ID_LIST:
 			if(event == QM_GOTFOCUS) ArenaServers_UpdatePicture();

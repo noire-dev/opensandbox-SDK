@@ -63,8 +63,6 @@ $cc ../../../code/game/g_weapon.c
 cp ../../../code/game/g_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..
 
-$cc ../../../code/qcommon/ns_func_game.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
@@ -134,8 +132,6 @@ cp ../../../code/cgame/cg_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..
 cp ../../../code/q_sharedsyscalls_client.asm ..
 
-$cc ../../../code/qcommon/ns_func_cgame.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
@@ -197,8 +193,6 @@ cp ../../../code/q_sharedsyscalls_client.asm ..
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 
-$cc ../../../code/qcommon/ns_func_ui.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c

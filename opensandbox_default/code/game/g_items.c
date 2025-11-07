@@ -211,7 +211,7 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 	if(!gameInfoNPCTypes[other->npcType].canPickup) return;
 
 	// the same pickup rules are used for client side and server side
-	if(!BG_CanItemBeGrabbed(g_gametype.integer, &ent->s, &other->client->ps)) return;
+	if(!BG_CanItemBeGrabbed(cvarInt("g_gametype"), &ent->s, &other->client->ps)) return;
 
 	// call the item-specific pickup function
 	switch(ent->item->giType) {
@@ -300,7 +300,7 @@ gentity_t *LaunchItem(item_t *item, vec3_t origin, vec3_t velocity) {
 	VectorCopy(velocity, dropped->s.pos.trDelta);
 
 	dropped->s.eFlags |= EF_BOUNCE;
-	if((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) && item->giType == IT_TEAM) {  // Special case for CTF flags
+	if((cvarInt("g_gametype") == GT_CTF || cvarInt("g_gametype") == GT_1FCTF) && item->giType == IT_TEAM) {  // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem(dropped);
@@ -404,7 +404,7 @@ void G_CheckTeamItems(void) {
 	// Set up team stuff
 	Team_InitGame();
 
-	if(g_gametype.integer == GT_CTF) {
+	if(cvarInt("g_gametype") == GT_CTF) {
 		item_t *item;
 
 		// check for the two flags
@@ -418,7 +418,7 @@ void G_CheckTeamItems(void) {
 		}
 	}
 
-	if(g_gametype.integer == GT_1FCTF) {
+	if(cvarInt("g_gametype") == GT_1FCTF) {
 		item_t *item;
 
 		// check for all three flags
@@ -436,7 +436,7 @@ void G_CheckTeamItems(void) {
 		}
 	}
 
-	if(g_gametype.integer == GT_OBELISK) {
+	if(cvarInt("g_gametype") == GT_OBELISK) {
 		gentity_t *ent;
 
 		// check for the two obelisks
@@ -453,7 +453,7 @@ void G_CheckTeamItems(void) {
 		}
 	}
 
-	if(g_gametype.integer == GT_HARVESTER) {
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
 		gentity_t *ent;
 
 		// check for all three obelisks
@@ -481,7 +481,7 @@ static int G_ItemDisabled(item_t *item) {
 	char name[128];
 
 	Com_sprintf(name, sizeof(name), "disable_%s", item->classname);
-	return trap_Cvar_VariableIntegerValue(name);
+	return cvarInt(name);
 }
 
 /*

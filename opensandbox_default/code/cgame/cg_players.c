@@ -69,17 +69,17 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 	animations = ci->animations;
 
 	// load the file
-	len = trap_FS_FOpenFile(filename, &f, FS_READ);
+	len = FS_Open(filename, &f, FS_READ);
 	if(len <= 0) return qfalse;
 
 	if(len >= sizeof(text) - 1) {
 		CG_Printf("File %s too long\n", filename);
-		trap_FS_FCloseFile(f);
+		FS_Close(f);
 		return qfalse;
 	}
-	trap_FS_Read(text, len, f);
+	FS_Read(text, len, f);
 	text[len] = 0;
-	trap_FS_FCloseFile(f);
+	FS_Close(f);
 
 	// parse the text
 	text_p = text;
@@ -200,7 +200,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 static qboolean CG_FileExists(const char *filename) {
 	int len;
 
-	len = trap_FS_FOpenFile(filename, NULL, FS_READ);
+	len = FS_Open(filename, NULL, FS_READ);
 	if(len > 0) {
 		return qtrue;
 	}

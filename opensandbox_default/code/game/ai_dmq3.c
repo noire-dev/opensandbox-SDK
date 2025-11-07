@@ -35,13 +35,6 @@ bot_waypoint_t *botai_freewaypoints;
 int gametype;		//game type
 int maxclients;		//maximum number of clients
 
-cvar_t bot_grapple;
-cvar_t bot_rocketjump;
-cvar_t bot_fastchat;
-cvar_t bot_nochat;
-cvar_t bot_testrchat;
-cvar_t bot_predictobstacles;
-
 extern cvar_t bot_developer;
 
 vec3_t lastteleport_origin;		//last teleport event origin
@@ -1383,7 +1376,7 @@ int ClientFromName(char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
+		maxclients = cvarInt("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		trap_GetConfigstring(CS_PLAYERS+i, buf, sizeof(buf));
 		Q_CleanStr( buf );
@@ -1403,7 +1396,7 @@ int ClientOnSameTeamFromName(bot_state_t *bs, char *name) {
 	static int maxclients;
 
 	if (!maxclients)
-		maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
+		maxclients = cvarInt("g_maxClients");
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if (!BotSameTeam(bs, i))
 			continue;
@@ -4178,7 +4171,7 @@ int BotAIPredictObstacles(bot_state_t *bs, bot_goal_t *goal) {
 	bot_activategoal_t activategoal;
 	aas_predictroute_t route;
 
-	if (!bot_predictobstacles.integer)
+	if (!cvarInt("bot_predictobstacles"))
 		return qfalse;
 
 	// always predict when the goal change or at regular intervals
@@ -4295,8 +4288,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 				}
 				//unify the message
 				trap_UnifyWhiteSpaces(message);
-				//
-				trap_Cvar_Update(&bot_testrchat);
+
 				if (bot_testrchat.integer) {
 					//
 					trap_BotLibVarSet("bot_testrchat", "1");
@@ -4996,16 +4988,16 @@ void BotSetupDeathmatchAI(void) {
 	int ent, modelnum;
 	char model[128];
 
-	gametype = trap_Cvar_VariableIntegerValue("g_gametype");
-	maxclients = trap_Cvar_VariableIntegerValue("g_maxClients");
+	gametype = cvarInt("g_gametype");
+	maxclients = cvarInt("g_maxClients");
 
-	trap_Cvar_Register(&bot_rocketjump, "bot_rocketjump", "1", 0);
-	trap_Cvar_Register(&bot_grapple, "bot_grapple", "0", 0);
-	trap_Cvar_Register(&bot_fastchat, "bot_fastchat", "0", 0);
-	trap_Cvar_Register(&bot_nochat, "bot_nochat", "0", 0);
-	trap_Cvar_Register(&bot_testrchat, "bot_testrchat", "0", 0);
-	trap_Cvar_Register(&bot_predictobstacles, "bot_predictobstacles", "1", 0);
-	//
+	cvarRegister("bot_rocketjump", "1", 0);
+	cvarRegister("bot_grapple", "0", 0);
+	cvarRegister("bot_fastchat", "0", 0);
+	cvarRegister("bot_nochat", "0", 0);
+	cvarRegister("bot_testrchat", "0", 0);
+	cvarRegister("bot_predictobstacles", "1", 0);
+
 	if (gametype == GT_CTF) {
 		if (trap_BotGetLevelItemGoal(-1, "Red Flag", &ctf_redflag) < 0)
 			BotAI_Print(PRT_WARNING, "CTF without Red Flag\n");

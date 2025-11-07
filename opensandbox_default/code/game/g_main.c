@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "g_local.h"
 
 level_locals_t level;
 gentity_t g_entities[MAX_GENTITIES];
@@ -52,7 +52,7 @@ void QDECL G_Printf(const char *fmt, ...) {
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end(argptr);
 
-	trap_Printf(text);
+	trap_Print(text);
 }
 
 void QDECL G_Error(const char *fmt, ...) {
@@ -120,9 +120,9 @@ G_CheckCvars
 */
 static void G_CheckCvars(void) {
 	// check some things
-	if(g_gametype.integer < 0 || g_gametype.integer >= GT_MAX_GAME_TYPE) {
-		G_Printf("g_gametype %i is out of range, defaulting to 0\n", g_gametype.integer);
-		trap_Cvar_Set("g_gametype", "0");
+	if(cvarInt("g_gametype") < 0 || cvarInt("g_gametype") >= GT_MAX_GAME_TYPE) {
+		G_Printf("g_gametype %i is out of range, defaulting to 0\n", cvarInt("g_gametype"));
+		cvarSet("g_gametype", "0");
 	}
 }
 
@@ -185,22 +185,20 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	G_FindTeams();
 
 	// make sure we have flags for CTF, etc
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		G_CheckTeamItems();
 	}
 
 	G_Printf("-----------------------------------\n");
 
-	if(trap_Cvar_VariableIntegerValue("bot_enable")) {
+	if(cvarInt("bot_enable")) {
 		BotAISetup(restart);
 		BotAILoadMap(restart);
 		G_LoadBots();
 	}
 
-	NS_OpenScript("nscript/game/init.ns", NULL, 0);  // Noire.Script Init in qagame.qvm
-
-	if(strlen(g_entitypack.string)) {
-		trap_SendConsoleCommand(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", g_entitypack.string, mapname));  // load map file
+	if(strlen(cvarString("g_entitypack"))) {
+		trap_SendConsoleCommand(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", cvarString("g_entitypack"), mapname));  // load map file
 	}
 }
 
@@ -224,7 +222,7 @@ static void G_ShutdownGame(int restart) {
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 
-	if(trap_Cvar_VariableIntegerValue("bot_enable")) {
+	if(cvarInt("bot_enable")) {
 		BotAIShutdown(restart);
 	}
 }
@@ -368,7 +366,7 @@ void CalculateRanks(void) {
 	qsort(level.sortedClients, level.numConnectedClients, sizeof(level.sortedClients[0]), SortRanks);
 
 	// set the rank value for all clients that are connected and not spectators
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
 		for(i = 0; i < level.numConnectedClients; i++) {
 			cl = &level.clients[level.sortedClients[i]];
@@ -403,7 +401,7 @@ void CalculateRanks(void) {
 	}
 
 	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		trap_SetConfigstring(CS_SCORES1, va("%i", level.teamScores[TEAM_RED]));
 		trap_SetConfigstring(CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE]));
 	} else {
@@ -690,7 +688,7 @@ static qboolean ScoreIsTied(void) {
 		return qfalse;
 	}
 
-	if(g_gametype.integer >= GT_TEAM) {
+	if(cvarInt("g_gametype") >= GT_TEAM) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
 
@@ -741,8 +739,8 @@ static void CheckExitRules(void) {
 		return;
 	}
 
-	if(g_timelimit.integer) {
-		if(level.time - level.startTime >= g_timelimit.integer * 60000) {
+	if(cvarInt("g_timelimit")) {
+		if(level.time - level.startTime >= cvarInt("g_timelimit") * 60000) {
 			trap_SendServerCommand(-1, "print \"Timelimit hit.\n\"");
 			LevelExit();
 			return;
@@ -753,14 +751,14 @@ static void CheckExitRules(void) {
 		return;
 	}
 
-	if(g_gametype.integer < GT_CTF && g_fraglimit.integer) {
-		if(level.teamScores[TEAM_RED] >= g_fraglimit.integer) {
+	if(cvarInt("g_gametype") < GT_CTF && cvarInt("g_fraglimit")) {
+		if(level.teamScores[TEAM_RED] >= cvarInt("g_fraglimit")) {
 			trap_SendServerCommand(-1, "print \"Red hit the fraglimit.\n\"");
 			LevelExit();
 			return;
 		}
 
-		if(level.teamScores[TEAM_BLUE] >= g_fraglimit.integer) {
+		if(level.teamScores[TEAM_BLUE] >= cvarInt("g_fraglimit")) {
 			trap_SendServerCommand(-1, "print \"Blue hit the fraglimit.\n\"");
 			LevelExit();
 			return;
@@ -775,7 +773,7 @@ static void CheckExitRules(void) {
 				continue;
 			}
 
-			if(cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer) {
+			if(cl->ps.persistant[PERS_SCORE] >= cvarInt("g_fraglimit")) {
 				LevelExit();
 				trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " hit the fraglimit.\n\"", cl->pers.netname));
 				return;
@@ -783,14 +781,14 @@ static void CheckExitRules(void) {
 		}
 	}
 
-	if(g_gametype.integer >= GT_CTF && g_capturelimit.integer) {
-		if(level.teamScores[TEAM_RED] >= g_capturelimit.integer) {
+	if(cvarInt("g_gametype") >= GT_CTF && cvarInt("g_capturelimit")) {
+		if(level.teamScores[TEAM_RED] >= cvarInt("g_capturelimit")) {
 			trap_SendServerCommand(-1, "print \"Red hit the capturelimit.\n\"");
 			LevelExit();
 			return;
 		}
 
-		if(level.teamScores[TEAM_BLUE] >= g_capturelimit.integer) {
+		if(level.teamScores[TEAM_BLUE] >= cvarInt("g_capturelimit")) {
 			trap_SendServerCommand(-1, "print \"Blue hit the capturelimit.\n\"");
 			LevelExit();
 			return;
@@ -893,25 +891,6 @@ void G_RunThink(gentity_t *ent) {
 	ent->think(ent);
 }
 
-static char qagameThreadBuffer[MAX_CYCLE_SIZE];
-static void RunScriptThreads(int time) {
-	int i;
-
-	for(i = 0; i < threadsCount; i++) {
-		ScriptLoop *script = &threadsLoops[i];
-		if(time - script->lastRunTime >= script->interval) {
-			// Обновляем время последнего запуска
-			script->lastRunTime = time;
-
-			// Используем временный буфер для выполнения скрипта
-			Q_strncpyz(qagameThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
-			qagameThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0';  // Убедимся, что буфер терминальный
-
-			Interpret(qagameThreadBuffer);  // Запускаем скрипт из временного буфера
-		}
-	}
-}
-
 /*
 ================
 G_UpdateGameCvars
@@ -920,8 +899,8 @@ Sends game cvars to client
 ================
 */
 static void G_UpdateGameCvars(void) {
-	mod_jumpheight = g_jumpheight.integer;
-	mod_gravity = g_gravity.value;
+	mod_jumpheight = cvarInt("g_jumpheight");
+	mod_gravity = cvarFloat("g_gravity");
 }
 
 /*
@@ -955,8 +934,6 @@ static void G_RunFrame(int levelTime) {
 
 	// get any cvar changes
 	ST_UpdateCvars();
-
-	RunScriptThreads(level.time);  // Noire.Script - run threads
 
 	//
 	// go through all allocated objects

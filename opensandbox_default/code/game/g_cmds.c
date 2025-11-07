@@ -109,7 +109,7 @@ void ObeliskHealthMessage(void) {
 void Cmd_Score_f(gentity_t *ent) { DeathmatchScoreboardMessage(ent); }
 
 static qboolean CheatsOk(gentity_t *ent) {
-	if(!sv_cheats.integer) {
+	if(!cvarInt("sv_cheats")) {
 		trap_SendServerCommand(ent - g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return qfalse;
 	}
@@ -151,7 +151,7 @@ static void Cmd_Give_f(gentity_t *ent) {
 	gentity_t *it_ent;
 	trace_t trace;
 
-	if(g_gametype.integer != GT_SANDBOX && !CheatsOk(ent)) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX && !CheatsOk(ent)) return;
 
 	name = ConcatArgs(1);
 
@@ -230,7 +230,7 @@ static void Cmd_God_f(gentity_t *ent) {
 }
 
 static void Cmd_Noclip_f(gentity_t *ent) {
-	if(g_gametype.integer != GT_SANDBOX && !CheatsOk(ent)) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX && !CheatsOk(ent)) return;
 
 	ent->client->noclip = !ent->client->noclip;
 }
@@ -299,7 +299,7 @@ void SetTeam(gentity_t *ent, char *s) {
 	} else if(!Q_stricmp(s, "spectator") || !Q_stricmp(s, "s")) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-	} else if(g_gametype.integer >= GT_TEAM) {
+	} else if(cvarInt("g_gametype") >= GT_TEAM) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
 		if(!Q_stricmp(s, "red") || !Q_stricmp(s, "r")) {
@@ -417,7 +417,7 @@ static void G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const
 	if(!other->inuse) return;
 	if(!other->client) return;
 	if(other->client->pers.connected != CON_CONNECTED) return;
-	if(mode == SAY_TEAM && (g_gametype.integer != GT_SANDBOX && !OnSameTeam(ent, other))) return;
+	if(mode == SAY_TEAM && (cvarInt("g_gametype") != GT_SANDBOX && !OnSameTeam(ent, other))) return;
 
 	trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\"", mode == SAY_TEAM ? "tchat" : "chat", name, Q_COLOR_ESCAPE, color, message));
 }
@@ -463,7 +463,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 	}
 
 	// echo the text to the console
-	if(g_dedicated.integer) G_Printf("%s%s\n", name, text);
+	if(cvarInt("g_dedicated")) G_Printf("%s%s\n", name, text);
 
 	// send it to all the apropriate clients
 	for(j = 0; j < level.maxclients; j++) {
@@ -546,7 +546,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 	char arg21[64];
 	char arg22[64];
 
-	if(g_gametype.integer != GT_SANDBOX) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX) return;
 
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) return;
 
@@ -592,7 +592,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 		return;
 	}
 	if(!Q_stricmp(arg01, "npc")) {
-		if(level.numConnectedClients >= g_maxClients.integer) {
+		if(level.numConnectedClients >= cvarInt("g_maxClients")) {
 			G_Printf(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
 			return;
 		}
@@ -639,7 +639,7 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	char arg04[64];
 	char arg05[64];
 
-	if(g_gametype.integer != GT_SANDBOX) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX) return;
 
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) return;
 
@@ -725,7 +725,7 @@ static void Cmd_Undo_f(gentity_t *ent) {
 	qboolean isRemoved;
 	gentity_t *prop;
 
-	if(g_gametype.integer != GT_SANDBOX) return;
+	if(cvarInt("g_gametype") != GT_SANDBOX) return;
 
 	while(Undo_LastElement(ent, &id, &isRemoved)) {
 		if(isRemoved) {
@@ -751,7 +751,7 @@ static void Cmd_Teleport_f(gentity_t *ent) {
 	char buffer[MAX_TOKEN_CHARS];
 	int i;
 
-	if(!sv_cheats.integer) {
+	if(!cvarInt("sv_cheats")) {
 		trap_SendServerCommand(ent - g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return;
 	}
@@ -841,7 +841,7 @@ void ClientCommand(int clientNum) {
 
 	if(!(cmds[i].cmdFlags & CMD_INTERMISSION) && level.intermissiontime) return;
 
-	if(cmds[i].cmdFlags & CMD_CHEAT && !sv_cheats.integer) {
+	if(cmds[i].cmdFlags & CMD_CHEAT && !cvarInt("sv_cheats")) {
 		trap_SendServerCommand(clientNum, "print \"Cheats are not enabled on this server\n\"");
 		return;
 	}
@@ -851,7 +851,7 @@ void ClientCommand(int clientNum) {
 		return;
 	}
 
-	if((cmds[i].cmdFlags & CMD_NOTEAM || (cmds[i].cmdFlags & CMD_CHEAT_TEAM && !sv_cheats.integer)) && ent->client->sess.sessionTeam != TEAM_NONE) {
+	if((cmds[i].cmdFlags & CMD_NOTEAM || (cmds[i].cmdFlags & CMD_CHEAT_TEAM && !cvarInt("sv_cheats"))) && ent->client->sess.sessionTeam != TEAM_NONE) {
 		trap_SendServerCommand(clientNum, "print \"Cannot use this command when on a team\n\"");
 		return;
 	}

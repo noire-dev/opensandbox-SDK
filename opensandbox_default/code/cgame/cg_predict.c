@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "cg_local.h"
 
 static pmove_t cg_pmove;
 

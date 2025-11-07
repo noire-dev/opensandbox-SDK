@@ -130,7 +130,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	qhandle_t loading;
 
 	UI_UpdateState();
-	trap_Cvar_Set("r_fx_blur", "0");  // blur UI postFX
+	cvarSet("r_fx_blur", "0");  // blur UI postFX
 
 	// see what information we should display
 	trap_GetClientState(&cstate);

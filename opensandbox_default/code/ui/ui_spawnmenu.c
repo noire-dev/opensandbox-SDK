@@ -117,79 +117,79 @@ static void SpawnMenu_Event(void* ptr, int event) {
 		if(spawnmenu_tab == TB_PROPS) {
 			if(!strlen(spawnmenu_folder)) {
 				if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
-					trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
-					trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+					trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
+					trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 				} else {
 					Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 					UI_SpawnMenu();
 				}
 			} else {
-				trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-				trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+				trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+				trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 			}
 		}
 		if(spawnmenu_tab == TB_ENTITIES) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
-			trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+			trap_Cmd(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
+			trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 		}
 		if(spawnmenu_tab == TB_NPCS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
-			trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+			trap_Cmd(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
+			trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 		}
 		if(spawnmenu_tab == TB_ITEMS) {
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("give %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("give %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 		if(spawnmenu_tab == TB_SPAWNLISTS) {
 			if(!strlen(spawnmenu_folder)) {
 				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			} else {
-				trap_Cmd_ExecuteText(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-				trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+				trap_Cmd(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+				trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 			}
 		}
 		if(spawnmenu_tab == TB_SCRIPTS) {
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("ns_openscript_ui dscripts/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("ns_openscript_ui dscripts/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 		if(spawnmenu_tab == TB_TOOLS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("ns_openscript_ui tools/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
+			trap_Cmd(EXEC_NOW, va("ns_openscript_ui tools/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 			NS_setCvar("toolgun_mod5", "0");
 			UI_SpawnMenu();
 		}
 		if(spawnmenu_tab == TB_SAVES) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("loadmap maps/%s.ent\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-			trap_Cmd_ExecuteText(EXEC_INSERT, "menuback\n");
+			trap_Cmd(EXEC_NOW, va("loadmap maps/%s.ent\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, "menuback\n");
 		}
 		if(spawnmenu_tab == TB_ADDBOTS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_skill[spawnmenu.e[30].curvalue], spawnmenu_team[spawnmenu.e[31].curvalue]));
+			trap_Cmd(EXEC_NOW, va("addbot %s %s %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_skill[spawnmenu.e[30].curvalue], spawnmenu_team[spawnmenu.e[31].curvalue]));
 		}
 		if(spawnmenu_tab == TB_REMOVEBOTS) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("kick %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va("kick %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 			UI_SpawnMenu();
 		}
 		if(spawnmenu_tab == TB_MUSIC) {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("music \"music/%s\"\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va("music \"music/%s\"\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 			UI_SpawnMenu();
 		}
 	}
 
 	if(((menucommon_s*)ptr)->callid == 1) {
-		trap_Cmd_ExecuteText(EXEC_INSERT, "vstr spawn_cmd\n");
+		trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 	}
 
 	if(((menucommon_s*)ptr)->callid == 2) {
-		trap_Cmd_ExecuteText(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
+		trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 	}
 
 	if(((menucommon_s*)ptr)->callid == 3 && spawnmenu_tab == TB_SAVES) {
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("savemap maps/%s.ent\n", spawnmenu.e[30].field.buffer));
+		trap_Cmd(EXEC_APPEND, va("savemap maps/%s.ent\n", spawnmenu.e[30].field.buffer));
 		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText(EXEC_APPEND, "cg_draw2D = 0\n");
-		trap_Cmd_ExecuteText(EXEC_APPEND, "wait 10\n");
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("screenshotJPEG maps/%s\n", spawnmenu.e[30].field.buffer));
-		trap_Cmd_ExecuteText(EXEC_APPEND, "wait 10\n");
-		trap_Cmd_ExecuteText(EXEC_APPEND, "cg_draw2D = 1\n");
+		trap_Cmd(EXEC_APPEND, "cg_draw2D = 0\n");
+		trap_Cmd(EXEC_APPEND, "wait 10\n");
+		trap_Cmd(EXEC_APPEND, va("screenshotJPEG maps/%s\n", spawnmenu.e[30].field.buffer));
+		trap_Cmd(EXEC_APPEND, "wait 10\n");
+		trap_Cmd(EXEC_APPEND, "cg_draw2D = 1\n");
 	}
 
 	if(((menucommon_s*)ptr)->callid >= ID_TAB_SELECT) {
@@ -211,31 +211,31 @@ static void SpawnMenu_Event(void* ptr, int event) {
 }
 
 static void SpawnMenu_Save(void) {
-	trap_Cmd_ExecuteText(EXEC_NOW, va("toolgun_cmd = tm %s %s %s %s", spawnmenu.e[40].field.buffer, spawnmenu.e[41].field.buffer, spawnmenu.e[42].field.buffer, spawnmenu.e[43].field.buffer));
+	trap_Cmd(EXEC_NOW, va("toolgun_cmd = tm %s %s %s %s", spawnmenu.e[40].field.buffer, spawnmenu.e[41].field.buffer, spawnmenu.e[42].field.buffer, spawnmenu.e[43].field.buffer));
 	if(spawnmenu_tab == TB_PROPS) {
 		if(!strlen(spawnmenu_folder)) {
 			if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
-				trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
+				trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
 			} else {
 				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			}
 		} else {
-			trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 	}
 	if(spawnmenu_tab == TB_ENTITIES) {
-		trap_Cmd_ExecuteText(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
+		trap_Cmd(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
 	}
 	if(spawnmenu_tab == TB_NPCS) {
-		trap_Cmd_ExecuteText(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
+		trap_Cmd(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
 	}
 	if(spawnmenu_tab == TB_SPAWNLISTS) {
 		if(!strlen(spawnmenu_folder)) {
 			Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 			UI_SpawnMenu();
 		} else {
-			trap_Cmd_ExecuteText(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 	}
 	spawnmenu_sv_top[spawnmenu_tab] = spawnmenu.e[0].top;

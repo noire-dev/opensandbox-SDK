@@ -43,11 +43,11 @@ static void NewGame_Event (void* ptr, int event) {
 
 	if(((menucommon_s*)ptr)->callid == 0) {
 		if(newgame_mode == NTB_NONE)
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("g_gametype - %i; map %s", newgame_gametype, newgame.e[0].itemnames[newgame.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("g_gametype - %i; map %s", newgame_gametype, newgame.e[0].itemnames[newgame.e[0].curvalue]));
 		if(newgame_mode == NTB_ADDONS)
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("exec addons/%s", newgame.e[0].itemnames[newgame.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("exec addons/%s", newgame.e[0].itemnames[newgame.e[0].curvalue]));
 		if(newgame_mode == NTB_DEMOS)
-			trap_Cmd_ExecuteText(EXEC_INSERT, va("demo %s.demo", newgame.e[0].itemnames[newgame.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("demo %s.demo", newgame.e[0].itemnames[newgame.e[0].curvalue]));
 	}
 
 	if(((menucommon_s*)ptr)->callid == ID_GAMETYPE_ALLMAPS){

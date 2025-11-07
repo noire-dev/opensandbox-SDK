@@ -884,4 +884,33 @@ void ST_AnimStart(stAnim_t *anim, int timeNow, int duration);
 float ST_AnimValue(stAnim_t *anim, int timeNow);
 #endif
 
+//sharedsyscalls
+void            *memset(void *dest, int c, size_t count);
+void            *memcpy(void *dest, const void *src, size_t count);
+char            *strncpy(char *strDest, const char *strSource, size_t count);
+double          sin(double x);
+double          cos(double x);
+double          acos(double x);
+double          atan2(double y, double x);
+double          sqrt(double x);
+void			trap_Print( const char *string );
+void			trap_Error( const char *string );
+int				trap_Milliseconds( void );
+void			cvarRegister( const char *name, const char *defaultValue, int flags );
+void			cvarID( const char *name );
+void			cvarUpdate( cvar_t *vmCvar, int cvarID );
+void			cvarSet( const char *name, const char *value );
+void			cvarSetValue( const char *name, float value );
+int				trap_Argc( void );
+void			trap_Argv( int n, char *buffer, int bufferLength );
+void		    trap_Args( char *buffer, int bufferLength );
+int				FS_Open( const char *qpath, fileHandle_t *f, fsMode_t mode );
+void			FS_Read( void *buffer, int len, fileHandle_t f );
+void			FS_Write( const void *buffer, int len, fileHandle_t f );
+void			FS_Close( fileHandle_t f );
+int				FS_List( const char *path, const char *extension, char *listbuf, int bufsize );
+void			trap_Cmd( int exec_when, const char *text );
+void			trap_RealTime(qtime_t *qtime);
+void			trap_System( const char *command );
+
 #endif	// __Q_SHARED_H

@@ -634,7 +634,7 @@ static void ClientThink_real(gentity_t *ent) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 
-	client->ps.gravity = g_gravity.value * gameInfoNPCTypes[ent->npcType].gravity;
+	client->ps.gravity = cvarFloat("g_gravity") * gameInfoNPCTypes[ent->npcType].gravity;
 
 	if(client->vehicleNum) {  // VEHICLE-SYSTEM: setup physics for all
 		if(G_FindEntityForEntityNum(client->vehicleNum)) {
@@ -646,7 +646,7 @@ static void ClientThink_real(gentity_t *ent) {
 			}
 		}
 	} else {
-		client->ps.speed = g_speed.value * gameInfoNPCTypes[ent->npcType].speed;
+		client->ps.speed = cvarFloat("g_speed") * gameInfoNPCTypes[ent->npcType].speed;
 		client->ps.stats[STAT_VEHICLE] = 0;
 	}
 
@@ -949,7 +949,7 @@ void ClientEndFrame(gentity_t *ent) {
 	// did the client miss any frames?
 	if(frames > 0) {
 		// yep, missed one or more, so extrapolate the player's movement
-		G_PredictPlayerMove(ent, (float)frames / sv_fps.integer);
+		G_PredictPlayerMove(ent, (float)frames / cvarInt("sv_fps"));
 		// save network bandwidth
 		SnapVector(ent->s.pos.trBase);
 	}

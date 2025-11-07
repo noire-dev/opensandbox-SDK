@@ -18,8 +18,6 @@ ui_settings
 ui_spawnmenu
 bg_lib
 bg_misc
-ns_func_ui
-ns_main
 q_cvars
 q_math
 q_shared

@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "cg_local.h"
 
 static int CG_CrosshairPlayer(void);
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
@@ -48,12 +48,12 @@ static void CG_CreateCvars(void) {
 	trap_Cvar_VariableStringBuffer("sv_running", var, sizeof(var));
 	cgs.localServer = atoi(var);
 
-	trap_Cvar_Register(NULL, "model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("team_model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
+	cvarRegister("team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
 }
 
 static int CG_CrosshairPlayer(void) { return cg.crosshairClientNum; }
@@ -475,7 +475,7 @@ static void CG_RegisterClients(void) {
 
 static void CG_ImportModelsOBJ(void) {
 	char dirlist[32000];
-	int numfiles = trap_FS_GetFileList("props", ".obj", dirlist, sizeof(dirlist));
+	int numfiles = FS_List("props", ".obj", dirlist, sizeof(dirlist));
 	int i;
 	char *file;
 
@@ -548,8 +548,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cgs.media.whiteShader = trap_R_RegisterShader("white");
 	cgs.media.corner = trap_R_RegisterShader("menu/corner");
 
-	CG_LoadingString("noire.script", 0.20);
-	NS_OpenScript("nscript/cgame/init.ns", NULL, 0);  // Noire.Script Init in cgame.qvm
+	CG_LoadingString("sourcetech.script", 0.20);
 
 	cgs.redflag = cgs.blueflag = -1;  // For compatibily, default to unset for
 	cgs.flagStatus = -1;

@@ -3,7 +3,7 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/ns_local.h"
+#include "ui_local.h"
 
 uiStatic_t uis;
 
@@ -56,9 +56,9 @@ void UI_UpdateState(void) {
 	}
 
 	if(glconfig.vidHeight / 480.0f > 0) {
-		trap_Cvar_SetValue("con_scale", 1.85);
+		cvarSetValue("con_scale", 1.85);
 	}
-	trap_Cvar_Set("cl_conColor", "8 8 8 192");
+	cvarSet("cl_conColor", "8 8 8 192");
 }
 
 void UI_PushMenu(menuframework_s *menu) {
@@ -66,9 +66,9 @@ void UI_PushMenu(menuframework_s *menu) {
 	menucommon_s *item;
 
 	if(uis.onmap) {
-		trap_Cvar_Set("r_fx_blur", "1");  // blur UI postFX
+		cvarSet("r_fx_blur", "1");  // blur UI postFX
 	} else {
-		trap_Cvar_Set("r_fx_blur", "0");  // blur UI postFX
+		cvarSet("r_fx_blur", "0");  // blur UI postFX
 	}
 
 	// avoid stacking menus invoked by hotkeys
@@ -127,8 +127,8 @@ void UI_ForceMenuOff(void) {
 
 	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
 	trap_Key_ClearStates();
-	trap_Cvar_Set("cl_paused", "0");
-	trap_Cvar_Set("r_fx_blur", "0");  // blur UI postFX
+	cvarSet("cl_paused", "0");
+	cvarSet("r_fx_blur", "0");  // blur UI postFX
 }
 
 qboolean UI_IsFullscreen(void) {
@@ -152,7 +152,7 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
 		case UIMENU_NONE: UI_ForceMenuOff(); return;
 		case UIMENU_MAIN: UI_MainMenu(); return;
 		case UIMENU_INGAME:
-			trap_Cvar_Set("cl_paused", "1");
+			cvarSet("cl_paused", "1");
 			UI_MainMenu();
 			return;
 
@@ -276,34 +276,6 @@ qboolean UI_ConsoleCommand(int realTime) {
 		return qtrue;
 	}
 
-	if(Q_stricmp(UI_Argv(0), "ns_openscript_ui") == 0) {
-		NS_OpenScript(UI_Argv(1), NULL, 0);
-		return qtrue;
-	}
-
-	if(Q_stricmp(UI_Argv(0), "ns_interpret_ui") == 0) {
-		Interpret(UI_ConcatArgs(1));
-		return qtrue;
-	}
-
-	if(Q_stricmp(UI_Argv(0), "ns_variablelist_ui") == 0) {
-		print_variables();
-		return qtrue;
-	}
-
-	if(Q_stricmp(UI_Argv(0), "ns_threadlist_ui") == 0) {
-		print_threads();
-		return qtrue;
-	}
-
-	if(Q_stricmp(UI_Argv(0), "ns_sendvariable_ui") == 0) {
-		if(!variable_exists(UI_Argv(1))) {
-			create_variable(UI_Argv(1), UI_Argv(2), atoi(UI_Argv(3)));
-		}
-
-		set_variable_value(UI_Argv(1), UI_Argv(2), atoi(UI_Argv(3)));
-	}
-
 	if(Q_stricmp(cmd, "menuback") == 0) {
 		UI_PopMenu();
 		return qtrue;
@@ -346,8 +318,6 @@ void UI_Init(void) {
 
 	uis.activemenu = NULL;
 	uis.menusp = 0;
-
-	NS_OpenScript("nscript/ui/init.ns", NULL, 0);  // Noire.Script Init in ui.qvm
 }
 
 /*
@@ -501,23 +471,6 @@ void UI_DrawRoundedRect(float x, float y, float width, float height, float radiu
 
 void UI_UpdateScreen(void) { trap_UpdateScreen(); }
 
-static char uiThreadBuffer[MAX_CYCLE_SIZE];
-void RunScriptThreads(int time) {
-	int i;
-
-	for(i = 0; i < threadsCount; i++) {
-		ScriptLoop *script = &threadsLoops[i];
-		if(time - script->lastRunTime >= script->interval) {
-			script->lastRunTime = time;
-
-			Q_strncpyz(uiThreadBuffer, script->code, MAX_CYCLE_SIZE - 1);
-			uiThreadBuffer[MAX_CYCLE_SIZE - 1] = '\0';
-
-			Interpret(uiThreadBuffer);
-		}
-	}
-}
-
 void UI_Refresh(int realtime) {
 	int x;
 	uis.frametime = realtime - uis.realtime;
@@ -529,7 +482,6 @@ void UI_Refresh(int realtime) {
 
 	ST_UpdateCvars();
 	ST_UpdateColors();
-	RunScriptThreads(uis.realtime);  // Noire.Script - run threads
 
 	if(uis.activemenu) {
 		if(uis.activemenu->fullscreen) {
