@@ -30,7 +30,7 @@ Called on a reconnect
 ================
 */
 void G_ReadSessionData(gclient_t *client) {
-	char s[MAX_STRING_CHARS];
+	char *s;
 	const char *var;
 
 	// bk001205 - format
@@ -39,7 +39,7 @@ void G_ReadSessionData(gclient_t *client) {
 	int sessionTeam;
 
 	var = va("session%i", (int)(client - level.clients));
-	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
+	s = cvarString(var);
 
 	sscanf(s,
 	       "%i %i %i %i %i",
@@ -93,11 +93,11 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 }
 
 void G_InitWorldSession(void) {
-	char s[MAX_STRING_CHARS];
+	char *s;
 	int gt;
 
 	// restore session from vQ3 session data
-	trap_Cvar_VariableStringBuffer("session", s, sizeof(s));
+	s = cvarString("session");
 	gt = atoi(s);
 
 	// if the gametype changed since the last session, don't use any client sessions

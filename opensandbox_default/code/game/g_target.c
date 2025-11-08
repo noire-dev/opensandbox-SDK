@@ -201,10 +201,10 @@ void SP_target_location(gentity_t *self) {
 }
 
 static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
-	char value[128];
+	char *value;
 
 	if(self->spawnflags & 1 || self->spawnflags & 2) {
-		trap_Cvar_VariableStringBuffer(self->key, value, sizeof(value));
+		value = cvarString(self->key);
 
 		if((self->spawnflags & 1) && !strcmp(value, self->value)) {
 			G_UseTargets(self, activator);
@@ -225,7 +225,7 @@ static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *ac
 		return;
 	}
 	if(self->spawnflags & 8192) {
-		trap_SendConsoleCommand(EXEC_APPEND, va("%s - %s\n", self->key, self->value));
+		trap_Cmd(EXEC_APPEND, va("%s - %s\n", self->key, self->value));
 	} else {
 		cvarSet(self->key, self->value);
 	}
@@ -259,7 +259,7 @@ void SP_script_variable(gentity_t *self) {
 
 static void use_script_cmd(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(ent->spawnflags & 1) {
-		trap_SendConsoleCommand(EXEC_APPEND, va("%s\n", ent->target));
+		trap_Cmd(EXEC_APPEND, va("%s\n", ent->target));
 	}
 	if(ent->spawnflags & 2) {
 		trap_SendServerCommand(activator - g_entities, va("clcmd \"%s\"", ent->target));

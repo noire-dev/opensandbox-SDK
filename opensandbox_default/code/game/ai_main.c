@@ -885,11 +885,11 @@ BotReadSessionData
 ==============
 */
 void BotReadSessionData(bot_state_t *bs) {
-	char	s[MAX_STRING_CHARS];
+	char	*s;
 	const char	*var;
 
 	var = va( "botsession%i", bs->client );
-	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
+	s = cvarString( var );
 
 	sscanf(s,
 			"%i %i %i %i %i %i %i %i"
@@ -1316,63 +1316,63 @@ BotInitLibrary
 ==============
 */
 int BotInitLibrary(void) {
-	char buf[144];
+	char *buf;
 
 	//set the maxclients and maxentities library variables before calling BotSetupLibrary
-	trap_Cvar_VariableStringBuffer("g_maxClients", buf, sizeof(buf));
+	buf = cvarString("g_maxClients");
 	if (!strlen(buf)) strcpy(buf, "8");
 	trap_BotLibVarSet("maxclients", buf);
 	Com_sprintf(buf, sizeof(buf), "%d", MAX_GENTITIES);
 	trap_BotLibVarSet("maxentities", buf);
 	//bsp checksum
-	trap_Cvar_VariableStringBuffer("sv_mapChecksum", buf, sizeof(buf));
+	buf = cvarString("sv_mapChecksum");
 	if (strlen(buf)) trap_BotLibVarSet("sv_mapChecksum", buf);
 	//maximum number of aas links
-	trap_Cvar_VariableStringBuffer("max_aaslinks", buf, sizeof(buf));
+	buf = cvarString("max_aaslinks");
 	if (strlen(buf)) trap_BotLibVarSet("max_aaslinks", buf);
 	//maximum number of items in a level
-	trap_Cvar_VariableStringBuffer("max_levelitems", buf, sizeof(buf));
+	buf = cvarString("max_levelitems");
 	if (strlen(buf)) trap_BotLibVarSet("max_levelitems", buf);
 	//game type
-	trap_Cvar_VariableStringBuffer("g_gametype", buf, sizeof(buf));
+	buf = cvarString("g_gametype");
 	if (!strlen(buf)) strcpy(buf, "0");
 	trap_BotLibVarSet("g_gametype", buf);
 	//bot developer mode and log file
 	trap_BotLibVarSet("bot_developer", bot_developer.string);
 	trap_BotLibVarSet("log", buf);
 	//no chatting
-	trap_Cvar_VariableStringBuffer("bot_nochat", buf, sizeof(buf));
+	buf = cvarString("bot_nochat");
 	if (strlen(buf)) trap_BotLibVarSet("nochat", "0");
 	//visualize jump pads
-	trap_Cvar_VariableStringBuffer("bot_visualizejumppads", buf, sizeof(buf));
+	buf = cvarString("bot_visualizejumppads");
 	if (strlen(buf)) trap_BotLibVarSet("bot_visualizejumppads", buf);
 	//forced clustering calculations
-	trap_Cvar_VariableStringBuffer("bot_forceclustering", buf, sizeof(buf));
+	buf = cvarString("bot_forceclustering");
 	if (strlen(buf)) trap_BotLibVarSet("forceclustering", buf);
 	//forced reachability calculations
-	trap_Cvar_VariableStringBuffer("bot_forcereachability", buf, sizeof(buf));
+	buf = cvarString("bot_forcereachability");
 	if (strlen(buf)) trap_BotLibVarSet("forcereachability", buf);
 	//force writing of AAS to file
-	trap_Cvar_VariableStringBuffer("bot_forcewrite", buf, sizeof(buf));
+	buf = cvarString("bot_forcewrite");
 	if (strlen(buf)) trap_BotLibVarSet("forcewrite", buf);
 	//no AAS optimization
-	trap_Cvar_VariableStringBuffer("bot_aasoptimize", buf, sizeof(buf));
+	buf = cvarString("bot_aasoptimize");
 	if (strlen(buf)) trap_BotLibVarSet("aasoptimize", buf);
 	//
-	trap_Cvar_VariableStringBuffer("bot_saveroutingcache", buf, sizeof(buf));
+	buf = cvarString("bot_saveroutingcache");
 	if (strlen(buf)) trap_BotLibVarSet("saveroutingcache", buf);
 	//reload instead of cache bot character files
-	trap_Cvar_VariableStringBuffer("bot_reloadcharacters", buf, sizeof(buf));
+	buf = cvarString("bot_reloadcharacters");
 	if (!strlen(buf)) strcpy(buf, "0");
 	trap_BotLibVarSet("bot_reloadcharacters", buf);
 	//base directory
-	trap_Cvar_VariableStringBuffer("fs_basepath", buf, sizeof(buf));
+	buf = cvarString("fs_basepath");
 	if (strlen(buf)) trap_BotLibVarSet("basedir", buf);
 	//game directory
-	trap_Cvar_VariableStringBuffer("fs_game", buf, sizeof(buf));
+	buf = cvarString("fs_game");
 	if (strlen(buf)) trap_BotLibVarSet("gamedir", buf);
 	//cd directory
-	trap_Cvar_VariableStringBuffer("fs_cdpath", buf, sizeof(buf));
+	buf = cvarString("fs_cdpath");
 	if (strlen(buf)) trap_BotLibVarSet("cddir", buf);
 	//
 	trap_BotLibDefine("MISSIONPACK");

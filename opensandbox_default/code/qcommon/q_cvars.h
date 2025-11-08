@@ -20,6 +20,6 @@ void ST_RegisterCvars(void);
 void ST_UpdateCvars(void);
 int cvarInt(const char *name);
 float cvarFloat(const char *name);
-const char* cvarString(const char *name);
+char* cvarString(const char *name);
 
 #endif

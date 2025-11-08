@@ -37,7 +37,6 @@ static cvarTable_t cvarTable[] = {
 	{ "g_enableBreath",             "0",            CVAR_SERVERINFO },
 	{ "sv_fps",                     "60",           CVAR_SYSTEMINFO|CVAR_ARCHIVE },
 //cgame.qvm
-	{ "g_gametype",                    "0",           0 },
     { "headR",                        "100",          CVAR_USERINFO|CVAR_ARCHIVE },
     { "headG",                        "100",          CVAR_USERINFO|CVAR_ARCHIVE },
     { "headB",                        "100",          CVAR_USERINFO|CVAR_ARCHIVE },
@@ -107,15 +106,7 @@ static cvarTable_t cvarTable[] = {
 	{ "toolgun_toolset4",             "--------:",    0 },
 	{ "toolgun_tooltext",             "",             0 },
 	{ "ui_effectslevel",              "0",            CVAR_ARCHIVE },
-	{ "ui_loaded",                    "0",            0 },
 	{ "cl_selectedmod",               "default",      CVAR_ARCHIVE },
-	{ "sensitivitymenu",              "1",            CVAR_ARCHIVE },
-	{ "ui_browserMaster",             "0",            CVAR_ARCHIVE },
-	{ "ui_browserGameType",           "0",            CVAR_ARCHIVE },
-	{ "ui_browserSortKey",            "4",            CVAR_ARCHIVE },
-	{ "ui_browserShowFull",           "1",            CVAR_ARCHIVE },
-	{ "ui_browserShowEmpty",          "1",            CVAR_ARCHIVE },
-	{ "cg_drawCrosshair",             "4",            CVAR_ARCHIVE },
 	{ "server1",                      "",             CVAR_ARCHIVE },
 	{ "server2",                      "",             CVAR_ARCHIVE },
 	{ "server3",                      "",             CVAR_ARCHIVE },
@@ -148,13 +139,6 @@ static cvarTable_t cvarTable[] = {
 	{ "server30",                     "",             CVAR_ARCHIVE },
 	{ "server31",                     "",             CVAR_ARCHIVE },
 	{ "server32",                     "",             CVAR_ARCHIVE },
-	{ "gui_map_multisel",             "0",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_map_list",                 "0",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_bot_multisel",             "0",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_bot_list",                 "0",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_s_animsfx",                "1",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_mapicons",                 "0",            CVAR_ROM|CVAR_ARCHIVE },
-	{ "gui_autoclosebotmenu",         "0",            CVAR_ROM|CVAR_ARCHIVE },
 };
 
 static int cvarTableSize = ARRAY_SIZE(cvarTable);
@@ -189,7 +173,7 @@ float cvarFloat(const char *name) {
     return cvarStorage[id].value;
 }
 
-const char* cvarString(const char *name) {
+char* cvarString(const char *name) {
     int id = cvarID(name);
     if (id == -1) return "<NULL>";
     return cvarStorage[id].string;

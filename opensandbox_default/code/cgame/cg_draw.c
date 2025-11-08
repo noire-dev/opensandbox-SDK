@@ -119,7 +119,7 @@ static void CG_DrawWeaponSelect(void) {
 
 	if(cg.predictedPlayerState.stats[STAT_HEALTH] <= 0) return;
 
-	if(!cg_draw2D.integer || cg.showScores) return;
+	if(!cvarInt("cg_draw2D") || cg.showScores) return;
 
 	originalX = (530 + cgs.wideoffset) - ((WICON_SIDE + WICON_SPACE) * WICONS_SIDES) - ((WICON_SELECT / 2) + WICON_SPACE) - 1.5;
 	originalY = 440;
@@ -202,11 +202,11 @@ static void CG_DrawToolgun() {
 	colorblk[2] = 0.0f;
 	colorblk[3] = 0.75f;
 
-	if(toolgun_tool.integer == TL_CREATE) {
+	if(cvarInt("toolgun_tool") == TL_CREATE) {
 		trap_R_RemapShader("models/weapons/toolgun/screen", "models/weapons/toolgun/screen", "0.005");
 	} else {
-		if(trap_R_RegisterShader(va("models/weapons/toolgun/tool%i", toolgun_tool.integer)) != 0) {
-			trap_R_RemapShader("models/weapons/toolgun/screen", va("models/weapons/toolgun/tool%i", toolgun_tool.integer), "0.005");
+		if(trap_R_RegisterShader(va("models/weapons/toolgun/tool%i", cvarInt("toolgun_tool"))) != 0) {
+			trap_R_RemapShader("models/weapons/toolgun/screen", va("models/weapons/toolgun/tool%i", cvarInt("toolgun_tool")), "0.005");
 		} else {
 			trap_R_RemapShader("models/weapons/toolgun/screen", "models/weapons/toolgun/toolerror", "0.005");
 		}
@@ -214,14 +214,14 @@ static void CG_DrawToolgun() {
 
 	CG_DrawPic(-1 - cgs.wideoffset, 40, 300, 125, trap_R_RegisterShaderNoMip("menu/assets/blacktrans"));
 	ST_DrawString(0 - cgs.wideoffset, 42, toolgun_tooltext.string, UI_LEFT, color_white, 2.50);
-	if(toolgun_mod5.integer == 0) {
-		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode1.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod5.integer == 1) {
-		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode2.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod5.integer == 2) {
-		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode3.string, UI_LEFT, color_white, 1.32);
-	} else if(toolgun_mod5.integer == 3) {
-		ST_DrawString(0 - cgs.wideoffset, 72, toolgun_toolmode4.string, UI_LEFT, color_white, 1.32);
+	if(cvarInt("toolgun_mod5") == 0) {
+		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode1"), UI_LEFT, color_white, 1.32);
+	} else if(cvarInt("toolgun_mod5") == 1) {
+		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode2"), UI_LEFT, color_white, 1.32);
+	} else if(cvarInt("toolgun_mod5") == 2) {
+		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode3"), UI_LEFT, color_white, 1.32);
+	} else if(cvarInt("toolgun_mod5") == 3) {
+		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode4"), UI_LEFT, color_white, 1.32);
 	}
 	y = 90;
 	ST_DrawString(0 - cgs.wideoffset, y, toolgun_tooltip1.string, UI_LEFT, color_white, 1.32);
@@ -311,7 +311,7 @@ static void CG_DrawStatusBar(void) {
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
 
-	if(cg.showScores || !cg_draw2D.integer) return;
+	if(cg.showScores || !cvarInt("cg_draw2D")) return;
 	if(cent->currentState.weapon == WP_TOOLGUN) CG_DrawToolgun();
 
 	if(cg.snap->ps.stats[STAT_HOLDABLE_ITEM] || cg.snap->ps.stats[STAT_PERSISTANT_POWERUP] || cg.predictedPlayerState.powerups[PW_REDFLAG] || cg.predictedPlayerState.powerups[PW_BLUEFLAG] || cg.predictedPlayerState.powerups[PW_NEUTRALFLAG]) CG_DrawRoundedRect(10 - cgs.wideoffset, 420 - 2, (ICON_SIZE + 4) * 3, ICON_SIZE + 4, 4, color_dim);
@@ -396,7 +396,7 @@ static void CG_DrawCounters(void) {
 
 	// Speed
 	value = sqrt(cg.snap->ps.velocity[0] * cg.snap->ps.velocity[0] + cg.snap->ps.velocity[1] * cg.snap->ps.velocity[1]);
-	if(cg_drawSpeed.integer == 1) {
+	if(cvarInt"(cg_drawSpeed") == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i", value), "Speed");
 		y += 20;
 	}
@@ -417,7 +417,7 @@ static void CG_DrawCounters(void) {
 		value = 1000 * FPS_FRAMES / total;
 	}
 	if(value <= 15 && seconds >= 3) cvarSet("ns_haveerror", "2");
-	if(cg_drawFPS.integer == 1) {
+	if(cvarInt("cg_drawFPS") == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i", value), "FPS");
 		y += 20;
 	}
@@ -429,7 +429,7 @@ static void CG_DrawCounters(void) {
 	seconds -= mins * 60;
 	tens = seconds / 10;
 	seconds -= tens * 10;
-	if(cg_drawTimer.integer == 1) {
+	if(cvarInt("cg_drawTimer") == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i:%i%i", mins, tens, seconds), "Time");
 		y += 20;
 	}
@@ -759,12 +759,12 @@ static void CG_DrawCrosshair(void) {
 	float cSize;
 	qhandle_t hShader;
 	
-	if(!cg_drawCrosshair.integer || cg.renderingThirdPerson || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return;
+	if(!cvarInt("cg_drawCrosshair") || cg.renderingThirdPerson || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return;
 
 	trap_R_SetColor(customcolor_crosshair);
-	cSize = cg_crosshairScale.value;
-	if(cg_drawCrosshair.integer > 0) {
-		hShader = cgs.media.crosshairShader[cg_drawCrosshair.integer % NUM_CROSSHAIRS];
+	cSize = cvarFloat("cg_crosshairScale");
+	if(cvarInt("cg_drawCrosshair") > 0) {
+		hShader = cgs.media.crosshairShader[cvarInt("cg_drawCrosshair") % NUM_CROSSHAIRS];
 		if(!hShader) hShader = cgs.media.crosshairShader[0];
 		CG_DrawPic(320-(cSize*0.5), 240-(cSize*0.5), cSize, cSize, hShader);
 	}
@@ -799,8 +799,8 @@ static void CG_Draw3DCrosshair(float x, float y, float z) {
 	finaly = (-localY / (localZ * tanFovY)) * 240 + 240;
 
 	trap_R_SetColor(customcolor_crosshair);
-	cSize = cg_crosshairScale.value;
-	hShader = cgs.media.crosshairShader[cg_drawCrosshair.integer % NUM_CROSSHAIRS];
+	cSize = cvarFloat("cg_crosshairScale");
+	hShader = cgs.media.crosshairShader[cvarInt("cg_drawCrosshair") % NUM_CROSSHAIRS];
 	CG_DrawPic(finalx-(cSize*0.5), finaly-(cSize*0.5), cSize, cSize, hShader);
 	trap_R_SetColor(NULL);
 }
@@ -810,7 +810,7 @@ static void CG_DrawCrosshair3D(void) {
 	vec3_t origin, endpos;
 	vec3_t axis[3];
 
-	if(!cg_drawCrosshair.integer || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return;
+	if(!cvarInt("cg_drawCrosshair") || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return;
 
 	if(cg.predictedPlayerState.pm_type == PM_DEAD || cg.predictedPlayerState.pm_type == PM_INTERMISSION) return;
 
@@ -866,7 +866,7 @@ static void CG_NSErrors(void) {
 	vec4_t colortex = {0.20f, 0.20f, 0.20f, 1.00f};
 	vec4_t colorpic = {1.00f, 1.00f, 1.00f, 1.00f};
 
-	if(!ns_haveerror.integer) return;
+	if(!cvarInt("ns_haveerror")) return;
 
 	if(!NSErrorTime) NSErrorTime = cg.time;
 
@@ -889,17 +889,17 @@ static void CG_NSErrors(void) {
 	colortex[3] *= alpha;
 	colorpic[3] *= alpha;
 
-	if(ns_haveerror.integer == 1) sizeX = 180;
-	if(ns_haveerror.integer == 2) sizeX = 205;
-	if(ns_haveerror.integer == 3) sizeX = 210;
+	if(cvarInt("ns_haveerror") == 1) sizeX = 180;
+	if(cvarInt("ns_haveerror") == 2) sizeX = 205;
+	if(cvarInt("ns_haveerror") == 3) sizeX = 210;
 	CG_DrawRoundedRect(21 - cgs.wideoffset, 21, sizeX, 16, 0, colord);
 	CG_DrawRoundedRect(20 - cgs.wideoffset, 20, sizeX, 16, 0, color);
 	trap_R_SetColor(colorpic);
 	CG_DrawPic(23 - cgs.wideoffset, 23, 10, 10, cgs.media.errIcon);
 	trap_R_SetColor(NULL);
-	if(ns_haveerror.integer == 1) ST_DrawString(38 - cgs.wideoffset, 24, "Something is creating script errors", UI_LEFT, colortex, 0.80f);
-	if(ns_haveerror.integer == 2) ST_DrawString(38 - cgs.wideoffset, 24, "Low performance, physics may be unstable", UI_LEFT, colortex, 0.80f);
-	if(ns_haveerror.integer == 3) ST_DrawString(38 - cgs.wideoffset, 24, "Network unstable, switching to chunk mode", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("ns_haveerror") == 1) ST_DrawString(38 - cgs.wideoffset, 24, "Something is creating script errors", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("ns_haveerror") == 2) ST_DrawString(38 - cgs.wideoffset, 24, "Low performance, physics may be unstable", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("ns_haveerror") == 3) ST_DrawString(38 - cgs.wideoffset, 24, "Network unstable, switching to chunk mode", UI_LEFT, colortex, 0.80f);
 }
 
 void CG_AddNotify(const char *text, int type, int number) {
@@ -975,8 +975,8 @@ static void CG_DrawDeathMessage(void) {
 }
 
 static void CG_DrawPostProcess(void) {
-	if(strlen(cg_postprocess.string)) {
-		cgs.media.postProcess = trap_R_RegisterShaderNoMip(cg_postprocess.string);
+	if(strlen(cvarString("cg_postprocess"))) {
+		cgs.media.postProcess = trap_R_RegisterShaderNoMip(cvarString("cg_postprocess"));
 	} else {
 		cgs.media.postProcess = 0;
 	}
@@ -987,7 +987,7 @@ static void CG_DrawPostProcess(void) {
 static void CG_Draw2D(void) {
 	int catcher = trap_Key_GetCatcher();
 
-	if(!cg_draw2D.integer) return;
+	if(!cvarInt("cg_draw2D")) return;
 
 	if(!(catcher & KEYCATCH_MESSAGE)) CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cgs.wideoffset, 0, 1.00);
 	if(!(catcher & KEYCATCH_UI)){

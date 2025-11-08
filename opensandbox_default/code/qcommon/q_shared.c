@@ -1154,9 +1154,9 @@ void ST_RegisterFont(const char* font){
 
 void ST_UpdateColors(void){
 #ifdef CGAME
-	customcolor_crosshair[0] = cg_crosshairColorRed.value;
-	customcolor_crosshair[1] = cg_crosshairColorGreen.value;
-	customcolor_crosshair[2] = cg_crosshairColorBlue.value;
+	customcolor_crosshair[0] = cvarFloat("cg_crosshairColorRed");
+	customcolor_crosshair[1] = cvarFloat("cg_crosshairColorGreen");
+	customcolor_crosshair[2] = cvarFloat("cg_crosshairColorBlue");
 #endif
 }
 

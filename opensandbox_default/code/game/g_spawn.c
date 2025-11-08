@@ -776,7 +776,6 @@ static void G_LoadMapfile(char *filename) {
 
 void G_LoadMapfile_f(void) {
 	char filename[MAX_QPATH];
-	char mapname[64];
 
 	if(trap_Argc() < 2) {
 		G_Printf("Usage: loadmap <filename>\n");
@@ -787,8 +786,7 @@ void G_LoadMapfile_f(void) {
 
 	G_LoadMapfile(filename);
 	cvarSet("mapfile", filename);
-	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, sizeof(mapname));
-	cvarSet("lastmap", mapname);
+	cvarSet("lastmap", cvarString("sv_mapname"));
 
 	G_RelinkEntities();
 
