@@ -90,7 +90,6 @@ static cvarTable_t cvarTable[] = {
 	{ "com_blood",                    "1",            CVAR_ARCHIVE },
 	{ "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ "g_enableBreath",               "0",            CVAR_SERVERINFO },
-	{ "cg_noProjectileTrail",         "0",            CVAR_ARCHIVE },
 	{ "cg_cameraEyes",                "0",            CVAR_ARCHIVE },
 	{ "cg_cameraEyes_Fwd",            "-2",            CVAR_ARCHIVE },
 	{ "cg_cameraEyes_Up",             "7",            CVAR_ARCHIVE },
@@ -151,6 +150,8 @@ void ST_RegisterCvars(void) {
 	for (i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++) {
 		cvarRegister( cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
+	cvarReload();
+	ST_UpdateCvars();
 }
 
 void ST_UpdateCvars(void) {
@@ -163,7 +164,11 @@ void ST_UpdateCvars(void) {
 
 int cvarInt(const char *name) {
     int id = cvarID(name);
-    if (id == -1) return 0;
+    if (id == -1) {
+        trap_Print(va("%i:%s = VARIABLE NOT FOUND!\n", id, name, cvarStorage[id].integer));
+        return 0; 
+    }
+    trap_Print(va("%i:%s = %i\n", id, name, cvarStorage[id].integer));
     return cvarStorage[id].integer;
 }
 

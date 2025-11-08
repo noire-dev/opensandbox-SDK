@@ -900,6 +900,7 @@ int				trap_Milliseconds( void );
 void			cvarRegister( const char *name, const char *defaultValue, int flags );
 int			    cvarID( const char *name );
 void			cvarUpdate( cvar_t *vmCvar, int cvarID );
+void			cvarReload( void );
 void			cvarSet( const char *name, const char *value );
 void			cvarSetValue( const char *name, float value );
 int				trap_Argc( void );

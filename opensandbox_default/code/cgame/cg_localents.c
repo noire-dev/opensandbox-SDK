@@ -24,7 +24,7 @@ void CG_InitLocalEntities(void) {
 	cg_activeLocalEntities.next = &cg_activeLocalEntities;
 	cg_activeLocalEntities.prev = &cg_activeLocalEntities;
 	cg_freeLocalEntities = cg_localEntities;
-	for(i = 0; i < cg_effectsLimit.integer - 1; i++) {
+	for(i = 0; i < cvarInt("cg_effectsLimit") - 1; i++) {
 		cg_localEntities[i].next = &cg_localEntities[i + 1];
 	}
 }

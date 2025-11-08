@@ -27,9 +27,9 @@ static void CG_DrawClientScore(int y, score_t *score) {
 		} else {
 			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
 		}
-		hcolor[0] = cg_crosshairColorRed.value;
-		hcolor[1] = cg_crosshairColorGreen.value;
-		hcolor[2] = cg_crosshairColorBlue.value;
+		hcolor[0] = cvarFloat("cg_crosshairColorRed");
+		hcolor[1] = cvarFloat("cg_crosshairColorGreen");
+		hcolor[2] = cvarFloat("cg_crosshairColorBlue");
 		hcolor[3] = 0.40;
 
 		CG_DrawRoundedRect(SB_X+4, y, SB_WIDTH-8, ICON_SIZE, 0, hcolor);

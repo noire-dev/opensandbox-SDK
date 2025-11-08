@@ -873,7 +873,7 @@ static void CG_BreathPuffs(centity_t *cent, refEntity_t *head) {
 
 	ci = &cgs.clientinfo[cent->currentState.number];
 
-	if(!cg_enableBreath.integer) return;
+	if(!cvarInt("cg_enableBreath")) return;
 	if(cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson) return;
 	if(cent->currentState.eFlags & EF_DEAD) return;
 	contents = CG_PointContents(head->origin, 0);
@@ -893,7 +893,7 @@ static void CG_DustTrail(centity_t *cent) {
 	vec3_t end, vel;
 	trace_t tr;
 
-	if(!cg_enableDust.integer) return;
+	if(!cvarInt("cg_enableDust")) return;
 
 	if(cent->dustTrailTime > cg.time) return;
 
@@ -1037,7 +1037,7 @@ static qboolean CG_PlayerShadow(centity_t *cent) {
 	trace_t trace;
 	float alpha;
 
-	if(cg_shadows.integer == 0) return qfalse;
+	if(cvarInt("cg_shadows") == 0) return qfalse;
 
 	// no shadows when invisible
 	if(cent->currentState.powerups & (1 << PW_INVIS)) return qfalse;

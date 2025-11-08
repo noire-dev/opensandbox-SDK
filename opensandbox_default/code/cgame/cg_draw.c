@@ -224,13 +224,13 @@ static void CG_DrawToolgun() {
 		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode4"), UI_LEFT, color_white, 1.32);
 	}
 	y = 90;
-	ST_DrawString(0 - cgs.wideoffset, y, toolgun_tooltip1.string, UI_LEFT, color_white, 1.32);
+	ST_DrawString(0 - cgs.wideoffset, y, cvarString("toolgun_tooltip1"), UI_LEFT, color_white, 1.32);
 	y += 15;
-	ST_DrawString(0 - cgs.wideoffset, y, toolgun_tooltip2.string, UI_LEFT, color_white, 1.32);
+	ST_DrawString(0 - cgs.wideoffset, y, cvarString("toolgun_tooltip2"), UI_LEFT, color_white, 1.32);
 	y += 15;
-	ST_DrawString(0 - cgs.wideoffset, y, toolgun_tooltip3.string, UI_LEFT, color_white, 1.32);
+	ST_DrawString(0 - cgs.wideoffset, y, cvarString("toolgun_tooltip3"), UI_LEFT, color_white, 1.32);
 	y += 15;
-	ST_DrawString(0 - cgs.wideoffset, y, toolgun_tooltip4.string, UI_LEFT, color_white, 1.32);
+	ST_DrawString(0 - cgs.wideoffset, y, cvarString("toolgun_tooltip4"), UI_LEFT, color_white, 1.32);
 
 	if(strlen(cg.entityInfo) > 0) {
 		SplitStringBySpace(cg.entityInfo, entityInfos);
@@ -981,7 +981,7 @@ static void CG_DrawPostProcess(void) {
 		cgs.media.postProcess = 0;
 	}
 
-	if(strlen(cg_postprocess.string) && cgs.media.postProcess) CG_DrawPic(0 - (cgs.wideoffset + 1), 0, SCREEN_WIDTH + (cgs.wideoffset * 2) + 2, SCREEN_HEIGHT, cgs.media.postProcess);
+	if(strlen(cvarString("cg_postprocess")) && cgs.media.postProcess) CG_DrawPic(0 - (cgs.wideoffset + 1), 0, SCREEN_WIDTH + (cgs.wideoffset * 2) + 2, SCREEN_HEIGHT, cgs.media.postProcess);
 }
 
 static void CG_Draw2D(void) {
@@ -1029,7 +1029,6 @@ void CG_DrawActive(void) {
 
 	if(!cg.weaponSelect) cg.weaponSelect = cg.snap->ps.weapon;
 
-	RunScriptThreads(cg.time);
 	CG_ReloadPlayers();
 	trap_R_RenderScene(&cg.refdef);
 	CG_Draw3DStringQueue();

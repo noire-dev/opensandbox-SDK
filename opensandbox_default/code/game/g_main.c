@@ -142,6 +142,8 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	ST_RegisterCvars();
 	G_CheckCvars();
 	G_InitMemory();
+	
+	G_Printf("maxEnts: %i\n", cvarInt("g_maxEntities"));
 
 	// set some level globals
 	memset(&level, 0, sizeof(level));

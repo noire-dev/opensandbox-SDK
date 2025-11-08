@@ -402,7 +402,7 @@ void CG_PredictPlayerState(void) {
 				cvarSet("sensitivity", "0.025");
 			} else {
 				if(cg.savedSens && cg.savedSens != 0.025) cvarSet("sensitivity", va("%.3f", cg.savedSens));
-				if(cg.savedSens != 0.025) cg.savedSens = get_cvar_float("sensitivity");
+				if(cg.savedSens != 0.025) cg.savedSens = cvarFloat("sensitivity");
 			}
 		}
 

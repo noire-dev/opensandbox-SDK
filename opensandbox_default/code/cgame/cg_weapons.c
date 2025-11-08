@@ -220,10 +220,6 @@ static void CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi) {
 	int therando;
 	int theradio;
 
-	if(cg_noProjectileTrail.integer) {
-		return;
-	}
-
 	up[0] = 5 - 10 * crandom();
 	up[1] = 5 - 10 * crandom();
 	up[2] = 8 - 5 * crandom();
@@ -281,8 +277,6 @@ static void CG_NailTrail(centity_t *ent, const weaponInfo_t *wi) {
 	entityState_t *es;
 	vec3_t up;
 	localEntity_t *smoke;
-
-	if(cg_noProjectileTrail.integer) return;
 
 	up[0] = 0;
 	up[1] = 0;
@@ -690,7 +684,7 @@ static void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles) {
 	VectorCopy(cg.refdef.vieworg, origin);
 	VectorCopy(cg.refdefViewAngles, angles);
 
-	if(!cg_enableBobbing.integer) return;
+	if(!cvarInt("cg_enableBobbing")) return;
 
 	// on odd legs, invert some angles
 	if(cg.bobcycle & 1) {
@@ -970,9 +964,9 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 	VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
 
 	// Make weapon appear left-handed for 2 and centered for 3
-	if(ps && cg_drawGun.integer == 2)
+	if(ps && cvarInt("cg_drawGun") == 2)
 		VectorMA(gun.origin, -lerped.origin[1], parent->axis[1], gun.origin);
-	else if(!ps || cg_drawGun.integer != 3)
+	else if(!ps || cvarInt("cg_drawGun") != 3)
 		VectorMA(gun.origin, lerped.origin[1], parent->axis[1], gun.origin);
 
 	VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
@@ -1065,7 +1059,7 @@ void CG_AddViewWeapon(playerState_t *ps) {
 	if(cg.renderingThirdPerson || cg.renderingEyesPerson) return;
 
 	// allow the gun to be completely removed
-	if(!cg_drawGun.integer) {
+	if(!cvarInt("cg_drawGun")) {
 		vec3_t origin;
 
 		if(cg.predictedPlayerState.eFlags & EF_FIRING) {
@@ -1078,8 +1072,8 @@ void CG_AddViewWeapon(playerState_t *ps) {
 	}
 
 	// drop gun lower at higher fov
-	if(cg_fov.integer > 90) {
-		fovOffset = -0.2 * (cg_fov.integer - 90);
+	if(cvarInt("cg_fov") > 90) {
+		fovOffset = -0.2 * (cvarInt("cg_fov") - 90);
 	} else {
 		fovOffset = 0;
 	}
@@ -1221,10 +1215,10 @@ void CG_FireWeapon(centity_t *cent) {
 	}
 
 	if(ent->weapon == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
-		if(toolgun_tool.integer <= TL_CREATE){
-			trap_Cmd(EXEC_INSERT, va("%s\n", spawn_cmd.string));
+		if(cvarInt("toolgun_tool") <= TL_CREATE){
+			trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 		} else {
-			trap_Cmd(EXEC_INSERT, va("%s %s\n", toolgun_cmd.string, toolgun_mod5.string));
+			trap_Cmd(EXEC_INSERT, va("%s %s\n", cvarString("toolgun_cmd"), cvarString("toolgun_mod5")));
 		}
 	}
 

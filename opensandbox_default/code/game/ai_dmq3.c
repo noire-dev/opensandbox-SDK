@@ -2244,7 +2244,7 @@ int BotCanAndWantsToRocketJump(bot_state_t *bs) {
 	float rocketjumper;
 
 	//if rocket jumping is disabled
-	if (!bot_rocketjump.integer) return qfalse;
+	if (!cvarInt("bot_rocketjump")) return qfalse;
 	//if no rocket launcher
 	if (bs->swep_list[WP_ROCKET_LAUNCHER] == WS_NONE) return qfalse;
 	//if low on rockets
@@ -4267,7 +4267,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 		//if there's no match
 		if (!BotMatchMessage(bs, m.message)) {
 			//if it is a chat message
-			if (m.type == CMS_CHAT && !bot_nochat.integer) {
+			if (m.type == CMS_CHAT && !cvarInt("bot_nochat")) {
 				//
 				if (!trap_BotFindMatch(m.message, &match, MTCONTEXT_REPLYCHAT)) {
 					trap_BotRemoveConsoleMessage(bs->cs, handle);
@@ -4289,7 +4289,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 				//unify the message
 				trap_UnifyWhiteSpaces(message);
 
-				if (bot_testrchat.integer) {
+				if (cvarInt("bot_testrchat")) {
 					//
 					trap_BotLibVarSet("bot_testrchat", "1");
 					//if bot replies with a chat message

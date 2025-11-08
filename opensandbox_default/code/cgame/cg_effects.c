@@ -11,8 +11,6 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 	float len;
 	int i;
 
-	if(cg_noProjectileTrail.integer) return;
-
 	VectorCopy(start, move);
 	VectorSubtract(end, start, vec);
 	len = VectorNormalize(vec);
@@ -319,7 +317,7 @@ localEntity_t *CG_MakeExplosion(vec3_t origin, vec3_t dir, qhandle_t hModel, qha
 void CG_Bleed(vec3_t origin, int entityNum) {
 	localEntity_t *ex;
 
-	if(!ccvarInt("g_blood")) return;
+	if(!cvarInt("g_blood")) return;
 
 	ex = CG_AllocLocalEntity();
 	ex->leType = LE_EXPLOSION;
@@ -349,7 +347,7 @@ static void CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel) {
 
 	le->leType = LE_FRAGMENT2;
 	le->startTime = cg.time;
-	le->endTime = le->startTime + cg_effectsTime.integer * 1000;
+	le->endTime = le->startTime + cvarInt("cg_effectsTime") * 1000;
 	VectorCopy(origin, re->origin);
 	AxisCopy(axisDefault, re->axis);
 	re->hModel = hModel;
@@ -371,7 +369,7 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
 	int j;
 
-	if(!ccvarInt("g_blood")) return;
+	if(!cvarInt("g_blood")) return;
 
 	VectorCopy(playerOrigin, origin);
 	velocity[0] = crandom() * GIB_VELOCITY;
@@ -437,7 +435,7 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 	velocity[2] = GIB_JUMP + crandom() * GIB_VELOCITY;
 	CG_LaunchGib(origin, velocity, cgs.media.gibLeg);
 
-	for(j = 1; j <= cg_effectsGibs.integer; j++) {
+	for(j = 1; j <= cvarInt("cg_effectsGibs"); j++) {
 		VectorCopy(playerOrigin, origin);
 		velocity[0] = crandom() * GIB_VELOCITY;
 		velocity[1] = crandom() * GIB_VELOCITY;

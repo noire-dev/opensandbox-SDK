@@ -24,7 +24,7 @@ void CG_InitMarkPolys(void) {
 	cg_activeMarkPolys.nextMark = &cg_activeMarkPolys;
 	cg_activeMarkPolys.prevMark = &cg_activeMarkPolys;
 	cg_freeMarkPolys = cg_markPolys;
-	for(i = 0; i < cg_effectsLimit.integer * 2 - 1; i++) {
+	for(i = 0; i < cvarInt("cg_effectsLimit") * 2 - 1; i++) {
 		cg_markPolys[i].nextMark = &cg_markPolys[i + 1];
 	}
 }
@@ -98,7 +98,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	int numFragments;
 	vec3_t projection;
 
-	if(!cg_addMarks.integer || radius <= 0) return;
+	if(!cvarInt("cg_addMarks") || radius <= 0) return;
 
 	// create the texture axis
 	VectorNormalize2(dir, axis[0]);
@@ -170,7 +170,7 @@ void CG_AddMarks(void) {
 	int t;
 	int fade;
 
-	if(!cg_addMarks.integer) return;
+	if(!cvarInt("cg_addMarks")) return;
 
 	mp = cg_activeMarkPolys.nextMark;
 	for(; mp != &cg_activeMarkPolys; mp = next) {
@@ -179,7 +179,7 @@ void CG_AddMarks(void) {
 		next = mp->nextMark;
 
 		// see if it is time to completely remove it
-		if(cg.time > mp->time + cg_effectsTime.integer * 1000) {
+		if(cg.time > mp->time + cvarInt("cg_effectsTime") * 1000) {
 			CG_FreeMarkPoly(mp);
 			continue;
 		}
@@ -202,7 +202,7 @@ void CG_AddMarks(void) {
 		}
 
 		// fade all marks out with time
-		t = mp->time + cg_effectsTime.integer * 1000 - cg.time;
+		t = mp->time + cvarInt("cg_effectsTime") * 1000 - cg.time;
 		if(t < MARK_FADE_TIME) {
 			fade = 255 * t / MARK_FADE_TIME;
 			if(mp->alphaFade) {

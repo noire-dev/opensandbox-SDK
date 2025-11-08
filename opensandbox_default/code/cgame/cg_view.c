@@ -43,7 +43,7 @@ static void CG_OffsetThirdPersonView(void) {
 
 	view[2] += 8;
 	if(!BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])) {
-		VectorMA(view, cg_thirdPersonOffset.value, right, view);
+		VectorMA(view, cvarFloat("cg_thirdPersonOffset"), right, view);
 	} else {
 		VectorMA(view, 0, right, view);
 	}
@@ -55,8 +55,8 @@ static void CG_OffsetThirdPersonView(void) {
 	forwardScale = cos(0 / 180 * M_PI);
 	sideScale = sin(0 / 180 * M_PI);
 	if(!BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])) {
-		VectorMA(view, -cg_thirdPersonRange.value * forwardScale, forward, view);
-		VectorMA(view, -cg_thirdPersonRange.value * sideScale, right, view);
+		VectorMA(view, -cvarFloat("cg_thirdPersonRange") * forwardScale, forward, view);
+		VectorMA(view, -cvarFloat("cg_thirdPersonRange") * sideScale, right, view);
 	} else {
 		VectorMA(view, -180 * forwardScale, forward, view);
 		VectorMA(view, -180 * sideScale, right, view);
@@ -110,7 +110,7 @@ static void CG_OffsetFirstPersonView(void) {
 	// add angles based on velocity
 	VectorCopy(cg.predictedPlayerState.velocity, predictedVelocity);
 
-	if(!cg_enableBobbing.integer) {
+	if(!cvarInt("cg_enableBobbing")) {
 		angles[PITCH] += DotProduct(predictedVelocity, cg.refdef.viewaxis[0]);
 		angles[ROLL] -= DotProduct(predictedVelocity, cg.refdef.viewaxis[1]);
 	} else {
@@ -138,7 +138,7 @@ static void CG_OffsetFirstPersonView(void) {
 	if(timeDelta < DUCK_TIME) cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
 
 	// add bob height
-	if(!cg_enableBobbing.integer) {
+	if(!cvarInt("cg_enableBobbing")) {
 		bob = 0.0f;
 	} else {
 		bob = cg.bobfracsin * cg.xyspeed * 0.002;
@@ -196,7 +196,7 @@ static void CG_CalcFov(void) {
 		// if in intermission, use a fixed value
 		fov_x = 90;
 	} else {
-		fov_x = cg_fov.value;
+		fov_x = cvarFloat("cg_fov");
 		if(fov_x < 1) {
 			fov_x = 1;
 		} else if(fov_x > 160) {
@@ -204,7 +204,7 @@ static void CG_CalcFov(void) {
 		}
 
 		// account for zooms
-		zoomFov = cg_zoomFov.value;
+		zoomFov = cvarFloat("cg_zoomFov");
 		if(zoomFov < 1) {
 			zoomFov = 1;
 		} else if(zoomFov > 160) {
@@ -326,8 +326,8 @@ static void CG_CalcViewValues(void) {
 
 		AngleVectors(headang, forward, NULL, up);
 		if(cg.renderingEyesPerson) {
-			VectorMA(headpos, cg_cameraEyes_Fwd.value, forward, headpos);
-			VectorMA(headpos, cg_cameraEyes_Up.value, up, headpos);
+			VectorMA(headpos, cvarFloat("cg_cameraEyes_Fwd"), forward, headpos);
+			VectorMA(headpos, cvarFloat("cg_cameraEyes_Up"), up, headpos);
 		}
 
 		cg.refdef.vieworg[0] = ps->origin[0] + headpos[0];
@@ -401,8 +401,8 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	cg.clientFrame++;
 	CG_PredictPlayerState();
 
-	cg.renderingThirdPerson = cg_thirdPerson.integer && cg.snap->ps.pm_type != PM_SPECTATOR || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.snap->ps.stats[STAT_VEHICLE];
-	cg.renderingEyesPerson = !cg_thirdPerson.integer && cg_cameraEyes.integer && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
+	cg.renderingThirdPerson = cvarFloat("cg_thirdPerson") && cg.snap->ps.pm_type != PM_SPECTATOR || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.snap->ps.stats[STAT_VEHICLE];
+	cg.renderingEyesPerson = !cvarFloat("cg_thirdPerson") && cvarInt("cg_cameraEyes") && cg.snap->ps.pm_type != PM_SPECTATOR || cg.snap->ps.stats[STAT_VEHICLE];
 
 	CG_CalcViewValues();
 
