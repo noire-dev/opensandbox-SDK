@@ -11,7 +11,7 @@ typedef struct {
 	menuframework_s	menu;
 	menuelement_s	e[OSUI_MAX_ELEMENTS];
 
-	char *error[4096];
+	char *error;
 } mainmenu_t;
 
 static mainmenu_t main;
