@@ -170,7 +170,7 @@ void CG_ZoomDown_f(void) {
 		cg.zoomed = qtrue;
 		cg.zoomTime = cg.time;
 	} else {
-		trap_SendConsoleCommand("altfire_physgun\n");
+		trap_Cmd(EXEC_INSERT, "altfire_physgun\n");
 	}
 }
 

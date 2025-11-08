@@ -94,7 +94,7 @@ static int g_servertype;
 static int ArenaServers_MaxPing(void) {
 	int maxPing;
 
-	maxPing = (int)trap_Cvar_VariableValue("cl_maxPing");
+	maxPing = (int)cvarInt("cl_maxPing");
 	if(maxPing < 100) {
 		maxPing = 100;
 	}
@@ -381,7 +381,7 @@ static void ArenaServers_StartRefresh(void) {
 
 	if(g_servertype == AS_GLOBAL) {
 		i = 0;
-		trap_Cmd(EXEC_APPEND, va("globalservers %d %d%s\n", i, (int)trap_Cvar_VariableValue("protocol"), myargs));
+		trap_Cmd(EXEC_APPEND, va("globalservers %d %d%s\n", i, (int)cvarInt("protocol"), myargs));
 	}
 }
 

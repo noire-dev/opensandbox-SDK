@@ -1550,7 +1550,7 @@ void UI_CreateUI(menuframework_s *menu, menuelement_s *e) {
 					e[i].curvalue = cvarInt(e[i].generic.var) * (float)e[i].generic.mode;
 				}
 				if(e[i].generic.type == MTYPE_FIELD) {
-					Q_strncpyz(e[i].field.buffer, UI_Cvar_VariableString(e[i].generic.var), MAX_EDIT_LINE);
+					Q_strncpyz(e[i].field.buffer, cvarString(e[i].generic.var), MAX_EDIT_LINE);
 				}
 				if(e[i].generic.type == MTYPE_RADIOBUTTON) {
 					if(e[i].generic.mode == RBT_NORMAL) {

@@ -42,11 +42,7 @@ int mod_jumpheight;
 int mod_gravity;
 
 static void CG_CreateCvars(void) {
-	char var[MAX_TOKEN_CHARS];
-
-	// see if we are also running the server on this machine
-	trap_Cvar_VariableStringBuffer("sv_running", var, sizeof(var));
-	cgs.localServer = atoi(var);
+	cgs.localServer = cvarInt("sv_running");
 
 	cvarRegister("model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
 	cvarRegister("headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
@@ -607,8 +603,8 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cg.infoScreenText[0] = 0;
 	cg.infoScreenValue = 0.0;
 
-	trap_SendConsoleCommand("ns_openscript_ui tools/create.ns\n");
-	trap_SendConsoleCommand(va("weapon %i\n", WP_TOOLGUN));
+	trap_Cmd(EXEC_INSERT, "ns_openscript_ui tools/create.ns\n");
+	trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 }
 
 /*

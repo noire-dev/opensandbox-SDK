@@ -66,7 +66,7 @@ static const char *sdriverList[] = {
 	NULL
 };
 
-static char resbuf[RESBUF_SIZE];
+static char* resbuf;
 static char* detectedResolutions[MAX_RESOLUTIONS];
 static char currentResolution[32];
 static char** resolutions = NULL;
@@ -121,7 +121,7 @@ static void Settings_MenuEvent(void* ptr, int event) {
 }
 
 static void Settings_GetResolutions(void) {
-	trap_Cvar_VariableStringBuffer("r_availableModes", resbuf, sizeof(resbuf));
+	resbuf = cvarString("r_availableModes");
 
 	if(*resbuf) {
 		char* s = resbuf;
@@ -171,30 +171,30 @@ void UI_Settings(void) {
 	x = 120;
 	UI_CSpinControl(&settings.e[3], x, y, "Resolution:", (const char**)resolutions, Settings_MenuEvent, 0); y += 12;
 	for(i = 0; resolutions[i]; i++) {
-		if(!strcmp(resolutions[i], UI_Cvar_VariableString("r_resolution"))) {
+		if(!strcmp(resolutions[i], cvarString("r_resolution"))) {
 			settings.e[3].curvalue = i;
 			break;
 		}
 	}
 
 	UI_CSpinControl(&settings.e[4], x, y, "Mode:", modeList, Settings_MenuEvent, 0); y += 12;
-	settings.e[4].curvalue = trap_Cvar_VariableValue("r_fullscreen");
+	settings.e[4].curvalue = cvarInt("r_fullscreen");
 
 	UI_CRadioButton(&settings.e[5], x, y, "Anisotropy:", "r_ext_texture_filter_anisotropic", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[6], x, y, "Post-processing:", "r_postfx", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[7], x, y, "HDR:", "r_hdr", RBT_NORMAL, NULL, 0); y += 12;
 
 	UI_CSpinControl(&settings.e[8], x, y, "Entity limit:", limitList, Settings_MenuEvent, 0); y += 12;
-	settings.e[8].curvalue = trap_Cvar_VariableValue("ui_effectsLevel");
+	settings.e[8].curvalue = cvarInt("ui_effectsLevel");
 
 	UI_CSpinControl(&settings.e[9], x, y, "Texture quality:", textureList, Settings_MenuEvent, 0); y += 12;
-	settings.e[9].curvalue = trap_Cvar_VariableValue("r_picmip");
+	settings.e[9].curvalue = cvarInt("r_picmip");
 
 	UI_CSpinControl(&settings.e[10], x, y, "Anti-aliasing:", aaList, Settings_MenuEvent, 0); y += 12;
-	settings.e[10].curvalue = trap_Cvar_VariableValue("r_ext_multisample")/2;
+	settings.e[10].curvalue = cvarInt("r_ext_multisample")/2;
 
 	UI_CSpinControl(&settings.e[11], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
-	settings.e[11].curvalue = trap_Cvar_VariableValue("r_bloom_intensity")/0.05;
+	settings.e[11].curvalue = cvarInt("r_bloom_intensity")/0.05;
 
 	UI_CSlider(&settings.e[12], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
 	y += 12;
@@ -208,7 +208,7 @@ void UI_Settings(void) {
 
 	UI_CSpinControl(&settings.e[32], x, y, "Sound driver:", sdriverList, Settings_MenuEvent, 0); y += 12;
 	for(i = 0; sdriverList[i]; i++) {
-		if(!strcmp(sdriverList[i], UI_Cvar_VariableString("s_driver"))) {
+		if(!strcmp(sdriverList[i], cvarString("s_driver"))) {
 			settings.e[32].curvalue = i;
 			break;
 		}

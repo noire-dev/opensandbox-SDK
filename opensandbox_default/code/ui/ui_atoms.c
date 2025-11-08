@@ -49,7 +49,7 @@ void UI_UpdateState(void) {
 		uis.onmap = qtrue;
 	}
 
-	if(trap_Cvar_VariableValue("r_postfx")) {
+	if(cvarInt("r_postfx")) {
 		uis.postfx_status = qtrue;
 	} else {
 		uis.postfx_status = qfalse;
@@ -186,13 +186,13 @@ void UI_MouseEvent(int dx, int dy) {
 	if(!uis.activemenu) return;
 
 	// update mouse screen position
-	uis.cursorx += dx * sensitivitymenu.value;
+	uis.cursorx += dx;
 	if(uis.cursorx < 0 - uis.wideoffset)
 		uis.cursorx = 0 - uis.wideoffset;
 	else if(uis.cursorx > 640 + uis.wideoffset)
 		uis.cursorx = 640 + uis.wideoffset;
 
-	uis.cursory += dy * sensitivitymenu.value;
+	uis.cursory += dy;
 	if(uis.cursory < 0)
 		uis.cursory = 0;
 	else if(uis.cursory > 480)
@@ -254,14 +254,6 @@ static char *UI_ConcatArgs(int start) {
 	line[len] = 0;
 
 	return line;
-}
-
-char *UI_Cvar_VariableString(const char *var_name) {
-	static char buffer[MAX_STRING_CHARS];
-
-	trap_Cvar_VariableStringBuffer(var_name, buffer, sizeof(buffer));
-
-	return buffer;
 }
 
 qboolean UI_ConsoleCommand(int realTime) {

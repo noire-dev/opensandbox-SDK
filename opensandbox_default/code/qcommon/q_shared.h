@@ -563,7 +563,8 @@ typedef enum {
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-3)
 
 #define	MAX_CONFIGSTRINGS	1600
-#define	MAX_GAMESTATE_CHARS	32000
+#define	MAX_GAMESTATE_CHARS	65535
+#define MAX_CVARS           65535
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
@@ -897,7 +898,7 @@ void			trap_Print( const char *string );
 void			trap_Error( const char *string );
 int				trap_Milliseconds( void );
 void			cvarRegister( const char *name, const char *defaultValue, int flags );
-void			cvarID( const char *name );
+int			    cvarID( const char *name );
 void			cvarUpdate( cvar_t *vmCvar, int cvarID );
 void			cvarSet( const char *name, const char *value );
 void			cvarSetValue( const char *name, float value );

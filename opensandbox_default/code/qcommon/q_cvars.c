@@ -157,7 +157,7 @@ void ST_UpdateCvars(void) {
     int			i;
 
 	for ( i = 0; i < MAX_CVARS ; i++ ) {
-		cvarUpdate( cvarStorage[i], i );
+		cvarUpdate( &cvarStorage[i], i );
 	}
 }
 

@@ -213,7 +213,7 @@ static void CG_DrawToolgun() {
 	}
 
 	CG_DrawPic(-1 - cgs.wideoffset, 40, 300, 125, trap_R_RegisterShaderNoMip("menu/assets/blacktrans"));
-	ST_DrawString(0 - cgs.wideoffset, 42, toolgun_tooltext.string, UI_LEFT, color_white, 2.50);
+	ST_DrawString(0 - cgs.wideoffset, 42, cvarString("toolgun_tooltext"), UI_LEFT, color_white, 2.50);
 	if(cvarInt("toolgun_mod5") == 0) {
 		ST_DrawString(0 - cgs.wideoffset, 72, cvarString("toolgun_toolmode1"), UI_LEFT, color_white, 1.32);
 	} else if(cvarInt("toolgun_mod5") == 1) {
@@ -396,7 +396,7 @@ static void CG_DrawCounters(void) {
 
 	// Speed
 	value = sqrt(cg.snap->ps.velocity[0] * cg.snap->ps.velocity[0] + cg.snap->ps.velocity[1] * cg.snap->ps.velocity[1]);
-	if(cvarInt"(cg_drawSpeed") == 1) {
+	if(cvarInt("cg_drawSpeed") == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i", value), "Speed");
 		y += 20;
 	}

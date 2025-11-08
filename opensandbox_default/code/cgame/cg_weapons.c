@@ -1119,7 +1119,7 @@ void CG_NextWeapon_f(void) {
 	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])) return;
 
 	if(cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING) {
-		trap_SendConsoleCommand("physgun_dist 0\n");
+		trap_Cmd(EXEC_INSERT, "physgun_dist 0\n");
 		return;
 	}
 
@@ -1152,7 +1152,7 @@ void CG_PrevWeapon_f(void) {
 	if(!cg.snap || cg.snap->ps.pm_flags & PMF_FOLLOW || BG_InVehicle(cg.snap->ps.stats[STAT_VEHICLE])) return;
 
 	if(cg.snap->ps.weapon == WP_PHYSGUN && cg.snap->ps.eFlags & EF_FIRING) {
-		trap_SendConsoleCommand("physgun_dist 1\n");
+		trap_Cmd(EXEC_INSERT, "physgun_dist 1\n");
 		return;
 	}
 
@@ -1222,9 +1222,9 @@ void CG_FireWeapon(centity_t *cent) {
 
 	if(ent->weapon == WP_TOOLGUN && cent->currentState.clientNum == cg.snap->ps.clientNum && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		if(toolgun_tool.integer <= TL_CREATE){
-			trap_SendConsoleCommand(va("%s\n", spawn_cmd.string));
+			trap_Cmd(EXEC_INSERT, va("%s\n", spawn_cmd.string));
 		} else {
-			trap_SendConsoleCommand(va("%s %s\n", toolgun_cmd.string, toolgun_mod5.string));
+			trap_Cmd(EXEC_INSERT, va("%s %s\n", toolgun_cmd.string, toolgun_mod5.string));
 		}
 	}
 

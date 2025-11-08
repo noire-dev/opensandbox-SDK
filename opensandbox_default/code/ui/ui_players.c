@@ -23,7 +23,7 @@ static void UI_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t
 	vec3_t tempAxis[3];
 
 	// lerp the tag
-	trap_CM_LerpTag(&lerped, parentModel, parent->oldframe, parent->frame, 1.0 - parent->backlerp, tagName);
+	trap_R_LerpTag(&lerped, parentModel, parent->oldframe, parent->frame, 1.0 - parent->backlerp, tagName);
 
 	// FIXME: allow origin offsets along tag?
 	VectorCopy(parent->origin, entity->origin);
@@ -345,9 +345,9 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 	legs.hModel = pi->legsModel;
 	legs.customSkin = pi->legsSkin;
 	legs.customShader = pi->legsShader;
-	legs.shaderRGBA[0] = trap_Cvar_VariableValue("legsR");
-	legs.shaderRGBA[1] = trap_Cvar_VariableValue("legsG");
-	legs.shaderRGBA[2] = trap_Cvar_VariableValue("legsB");
+	legs.shaderRGBA[0] = cvarInt("legsR");
+	legs.shaderRGBA[1] = cvarInt("legsG");
+	legs.shaderRGBA[2] = cvarInt("legsB");
 	legs.shaderRGBA[3] = 255;
 
 	VectorCopy(origin, legs.origin);
@@ -374,9 +374,9 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 	if(!torso.customSkin) {
 		torso.customShader = pi->torsoShader;
 	}
-	torso.shaderRGBA[0] = trap_Cvar_VariableValue("modelR");
-	torso.shaderRGBA[1] = trap_Cvar_VariableValue("modelG");
-	torso.shaderRGBA[2] = trap_Cvar_VariableValue("modelB");
+	torso.shaderRGBA[0] = cvarInt("modelR");
+	torso.shaderRGBA[1] = cvarInt("modelG");
+	torso.shaderRGBA[2] = cvarInt("modelB");
 	torso.shaderRGBA[3] = 255;
 
 	VectorCopy(origin, torso.lightingOrigin);
@@ -398,9 +398,9 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 	if(!head.customSkin) {
 		head.customShader = pi->headShader;
 	}
-	head.shaderRGBA[0] = trap_Cvar_VariableValue("headR");
-	head.shaderRGBA[1] = trap_Cvar_VariableValue("headG");
-	head.shaderRGBA[2] = trap_Cvar_VariableValue("headB");
+	head.shaderRGBA[0] = cvarInt("headR");
+	head.shaderRGBA[1] = cvarInt("headG");
+	head.shaderRGBA[2] = cvarInt("headB");
 	head.shaderRGBA[3] = 255;
 
 	VectorCopy(origin, head.lightingOrigin);
@@ -859,24 +859,24 @@ static void PlayerInfo_SetupNewModel(modelAnim_t *m) {
 }
 
 void GUI_PlayerInfo_InitModel(modelAnim_t *m) {
-	char buffer[MODELNAME_BUFFER];
+	char *buffer;
 
-	trap_Cvar_VariableStringBuffer("model", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("model");
 	strcpy(m->modelskin, buffer);
 
-	trap_Cvar_VariableStringBuffer("headmodel", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("headmodel");
 	strcpy(m->headskin, buffer);
 
-	trap_Cvar_VariableStringBuffer("legsmodel", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("legsmodel");
 	strcpy(m->legsskin, buffer);
 
-	trap_Cvar_VariableStringBuffer("team_model", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("team_model");
 	strcpy(m->team_modelskin, buffer);
 
-	trap_Cvar_VariableStringBuffer("team_headmodel", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("team_headmodel");
 	strcpy(m->team_headskin, buffer);
 
-	trap_Cvar_VariableStringBuffer("team_legsmodel", buffer, MODELNAME_BUFFER);
+	buffer = cvarString("team_legsmodel");
 	strcpy(m->team_legsskin, buffer);
 
 	PlayerInfo_SetupNewModel(m);

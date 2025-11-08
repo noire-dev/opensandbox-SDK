@@ -117,19 +117,19 @@ static void SpawnMenu_Event(void* ptr, int event) {
 		if(spawnmenu_tab == TB_PROPS) {
 			if(!strlen(spawnmenu_folder)) {
 				if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
-					trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
+					trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
 					trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 				} else {
 					Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 					UI_SpawnMenu();
 				}
 			} else {
-				trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+				trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 				trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 			}
 		}
 		if(spawnmenu_tab == TB_ENTITIES) {
-			trap_Cmd(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
+			trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
 			trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
 		}
 		if(spawnmenu_tab == TB_NPCS) {
@@ -154,7 +154,7 @@ static void SpawnMenu_Event(void* ptr, int event) {
 		if(spawnmenu_tab == TB_TOOLS) {
 			trap_Cmd(EXEC_NOW, va("ns_openscript_ui tools/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 			trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
-			NS_setCvar("toolgun_mod5", "0");
+			cvarSet("toolgun_mod5", "0");
 			UI_SpawnMenu();
 		}
 		if(spawnmenu_tab == TB_SAVES) {
@@ -215,17 +215,17 @@ static void SpawnMenu_Save(void) {
 	if(spawnmenu_tab == TB_PROPS) {
 		if(!strlen(spawnmenu_folder)) {
 			if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
-				trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
+				trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
 			} else {
 				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			}
 		} else {
-			trap_Cmd(EXEC_NOW, va(spawn_preset.string, spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 	}
 	if(spawnmenu_tab == TB_ENTITIES) {
-		trap_Cmd(EXEC_NOW, va(spawn_preset.string, "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
+		trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
 	}
 	if(spawnmenu_tab == TB_NPCS) {
 		trap_Cmd(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
@@ -260,7 +260,7 @@ static void SpawnMenu_Draw(void) {
 	UI_DrawRoundedRect(640 + uis.wideoffset - 180, 10, 170, 480 - 38, 4, color_dim);
 
 	UI_DrawRoundedRect(640+uis.wideoffset-175, 15, 160, 16, 3, color3);
-	ST_DrawString(640+uis.wideoffset-95, 18, toolgun_tooltext.string, UI_CENTER, color_white, 1.00);
+	ST_DrawString(640+uis.wideoffset-95, 18, cvarString("toolgun_tooltext"), UI_CENTER, color_white, 1.00);
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
@@ -351,10 +351,10 @@ void UI_SpawnMenu(void) {
 		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 110, y, "Class:", spawnmenu_npsclasses, NULL, 0); y += 12;
 		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Weapon:", spawnmenu_npsweapons, NULL, 0); y += 12;
 		y += 12;
-		NS_setCvar("uis_b1", "5");
-		NS_setCvar("uis_b2", "100");
-		NS_setCvar("uis_b3", "0");
-		NS_setCvar("uis_b4", "0");
+		cvarSet("uis_b1", "5");
+		cvarSet("uis_b2", "100");
+		cvarSet("uis_b3", "0");
+		cvarSet("uis_b4", "0");
 		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 110, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0); y += 12;
 		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 110, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0); y += 12;
 		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 110, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0); y += 12;
@@ -370,10 +370,10 @@ void UI_SpawnMenu(void) {
 		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
 		y += 20;
 	}
-	UI_CField(&spawnmenu.e[40], 640 + uis.wideoffset - 110, y, toolgun_toolset1.string, 16, 16, color_white, "uis_tg1", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[41], 640 + uis.wideoffset - 110, y, toolgun_toolset2.string, 16, 16, color_white, "uis_tg2", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[42], 640 + uis.wideoffset - 110, y, toolgun_toolset3.string, 16, 16, color_white, "uis_tg3", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[43], 640 + uis.wideoffset - 110, y, toolgun_toolset4.string, 16, 16, color_white, "uis_tg4", NULL, 0); y += 12;
+	UI_CField(&spawnmenu.e[40], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset1"), 16, 16, color_white, "uis_tg1", NULL, 0); y += 12;
+	UI_CField(&spawnmenu.e[41], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset2"), 16, 16, color_white, "uis_tg2", NULL, 0); y += 12;
+	UI_CField(&spawnmenu.e[42], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset3"), 16, 16, color_white, "uis_tg3", NULL, 0); y += 12;
+	UI_CField(&spawnmenu.e[43], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset4"), 16, 16, color_white, "uis_tg4", NULL, 0); y += 12;
 
 	UI_CreateUI(&spawnmenu.menu, spawnmenu.e);
 

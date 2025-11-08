@@ -293,7 +293,6 @@ qboolean UI_IsFullscreen(void);
 void UI_SetActiveMenu(uiMenuCommand_t menu);
 void UI_KeyEvent(int key, int down);
 void UI_MouseEvent(int dx, int dy);
-char *UI_Cvar_VariableString(const char *var_name);
 qboolean UI_ConsoleCommand(int realTime);
 void UI_Shutdown(void);
 void UI_Init(void);

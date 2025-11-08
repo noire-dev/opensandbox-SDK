@@ -195,7 +195,7 @@ static void CG_ServerCommand(void) {
 	}
 
 	if(!strcmp(cmd, "clcmd")) {
-		trap_SendConsoleCommand(CG_Argv(1));
+		trap_Cmd(EXEC_INSERT, CG_Argv(1));
 		return;
 	}
 

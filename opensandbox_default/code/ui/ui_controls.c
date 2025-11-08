@@ -238,7 +238,7 @@ static void Controls_GetConfig(void) {
 		bindptr->bind1 = twokeys[0];
 		bindptr->bind2 = twokeys[1];
 	}
-	controls.e[KEYS_NUM + 1].curvalue = (trap_Cvar_VariableValue("in_mouse") > 0) ? 1 : 0;
+	controls.e[KEYS_NUM + 1].curvalue = (cvarInt("in_mouse") > 0) ? 1 : 0;
 }
 
 static void Controls_SetConfig(void) {

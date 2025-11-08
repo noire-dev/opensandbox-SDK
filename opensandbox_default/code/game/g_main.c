@@ -133,9 +133,6 @@ G_InitGame
 */
 static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	int i;
-	char mapname[64];
-
-	trap_Cvar_VariableStringBuffer("sv_mapname", mapname, 64);
 
 	G_Printf("------- Game Initialization -------\n");
 	G_Printf("gamedate: %s\n", __DATE__);
@@ -198,7 +195,7 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	}
 
 	if(strlen(cvarString("g_entitypack"))) {
-		trap_SendConsoleCommand(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", cvarString("g_entitypack"), mapname));  // load map file
+		trap_Cmd(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", cvarString("g_entitypack"), cvarString("sv_mapname")));  // load map file
 	}
 }
 
@@ -525,7 +522,7 @@ static void LevelRestart(void) {
 	int i;
 	gclient_t *cl;
 
-	trap_SendConsoleCommand(EXEC_APPEND, "map_restart\n");
+	trap_Cmd(EXEC_APPEND, "map_restart\n");
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
