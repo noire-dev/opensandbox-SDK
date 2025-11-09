@@ -889,11 +889,7 @@ float ST_AnimValue(stAnim_t *anim, int timeNow);
 void            *memset(void *dest, int c, size_t count);
 void            *memcpy(void *dest, const void *src, size_t count);
 char            *strncpy(char *strDest, const char *strSource, size_t count);
-double          sin(double x);
-double          cos(double x);
-double          acos(double x);
-double          atan2(double y, double x);
-double          sqrt(double x);
+//other in mathlib
 void			trap_Print( const char *string );
 void			trap_Error( const char *string );
 int				trap_Milliseconds( void );
