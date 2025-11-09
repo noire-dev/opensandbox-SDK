@@ -142,8 +142,6 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	ST_RegisterCvars();
 	G_CheckCvars();
 	G_InitMemory();
-	
-	G_Printf("maxEnts: %i\n", cvarInt("g_maxEntities"));
 
 	// set some level globals
 	memset(&level, 0, sizeof(level));
@@ -187,8 +185,6 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	if(cvarInt("g_gametype") >= GT_TEAM) {
 		G_CheckTeamItems();
 	}
-
-	G_Printf("-----------------------------------\n");
 
 	if(cvarInt("bot_enable")) {
 		BotAISetup(restart);

@@ -162,13 +162,11 @@ void ST_UpdateCvars(void) {
 	}
 }
 
+//Debug: trap_Print(va("%i:%s = %i\n", id, name, cvarStorage[id].integer));
+
 int cvarInt(const char *name) {
     int id = cvarID(name);
-    if (id == -1) {
-        trap_Print(va("%i:%s = VARIABLE NOT FOUND!\n", id, name, cvarStorage[id].integer));
-        return 0; 
-    }
-    trap_Print(va("%i:%s = %i\n", id, name, cvarStorage[id].integer));
+    if (id == -1) return 0;
     return cvarStorage[id].integer;
 }
 
