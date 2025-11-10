@@ -591,16 +591,6 @@ static void ClientThink_real(gentity_t *ent) {
 	if(ucmd->serverTime > level.time + 200) ucmd->serverTime = level.time + 200;
 	if(ucmd->serverTime < level.time - 1000) ucmd->serverTime = level.time - 1000;
 
-	client->frameOffset = trap_Milliseconds() - level.frameStartTime;
-
-	// we use level.previousTime to account for 50ms lag correction
-	// besides, this will turn out numbers more like what players are used to
-	client->pers.pingsamples[client->pers.samplehead] = level.previousTime + client->frameOffset - ucmd->serverTime;
-	client->pers.samplehead++;
-	if(client->pers.samplehead >= NUM_PING_SAMPLES) {
-		client->pers.samplehead -= NUM_PING_SAMPLES;
-	}
-
 	client->attackTime = ucmd->serverTime;
 
 	client->lastUpdateFrame = level.framenum;
@@ -884,7 +874,6 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 void ClientEndFrame(gentity_t *ent) {
 	int i;
 	clientPersistant_t *pers;
-	int frames;
 
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
 		SpectatorClientEndFrame(ent);
@@ -937,23 +926,4 @@ void ClientEndFrame(gentity_t *ent) {
 
 	BG_PlayerStateToEntityState(&ent->client->ps, &ent->s, qtrue);
 	SendPendingPredictableEvents(&ent->client->ps);
-
-	// see how many frames the client has missed
-	frames = level.framenum - ent->client->lastUpdateFrame - 1;
-
-	// don't extrapolate more than two frames
-	if(frames > 2) {
-		frames = 2;
-	}
-
-	// did the client miss any frames?
-	if(frames > 0) {
-		// yep, missed one or more, so extrapolate the player's movement
-		G_PredictPlayerMove(ent, (float)frames / cvarInt("sv_fps"));
-		// save network bandwidth
-		SnapVector(ent->s.pos.trBase);
-	}
-
-	// store the client's position for backward reconciliation later
-	G_StoreHistory(ent);
 }

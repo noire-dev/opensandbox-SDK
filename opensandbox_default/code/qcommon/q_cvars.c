@@ -167,17 +167,20 @@ void ST_UpdateCvars(void) {
 int cvarInt(const char *name) {
     int id = cvarID(name);
     if (id == -1) return 0;
+    cvarUpdate( &cvarStorage[id], id );
     return cvarStorage[id].integer;
 }
 
 float cvarFloat(const char *name) {
     int id = cvarID(name);
     if (id == -1) return 0.0f;
+    cvarUpdate( &cvarStorage[id], id );
     return cvarStorage[id].value;
 }
 
 char* cvarString(const char *name) {
     int id = cvarID(name);
-    if (id == -1) return "<NULL>";
+    if (id == -1) return "0";
+    cvarUpdate( &cvarStorage[id], id );
     return cvarStorage[id].string;
 }

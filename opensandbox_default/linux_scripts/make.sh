@@ -56,7 +56,6 @@ $cc ../../../code/game/g_svcmds.c
 $cc ../../../code/game/g_target.c
 $cc ../../../code/game/g_team.c
 $cc ../../../code/game/g_trigger.c
-$cc ../../../code/game/g_unlagged.c
 $cc ../../../code/game/g_utils.c
 $cc ../../../code/game/g_weapon.c
 

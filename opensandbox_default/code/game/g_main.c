@@ -908,37 +908,20 @@ Advances the non-player objects in the world
 static void G_RunFrame(int levelTime) {
 	int i;
 	gentity_t *ent;
-	int mins, seconds, tens;
-	int msec;
 	int start, end;
 
 	// if we are waiting for the level to restart, do nothing
-	if(level.restarted) {
-		return;
-	}
+	if(level.restarted) return;
 
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
-	msec = level.time - level.previousTime;
-	seconds = level.time / 1000;
-	mins = seconds / 60;
-	seconds -= mins * 60;
-	tens = seconds / 10;
-	seconds -= tens * 10;
 
-	// get any cvar changes
-	ST_UpdateCvars();
-
-	//
 	// go through all allocated objects
-	//
 	start = trap_Milliseconds();
 	ent = &g_entities[0];
 	for(i = 0; i < level.num_entities; i++, ent++) {
-		if(!ent->inuse) {
-			continue;
-		}
+		if(!ent->inuse) continue;
 
 		// clear events that are too old
 		if(level.time - ent->eventTime > EVENT_VALID_MSEC) {
@@ -959,14 +942,7 @@ static void G_RunFrame(int levelTime) {
 			}
 		}
 
-		// temporary entities don't think
-		if(ent->freeAfterEvent) {
-			continue;
-		}
-
-		if(!ent->r.linked && ent->neverFree) {
-			continue;
-		}
+		if(!ent->r.linked && ent->neverFree) continue;
 
 		if(ent->s.eType == ET_ITEM && !ent->sandboxObject || ent->physicsObject && !ent->sandboxObject) {
 			G_RunItem(ent);
@@ -987,29 +963,13 @@ static void G_RunFrame(int levelTime) {
 			G_RunClient(ent);
 			continue;
 		}
+		
+        if(ent->s.eType == ET_MISSILE) {
+			G_RunMissile(ent);
+		}
 
 		G_RunThink(ent);
 	}
-
-	G_TimeShiftAllClients(level.previousTime, NULL);
-
-	ent = &g_entities[0];
-	for(i = 0; i < level.num_entities; i++, ent++) {
-		if(!ent->inuse) {
-			continue;
-		}
-
-		// temporary entities don't think
-		if(ent->freeAfterEvent) {
-			continue;
-		}
-
-		if(ent->s.eType == ET_MISSILE) {
-			G_RunMissile(ent);
-		}
-	}
-
-	G_UnTimeShiftAllClients(NULL);
 
 	end = trap_Milliseconds();
 

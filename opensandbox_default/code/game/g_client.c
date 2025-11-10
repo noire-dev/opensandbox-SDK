@@ -717,9 +717,6 @@ void ClientSpawn(gentity_t *ent) {
 	flags = ent->client->ps.eFlags & (EF_TELEPORT_BIT);
 	flags ^= EF_TELEPORT_BIT;
 
-	// clear everything but the persistant data
-	G_ResetHistory(ent);
-
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;

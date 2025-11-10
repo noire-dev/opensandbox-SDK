@@ -35,9 +35,6 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles, qboolean no
     // toggle the teleport bit so the client knows to not lerp
     player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 
-    // reset history for teleport
-    G_ResetHistory(player);
-
     // set angles
     SetClientViewAngle(player, angles);
 

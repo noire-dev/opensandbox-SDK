@@ -1316,67 +1316,13 @@ BotInitLibrary
 ==============
 */
 int BotInitLibrary(void) {
-	char *buf;
-
-	//set the maxclients and maxentities library variables before calling BotSetupLibrary
-	buf = cvarString("g_maxClients");
-	if (!strlen(buf)) strcpy(buf, "8");
-	trap_BotLibVarSet("maxclients", buf);
-	Com_sprintf(buf, sizeof(buf), "%d", MAX_GENTITIES);
-	trap_BotLibVarSet("maxentities", buf);
-	//bsp checksum
-	buf = cvarString("sv_mapChecksum");
-	if (strlen(buf)) trap_BotLibVarSet("sv_mapChecksum", buf);
-	//maximum number of aas links
-	buf = cvarString("max_aaslinks");
-	if (strlen(buf)) trap_BotLibVarSet("max_aaslinks", buf);
-	//maximum number of items in a level
-	buf = cvarString("max_levelitems");
-	if (strlen(buf)) trap_BotLibVarSet("max_levelitems", buf);
-	//game type
-	buf = cvarString("g_gametype");
-	if (!strlen(buf)) strcpy(buf, "0");
-	trap_BotLibVarSet("g_gametype", buf);
-	//bot developer mode and log file
-	trap_BotLibVarSet("bot_developer", bot_developer.string);
-	trap_BotLibVarSet("log", buf);
-	//no chatting
-	buf = cvarString("bot_nochat");
-	if (strlen(buf)) trap_BotLibVarSet("nochat", "0");
-	//visualize jump pads
-	buf = cvarString("bot_visualizejumppads");
-	if (strlen(buf)) trap_BotLibVarSet("bot_visualizejumppads", buf);
-	//forced clustering calculations
-	buf = cvarString("bot_forceclustering");
-	if (strlen(buf)) trap_BotLibVarSet("forceclustering", buf);
-	//forced reachability calculations
-	buf = cvarString("bot_forcereachability");
-	if (strlen(buf)) trap_BotLibVarSet("forcereachability", buf);
-	//force writing of AAS to file
-	buf = cvarString("bot_forcewrite");
-	if (strlen(buf)) trap_BotLibVarSet("forcewrite", buf);
-	//no AAS optimization
-	buf = cvarString("bot_aasoptimize");
-	if (strlen(buf)) trap_BotLibVarSet("aasoptimize", buf);
-	//
-	buf = cvarString("bot_saveroutingcache");
-	if (strlen(buf)) trap_BotLibVarSet("saveroutingcache", buf);
-	//reload instead of cache bot character files
-	buf = cvarString("bot_reloadcharacters");
-	if (!strlen(buf)) strcpy(buf, "0");
-	trap_BotLibVarSet("bot_reloadcharacters", buf);
-	//base directory
-	buf = cvarString("fs_basepath");
-	if (strlen(buf)) trap_BotLibVarSet("basedir", buf);
-	//game directory
-	buf = cvarString("fs_game");
-	if (strlen(buf)) trap_BotLibVarSet("gamedir", buf);
-	//cd directory
-	buf = cvarString("fs_cdpath");
-	if (strlen(buf)) trap_BotLibVarSet("cddir", buf);
-	//
+	trap_BotLibVarSet("maxclients", va("%i", MAX_CLIENTS));
+	trap_BotLibVarSet("maxentities", va("%i", MAX_GENTITIES));
+	trap_BotLibVarSet("sv_mapChecksum", cvarString("sv_mapChecksum"));
+	trap_BotLibVarSet("g_gametype", cvarString("g_gametype"));
+	trap_BotLibVarSet("nochat", cvarString("bot_nochat"));
+	trap_BotLibVarSet("basedir", cvarString("fs_basepath"));
 	trap_BotLibDefine("MISSIONPACK");
-	//setup the bot library
 	return trap_BotLibSetup();
 }
 

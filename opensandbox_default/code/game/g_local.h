@@ -254,8 +254,6 @@ typedef struct {
 	qboolean isRemoved;
 } undo_stack_t;
 
-#define NUM_PING_SAMPLES 64
-
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
@@ -265,20 +263,8 @@ typedef struct {
 	int maxHealth;
 	playerTeamState_t teamState;  // status in teamplay games
 
-	int pingsamples[NUM_PING_SAMPLES];
-	int samplehead;
 	undo_stack_t undoStack[MAX_UNDO_STACK];
 } clientPersistant_t;
-
-// the size of history we'll keep
-#define NUM_CLIENT_HISTORY 17
-
-// everything we need to know to backward reconcile
-typedef struct {
-	vec3_t mins, maxs;
-	vec3_t currentOrigin;
-	int leveltime;
-} clientHistory_t;
 
 // this structure is cleared on each ClientSpawn(),
 // except for 'client->pers' and 'client->sess'
@@ -336,15 +322,6 @@ struct gclient_s {
 
 	// the serverTime the button was pressed
 	int attackTime;
-	// the head of the history queue
-	int historyHead;
-	// the history queue
-	clientHistory_t history[NUM_CLIENT_HISTORY];
-	// the client's saved position
-	clientHistory_t saved;  // used to restore after time shift
-	// an approximation of the actual server time we received this
-	// command (not in 50ms increments)
-	int frameOffset;
 
 	int vehicleNum;
 
@@ -623,15 +600,6 @@ void SP_trigger_push(gentity_t *self);
 void SP_target_push(gentity_t *self);
 void SP_trigger_teleport(gentity_t *self);
 void SP_trigger_hurt(gentity_t *self);
-
-// g_unlagged.c
-void G_ResetHistory(gentity_t *ent);
-void G_StoreHistory(gentity_t *ent);
-void G_TimeShiftAllClients(int time, gentity_t *skip);
-void G_DoTimeShiftFor(gentity_t *ent);
-void G_UnTimeShiftAllClients(gentity_t *skip);
-void G_UndoTimeShiftFor(gentity_t *ent);
-void G_PredictPlayerMove(gentity_t *ent, float frametime);
 
 // g_utils.c
 int G_ModelIndex(char *name);

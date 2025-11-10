@@ -445,15 +445,14 @@ void UI_Refresh(int realtime) {
 		return;
 	}
 
-	ST_UpdateCvars();
 	ST_UpdateColors();
 
 	if(uis.activemenu) {
 		if(uis.activemenu->fullscreen) {
 			if(!uis.onmap) {
-				trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
+				//trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
 			}
-			trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
+			//trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
 		}
 
 		if(uis.activemenu->draw)

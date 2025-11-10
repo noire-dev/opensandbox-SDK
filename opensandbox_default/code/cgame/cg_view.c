@@ -379,7 +379,6 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	ST_UpdateCvars();
 	ST_UpdateColors();
 	CG_UpdateState();
 

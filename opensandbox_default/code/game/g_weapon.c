@@ -191,9 +191,7 @@ static void Bullet_Fire(gentity_t *ent, int weapon) {
 	VectorMA(end, u, up, end);
 
 	passent = ent->s.number;
-	G_DoTimeShiftFor(ent);
 	trap_Trace(&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
-	G_UndoTimeShiftFor(ent);
 
 	if(tr.surfaceFlags & SURF_NOIMPACT) return;
 
@@ -248,8 +246,6 @@ static void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *e
 	PerpendicularVector(right, forward);
 	CrossProduct(forward, right, up);
 
-	G_DoTimeShiftFor(ent);
-
 	for(i = 0; i < gameInfoWeapons[weapon].count; i++) {
 		r = Q_crandom(&seed) * gameInfoWeapons[weapon].spread * 16;
 		u = Q_crandom(&seed) * gameInfoWeapons[weapon].spread * 16;
@@ -259,8 +255,6 @@ static void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *e
 
 		ShotgunPellet(origin, end, ent, weapon);
 	}
-
-	G_UndoTimeShiftFor(ent);
 }
 
 static void Shotgun_Fire(gentity_t *ent, int weapon) {
@@ -289,8 +283,6 @@ static void Railgun_Fire(gentity_t *ent, int weapon) {
 	int i, hits, unlinked, passent;
 
 	VectorMA(muzzle, gameInfoWeapons[weapon].range, forward, end);
-
-	G_DoTimeShiftFor(ent);
 
 	unlinked = 0;
 	hits = 0;
@@ -325,8 +317,6 @@ static void Railgun_Fire(gentity_t *ent, int weapon) {
 		unlinkedEntities[unlinked] = traceEnt;
 		unlinked++;
 	} while(unlinked < MAX_RAIL_HITS);
-
-	G_UndoTimeShiftFor(ent);
 
 	for(i = 0; i < unlinked; i++) trap_LinkEntity(unlinkedEntities[i]);
 
@@ -388,9 +378,7 @@ static void Lightning_Fire(gentity_t *ent, int weapon) {
 	passent = ent->s.number;
 	for(i = 0; i < 10; i++) {
 		VectorMA(muzzle, gameInfoWeapons[weapon].range, forward, end);
-		G_DoTimeShiftFor(ent);
 		trap_Trace(&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
-		G_UndoTimeShiftFor(ent);
 
 		if(i) {
 			tent = G_TempEntity(muzzle, EV_LIGHTNINGBOLT);
