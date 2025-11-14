@@ -199,16 +199,16 @@ static void CG_CalcFov(void) {
 		fov_x = cvarFloat("cg_fov");
 		if(fov_x < 1) {
 			fov_x = 1;
-		} else if(fov_x > 160) {
-			fov_x = 160;
+		} else if(fov_x > 140) {
+			fov_x = 140;
 		}
 
 		// account for zooms
 		zoomFov = cvarFloat("cg_zoomFov");
 		if(zoomFov < 1) {
 			zoomFov = 1;
-		} else if(zoomFov > 160) {
-			zoomFov = 160;
+		} else if(zoomFov > 140) {
+			zoomFov = 140;
 		}
 
 		if(cg.zoomed) {

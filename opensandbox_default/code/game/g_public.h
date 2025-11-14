@@ -3,15 +3,13 @@
 // Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#define	SVF_NOCLIENT			0x00000001	// don't send entity to clients, even if it has effects
-#define SVF_BOT					0x00000002	// set if the entity is a bot
-#define	SVF_BROADCAST			0x00000004	// send to all connected clients
-#define	SVF_PORTAL				0x00000008	// merge a second pvs at origin2 into snapshots
-#define	SVF_USE_CURRENT_ORIGIN	0x00000010	// entity->r.currentOrigin instead of entity->s.origin
-#define SVF_SINGLECLIENT		0x00000020	// only send to a single client (entityShared_t->singleClient)
-#define SVF_NOSERVERINFO		0x00000040	// don't send CS_SERVERINFO updates to this client
-#define SVF_NOTSINGLECLIENT		0x00000080	// send entity to everyone but one client
-#define SVF_SELF_PORTAL2		0x00000100  // merge a second pvs at entity->r.s.origin2 into snapshots
+#define	SVF_NOCLIENT			1	// don't send entity to clients, even if it has effects
+#define SVF_BOT					2	// set if the entity is a bot
+#define	SVF_BROADCAST			4	// send to all connected clients
+#define	SVF_PORTAL				8	// merge a second pvs at origin2 into snapshots
+#define	SVF_USE_CURRENT_ORIGIN	16	// entity->r.currentOrigin instead of entity->s.origin
+#define SVF_NOSERVERINFO		32	// don't send CS_SERVERINFO updates to this client
+#define SVF_SELF_PORTAL2		64  // merge a second pvs at entity->r.s.origin2 into snapshots
 
 typedef struct {
 	entityState_t	s;				// communicated by server to clients
@@ -21,7 +19,6 @@ typedef struct {
 
 	int			svFlags;			// SVF_NOCLIENT, SVF_BROADCAST, etc
 
-	// only send to this client when SVF_SINGLECLIENT is set
 	int			singleClient;		
 
 	qboolean	bmodel;				// if false, assume an explicit mins / maxs bounding box
