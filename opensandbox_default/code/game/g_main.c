@@ -38,7 +38,7 @@ intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, i
 		case GAME_CLIENT_COMMAND: ClientCommand(arg0); return 0;
 		case GAME_RUN_FRAME: G_RunFrame(arg0); return 0;
 		case GAME_CONSOLE_COMMAND: return ConsoleCommand();
-		case BOTAI_START_FRAME: return BotAIStartFrame(arg0);
+		case BOTAI_START_FRAME: return AI_Frame(arg0);
 	}
 
 	return -1;

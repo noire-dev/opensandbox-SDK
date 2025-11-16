@@ -18,6 +18,7 @@
 #include "syn.h"
 
 #define MAX_PATH		144
+#define AI_THINKTIME    300
 
 
 //bot states
@@ -29,7 +30,6 @@ float floattime;
 //time to do a regular update
 float regularupdate_time;
 //
-cvar_t bot_thinktime;
 cvar_t bot_memorydump;
 cvar_t bot_saveroutingcache;
 cvar_t bot_pause;
@@ -736,18 +736,17 @@ void RemoveColorEscapeSequences( char *text ) {
 	text[l] = '\0';
 }
 
-/*
-==============
-BotAI
-==============
-*/
 int BotAI(int client, float thinktime) {
 	bot_state_t *bs;
-	char buf[1024], *args;
-	int j;
+	char buf[1024];
+	int i;
 
 	trap_EA_ResetInput(client);
-	//
+	
+	while( trap_BotGetServerCommand(client, buf, sizeof(buf)) ) {
+        //NOTHING, WE JUST ANSWER TO EVERY COMMAND
+	}
+	
 	bs = botstates[client];
 	if (!bs || !bs->inuse) {
 		BotAI_Print(PRT_FATAL, "BotAI: client %d is not setup\n", client);
@@ -757,67 +756,27 @@ int BotAI(int client, float thinktime) {
 	//retrieve the current client state
 	BotAI_GetClientState( client, &bs->cur_ps );
 
-	//retrieve any waiting server commands
-	while( trap_BotGetServerCommand(client, buf, sizeof(buf)) ) {
-		//have buf point to the command and args to the command arguments
-		args = strchr( buf, ' ');
-		if (!args) continue;
-		*args++ = '\0';
-
-		//remove color espace sequences from the arguments
-		RemoveColorEscapeSequences( args );
-
-		if (!Q_stricmp(buf, "cp "))
-			{ /*CenterPrintf*/ }
-		else if (!Q_stricmp(buf, "cs"))
-			{ /*ConfigStringModified*/ }
-		else if (!Q_stricmp(buf, "print")) {
-			//remove first and last quote from the chat message
-			memmove(args, args+1, strlen(args));
-			args[strlen(args)-1] = '\0';
-			trap_BotQueueConsoleMessage(bs->cs, CMS_NORMAL, args);
-		}
-		else if (!Q_stricmp(buf, "chat")) {
-			//remove first and last quote from the chat message
-			memmove(args, args+1, strlen(args));
-			args[strlen(args)-1] = '\0';
-			trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, args);
-		}
-		else if (!Q_stricmp(buf, "tchat")) {
-			//remove first and last quote from the chat message
-			memmove(args, args+1, strlen(args));
-			args[strlen(args)-1] = '\0';
-			trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, args);
-		}
-		else if (!Q_stricmp(buf, "scores"))
-			{ /*FIXME: parse scores?*/ }
-		else if (!Q_stricmp(buf, "clientLevelShot"))
-			{ /*ignore*/ }
-	}
 	//add the delta angles to the bot's current view angles
-	for (j = 0; j < 3; j++) {
-		bs->viewangles[j] = AngleMod(bs->viewangles[j] + SHORT2ANGLE(bs->cur_ps.delta_angles[j]));
+	for (i = 0; i < 3; i++) {
+		bs->viewangles[i] = AngleMod(bs->viewangles[i] + SHORT2ANGLE(bs->cur_ps.delta_angles[i]));
 	}
+	
 	//increase the local time of the bot
 	bs->ltime += thinktime;
-	//
 	bs->thinktime = thinktime;
-	//origin of the bot
 	VectorCopy(bs->cur_ps.origin, bs->origin);
-	//eye coordinates of the bot
 	VectorCopy(bs->cur_ps.origin, bs->eye);
 	bs->eye[2] += bs->cur_ps.viewheight;
-	//get the area the bot is in
 	bs->areanum = BotPointAreaNum(bs->origin);
-	//the real AI
+	
 	BotDeathmatchAI(bs, thinktime);
-	//set the weapon selection every AI frame
 	trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+
 	//subtract the delta angles
-	for (j = 0; j < 3; j++) {
-		bs->viewangles[j] = AngleMod(bs->viewangles[j] - SHORT2ANGLE(bs->cur_ps.delta_angles[j]));
+	for (i = 0; i < 3; i++) {
+		bs->viewangles[i] = AngleMod(bs->viewangles[i] - SHORT2ANGLE(bs->cur_ps.delta_angles[i]));
 	}
-	//everything was ok
+
 	return qtrue;
 }
 
@@ -836,7 +795,7 @@ void BotScheduleBotThink(void) {
 			continue;
 		}
 		//initialize the bot think residual time
-		botstates[i]->botthink_residual = bot_thinktime.integer * botnum / numbots;
+		botstates[i]->botthink_residual = AI_THINKTIME * botnum / numbots;
 		botnum++;
 	}
 }
@@ -1136,68 +1095,20 @@ int BotAILoadMap( int restart ) {
 	return qtrue;
 }
 
-/*
-==================
-BotAIStartFrame
-==================
-*/
-int BotAIStartFrame(int time) {
+int AI_Frame(int time) {
 	int i;
 	gentity_t	*ent;
 	bot_entitystate_t state;
 	int elapsed_time, thinktime;
 	static int local_time;
 	static int botlib_residual;
-	static int lastbotthink_time;
-
-	if(bot_report.integer) {
-		BotUpdateInfoConfigStrings();
-	}
-
-	if (bot_pause.integer) {
-		// execute bot user commands every frame
-		for( i = 0; i < MAX_CLIENTS; i++ ) {
-			if( !botstates[i] || !botstates[i]->inuse ) {
-				continue;
-			}
-			if( g_entities[i].client->pers.connected != CON_CONNECTED ) {
-				continue;
-			}
-			botstates[i]->lastucmd.forwardmove = 0;
-			botstates[i]->lastucmd.rightmove = 0;
-			botstates[i]->lastucmd.upmove = 0;
-			botstates[i]->lastucmd.buttons = 0;
-			botstates[i]->lastucmd.serverTime = time;
-			trap_BotUserCommand(botstates[i]->client, &botstates[i]->lastucmd);
-		}
-		return qtrue;
-	}
-
-	if (bot_memorydump.integer) {
-		trap_BotLibVarSet("memorydump", "1");
-		cvarSet("bot_memorydump", "0");
-	}
-	if (bot_saveroutingcache.integer) {
-		trap_BotLibVarSet("saveroutingcache", "1");
-		cvarSet("bot_saveroutingcache", "0");
-	}
-	//cap the bot think time
-	if (bot_thinktime.integer > 200) {
-		cvarSet("bot_thinktime", "200");
-	}
-	//if the bot think time changed we should reschedule the bots
-	if (bot_thinktime.integer != lastbotthink_time) {
-		lastbotthink_time = bot_thinktime.integer;
-		BotScheduleBotThink();
-	}
 
 	elapsed_time = time - local_time;
 	local_time = time;
-
 	botlib_residual += elapsed_time;
 
-	if (elapsed_time > bot_thinktime.integer) thinktime = elapsed_time;
-	else thinktime = bot_thinktime.integer;
+	if (elapsed_time > AI_THINKTIME) thinktime = elapsed_time;
+	else thinktime = AI_THINKTIME;
 
 	// update the bot library
 	if ( botlib_residual >= thinktime ) {
@@ -1210,38 +1121,14 @@ int BotAIStartFrame(int time) {
 		//update entities in the botlib
 		for (i = 0; i < MAX_GENTITIES; i++) {
 			ent = &g_entities[i];
-			if (!ent->inuse) {
+			//bypass ents
+			if (!ent->inuse || !ent->r.linked || ent->r.svFlags & SVF_NOCLIENT || ent->s.eType == ET_MISSILE || ent->s.eType > ET_EVENTS || ent->r.contents == CONTENTS_TRIGGER) {
 				trap_BotLibUpdateEntity(i, NULL);
 				continue;
 			}
-			if (!ent->r.linked) {
-				trap_BotLibUpdateEntity(i, NULL);
-				continue;
-			}
-			if (ent->r.svFlags & SVF_NOCLIENT) {
-				trap_BotLibUpdateEntity(i, NULL);
-				continue;
-			}
-			// do not update missiles
-			if (ent->s.eType == ET_MISSILE && ent->s.weapon != WP_GRAPPLING_HOOK) {
-				trap_BotLibUpdateEntity(i, NULL);
-				continue;
-			}
-			// do not update event only entities
-			if (ent->s.eType > ET_EVENTS) {
-				trap_BotLibUpdateEntity(i, NULL);
-				continue;
-			}
-			// never link prox mine triggers
-			if (ent->r.contents == CONTENTS_TRIGGER) {
-				if (ent->touch == ProximityMine_Trigger) {
-					trap_BotLibUpdateEntity(i, NULL);
-					continue;
-				}
-			}
-			//
+			
 			memset(&state, 0, sizeof(bot_entitystate_t));
-			//
+			
 			VectorCopy(ent->r.currentOrigin, state.origin);
 			if (i < MAX_CLIENTS) {
 				VectorCopy(ent->s.apos.trBase, state.angles);
@@ -1265,10 +1152,9 @@ int BotAIStartFrame(int time) {
 			state.legsAnim = ent->s.legsAnim;
 			state.torsoAnim = ent->s.torsoAnim;
 			state.weapon = ent->s.weapon;
-			//
+			
 			trap_BotLibUpdateEntity(i, &state);
 		}
-
 		BotAIRegularUpdate();
 	}
 
@@ -1276,32 +1162,20 @@ int BotAIStartFrame(int time) {
 
 	// execute scheduled bot AI
 	for( i = 0; i < MAX_CLIENTS; i++ ) {
-		if( !botstates[i] || !botstates[i]->inuse ) {
-			continue;
-		}
-		//
+		if( !botstates[i] || !botstates[i]->inuse ) continue;
 		botstates[i]->botthink_residual += elapsed_time;
-		//
+		
 		if ( botstates[i]->botthink_residual >= thinktime ) {
 			botstates[i]->botthink_residual -= thinktime;
-
 			if (!trap_AAS_Initialized()) return qfalse;
-
-			if (g_entities[i].client->pers.connected == CON_CONNECTED) {
-				BotAI(i, (float) thinktime / 1000);
-			}
+			if (g_entities[i].client->pers.connected == CON_CONNECTED) BotAI(i, (float) thinktime / 1000);
 		}
 	}
 
-
-	// execute bot user commands every frame
+	// execute bot commands
 	for( i = 0; i < MAX_CLIENTS; i++ ) {
-		if( !botstates[i] || !botstates[i]->inuse ) {
-			continue;
-		}
-		if( g_entities[i].client->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
+		if( !botstates[i] || !botstates[i]->inuse ) continue;
+		if( g_entities[i].client->pers.connected != CON_CONNECTED ) continue;
 
 		BotUpdateInput(botstates[i], time, elapsed_time);
 		trap_BotUserCommand(botstates[i]->client, &botstates[i]->lastucmd);
@@ -1334,7 +1208,6 @@ BotAISetup
 int BotAISetup( int restart ) {
 	int			errnum;
 
-	cvarRegister("bot_thinktime", "100", CVAR_CHEAT);
 	cvarRegister("bot_memorydump", "0", CVAR_CHEAT);
 	cvarRegister("bot_saveroutingcache", "0", CVAR_CHEAT);
 	cvarRegister("bot_pause", "0", CVAR_CHEAT);

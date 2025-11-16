@@ -1,97 +1,8 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-//#define DEBUG
-#define CTF
-//bot flags
-#define BFL_STRAFERIGHT				1	//strafe to the right
-#define BFL_ATTACKED				2	//bot has attacked last ai frame
-#define BFL_ATTACKJUMPED			4	//bot jumped during attack last frame
-#define BFL_AIMATENEMY				8	//bot aimed at the enemy this frame
-#define BFL_AVOIDRIGHT				16	//avoid obstacles by going to the right
-#define BFL_IDEALVIEWSET			32	//bot has ideal view angles set
-#define BFL_FIGHTSUICIDAL			64	//bot is in a suicidal fight
-//long term goal types
-#define LTG_TEAMHELP				1	//help a team mate
-#define LTG_TEAMACCOMPANY			2	//accompany a team mate
-#define LTG_DEFENDKEYAREA			3	//defend a key area
-#define LTG_GETFLAG					4	//get the enemy flag
-#define LTG_RUSHBASE				5	//rush to the base
-#define LTG_RETURNFLAG				6	//return the flag
-#define LTG_CAMP					7	//camp somewhere
-#define LTG_CAMPORDER				8	//ordered to camp somewhere
-#define LTG_PATROL					9	//patrol
-#define LTG_GETITEM					10	//get an item
-#define LTG_KILL					11	//kill someone
-#define LTG_HARVEST					12	//harvest skulls
-#define LTG_ATTACKENEMYBASE			13	//attack the enemy base
-#define LTG_MAKELOVE_UNDER			14
-#define LTG_MAKELOVE_ONTOP			15
-//some goal dedication times
-#define TEAM_HELP_TIME				60	//1 minute teamplay help time
-#define TEAM_ACCOMPANY_TIME			600	//10 minutes teamplay accompany time
-#define TEAM_DEFENDKEYAREA_TIME		600	//10 minutes ctf defend base time
-#define TEAM_CAMP_TIME				600	//10 minutes camping time
-#define TEAM_PATROL_TIME			600	//10 minutes patrolling time
-#define TEAM_LEAD_TIME				600	//10 minutes taking the lead
-#define TEAM_GETITEM_TIME			60	//1 minute
-#define	TEAM_KILL_SOMEONE			180	//3 minute to kill someone
-#define TEAM_ATTACKENEMYBASE_TIME	600	//10 minutes
-#define TEAM_HARVEST_TIME			120	//2 minutes
-#define CTF_GETFLAG_TIME			600	//10 minutes ctf get flag time
-#define CTF_RUSHBASE_TIME			120	//2 minutes ctf rush base time
-#define CTF_RETURNFLAG_TIME			180	//3 minutes to return the flag
-#define CTF_ROAM_TIME				60	//1 minute ctf roam time
-//patrol flags
-#define PATROL_LOOP					1
-#define PATROL_REVERSE				2
-#define PATROL_BACK					4
-//teamplay task preference
-#define TEAMTP_DEFENDER				1
-#define TEAMTP_ATTACKER				2
-//CTF strategy
-#define CTFS_AGRESSIVE				1
-//copied from the aas file header
-#define PRESENCE_NONE				1
-#define PRESENCE_NORMAL				2
-#define PRESENCE_CROUCH				4
-//
-#define MAX_PROXMINES				64
-
-//check points
-typedef struct bot_waypoint_s
-{
-	int			inuse;
-	char		name[32];
-	bot_goal_t	goal;
-	struct		bot_waypoint_s *next, *prev;
-} bot_waypoint_t;
-
-#define MAX_ACTIVATESTACK		8
-#define MAX_ACTIVATEAREAS		32
-
-typedef struct bot_activategoal_s
-{
-	int inuse;
-	bot_goal_t goal;						//goal to activate (buttons etc.)
-	float time;								//time to activate something
-	float start_time;						//time starting to activate something
-	float justused_time;					//time the goal was used
-	int shoot;								//true if bot has to shoot to activate
-	int weapon;								//weapon to be used for activation
-	vec3_t target;							//target to shoot at to activate something
-	vec3_t origin;							//origin of the blocking entity to activate
-	int areas[MAX_ACTIVATEAREAS];			//routing areas disabled by blocking entity
-	int numareas;							//number of disabled routing areas
-	int areasdisabled;						//true if the areas are disabled for the routing
-	struct bot_activategoal_s *next;		//next activate goal on stack
-} bot_activategoal_t;
-
-//bot state
-typedef struct bot_state_s
-{
+typedef struct sai_state_s {
 	int inuse;										//true if this state is used by a bot client
 	int botthink_residual;							//residual for the bot thinks
 	int client;										//client number of the bot
@@ -103,7 +14,7 @@ typedef struct bot_state_s
 	int entityeventTime[MAX_GENTITIES];				//last entity event time
 	//
 	bot_settings_t settings;						//several bot settings
-	int (*ainode)(struct bot_state_s *bs);			//current AI node
+	int (*state)(struct sai_state_s *bs);			//current AI node
 	float thinktime;								//time the bot thinks this frame
 	vec3_t origin;									//origin of the bot
 	vec3_t velocity;								//velocity of the bot
@@ -251,26 +162,12 @@ typedef struct bot_state_s
 	int patrolflags;								//patrol flags
 	int	swep_list[WEAPONS_NUM];						//OpenSandbox weapon system
 	int	swep_ammo[WEAPONS_NUM];						//OpenSandbox ammo system
-	int item_searchtime;
-	bot_goal_t maingoal;
-} bot_state_t;
+} sai_state_t;
 
-//resets the whole bot state
-void BotResetState(bot_state_t *bs);
-//returns the number of bots in the game
-int NumBots(void);
-//returns info about the entity
-void BotEntityInfo(int entnum, aas_entityinfo_t *info);
-
-extern float floattime;
-#define FloatTime() floattime
-
-// from the game source
-void	QDECL BotAI_Print(int type, char *fmt, ...);
-void	QDECL QDECL BotAI_BotInitialChat( bot_state_t *bs, char *type, ... );
-void	BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
-int		BotAI_GetClientState( int clientNum, playerState_t *state );
-int		BotAI_GetEntityState( int entityNum, entityState_t *state );
-int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );
-int		BotSelectOpenSandboxWeapon(bot_state_t *bs);
-int		BotTeamLeader(bot_state_t *bs);
+// sai_state.c
+int AI_Intermission(sai_state_t *bs);
+int AI_Observer(sai_state_t *bs);
+int AI_Respawn(sai_state_t *bs);
+int AI_Battle(sai_state_t *bs);
+int AI_Seek(sai_state_t *bs);
+int AI_Stand(sai_state_t *bs);

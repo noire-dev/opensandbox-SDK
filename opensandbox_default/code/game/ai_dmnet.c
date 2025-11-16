@@ -145,29 +145,9 @@ int BotGoForAir(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
 	return qfalse;
 }
 
-/*
-==================
-BotNearbyGoal
-==================
-*/
 int BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
-	int ret;
-
 	if(!gameInfoNPCTypes[bs->npcType].canPickup) return qfalse;
-
-	//check if the bot should go for air
-	if (BotGoForAir(bs, tfl, ltg, range)) return qtrue;
-	//if the bot is carrying the enemy flag
-	if (BotCTFCarryingFlag(bs)) {
-		//if the bot is just a few secs away from the base 
-		if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin,
-				bs->teamgoal.areanum, TFL_DEFAULT) < 300) {
-			//make the range really small
-			range = 50;
-		}
-	}
-	ret = trap_BotChooseNBGItem(bs->gs, bs->origin, bs->inventory, tfl, ltg, range);
-	return ret;
+	return trap_BotChooseNBGItem(bs->gs, bs->origin, bs->inventory, tfl, ltg, range);
 }
 
 /*
@@ -1550,7 +1530,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 	bot_moveresult_t moveresult;
 
 	if (BotIsObserver(bs)) {
-		AIEnter_Observer(bs, "seek nbg: observer");
+		bs->ainode = AINode_Observer;
 		return qfalse;
 	}
 	//if in the intermission
@@ -1670,167 +1650,95 @@ void AIEnter_Seek_LTG(bot_state_t *bs, char *s) {
 	bs->ainode = AINode_Seek_LTG;
 }
 
-/*
-==================
-AINode_Seek_LTG
-==================
-*/
-int AINode_Seek_LTG(bot_state_t *bs)
-{
-	bot_goal_t goal;
+void BotAimAtMovementDirection(bot_state_t *bs) {
+    bot_input_t bi;
+    vec3_t temp_dir;
+    
+    // Получаем текущий ввод бота
+    trap_EA_GetInput(bs->client, (float) bs->thinktime / 1000, &bi);
+    
+    // Если бот не двигается, выходим
+    if (VectorLength(bi.dir) < 0.1f) return;
+    
+    // Создаем временный вектор направления для вычисления углов
+    VectorCopy(bi.dir, temp_dir);
+    
+    // Обнуляем вертикальную компоненту, чтобы смотреть только по горизонтали
+    temp_dir[2] = 0;
+    
+    // Нормализуем вектор, если он не нулевой
+    if (VectorNormalize(temp_dir) > 0) {
+        // Преобразуем направление в углы
+        vectoangles(temp_dir, bs->ideal_viewangles);
+        
+        // Сохраняем текущий вертикальный угол, меняем только горизонтальный
+        bs->ideal_viewangles[PITCH] = bs->viewangles[PITCH];
+        bs->ideal_viewangles[ROLL] = 0; // Обнуляем крен
+        
+        // Копируем идеальные углы в текущие
+        VectorCopy(bs->ideal_viewangles, bs->viewangles);
+        
+        // Применяем новые углы обзора
+        trap_EA_View(bs->client, bs->viewangles);
+    }
+}
+
+bot_goal_t AI_GoalFromRandomItem(bot_state_t *bs){
+    bot_goal_t result;
+    gentity_t* item;
+    
+    memset(&result, 0, sizeof(bot_goal_t));
+    
+    item = FindRandomItem();
+    if (item) {
+        G_Printf("Goal finded: %s \n", item->classname);
+        VectorCopy(item->r.currentOrigin, result.origin);
+        result.areanum = BotPointAreaNum(item->r.currentOrigin);
+        VectorSet(result.mins, -8, -8, -8);
+		VectorSet(result.maxs, 8, 8, 8);
+        result.entitynum = item->s.number;
+    }
+    
+    return result;
+}
+
+int AINode_Seek_LTG(bot_state_t *bs) {
 	vec3_t target, dir;
 	bot_moveresult_t moveresult;
-	int range;
-	//char buf[128];
-	//bot_goal_t tmpgoal;
 
 	if (BotIsObserver(bs)) {
-		AIEnter_Observer(bs, "seek ltg: observer");
+		bs->ainode = AINode_Observer;
 		return qfalse;
 	}
-	//if in the intermission
 	if (BotIntermission(bs)) {
-		AIEnter_Intermission(bs, "seek ltg: intermission");
+		bs->ainode = AINode_Intermission;
 		return qfalse;
 	}
-	//respawn if dead
 	if (BotIsDead(bs)) {
-		AIEnter_Respawn(bs, "seek ltg: bot dead");
+		bs->ainode = AINode_Respawn;
 		return qfalse;
 	}
-	//
-	if (BotChat_Random(bs)) {
-		bs->stand_time = FloatTime() + BotChatTime(bs);
-		AIEnter_Stand(bs, "seek ltg: random chat");
-		return qfalse;
-	}
-	//
+
 	bs->tfl = TFL_DEFAULT;
-	if (cvarInt("bot_grapple")) bs->tfl |= TFL_GRAPPLEHOOK;
-	//if in lava or slime the bot should be able to get out
+	
 	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-	//
-	if (BotCanAndWantsToRocketJump(bs)) {
-		bs->tfl |= TFL_ROCKETJUMP;
-	}
-	//no enemy
-	bs->enemy = -1;
-	//
-	if (bs->killedenemy_time > FloatTime() - 2) {
-		if (random() < bs->thinktime * 1) {
-			trap_EA_Gesture(bs->client);
-		}
-	}
-	//if there is an enemy
+	
+	bs->enemy = -1;     //no enemy
 	if (BotFindEnemy(bs, -1)) {
-		if (BotWantsToRetreat(bs)) {
-			//keep the current long term goal and retreat
-			AIEnter_Battle_Retreat(bs, "seek ltg: found enemy");
-			return qfalse;
-		}
-		else {
-			trap_BotResetLastAvoidReach(bs->ms);
-			//empty the goal stack
-			trap_BotEmptyGoalStack(bs->gs);
-			//go fight
-			AIEnter_Battle_Fight(bs, "seek ltg: found enemy");
-			return qfalse;
-		}
-	}
-	//
-	BotTeamGoals(bs, qfalse);
-	//get the current long term goal
-	if (!BotLongTermGoal(bs, bs->tfl, qfalse, &goal)) {
-		return qtrue;
-	}
-	//check for nearby goals periodicly
-	if (bs->check_time < FloatTime()) {
-		bs->check_time = FloatTime() + 0.5;
-		//check if the bot wants to camp
-		BotWantsToCamp(bs);
-		//
-		if (bs->ltgtype == LTG_DEFENDKEYAREA) range = 400;
-		else range = 150;
-		//
-#ifdef CTF
-		if (gametype == GT_CTF) {
-			//if carrying a flag the bot shouldn't be distracted too much
-			if (BotCTFCarryingFlag(bs))
-				range = 50;
-		}
-#endif //CTF
-		else if (gametype == GT_1FCTF) {
-			if (Bot1FCTFCarryingFlag(bs))
-				range = 50;
-		}
-		else if (gametype == GT_HARVESTER) {
-			if (BotHarvesterCarryingCubes(bs))
-				range = 80;
-		}
-		//
-		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
-			trap_BotResetLastAvoidReach(bs->ms);
-			//get the goal at the top of the stack
-			//trap_BotGetTopGoal(bs->gs, &tmpgoal);
-			//trap_BotGoalName(tmpgoal.number, buf, 144);
-			//BotAI_Print(PRT_MESSAGE, "new nearby goal %s\n", buf);
-			//time the bot gets to pick up the nearby goal item
-			bs->nbg_time = FloatTime() + 4 + range * 0.01;
-			AIEnter_Seek_NBG(bs, "ltg seek: nbg");
-			return qfalse;
-		}
-	}
-	//predict obstacles
-	if (BotAIPredictObstacles(bs, &goal))
+		bs->ainode = AINode_Battle_Fight;
 		return qfalse;
-	//initialize the movement state
-	BotSetupForMovement(bs);
-	//move towards the goal
-	trap_BotMoveToGoal(&moveresult, bs->ms, &goal, bs->tfl);
-	//if the movement failed
-	if (moveresult.failure) {
-		//reset the avoid reach, otherwise bot is stuck in current area
-		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
-		bs->ltg_time = 0;
 	}
-	//
-	BotAIBlocked(bs, &moveresult, qtrue);
-	//
-	BotClearPath(bs, &moveresult);
-	//if the viewangles are used for the movement
-	if (moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET|MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) {
-		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
+	
+    if (level.time > bs->item_searchtime || trap_BotTouchingGoal(bs->origin, &bs->maingoal)) {
+        bs->maingoal = AI_GoalFromRandomItem(bs);
+        bs->item_searchtime = level.time + 30000;
+    }
+	
+	if(bs->maingoal.entitynum){
+	    BotSetupForMovement(bs);
+	    trap_BotMoveToGoal(&moveresult, bs->ms, &bs->maingoal, bs->tfl);
+	    BotAimAtMovementDirection(bs);
 	}
-	//if waiting for something
-	else if (moveresult.flags & MOVERESULT_WAITING) {
-		if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-			VectorSubtract(target, bs->origin, dir);
-			vectoangles(dir, bs->ideal_viewangles);
-			bs->ideal_viewangles[2] *= 0.5;
-		}
-	}
-	else if (!(bs->flags & BFL_IDEALVIEWSET)) {
-		if (trap_BotMovementViewTarget(bs->ms, &goal, bs->tfl, 300, target)) {
-			VectorSubtract(target, bs->origin, dir);
-			vectoangles(dir, bs->ideal_viewangles);
-		}
-		//FIXME: look at cluster portals?
-		else if (VectorLengthSquared(moveresult.movedir)) {
-			vectoangles(moveresult.movedir, bs->ideal_viewangles);
-		}
-		else if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-			VectorSubtract(target, bs->origin, dir);
-			vectoangles(dir, bs->ideal_viewangles);
-			bs->ideal_viewangles[2] *= 0.5;
-		}
-		bs->ideal_viewangles[2] *= 0.5;
-	}
-	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
-	//
 	return qtrue;
 }
 
@@ -1857,155 +1765,52 @@ void AIEnter_Battle_SuicidalFight(bot_state_t *bs, char *s) {
 	bs->flags |= BFL_FIGHTSUICIDAL;
 }
 
-/*
-==================
-AINode_Battle_Fight
-==================
-*/
 int AINode_Battle_Fight(bot_state_t *bs) {
 	int areanum;
 	vec3_t target;
 	aas_entityinfo_t entinfo;
 	bot_moveresult_t moveresult;
 
-	if (BotIsObserver(bs)) {
-		AIEnter_Observer(bs, "battle fight: observer");
+	BotFindEnemy(bs, bs->enemy);
+
+	if (bs->enemy < 0) {
+		bs->ainode = AINode_Seek_LTG;
 		return qfalse;
 	}
 
-	//if in the intermission
-	if (BotIntermission(bs)) {
-		AIEnter_Intermission(bs, "battle fight: intermission");
-		return qfalse;
-	}
-	//respawn if dead
-	if (BotIsDead(bs)) {
-		AIEnter_Respawn(bs, "battle fight: bot dead");
-		return qfalse;
-	}
-	//if there is another better enemy
-	if (BotFindEnemy(bs, bs->enemy)) {
-#ifdef DEBUG
-		BotAI_Print(PRT_MESSAGE, "found new better enemy\n");
-#endif
-	}
-	//if no enemy
-	if (bs->enemy < 0) {
-		AIEnter_Seek_LTG(bs, "battle fight: no enemy");
-		return qfalse;
-	}
-	//
 	BotEntityInfo(bs->enemy, &entinfo);
-	//if the enemy is dead
-	if (bs->enemydeath_time) {
-		if (bs->enemydeath_time < FloatTime() - 1.0) {
-			bs->enemydeath_time = 0;
-			if (bs->enemysuicide) {
-				BotChat_EnemySuicide(bs);
-			}
-			if (bs->lastkilledplayer == bs->enemy && BotChat_Kill(bs)) {
-				bs->stand_time = FloatTime() + BotChatTime(bs);
-				AIEnter_Stand(bs, "battle fight: enemy dead");
-			}
-			else {
-				bs->ltg_time = 0;
-				AIEnter_Seek_LTG(bs, "battle fight: enemy dead");
-			}
-			return qfalse;
-		}
-	}
-	else {
-		if (EntityIsDead(&entinfo)) {
-			bs->enemydeath_time = FloatTime();
-		}
-	}
+
 	//if the enemy is invisible and not shooting the bot looses track easily
 	if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
 		if (random() < 0.2) {
-			AIEnter_Seek_LTG(bs, "battle fight: invisible");
+			bs->ainode = AINode_Seek_LTG;
 			return qfalse;
 		}
 	}
-	//
+	
 	VectorCopy(entinfo.origin, target);
-	// if not a player enemy
-	if (bs->enemy >= MAX_CLIENTS) {
-		// if attacking an obelisk
-		if ( bs->enemy == redobelisk.entitynum ||
-			bs->enemy == blueobelisk.entitynum ) {
-			target[2] += 16;
-		}
-	}
+	
 	//update the reachability area and origin if possible
 	areanum = BotPointAreaNum(target);
 	if (areanum && trap_AAS_AreaReachability(areanum)) {
 		VectorCopy(target, bs->lastenemyorigin);
 		bs->lastenemyareanum = areanum;
 	}
-	//update the attack inventory values
-	BotUpdateBattleInventory(bs, bs->enemy);
-	//if the bot's health decreased
-	if (bs->lastframe_health > bs->inventory[INVENTORY_HEALTH]) {
-		if (BotChat_HitNoDeath(bs)) {
-			bs->stand_time = FloatTime() + BotChatTime(bs);
-			AIEnter_Stand(bs, "battle fight: chat health decreased");
-			return qfalse;
-		}
-	}
-	//if the bot hit someone
-	if (bs->cur_ps.persistant[PERS_HITS] > bs->lasthitcount) {
-		if (BotChat_HitNoKill(bs)) {
-			bs->stand_time = FloatTime() + BotChatTime(bs);
-			AIEnter_Stand(bs, "battle fight: chat hit someone");
-			return qfalse;
-		}
-	}
+
 	//if the enemy is not visible
 	if (!BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy) && bs->npcType != NT_NEXTBOT) {
-		if (BotWantsToChase(bs)) {
-			AIEnter_Battle_Chase(bs, "battle fight: enemy out of sight");
-			return qfalse;
-		}
-		else {
-			AIEnter_Seek_LTG(bs, "battle fight: enemy out of sight");
-			return qfalse;
-		}
+		bs->ainode = AINode_Seek_LTG;
+		return qfalse;
 	}
-	//use holdable items
-	BotBattleUseItems(bs);
-	//
+
 	bs->tfl = TFL_DEFAULT;
-	if (cvarInt("bot_grapple")) bs->tfl |= TFL_GRAPPLEHOOK;
-	//if in lava or slime the bot should be able to get out
+
 	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-	//
-	if (BotCanAndWantsToRocketJump(bs)) {
-		bs->tfl |= TFL_ROCKETJUMP;
-	}
-	//choose the best weapon to fight with
+
 	BotChooseWeapon(bs);
-	//do attack movements
-	moveresult = BotAttackMove(bs, bs->tfl);
-	//if the movement failed
-	if (moveresult.failure) {
-		//reset the avoid reach, otherwise bot is stuck in current area
-		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
-		bs->ltg_time = 0;
-	}
-	//
-	BotAIBlocked(bs, &moveresult, qfalse);
-	//aim at the enemy
+	BotAttackMove(bs, bs->tfl);
 	BotAimAtEnemy(bs);
-	//attack the enemy if possible
 	BotCheckAttack(bs);
-	//if the bot wants to retreat
-	if (!(bs->flags & BFL_FIGHTSUICIDAL)) {
-		if (BotWantsToRetreat(bs)) {
-			AIEnter_Battle_Retreat(bs, "battle fight: wants to retreat");
-			return qtrue;
-		}
-	}
 	return qtrue;
 }
 

@@ -486,6 +486,7 @@ void FinishSpawningItem(gentity_t *ent);
 void G_CheckTeamItems(void);
 void G_SpawnItem(gentity_t *ent, item_t *item);
 void G_RunItem(gentity_t *ent);
+gentity_t *FindRandomItem(void);
 
 // g_main.c
 void QDECL G_Printf(const char *fmt, ...);
@@ -656,7 +657,7 @@ int BotAIShutdown(int restart);
 int BotAILoadMap(int restart);
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart);
 int BotAIShutdownClient(int client, qboolean restart);
-int BotAIStartFrame(int time);
+int AI_Frame(int time);
 void BotTestAAS(vec3_t origin);
 
 extern level_locals_t level;

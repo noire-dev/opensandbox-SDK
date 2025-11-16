@@ -410,8 +410,8 @@ static void CG_RegisterGraphics(void) {
 	memset(cg_weapons, 0, sizeof(cg_weapons));
 
 	for(i = 1; i < gameInfoItemsNum; i++) {
-		CG_LoadingItem(i);
-		CG_RegisterItemVisuals(i);
+		//CG_LoadingItem(i);
+		//CG_RegisterItemVisuals(i);
 	}
 
 	// wall marks

@@ -205,19 +205,8 @@ qboolean EntityCarriesFlag(aas_entityinfo_t *entinfo) {
 	return qfalse;
 }
 
-/*
-==================
-EntityIsInvisible
-==================
-*/
 qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
-	// the flag is always visible
-	if (EntityCarriesFlag(entinfo)) {
-		return qfalse;
-	}
-	if (entinfo->powerups & (1 << PW_INVIS)) {
-		return qtrue;
-	}
+	if (entinfo->powerups & (1 << PW_INVIS)) return qtrue;
 	return qfalse;
 }
 
@@ -1728,8 +1717,7 @@ void BotUpdateInventory(bot_state_t *bs) {
 	if (BotTeam(bs) == TEAM_RED) {
 		bs->inventory[INVENTORY_REDCUBE] = bs->cur_ps.generic1;
 		bs->inventory[INVENTORY_BLUECUBE] = 0;
-	}
-	else {
+	} else {
 		bs->inventory[INVENTORY_REDCUBE] = 0;
 		bs->inventory[INVENTORY_BLUECUBE] = bs->cur_ps.generic1;
 	}
@@ -2444,7 +2432,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 
 	attackentity = bs->enemy;
 	//
-	if (bs->attackchase_time > FloatTime() || bs->npcType == NT_NEXTBOT) {
+	if (bs->npcType == NT_NEXTBOT) {
 		//create the chase goal
 		goal.entitynum = attackentity;
 		goal.areanum = bs->lastenemyareanum;
@@ -2581,13 +2569,7 @@ int BotSameTeam(bot_state_t *bs, int entnum) {
 	return qfalse;
 }
 
-/*
-==================
-InFieldOfVision
-==================
-*/
-qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles)
-{
+qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles) {
 	int i;
 	float diff, angle;
 
@@ -2611,114 +2593,18 @@ qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles)
 	return qtrue;
 }
 
-/*
-==================
-BotEntityVisible
-
-returns visibility in the range [0, 1] taking fog and water surfaces into account
-==================
-*/
 float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int ent) {
-	int i, contents_mask, passent, hitent, infog, inwater, otherinfog, pc;
-	float squaredfogdist, waterfactor, vis, bestvis;
 	bsp_trace_t trace;
 	aas_entityinfo_t entinfo;
-	vec3_t dir, entangles, start, end, middle;
 
-	//calculate middle of bounding box
 	BotEntityInfo(ent, &entinfo);
-	VectorAdd(entinfo.mins, entinfo.maxs, middle);
-	VectorScale(middle, 0.5, middle);
-	VectorAdd(entinfo.origin, middle, middle);
-	//check if entity is within field of vision
-	VectorSubtract(middle, eye, dir);
-	vectoangles(dir, entangles);
-	if (!InFieldOfVision(viewangles, fov, entangles)) return 0;
-	//
-	pc = trap_AAS_PointContents(eye);
-	infog = (pc & CONTENTS_FOG);
-	inwater = (pc & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER));
-	//
-	bestvis = 0;
-	for (i = 0; i < 3; i++) {
-		contents_mask = CONTENTS_SOLID|CONTENTS_PLAYERCLIP;
-		passent = viewer;
-		hitent = ent;
-		VectorCopy(eye, start);
-		VectorCopy(middle, end);
-		//if the entity is in water, lava or slime
-		if (trap_AAS_PointContents(middle) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) {
-			contents_mask |= (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
-		}
-		//if eye is in water, lava or slime
-		if (inwater) {
-			if (!(contents_mask & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))) {
-				passent = ent;
-				hitent = viewer;
-				VectorCopy(middle, start);
-				VectorCopy(eye, end);
-			}
-			contents_mask ^= (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
-		}
-		//trace from start to end
-		BotAI_Trace(&trace, start, NULL, NULL, end, passent, contents_mask);
-		//if water was hit
-		waterfactor = 1.0;
-		if (trace.contents & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) {
-			//if the water surface is translucent
-			if (1) {
-				//trace through the water
-				contents_mask &= ~(CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
-				BotAI_Trace(&trace, trace.endpos, NULL, NULL, end, passent, contents_mask);
-				waterfactor = 0.5;
-			}
-		}
-		//if a full trace or the hitent was hit
-		if (trace.fraction >= 1 || trace.ent == hitent) {
-			//check for fog, assuming there's only one fog brush where
-			//either the viewer or the entity is in or both are in
-			otherinfog = (trap_AAS_PointContents(middle) & CONTENTS_FOG);
-			if (infog && otherinfog) {
-				VectorSubtract(trace.endpos, eye, dir);
-				squaredfogdist = VectorLengthSquared(dir);
-			}
-			else if (infog) {
-				VectorCopy(trace.endpos, start);
-				BotAI_Trace(&trace, start, NULL, NULL, eye, viewer, CONTENTS_FOG);
-				VectorSubtract(eye, trace.endpos, dir);
-				squaredfogdist = VectorLengthSquared(dir);
-			}
-			else if (otherinfog) {
-				VectorCopy(trace.endpos, end);
-				BotAI_Trace(&trace, eye, NULL, NULL, end, viewer, CONTENTS_FOG);
-				VectorSubtract(end, trace.endpos, dir);
-				squaredfogdist = VectorLengthSquared(dir);
-			}
-			else {
-				//if the entity and the viewer are not in fog assume there's no fog in between
-				squaredfogdist = 0;
-			}
-			//decrease visibility with the view distance through fog
-			vis = 1 / ((squaredfogdist * 0.001) < 1 ? 1 : (squaredfogdist * 0.001));
-			//if entering water visibility is reduced
-			vis *= waterfactor;
-			//
-			if (vis > bestvis) bestvis = vis;
-			//if pretty much no fog
-			if (bestvis >= 0.95) return bestvis;
-		}
-		//check bottom and top of bounding box as well
-		if (i == 0) middle[2] += entinfo.mins[2];
-		else if (i == 1) middle[2] += entinfo.maxs[2] - entinfo.mins[2];
-	}
-	return bestvis;
+	
+	BotAI_Trace(&trace, eye, NULL, NULL, entinfo.origin, viewer, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
+
+	if (trace.fraction >= 1 || trace.ent == ent) return 1.00;
+	return 0.00;
 }
 
-/*
-==================
-BotFindEnemy
-==================
-*/
 int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	int i, healthdecrease;
 	float vis;
@@ -2726,89 +2612,39 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	aas_entityinfo_t entinfo, curenemyinfo;
 	vec3_t dir;
 
-	//check if the health decreased
-	healthdecrease = bs->lasthealth > bs->inventory[INVENTORY_HEALTH];
-	//remember the current health value
-	bs->lasthealth = bs->inventory[INVENTORY_HEALTH];
-	//
 	if (curenemy >= 0) {
 		BotEntityInfo(curenemy, &curenemyinfo);
-		if (EntityCarriesFlag(&curenemyinfo)) return qfalse;
 		VectorSubtract(curenemyinfo.origin, bs->origin, dir);
 		cursquaredist = VectorLengthSquared(dir);
 	} else {
 		cursquaredist = 0;
-	} if (gametype == GT_OBELISK) {
-		vec3_t target;
-		bot_goal_t *goal;
-		bsp_trace_t trace;
-
-		if (BotTeam(bs) == TEAM_RED)
-			goal = &blueobelisk;
-		else
-			goal = &redobelisk;
-		//if the obelisk is visible
-		VectorCopy(goal->origin, target);
-		target[2] += 1;
-		BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
-		if (trace.fraction >= 1 || trace.ent == goal->entitynum) {
-			if (goal->entitynum == bs->enemy) {
-				return qfalse;
-			}
-			bs->enemy = goal->entitynum;
-			bs->enemysight_time = FloatTime();
-			bs->enemysuicide = qfalse;
-			bs->enemydeath_time = 0;
-			bs->enemyvisible_time = FloatTime();
-			return qtrue;
-		}
 	}
-	//
+	
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if (i == bs->client) continue;
-		//if it's the current enemy
 		if (i == curenemy) continue;
-		//
 		BotEntityInfo(i, &entinfo);
-		//
 		if (!entinfo.valid) continue;
-		//if the enemy isn't dead and the enemy isn't the bot self
 		if (EntityIsDead(&entinfo) || entinfo.number == bs->entitynum) continue;
-		//if the enemy is invisible and not shooting
-		if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
-			continue;
-		}
-		//
-		if (lastteleport_time > FloatTime() - 3) {
-			VectorSubtract(entinfo.origin, lastteleport_origin, dir);
-			if (VectorLengthSquared(dir) < Square(70)) continue;
-		}
+		if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) continue;
+
 		//calculate the distance towards the enemy
 		VectorSubtract(entinfo.origin, bs->origin, dir);
 		squaredist = VectorLengthSquared(dir);
-		//if this entity is not carrying a flag
-		if (!EntityCarriesFlag(&entinfo)) {
-			//if this enemy is further away than the current one
-			if (curenemy >= 0 && squaredist > cursquaredist) continue;
-		} //end if
-		//if the bot has no
+		if (curenemy >= 0 && squaredist > cursquaredist) continue;
+
 		if (squaredist > Square(16384.0)) continue;
-		//if on the same team
 		if (BotSameTeam(bs, i)) continue;
-		//check if the enemy is visible
+		
 		if(bs->npcType != NT_NEXTBOT){
 			vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, i);
 		} else {
-			vis = 1;
+			vis = 1.00;
 		}
-		if (vis <= 0) continue;
+		if (vis <= 0.00) continue;
+		
 		//found an enemy
 		bs->enemy = entinfo.number;
-		if (curenemy >= 0) bs->enemysight_time = FloatTime() - 2;
-		else bs->enemysight_time = FloatTime();
-		bs->enemysuicide = qfalse;
-		bs->enemydeath_time = 0;
-		bs->enemyvisible_time = FloatTime();
 		return qtrue;
 	}
 	return qfalse;
@@ -3019,256 +2855,23 @@ int BotEnemyCubeCarrierVisible(bot_state_t *bs) {
 	return -1;
 }
 
-/*
-==================
-BotAimAtEnemy
-==================
-*/
 void BotAimAtEnemy(bot_state_t *bs) {
-	int enemyvisible;
-	float dist, f, aim_skill, aim_accuracy, speed;
-	vec3_t dir, bestorigin, end, start, groundtarget, cmdmove, enemyvelocity;
-	vec3_t mins = {-4,-4,-4}, maxs = {4, 4, 4};
-	weaponinfo_t wi;
+	vec3_t dir;
 	aas_entityinfo_t entinfo;
-	bot_goal_t goal;
-	bsp_trace_t trace;
-	vec3_t target;
-
-	//if the bot has no enemy
-	if (bs->enemy < 0) {
-		return;
-	}
-	//get the enemy entity information
+	
+	if (bs->enemy < 0) return;
+	
 	BotEntityInfo(bs->enemy, &entinfo);
-	//if this is not a player (should be an obelisk)
-	if (bs->enemy >= MAX_CLIENTS) {
-		//if the obelisk is visible
-		VectorCopy(entinfo.origin, target);
-		// if attacking an obelisk
-		if ( bs->enemy == redobelisk.entitynum ||
-			bs->enemy == blueobelisk.entitynum ) {
-			target[2] += 32;
-		}
-		//aim at the obelisk
-		VectorSubtract(target, bs->eye, dir);
-		vectoangles(dir, bs->ideal_viewangles);
-		//set the aim target before trying to attack
-		VectorCopy(target, bs->aimtarget);
-		return;
-	}
-
-	aim_skill = 1.00;
-	aim_accuracy = 1.00;
-
-	//get the weapon information
-	FillWeaponInfo(&wi);
-	//get the enemy entity information
-	BotEntityInfo(bs->enemy, &entinfo);
-	//if the enemy is invisible then shoot crappy most of the time
-	if (EntityIsInvisible(&entinfo)) {
-		if (random() > 0.1) aim_accuracy *= 0.4f;
-	}
-	VectorSubtract(entinfo.origin, entinfo.lastvisorigin, enemyvelocity);
-	VectorScale(enemyvelocity, 1 / entinfo.update_time, enemyvelocity);
-	//enemy origin and velocity is remembered every 0.5 seconds
-	if (bs->enemyposition_time < FloatTime()) {
-		//
-		bs->enemyposition_time = FloatTime() + 0.5;
-		VectorCopy(enemyvelocity, bs->enemyvelocity);
-		VectorCopy(entinfo.origin, bs->enemyorigin);
-	}
-	VectorSubtract(entinfo.origin, bs->enemyorigin, dir);
-	//if the enemy moved a bit
-	if (VectorLengthSquared(dir) > Square(48)) {
-		//if the enemy changed direction
-		if (DotProduct(bs->enemyvelocity, enemyvelocity) < 0) {
-			//aim accuracy should be worse now
-			aim_accuracy *= 0.7f;
-		}
-	}
-	//check visibility of enemy
-	enemyvisible = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy);
-	//if the enemy is visible
-	if (enemyvisible) {
-		//
-		VectorCopy(entinfo.origin, bestorigin);
-		bestorigin[2] += 8;
-		//get the start point shooting from
-		//NOTE: the x and y projectile start offsets are ignored
-		VectorCopy(bs->origin, start);
-		start[2] += bs->cur_ps.viewheight;
-		start[2] += wi.offset[2];
-		//
-		BotAI_Trace(&trace, start, mins, maxs, bestorigin, bs->entitynum, MASK_SHOT);
-		//if the enemy is NOT hit
-		if (trace.fraction <= 1 && trace.ent != entinfo.number) {
-			bestorigin[2] += 16;
-		}
-		//if it is not an instant hit weapon the bot might want to predict the enemy
-		if (wi.speed) {
-			//
-			VectorSubtract(bestorigin, bs->origin, dir);
-			dist = VectorLength(dir);
-			VectorSubtract(entinfo.origin, bs->enemyorigin, dir);
-			//if the enemy is NOT pretty far away and strafing just small steps left and right
-			if (!(dist > 100 && VectorLengthSquared(dir) < Square(32))) {
-				//if skilled anough do exact prediction
-				if (aim_skill > 0.8 &&
-						//if the weapon is ready to fire
-						bs->cur_ps.weaponstate == WEAPON_READY) {
-					aas_clientmove_t move;
-					vec3_t origin;
-
-					VectorSubtract(entinfo.origin, bs->origin, dir);
-					//distance towards the enemy
-					dist = VectorLength(dir);
-					//direction the enemy is moving in
-					VectorSubtract(entinfo.origin, entinfo.lastvisorigin, dir);
-					//
-					VectorScale(dir, 1 / entinfo.update_time, dir);
-					//
-					VectorCopy(entinfo.origin, origin);
-					origin[2] += 1;
-					//
-					VectorClear(cmdmove);
-					//AAS_ClearShownDebugLines();
-					trap_AAS_PredictClientMovement(&move, bs->enemy, origin,
-														PRESENCE_CROUCH, qfalse,
-														dir, cmdmove, 0,
-														dist * 10 / wi.speed, 0.1f, 0, 0, qfalse);
-					VectorCopy(move.endpos, bestorigin);
-					//BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), VectorLength(dir), dist * 10 / wi.speed);
-				}
-				//if not that skilled do linear prediction
-				else if (aim_skill > 0.4) {
-					VectorSubtract(entinfo.origin, bs->origin, dir);
-					//distance towards the enemy
-					dist = VectorLength(dir);
-					//direction the enemy is moving in
-					VectorSubtract(entinfo.origin, entinfo.lastvisorigin, dir);
-					dir[2] = 0;
-					//
-					speed = VectorNormalize(dir) / entinfo.update_time;
-					//botimport.Print(PRT_MESSAGE, "speed = %f, wi->speed = %f\n", speed, wi->speed);
-					//best spot to aim at
-					VectorMA(entinfo.origin, (dist / wi.speed) * speed, dir, bestorigin);
-				}
-			}
-		}
-		//if the projectile does radial damage
-		if (aim_skill > 0.6 && wi.proj.damagetype & DAMAGETYPE_RADIAL) {
-			//if the enemy isn't standing significantly higher than the bot
-			if (entinfo.origin[2] < bs->origin[2] + 16) {
-				//try to aim at the ground in front of the enemy
-				VectorCopy(entinfo.origin, end);
-				end[2] -= 64;
-				BotAI_Trace(&trace, entinfo.origin, NULL, NULL, end, entinfo.number, MASK_SHOT);
-				//
-				VectorCopy(bestorigin, groundtarget);
-				if (trace.startsolid) groundtarget[2] = entinfo.origin[2] - 16;
-				else groundtarget[2] = trace.endpos[2] - 8;
-				//trace a line from projectile start to ground target
-				BotAI_Trace(&trace, start, NULL, NULL, groundtarget, bs->entitynum, MASK_SHOT);
-				//if hitpoint is not vertically too far from the ground target
-				if (fabs(trace.endpos[2] - groundtarget[2]) < 50) {
-					VectorSubtract(trace.endpos, groundtarget, dir);
-					//if the hitpoint is near anough the ground target
-					if (VectorLengthSquared(dir) < Square(60)) {
-						VectorSubtract(trace.endpos, start, dir);
-						//if the hitpoint is far anough from the bot
-						if (VectorLengthSquared(dir) > Square(100)) {
-							//check if the bot is visible from the ground target
-							trace.endpos[2] += 1;
-							BotAI_Trace(&trace, trace.endpos, NULL, NULL, entinfo.origin, entinfo.number, MASK_SHOT);
-							if (trace.fraction >= 1) {
-								//botimport.Print(PRT_MESSAGE, "%1.1f aiming at ground\n", AAS_Time());
-								VectorCopy(groundtarget, bestorigin);
-							}
-						}
-					}
-				}
-			}
-		}
-		bestorigin[0] += 20 * crandom() * (1 - aim_accuracy);
-		bestorigin[1] += 20 * crandom() * (1 - aim_accuracy);
-		bestorigin[2] += 10 * crandom() * (1 - aim_accuracy);
-	}
-	else {
-		//
-		VectorCopy(bs->lastenemyorigin, bestorigin);
-		bestorigin[2] += 8;
-		//if the bot is skilled anough
-		if (aim_skill > 0.5) {
-			//do prediction shots around corners
-			if (wi.number == WP_BFG ||
-				wi.number == WP_ROCKET_LAUNCHER ||
-				wi.number == WP_GRENADE_LAUNCHER) {
-				//create the chase goal
-				goal.entitynum = bs->client;
-				goal.areanum = bs->areanum;
-				VectorCopy(bs->eye, goal.origin);
-				VectorSet(goal.mins, -8, -8, -8);
-				VectorSet(goal.maxs, 8, 8, 8);
-				//
-				if (trap_BotPredictVisiblePosition(bs->lastenemyorigin, bs->lastenemyareanum, &goal, TFL_DEFAULT, target)) {
-					VectorSubtract(target, bs->eye, dir);
-					if (VectorLengthSquared(dir) > Square(80)) {
-						VectorCopy(target, bestorigin);
-						bestorigin[2] -= 20;
-					}
-				}
-				aim_accuracy = 1;
-			}
-		}
-	}
-	//
-	if (enemyvisible) {
-		BotAI_Trace(&trace, bs->eye, NULL, NULL, bestorigin, bs->entitynum, MASK_SHOT);
-		VectorCopy(trace.endpos, bs->aimtarget);
-	}
-	else {
-		VectorCopy(bestorigin, bs->aimtarget);
-	}
-	//get aim direction
-	VectorSubtract(bestorigin, bs->eye, dir);
-	//
-	if (wi.number == WP_MACHINEGUN ||
-		wi.number == WP_SHOTGUN ||
-		wi.number == WP_LIGHTNING ||
-		wi.number == WP_RAILGUN) {
-		//distance towards the enemy
-		dist = VectorLength(dir);
-		if (dist > 150) dist = 150;
-		f = 0.6 + dist / 150 * 0.4;
-		aim_accuracy *= f;
-	}
-	//set the ideal view angles
+	VectorSubtract(entinfo.origin, bs->eye, dir);
 	vectoangles(dir, bs->ideal_viewangles);
-	//take the weapon spread into account for lower skilled bots
-	bs->ideal_viewangles[PITCH] += 6 * wi.vspread * crandom() * (1 - aim_accuracy);
-	bs->ideal_viewangles[PITCH] = AngleMod(bs->ideal_viewangles[PITCH]);
-	bs->ideal_viewangles[YAW] += 6 * wi.hspread * crandom() * (1 - aim_accuracy);
-	bs->ideal_viewangles[YAW] = AngleMod(bs->ideal_viewangles[YAW]);
-	//if the bot is really accurate and has the enemy in view for some time
-	if (aim_accuracy > 0.9 && bs->enemysight_time < FloatTime() - 1) {
-		//set the view angles directly
-		if (bs->ideal_viewangles[PITCH] > 180) bs->ideal_viewangles[PITCH] -= 360;
-		VectorCopy(bs->ideal_viewangles, bs->viewangles);
-		trap_EA_View(bs->client, bs->viewangles);
-	}
+	VectorCopy(bs->ideal_viewangles, bs->viewangles);
+	trap_EA_View(bs->client, bs->viewangles);
 }
 
-/*
-==================
-BotCheckAttack
-==================
-*/
 void BotCheckAttack(bot_state_t *bs) {
-	float points, reactiontime, fov, firethrottle;
+	float fov;
 	int attackentity;
 	bsp_trace_t bsptrace;
-	//float selfpreservation;
 	vec3_t forward, right, start, end, dir, angles;
 	weaponinfo_t wi;
 	bsp_trace_t trace;
@@ -3276,102 +2879,39 @@ void BotCheckAttack(bot_state_t *bs) {
 	vec3_t mins = {-8, -8, -8}, maxs = {8, 8, 8};
 
 	attackentity = bs->enemy;
-	//
 	BotEntityInfo(attackentity, &entinfo);
-	// if not attacking a player
-	if (attackentity >= MAX_CLIENTS) {
-		// if attacking an obelisk
-		if ( entinfo.number == redobelisk.entitynum ||
-			entinfo.number == blueobelisk.entitynum ) {
-			// if obelisk is respawning return
-			if ( g_entities[entinfo.number].activator &&
-				g_entities[entinfo.number].activator->s.frame == 2 ) {
-				return;
-			}
-		}
-	}
-	//
-	reactiontime = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_REACTIONTIME, 0, 1);
-	if (bs->enemysight_time > FloatTime() - reactiontime) return;
-	if (bs->teleport_time > FloatTime() - reactiontime) return;
-	//if changing weapons
-	if (bs->weaponchange_time > FloatTime() - 0.1) return;
-	//check fire throttle characteristic
-	if (bs->firethrottlewait_time > FloatTime()) return;
-	firethrottle = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_FIRETHROTTLE, 0, 1);
-	if (bs->firethrottleshoot_time < FloatTime()) {
-		if (random() > firethrottle) {
-			bs->firethrottlewait_time = FloatTime() + firethrottle;
-			bs->firethrottleshoot_time = 0;
-		}
-		else {
-			bs->firethrottleshoot_time = FloatTime() + 1 - firethrottle;
-			bs->firethrottlewait_time = 0;
-		}
-	}
-	//
-	//
 	VectorSubtract(bs->aimtarget, bs->eye, dir);
-	//
-	if (gameInfoWeapons[bs->weaponnum].wType == WT_MELEE) {
-		if (VectorLengthSquared(dir) > Square(60)) {
-			return;
-		}
-	}
-	if (VectorLengthSquared(dir) < Square(100))
-		fov = 120;
-	else
-		fov = 50;
-	//
-	vectoangles(dir, angles);
-	if (!InFieldOfVision(bs->viewangles, fov, angles))
-		return;
-	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
-	if (bsptrace.fraction < 1 && bsptrace.ent != attackentity)
-		return;
 
-	//get the weapon info
-	FillWeaponInfo(&wi);
+	if (gameInfoWeapons[bs->weaponnum].wType == WT_MELEE) {
+		if (VectorLengthSquared(dir) > Square(100)) return;
+	}
+	if (VectorLengthSquared(dir) < Square(100)) fov = 360;
+	else fov = 50;
+
+	vectoangles(dir, angles);
+	if (!InFieldOfVision(bs->viewangles, fov, angles)) return;
+	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
+	if (bsptrace.fraction < 1 && bsptrace.ent != attackentity) return;
+
 	//get the start point shooting from
 	VectorCopy(bs->origin, start);
 	start[2] += bs->cur_ps.viewheight;
 	AngleVectors(bs->viewangles, forward, right, NULL);
-	start[0] += forward[0] * wi.offset[0] + right[0] * wi.offset[1];
-	start[1] += forward[1] * wi.offset[0] + right[1] * wi.offset[1];
-	start[2] += forward[2] * wi.offset[0] + right[2] * wi.offset[1] + wi.offset[2];
+	start[0] += forward[0] * right[0];
+	start[1] += forward[1] * right[1];
+	start[2] += forward[2] * right[2];
 	//end point aiming at
 	VectorMA(start, 1000, forward, end);
 	//a little back to make sure not inside a very close enemy
 	VectorMA(start, -12, forward, start);
-	BotAI_Trace(&trace, start, mins, maxs, end, bs->entitynum, MASK_SHOT);
-	//if the entity is a client
-	if (trace.ent > 0 && trace.ent <= MAX_CLIENTS) {
-		if (trace.ent != attackentity) {
-			//if a teammate is hit
-			if (BotSameTeam(bs, trace.ent))
-				return;
-		}
-	}
-	//if won't hit the enemy or not attacking a player (obelisk)
-	if (trace.ent != attackentity || attackentity >= MAX_CLIENTS) {
-		//if the projectile does radial damage
-		if (wi.proj.damagetype & DAMAGETYPE_RADIAL) {
-			if (trace.fraction * 1000 < wi.proj.radius) {
-				points = (wi.proj.damage - 0.5 * trace.fraction * 1000) * 0.5;
-				if (points > 0) {
-					return;
-				}
-			}
-			//FIXME: check if a teammate gets radial damage
-		}
-	}
+	BotAI_Trace(&trace, bs->origin, mins, maxs, end, bs->entitynum, MASK_SHOT);
+	
 	//if fire has to be release to activate weapon
 	if (wi.flags & WFL_FIRERELEASED) {
 		if (bs->flags & BFL_ATTACKED) {
 			trap_EA_Attack(bs->client);
 		}
-	}
-	else {
+	} else {
 		trap_EA_Attack(bs->client);
 	}
 	bs->flags ^= BFL_ATTACKED;
@@ -4797,98 +4337,27 @@ void BotSetupAlternativeRouteGoals(void) {
 	altroutegoals_setup = qtrue;
 }
 
-/*
-==================
-BotDeathmatchAI
-==================
-*/
 void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
-	char gender[144], name[144], buf[144];
-	char userinfo[MAX_INFO_STRING];
-	int i;
+	char buf[144];
 
 	//if the bot has just been setup
 	if (bs->setupcount > 0) {
 		bs->setupcount--;
 		if (bs->setupcount > 0) return;
-		//get the gender characteristic
-		trap_Characteristic_String(bs->character, CHARACTERISTIC_GENDER, gender, sizeof(gender));
-		//set the bot gender
-		trap_GetUserinfo(bs->client, userinfo, sizeof(userinfo));
-		Info_SetValueForKey(userinfo, "sex", gender);
-		trap_SetUserinfo(bs->client, userinfo);
 		//set the team
 		Com_sprintf(buf, sizeof(buf), "team %s", bs->settings.team);
 		trap_EA_Command(bs->client, buf);
-		//set the chat gender
-		if (gender[0] == 'm') trap_BotSetChatGender(bs->cs, CHAT_GENDERMALE);
-		else if (gender[0] == 'f')  trap_BotSetChatGender(bs->cs, CHAT_GENDERFEMALE);
-		else  trap_BotSetChatGender(bs->cs, CHAT_GENDERLESS);
-		//set the chat name
-		ClientName(bs->client, name, sizeof(name));
-		trap_BotSetChatName(bs->cs, name, bs->client);
-		//
-		bs->lastframe_health = bs->inventory[INVENTORY_HEALTH];
-		bs->lasthitcount = bs->cur_ps.persistant[PERS_HITS];
-		//
+		
 		bs->setupcount = 0;
-		//
+
 		BotSetupAlternativeRouteGoals();
 	}
-	//no ideal view set
-	bs->flags &= ~BFL_IDEALVIEWSET;
-	//
-	if (!BotIntermission(bs)) {
-		//set the teleport time
-		BotSetTeleportTime(bs);
-		//update some inventory values
-		BotUpdateInventory(bs);
-		//check out the snapshot
-		BotCheckSnapshot(bs);
-		//check for air
-		BotCheckAir(bs);
-	}
-	//check the console messages
-	BotCheckConsoleMessages(bs);
-	//if not in the intermission and not in observer mode
-	if (!BotIntermission(bs) && !BotIsObserver(bs)) {
-		//do team AI
-		BotTeamAI(bs);
-	}
 
-	if(!gameInfoNPCTypes[bs->npcType].canPickup) bs->ltgtype = LTG_CAMP;
-
-	//if the bot has no ai node
-	if (!bs->ainode) {
-		AIEnter_Seek_LTG(bs, "BotDeathmatchAI: no ai node");
-	}
-	//if the bot entered the game less than 8 seconds ago
-	if (!bs->entergamechat && bs->entergame_time > FloatTime() - 8) {
-		if (BotChat_EnterGame(bs)) {
-			bs->stand_time = FloatTime() + BotChatTime(bs);
-			AIEnter_Stand(bs, "BotDeathmatchAI: chat enter game");
-		}
-		bs->entergamechat = qtrue;
-	}
-	//reset the node switches from the previous frame
-	BotResetNodeSwitches();
-	//execute AI nodes
-	for (i = 0; i < MAX_NODESWITCHES; i++) {
-		if (bs->ainode(bs)) break;
-	}
-	//if the bot removed itself :)
+	if (!BotIntermission(bs)) BotUpdateInventory(bs);
+	if (!bs->ainode) bs->ainode = AINode_Seek_LTG;
+	bs->ainode(bs);	//execute AI node
+	
 	if (!bs->inuse) return;
-	//if the bot executed too many AI nodes
-	if (i >= MAX_NODESWITCHES) {
-		trap_BotDumpGoalStack(bs->gs);
-		trap_BotDumpAvoidGoals(bs->gs);
-		BotDumpNodeSwitches(bs);
-		ClientName(bs->client, name, sizeof(name));
-		BotAI_Print(PRT_ERROR, "%s at %1.1f switched more than %d AI nodes\n", name, FloatTime(), MAX_NODESWITCHES);
-	}
-	//
-	bs->lastframe_health = bs->inventory[INVENTORY_HEALTH];
-	bs->lasthitcount = bs->cur_ps.persistant[PERS_HITS];
 }
 
 /*
