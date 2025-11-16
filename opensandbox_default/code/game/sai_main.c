@@ -100,9 +100,7 @@ void SAI_ResetState(sai_state_t *bs) {
 	chatstate = bs->cs;
 	weaponstate = bs->ws;
 	entergame_time = bs->entergame_time;
-	//free checkpoints and patrol points
-	BotFreeWaypoints(bs->checkpoints);
-	BotFreeWaypoints(bs->patrolpoints);
+
 	//reset the whole state
 	memset(bs, 0, sizeof(sai_state_t));
 	//copy back some state stuff that should not be reset
@@ -179,7 +177,7 @@ int SAI_SetupClient(int client, struct bot_settings_s *settings, qboolean restar
 	bs = sai_states[client];
 
 	if (bs && bs->inuse) {
-		BotAI_Print(PRT_FATAL, "BotAISetupClient: client %d already setup\n", client);
+		G_Printf("BotAISetupClient: client %d already setup\n", client);
 		return qfalse;
 	}
 

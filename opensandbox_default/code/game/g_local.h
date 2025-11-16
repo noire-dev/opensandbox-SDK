@@ -658,7 +658,6 @@ int BotAILoadMap(int restart);
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart);
 int BotAIShutdownClient(int client, qboolean restart);
 int AI_Frame(int time);
-void BotTestAAS(vec3_t origin);
 
 extern level_locals_t level;
 extern gentity_t g_entities[MAX_GENTITIES];
