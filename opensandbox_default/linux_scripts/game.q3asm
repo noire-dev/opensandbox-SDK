@@ -2,12 +2,7 @@
 g_main
 ..\g_syscalls
 ..\q_sharedsyscalls
-ai_chat
-ai_cmd
-ai_dmnet
-ai_dmq3
 ai_main
-ai_team
 bg_alloc
 bg_lib
 bg_misc

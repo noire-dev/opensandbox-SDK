@@ -28,12 +28,7 @@ cd linux/build/game
 # Files to compile to           qagame.qvm
 # ########################################
 
-$cc ../../../code/game/ai_chat.c
-$cc ../../../code/game/ai_cmd.c
-$cc ../../../code/game/ai_dmnet.c
-$cc ../../../code/game/ai_dmq3.c
 $cc ../../../code/game/ai_main.c
-$cc ../../../code/game/ai_team.c
 $cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
