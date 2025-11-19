@@ -16,10 +16,46 @@
 #define MAX_PATH		144
 #define AI_THINKTIME    300
 
+bot_state_t	*botstates[MAX_CLIENTS];
+int numbots;
+float floattime;
+float regularupdate_time;
+
 int gametype;		//game type
 int maxclients;		//maximum number of clients
 
-qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
+static void BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask) {
+	trace_t trace;
+
+	trap_Trace(&trace, start, mins, maxs, end, passent, contentmask);
+	//copy the trace information
+	bsptrace->allsolid = trace.allsolid;
+	bsptrace->startsolid = trace.startsolid;
+	bsptrace->fraction = trace.fraction;
+	VectorCopy(trace.endpos, bsptrace->endpos);
+	bsptrace->plane.dist = trace.plane.dist;
+	VectorCopy(trace.plane.normal, bsptrace->plane.normal);
+	bsptrace->plane.signbits = trace.plane.signbits;
+	bsptrace->plane.type = trace.plane.type;
+	bsptrace->surface.value = trace.surfaceFlags;
+	bsptrace->ent = trace.entityNum;
+	bsptrace->exp_dist = 0;
+	bsptrace->sidenum = 0;
+	bsptrace->contents = 0;
+}
+
+static int BotAI_GetClientState( int clientNum, playerState_t *state ) {
+	gentity_t	*ent;
+
+	ent = &g_entities[clientNum];
+	if ( !ent->inuse ) return qfalse;
+	if ( !ent->client ) return qfalse;
+
+	memcpy( state, &ent->client->ps, sizeof(playerState_t) );
+	return qtrue;
+}
+
+static qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
 	playerState_t ps;
 
 	if (entinfo->number >= 0 && entinfo->number < MAX_CLIENTS) {
@@ -29,17 +65,17 @@ qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
 	return qfalse;
 }
 
-qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
+static qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
 	if (entinfo->powerups & (1 << PW_INVIS)) return qtrue;
 	return qfalse;
 }
 
-qboolean EntityIsShooting(aas_entityinfo_t *entinfo) {
+static qboolean EntityIsShooting(aas_entityinfo_t *entinfo) {
 	if (entinfo->flags & EF_FIRING) return qtrue;
 	return qfalse;
 }
 
-int BotPointAreaNum(vec3_t origin) {
+static int BotPointAreaNum(vec3_t origin) {
 	int areanum, numareas, areas[10];
 	vec3_t end;
 
@@ -52,7 +88,7 @@ int BotPointAreaNum(vec3_t origin) {
 	return 0;
 }
 
-int weaponOrder[] = {
+static int weaponOrder[] = {
 	WP_NONE,
 
 	// Quake weapons here!
@@ -90,7 +126,7 @@ int weaponOrder[] = {
 	WEAPONS_NUM
 };
 
-int BotSelectOpenSandboxWeapon(bot_state_t *bs) {
+static int BotSelectWeapon(bot_state_t *bs) {
 	int i, weaponID;
 	for (i = WEAPONS_NUM - 1; i > 0; i--) {
 		weaponID = weaponOrder[i];
@@ -103,24 +139,14 @@ int BotSelectOpenSandboxWeapon(bot_state_t *bs) {
 	return WP_NONE;
 }
 
-/*
-==================
-BotChooseWeapon
-==================
-*/
-void BotChooseWeapon(bot_state_t *bs) {
-	if (bs->weaponnum != BotSelectOpenSandboxWeapon(bs)) bs->weaponchange_time = FloatTime();
-	bs->weaponnum = BotSelectOpenSandboxWeapon(bs);
+static void BotChooseWeapon(bot_state_t *bs) {
+	if (bs->weaponnum != BotSelectWeapon(bs)) bs->weaponchange_time = floattime;
+	bs->weaponnum = BotSelectWeapon(bs);
 	bs->cur_ps.weapon = bs->weaponnum;
 	trap_EA_SelectWeapon(bs->client, bs->weaponnum);
 }
 
-/*
-==================
-BotSetupForMovement
-==================
-*/
-void BotSetupForMovement(bot_state_t *bs) {
+static void BotSetupForMovement(bot_state_t *bs) {
 	bot_initmove_t initmove;
 
 	memset(&initmove, 0, sizeof(bot_initmove_t));
@@ -133,10 +159,6 @@ void BotSetupForMovement(bot_state_t *bs) {
 	initmove.thinktime = bs->thinktime;
 	//set the onground flag
 	if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) initmove.or_moveflags |= MFL_ONGROUND;
-	//set the teleported flag
-	if ((bs->cur_ps.pm_flags & PMF_TIME_KNOCKBACK) && (bs->cur_ps.pm_time > 0)) {
-		initmove.or_moveflags |= MFL_TELEPORTED;
-	}
 	//set the waterjump flag
 	if ((bs->cur_ps.pm_flags & PMF_TIME_WATERJUMP) && (bs->cur_ps.pm_time > 0)) {
 		initmove.or_moveflags |= MFL_WATERJUMP;
@@ -152,12 +174,7 @@ void BotSetupForMovement(bot_state_t *bs) {
 	trap_BotInitMoveState(bs->ms, &initmove);
 }
 
-/*
-==================
-BotUpdateInventory
-==================
-*/
-void BotUpdateInventory(bot_state_t *bs) {
+static void BotUpdateInventory(bot_state_t *bs) {
 	gentity_t *ent;
 	int i;
 
@@ -169,11 +186,11 @@ void BotUpdateInventory(bot_state_t *bs) {
 	}
 }
 
-qboolean BotIsDead(bot_state_t *bs) {
+static qboolean BotIsDead(bot_state_t *bs) {
 	return (bs->cur_ps.pm_type == PM_DEAD);
 }
 
-qboolean BotIsObserver(bot_state_t *bs) {
+static qboolean BotIsObserver(bot_state_t *bs) {
 	char buf[MAX_INFO_STRING];
 	if (bs->cur_ps.pm_type == PM_SPECTATOR) return qtrue;
 	trap_GetConfigstring(CS_PLAYERS+bs->client, buf, sizeof(buf));
@@ -181,13 +198,12 @@ qboolean BotIsObserver(bot_state_t *bs) {
 	return qfalse;
 }
 
-qboolean BotIntermission(bot_state_t *bs) {
-	//NOTE: we shouldn't be looking at the game code...
+static qboolean BotIntermission(bot_state_t *bs) {
 	if (level.intermissiontime) return qtrue;
 	return (bs->cur_ps.pm_type == PM_FREEZE || bs->cur_ps.pm_type == PM_INTERMISSION);
 }
 
-qboolean BotInLavaOrSlime(bot_state_t *bs) {
+static qboolean BotInLavaOrSlime(bot_state_t *bs) {
 	vec3_t feet;
 
 	VectorCopy(bs->origin, feet);
@@ -195,7 +211,7 @@ qboolean BotInLavaOrSlime(bot_state_t *bs) {
 	return (trap_AAS_PointContents(feet) & (CONTENTS_LAVA|CONTENTS_SLIME));
 }
 
-void BotAttackMove(bot_state_t *bs, int tfl) {
+static void BotAttackMove(bot_state_t *bs, int tfl) {
 	bot_moveresult_t moveresult;
 	bot_goal_t goal;
 	
@@ -209,7 +225,7 @@ void BotAttackMove(bot_state_t *bs, int tfl) {
 	trap_BotMoveToGoal(&moveresult, bs->ms, &goal, tfl);
 }
 
-int BotSameTeam(bot_state_t *bs, int entnum) {
+static int BotSameTeam(bot_state_t *bs, int entnum) {
 	char info1[1024], info2[1024];
 
 	if (bs->client < 0 || bs->client >= MAX_CLIENTS)
@@ -229,43 +245,18 @@ int BotSameTeam(bot_state_t *bs, int entnum) {
 	return qfalse;
 }
 
-qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles) {
-	int i;
-	float diff, angle;
-
-	for (i = 0; i < 2; i++) {
-		angle = AngleMod(viewangles[i]);
-		angles[i] = AngleMod(angles[i]);
-		diff = angles[i] - angle;
-		if (angles[i] > angle) {
-			if (diff > 180.0) diff -= 360.0;
-		}
-		else {
-			if (diff < -180.0) diff += 360.0;
-		}
-		if (diff > 0) {
-			if (diff > fov * 0.5) return qfalse;
-		}
-		else {
-			if (diff < -fov * 0.5) return qfalse;
-		}
-	}
-	return qtrue;
-}
-
-float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int ent) {
+static float BotEntityVisible(int viewer, vec3_t eye, int ent) {
 	bsp_trace_t trace;
 	aas_entityinfo_t entinfo;
 
-	BotEntityInfo(ent, &entinfo);
-	
+	trap_AAS_EntityInfo(ent, &entinfo);
 	BotAI_Trace(&trace, eye, NULL, NULL, entinfo.origin, viewer, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 
 	if (trace.fraction >= 1 || trace.ent == ent) return 1.00;
 	return 0.00;
 }
 
-int BotFindEnemy(bot_state_t *bs, int curenemy) {
+static int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	int i;
 	float vis;
 	float squaredist, cursquaredist;
@@ -273,7 +264,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	vec3_t dir;
 
 	if (curenemy >= 0) {
-		BotEntityInfo(curenemy, &curenemyinfo);
+		trap_AAS_EntityInfo(curenemy, &curenemyinfo);
 		VectorSubtract(curenemyinfo.origin, bs->origin, dir);
 		cursquaredist = VectorLengthSquared(dir);
 	} else {
@@ -283,7 +274,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if (i == bs->client) continue;
 		if (i == curenemy) continue;
-		BotEntityInfo(i, &entinfo);
+		trap_AAS_EntityInfo(i, &entinfo);
 		if (!entinfo.valid) continue;
 		if (EntityIsDead(&entinfo) || entinfo.number == bs->entitynum) continue;
 		if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) continue;
@@ -297,77 +288,32 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		if (BotSameTeam(bs, i)) continue;
 		
 		if(bs->npcType != NT_NEXTBOT){
-			vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, i);
+			vis = BotEntityVisible(bs->entitynum, bs->eye, i);
 		} else {
 			vis = 1.00;
 		}
 		if (vis <= 0.00) continue;
 		
-		//found an enemy
 		bs->enemy = entinfo.number;
 		return qtrue;
 	}
 	return qfalse;
 }
 
-void BotAimAtEnemy(bot_state_t *bs) {
+static void BotAimAtEnemy(bot_state_t *bs) {
 	vec3_t dir;
 	aas_entityinfo_t entinfo;
 	
 	if (bs->enemy < 0) return;
 	
-	BotEntityInfo(bs->enemy, &entinfo);
+	trap_AAS_EntityInfo(bs->enemy, &entinfo);
 	VectorSubtract(entinfo.origin, bs->eye, dir);
 	vectoangles(dir, bs->ideal_viewangles);
 	VectorCopy(bs->ideal_viewangles, bs->viewangles);
 	trap_EA_View(bs->client, bs->viewangles);
 }
 
-void BotCheckAttack(bot_state_t *bs) { //TODO: make from enemy origin, not from aimtarget
-	float fov;
-	int attackentity;
-	bsp_trace_t bsptrace;
-	vec3_t dir, angles;
-	aas_entityinfo_t entinfo;
-	vec3_t mins = {-8, -8, -8}, maxs = {8, 8, 8};
-
-	attackentity = bs->enemy;
-	BotEntityInfo(attackentity, &entinfo);
-	VectorSubtract(bs->aimtarget, bs->eye, dir);
-
-	if (gameInfoWeapons[bs->weaponnum].wType == WT_MELEE) {
-		if (VectorLengthSquared(dir) > Square(100)) return;
-	}
-	if (VectorLengthSquared(dir) < Square(100)) fov = 360;
-	else fov = 90;
-
-	vectoangles(dir, angles);
-	if (!InFieldOfVision(bs->viewangles, fov, angles)) return;
-	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
-	if (bsptrace.fraction < 1 && bsptrace.ent != attackentity) return;
-
-	trap_EA_Attack(bs->client);
-}
-
-int AINode_Nothing(bot_state_t *bs) {
-	return qtrue;
-}
-
-int AINode_Respawn(bot_state_t *bs) {
-	if (!BotIsDead(bs)) {
-		bs->ainode = AINode_Seek_LTG;
-	} else {
-	    trap_BotResetMoveState(bs->ms);
-	    trap_BotResetGoalState(bs->gs);
-	    trap_BotResetAvoidGoals(bs->gs);
-	    trap_BotResetAvoidReach(bs->ms);
-		trap_EA_Respawn(bs->client);
-	}
-
-	return qtrue;
-}
-
-void BotAimAtMovementDirection(bot_state_t *bs) {
+static void BotAimAtMovementDirection(bot_state_t *bs) {
     bot_input_t bi;
     vec3_t temp_dir;
     
@@ -382,13 +328,10 @@ void BotAimAtMovementDirection(bot_state_t *bs) {
         
         bs->ideal_viewangles[PITCH] = bs->viewangles[PITCH];
         bs->ideal_viewangles[ROLL] = 0;
-        
-        VectorCopy(bs->ideal_viewangles, bs->viewangles);
-        trap_EA_View(bs->client, bs->viewangles);
     }
 }
 
-bot_goal_t AI_GoalFromRandomItem(bot_state_t *bs){
+static bot_goal_t AI_GoalFromRandomItem(bot_state_t *bs){
     bot_goal_t result;
     gentity_t* item;
     
@@ -407,19 +350,51 @@ bot_goal_t AI_GoalFromRandomItem(bot_state_t *bs){
     return result;
 }
 
-int AINode_Seek_LTG(bot_state_t *bs) {
+int AI_Battle(bot_state_t *bs) {
+	int areanum;
+	vec3_t target;
+	aas_entityinfo_t entinfo;
+
+	BotFindEnemy(bs, bs->enemy);
+
+	if (bs->enemy < 0) return qfalse;
+
+	trap_AAS_EntityInfo(bs->enemy, &entinfo);
+
+	if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
+		if (random() < 0.2) return qfalse;
+	}
+	
+	VectorCopy(entinfo.origin, target);
+	
+	areanum = BotPointAreaNum(target);
+	if (areanum && trap_AAS_AreaReachability(areanum)) {
+		VectorCopy(target, bs->lastenemyorigin);
+		bs->lastenemyareanum = areanum;
+	}
+
+	if (!BotEntityVisible(bs->entitynum, bs->eye, bs->enemy) && bs->npcType != NT_NEXTBOT) return qfalse;
+
+	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
+
+	BotChooseWeapon(bs);
+	BotAttackMove(bs, bs->tfl);
+	BotAimAtEnemy(bs);
+	trap_EA_Attack(bs->client);
+	return qtrue;
+}
+
+int AINode_Seek(bot_state_t *bs) {
 	bot_moveresult_t moveresult;
 
-	if (BotIsObserver(bs)) {
-		bs->ainode = AINode_Nothing;
-		return qfalse;
-	}
-	if (BotIntermission(bs)) {
-		bs->ainode = AINode_Nothing;
-		return qfalse;
-	}
+	if (BotIsObserver(bs) || BotIntermission(bs)) return qfalse;
+	
 	if (BotIsDead(bs)) {
-		bs->ainode = AINode_Respawn;
+    	trap_BotResetMoveState(bs->ms);
+    	trap_BotResetGoalState(bs->gs);
+    	trap_BotResetAvoidGoals(bs->gs);
+    	trap_BotResetAvoidReach(bs->ms);
+    	trap_EA_Respawn(bs->client);
 		return qfalse;
 	}
 
@@ -429,7 +404,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 	
 	bs->enemy = -1;     //no enemy
 	if (BotFindEnemy(bs, -1)) {
-		bs->ainode = AINode_Battle_Fight;
+		AI_Battle(bs);
 		return qfalse;
 	}
 	
@@ -446,121 +421,31 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 	return qtrue;
 }
 
-int AINode_Battle_Fight(bot_state_t *bs) {
-	int areanum;
-	vec3_t target;
-	aas_entityinfo_t entinfo;
-
-	BotFindEnemy(bs, bs->enemy);
-
-	if (bs->enemy < 0) {
-		bs->ainode = AINode_Seek_LTG;
-		return qfalse;
-	}
-
-	BotEntityInfo(bs->enemy, &entinfo);
-
-	//if the enemy is invisible and not shooting the bot looses track easily
-	if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
-		if (random() < 0.2) {
-			bs->ainode = AINode_Seek_LTG;
-			return qfalse;
-		}
-	}
-	
-	VectorCopy(entinfo.origin, target);
-	
-	//update the reachability area and origin if possible
-	areanum = BotPointAreaNum(target);
-	if (areanum && trap_AAS_AreaReachability(areanum)) {
-		VectorCopy(target, bs->lastenemyorigin);
-		bs->lastenemyareanum = areanum;
-	}
-
-	//if the enemy is not visible
-	if (!BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy) && bs->npcType != NT_NEXTBOT) {
-		bs->ainode = AINode_Seek_LTG;
-		return qfalse;
-	}
-
-	bs->tfl = TFL_DEFAULT;
-
-	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-
-	BotChooseWeapon(bs);
-	BotAttackMove(bs, bs->tfl);
-	BotAimAtEnemy(bs);
-	BotCheckAttack(bs);
-	return qtrue;
-}
-
-void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
+static void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	char buf[144];
 
-	//if the bot has just been setup
 	if (bs->setupcount > 0) {
 		bs->setupcount--;
 		if (bs->setupcount > 0) return;
 		//set the team
 		Com_sprintf(buf, sizeof(buf), "team %s", bs->settings.team);
 		trap_EA_Command(bs->client, buf);
-		
 		bs->setupcount = 0;
 	}
 
 	if (!BotIntermission(bs)) BotUpdateInventory(bs);
-	if (!bs->ainode) bs->ainode = AINode_Seek_LTG;
+	if (!bs->ainode) bs->ainode = AINode_Seek;
 	bs->ainode(bs);	//execute AI node
 	
 	if (!bs->inuse) return;
 }
 
-void BotSetupDeathmatchAI(void) {
+static void BotSetupDeathmatchAI(void) {
 	gametype = cvarInt("g_gametype");
 	maxclients = cvarInt("g_maxClients");
 }
 
-bot_state_t	*botstates[MAX_CLIENTS];
-int numbots;
-float floattime;
-float regularupdate_time;
-
-void BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask) {
-	trace_t trace;
-
-	trap_Trace(&trace, start, mins, maxs, end, passent, contentmask);
-	//copy the trace information
-	bsptrace->allsolid = trace.allsolid;
-	bsptrace->startsolid = trace.startsolid;
-	bsptrace->fraction = trace.fraction;
-	VectorCopy(trace.endpos, bsptrace->endpos);
-	bsptrace->plane.dist = trace.plane.dist;
-	VectorCopy(trace.plane.normal, bsptrace->plane.normal);
-	bsptrace->plane.signbits = trace.plane.signbits;
-	bsptrace->plane.type = trace.plane.type;
-	bsptrace->surface.value = trace.surfaceFlags;
-	bsptrace->ent = trace.entityNum;
-	bsptrace->exp_dist = 0;
-	bsptrace->sidenum = 0;
-	bsptrace->contents = 0;
-}
-
-int BotAI_GetClientState( int clientNum, playerState_t *state ) {
-	gentity_t	*ent;
-
-	ent = &g_entities[clientNum];
-	if ( !ent->inuse ) return qfalse;
-	if ( !ent->client ) return qfalse;
-
-	memcpy( state, &ent->client->ps, sizeof(playerState_t) );
-	return qtrue;
-}
-
-void BotEntityInfo(int entnum, aas_entityinfo_t *info) {
-	trap_AAS_EntityInfo(entnum, info);
-}
-
-float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
+static float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
 	float move;
 
 	angle = AngleMod(angle);
@@ -581,12 +466,12 @@ float BotChangeViewAngle(float angle, float ideal_angle, float speed) {
 	return AngleMod(angle + move);
 }
 
-void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
+static void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 	float diff, factor, maxchange, anglespeed;
 	int i;
 
 	if (bs->ideal_viewangles[PITCH] > 180) bs->ideal_viewangles[PITCH] -= 360;
-	//
+	
 	if (bs->enemy >= 0) {
 		factor = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_VIEW_FACTOR, 0.01f, 1);
 		maxchange = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_VIEW_MAXCHANGE, 1, 1800);
@@ -610,7 +495,7 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 	trap_EA_View(bs->client, bs->viewangles);
 }
 
-void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3], int time) {
+static void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3], int time) {
 	vec3_t angles, forward, right;
 	short temp;
 	int j;
@@ -668,7 +553,7 @@ void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3]
 	if (bi->actionflags & ACTION_CROUCH) ucmd->upmove -= 127;
 }
 
-void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
+static void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
 	bot_input_t bi;
 	int j;
 
@@ -690,14 +575,14 @@ void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
 	}
 }
 
-void BotAIRegularUpdate(void) {
-	if (regularupdate_time < FloatTime()) {
+static void BotAIRegularUpdate(void) {
+	if (regularupdate_time < floattime) {
 		trap_BotUpdateEntityItems();
-		regularupdate_time = FloatTime() + 0.3;
+		regularupdate_time = floattime + 0.3;
 	}
 }
 
-int BotAI(int client, float thinktime) {
+static int BotAI(int client, float thinktime) {
 	bot_state_t *bs;
 	char buf[1024];
 	int i;
@@ -741,25 +626,20 @@ int BotAI(int client, float thinktime) {
 	return qtrue;
 }
 
-void BotScheduleBotThink(void) {
+static void BotScheduleBotThink(void) {
 	int i, botnum;
 
 	botnum = 0;
 
 	for( i = 0; i < MAX_CLIENTS; i++ ) {
-		if( !botstates[i] || !botstates[i]->inuse ) {
-			continue;
-		}
-		//initialize the bot think residual time
+		if( !botstates[i] || !botstates[i]->inuse ) continue;
 		botstates[i]->botthink_residual = AI_THINKTIME * botnum / numbots;
 		botnum++;
 	}
 }
 
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart) {
-	char filename[MAX_PATH], name[MAX_PATH], gender[MAX_PATH];
 	bot_state_t *bs;
-	int errnum;
 	char userinfo[MAX_INFO_STRING];
 
 	if (!botstates[client]) botstates[client] = G_Alloc(sizeof(bot_state_t));
@@ -775,57 +655,11 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 		return qfalse;
 	}
 
-	//load the bot character
-	bs->character = trap_BotLoadCharacter(settings->characterfile, settings->skill);
-	if (!bs->character) {
-		G_Printf("couldn't load skill %f from %s\n", settings->skill, settings->characterfile);
-		return qfalse;
-	}
-	//copy the settings
-	memcpy(&bs->settings, settings, sizeof(bot_settings_t));
-	//allocate a goal state
-	bs->gs = trap_BotAllocGoalState(client);
-	//load the item weights
-	trap_Characteristic_String(bs->character, CHARACTERISTIC_ITEMWEIGHTS, filename, MAX_PATH);
-	errnum = trap_BotLoadItemWeights(bs->gs, filename);
-	if (errnum != BLERR_NOERROR) {
-		trap_BotFreeGoalState(bs->gs);
-		return qfalse;
-	}
-	//allocate a weapon state
-	bs->ws = trap_BotAllocWeaponState();
-	//load the weapon weights
-	trap_Characteristic_String(bs->character, CHARACTERISTIC_WEAPONWEIGHTS, filename, MAX_PATH);
-	errnum = trap_BotLoadWeaponWeights(bs->ws, filename);
-	if (errnum != BLERR_NOERROR) {
-		trap_BotFreeGoalState(bs->gs);
-		trap_BotFreeWeaponState(bs->ws);
-		return qfalse;
-	}
-	//allocate a chat state
-	bs->cs = trap_BotAllocChatState();
-	//load the chat file
-	trap_Characteristic_String(bs->character, CHARACTERISTIC_CHAT_FILE, filename, MAX_PATH);
-	trap_Characteristic_String(bs->character, CHARACTERISTIC_CHAT_NAME, name, MAX_PATH);
-	errnum = trap_BotLoadChatFile(bs->cs, filename, name);
-	if (errnum != BLERR_NOERROR) {
-		trap_BotFreeChatState(bs->cs);
-		trap_BotFreeGoalState(bs->gs);
-		trap_BotFreeWeaponState(bs->ws);
-		return qfalse;
-	}
-	//get the gender characteristic
-	trap_Characteristic_String(bs->character, CHARACTERISTIC_GENDER, gender, MAX_PATH);
-	//set the chat gender
-	if (*gender == 'f' || *gender == 'F') trap_BotSetChatGender(bs->cs, CHAT_GENDERFEMALE);
-	else if (*gender == 'm' || *gender == 'M') trap_BotSetChatGender(bs->cs, CHAT_GENDERMALE);
-	else trap_BotSetChatGender(bs->cs, CHAT_GENDERLESS);
-
 	bs->inuse = qtrue;
 	bs->client = client;
 	bs->entitynum = client;
 	bs->setupcount = 4;
-	bs->entergame_time = FloatTime();
+	bs->entergame_time = floattime;
 	bs->ms = trap_BotAllocMoveState();
 	bs->walker = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_WALKER, 0, 1);
 
@@ -834,10 +668,8 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 
 	numbots++;
 
-	//NOTE: reschedule the bot thinking
-	BotScheduleBotThink();
+	BotScheduleBotThink();	//NOTE: reschedule the bot thinking
 
-	//bot has been setup succesfully
 	return qtrue;
 }
 
@@ -1009,7 +841,7 @@ int AI_Frame(int time) {
 	return qtrue;
 }
 
-int BotInitLibrary(void) {
+static int BotInitLibrary(void) {
 	trap_BotLibVarSet("maxclients", va("%i", MAX_CLIENTS));
 	trap_BotLibVarSet("maxentities", va("%i", MAX_GENTITIES));
 	trap_BotLibVarSet("sv_mapChecksum", cvarString("sv_mapChecksum"));

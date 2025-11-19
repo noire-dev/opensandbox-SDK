@@ -7,37 +7,6 @@
 #define PRESENCE_NONE				1
 #define PRESENCE_NORMAL				2
 #define PRESENCE_CROUCH				4
-//
-#define MAX_PROXMINES				64
-
-//check points
-typedef struct bot_waypoint_s
-{
-	int			inuse;
-	char		name[32];
-	bot_goal_t	goal;
-	struct		bot_waypoint_s *next, *prev;
-} bot_waypoint_t;
-
-#define MAX_ACTIVATESTACK		8
-#define MAX_ACTIVATEAREAS		32
-
-typedef struct bot_activategoal_s
-{
-	int inuse;
-	bot_goal_t goal;						//goal to activate (buttons etc.)
-	float time;								//time to activate something
-	float start_time;						//time starting to activate something
-	float justused_time;					//time the goal was used
-	int shoot;								//true if bot has to shoot to activate
-	int weapon;								//weapon to be used for activation
-	vec3_t target;							//target to shoot at to activate something
-	vec3_t origin;							//origin of the blocking entity to activate
-	int areas[MAX_ACTIVATEAREAS];			//routing areas disabled by blocking entity
-	int numareas;							//number of disabled routing areas
-	int areasdisabled;						//true if the areas are disabled for the routing
-	struct bot_activategoal_s *next;		//next activate goal on stack
-} bot_activategoal_t;
 
 //bot state
 typedef struct bot_state_s
@@ -125,11 +94,7 @@ typedef struct bot_state_s
 	vec3_t aimtarget;
 	vec3_t enemyvelocity;							//enemy velocity 0.5 secs ago during battle
 	vec3_t enemyorigin;								//enemy origin 0.5 secs ago during battle
-	//
-	int kamikazebody;								//kamikaze body
-	int proxmines[MAX_PROXMINES];
-	int numproxmines;
-	//
+
 	int character;									//the bot character
 	int ms;											//move state of the bot
 	int gs;											//goal state of the bot
@@ -192,25 +157,9 @@ typedef struct bot_state_s
 	vec3_t formation_origin;						//origin the bot uses for relative positioning
 	bot_goal_t formation_goal;						//formation goal
 
-	bot_activategoal_t *activatestack;				//first activate goal on the stack
-	bot_activategoal_t activategoalheap[MAX_ACTIVATESTACK];	//activate goal heap
-
-	bot_waypoint_t *checkpoints;					//check points
-	bot_waypoint_t *patrolpoints;					//patrol points
-	bot_waypoint_t *curpatrolpoint;					//current patrol point the bot is going for
 	int patrolflags;								//patrol flags
 	int	swep_list[WEAPONS_NUM];						//OpenSandbox weapon system
 	int	swep_ammo[WEAPONS_NUM];						//OpenSandbox ammo system
 	int item_searchtime;
 	bot_goal_t maingoal;
 } bot_state_t;
-
-//resets the whole bot state
-void BotResetState(bot_state_t *bs);
-//returns the number of bots in the game
-int NumBots(void);
-//returns info about the entity
-void BotEntityInfo(int entnum, aas_entityinfo_t *info);
-
-extern float floattime;
-#define FloatTime() floattime
