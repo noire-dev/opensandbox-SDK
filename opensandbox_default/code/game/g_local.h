@@ -647,8 +647,6 @@ void G_StartNukeExplode(gentity_t *ent);
 
 // bot settings
 typedef struct bot_settings_s {
-	char characterfile[MAX_FILEPATH];
-	float skill;
 	char team[MAX_FILEPATH];
 } bot_settings_t;
 

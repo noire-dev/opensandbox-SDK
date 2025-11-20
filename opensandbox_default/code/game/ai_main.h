@@ -1,165 +1,233 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-//copied from the aas file header
-#define PRESENCE_NONE				1
-#define PRESENCE_NORMAL				2
-#define PRESENCE_CROUCH				4
+#define PRESENCE_NONE 1
+#define PRESENCE_NORMAL 2
+#define PRESENCE_CROUCH 4
 
-//bot state
-typedef struct bot_state_s
-{
-	int inuse;										//true if this state is used by a bot client
-	int botthink_residual;							//residual for the bot thinks
-	int client;										//client number of the bot
-	int entitynum;									//entity number of the bot
+#define ACTION_ATTACK           0x0000001
+#define ACTION_USE              0x0000002
+#define ACTION_RESPAWN          0x0000008
+#define ACTION_JUMP             0x0000010
+#define ACTION_MOVEUP           0x0000020
+#define ACTION_CROUCH           0x0000080
+#define ACTION_MOVEDOWN         0x0000100
+#define ACTION_MOVEFORWARD      0x0000200
+#define ACTION_MOVEBACK         0x0000800
+#define ACTION_MOVELEFT         0x0001000
+#define ACTION_MOVERIGHT        0x0002000
+#define ACTION_DELAYEDJUMP      0x0008000
+#define ACTION_TALK             0x0010000
+#define ACTION_GESTURE          0x0020000
+#define ACTION_WALK             0x0080000
+
+// the bot input, will be converted to an usercmd_t
+typedef struct bot_input_s {
+	float thinktime;    // time since last output (in seconds)
+	vec3_t dir;         // movement direction
+	float speed;        // speed in the range [0, 400]
+	vec3_t viewangles;  // the view angles
+	int actionflags;    // one of the ACTION_? flags
+	int weapon;         // weapon to use
+} bot_input_t;
+
+#ifndef BSPTRACE
+#define BSPTRACE
+
+// bsp_trace_t hit surface
+typedef struct bsp_surface_s {
+	char name[16];
+	int flags;
+	int value;
+} bsp_surface_t;
+
+// remove the bsp_trace_s structure definition l8r on
+// a trace is returned when a box is swept through the world
+typedef struct bsp_trace_s {
+	qboolean allsolid;      // if true, plane is not valid
+	qboolean startsolid;    // if true, the initial point was in a solid area
+	float fraction;         // time completed, 1.0 = didn't hit anything
+	vec3_t endpos;          // final position
+	cplane_t plane;         // surface normal at impact
+	float exp_dist;         // expanded plane distance
+	int sidenum;            // number of the brush side hit
+	bsp_surface_t surface;  // the hit point surface
+	int contents;           // contents on other side of surface hit
+	int ent;                // number of entity hit
+} bsp_trace_t;
+
+#endif  // BSPTRACE
+
+// entity state
+typedef struct bot_entitystate_s {
+	int type;           // entity type
+	int flags;          // entity flags
+	vec3_t origin;      // origin of the entity
+	vec3_t angles;      // angles of the model
+	vec3_t old_origin;  // for lerping
+	vec3_t mins;        // bounding box minimums
+	vec3_t maxs;        // bounding box maximums
+	int groundent;      // ground entity
+	int solid;          // solid type
+	int modelindex;     // model used
+	int modelindex2;    // weapons, CTF flags, etc
+	int frame;          // model frame number
+	int event;          // impulse events -- muzzle flashes, footsteps, etc
+	int eventParm;      // even parameter
+	int powerups;       // bit flags
+	int weapon;         // determines weapon and flash model, etc
+	int legsAnim;       // mask off ANIM_TOGGLEBIT
+	int torsoAnim;      // mask off ANIM_TOGGLEBIT
+} bot_entitystate_t;
+
+// movement types
+#define MOVE_WALK           1
+#define MOVE_CROUCH         2
+#define MOVE_JUMP           4
+#define MOVE_GRAPPLE        8
+#define MOVE_ROCKETJUMP     16
+#define MOVE_BFGJUMP        32
+
+// move flags
+#define MFL_BARRIERJUMP     1       // bot is performing a barrier jump
+#define MFL_ONGROUND        2       // bot is in the ground
+#define MFL_SWIMMING        4       // bot is swimming
+#define MFL_AGAINSTLADDER   8       // bot is against a ladder
+#define MFL_WATERJUMP       16      // bot is waterjumping
+#define MFL_TELEPORTED      32      // bot is being teleported
+#define MFL_GRAPPLEPULL     64      // bot is being pulled by the grapple
+#define MFL_ACTIVEGRAPPLE   128     // bot is using the grapple hook
+#define MFL_GRAPPLERESET    256     // bot has reset the grapple
+#define MFL_WALK            512     // bot should walk slowly
+
+typedef struct bot_initmove_s {
+	vec3_t origin;      // origin of the bot
+	vec3_t velocity;    // velocity of the bot
+	vec3_t viewoffset;  // view offset
+	int entitynum;      // entity number of the bot
+	int client;         // client number of the bot
+	float thinktime;    // time the bot thinks
+	int presencetype;   // presencetype of the bot
+	vec3_t viewangles;  // view angles of the bot
+	int or_moveflags;   // values ored to the movement flags
+} bot_initmove_t;
+
+typedef struct bot_moveresult_s {
+	int failure;              // true if movement failed all together
+	int type;                 // failure or blocked type
+	int blocked;              // true if blocked by an entity
+	int blockentity;          // entity blocking the bot
+	int traveltype;           // last executed travel type
+	int flags;                // result flags
+	int weapon;               // weapon used for movement
+	vec3_t movedir;           // movement direction
+	vec3_t ideal_viewangles;  // ideal viewangles for the movement
+} bot_moveresult_t;
+
+typedef struct bot_goal_s {
+	vec3_t origin;      // origin of the goal
+	int areanum;        // area number of the goal
+	vec3_t mins, maxs;  // mins and maxs of the goal
+	int entitynum;      // number of the goal entity
+	int number;         // goal number
+	int flags;          // goal flags
+	int iteminfo;       // item information
+} bot_goal_t;
+
+#define TFL_INVALID				0x00000001	//traveling temporary not possible
+#define TFL_WALK				0x00000002	//walking
+#define TFL_CROUCH				0x00000004	//crouching
+#define TFL_BARRIERJUMP			0x00000008	//jumping onto a barrier
+#define TFL_JUMP				0x00000010	//jumping
+#define TFL_LADDER				0x00000020	//climbing a ladder
+#define TFL_WALKOFFLEDGE		0x00000080	//walking of a ledge
+#define TFL_SWIM				0x00000100	//swimming
+#define TFL_WATERJUMP			0x00000200	//jumping out of the water
+#define TFL_TELEPORT			0x00000400	//teleporting
+#define TFL_ELEVATOR			0x00000800	//elevator
+#define TFL_ROCKETJUMP			0x00001000	//rocket jumping
+#define TFL_BFGJUMP				0x00002000	//bfg jumping
+#define TFL_GRAPPLEHOOK			0x00004000	//grappling hook
+#define TFL_DOUBLEJUMP			0x00008000	//double jump
+#define TFL_RAMPJUMP			0x00010000	//ramp jump
+#define TFL_STRAFEJUMP			0x00020000	//strafe jump
+#define TFL_JUMPPAD				0x00040000	//jump pad
+#define TFL_AIR					0x00080000	//travel through air
+#define TFL_WATER				0x00100000	//travel through water
+#define TFL_SLIME				0x00200000	//travel through slime
+#define TFL_LAVA				0x00400000	//travel through lava
+#define TFL_DONOTENTER			0x00800000	//travel through donotenter area
+#define TFL_FUNCBOB				0x01000000	//func bobbing
+#define TFL_FLIGHT				0x02000000	//flight
+#define TFL_BRIDGE				0x04000000	//move over a bridge
+#define TFL_NOTTEAM1			0x08000000	//not team 1
+#define TFL_NOTTEAM2			0x10000000	//not team 2
+
+// default travel flags
+#define TFL_DEFAULT TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | TFL_JUMP | TFL_LADDER | TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | TFL_WATER | TFL_JUMPPAD | TFL_FUNCBOB
+
+// entity info
+typedef struct aas_entityinfo_s {
+	int valid;             // true if updated this frame
+	int type;              // entity type
+	int flags;             // entity flags
+	float ltime;           // local time
+	float update_time;     // time between last and current update
+	int number;            // number of the entity
+	vec3_t origin;         // origin of the entity
+	vec3_t angles;         // angles of the model
+	vec3_t old_origin;     // for lerping
+	vec3_t lastvisorigin;  // last visible origin
+	vec3_t mins;           // bounding box minimums
+	vec3_t maxs;           // bounding box maximums
+	int groundent;         // ground entity
+	int solid;             // solid type
+	int modelindex;        // model used
+	int modelindex2;       // weapons, CTF flags, etc
+	int frame;             // model frame number
+	int event;             // impulse events -- muzzle flashes, footsteps, etc
+	int eventParm;         // even parameter
+	int powerups;          // bit flags
+	int weapon;            // determines weapon and flash model, etc
+	int legsAnim;          // mask off ANIM_TOGGLEBIT
+	int torsoAnim;         // mask off ANIM_TOGGLEBIT
+} aas_entityinfo_t;
+
+typedef enum {
+	SOLID_NOT,      // no interaction with other objects
+	SOLID_TRIGGER,  // only touch when inside, after moving
+	SOLID_BBOX,     // touch on edge
+	SOLID_BSP       // bsp clip, touch on edge
+} solid_t;
+
+typedef struct bot_state_s {
+	int inuse;
+	int botthink_residual;
+	int client;
+	int entitynum;
 	int npcType;
-	playerState_t cur_ps;							//current player state
-	int last_eFlags;								//last ps flags
-	usercmd_t lastucmd;								//usercmd from last frame
-	int entityeventTime[MAX_GENTITIES];				//last entity event time
-	//
-	bot_settings_t settings;						//several bot settings
-	int (*ainode)(struct bot_state_s *bs);			//current AI node
-	float thinktime;								//time the bot thinks this frame
-	vec3_t origin;									//origin of the bot
-	vec3_t velocity;								//velocity of the bot
-	int presencetype;								//presence type of the bot
-	vec3_t eye;										//eye coordinates of the bot
-	int areanum;									//the number of the area the bot is in
-	int inventory[MAX_ITEMS];						//string with items amounts the bot has
-	int tfl;										//the travel flags the bot uses
-	int flags;										//several flags
-	int respawn_wait;								//wait until respawned
-	int lasthealth;									//health value previous frame
-	int lastkilledplayer;							//last killed player
-	int lastkilledby;								//player that last killed this bot
-	int botdeathtype;								//the death type of the bot
-	int enemydeathtype;								//the death type of the enemy
-	int botsuicide;									//true when the bot suicides
-	int enemysuicide;								//true when the enemy of the bot suicides
-	int setupcount;									//true when the bot has just been setup
-	int map_restart;									//true when the map is being restarted
-	int entergamechat;								//true when the bot used an enter game chat
-	int num_deaths;									//number of time this bot died
-	int num_kills;									//number of kills of this bot
-	int revenge_enemy;								//the revenge enemy
-	int revenge_kills;								//number of kills the enemy made
-	int lastframe_health;							//health value the last frame
-	int lasthitcount;								//number of hits last frame
-	int chatto;										//chat to all or team
-	float walker;									//walker charactertic
-	float ltime;									//local bot time
-	float entergame_time;							//time the bot entered the game
-	float ltg_time;									//long term goal time
-	float nbg_time;									//nearby goal time
-	float respawn_time;								//time the bot takes to respawn
-	float respawnchat_time;							//time the bot started a chat during respawn
-	float chase_time;								//time the bot will chase the enemy
-	float enemyvisible_time;						//time the enemy was last visible
-	float check_time;								//time to check for nearby items
-	float stand_time;								//time the bot is standing still
-	float lastchat_time;							//time the bot last selected a chat
-	float kamikaze_time;							//time to check for kamikaze usage
-	float invulnerability_time;						//time to check for invulnerability usage
-	float standfindenemy_time;						//time to find enemy while standing
-	float attackstrafe_time;						//time the bot is strafing in one dir
-	float attackcrouch_time;						//time the bot will stop crouching
-	float attackchase_time;							//time the bot chases during actual attack
-	float attackjump_time;							//time the bot jumped during attack
-	float enemysight_time;							//time before reacting to enemy
-	float enemydeath_time;							//time the enemy died
-	float enemyposition_time;						//time the position and velocity of the enemy were stored
-	float defendaway_time;							//time away while defending
-	float defendaway_range;							//max travel time away from defend area
-	float rushbaseaway_time;						//time away from rushing to the base
-	float attackaway_time;							//time away from attacking the enemy base
-	float harvestaway_time;							//time away from harvesting
-	float ctfroam_time;								//time the bot is roaming in ctf
-	float killedenemy_time;							//time the bot killed the enemy
-	float arrive_time;								//time arrived (at companion)
-	float lastair_time;								//last time the bot had air
-	float teleport_time;							//last time the bot teleported
-	float camp_time;								//last time camped
-	float camp_range;								//camp range
-	float weaponchange_time;						//time the bot started changing weapons
-	float firethrottlewait_time;					//amount of time to wait
-	float firethrottleshoot_time;					//amount of time to shoot
-	float notblocked_time;							//last time the bot was not blocked
-	float blockedbyavoidspot_time;					//time blocked by an avoid spot
-	float predictobstacles_time;					//last time the bot predicted obstacles
-	int predictobstacles_goalareanum;				//last goal areanum the bot predicted obstacles for
-	vec3_t aimtarget;
-	vec3_t enemyvelocity;							//enemy velocity 0.5 secs ago during battle
-	vec3_t enemyorigin;								//enemy origin 0.5 secs ago during battle
-
-	int character;									//the bot character
-	int ms;											//move state of the bot
-	int gs;											//goal state of the bot
-	int cs;											//chat state of the bot
-	int ws;											//weapon state of the bot
-	//
-	int enemy;										//enemy entity number
-	int lastenemyareanum;							//last reachability area the enemy was in
-	vec3_t lastenemyorigin;							//last origin of the enemy in the reachability area
-	int weaponnum;									//current weapon number
-	vec3_t viewangles;								//current view angles
-	vec3_t ideal_viewangles;						//ideal view angles
-	vec3_t viewanglespeed;
-	//
-	int ltgtype;									//long term goal type
-	// team goals
-	int teammate;									//team mate involved in this team goal
-	int decisionmaker;								//player who decided to go for this goal
-	int ordered;									//true if ordered to do something
-	float order_time;								//time ordered to do something
-	int owndecision_time;							//time the bot made it's own decision
-	bot_goal_t teamgoal;							//the team goal
-	bot_goal_t altroutegoal;						//alternative route goal
-	float reachedaltroutegoal_time;					//time the bot reached the alt route goal
-	float teammessage_time;							//time to message team mates what the bot is doing
-	float teamgoal_time;							//time to stop helping team mate
-	float teammatevisible_time;						//last time the team mate was NOT visible
-	int teamtaskpreference;							//team task preference
-	// last ordered team goal
-	int lastgoal_decisionmaker;
-	int lastgoal_ltgtype;
-	int lastgoal_teammate;
-	bot_goal_t lastgoal_teamgoal;
-	// for leading team mates
-	int lead_teammate;								//team mate the bot is leading
-	bot_goal_t lead_teamgoal;						//team goal while leading
-	float lead_time;								//time leading someone
-	float leadvisible_time;							//last time the team mate was visible
-	float leadmessage_time;							//last time a messaged was sent to the team mate
-	float leadbackup_time;							//time backing up towards team mate
-	//
-	char teamleader[32];							//netname of the team leader
-	float askteamleader_time;						//time asked for team leader
-	float becometeamleader_time;					//time the bot will become the team leader
-	float teamgiveorders_time;						//time to give team orders
-	float lastflagcapture_time;						//last time a flag was captured
-	int numteammates;								//number of team mates
-	int redflagstatus;								//0 = at base, 1 = not at base
-	int blueflagstatus;								//0 = at base, 1 = not at base
-	int neutralflagstatus;							//0 = at base, 1 = our team has flag, 2 = enemy team has flag, 3 = enemy team dropped the flag
-	int flagstatuschanged;							//flag status changed
-	int forceorders;								//true if forced to give orders
-	int flagcarrier;								//team mate carrying the enemy flag
-	int ctfstrategy;								//ctf strategy
-	char subteam[32];								//sub team name
-	float formation_dist;							//formation team mate intervening space
-	char formation_teammate[16];					//netname of the team mate the bot uses for relative positioning
-	float formation_angle;							//angle relative to the formation team mate
-	vec3_t formation_dir;							//the direction the formation is moving in
-	vec3_t formation_origin;						//origin the bot uses for relative positioning
-	bot_goal_t formation_goal;						//formation goal
-
-	int patrolflags;								//patrol flags
-	int	swep_list[WEAPONS_NUM];						//OpenSandbox weapon system
-	int	swep_ammo[WEAPONS_NUM];						//OpenSandbox ammo system
+	playerState_t cur_ps;
+	usercmd_t lastucmd;
+	bot_settings_t settings;
+	int (*ainode)(struct bot_state_s* bs);
+	float thinktime;
+	vec3_t origin;
+	vec3_t velocity;
+	int presencetype;
+	vec3_t eye;
+	int areanum;
+	int tfl;
+	int setupcount;
+	int ms;
+	int enemy;
+	int lastenemyareanum;
+	vec3_t lastenemyorigin;
+	int weaponnum;
+	vec3_t viewangles;
+	vec3_t ideal_viewangles;
+	int swep_list[WEAPONS_NUM];
+	int swep_ammo[WEAPONS_NUM];
 	int item_searchtime;
 	bot_goal_t maingoal;
 } bot_state_t;
