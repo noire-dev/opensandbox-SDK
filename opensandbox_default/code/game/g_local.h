@@ -415,6 +415,20 @@ typedef struct {
 #define DAMAGE_NO_PROTECTION 0x00000008       // armor, shields, invulnerability, and godmode have no effect
 #define DAMAGE_NO_TEAM_PROTECTION 0x00000010  // armor, shields, invulnerability, and godmode have no effect
 
+// bot settings
+#define MAX_FILEPATH 144
+typedef struct bot_settings_s {
+	char team[MAX_FILEPATH];
+} bot_settings_t;
+
+// ai_main.c
+int BotAISetup(int restart);
+int BotAIShutdown(int restart);
+int BotAILoadMap(int restart);
+int BotAISetupClient(int client, struct bot_settings_s* settings);
+int BotAIShutdownClient(int client, qboolean restart);
+int AI_Frame(int time);
+
 // g_active.c
 void ClientThink(int clientNum);
 void G_RunClient(gentity_t *ent);
@@ -424,8 +438,8 @@ void PM_Add_SwepAmmo(int clientNum, int wp, int count);
 void ClientEndFrame(gentity_t *ent);
 
 // g_bot.c
-qboolean G_BotConnect(int clientNum, qboolean restart);
-void G_AddBot(const char *name, float skill, const char *team, char *altname, gentity_t *spawn);
+qboolean G_BotConnect(int clientNum);
+void G_AddBot(char *model, char *name, char *team, gentity_t *spawn);
 void Svcmd_AddBot_f(void);
 void G_LoadBots(void);
 void SandboxBotSpawn(gentity_t *bot, char spawnid[]);
@@ -642,20 +656,6 @@ void FireWeapon(gentity_t *ent);
 void G_StartKamikaze(gentity_t *ent);
 void G_StartCarExplode(gentity_t *ent);
 void G_StartNukeExplode(gentity_t *ent);
-
-#define MAX_FILEPATH 144
-
-// bot settings
-typedef struct bot_settings_s {
-	char team[MAX_FILEPATH];
-} bot_settings_t;
-
-int BotAISetup(int restart);
-int BotAIShutdown(int restart);
-int BotAILoadMap(int restart);
-int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart);
-int BotAIShutdownClient(int client, qboolean restart);
-int AI_Frame(int time);
 
 extern level_locals_t level;
 extern gentity_t g_entities[MAX_GENTITIES];

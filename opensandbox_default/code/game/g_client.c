@@ -545,7 +545,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot) {
 	if(isBot) {
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
-		if(!G_BotConnect(clientNum, !firstTime)) return "BotConnectfailed";
+		if(!G_BotConnect(clientNum)) return "BotConnectfailed";
 
 		SandboxBotSpawn(ent, Info_ValueForKey(userinfo, "spawnid"));
 	}

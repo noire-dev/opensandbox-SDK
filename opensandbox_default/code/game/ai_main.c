@@ -360,7 +360,7 @@ static int AI_Battle(bot_state_t* bs) {
 	return qtrue;
 }
 
-static int AINode_Seek(bot_state_t* bs) {
+static int AINode_Default(bot_state_t* bs) {
 	bot_moveresult_t moveresult;
 
 	if(BotIsObserver(bs) || BotIntermission(bs)) return qfalse;
@@ -407,7 +407,7 @@ static void BotDeathmatchAI(bot_state_t* bs, float thinktime) {
 	}
 
 	if(!BotIntermission(bs)) BotUpdateInventory(bs);
-	if(!bs->ainode) bs->ainode = AINode_Seek;
+	if(!bs->ainode) bs->ainode = AINode_Default;
 	bs->ainode(bs);  // execute AI node
 
 	if(!bs->inuse) return;
@@ -599,7 +599,7 @@ static void BotScheduleBotThink(void) {
 	}
 }
 
-int BotAISetupClient(int client, struct bot_settings_s* settings, qboolean restart) {
+int BotAISetupClient(int client, struct bot_settings_s* settings) {
 	bot_state_t* bs;
 	char userinfo[MAX_INFO_STRING];
 

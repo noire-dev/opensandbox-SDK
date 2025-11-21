@@ -621,7 +621,7 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 
 		if(!Q_stricmp(tent->message, "0") || !tent->message) CopyAlloc(tent->message, tent->clientname);
 
-		G_AddBot(tent->clientname, tent->skill, "Blue", tent->message, tent);
+		G_AddBot(tent->clientname, tent->message, "Blue", tent);
 
 		if(tent->parent) Undo_AddElement(ent, tent->s.number);
 		return;

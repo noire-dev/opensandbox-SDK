@@ -94,7 +94,7 @@ static void setModel(gentity_t *ent, char *modelName) {
 	}
 }
 
-void SP_sandbox_npc(gentity_t *ent) { G_AddBot(ent->clientname, ent->skill, "Blue", ent->message, ent); }
+void SP_sandbox_npc(gentity_t *ent) { G_AddBot(ent->clientname, ent->message, "Blue", ent); }
 
 void SP_sandbox_prop(gentity_t *ent) {
 	spawn_t *s;

@@ -40,7 +40,7 @@ static int G_ParseInfos(char *buf, int max, char *infos[]) {
 	return count;
 }
 
-qboolean G_BotConnect(int clientNum, qboolean restart) {
+qboolean G_BotConnect(int clientNum) {
 	bot_settings_t settings;
 	char userinfo[MAX_INFO_STRING];
 
@@ -48,24 +48,12 @@ qboolean G_BotConnect(int clientNum, qboolean restart) {
 
 	Q_strncpyz(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
 
-	if(!BotAISetupClient(clientNum, &settings, restart)) {
+	if(!BotAISetupClient(clientNum, &settings)) {
 		trap_DropClient(clientNum, "BotAISetupClient failed");
 		return qfalse;
 	}
 
 	return qtrue;
-}
-
-static char *G_GetBotInfoByName(const char *name) {
-	int n;
-	char *value;
-
-	for(n = 0; n < g_numBots; n++) {
-		value = Info_ValueForKey(g_botInfos[n], "name");
-		if(!Q_stricmp(value, name)) return g_botInfos[n];
-	}
-
-	return NULL;
 }
 
 static void G_BotSandboxCheck(gentity_t *self) {
@@ -78,68 +66,23 @@ static void G_BotSandboxCheck(gentity_t *self) {
 	self->nextthink = level.time + 1;
 }
 
-void G_AddBot(const char *name, float skill, const char *team, char *altname, gentity_t *spawn) {
+void G_AddBot(char *model, char *name, char *team, gentity_t *spawn) {
 	int clientNum;
-	char *botinfo;
 	gentity_t *bot;
-	char *key;
-	char *s;
-	char *botname;
-	char *model;
-	char *headmodel;
 	char userinfo[MAX_INFO_STRING];
-
-	// get the botinfo from bots.txt
-	botinfo = G_GetBotInfoByName(name);
-	if(!botinfo) {
-		G_Printf(S_COLOR_RED "Error: Bot '%s' not defined\n", name);
-		return;
-	}
 
 	// create the bot's userinfo
 	userinfo[0] = '\0';
 
-	botname = Info_ValueForKey(botinfo, "funname");
-	if(!botname[0]) botname = Info_ValueForKey(botinfo, "name");
+	if(!name) name = model;
 
-	// check for an alternative name
-	if(altname && altname[0]) botname = altname;
-
-	Info_SetValueForKey(userinfo, "name", botname);
+	Info_SetValueForKey(userinfo, "name", name);
 	Info_SetValueForKey(userinfo, "rate", "25000");
 	Info_SetValueForKey(userinfo, "snaps", "20");
-	Info_SetValueForKey(userinfo, "skill", va("%1.2f", skill));
 
-	key = "model";
-	model = Info_ValueForKey(botinfo, key);
-	if(!*model) {
-		model = "visor/default";
-	}
-	Info_SetValueForKey(userinfo, key, model);
-	key = "team_model";
-	Info_SetValueForKey(userinfo, key, model);
-
-	key = "headmodel";
-	headmodel = Info_ValueForKey(botinfo, key);
-	if(!*headmodel) {
-		headmodel = model;
-	}
-	Info_SetValueForKey(userinfo, key, headmodel);
-	key = "team_headmodel";
-	Info_SetValueForKey(userinfo, key, headmodel);
-
-	key = "gender";
-	s = Info_ValueForKey(botinfo, key);
-	if(!*s) {
-		s = "male";
-	}
-	Info_SetValueForKey(userinfo, "sex", s);
-
-	s = Info_ValueForKey(botinfo, "aifile");
-	if(!*s) {
-		trap_Print(S_COLOR_RED "Error: bot has no aifile specified\n");
-		return;
-	}
+	if(!*model) model = "sarge/default";
+	Info_SetValueForKey(userinfo, "model", model);
+	Info_SetValueForKey(userinfo, "team_model", model);
 
 	// dynamic limit
 	if(level.numConnectedClients >= cvarInt("g_maxClients")) {
@@ -150,7 +93,7 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 	// have the server allocate a client slot
 	clientNum = trap_BotAllocateClient();
 	if(clientNum == -1) {
-		G_Printf(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
+		G_Printf(S_COLOR_YELLOW "Server is full, increase engine limit.\n");
 		return;
 	}
 
@@ -166,8 +109,6 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 			team = "red";
 		}
 	}
-	Info_SetValueForKey(userinfo, "characterfile", Info_ValueForKey(botinfo, "aifile"));
-	Info_SetValueForKey(userinfo, "skill", va("%5.2f", skill));
 	Info_SetValueForKey(userinfo, "team", team);
 
 	bot = &g_entities[clientNum];
@@ -196,36 +137,19 @@ void G_AddBot(const char *name, float skill, const char *team, char *altname, ge
 }
 
 void Svcmd_AddBot_f(void) {
-	float skill;
+	char model[MAX_TOKEN_CHARS];
 	char name[MAX_TOKEN_CHARS];
-	char altname[MAX_TOKEN_CHARS];
-	char string[MAX_TOKEN_CHARS];
 	char team[MAX_TOKEN_CHARS];
 
-	// are bots enabled?
-	if(!cvarInt("bot_enable")) return;
-
-	// name
-	trap_Argv(1, name, sizeof(name));
-	if(!name[0]) {
-		trap_Print("Usage: Addbot <botname> [skill 1-5] [team] [altname]\n");
+	trap_Argv(1, model, sizeof(model));
+	if(!model[0]) {
+		trap_Print("Usage: addbot <model/skin> [name] [team]\n");
 		return;
 	}
 
-	// skill
-	trap_Argv(2, string, sizeof(string));
-	if(!string[0]) {
-		skill = 5.00;
-	} else {
-		skill = atof(string);
-	}
-
-	// team
+	trap_Argv(2, name, sizeof(name));
 	trap_Argv(3, team, sizeof(team));
-
-	// alternative name
-	trap_Argv(4, altname, sizeof(altname));
-	G_AddBot(name, skill, team, altname, NULL);
+	G_AddBot(model, name, team, NULL);
 }
 
 static void G_LoadBotsFromFile(char *filename) {
