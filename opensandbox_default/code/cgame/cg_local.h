@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "../qcommon/q_shared.h"
@@ -234,8 +233,6 @@ typedef struct {
 	char			name[MAX_QPATH];
 	team_t			team;
 
-	int				botSkill;		// 0 = not bot, 1-5 = bot
-
 	int				isNPC;		// 0 = not NPC, 1 = NPC
 
 	int				headR;
@@ -257,8 +254,6 @@ typedef struct {
 	int				armor;
 	int				curWeapon;
 
-	int				teamTask;		// task in teamplay (offence/defence)
-	qboolean		teamLeader;		// true when this is a team leader
 	int				flashlight;
 
 	int				powerups;		// so can display quad/flag status

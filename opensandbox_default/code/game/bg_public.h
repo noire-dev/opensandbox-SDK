@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #if defined(BG_PUBLIC_H)
@@ -629,17 +628,6 @@ typedef enum {
 } team_t;
 
 #define TEAM_NONE TEAM_SPECTATOR
-
-typedef enum {
-	TEAMTASK_NONE,
-	TEAMTASK_OFFENSE, 
-	TEAMTASK_DEFENSE,
-	TEAMTASK_PATROL,
-	TEAMTASK_FOLLOW,
-	TEAMTASK_RETRIEVE,
-	TEAMTASK_ESCORT,
-	TEAMTASK_CAMP
-} teamtask_t;
 
 typedef enum {
 	MOD_UNKNOWN,

@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
@@ -791,11 +790,6 @@ static void CheckExitRules(void) {
 	}
 }
 
-/*
-==================
-PrintTeam
-==================
-*/
 static void PrintTeam(int team, char *message) {
 	int i;
 
@@ -805,14 +799,7 @@ static void PrintTeam(int team, char *message) {
 	}
 }
 
-/*
-==================
-SetLeader
-==================
-*/
 void SetLeader(int team, int client) {
-	int i;
-
 	if(level.clients[client].pers.connected == CON_DISCONNECTED) {
 		PrintTeam(team, va("print \"%s is not connected\n\"", level.clients[client].pers.netname));
 		return;
@@ -821,44 +808,8 @@ void SetLeader(int team, int client) {
 		PrintTeam(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname));
 		return;
 	}
-	for(i = 0; i < level.maxclients; i++) {
-		if(level.clients[i].sess.sessionTeam != team) continue;
-		if(level.clients[i].sess.teamLeader) {
-			level.clients[i].sess.teamLeader = qfalse;
-			ClientUserinfoChanged(i);
-		}
-	}
-	level.clients[client].sess.teamLeader = qtrue;
+	
 	ClientUserinfoChanged(client);
-	PrintTeam(team, va("print \"%s is the new team leader\n\"", level.clients[client].pers.netname));
-}
-
-/*
-==================
-CheckTeamLeader
-==================
-*/
-void CheckTeamLeader(int team) {
-	int i;
-
-	for(i = 0; i < level.maxclients; i++) {
-		if(level.clients[i].sess.sessionTeam != team) continue;
-		if(level.clients[i].sess.teamLeader) break;
-	}
-	if(i >= level.maxclients) {
-		for(i = 0; i < level.maxclients; i++) {
-			if(level.clients[i].sess.sessionTeam != team) continue;
-			if(!(g_entities[i].r.svFlags & SVF_BOT)) {
-				level.clients[i].sess.teamLeader = qtrue;
-				break;
-			}
-		}
-		for(i = 0; i < level.maxclients; i++) {
-			if(level.clients[i].sess.sessionTeam != team) continue;
-			level.clients[i].sess.teamLeader = qtrue;
-			break;
-		}
-	}
 }
 
 /*

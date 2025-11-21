@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
@@ -74,7 +73,7 @@ void G_AddBot(char *model, char *name, char *team, gentity_t *spawn) {
 	// create the bot's userinfo
 	userinfo[0] = '\0';
 
-	if(!name) name = model;
+	if(!strlen(name)) name = model;
 
 	Info_SetValueForKey(userinfo, "name", name);
 	Info_SetValueForKey(userinfo, "rate", "25000");
@@ -82,7 +81,6 @@ void G_AddBot(char *model, char *name, char *team, gentity_t *spawn) {
 
 	if(!*model) model = "sarge/default";
 	Info_SetValueForKey(userinfo, "model", model);
-	Info_SetValueForKey(userinfo, "team_model", model);
 
 	// dynamic limit
 	if(level.numConnectedClients >= cvarInt("g_maxClients")) {

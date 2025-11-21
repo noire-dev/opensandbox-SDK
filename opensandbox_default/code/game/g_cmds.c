@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
@@ -235,22 +234,6 @@ static void Cmd_Noclip_f(gentity_t *ent) {
 	ent->client->noclip = !ent->client->noclip;
 }
 
-static void Cmd_TeamTask_f(gentity_t *ent) {
-	char userinfo[MAX_INFO_STRING];
-	char arg[MAX_TOKEN_CHARS];
-	int task;
-	int client = ent->client - level.clients;
-
-	if(trap_Argc() != 2) return;
-	trap_Argv(1, arg, sizeof(arg));
-	task = atoi(arg);
-
-	trap_GetUserinfo(client, userinfo, sizeof(userinfo));
-	Info_SetValueForKey(userinfo, "teamtask", va("%d", task));
-	trap_SetUserinfo(client, userinfo);
-	ClientUserinfoChanged(client);
-}
-
 static void Cmd_Kill_f(gentity_t *ent) {
 	if(ent->client->sess.sessionTeam == TEAM_SPECTATOR) return;
 	if(ent->health <= 0) return;
@@ -277,7 +260,6 @@ void SetTeam(gentity_t *ent, char *s) {
 	int clientNum;
 	spectatorState_t specState;
 	int specClient;
-	int teamLeader;
 
 	// see what change is requested
 	client = ent->client;
@@ -334,15 +316,6 @@ void SetTeam(gentity_t *ent, char *s) {
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
-
-	client->sess.teamLeader = qfalse;
-	if(team == TEAM_RED || team == TEAM_BLUE) {
-		teamLeader = TeamLeader(team);
-		// if there is no team leader or the team leader is a bot and this client is not a bot
-		if(teamLeader == -1 || (!(g_entities[clientNum].r.svFlags & SVF_BOT) && (g_entities[teamLeader].r.svFlags & SVF_BOT))) SetLeader(team, clientNum);
-	}
-	// make sure there is a team leader on the team the player came from
-	if(oldTeam == TEAM_RED || oldTeam == TEAM_BLUE) CheckTeamLeader(oldTeam);
 
 	BroadcastTeamChange(client, oldTeam);
 
@@ -815,7 +788,6 @@ commands_t cmds[] = {
     // game commands
     {"follownext", CMD_NOTEAM, Cmd_RunFollowNext_f},
     {"followprev", CMD_NOTEAM, Cmd_RunFollowPrev_f},
-    {"teamtask", CMD_TEAM, Cmd_TeamTask_f},
     {"freespectator", CMD_NOTEAM, StopFollowing}};
 
 static int numCmds = ARRAY_SIZE(cmds);

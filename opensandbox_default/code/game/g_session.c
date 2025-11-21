@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
@@ -16,7 +15,7 @@ static void G_WriteClientSessionData(gclient_t *client) {
 	const char *s;
 	const char *var;
 
-	s = va("%i %i %i %i %i", client->sess.sessionTeam, client->sess.spectatorNum, client->sess.spectatorState, client->sess.spectatorClient, client->sess.teamLeader);
+	s = va("%i %i %i %i", client->sess.sessionTeam, client->sess.spectatorNum, client->sess.spectatorState, client->sess.spectatorClient);
 
 	var = va("session%i", (int)(client - level.clients));
 	cvarSet(var, s);
@@ -32,28 +31,16 @@ Called on a reconnect
 void G_ReadSessionData(gclient_t *client) {
 	char *s;
 	const char *var;
-
-	// bk001205 - format
-	int teamLeader;
 	int spectatorState;
 	int sessionTeam;
 
 	var = va("session%i", (int)(client - level.clients));
 	s = cvarString(var);
 
-	sscanf(s,
-	       "%i %i %i %i %i",
-	       &sessionTeam,  // bk010221 - format
-	       &client->sess.spectatorNum,
-	       &spectatorState,  // bk010221 - format
-	       &client->sess.spectatorClient,
-	       &teamLeader  // bk010221 - format
-	);
+	sscanf(s, "%i %i %i %i", &sessionTeam, &client->sess.spectatorNum, &spectatorState, &client->sess.spectatorClient);
 
-	// bk001205 - format issues
 	client->sess.sessionTeam = (team_t)sessionTeam;
 	client->sess.spectatorState = (spectatorState_t)spectatorState;
-	client->sess.teamLeader = (qboolean)teamLeader;
 }
 
 /*

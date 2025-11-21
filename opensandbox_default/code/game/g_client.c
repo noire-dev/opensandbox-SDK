@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "g_local.h"
@@ -277,28 +276,6 @@ static team_t TeamCount(int ignoreClientNum, int team) {
 	return count;
 }
 
-/*
-================
-TeamLeader
-
-Returns the client number of the team leader
-================
-*/
-int TeamLeader(int team) {
-	int i;
-
-	for(i = 0; i < level.maxclients; i++) {
-		if(level.clients[i].pers.connected == CON_DISCONNECTED) {
-			continue;
-		}
-		if(level.clients[i].sess.sessionTeam == team) {
-			if(level.clients[i].sess.teamLeader) return i;
-		}
-	}
-
-	return -1;
-}
-
 team_t PickTeam(int ignoreClientNum) {
 	int counts[TEAM_NUM_TEAMS];
 
@@ -309,74 +286,6 @@ team_t PickTeam(int ignoreClientNum) {
 	if(counts[TEAM_RED] > counts[TEAM_BLUE]) return TEAM_BLUE;
 	if(level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]) return TEAM_RED;
 	return TEAM_BLUE;
-}
-
-static void ClientCleanName(const char *in, char *out, int outSize) {
-	int len, colorlessLen;
-	char ch;
-	char *p;
-	int spaces;
-
-	// save room for trailing null byte
-	outSize--;
-
-	len = 0;
-	colorlessLen = 0;
-	p = out;
-	*p = 0;
-	spaces = 0;
-
-	while(1) {
-		ch = *in++;
-		if(!ch) break;
-
-		// don't allow leading spaces
-		if(!*p && ch == ' ') {
-			continue;
-		}
-
-		// check colors
-		if(ch == Q_COLOR_ESCAPE) {
-			// solo trailing carat is not a color prefix
-			if(!*in) break;
-
-			// don't allow black in a name, period
-			if(ColorIndex(*in) == 0) {
-				in++;
-				continue;
-			}
-
-			// make sure room in dest for both chars
-			if(len > outSize - 2) break;
-
-			*out++ = ch;
-			*out++ = *in++;
-			len += 2;
-			continue;
-		}
-
-		// don't allow too many consecutive spaces
-		if(ch == ' ') {
-			spaces++;
-			if(spaces > 3) {
-				continue;
-			}
-		} else {
-			spaces = 0;
-		}
-
-		if(len > outSize - 1) break;
-
-		*out++ = ch;
-		colorlessLen++;
-		len++;
-	}
-	*out = 0;
-
-	// don't allow empty names
-	if(*p == 0 || colorlessLen == 0) {
-		Q_strncpyz(p, "noname", outSize);
-	}
 }
 
 /*
@@ -391,8 +300,8 @@ The game can override any of the settings and call trap_SetUserinfo if desired.
 */
 void ClientUserinfoChanged(int clientNum) {
 	gentity_t *ent;
-	int teamTask, teamLeader, team;
-	int npcType, botskill;
+	int team;
+	int npcType;
 	char *s;
 	char model[MAX_QPATH], headModel[MAX_QPATH], legsModel[MAX_QPATH];
 	char headR[16], headG[16], headB[16];
@@ -400,7 +309,6 @@ void ClientUserinfoChanged(int clientNum) {
 	char legsR[16], legsG[16], legsB[16];
 	char physR[16], physG[16], physB[16];
 	char swep_id[16];
-	char oldname[MAX_STRING_CHARS];
 	gclient_t *client;
 	char userinfo[MAX_INFO_STRING];
 
@@ -413,18 +321,15 @@ void ClientUserinfoChanged(int clientNum) {
 	if(!Info_Validate(userinfo)) strcpy(userinfo, "\\name\\badinfo");
 
 	// set name
-	Q_strncpyz(oldname, client->pers.netname, sizeof(oldname));
 	s = Info_ValueForKey(userinfo, "name");
-	ClientCleanName(s, client->pers.netname, sizeof(client->pers.netname));
+    if(strlen(s) > 0) {
+        strcpy(client->pers.netname, s);
+    } else {
+        strcpy(client->pers.netname, "noname");
+    }
 
 	ent->tool_id = atoi(Info_ValueForKey(userinfo, "toolgun_tool"));
 	ent->tool_entity = NULL;
-
-	if(client->pers.connected == CON_CONNECTED) {
-		if(strcmp(oldname, client->pers.netname)) {
-			trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname, client->pers.netname));
-		}
-	}
 
 	// set model
 	if(cvarInt("g_gametype") >= GT_TEAM) {
@@ -438,14 +343,8 @@ void ClientUserinfoChanged(int clientNum) {
 	}
 
 	if(ent->r.svFlags & SVF_BOT) {
-		if(cvarInt("g_gametype") >= GT_TEAM) {
-			Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "team_model"), sizeof(legsModel));
-		} else {
-			Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
-		}
-
-		botskill = atoi(Info_ValueForKey(userinfo, "skill"));
-		ent->skill = botskill;
+		Q_strncpyz(headModel, Info_ValueForKey(userinfo, "model"), sizeof(headModel));
+		Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
 	}
 
 	npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
@@ -486,17 +385,12 @@ void ClientUserinfoChanged(int clientNum) {
 		team = client->sess.sessionTeam;
 	}
 
-	// team task (0 = none, 1 = offence, 2 = defence)
-	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
-	// team Leader (1 = leader, 0 is normal player)
-	teamLeader = client->sess.teamLeader;
-
 	strcpy(swep_id, va("%i", ent->swep_id));
 
 	if(ent->r.svFlags & SVF_BOT) {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\nt\\%i\\s\\%s\\tt\\%d\\tl\\%d", client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehicleNum, ent->npcType, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\nt\\%i", client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehicleNum, ent->npcType);
 	} else {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\nt\\%i\\tt\\%d\\tl\\%d\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehicleNum, ent->npcType, teamTask, teamLeader, ent->flashlight);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\nt\\%i\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehicleNum, ent->npcType, ent->flashlight);
 	}
 
 	trap_SetConfigstring(CS_PLAYERS + clientNum, s);

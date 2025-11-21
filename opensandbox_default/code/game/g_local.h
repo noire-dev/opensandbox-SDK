@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
 // Copyright (C) 2023-2025 Noire.dev
-// Copyright (C) 2025 OpenSandbox Team
 // OpenSandbox — GPLv2; see LICENSE for details.
 
 #include "../qcommon/q_shared.h"
@@ -246,7 +245,6 @@ typedef struct {
 	int spectatorNum;  // for determining next-in-line to play
 	spectatorState_t spectatorState;
 	int spectatorClient;  // for chasecam and follow mode
-	qboolean teamLeader;  // true when this client is a team leader
 } clientSession_t;
 
 typedef struct {
@@ -453,7 +451,6 @@ void InitBodyQue(void);
 void CopyToBodyQue(gentity_t *ent);
 void SetClientViewAngle(gentity_t *ent, vec3_t angle);
 void ClientRespawn(gentity_t *ent);
-int TeamLeader(int team);
 team_t PickTeam(int ignoreClientNum);
 void ClientUserinfoChanged(int clientNum);
 char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot);
@@ -511,7 +508,6 @@ void CalculateRanks(void);
 void MoveClientToIntermission(gentity_t *ent);
 void FindIntermissionPoint(void);
 void SetLeader(int team, int client);
-void CheckTeamLeader(int team);
 void G_RunThink(gentity_t *ent);
 
 // g_misc.c

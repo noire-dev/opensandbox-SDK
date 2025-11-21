@@ -2,11 +2,11 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/q_shared.h"
-#include "g_local.h"
 #include "ai_main.h"
 
-#define MAX_PATH 144
+#include "../qcommon/q_shared.h"
+#include "g_local.h"
+
 #define AI_THINKTIME 300
 
 bot_state_t* botstates[MAX_CLIENTS];
@@ -704,8 +704,10 @@ int AI_Frame(int time) {
 	local_time = time;
 	botlib_residual += elapsed_time;
 
-	if(elapsed_time > AI_THINKTIME) thinktime = elapsed_time;
-	else thinktime = AI_THINKTIME;
+	if(elapsed_time > AI_THINKTIME)
+		thinktime = elapsed_time;
+	else
+		thinktime = AI_THINKTIME;
 
 	// update the bot library
 	if(botlib_residual >= thinktime) {
@@ -737,8 +739,10 @@ int AI_Frame(int time) {
 			VectorCopy(ent->r.maxs, state.maxs);
 			state.type = ent->s.eType;
 			state.flags = ent->s.eFlags;
-			if(ent->r.bmodel) state.solid = SOLID_BSP;
-			else state.solid = SOLID_BBOX;
+			if(ent->r.bmodel)
+				state.solid = SOLID_BSP;
+			else
+				state.solid = SOLID_BBOX;
 			state.groundent = ent->s.groundEntityNum;
 			state.modelindex = ent->s.modelindex;
 			state.modelindex2 = ent->s.modelindex2;
