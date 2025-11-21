@@ -1546,17 +1546,17 @@ void UI_CreateUI(menuframework_s *menu, menuelement_s *e) {
 			// Get value
 			if(e[i].generic.var) {
 				if(e[i].generic.type == MTYPE_SLIDER) {
-					e[i].curvalue = cvarInt(e[i].generic.var) * (float)e[i].generic.mode;
+					e[i].curvalue = cvarFloat(e[i].generic.var) * (float)e[i].generic.mode;
 				}
 				if(e[i].generic.type == MTYPE_FIELD) {
 					Q_strncpyz(e[i].field.buffer, cvarString(e[i].generic.var), MAX_EDIT_LINE);
 				}
 				if(e[i].generic.type == MTYPE_RADIOBUTTON) {
 					if(e[i].generic.mode == RBT_NORMAL) {
-						e[i].curvalue = cvarInt(e[i].generic.var);
+						e[i].curvalue = cvarFloat(e[i].generic.var);
 					}
 					if(e[i].generic.mode == RBT_INVERSE) {
-						e[i].curvalue = -cvarInt(e[i].generic.var);
+						e[i].curvalue = -cvarFloat(e[i].generic.var);
 					}
 				}
 			}

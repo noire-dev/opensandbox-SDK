@@ -193,7 +193,7 @@ void UI_Settings(void) {
 	settings.e[10].curvalue = cvarInt("r_ext_multisample")/2;
 
 	UI_CSpinControl(&settings.e[11], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
-	settings.e[11].curvalue = cvarInt("r_bloom_intensity")/0.05;
+	settings.e[11].curvalue = cvarFloat("r_bloom_intensity")/0.05;
 
 	UI_CSlider(&settings.e[12], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
 	y += 12;
