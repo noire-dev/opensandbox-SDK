@@ -345,10 +345,8 @@ static int AI_Battle(bot_state_t* bs) {
 	VectorCopy(entinfo.origin, target);
 
 	areanum = BotPointAreaNum(target);
-	if(areanum && trap_AAS_AreaReachability(areanum)) {
-		VectorCopy(target, bs->lastenemyorigin);
-		bs->lastenemyareanum = areanum;
-	}
+	VectorCopy(target, bs->lastenemyorigin);
+	if(areanum) bs->lastenemyareanum = areanum;
 
 	if(!BotEntityVisible(bs->entitynum, bs->eye, bs->enemy) && bs->npcType != NT_NEXTBOT) return qfalse;
 
@@ -366,8 +364,7 @@ static int AINode_Default(bot_state_t* bs) {
 
 	if(BotIsDead(bs)) {
 		trap_BotResetMoveState(bs->ms);
-		trap_BotResetAvoidReach(bs->ms);
-		trap_EA_Respawn(bs->client);
+		trap_EA_Attack(bs->client);
 		return qfalse;
 	}
 
@@ -474,7 +471,6 @@ static void BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int delta_an
 		bi->actionflags &= ~ACTION_DELAYEDJUMP;
 	}
 
-	if(bi->actionflags & ACTION_RESPAWN) ucmd->buttons = BUTTON_ATTACK;
 	if(bi->actionflags & ACTION_ATTACK) ucmd->buttons |= BUTTON_ATTACK;
 	if(bi->actionflags & ACTION_TALK) ucmd->buttons |= BUTTON_TALK;
 	if(bi->actionflags & ACTION_GESTURE) ucmd->buttons |= BUTTON_GESTURE;
@@ -538,7 +534,6 @@ static void BotUpdateInput(bot_state_t* bs, int time, int elapsed_time) {
 
 static void BotAIRegularUpdate(void) {
 	if(regularupdate_time < floattime) {
-		trap_BotUpdateEntityItems();
 		regularupdate_time = floattime + 0.3;
 	}
 }
@@ -671,7 +666,6 @@ void BotResetState(bot_state_t* bs) {
 	bs->entitynum = entitynum;
 	// reset several states
 	if(bs->ms) trap_BotResetMoveState(bs->ms);
-	if(bs->ms) trap_BotResetAvoidReach(bs->ms);
 }
 
 int BotAILoadMap(int restart) {
@@ -784,12 +778,6 @@ int AI_Frame(int time) {
 	return qtrue;
 }
 
-static int BotInitLibrary(void) {
-	trap_BotLibVarSet("maxclients", va("%i", MAX_CLIENTS));
-	trap_BotLibVarSet("maxentities", va("%i", MAX_GENTITIES));
-	return trap_BotLibSetup();
-}
-
 int BotAISetup(int restart) {
 	int errnum;
 
@@ -798,7 +786,7 @@ int BotAISetup(int restart) {
 	// initialize the bot states
 	memset(botstates, 0, sizeof(botstates));
 
-	errnum = BotInitLibrary();
+	errnum = trap_BotLibSetup();
 	if(errnum != 0) return qfalse;
 	return qtrue;
 }
