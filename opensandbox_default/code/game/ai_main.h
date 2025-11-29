@@ -129,10 +129,6 @@ typedef struct bot_goal_s {
 	vec3_t origin;      // origin of the goal
 	int areanum;        // area number of the goal
 	vec3_t mins, maxs;  // mins and maxs of the goal
-	int entitynum;      // number of the goal entity
-	int number;         // goal number
-	int flags;          // goal flags
-	int iteminfo;       // item information
 } bot_goal_t;
 
 #define TFL_INVALID 0x00000001       // traveling temporary not possible
@@ -167,33 +163,6 @@ typedef struct bot_goal_s {
 // default travel flags
 #define TFL_DEFAULT TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | TFL_JUMP | TFL_LADDER | TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | TFL_WATER | TFL_JUMPPAD | TFL_FUNCBOB
 
-// entity info
-typedef struct aas_entityinfo_s {
-	int valid;             // true if updated this frame
-	int type;              // entity type
-	int flags;             // entity flags
-	float ltime;           // local time
-	float update_time;     // time between last and current update
-	int number;            // number of the entity
-	vec3_t origin;         // origin of the entity
-	vec3_t angles;         // angles of the model
-	vec3_t old_origin;     // for lerping
-	vec3_t lastvisorigin;  // last visible origin
-	vec3_t mins;           // bounding box minimums
-	vec3_t maxs;           // bounding box maximums
-	int groundent;         // ground entity
-	int solid;             // solid type
-	int modelindex;        // model used
-	int modelindex2;       // weapons, CTF flags, etc
-	int frame;             // model frame number
-	int event;             // impulse events -- muzzle flashes, footsteps, etc
-	int eventParm;         // even parameter
-	int powerups;          // bit flags
-	int weapon;            // determines weapon and flash model, etc
-	int legsAnim;          // mask off ANIM_TOGGLEBIT
-	int torsoAnim;         // mask off ANIM_TOGGLEBIT
-} aas_entityinfo_t;
-
 typedef enum {
 	SOLID_NOT,      // no interaction with other objects
 	SOLID_TRIGGER,  // only touch when inside, after moving
@@ -213,17 +182,12 @@ typedef struct bot_state_s {
 	int (*ainode)(struct bot_state_s* bs);
 	float thinktime;
 	vec3_t origin;
-	vec3_t velocity;
-	int presencetype;
 	vec3_t eye;
-	int areanum;
 	int tfl;
 	int setupcount;
 	int ms;
 	int enemy;
-	int lastenemyareanum;
 	vec3_t lastenemyorigin;
-	int weaponnum;
 	vec3_t viewangles;
 	vec3_t ideal_viewangles;
 	int swep_list[WEAPONS_NUM];

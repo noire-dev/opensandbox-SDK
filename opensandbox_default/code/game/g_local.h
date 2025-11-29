@@ -497,7 +497,6 @@ void FinishSpawningItem(gentity_t *ent);
 void G_CheckTeamItems(void);
 void G_SpawnItem(gentity_t *ent, item_t *item);
 void G_RunItem(gentity_t *ent);
-gentity_t *FindRandomItem(void);
 
 // g_main.c
 void QDECL G_Printf(const char *fmt, ...);
@@ -638,6 +637,8 @@ void CrosshairPointGravity(gentity_t *ent, int range, vec3_t outPoint);
 gentity_t *G_FindEntityForEntityNum(int entityNum);
 qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent);
 gentity_t *G_FindWeldEntity(gentity_t *ent);
+gentity_t *FindRandomItem(void);
+gentity_t *FindRandomSpawn(void);
 
 // g_weapon.c
 void CalcMuzzlePoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);

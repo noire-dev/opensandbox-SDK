@@ -591,22 +591,3 @@ void G_RunItem(gentity_t *ent) {
 
 	G_BounceItem(ent, &tr);
 }
-
-gentity_t *FindRandomItem(void) {
-    gentity_t *finded[MAX_GENTITIES];
-    int i, num_finded = 0;
-    
-    for (i = 0; i < level.num_entities; i++) {
-        gentity_t *ent = &g_entities[i];
-        
-        if (!ent->inuse) continue;
-        if (ent->s.eType == ET_ITEM) {
-            finded[num_finded++] = ent;
-            if (num_finded >= MAX_GENTITIES) break;
-        }
-    }
-    
-    if (num_finded > 0) return finded[rand() % num_finded];
-    
-    return NULL;
-}

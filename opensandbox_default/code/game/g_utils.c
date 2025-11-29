@@ -545,3 +545,41 @@ gentity_t *G_FindWeldEntity(gentity_t *ent) {
 		return ent;
 	}
 }
+
+gentity_t *FindRandomItem(void) {
+    gentity_t *finded[MAX_GENTITIES];
+    int i, num_finded = 0;
+    
+    for (i = 0; i < level.num_entities; i++) {
+        gentity_t *ent = &g_entities[i];
+        
+        if (!ent->inuse) continue;
+        if (ent->s.eType == ET_ITEM) {
+            finded[num_finded++] = ent;
+            if (num_finded >= MAX_GENTITIES) break;
+        }
+    }
+    
+    if (num_finded > 0) return finded[rand() % num_finded];
+    
+    return NULL;
+}
+
+gentity_t *FindRandomSpawn(void) {
+    gentity_t *finded[MAX_GENTITIES];
+    int i, num_finded = 0;
+    
+    for (i = 0; i < level.num_entities; i++) {
+        gentity_t *ent = &g_entities[i];
+        
+        if (!ent->inuse) continue;
+        if (!strcmp(ent->classname, "info_player_deathmatch") || !strcmp(ent->classname, "team_CTF_redspawn") || !strcmp(ent->classname, "team_CTF_bluespawn")) {
+            finded[num_finded++] = ent;
+            if (num_finded >= MAX_GENTITIES) break;
+        }
+    }
+    
+    if (num_finded > 0) return finded[rand() % num_finded];
+    
+    return NULL;
+}
