@@ -117,23 +117,23 @@ static void SpawnMenu_Event(void* ptr, int event) {
 			if(!strlen(spawnmenu_folder)) {
 				if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
 					trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
-					trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+					trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 				} else {
 					Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 					UI_SpawnMenu();
 				}
 			} else {
 				trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu_folder, "none", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-				trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+				trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 			}
 		}
 		if(spawnmenu_tab == TB_ENTITIES) {
 			trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), "props/cube", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "0"));
-			trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+			trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 		}
 		if(spawnmenu_tab == TB_NPCS) {
 			trap_Cmd(EXEC_NOW, va("spawn_cmd = sl npc %s %s %s %s %s %s %i\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], spawnmenu_npsclasses[spawnmenu.e[30].curvalue], spawnmenu.e[32].field.buffer, spawnmenu.e[33].field.buffer, spawnmenu.e[34].field.buffer, spawnmenu.e[35].field.buffer, spawnmenu.e[31].curvalue + 1));
-			trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+			trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 		}
 		if(spawnmenu_tab == TB_ITEMS) {
 			trap_Cmd(EXEC_INSERT, va("give %s\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
@@ -143,15 +143,15 @@ static void SpawnMenu_Event(void* ptr, int event) {
 				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			} else {
-				trap_Cmd(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
-				trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+				trap_Cmd(EXEC_NOW, va("spawn_cmd = exec spawnlists/%s/%s.sbscript\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+				trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 			}
 		}
 		if(spawnmenu_tab == TB_SCRIPTS) {
-			trap_Cmd(EXEC_INSERT, va("ns_openscript_ui dscripts/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_INSERT, va("exec scripts/user/%s.sbscript\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 		if(spawnmenu_tab == TB_TOOLS) {
-			trap_Cmd(EXEC_NOW, va("ns_openscript_ui tools/%s.ns\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va("exec scripts/tools/%s.sbscript\n", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 			trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 			cvarSet("toolgun_mod5", "0");
 			UI_SpawnMenu();
@@ -174,10 +174,11 @@ static void SpawnMenu_Event(void* ptr, int event) {
 	}
 
 	if(((menucommon_s*)ptr)->callid == 1) {
-		trap_Cmd(EXEC_INSERT, "vstr spawn_cmd\n");
+		trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 	}
 
 	if(((menucommon_s*)ptr)->callid == 2) {
+	    trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.sbscript\n");
 		trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 	}
 
@@ -234,7 +235,7 @@ static void SpawnMenu_Save(void) {
 			Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 			UI_SpawnMenu();
 		} else {
-			trap_Cmd(EXEC_NOW, va("spawn_cmd = ns_openscript_ui spawnlists/%s/%s.ns\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
+			trap_Cmd(EXEC_NOW, va("spawn_cmd = exec spawnlists/%s/%s.sbscript\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
 		}
 	}
 	spawnmenu_sv_top[spawnmenu_tab] = spawnmenu.e[0].top;
@@ -268,18 +269,6 @@ static void SpawnMenu_Draw(void) {
 		} else {
 			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
 		}
-		UI_DrawRoundedRect(124 - uis.wideoffset, y + 2, 14, 12, 2, color_dim);
-		if(i == TB_PROPS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("props", ".md3")), UI_CENTER, color_white, 0.65);
-		if(i == TB_ENTITIES) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", gameInfoSandboxSpawnsNum), UI_CENTER, color_white, 0.65);
-		if(i == TB_NPCS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_GetNumBots()), UI_CENTER, color_white, 0.65);
-		if(i == TB_ITEMS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", gameInfoItemsNum - 1), UI_CENTER, color_white, 0.65);
-		if(i == TB_SPAWNLISTS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("spawnlists", ".cfg")), UI_CENTER, color_white, 0.65);
-		if(i == TB_SCRIPTS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("dscripts", ".ns")), UI_CENTER, color_white, 0.65);
-		if(i == TB_TOOLS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("tools", ".ns")), UI_CENTER, color_white, 0.65);
-		if(i == TB_SAVES) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("maps", ".ent")), UI_CENTER, color_white, 0.65);
-		if(i == TB_ADDBOTS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_GetNumBots()), UI_CENTER, color_white, 0.65);
-		if(i == TB_REMOVEBOTS) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_ListPlayerCount()), UI_CENTER, color_white, 0.65);
-		if(i == TB_MUSIC) ST_DrawString(131 - uis.wideoffset, y + 5, va("%i", UI_CountFiles("music", "$sound")), UI_CENTER, color_white, 0.65);
 		y += 20;
 	}
 
@@ -322,11 +311,11 @@ void UI_SpawnMenu(void) {
 		} else {
 			Com_sprintf(spawnmenu_path_folder, sizeof(spawnmenu_path_folder), "spawnlists/%s", spawnmenu_folder);
 			Com_sprintf(spawnmenu_path_icons, sizeof(spawnmenu_path_icons), "spawnlists/%s/icons", spawnmenu_folder);
-			UI_FillList(&spawnmenu.e[0], spawnmenu_path_folder, spawnmenu_path_icons, ".ns", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
+			UI_FillList(&spawnmenu.e[0], spawnmenu_path_folder, spawnmenu_path_icons, ".sbscript", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 		}
 	}
-	if(spawnmenu_tab == TB_SCRIPTS) UI_FillList(&spawnmenu.e[0], "dscripts", "", ".ns", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
-	if(spawnmenu_tab == TB_TOOLS) UI_FillList(&spawnmenu.e[0], "tools", "", ".ns", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
+	if(spawnmenu_tab == TB_SCRIPTS) UI_FillList(&spawnmenu.e[0], "scripts/user", "", ".sbscript", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
+	if(spawnmenu_tab == TB_TOOLS) UI_FillList(&spawnmenu.e[0], "scripts/tools", "", ".sbscript", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 	if(spawnmenu_tab == TB_SAVES) UI_FillList(&spawnmenu.e[0], "maps", "screenshots/maps", ".ent", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 	if(spawnmenu_tab == TB_ADDBOTS) UI_FillListOfBots(&spawnmenu.e[0], spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 	if(spawnmenu_tab == TB_REMOVEBOTS) UI_FillListPlayers(&spawnmenu.e[0], spawnmenu.list1, spawnmenu.names1, sizeof(spawnmenu.names1));

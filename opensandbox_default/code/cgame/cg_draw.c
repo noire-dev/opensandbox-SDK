@@ -415,7 +415,7 @@ static void CG_DrawCounters(void) {
 		if(!total) total = 1;
 		value = 1000 * FPS_FRAMES / total;
 	}
-	if(value <= 15 && seconds >= 3) cvarSet("ns_haveerror", "2");
+	if(value <= 15 && seconds >= 3) cvarSet("script.error", "2");
 	if(cvarInt("cg_drawFPS") == 1) {
 		CG_DrawCounterElement(640 + cgs.wideoffset - 84, y, va("%i", value), "FPS");
 		y += 20;
@@ -865,14 +865,14 @@ static void CG_NSErrors(void) {
 	vec4_t colortex = {0.20f, 0.20f, 0.20f, 1.00f};
 	vec4_t colorpic = {1.00f, 1.00f, 1.00f, 1.00f};
 
-	if(!cvarInt("ns_haveerror")) return;
+	if(!cvarInt("script.error")) return;
 
 	if(!NSErrorTime) NSErrorTime = cg.time;
 
 	elapsed = cg.time - NSErrorTime;
 
 	if(elapsed >= fadeInDuration + visibleDuration + fadeOutDuration) {
-		cvarSet("ns_haveerror", "0");
+		cvarSet("script.error", "0");
 		NSErrorTime = 0;
 		return;
 	}
@@ -888,17 +888,17 @@ static void CG_NSErrors(void) {
 	colortex[3] *= alpha;
 	colorpic[3] *= alpha;
 
-	if(cvarInt("ns_haveerror") == 1) sizeX = 180;
-	if(cvarInt("ns_haveerror") == 2) sizeX = 205;
-	if(cvarInt("ns_haveerror") == 3) sizeX = 210;
+	if(cvarInt("script.error") == 1) sizeX = 180;
+	if(cvarInt("script.error") == 2) sizeX = 205;
+	if(cvarInt("script.error") == 3) sizeX = 210;
 	CG_DrawRoundedRect(21 - cgs.wideoffset, 21, sizeX, 16, 0, colord);
 	CG_DrawRoundedRect(20 - cgs.wideoffset, 20, sizeX, 16, 0, color);
 	trap_R_SetColor(colorpic);
 	CG_DrawPic(23 - cgs.wideoffset, 23, 10, 10, cgs.media.errIcon);
 	trap_R_SetColor(NULL);
-	if(cvarInt("ns_haveerror") == 1) ST_DrawString(38 - cgs.wideoffset, 24, "Something is creating script errors", UI_LEFT, colortex, 0.80f);
-	if(cvarInt("ns_haveerror") == 2) ST_DrawString(38 - cgs.wideoffset, 24, "Low performance, physics may be unstable", UI_LEFT, colortex, 0.80f);
-	if(cvarInt("ns_haveerror") == 3) ST_DrawString(38 - cgs.wideoffset, 24, "Network unstable, switching to chunk mode", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("script.error") == 1) ST_DrawString(38 - cgs.wideoffset, 24, "Something is creating script errors", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("script.error") == 2) ST_DrawString(38 - cgs.wideoffset, 24, "Low performance, physics may be unstable", UI_LEFT, colortex, 0.80f);
+	if(cvarInt("script.error") == 3) ST_DrawString(38 - cgs.wideoffset, 24, "Network unstable, switching to chunk mode", UI_LEFT, colortex, 0.80f);
 }
 
 void CG_AddNotify(const char *text, int type, int number) {

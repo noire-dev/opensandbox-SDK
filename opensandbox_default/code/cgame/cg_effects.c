@@ -366,7 +366,6 @@ static void CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel) {
 #define GIB_JUMP 350
 void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
-	int j;
 
 	if(!cvarInt("g_blood")) return;
 
@@ -433,14 +432,6 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 	velocity[1] = crandom() * GIB_VELOCITY;
 	velocity[2] = GIB_JUMP + crandom() * GIB_VELOCITY;
 	CG_LaunchGib(origin, velocity, cgs.media.gibLeg);
-
-	for(j = 1; j <= cvarInt("cg_effectsGibs"); j++) {
-		VectorCopy(playerOrigin, origin);
-		velocity[0] = crandom() * GIB_VELOCITY;
-		velocity[1] = crandom() * GIB_VELOCITY;
-		velocity[2] = GIB_JUMP + crandom() * GIB_VELOCITY;
-		CG_LaunchGib(origin, velocity, cgs.media.gibChest);
-	}
 }
 
 static void CG_Particles(vec3_t origin, int count, int speed, int lifetime, int radius, int type, byte r, byte g, byte b) {

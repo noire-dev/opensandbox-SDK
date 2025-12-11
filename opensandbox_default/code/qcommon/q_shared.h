@@ -457,13 +457,10 @@ default values.
 
 #define	CVAR_ARCHIVE		1	// set to cause it to be saved
 #define	CVAR_USERINFO		2	// sent to server on connect or change
-#define	CVAR_SERVERINFO		4	// sent in response to front end requests
-#define	CVAR_SYSTEMINFO		8	// these cvars will be duplicated on all clients
-#define	CVAR_INIT			16	// don't allow change from console at all
-#define	CVAR_LATCH			32	// will only change after restart
-#define	CVAR_ROM			64	// display only, cannot be set by user at all
-#define CVAR_CHEAT			128	// can not be changed if cheats are disabled
-#define CVAR_DEVELOPER		256 // can be set only in developer mode
+#define	CVAR_SYSTEMINFO		4	// these cvars will be duplicated on all clients
+#define	CVAR_SERVERINFO		8	// sent in response to front end requests
+#define	CVAR_LATCH			16	// will only change after restart
+#define CVAR_CHEAT			32	// can not be changed if cheats are disabled
 
 /*
 ==============================================================
@@ -563,7 +560,7 @@ typedef enum {
 
 #define	MAX_CONFIGSTRINGS	1600
 #define	MAX_GAMESTATE_CHARS	65535
-#define MAX_CVARS           65535
+#define MAX_CVARS           131072
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
@@ -897,7 +894,6 @@ int			    cvarID( const char *name );
 void			cvarUpdate( cvar_t *vmCvar, int cvarID );
 void			cvarReload( void );
 void			cvarSet( const char *name, const char *value );
-void			cvarSetValue( const char *name, float value );
 int				trap_Argc( void );
 void			trap_Argv( int n, char *buffer, int bufferLength );
 void		    trap_Args( char *buffer, int bufferLength );

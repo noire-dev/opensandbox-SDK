@@ -14,7 +14,7 @@ static char* ui_arenaInfos[MAX_ARENAS];
 
 static char dirlist[DIRLIST_SIZE];
 
-#define POOLSIZE (1024 * 1024) * 16  // QVM_MEMORY note: use 16 for 32bit
+#define POOLSIZE (1024 * 1024)  // QVM_MEMORY: 1mb
 static char memoryPool[POOLSIZE];
 static int allocPoint;
 

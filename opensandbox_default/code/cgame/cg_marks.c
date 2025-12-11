@@ -23,7 +23,7 @@ void CG_InitMarkPolys(void) {
 	cg_activeMarkPolys.nextMark = &cg_activeMarkPolys;
 	cg_activeMarkPolys.prevMark = &cg_activeMarkPolys;
 	cg_freeMarkPolys = cg_markPolys;
-	for(i = 0; i < cvarInt("cg_effectsLimit") * 2 - 1; i++) {
+	for(i = 0; i < MAX_LOCAL_ENTITIES * 2 - 1; i++) {
 		cg_markPolys[i].nextMark = &cg_markPolys[i + 1];
 	}
 }

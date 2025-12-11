@@ -10,13 +10,6 @@ void CG_LoadingString(const char *s, float value) {
 	trap_UpdateScreen();
 }
 
-void CG_LoadingItem(int itemNum) {
-	item_t *item;
-
-	item = &gameInfoItems[itemNum];
-	CG_LoadingString(item->pickup_name, -1);
-}
-
 void CG_LoadingClient(int clientNum) {
 	const char *info;
 	char personality[MAX_QPATH];

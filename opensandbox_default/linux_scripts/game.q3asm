@@ -1,14 +1,14 @@
--o "../../game/qvm/qagame"
+-o "../../game/qvm/game"
 g_main
 ..\g_syscalls
 ..\q_sharedsyscalls
 ai_main
-bg_alloc
 bg_lib
 bg_misc
 bg_pmove
 bg_slidemove
 g_active
+g_alloc
 g_bot
 g_client
 g_cmds

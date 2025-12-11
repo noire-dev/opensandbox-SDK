@@ -1512,17 +1512,17 @@ static void UI_GeneralCallback(void *ptr, int event) {
 
 		case CB_VARIABLE:
 			if(((menucommon_s *)ptr)->type == MTYPE_SLIDER) {
-				cvarSetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value / (float)((menucommon_s *)ptr)->mode);
+				cvarSet(((menucommon_s *)ptr)->var, va("%f", (float)*((menucommon_s *)ptr)->value / (float)((menucommon_s *)ptr)->mode));
 			}
 			if(((menucommon_s *)ptr)->type == MTYPE_FIELD) {
 				cvarSet(((menucommon_s *)ptr)->var, ((menucommon_s *)ptr)->buffer);
 			}
 			if(((menucommon_s *)ptr)->type == MTYPE_RADIOBUTTON) {
 				if(((menucommon_s *)ptr)->mode == RBT_NORMAL) {
-					cvarSetValue(((menucommon_s *)ptr)->var, (float)*((menucommon_s *)ptr)->value);
+					cvarSet(((menucommon_s *)ptr)->var, va("%f", (float)*((menucommon_s *)ptr)->value));
 				}
 				if(((menucommon_s *)ptr)->mode == RBT_INVERSE) {
-					cvarSetValue(((menucommon_s *)ptr)->var, -(float)*((menucommon_s *)ptr)->value);
+					cvarSet(((menucommon_s *)ptr)->var, va("%f", -(float)*((menucommon_s *)ptr)->value));
 				}
 			}
 			break;

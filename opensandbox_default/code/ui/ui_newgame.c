@@ -87,8 +87,6 @@ static void NewGame_Draw(void) {
 	    } else {
 	        UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
     	}
-		UI_DrawRoundedRect(124 - uis.wideoffset, y + 2, 14, 12, 2, color_dim);
-		ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps(gametypes_mapnames[i])), UI_CENTER, color_white, 0.65);
 		y += 20;
 	}
 
@@ -98,15 +96,10 @@ static void NewGame_Draw(void) {
 	} else {
 	    UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2all);
 	}
-	UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color_dim);
-	ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountOfMaps("all")), UI_CENTER, color_white, 0.65);
 	y += 40;
 
 	for(i = 1; i < NTB_MAX; i++) {
 		UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2mode);
-		UI_DrawRoundedRect(125 - uis.wideoffset, y+2, 12, 12, 2, color_dim);
-		if(i == NTB_ADDONS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("addons", ".cfg")), UI_CENTER, color_white, 0.65);
-		if(i == NTB_DEMOS) ST_DrawString(131 - uis.wideoffset, y+5, va("%i", UI_CountFiles("demos", ".demo")), UI_CENTER, color_white, 0.65);
 		y += 20;
 	}
 
@@ -144,7 +137,7 @@ void UI_NewGame(void) {
 		}
 	}
 	if(newgame_mode == NTB_ADDONS) {
-		UI_FillList(&newgame.e[0], "addons", "addons", ".cfg", newgame.names1, sizeof(newgame.names1), newgame.list1);
+		UI_FillList(&newgame.e[0], "addons", "addons", ".sbscript", newgame.names1, sizeof(newgame.names1), newgame.list1);
 	}
 	if(newgame_mode == NTB_DEMOS) {
 		UI_FillList(&newgame.e[0], "demos", "demos", ".demo", newgame.names1, sizeof(newgame.names1), newgame.list1);

@@ -11,7 +11,7 @@ static void Svcmd_EntityList_f(void) {
 	check = g_entities + 1;
 	for(e = 1; e < level.num_entities; e++, check++) {
 		if(!check->inuse) continue;
-		G_Printf("%3i:    ", e);
+		G_Printf("%3i: ", e);
 
 		if(check->classname) G_Printf("%s", check->classname);
 		G_Printf("\n");

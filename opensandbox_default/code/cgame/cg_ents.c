@@ -322,6 +322,8 @@ static void CG_Item(centity_t *cent) {
 		CG_Error("Bad item index %i on entity", es->modelindex);
 		return;
 	}
+	
+	CG_RegisterItemVisuals(es->modelindex);
 
 	// if set to invisible, skip
 	if(!es->modelindex || (es->eFlags & EF_NODRAW)) return;

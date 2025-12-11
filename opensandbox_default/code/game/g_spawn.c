@@ -504,9 +504,9 @@ void G_SpawnEntitiesFromString(void) {
 	level.spawning = qfalse;  // any future calls to G_Spawn*() will be errors
 }
 
-#define MAX_MAPFILE_LENGTH 2500000 * 6
-#define MAX_TOKENNUM 524288 * 6
-static char mapbuffer[2500000 * 6];
+#define MAX_TOKENNUM 1000000
+#define MAX_MAPFILE_LENGTH (4 * 1024 * 1024)  // 1MB
+static char mapbuffer[MAX_MAPFILE_LENGTH];
 
 typedef enum { TOT_LPAREN, TOT_RPAREN, TOT_WORD, TOT_NUMBER, TOT_NIL, TOT_MAX } tokenType_t;
 

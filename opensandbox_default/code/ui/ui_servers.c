@@ -428,7 +428,7 @@ static void ArenaServers_Event(void* ptr, int event) {
 	switch(id) {
 		case ID_MASTER:
 			value = g_arenaservers.master.curvalue;
-			cvarSetValue("ui_browserMaster", value);
+			cvarSet("ui_browserMaster", va("%f", value));
 			ArenaServers_SetType(value);
 			break;
 

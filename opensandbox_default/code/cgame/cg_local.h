@@ -39,6 +39,7 @@
 #define NOTIFY_KILL		4
 
 #define MAX_3D_STRING_QUEUE 8192
+#define MAX_LOCAL_ENTITIES 4096
 
 typedef struct {
     float x, y, z;
@@ -838,7 +839,6 @@ void CG_CheckEvents(centity_t *cent);
 
 // cg_info.c
 void CG_LoadingString(const char *s, float value);
-void CG_LoadingItem(int itemNum);
 void CG_LoadingClient(int clientNum);
 void CG_DrawInformation(void);
 

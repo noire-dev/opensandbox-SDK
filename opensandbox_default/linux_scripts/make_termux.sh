@@ -17,24 +17,21 @@ cp linux_scripts/cpp linux/build/game/
 cp linux_scripts/rcc linux/build/game/
 cp linux_scripts/game.q3asm linux/build/
 
-LIBRARY=""
-INCLUDE=""
-
 cc="lcc -DGAME -DQVM -S -I../../../code/game -I../../../code/qcommon $1"
 
 cd linux/build/game
 
 # ########################################
-# Files to compile to           qagame.qvm
+# Files to compile to             game.qvm
 # ########################################
 
 $cc ../../../code/game/ai_main.c
-$cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 $cc ../../../code/game/bg_pmove.c
 $cc ../../../code/game/bg_slidemove.c
 $cc ../../../code/game/g_active.c
+$cc ../../../code/game/g_alloc.c
 $cc ../../../code/game/g_bot.c
 $cc ../../../code/game/g_client.c
 $cc ../../../code/game/g_cmds.c
@@ -85,9 +82,6 @@ cp linux_scripts/lcc linux/build/cgame/
 cp linux_scripts/cpp linux/build/cgame/
 cp linux_scripts/rcc linux/build/cgame/
 cp linux_scripts/cgame.q3asm linux/build/
-
-LIBRARY=""
-INCLUDE=""
 
 cc="lcc -DCGAME -DQVM -S -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
@@ -154,9 +148,6 @@ cp linux_scripts/cpp linux/build/ui/
 cp linux_scripts/rcc linux/build/ui/
 cp linux_scripts/ui.q3asm linux/build/
 
-LIBRARY=""
-INCLUDE=""
-
 cc="lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/ui
@@ -211,7 +202,7 @@ cd ../../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/opensandbox_default/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/opensandbox_default/linux/game/qvm/game.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/opensandbox_default/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/opensandbox_default/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
 

@@ -4,41 +4,6 @@
 
 #include "g_local.h"
 
-static int g_numBots;
-static char *g_botInfos[MAX_BOTS];
-
-static int G_ParseInfos(char *buf, int max, char *infos[]) {
-	char *token;
-	int count;
-	char key[MAX_TOKEN_CHARS], info[MAX_INFO_STRING];
-
-	count = 0;
-
-	while(1) {
-		token = COM_Parse(&buf);
-		if(!token[0]) break;
-		if(strcmp(token, "{")) { Com_Printf("Missing { in info file\n"); break; }
-		if(count == max) { Com_Printf("Max infos exceeded\n"); break; }
-
-		info[0] = '\0';
-		while(1) {
-			token = COM_ParseExt(&buf, qtrue);
-			if(!token[0]) { Com_Printf("Unexpected end of info file\n"); break; }
-			if(!strcmp(token, "}")) break;
-			Q_strncpyz(key, token, sizeof(key));
-			token = COM_ParseExt(&buf, qfalse);
-			if(!token[0]) strcpy(token, "<NULL>");
-			Info_SetValueForKey(info, key, token);
-		}
-		infos[count] = G_Alloc(strlen(info) + 1);
-		if(infos[count]) {
-			strcpy(infos[count], info);
-			count++;
-		}
-	}
-	return count;
-}
-
 qboolean G_BotConnect(int clientNum) {
 	bot_settings_t settings;
 	char userinfo[MAX_INFO_STRING];
@@ -148,45 +113,6 @@ void Svcmd_AddBot_f(void) {
 	trap_Argv(2, name, sizeof(name));
 	trap_Argv(3, team, sizeof(team));
 	G_AddBot(model, name, team, NULL);
-}
-
-static void G_LoadBotsFromFile(char *filename) {
-	int len;
-	fileHandle_t f;
-	char buf[MAX_BOTS_TEXT];
-
-	len = FS_Open(filename, &f, FS_READ);
-
-	if(!f) return;
-
-	if(len >= MAX_BOTS_TEXT) {
-		trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_BOTS_TEXT));
-		FS_Close(f);
-		return;
-	}
-
-	FS_Read(buf, len, f);
-	buf[len] = 0;
-	FS_Close(f);
-
-	g_numBots += G_ParseInfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
-}
-
-void G_LoadBots(void) {
-	int numdirs, i, dirlen;
-	char filename[128], dirlist[1024];
-	char *dirptr;
-
-	g_numBots = 0;
-
-	numdirs = FS_List("scripts", ".bot", dirlist, 1024);
-	dirptr = dirlist;
-	for(i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
-		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
-		G_LoadBotsFromFile(filename);
-	}
 }
 
 void SandboxBotSpawn(gentity_t *bot, char spawnid[]) {

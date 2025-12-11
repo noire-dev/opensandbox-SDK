@@ -22,16 +22,6 @@ static const char *modeList[] = {
 	NULL
 };
 
-static const char *limitList[] = {
-	"Very low",
-	"Low",
-	"Medium",
-	"High",
-	"Very High",
-	"Ultra",
-	NULL
-};
-
 static const char *textureList[] = {
 	"High",
 	"Medium",
@@ -74,48 +64,10 @@ static qboolean resolutionsDetected = qfalse;
 static void Settings_MenuEvent(void* ptr, int event) {
 	if(event != QM_ACTIVATED) return;
 	if(((menucommon_s*)ptr)->id == 3) cvarSet("r_resolution", resolutions[settings.e[3].curvalue]);
-	if(((menucommon_s*)ptr)->id == 4) cvarSetValue("r_fullscreen", settings.e[4].curvalue);
-	if(((menucommon_s*)ptr)->id == 8) {
-		if(settings.e[8].curvalue == 0) {
-			cvarSetValue("ui_effectslevel", 0);
-			cvarSetValue("cg_effectsTime", 10);
-			cvarSetValue("cg_effectsLimit", 4096);
-			cvarSetValue("cg_effectsGibs", 1);
-		}
-		if(settings.e[8].curvalue == 1) {
-			cvarSetValue("ui_effectslevel", 1);
-			cvarSetValue("cg_effectsTime", 30);
-			cvarSetValue("cg_effectsLimit", 5120);
-			cvarSetValue("cg_effectsGibs", 3);
-		}
-		if(settings.e[8].curvalue == 2) {
-			cvarSetValue("ui_effectslevel", 2);
-			cvarSetValue("cg_effectsTime", 60);
-			cvarSetValue("cg_effectsLimit", 6144);
-			cvarSetValue("cg_effectsGibs", 6);
-		}
-		if(settings.e[8].curvalue == 3) {
-			cvarSetValue("ui_effectslevel", 3);
-			cvarSetValue("cg_effectsTime", 90);
-			cvarSetValue("cg_effectsLimit", 7168);
-			cvarSetValue("cg_effectsGibs", 3);
-		}
-		if(settings.e[8].curvalue == 4) {
-			cvarSetValue("ui_effectslevel", 4);
-			cvarSetValue("cg_effectsTime", 300);
-			cvarSetValue("cg_effectsLimit", 8192);
-			cvarSetValue("cg_effectsGibs", 9);
-		}
-		if(settings.e[8].curvalue == 5) {
-			cvarSetValue("ui_effectslevel", 5);
-			cvarSetValue("cg_effectsTime", 600);
-			cvarSetValue("cg_effectsLimit", 8192);
-			cvarSetValue("cg_effectsGibs", 16);
-		}
-	}
-	if(((menucommon_s*)ptr)->id == 9) cvarSetValue("r_picmip", settings.e[9].curvalue);
-	if(((menucommon_s*)ptr)->id == 10) cvarSetValue("r_ext_multisample", settings.e[10].curvalue * 2);
-	if(((menucommon_s*)ptr)->id == 11) cvarSetValue("r_bloom_intensity", settings.e[11].curvalue * 0.05);
+	if(((menucommon_s*)ptr)->id == 4) cvarSet("r_fullscreen", va("%i", settings.e[4].curvalue));
+	if(((menucommon_s*)ptr)->id == 8) cvarSet("r_picmip", va("%i", settings.e[8].curvalue));
+	if(((menucommon_s*)ptr)->id == 9) cvarSet("r_ext_multisample", va("%i", settings.e[9].curvalue * 2));
+	if(((menucommon_s*)ptr)->id == 10) cvarSet("r_bloom_intensity", va("%f", settings.e[10].curvalue * 0.05));
 	if(((menucommon_s*)ptr)->id == 32) cvarSet("s_driver", sdriverList[settings.e[32].curvalue]);
 }
 
@@ -183,22 +135,19 @@ void UI_Settings(void) {
 	UI_CRadioButton(&settings.e[6], x, y, "Post-processing:", "r_postfx", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[7], x, y, "HDR:", "r_hdr", RBT_NORMAL, NULL, 0); y += 12;
 
-	UI_CSpinControl(&settings.e[8], x, y, "Entity limit:", limitList, Settings_MenuEvent, 0); y += 12;
-	settings.e[8].curvalue = cvarInt("ui_effectsLevel");
+	UI_CSpinControl(&settings.e[8], x, y, "Texture quality:", textureList, Settings_MenuEvent, 0); y += 12;
+	settings.e[8].curvalue = cvarInt("r_picmip");
 
-	UI_CSpinControl(&settings.e[9], x, y, "Texture quality:", textureList, Settings_MenuEvent, 0); y += 12;
-	settings.e[9].curvalue = cvarInt("r_picmip");
+	UI_CSpinControl(&settings.e[9], x, y, "Anti-aliasing:", aaList, Settings_MenuEvent, 0); y += 12;
+	settings.e[9].curvalue = cvarInt("r_ext_multisample")/2;
 
-	UI_CSpinControl(&settings.e[10], x, y, "Anti-aliasing:", aaList, Settings_MenuEvent, 0); y += 12;
-	settings.e[10].curvalue = cvarInt("r_ext_multisample")/2;
+	UI_CSpinControl(&settings.e[10], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
+	settings.e[10].curvalue = cvarFloat("r_bloom_intensity")/0.05;
 
-	UI_CSpinControl(&settings.e[11], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
-	settings.e[11].curvalue = cvarFloat("r_bloom_intensity")/0.05;
-
-	UI_CSlider(&settings.e[12], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
+	UI_CSlider(&settings.e[11], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
 	y += 12;
-	UI_CRadioButton(&settings.e[13], x, y, "V-Sync:", "r_swapInterval", RBT_NORMAL, NULL, 0); y += 12;
-	UI_CField(&settings.e[14], x, y, "Max FPS:", 4, 4, color_white, "com_maxfps", NULL, 0); y += 12;
+	UI_CRadioButton(&settings.e[12], x, y, "V-Sync:", "r_swapInterval", RBT_NORMAL, NULL, 0); y += 12;
+	UI_CField(&settings.e[13], x, y, "Max FPS:", 4, 4, color_white, "com_maxfps", NULL, 0); y += 12;
 
 	y = 30;
 	x = 330;

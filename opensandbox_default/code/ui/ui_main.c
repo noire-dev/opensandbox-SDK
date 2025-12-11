@@ -67,5 +67,5 @@ const char *gametype_items[GT_MAX_GAME_TYPE+1] = {
 int mod_gravity = 800;
 
 void UI_CreateCvars(void) {
-	trap_Cmd(EXEC_APPEND, "exec uiautoexec.cfg\n");
+	trap_Cmd(EXEC_APPEND, "exec uiautoexec.sbscript\n");
 }

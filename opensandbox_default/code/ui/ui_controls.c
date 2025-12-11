@@ -57,7 +57,7 @@ static bind_t g_bindings[] = {
 	{"undo", 					"undone",				19,	-1, -1},
 	{"noclip", 					"toggle noclip",		20,	-1, -1},
 	{"toggle cl_run", 			"toggle run",			21,	-1, -1},
-	{"vstr uitoolmode", 		"switch toolgun mode",	22,	-1, -1},
+	{"$uitoolmode$", 		    "switch toolgun mode",	22,	-1, -1},
 	{"exitvehicle", 			"exit vehicle",			23,	-1, -1},
 	{(char*)NULL,				(char*)NULL,			-1,	-1,	-1},
 };
@@ -366,7 +366,7 @@ static void Controls_MenuEvent(void* ptr, int event) {
 			break;
 
 		case KEYS_NUM + 1:
-			cvarSetValue("in_mouse", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1);
+			cvarSet("in_mouse", va("%f", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1));
 			trap_Cmd(EXEC_APPEND, "in_restart\n");
 			break;
 	}

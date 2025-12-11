@@ -4,7 +4,6 @@
 
 #include "cg_local.h"
 
-#define MAX_LOCAL_ENTITIES 4096
 localEntity_t cg_localEntities[MAX_LOCAL_ENTITIES];
 localEntity_t cg_activeLocalEntities;  // double linked list
 localEntity_t *cg_freeLocalEntities;   // single linked list
@@ -23,7 +22,7 @@ void CG_InitLocalEntities(void) {
 	cg_activeLocalEntities.next = &cg_activeLocalEntities;
 	cg_activeLocalEntities.prev = &cg_activeLocalEntities;
 	cg_freeLocalEntities = cg_localEntities;
-	for(i = 0; i < cvarInt("cg_effectsLimit") - 1; i++) {
+	for(i = 0; i < MAX_LOCAL_ENTITIES - 1; i++) {
 		cg_localEntities[i].next = &cg_localEntities[i + 1];
 	}
 }

@@ -408,11 +408,6 @@ static void CG_RegisterGraphics(void) {
 	memset(cg_items, 0, sizeof(cg_items));
 	memset(cg_weapons, 0, sizeof(cg_weapons));
 
-	for(i = 1; i < gameInfoItemsNum; i++) {
-		//CG_LoadingItem(i);
-		//CG_RegisterItemVisuals(i);
-	}
-
 	// wall marks
 	cgs.media.bulletMarkShader = trap_R_RegisterShader("gfx/damage/bullet_mrk");
 	cgs.media.burnMarkShader = trap_R_RegisterShader("gfx/damage/burn_med_mrk");
@@ -602,7 +597,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cg.infoScreenText[0] = 0;
 	cg.infoScreenValue = 0.0;
 
-	trap_Cmd(EXEC_INSERT, "ns_openscript_ui tools/create.ns\n");
+	trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.sbscript\n");
 	trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 }
 

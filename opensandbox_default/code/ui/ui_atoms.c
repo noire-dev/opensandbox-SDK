@@ -55,7 +55,7 @@ void UI_UpdateState(void) {
 	}
 
 	if(glconfig.vidHeight / 480.0f > 0) {
-		cvarSetValue("con_scale", 1.85);
+		cvarSet("con_scale", "1.50");
 	}
 	cvarSet("cl_conColor", "8 8 8 192");
 }
@@ -449,9 +449,9 @@ void UI_Refresh(int realtime) {
 	if(uis.activemenu) {
 		if(uis.activemenu->fullscreen) {
 			if(!uis.onmap) {
-				//trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
+				trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
 			}
-			//trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
+			trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
 		}
 
 		if(uis.activemenu->draw)

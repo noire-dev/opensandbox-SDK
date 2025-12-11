@@ -222,8 +222,8 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	}
 
 	if(!allow_spawn) {
-		G_FreeEntity(ent);
-		trap_SendServerCommand(player->s.clientNum, "lp \"Spawning of this class is not allowed\n\"");
+		trap_SendServerCommand(player->s.clientNum, va("lp \"Spawning of %s is not allowed\n\"", ent->classname));
+        G_FreeEntity(ent);
 		return;
 	}
 

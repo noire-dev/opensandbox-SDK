@@ -188,7 +188,6 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	if(cvarInt("bot_enable")) {
 		BotAISetup(restart);
 		BotAILoadMap(restart);
-		G_LoadBots();
 	}
 
 	if(strlen(cvarString("g_entitypack"))) {
@@ -215,10 +214,7 @@ static void G_ShutdownGame(int restart) {
 
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
-
-	if(cvarInt("bot_enable")) {
-		BotAIShutdown(restart);
-	}
+	BotAIShutdown(restart);
 }
 
 void QDECL Com_Error(int level, const char *error, ...) {

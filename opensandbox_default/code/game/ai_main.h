@@ -22,7 +22,6 @@
 #define ACTION_GESTURE 0x0020000
 #define ACTION_WALK 0x0080000
 
-// the bot input, will be converted to an usercmd_t
 typedef struct bot_input_s {
 	float thinktime;    // time since last output (in seconds)
 	vec3_t dir;         // movement direction
@@ -32,34 +31,6 @@ typedef struct bot_input_s {
 	int weapon;         // weapon to use
 } bot_input_t;
 
-#ifndef BSPTRACE
-#define BSPTRACE
-
-// bsp_trace_t hit surface
-typedef struct bsp_surface_s {
-	char name[16];
-	int flags;
-	int value;
-} bsp_surface_t;
-
-// remove the bsp_trace_s structure definition l8r on
-// a trace is returned when a box is swept through the world
-typedef struct bsp_trace_s {
-	qboolean allsolid;      // if true, plane is not valid
-	qboolean startsolid;    // if true, the initial point was in a solid area
-	float fraction;         // time completed, 1.0 = didn't hit anything
-	vec3_t endpos;          // final position
-	cplane_t plane;         // surface normal at impact
-	float exp_dist;         // expanded plane distance
-	int sidenum;            // number of the brush side hit
-	bsp_surface_t surface;  // the hit point surface
-	int contents;           // contents on other side of surface hit
-	int ent;                // number of entity hit
-} bsp_trace_t;
-
-#endif  // BSPTRACE
-
-// entity state
 typedef struct bot_entitystate_s {
 	int type;           // entity type
 	int flags;          // entity flags
@@ -80,6 +51,13 @@ typedef struct bot_entitystate_s {
 	int legsAnim;       // mask off ANIM_TOGGLEBIT
 	int torsoAnim;      // mask off ANIM_TOGGLEBIT
 } bot_entitystate_t;
+
+typedef enum {
+	SOLID_NOT,      // no interaction with other objects
+	SOLID_TRIGGER,  // only touch when inside, after moving
+	SOLID_BBOX,     // touch on edge
+	SOLID_BSP       // bsp clip, touch on edge
+} solid_t;
 
 // movement types
 #define MOVE_WALK 1
@@ -163,35 +141,20 @@ typedef struct bot_goal_s {
 // default travel flags
 #define TFL_DEFAULT TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | TFL_JUMP | TFL_LADDER | TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | TFL_WATER | TFL_JUMPPAD | TFL_FUNCBOB
 
-typedef enum {
-	SOLID_NOT,      // no interaction with other objects
-	SOLID_TRIGGER,  // only touch when inside, after moving
-	SOLID_BBOX,     // touch on edge
-	SOLID_BSP       // bsp clip, touch on edge
-} solid_t;
-
 typedef struct bot_state_s {
-	int inuse;
+    gentity_t* ent;
+    qboolean inuse;
 	int botthink_residual;
-	int client;
-	int entitynum;
-	int npcType;
-	playerState_t cur_ps;
-	usercmd_t lastucmd;
 	bot_settings_t settings;
 	int (*ainode)(struct bot_state_s* bs);
 	float thinktime;
-	vec3_t origin;
 	vec3_t eye;
 	int tfl;
 	int setupcount;
 	int ms;
 	int enemy;
-	vec3_t lastenemyorigin;
 	vec3_t viewangles;
 	vec3_t ideal_viewangles;
-	int swep_list[WEAPONS_NUM];
-	int swep_ammo[WEAPONS_NUM];
-	int item_searchtime;
 	bot_goal_t maingoal;
+	int maingoal_time;
 } bot_state_t;
