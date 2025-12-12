@@ -712,9 +712,7 @@ static void G_LoadMapfile(char *filename) {
 	}
 
 	FS_Read(mapbuffer, len, f);
-	if(len <= 10) {
-		return;
-	}
+	if(len <= 10) return;
 	mapbuffer[len] = 0;
 	FS_Close(f);
 

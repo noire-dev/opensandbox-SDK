@@ -1519,11 +1519,14 @@ static void UI_GeneralCallback(void *ptr, int event) {
 			}
 			if(((menucommon_s *)ptr)->type == MTYPE_RADIOBUTTON) {
 				if(((menucommon_s *)ptr)->mode == RBT_NORMAL) {
-					cvarSet(((menucommon_s *)ptr)->var, va("%f", (float)*((menucommon_s *)ptr)->value));
+					cvarSet(((menucommon_s *)ptr)->var, va("%i", (float)*((menucommon_s *)ptr)->value));
 				}
 				if(((menucommon_s *)ptr)->mode == RBT_INVERSE) {
-					cvarSet(((menucommon_s *)ptr)->var, va("%f", -(float)*((menucommon_s *)ptr)->value));
+					cvarSet(((menucommon_s *)ptr)->var, va("%i", -(float)*((menucommon_s *)ptr)->value));
 				}
+			}
+			if(((menucommon_s *)ptr)->type == MTYPE_SPINCONTROL) {
+				cvarSet(((menucommon_s *)ptr)->var, va("%i", ((menucommon_s *)ptr)->value));
 			}
 			break;
 
@@ -1558,6 +1561,9 @@ void UI_CreateUI(menuframework_s *menu, menuelement_s *e) {
 					if(e[i].generic.mode == RBT_INVERSE) {
 						e[i].curvalue = -cvarFloat(e[i].generic.var);
 					}
+				}
+				if(e[i].generic.type == MTYPE_SPINCONTROL) {
+					e[i].curvalue = cvarFloat(e[i].generic.var);
 				}
 			}
 
@@ -1636,7 +1642,7 @@ void UI_CRadioButton(menuelement_s *e, float x, float y, char *text, char *var, 
 	e->color = color_white;
 }
 
-void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char **list, void (*callback)(void *self, int event), int callid) {
+void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char **list, char *var, void (*callback)(void *self, int event), int callid) {
 	e->generic.type = MTYPE_SPINCONTROL;
 	e->generic.x = x;
 	e->generic.y = y;
@@ -1644,6 +1650,10 @@ void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char 
 	e->generic.callback = callback;
 	e->generic.callid = callid;
 	e->itemnames = list;
+	if(var) {
+		e->generic.excallbacktype = CB_VARIABLE;
+		e->generic.var = var;
+	}
 	e->color = color_white;
 }
 

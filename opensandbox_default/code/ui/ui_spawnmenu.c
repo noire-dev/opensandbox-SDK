@@ -7,6 +7,8 @@
 #define SPAWNGRID_SIZE 80
 #define ID_TAB_SELECT 60
 
+#define SPAWNDATA_MAX 10
+
 typedef enum {
 	TB_PROPS,
 	TB_ENTITIES,
@@ -106,6 +108,22 @@ int spawnmenu_tab = 0;
 char spawnmenu_folder[32] = "";
 char spawnmenu_path_folder[32] = "";
 char spawnmenu_path_icons[32] = "";
+
+const char** SpawnMenu_SpawnDataStrings(int id) {
+    static const char* classes[SPAWNDATA_MAX][16];
+    int i;
+    
+    for (i = 0; i < 16; i++) {
+        if (cvarID(va("api.spawndata.string[%i][%i]", id, i)) == -1) {
+            classes[id][i] = NULL;
+            break;
+        }
+            
+        classes[id][i] = cvarString(va("api.spawndata.string[%i][%i]", id, i));
+    }
+    
+    return classes[id];
+}
 
 static void SpawnMenu_Event(void* ptr, int event) {
 	if(event != QM_ACTIVATED) return;
@@ -336,17 +354,17 @@ void UI_SpawnMenu(void) {
 
 	y = 38;
 	if(spawnmenu_tab == TB_NPCS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 110, y, "Class:", spawnmenu_npsclasses, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Weapon:", spawnmenu_npsweapons, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, 0); y += 12;
 		y += 12;
 		cvarSet("uis_b1", "5");
 		cvarSet("uis_b2", "100");
 		cvarSet("uis_b3", "0");
 		cvarSet("uis_b4", "0");
-		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 110, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 110, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 110, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[35], 640 + uis.wideoffset - 110, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0); y += 12;
+		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 100, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0); y += 12;
+		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 100, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0); y += 12;
+		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 100, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0); y += 12;
+		UI_CField(&spawnmenu.e[35], 640 + uis.wideoffset - 100, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0); y += 12;
 		y += 20;
 	}
 	if(spawnmenu_tab == TB_SAVES) {
@@ -354,15 +372,21 @@ void UI_SpawnMenu(void) {
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 110, y, "Skill:", spawnmenu_skill, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 110, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
 		y += 20;
 	}
-	UI_CField(&spawnmenu.e[40], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset1"), 16, 16, color_white, "uis_tg1", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[41], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset2"), 16, 16, color_white, "uis_tg2", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[42], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset3"), 16, 16, color_white, "uis_tg3", NULL, 0); y += 12;
-	UI_CField(&spawnmenu.e[43], 640 + uis.wideoffset - 110, y, cvarString("toolgun_toolset4"), 16, 16, color_white, "uis_tg4", NULL, 0); y += 12;
-
+	
+	for(i = 0; i < SPAWNDATA_MAX; i++) {
+	    if(cvarInt(va("api.spawndata.type[%i]", i)) == 1) {
+	        UI_CField(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0); y += 12;
+	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 2) {
+	        UI_CSpinControl(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), NULL, 0); y += 12;
+	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 3) {
+	        UI_CSlider(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0); y += 12;
+	    }
+	}
+	
 	UI_CreateUI(&spawnmenu.menu, spawnmenu.e);
 
 	y = 15;
