@@ -18,6 +18,7 @@ This will also be overlaid on the cgame info screen during loading
 to prevent it from blinking away too rapidly on local or lan games.
 ========================
 */
+#define LOADING_LINES 8
 void UI_DrawConnectScreen(qboolean overlay) {
 	char *s;
 	uiClientState_t cstate;
@@ -25,9 +26,10 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	qhandle_t black;
 	qhandle_t logo;
 	qhandle_t loading;
+	int i, y;
 
 	UI_UpdateState();
-	cvarSet("r_fx_blur", "0");  // blur UI postFX
+	consoleSync(&console, console.linescount);
 
 	// see what information we should display
 	trap_GetClientState(&cstate);
@@ -49,6 +51,13 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		lastLoadingText[0] = '\0';
 	}
 	lastConnState = cstate.connState;
+	
+	y = 460-BASEFONT_HEIGHT;
+	for(i = console.linescount; i > console.linescount-LOADING_LINES; i--) {
+	    if(i <= 0) break;
+	    ST_DrawString(15 - uis.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
+	    y -= BASEFONT_HEIGHT;
+	}
 
 	switch(cstate.connState) {
 		case CA_CONNECTING: s = va("Awaiting challenge...%i", cstate.connectPacketCount); break;

@@ -120,7 +120,7 @@ void UI_Settings(void) {
 
 	y = 30;
 	x = 120;
-	UI_CSpinControl(&settings.e[3], x, y, "Resolution:", (const char**)resolutions, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[3], x, y, "Resolution:", (const char**)resolutions, NULL, Settings_MenuEvent, 0); y += 12;
 	for(i = 0; resolutions[i]; i++) {
 		if(!strcmp(resolutions[i], cvarString("r_resolution"))) {
 			settings.e[3].curvalue = i;
@@ -128,20 +128,20 @@ void UI_Settings(void) {
 		}
 	}
 
-	UI_CSpinControl(&settings.e[4], x, y, "Mode:", modeList, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[4], x, y, "Mode:", modeList, NULL, Settings_MenuEvent, 0); y += 12;
 	settings.e[4].curvalue = cvarInt("r_fullscreen");
 
 	UI_CRadioButton(&settings.e[5], x, y, "Anisotropy:", "r_ext_texture_filter_anisotropic", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[6], x, y, "Post-processing:", "r_postfx", RBT_NORMAL, NULL, 0); y += 12;
 	UI_CRadioButton(&settings.e[7], x, y, "HDR:", "r_hdr", RBT_NORMAL, NULL, 0); y += 12;
 
-	UI_CSpinControl(&settings.e[8], x, y, "Texture quality:", textureList, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[8], x, y, "Texture quality:", textureList, NULL, Settings_MenuEvent, 0); y += 12;
 	settings.e[8].curvalue = cvarInt("r_picmip");
 
-	UI_CSpinControl(&settings.e[9], x, y, "Anti-aliasing:", aaList, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[9], x, y, "Anti-aliasing:", aaList, NULL, Settings_MenuEvent, 0); y += 12;
 	settings.e[9].curvalue = cvarInt("r_ext_multisample")/2;
 
-	UI_CSpinControl(&settings.e[10], x, y, "Bloom level:", bloomList, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[10], x, y, "Bloom level:", bloomList, NULL, Settings_MenuEvent, 0); y += 12;
 	settings.e[10].curvalue = cvarFloat("r_bloom_intensity")/0.05;
 
 	UI_CSlider(&settings.e[11], x, y, "Gamma:", "r_gamma", 50, 300, 100, NULL, 0); y += 12;
@@ -154,7 +154,7 @@ void UI_Settings(void) {
 	UI_CSlider(&settings.e[30], x, y, "Sound volume:", "s_volume", 0, 100, 100, NULL, 0); y += 12;
 	UI_CSlider(&settings.e[31], x, y, "Music volume:", "s_musicVolume", 0, 100, 100, NULL, 0); y += 12;
 
-	UI_CSpinControl(&settings.e[32], x, y, "Sound driver:", sdriverList, Settings_MenuEvent, 0); y += 12;
+	UI_CSpinControl(&settings.e[32], x, y, "Sound driver:", sdriverList, NULL, Settings_MenuEvent, 0); y += 12;
 	for(i = 0; sdriverList[i]; i++) {
 		if(!strcmp(sdriverList[i], cvarString("s_driver"))) {
 			settings.e[32].curvalue = i;

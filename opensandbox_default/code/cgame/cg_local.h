@@ -2,11 +2,6 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/q_shared.h"
-#include "../renderer/tr_types.h"
-#include "../game/bg_public.h"
-#include "cg_public.h"
-
 #define	FADE_TIME			500
 #define DAMAGE_TIME			500
 #define	LAND_DEFLECT_TIME	150

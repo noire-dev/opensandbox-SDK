@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "cg_local.h"
+#include "../qcommon/js_local.h"
 
 static int CG_CrosshairPlayer(void);
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
@@ -19,13 +19,14 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
+intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	switch(command) {
 		case CG_INIT: CG_Init(arg0, arg1, arg2); return 0;
 		case CG_SHUTDOWN: CG_Shutdown(); return 0;
 		case CG_CONSOLE_COMMAND: return CG_ConsoleCommand();
 		case CG_DRAW_ACTIVE_FRAME: CG_DrawActiveFrame(arg0, arg1); return 0;
-		case CG_CROSSHAIR_PLAYER: return CG_CrosshairPlayer();
+		case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
+		case VMCALL: VMCall(arg0); return 0;
 		default: CG_Error("vmMain: unknown command %i", command); break;
 	}
 	return -1;

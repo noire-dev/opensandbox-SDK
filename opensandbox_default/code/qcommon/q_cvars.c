@@ -83,7 +83,6 @@ static cvarTable_t cvarTable[] = {
 	{ "cg_thirdPersonRange",          "65",           CVAR_ARCHIVE },
 	{ "cg_thirdPersonOffset",         "25",           CVAR_ARCHIVE },
 	{ "cg_thirdPerson",               "0",            CVAR_ARCHIVE},
-	{ "cl_paused",                    "0",            0 },
 	{ "com_blood",                    "1",            CVAR_ARCHIVE },
 	{ "g_enableDust",                 "0",            CVAR_SERVERINFO },
 	{ "g_enableBreath",               "0",            CVAR_SERVERINFO },
@@ -131,20 +130,20 @@ void ST_UpdateCvars(void) {
 int cvarInt(const char *name) {
     int id = cvarID(name);
     if (id == -1) return 0;
-    cvarUpdate( &cvarStorage[id], id );
+    cvarUpdate(&cvarStorage[id], id);
     return cvarStorage[id].integer;
 }
 
 float cvarFloat(const char *name) {
     int id = cvarID(name);
     if (id == -1) return 0.0f;
-    cvarUpdate( &cvarStorage[id], id );
+    cvarUpdate(&cvarStorage[id], id);
     return cvarStorage[id].value;
 }
 
 char* cvarString(const char *name) {
     int id = cvarID(name);
     if (id == -1) return "0";
-    cvarUpdate( &cvarStorage[id], id );
+    cvarUpdate(&cvarStorage[id], id);
     return cvarStorage[id].string;
 }

@@ -30,8 +30,6 @@ void UI_Options(void) {
 	UI_CButton(&options.e[2], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Controls, NULL, 0); y += OSUI_SPACING_Y;
 	UI_CButton(&options.e[3], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Settings, NULL, 0); y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&options.e[4], 64 - uis.wideoffset, y, "Defaults", UI_LEFT, 1.00, color_white, NULL, NULL, Options_Defaults_Action, NULL, 0); y += OSUI_BIGSPACING_Y;
-
 	UI_CButton(&options.e[5], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, color_white, NULL, NULL, UI_PopMenu, NULL, 0);
 
 	UI_CreateUI(&options.menu, options.e);

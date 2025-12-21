@@ -57,6 +57,8 @@ cp ../../../code/q_sharedsyscalls.asm ..
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 
 echo "-----------------"
@@ -123,6 +125,8 @@ cp ../../../code/q_sharedsyscalls_client.asm ..
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 echo "-----------------"
 echo "cgame.qvm compiled"
@@ -181,6 +185,8 @@ $cc ../../../code/game/bg_misc.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 echo "-----------------"
 echo "ui.qvm compiled"

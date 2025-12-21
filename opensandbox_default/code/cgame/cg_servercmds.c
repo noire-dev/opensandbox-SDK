@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "cg_local.h"
+#include "../qcommon/js_local.h"
 
 #define NUM_DATA 2
 #define FIRST_DATA 3

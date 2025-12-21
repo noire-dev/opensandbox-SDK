@@ -774,14 +774,12 @@ typedef struct entityState_s {
 typedef enum {
 	CA_UNINITIALIZED,
 	CA_DISCONNECTED, 	// not talking to a server
-	CA_AUTHORIZING,		// not used any more, was checking cd key
 	CA_CONNECTING,		// sending request packets to the server
 	CA_CHALLENGING,		// sending challenge packets to the server
 	CA_CONNECTED,		// netchan_t established, getting gamestate
 	CA_LOADING,			// only during cgame initialization, never during main loop
 	CA_PRIMED,			// got gamestate, waiting for first frame
-	CA_ACTIVE,			// game views should be displayed
-	CA_CINEMATIC		// playing a cinematic or a static pic, not connected to a server
+	CA_ACTIVE			// game views should be displayed
 } connstate_t;
 
 #define Square(x) ((x)*(x))
@@ -881,11 +879,9 @@ void ST_AnimStart(stAnim_t *anim, int timeNow, int duration);
 float ST_AnimValue(stAnim_t *anim, int timeNow);
 #endif
 
+//JavaScript API
+
 //sharedsyscalls
-void            *memset(void *dest, int c, size_t count);
-void            *memcpy(void *dest, const void *src, size_t count);
-char            *strncpy(char *strDest, const char *strSource, size_t count);
-//other in mathlib
 void			trap_Print( const char *string );
 void			trap_Error( const char *string );
 int				trap_Milliseconds( void );
@@ -897,7 +893,7 @@ void			cvarSet( const char *name, const char *value );
 int				trap_Argc( void );
 void			trap_Argv( int n, char *buffer, int bufferLength );
 void		    trap_Args( char *buffer, int bufferLength );
-int				FS_Open( const char *qpath, fileHandle_t *f, fsMode_t mode );
+int				FS_Open( const char *qpatph, fileHandle_t *f, fsMode_t mode );
 void			FS_Read( void *buffer, int len, fileHandle_t f );
 void			FS_Write( const void *buffer, int len, fileHandle_t f );
 void			FS_Close( fileHandle_t f );
@@ -906,4 +902,8 @@ void			trap_Cmd( int exec_when, const char *text );
 void			trap_RealTime(qtime_t *qtime);
 void			trap_System( const char *command );
 
+void            *memset(void *dest, int c, size_t count);
+void            *memcpy(void *dest, const void *src, size_t count);
+char            *strncpy(char *strDest, const char *strSource, size_t count);
+//other in mathlib
 #endif	// __Q_SHARED_H

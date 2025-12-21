@@ -402,7 +402,7 @@ void UI_Controls(void) {
 		controls.e[i].generic.id = i;
 	}
 
-	UI_CSpinControl(&controls.e[KEYS_NUM + 1], SCREEN_WIDTH * 0.64, 0, "input method", mousestyle_description, Controls_MenuEvent, KEYS_NUM + 1);
+	UI_CSpinControl(&controls.e[KEYS_NUM + 1], SCREEN_WIDTH * 0.64, 0, "input method", mousestyle_description, NULL, Controls_MenuEvent, KEYS_NUM + 1);
 	UI_CRadioButton(&controls.e[KEYS_NUM + 2], SCREEN_WIDTH * 0.64, 0, "free look", "cl_freelook", RBT_NORMAL, NULL, 0);
 	UI_CRadioButton(&controls.e[KEYS_NUM + 3], SCREEN_WIDTH * 0.64, 0, "smooth mouse", "m_filter", RBT_NORMAL, NULL, 0);
 	UI_CRadioButton(&controls.e[KEYS_NUM + 4], SCREEN_WIDTH * 0.64, 0, "always run", "cl_run", RBT_NORMAL, NULL, 0);

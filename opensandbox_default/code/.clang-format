@@ -1,4 +1,4 @@
-BasedOnStyle: Google
+BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
@@ -10,6 +10,7 @@ AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortCaseLabelsOnASingleLine: true
 
+SortIncludes: false
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Attach

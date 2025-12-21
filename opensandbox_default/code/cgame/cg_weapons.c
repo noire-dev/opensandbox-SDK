@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "cg_local.h"
+#include "../qcommon/js_local.h"
 
 static void CG_MachineGunEjectBrass(centity_t *cent) {
 	localEntity_t *le;

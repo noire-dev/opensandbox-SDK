@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "cg_local.h"
+#include "../qcommon/js_local.h"
 
 void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 	*x = *x * cgs.scale + cgs.bias;

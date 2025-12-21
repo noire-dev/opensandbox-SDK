@@ -18,3 +18,4 @@ equ	trap_LAN_GetPingInfo					-15
 equ trap_MemoryRemaining					-16
 equ trap_LAN_GetServerCount					-17
 equ trap_LAN_GetServerAddressString			-18
+equ consoleSync                             -19

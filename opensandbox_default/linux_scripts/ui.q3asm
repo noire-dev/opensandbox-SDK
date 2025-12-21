@@ -21,3 +21,5 @@ bg_misc
 q_cvars
 q_math
 q_shared
+js_main
+js_func

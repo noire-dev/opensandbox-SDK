@@ -354,8 +354,8 @@ void UI_SpawnMenu(void) {
 
 	y = 38;
 	if(spawnmenu_tab == TB_NPCS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, NULL, 0); y += 12;
 		y += 12;
 		cvarSet("uis_b1", "5");
 		cvarSet("uis_b2", "100");
@@ -372,8 +372,8 @@ void UI_SpawnMenu(void) {
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, NULL, 0); y += 12;
 		y += 20;
 	}
 	
@@ -381,7 +381,7 @@ void UI_SpawnMenu(void) {
 	    if(cvarInt(va("api.spawndata.type[%i]", i)) == 1) {
 	        UI_CField(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0); y += 12;
 	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 2) {
-	        UI_CSpinControl(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), NULL, 0); y += 12;
+	        UI_CSpinControl(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), va("api.spawndata.value[%i]", i), NULL, 0); y += 12;
 	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 3) {
 	        UI_CSlider(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0); y += 12;
 	    }

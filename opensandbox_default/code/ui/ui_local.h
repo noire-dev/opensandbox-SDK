@@ -278,7 +278,6 @@ typedef struct {
 	float				wideoffset;
 	qboolean			firstdraw;
 	qboolean			onmap;
-	qboolean			postfx_status;
 } uiStatic_t;
 
 // ui_atoms.c  
@@ -377,6 +376,17 @@ void UI_SpawnMenu(void);
 extern uiStatic_t uis;
 extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
 
+#define CON_MAXLINES 16384
+#define CON_MAXLINE 256
+
+typedef struct console_s {
+    char lines[CON_MAXLINES][CON_MAXLINE];
+    int linescount;
+} console_t;
+
+extern console_t console;
+extern int consoleLines;
+
 //syscalls
 void			trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 void			trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
@@ -396,5 +406,6 @@ void			trap_LAN_GetPingInfo( int n, char *buf, int buflen );
 int				trap_MemoryRemaining( void );
 int				trap_LAN_GetServerCount( int source );
 void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
-
+void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
+void			consoleSync(console_t* vmconsole, int currentLines);
 #endif

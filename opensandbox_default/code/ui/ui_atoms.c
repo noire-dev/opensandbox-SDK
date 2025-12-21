@@ -47,28 +47,11 @@ void UI_UpdateState(void) {
 	} else {
 		uis.onmap = qtrue;
 	}
-
-	if(cvarInt("r_postfx")) {
-		uis.postfx_status = qtrue;
-	} else {
-		uis.postfx_status = qfalse;
-	}
-
-	if(glconfig.vidHeight / 480.0f > 0) {
-		cvarSet("con_scale", "1.50");
-	}
-	cvarSet("cl_conColor", "8 8 8 192");
 }
 
 void UI_PushMenu(menuframework_s *menu) {
 	int i;
 	menucommon_s *item;
-
-	if(uis.onmap) {
-		cvarSet("r_fx_blur", "1");  // blur UI postFX
-	} else {
-		cvarSet("r_fx_blur", "0");  // blur UI postFX
-	}
 
 	// avoid stacking menus invoked by hotkeys
 	for(i = 0; i < uis.menusp; i++) {
@@ -126,8 +109,6 @@ void UI_ForceMenuOff(void) {
 
 	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
 	trap_Key_ClearStates();
-	cvarSet("cl_paused", "0");
-	cvarSet("r_fx_blur", "0");  // blur UI postFX
 }
 
 qboolean UI_IsFullscreen(void) {
@@ -143,18 +124,13 @@ qboolean UI_IsFullscreen(void) {
 }
 
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
-	// this should be the ONLY way the menu system is brought up
-	// enusure minumum menu data is cached
 	Menu_Cache();
+	UI_UpdateState();
 
 	switch(menu) {
 		case UIMENU_NONE: UI_ForceMenuOff(); return;
 		case UIMENU_MAIN: UI_MainMenu(); return;
-		case UIMENU_INGAME:
-			cvarSet("cl_paused", "1");
-			UI_MainMenu();
-			return;
-
+		case UIMENU_INGAME: UI_MainMenu(); return;
 		default: Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu); break;
 	}
 }
@@ -445,7 +421,9 @@ void UI_Refresh(int realtime) {
 	}
 
 	ST_UpdateColors();
-
+	UI_UpdateState();
+	consoleSync(&console, console.linescount);
+	
 	if(uis.activemenu) {
 		if(uis.activemenu->fullscreen) {
 			if(!uis.onmap) {
