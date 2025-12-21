@@ -65,12 +65,12 @@ static void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activa
 void SP_target_print(gentity_t *ent) { ent->use = Use_Target_Print; }
 
 static void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->spawnflags & 3) {  // looping sound toggles
+	if(ent->spawnflags & 3) { // looping sound toggles
 		if(ent->s.loopSound)
-			ent->s.loopSound = 0;  // turn it off
+			ent->s.loopSound = 0; // turn it off
 		else
-			ent->s.loopSound = ent->noise_index;  // start it
-	} else {                                      // normal sound
+			ent->s.loopSound = ent->noise_index; // start it
+	} else {                                     // normal sound
 		if(ent->spawnflags & 8) {
 			G_AddEvent(activator, EV_GENERAL_SOUND, ent->noise_index);
 		} else if(ent->spawnflags & 4) {
@@ -183,7 +183,7 @@ static void target_location_linkup(gentity_t *ent) {
 		if(ent->classname && !Q_stricmp(ent->classname, "target_location")) {
 			// lets overload some variables!
 			if(CS_LOCATIONS + n >= MAX_CONFIGSTRINGS) return;
-			ent->health = n;  // use for location marking
+			ent->health = n; // use for location marking
 			trap_SetConfigstring(CS_LOCATIONS + n, ent->message);
 			n++;
 			ent->nextTrain = level.locationHead;
@@ -194,7 +194,7 @@ static void target_location_linkup(gentity_t *ent) {
 
 void SP_target_location(gentity_t *self) {
 	self->think = target_location_linkup;
-	self->nextthink = level.time + 200;  // Let them all spawn first
+	self->nextthink = level.time + 200; // Let them all spawn first
 
 	G_SetOrigin(self, self->s.origin);
 }
@@ -251,7 +251,7 @@ void SP_script_variable(gentity_t *self) {
 	self->use = script_variable_use;
 
 	if((self->spawnflags & 4096)) {
-		self->nextthink = level.time + FRAMETIME * 3;  // trigger entities next frame so they can spawn first
+		self->nextthink = level.time + FRAMETIME * 3; // trigger entities next frame so they can spawn first
 		self->think = script_variable_think;
 	}
 }
@@ -278,7 +278,7 @@ void SP_script_cmd(gentity_t *ent) {
 		G_Printf("No target in script_cmd\n");
 	}
 	if(ent->spawnflags & 4096) {
-		ent->nextthink = level.time + FRAMETIME * 10;  // trigger entities next frame so they can spawn first
+		ent->nextthink = level.time + FRAMETIME * 10; // trigger entities next frame so they can spawn first
 		ent->think = script_cmd_think;
 	}
 	ent->use = use_script_cmd;

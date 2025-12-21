@@ -8,7 +8,7 @@ static void InitTrigger(gentity_t *self) {
 	if(!VectorCompare(self->s.angles, vec3_origin)) G_SetMovedir(self->s.angles, self->movedir);
 
 	trap_SetBrushModel(self, self->model);
-	self->r.contents = CONTENTS_TRIGGER;  // replaces the -1 from trap_SetBrushModel
+	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
@@ -21,7 +21,7 @@ static void multi_wait(gentity_t *ent) { ent->nextthink = 0; }
 static void multi_trigger(gentity_t *ent, gentity_t *activator) {
 	ent->activator = activator;
 	if(ent->nextthink) {
-		return;  // can't retrigger until the wait is over
+		return; // can't retrigger until the wait is over
 	}
 
 	if(activator->client) {

@@ -4,36 +4,27 @@
 
 #include "ui_local.h"
 
-#define MAX_GLOBALSERVERS		128
-#define MAX_PINGREQUESTS		32
-#define MAX_ADDRESSLENGTH		64
-#define MAX_LISTBOXITEMS		128
-#define MAX_LOCALSERVERS		128
-#define MAX_STATUSLENGTH		64
-#define MAX_LISTBOXWIDTH		111
+#define MAX_GLOBALSERVERS 128
+#define MAX_PINGREQUESTS 32
+#define MAX_ADDRESSLENGTH 64
+#define MAX_LISTBOXITEMS 128
+#define MAX_LOCALSERVERS 128
+#define MAX_STATUSLENGTH 64
+#define MAX_LISTBOXWIDTH 111
 
-#define ART_UNKNOWNMAP			"menu/assets/unknownmap"
+#define ART_UNKNOWNMAP "menu/assets/unknownmap"
 
-#define ID_MASTER			10
-#define ID_CONNECT			11
-#define ID_LIST				12
-#define ID_REFRESH			13
+#define ID_MASTER 10
+#define ID_CONNECT 11
+#define ID_LIST 12
+#define ID_REFRESH 13
 
-#define AS_LOCAL			0
-#define AS_GLOBAL			1
+#define AS_LOCAL 0
+#define AS_GLOBAL 1
 
-static const char *master_items[] = {
-	"Local",
-	"Internet",
-	0
-};
+static const char *master_items[] = {"Local", "Internet", 0};
 
-static char* netnames[] = {
-	"????",
-	"IPv4",
-	"IPv6",
-	NULL
-};
+static char *netnames[] = {"????", "IPv4", "IPv6", NULL};
 
 typedef struct {
 	char adrstr[MAX_ADDRESSLENGTH];
@@ -57,7 +48,7 @@ typedef struct servernode_s {
 
 typedef struct {
 	char buff[MAX_LISTBOXWIDTH];
-	servernode_t* servernode;
+	servernode_t *servernode;
 } table_t;
 
 typedef struct {
@@ -72,10 +63,10 @@ typedef struct {
 
 	pinglist_t pinglist[MAX_PINGREQUESTS];
 	table_t table[MAX_LISTBOXITEMS];
-	char* items[MAX_LISTBOXITEMS];
+	char *items[MAX_LISTBOXITEMS];
 	int numqueriedservers;
-	int* numservers;
-	servernode_t* serverlist;
+	int *numservers;
+	servernode_t *serverlist;
 	int currentping;
 	qboolean refreshservers;
 	int nextpingtime;
@@ -101,7 +92,7 @@ static int ArenaServers_MaxPing(void) {
 }
 
 static void ArenaServers_Go(void) {
-	servernode_t* servernode;
+	servernode_t *servernode;
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if(servernode) {
@@ -112,7 +103,7 @@ static void ArenaServers_Go(void) {
 
 static void ArenaServers_UpdatePicture(void) {
 	static char picname[64];
-	servernode_t* servernodeptr;
+	servernode_t *servernodeptr;
 
 	if(!g_arenaservers.list.numitems) {
 		g_arenaservers.mappic.string = NULL;
@@ -130,9 +121,9 @@ static void ArenaServers_UpdateMenu(void) {
 	int i;
 	int j;
 	int count;
-	char* buff;
-	servernode_t* servernodeptr;
-	table_t* tableptr;
+	char *buff;
+	servernode_t *servernodeptr;
+	table_t *tableptr;
 
 	if(g_arenaservers.numqueriedservers > 0) {
 		// servers found
@@ -202,11 +193,11 @@ static void ArenaServers_UpdateMenu(void) {
 	ArenaServers_UpdatePicture();
 }
 
-static void ArenaServers_Insert(char* adrstr, char* info, int pingtime) {
-	servernode_t* servernodeptr;
+static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
+	servernode_t *servernodeptr;
 	int i;
 
-	if((pingtime >= ArenaServers_MaxPing())) return; //slow global or local servers do not get entered
+	if((pingtime >= ArenaServers_MaxPing())) return; // slow global or local servers do not get entered
 
 	if(*g_arenaservers.numservers >= g_arenaservers.maxservers) {
 		// list full;
@@ -270,10 +261,10 @@ static void ArenaServers_DoRefresh(void) {
 		if(g_servertype == AS_LOCAL) {
 			if(!trap_LAN_GetServerCount(g_servertype)) return;
 		}
-		if(trap_LAN_GetServerCount(g_servertype) < 0) return; //still waiting for response
+		if(trap_LAN_GetServerCount(g_servertype) < 0) return; // still waiting for response
 	}
 
-	if(uis.realtime < g_arenaservers.nextpingtime) return; //wait for time trigger
+	if(uis.realtime < g_arenaservers.nextpingtime) return; // wait for time trigger
 
 	// trigger at 10Hz intervals
 	g_arenaservers.nextpingtime = uis.realtime + 10;
@@ -282,7 +273,7 @@ static void ArenaServers_DoRefresh(void) {
 	maxPing = ArenaServers_MaxPing();
 	for(i = 0; i < MAX_PINGREQUESTS; i++) {
 		trap_LAN_GetPing(i, adrstr, MAX_ADDRESSLENGTH, &time);
-		if(!adrstr[0]) continue; //ignore empty or pending pings
+		if(!adrstr[0]) continue; // ignore empty or pending pings
 
 		// find ping result in our local list
 		for(j = 0; j < MAX_PINGREQUESTS; j++)
@@ -292,7 +283,7 @@ static void ArenaServers_DoRefresh(void) {
 			// found it
 			if(!time) {
 				time = uis.realtime - g_arenaservers.pinglist[j].start;
-				if(time < maxPing) continue; //still waiting
+				if(time < maxPing) continue; // still waiting
 			}
 
 			if(time > maxPing) { // stale it out
@@ -320,13 +311,13 @@ static void ArenaServers_DoRefresh(void) {
 	// send ping requests in reasonable bursts
 	// iterate ping through all found servers
 	for(i = 0; i < MAX_PINGREQUESTS && g_arenaservers.currentping < g_arenaservers.numqueriedservers; i++) {
-		if(trap_LAN_GetPingQueueCount() >= MAX_PINGREQUESTS) break; //ping queue is full
+		if(trap_LAN_GetPingQueueCount() >= MAX_PINGREQUESTS) break; // ping queue is full
 
 		// find empty slot
 		for(j = 0; j < MAX_PINGREQUESTS; j++)
 			if(!g_arenaservers.pinglist[j].adrstr[0]) break;
 
-		if(j >= MAX_PINGREQUESTS) break; //no empty slots available yet - wait for timeout
+		if(j >= MAX_PINGREQUESTS) break; // no empty slots available yet - wait for timeout
 
 		// get an address to ping
 		trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
@@ -392,18 +383,18 @@ static void ArenaServers_SetType(int type) {
 	trap_Print(va("%i", type));
 
 	switch(type) {
-		default:
-		case AS_LOCAL:
-			g_arenaservers.serverlist = g_localserverlist;
-			g_arenaservers.numservers = &g_numlocalservers;
-			g_arenaservers.maxservers = MAX_LOCALSERVERS;
-			break;
+	default:
+	case AS_LOCAL:
+		g_arenaservers.serverlist = g_localserverlist;
+		g_arenaservers.numservers = &g_numlocalservers;
+		g_arenaservers.maxservers = MAX_LOCALSERVERS;
+		break;
 
-		case AS_GLOBAL:
-			g_arenaservers.serverlist = g_globalserverlist;
-			g_arenaservers.numservers = &g_numglobalservers;
-			g_arenaservers.maxservers = MAX_GLOBALSERVERS;
-			break;
+	case AS_GLOBAL:
+		g_arenaservers.serverlist = g_globalserverlist;
+		g_arenaservers.numservers = &g_numglobalservers;
+		g_arenaservers.maxservers = MAX_GLOBALSERVERS;
+		break;
 	}
 
 	if(!*g_arenaservers.numservers) {
@@ -417,29 +408,29 @@ static void ArenaServers_SetType(int type) {
 	strcpy(g_arenaservers.status.string, "hit Refresh to update");
 }
 
-static void ArenaServers_Event(void* ptr, int event) {
+static void ArenaServers_Event(void *ptr, int event) {
 	int id;
 	int value;
 
-	id = ((menucommon_s*)ptr)->id;
+	id = ((menucommon_s *)ptr)->id;
 
 	if(event != QM_ACTIVATED && id != ID_LIST) return;
 
 	switch(id) {
-		case ID_MASTER:
-			value = g_arenaservers.master.curvalue;
-			cvarSet("ui_browserMaster", va("%f", value));
-			ArenaServers_SetType(value);
-			break;
+	case ID_MASTER:
+		value = g_arenaservers.master.curvalue;
+		cvarSet("ui_browserMaster", va("%f", value));
+		ArenaServers_SetType(value);
+		break;
 
-		case ID_CONNECT: trap_Cmd( EXEC_INSERT, va("connect %s\n", g_arenaservers.domain.field.buffer)); break;
+	case ID_CONNECT: trap_Cmd(EXEC_INSERT, va("connect %s\n", g_arenaservers.domain.field.buffer)); break;
 
-		case ID_LIST:
-			if(event == QM_GOTFOCUS) ArenaServers_UpdatePicture();
-			if(event == QM_ACTIVATED) ArenaServers_Go();
-			break;
+	case ID_LIST:
+		if(event == QM_GOTFOCUS) ArenaServers_UpdatePicture();
+		if(event == QM_ACTIVATED) ArenaServers_Go();
+		break;
 
-		case ID_REFRESH: ArenaServers_StartRefresh(); break;
+	case ID_REFRESH: ArenaServers_StartRefresh(); break;
 	}
 }
 
@@ -481,7 +472,7 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.domain.string = "Address:";
 	g_arenaservers.domain.generic.flags = QMF_PULSEIFFOCUS;
 	g_arenaservers.domain.generic.x = 160;
-	g_arenaservers.domain.generic.y	= 44;
+	g_arenaservers.domain.generic.y = 44;
 	g_arenaservers.domain.field.widthInChars = 38;
 	g_arenaservers.domain.field.maxchars = 80;
 
@@ -504,13 +495,13 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.list.generic.y = 88;
 	g_arenaservers.list.width = MAX_LISTBOXWIDTH;
 	g_arenaservers.list.height = 30;
-	g_arenaservers.list.itemnames = (const char**)g_arenaservers.items;
+	g_arenaservers.list.itemnames = (const char **)g_arenaservers.items;
 	for(i = 0; i < MAX_LISTBOXITEMS; i++) {
 		g_arenaservers.items[i] = g_arenaservers.table[i].buff;
 	}
 
 	g_arenaservers.mappic.generic.type = MTYPE_BITMAP;
-	g_arenaservers.mappic.generic.flags = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
+	g_arenaservers.mappic.generic.flags = QMF_LEFT_JUSTIFY | QMF_INACTIVE;
 	g_arenaservers.mappic.generic.x = 0;
 	g_arenaservers.mappic.generic.y = 8;
 	g_arenaservers.mappic.width = 100;
@@ -519,7 +510,7 @@ static void ArenaServers_MenuInit(void) {
 
 	g_arenaservers.refresh.generic.type = MTYPE_PTEXT;
 	g_arenaservers.refresh.string = "Refresh";
-	g_arenaservers.refresh.generic.flags = QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
+	g_arenaservers.refresh.generic.flags = QMF_PULSEIFFOCUS | QMF_CENTER_JUSTIFY;
 	g_arenaservers.refresh.generic.callback = ArenaServers_Event;
 	g_arenaservers.refresh.generic.id = ID_REFRESH;
 	g_arenaservers.refresh.generic.x = 320;
@@ -528,13 +519,13 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.refresh.style = UI_CENTER;
 	g_arenaservers.refresh.color = color_white;
 
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.status);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.master);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.domain);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.connect);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.list);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.mappic);
-	Menu_AddItem(&g_arenaservers.menu, (void*)&g_arenaservers.refresh);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.status);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.master);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.domain);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.connect);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.list);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.mappic);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.refresh);
 
 	g_servertype = 0;
 	value = g_servertype;

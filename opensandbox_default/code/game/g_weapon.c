@@ -160,7 +160,7 @@ qboolean Melee_Fire(gentity_t *ent, int weapon) {
 		s_quadFactor = 1;
 	}
 	if(ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER) s_quadFactor *= 2.0;
-	
+
 	s_quadFactor *= gameInfoNPCTypes[ent->npcType].damage;
 
 	G_Damage(traceEnt, ent, ent, forward, tr.endpos, gameInfoWeapons[weapon].damage * s_quadFactor, 0, WP_GAUNTLET);
@@ -355,7 +355,7 @@ static void Weapon_HookThink(gentity_t *ent) {
 		v[0] = ent->enemy->r.currentOrigin[0] + (ent->enemy->r.mins[0] + ent->enemy->r.maxs[0]) * 0.5;
 		v[1] = ent->enemy->r.currentOrigin[1] + (ent->enemy->r.mins[1] + ent->enemy->r.maxs[1]) * 0.5;
 		v[2] = ent->enemy->r.currentOrigin[2] + (ent->enemy->r.mins[2] + ent->enemy->r.maxs[2]) * 0.5;
-		SnapVectorTowards(v, oldorigin);  // save net bandwidth
+		SnapVectorTowards(v, oldorigin); // save net bandwidth
 
 		G_SetOrigin(ent, v);
 	}
@@ -674,7 +674,7 @@ static void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
 			BG_EvaluateTrajectoryDelta(&ent->s.pos, level.time, velocity);
 			if(VectorLength(velocity) == 0) {
-				velocity[2] = 1;  // stepped on a grenade
+				velocity[2] = 1; // stepped on a grenade
 			}
 			G_Damage(other, ent, &g_entities[ent->r.ownerNum], velocity, ent->s.origin, ent->damage, 0, ent->methodOfDeath);
 		}
@@ -730,14 +730,14 @@ static void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 			v[1] = other->r.currentOrigin[1] + (other->r.mins[1] + other->r.maxs[1]) * 0.5;
 			v[2] = other->r.currentOrigin[2] + (other->r.mins[2] + other->r.maxs[2]) * 0.5;
 
-			SnapVectorTowards(v, ent->s.pos.trBase);  // save net bandwidth
+			SnapVectorTowards(v, ent->s.pos.trBase); // save net bandwidth
 		} else {
 			VectorCopy(trace->endpos, v);
 			G_AddEvent(nent, EV_MISSILE_MISS, DirToByte(trace->plane.normal));
 			ent->enemy = NULL;
 		}
 
-		SnapVectorTowards(v, ent->s.pos.trBase);  // save net bandwidth
+		SnapVectorTowards(v, ent->s.pos.trBase); // save net bandwidth
 
 		nent->freeAfterEvent = qtrue;
 		// change over to a normal entity right at the point of impact
@@ -775,7 +775,7 @@ static void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	// change over to a normal entity right at the point of impact
 	ent->s.eType = ET_GENERAL;
 
-	SnapVectorTowards(trace->endpos, ent->s.pos.trBase);  // save net bandwidth
+	SnapVectorTowards(trace->endpos, ent->s.pos.trBase); // save net bandwidth
 
 	G_SetOrigin(ent, trace->endpos);
 
@@ -822,7 +822,7 @@ void G_RunMissile(gentity_t *ent) {
 	if(tr.fraction != 1) {
 		G_MissileImpact(ent, &tr);
 		if(ent->s.eType != ET_MISSILE) {
-			return;  // exploded
+			return; // exploded
 		}
 	}
 	// if the prox mine wasn't yet outside the player body
@@ -974,7 +974,7 @@ static void Missile_Fire(gentity_t *ent, int weapon) {
 
 		ent->client->fireHeld = qtrue;
 	} else {
-		if(weapon == WP_GRENADE_LAUNCHER || weapon == WP_PROX_LAUNCHER) {  // extra vertical velocity
+		if(weapon == WP_GRENADE_LAUNCHER || weapon == WP_PROX_LAUNCHER) { // extra vertical velocity
 			forward[2] += 0.2f;
 			VectorNormalize(forward);
 		}
@@ -1015,14 +1015,14 @@ void FireWeapon(gentity_t *ent) {
 	CalcMuzzlePointOrigin(ent, ent->client->oldOrigin, forward, right, up, muzzle);
 
 	switch(gameInfoWeapons[ent->swep_id].wType) {
-		case WT_BULLET: Bullet_Fire(ent, ent->swep_id); break;
-		case WT_SHOTGUN: Shotgun_Fire(ent, ent->swep_id); break;
-		case WT_LIGHTNING: Lightning_Fire(ent, ent->swep_id); break;
-		case WT_RAILGUN: Railgun_Fire(ent, ent->swep_id); break;
-		case WT_EMPTY: break;
-		case WT_TOOLGUN: break;
-		case WT_MISSILE: Missile_Fire(ent, ent->swep_id); break;
-		default: break;
+	case WT_BULLET: Bullet_Fire(ent, ent->swep_id); break;
+	case WT_SHOTGUN: Shotgun_Fire(ent, ent->swep_id); break;
+	case WT_LIGHTNING: Lightning_Fire(ent, ent->swep_id); break;
+	case WT_RAILGUN: Railgun_Fire(ent, ent->swep_id); break;
+	case WT_EMPTY: break;
+	case WT_TOOLGUN: break;
+	case WT_MISSILE: Missile_Fire(ent, ent->swep_id); break;
+	default: break;
 	}
 }
 
@@ -1208,7 +1208,7 @@ void G_StartKamikaze(gentity_t *ent) {
 	} else {
 		VectorCopy(ent->activator->s.pos.trBase, snapped);
 	}
-	SnapVector(snapped);  // save network bandwidth
+	SnapVector(snapped); // save network bandwidth
 	G_SetOrigin(explosion, snapped);
 
 	explosion->classname = "kamikaze";
@@ -1311,7 +1311,7 @@ void G_StartCarExplode(gentity_t *ent) {
 	explosion->eventTime = level.time;
 
 	VectorCopy(ent->r.currentOrigin, snapped);
-	SnapVector(snapped);  // save network bandwidth
+	SnapVector(snapped); // save network bandwidth
 	G_SetOrigin(explosion, snapped);
 
 	explosion->classname = "kamikaze";
@@ -1350,7 +1350,7 @@ void G_StartNukeExplode(gentity_t *ent) {
 	explosion->eventTime = level.time;
 
 	VectorCopy(ent->r.currentOrigin, snapped);
-	SnapVector(snapped);  // save network bandwidth
+	SnapVector(snapped); // save network bandwidth
 	G_SetOrigin(explosion, snapped);
 
 	explosion->classname = "kamikaze";

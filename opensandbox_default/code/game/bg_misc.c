@@ -76,7 +76,7 @@ item_t gameInfoItems[] = {
 };
 // clang-format on
 
-int	gameInfoItemsNum = ARRAY_SIZE(gameInfoItems);
+int gameInfoItemsNum = ARRAY_SIZE(gameInfoItems);
 
 // clang-format off
 weaponProperties_t gameInfoWeapons[] = {
@@ -111,7 +111,7 @@ weaponProperties_t gameInfoWeapons[] = {
 };
 // clang-format on
 
-int	gameInfoWeaponsNum = ARRAY_SIZE(gameInfoWeapons);
+int gameInfoWeaponsNum = ARRAY_SIZE(gameInfoWeapons);
 
 // clang-format off
 wPropProperties_t gameInfoWProps[] = {
@@ -127,7 +127,7 @@ wPropProperties_t gameInfoWProps[] = {
 };
 // clang-format on
 
-int	gameInfoWPropsNum = ARRAY_SIZE(gameInfoWProps);
+int gameInfoWPropsNum = ARRAY_SIZE(gameInfoWProps);
 
 // clang-format off
 NPCTypes_t gameInfoNPCTypes[] = {
@@ -142,7 +142,7 @@ NPCTypes_t gameInfoNPCTypes[] = {
 };
 // clang-format on
 
-int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
+int gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 
 // clang-format off
 NPCFactions_t gameInfoFactions[] = {
@@ -157,7 +157,7 @@ NPCFactions_t gameInfoFactions[] = {
 };
 // clang-format on
 
-int	gameInfoFactionsNum = ARRAY_SIZE(gameInfoFactions);
+int gameInfoFactionsNum = ARRAY_SIZE(gameInfoFactions);
 
 // clang-format off
 char* gameInfoSandboxSpawns[] = {
@@ -225,7 +225,7 @@ char* gameInfoSandboxSpawns[] = {
 };
 // clang-format on
 
-int	gameInfoSandboxSpawnsNum = ARRAY_SIZE(gameInfoSandboxSpawns);
+int gameInfoSandboxSpawnsNum = ARRAY_SIZE(gameInfoSandboxSpawns);
 
 // clang-format off
 char* gametypes_names[] = {
@@ -254,8 +254,8 @@ char* gametypes_mapnames[] = {
 int BG_FindNPCTypeID(const char *name) {
 	int i;
 
-	for (i = 0; i < gameInfoNPCTypesNum; i++) {
-		if (!Q_stricmp(gameInfoNPCTypes[i].name, name)) {
+	for(i = 0; i < gameInfoNPCTypesNum; i++) {
+		if(!Q_stricmp(gameInfoNPCTypes[i].name, name)) {
 			if(i <= NT_PLAYER) return NT_CITIZEN;
 			return i;
 		}
@@ -393,100 +393,100 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 	item = &gameInfoItems[ent->modelindex];
 
 	switch(item->giType) {
-		case IT_WEAPON: return qtrue;  // weapons are always picked up
+	case IT_WEAPON: return qtrue; // weapons are always picked up
 
-		case IT_AMMO:
-			if(ps->stats[STAT_AMMO] >= 9000) {
-				return qfalse;  // can't hold any more
-			}
-			return qtrue;
+	case IT_AMMO:
+		if(ps->stats[STAT_AMMO] >= 9000) {
+			return qfalse; // can't hold any more
+		}
+		return qtrue;
 
-		case IT_ARMOR:
-			if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
+	case IT_ARMOR:
+		if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
+			return qfalse;
+		}
+
+		if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
+			upperBound = ps->stats[STAT_MAX_HEALTH];
+		} else {
+			upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
+		}
+
+		if(ps->stats[STAT_ARMOR] >= upperBound) {
+			return qfalse;
+		}
+		return qtrue;
+
+	case IT_HEALTH:
+		if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
+			upperBound = ps->stats[STAT_MAX_HEALTH];
+		} else if(item->quantity == 5 || item->quantity == 100) {
+			if(ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2) {
 				return qfalse;
 			}
-
-			if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
-				upperBound = ps->stats[STAT_MAX_HEALTH];
-			} else {
-				upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
-			}
-
-			if(ps->stats[STAT_ARMOR] >= upperBound) {
-				return qfalse;
-			}
 			return qtrue;
+		}
 
-		case IT_HEALTH:
-			if(gameInfoItems[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD) {
-				upperBound = ps->stats[STAT_MAX_HEALTH];
-			} else if(item->quantity == 5 || item->quantity == 100) {
-				if(ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2) {
-					return qfalse;
-				}
+		if(ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH]) {
+			return qfalse;
+		}
+		return qtrue;
+
+	case IT_POWERUP: return qtrue; // powerups are always picked up
+
+	case IT_RUNE:
+		// can only hold one item at a time
+		if(ps->stats[STAT_PERSISTANT_POWERUP]) {
+			return qfalse;
+		}
+
+		// check team only
+		if((ent->generic1 & 2) && (ps->persistant[PERS_TEAM] != TEAM_RED)) {
+			return qfalse;
+		}
+		if((ent->generic1 & 4) && (ps->persistant[PERS_TEAM] != TEAM_BLUE)) {
+			return qfalse;
+		}
+
+		return qtrue;
+
+	case IT_TEAM: // team items, such as flags
+		if(gametype == GT_1FCTF) {
+			// neutral flag can always be picked up
+			if(item->giTag == PW_NEUTRALFLAG) {
 				return qtrue;
 			}
-
-			if(ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH]) {
-				return qfalse;
-			}
-			return qtrue;
-
-		case IT_POWERUP: return qtrue;  // powerups are always picked up
-
-		case IT_RUNE:
-			// can only hold one item at a time
-			if(ps->stats[STAT_PERSISTANT_POWERUP]) {
-				return qfalse;
-			}
-
-			// check team only
-			if((ent->generic1 & 2) && (ps->persistant[PERS_TEAM] != TEAM_RED)) {
-				return qfalse;
-			}
-			if((ent->generic1 & 4) && (ps->persistant[PERS_TEAM] != TEAM_BLUE)) {
-				return qfalse;
-			}
-
-			return qtrue;
-
-		case IT_TEAM:  // team items, such as flags
-			if(gametype == GT_1FCTF) {
-				// neutral flag can always be picked up
-				if(item->giTag == PW_NEUTRALFLAG) {
+			if(ps->persistant[PERS_TEAM] == TEAM_RED) {
+				if(item->giTag == PW_BLUEFLAG && ps->powerups[PW_NEUTRALFLAG]) {
 					return qtrue;
 				}
-				if(ps->persistant[PERS_TEAM] == TEAM_RED) {
-					if(item->giTag == PW_BLUEFLAG && ps->powerups[PW_NEUTRALFLAG]) {
-						return qtrue;
-					}
-				} else if(ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-					if(item->giTag == PW_REDFLAG && ps->powerups[PW_NEUTRALFLAG]) {
-						return qtrue;
-					}
+			} else if(ps->persistant[PERS_TEAM] == TEAM_BLUE) {
+				if(item->giTag == PW_REDFLAG && ps->powerups[PW_NEUTRALFLAG]) {
+					return qtrue;
 				}
 			}
-			if(gametype == GT_CTF) {
-				if(ps->persistant[PERS_TEAM] == TEAM_RED) {
-					if(item->giTag == PW_BLUEFLAG || (item->giTag == PW_REDFLAG && ent->modelindex2) || (item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG])) return qtrue;
-				} else if(ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-					if(item->giTag == PW_REDFLAG || (item->giTag == PW_BLUEFLAG && ent->modelindex2) || (item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG])) return qtrue;
-				}
+		}
+		if(gametype == GT_CTF) {
+			if(ps->persistant[PERS_TEAM] == TEAM_RED) {
+				if(item->giTag == PW_BLUEFLAG || (item->giTag == PW_REDFLAG && ent->modelindex2) || (item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG])) return qtrue;
+			} else if(ps->persistant[PERS_TEAM] == TEAM_BLUE) {
+				if(item->giTag == PW_REDFLAG || (item->giTag == PW_BLUEFLAG && ent->modelindex2) || (item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG])) return qtrue;
 			}
-			if(gametype == GT_HARVESTER) {
-				return qtrue;
-			}
-			return qfalse;
-
-		case IT_HOLDABLE:
-			if(ps->stats[STAT_HOLDABLE_ITEM]) {
-				return qfalse;
-			}
+		}
+		if(gametype == GT_HARVESTER) {
 			return qtrue;
+		}
+		return qfalse;
 
-		case IT_NULL: return qfalse;
+	case IT_HOLDABLE:
+		if(ps->stats[STAT_HOLDABLE_ITEM]) {
+			return qfalse;
+		}
+		return qtrue;
 
-		default: Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType); break;
+	case IT_NULL: return qfalse;
+
+	default: Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType); break;
 	}
 
 	return qfalse;
@@ -497,48 +497,47 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result) {
 	float phase;
 
 	switch(tr->trType) {
-		case TR_STATIONARY:
-		case TR_INTERPOLATE: VectorCopy(tr->trBase, result); break;
-		case TR_LINEAR:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		case TR_SINE:
-			deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
-			phase = sin(deltaTime * M_PI * 2);
-			VectorMA(tr->trBase, phase, tr->trDelta, result);
-			break;
-		case TR_LINEAR_STOP:
-			if(atTime > tr->trTime + tr->trDuration) {
-				atTime = tr->trTime + tr->trDuration;
-			}
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			if(deltaTime < 0) {
-				deltaTime = 0;
-			}
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		case TR_GRAVITY:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			result[2] -= 0.5 * mod_gravity * deltaTime * deltaTime;
-			break;
-		case TR_ROTATING:
-			if(tr->trTime > 0)
-				deltaTime = tr->trTime * 0.001;  // milliseconds to seconds
-			else if(tr->trTime < 0)
-				deltaTime = (atTime + tr->trTime) * 0.001;
-			else
-				deltaTime = (atTime - tr->trTime) * 0.001;
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		case TR_GRAVITY_WATER:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			result[2] -= 0.5 * (mod_gravity * 0.50) * deltaTime * deltaTime;
-			break;
-		default:
-			break;
+	case TR_STATIONARY:
+	case TR_INTERPOLATE: VectorCopy(tr->trBase, result); break;
+	case TR_LINEAR:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	case TR_SINE:
+		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
+		phase = sin(deltaTime * M_PI * 2);
+		VectorMA(tr->trBase, phase, tr->trDelta, result);
+		break;
+	case TR_LINEAR_STOP:
+		if(atTime > tr->trTime + tr->trDuration) {
+			atTime = tr->trTime + tr->trDuration;
+		}
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		if(deltaTime < 0) {
+			deltaTime = 0;
+		}
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	case TR_GRAVITY:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		result[2] -= 0.5 * mod_gravity * deltaTime * deltaTime;
+		break;
+	case TR_ROTATING:
+		if(tr->trTime > 0)
+			deltaTime = tr->trTime * 0.001; // milliseconds to seconds
+		else if(tr->trTime < 0)
+			deltaTime = (atTime + tr->trTime) * 0.001;
+		else
+			deltaTime = (atTime - tr->trTime) * 0.001;
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	case TR_GRAVITY_WATER:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		result[2] -= 0.5 * (mod_gravity * 0.50) * deltaTime * deltaTime;
+		break;
+	default: break;
 	}
 }
 
@@ -554,35 +553,34 @@ void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 	float phase;
 
 	switch(tr->trType) {
-		case TR_STATIONARY:
-		case TR_INTERPOLATE: VectorClear(result); break;
-		case TR_ROTATING:
-		case TR_LINEAR: VectorCopy(tr->trDelta, result); break;
-		case TR_SINE:
-			deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
-			phase = cos(deltaTime * M_PI * 2);  // derivative of sin = cos
-			phase *= 0.5;
-			VectorScale(tr->trDelta, phase, result);
-			break;
-		case TR_LINEAR_STOP:
-			if(atTime > tr->trTime + tr->trDuration) {
-				VectorClear(result);
-				return;
-			}
-			VectorCopy(tr->trDelta, result);
-			break;
-		case TR_GRAVITY:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorCopy(tr->trDelta, result);
-			result[2] -= mod_gravity * deltaTime;
-			break;
-		case TR_GRAVITY_WATER:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorCopy(tr->trDelta, result);
-			result[2] -= (mod_gravity * 0.50) * deltaTime;
-			break;
-		default:
-			break;
+	case TR_STATIONARY:
+	case TR_INTERPOLATE: VectorClear(result); break;
+	case TR_ROTATING:
+	case TR_LINEAR: VectorCopy(tr->trDelta, result); break;
+	case TR_SINE:
+		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
+		phase = cos(deltaTime * M_PI * 2); // derivative of sin = cos
+		phase *= 0.5;
+		VectorScale(tr->trDelta, phase, result);
+		break;
+	case TR_LINEAR_STOP:
+		if(atTime > tr->trTime + tr->trDuration) {
+			VectorClear(result);
+			return;
+		}
+		VectorCopy(tr->trDelta, result);
+		break;
+	case TR_GRAVITY:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorCopy(tr->trDelta, result);
+		result[2] -= mod_gravity * deltaTime;
+		break;
+	case TR_GRAVITY_WATER:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorCopy(tr->trDelta, result);
+		result[2] -= (mod_gravity * 0.50) * deltaTime;
+		break;
+	default: break;
 	}
 }
 
@@ -591,49 +589,49 @@ void ST_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result, fl
 	float phase;
 
 	switch(tr->trType) {
-		case TR_STATIONARY:
-		case TR_INTERPOLATE: VectorCopy(tr->trBase, result); break;
-		case TR_LINEAR:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		case TR_SINE:
-			deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
-			phase = sin(deltaTime * M_PI * 2);
-			VectorMA(tr->trBase, phase, tr->trDelta, result);
-			break;
-		case TR_LINEAR_STOP:
-			if(atTime > tr->trTime + tr->trDuration) {
-				atTime = tr->trTime + tr->trDuration;
-			}
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			if(deltaTime < 0) {
-				deltaTime = 0;
-			}
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		case TR_GRAVITY:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;
-			break;
-		case TR_GRAVITY_WATER:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			result[2] -= 0.5 * (mod_gravity * (mass * 0.50)) * deltaTime * deltaTime;
-			break;
-		case TR_ROTATING:
-			if(tr->trTime > 0)
-				deltaTime = tr->trTime * 0.001;  // milliseconds to seconds
-			else if(tr->trTime < 0)
-				deltaTime = (atTime + tr->trTime) * 0.001;
-			else
-				deltaTime = (atTime - tr->trTime) * 0.001;
-			VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-			break;
-		default:
-			// Com_Error( ERR_DROP, "ST_EvaluateTrajectory: unknown trType: %i", tr->trTime );
-			break;
+	case TR_STATIONARY:
+	case TR_INTERPOLATE: VectorCopy(tr->trBase, result); break;
+	case TR_LINEAR:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	case TR_SINE:
+		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
+		phase = sin(deltaTime * M_PI * 2);
+		VectorMA(tr->trBase, phase, tr->trDelta, result);
+		break;
+	case TR_LINEAR_STOP:
+		if(atTime > tr->trTime + tr->trDuration) {
+			atTime = tr->trTime + tr->trDuration;
+		}
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		if(deltaTime < 0) {
+			deltaTime = 0;
+		}
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	case TR_GRAVITY:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;
+		break;
+	case TR_GRAVITY_WATER:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		result[2] -= 0.5 * (mod_gravity * (mass * 0.50)) * deltaTime * deltaTime;
+		break;
+	case TR_ROTATING:
+		if(tr->trTime > 0)
+			deltaTime = tr->trTime * 0.001; // milliseconds to seconds
+		else if(tr->trTime < 0)
+			deltaTime = (atTime + tr->trTime) * 0.001;
+		else
+			deltaTime = (atTime - tr->trTime) * 0.001;
+		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		break;
+	default:
+		// Com_Error( ERR_DROP, "ST_EvaluateTrajectory: unknown trType: %i", tr->trTime );
+		break;
 	}
 }
 
@@ -649,36 +647,36 @@ void ST_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 	float phase;
 
 	switch(tr->trType) {
-		case TR_STATIONARY:
-		case TR_INTERPOLATE: VectorClear(result); break;
-		case TR_ROTATING:
-		case TR_LINEAR: VectorCopy(tr->trDelta, result); break;
-		case TR_SINE:
-			deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
-			phase = cos(deltaTime * M_PI * 2);  // derivative of sin = cos
-			phase *= 0.5;
-			VectorScale(tr->trDelta, phase, result);
-			break;
-		case TR_LINEAR_STOP:
-			if(atTime > tr->trTime + tr->trDuration) {
-				VectorClear(result);
-				return;
-			}
-			VectorCopy(tr->trDelta, result);
-			break;
-		case TR_GRAVITY:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorCopy(tr->trDelta, result);
-			result[2] -= (mod_gravity * mass) * deltaTime;
-			break;
-		case TR_GRAVITY_WATER:
-			deltaTime = (atTime - tr->trTime) * 0.001;  // milliseconds to seconds
-			VectorCopy(tr->trDelta, result);
-			result[2] -= (mod_gravity * (mass * 0.50)) * deltaTime;
-			break;
-		default:
-			// Com_Error( ERR_DROP, "ST_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
-			break;
+	case TR_STATIONARY:
+	case TR_INTERPOLATE: VectorClear(result); break;
+	case TR_ROTATING:
+	case TR_LINEAR: VectorCopy(tr->trDelta, result); break;
+	case TR_SINE:
+		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
+		phase = cos(deltaTime * M_PI * 2); // derivative of sin = cos
+		phase *= 0.5;
+		VectorScale(tr->trDelta, phase, result);
+		break;
+	case TR_LINEAR_STOP:
+		if(atTime > tr->trTime + tr->trDuration) {
+			VectorClear(result);
+			return;
+		}
+		VectorCopy(tr->trDelta, result);
+		break;
+	case TR_GRAVITY:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorCopy(tr->trDelta, result);
+		result[2] -= (mod_gravity * mass) * deltaTime;
+		break;
+	case TR_GRAVITY_WATER:
+		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
+		VectorCopy(tr->trDelta, result);
+		result[2] -= (mod_gravity * (mass * 0.50)) * deltaTime;
+		break;
+	default:
+		// Com_Error( ERR_DROP, "ST_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
+		break;
 	}
 }
 
@@ -767,8 +765,8 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 	s->angles2[YAW] = ps->movementDir;
 	s->legsAnim = ps->legsAnim;
 	s->torsoAnim = ps->torsoAnim;
-	s->clientNum = ps->clientNum;  // ET_PLAYER looks here instead of at number
-	                               // so corpses can also reference the proper config
+	s->clientNum = ps->clientNum; // ET_PLAYER looks here instead of at number
+	                              // so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
 	if(ps->stats[STAT_HEALTH] <= 0) {
 		s->eFlags |= EF_DEAD;

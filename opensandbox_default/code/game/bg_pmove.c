@@ -67,7 +67,7 @@ static void PM_StartLegsAnim(int anim) {
 		return;
 	}
 	if(pm->ps->legsTimer > 0) {
-		return;  // a high priority animation is running
+		return; // a high priority animation is running
 	}
 	pm->ps->legsAnim = ((pm->ps->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
 }
@@ -77,7 +77,7 @@ static void PM_ContinueLegsAnim(int anim) {
 		return;
 	}
 	if(pm->ps->legsTimer > 0) {
-		return;  // a high priority animation is running
+		return; // a high priority animation is running
 	}
 	PM_StartLegsAnim(anim);
 }
@@ -87,7 +87,7 @@ static void PM_ContinueTorsoAnim(int anim) {
 		return;
 	}
 	if(pm->ps->torsoTimer > 0) {
-		return;  // a high priority animation is running
+		return; // a high priority animation is running
 	}
 	PM_StartTorsoAnim(anim);
 }
@@ -140,13 +140,13 @@ static void PM_Friction(void) {
 
 	VectorCopy(vel, vec);
 	if(pml.walking) {
-		vec[2] = 0;  // ignore slope movement
+		vec[2] = 0; // ignore slope movement
 	}
 
 	speed = VectorLength(vec);
 	if(speed < 1) {
 		vel[0] = 0;
-		vel[1] = 0;  // allow sinking underwater
+		vel[1] = 0; // allow sinking underwater
 		// FIXME: still have z friction underwater?
 		return;
 	}
@@ -155,7 +155,7 @@ static void PM_Friction(void) {
 
 	// apply ground friction
 	if(pm->waterlevel <= 1) {
-		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable player phys for all
+		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable player phys for all
 			if(pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK)) {
 				// if getting knocked back, no friction
 				if(!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)) {
@@ -164,12 +164,12 @@ static void PM_Friction(void) {
 				}
 			}
 		}
-		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: turn vehicle phys
+		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: turn vehicle phys
 			if(pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK)) {
 				// if getting knocked back, no friction
 				if(!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)) {
 					control = speed < pm_veh00001stopspeed ? pm_veh00001stopspeed : speed;
-					if(pm->cmd.upmove > 0) {  // VEHICLE-SYSTEM: space break
+					if(pm->cmd.upmove > 0) { // VEHICLE-SYSTEM: space break
 						drop += pm_veh00001stopspeed * pm_veh00001friction * 16 * pml.frametime;
 					} else {
 						drop += control * pm_veh00001friction * pml.frametime;
@@ -218,7 +218,7 @@ Handles user intended acceleration
 ==============
 */
 static void PM_Accelerate(vec3_t wishdir, float wishspeed, float accel) {
-	if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable player accelerate for all
+	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable player accelerate for all
 		int i;
 		float addspeed, accelspeed, currentspeed;
 
@@ -235,7 +235,7 @@ static void PM_Accelerate(vec3_t wishdir, float wishspeed, float accel) {
 		for(i = 0; i < 3; i++) {
 			pm->ps->velocity[i] += accelspeed * wishdir[i];
 		}
-	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: accelerate for 1
+	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: accelerate for 1
 		// vehicle
 		int i;
 		float addspeed, accelspeed, currentspeed;
@@ -296,7 +296,7 @@ to the facing dir
 ================
 */
 static void PM_SetMovementDir(void) {
-	if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable player-move for all
+	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable player-move for all
 		if(pm->cmd.forwardmove || pm->cmd.rightmove) {
 			if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0) {
 				pm->ps->movementDir = 0;
@@ -325,7 +325,7 @@ static void PM_SetMovementDir(void) {
 				pm->ps->movementDir = 7;
 			}
 		}
-	} else {  // VEHICLE-SYSTEM: turn vehicle-move for all
+	} else { // VEHICLE-SYSTEM: turn vehicle-move for all
 		if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0) {
 			pm->ps->movementDir = 0;
 		} else if(pm->cmd.rightmove < 0) {
@@ -339,12 +339,12 @@ static void PM_SetMovementDir(void) {
 }
 
 static qboolean PM_CheckJump(void) {
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: disable jump for 1
-		return qfalse;                                             // don't allow jump for vehicle
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: disable jump for 1
+		return qfalse;                              // don't allow jump for vehicle
 	}
 
 	if(pm->ps->pm_flags & PMF_RESPAWNED) {
-		return qfalse;  // don't allow jump until all buttons are up
+		return qfalse; // don't allow jump until all buttons are up
 	}
 
 	if(pm->cmd.upmove < 10) {
@@ -359,7 +359,7 @@ static qboolean PM_CheckJump(void) {
 		return qfalse;
 	}
 
-	pml.groundPlane = qfalse;  // jumping away
+	pml.groundPlane = qfalse; // jumping away
 	pml.walking = qfalse;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
@@ -457,13 +457,13 @@ static void PM_WaterMove(void) {
 	//
 	// user intentions
 	//
-	if(!scale || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: disable water move for 1
+	if(!scale || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: disable water move for 1
 		wishvel[0] = 0;
 		wishvel[1] = 0;
-		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: water slow move for all
-			wishvel[2] = -30;               // sink towards bottom
+		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: water slow move for all
+			wishvel[2] = -30;              // sink towards bottom
 		} else {
-			wishvel[2] = -2;  // sink towards bottom
+			wishvel[2] = -2; // sink towards bottom
 		}
 	} else {
 		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * pm->cmd.forwardmove + scale * pml.right[i] * pm->cmd.rightmove;
@@ -512,7 +512,7 @@ static void PM_NoclipMove(void) {
 	} else {
 		drop = 0;
 
-		friction = pm_friction * 1.5;  // extra friction
+		friction = pm_friction * 1.5; // extra friction
 		control = speed < pm_stopspeed ? pm_stopspeed : speed;
 		drop += control * friction * pml.frametime;
 
@@ -611,7 +611,7 @@ static void PM_AirMove(void) {
 
 	PM_Friction();
 
-	if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable air move for all
+	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable air move for all
 		smove = pm->cmd.rightmove;
 		fmove = pm->cmd.forwardmove;
 	} else {
@@ -703,7 +703,7 @@ static void PM_WalkMove(void) {
 	PM_Friction();
 
 	fmove = pm->cmd.forwardmove;
-	if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable strafe for all
+	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable strafe for all
 		smove = pm->cmd.rightmove;
 	} else {
 		smove = 0;
@@ -740,10 +740,10 @@ static void PM_WalkMove(void) {
 			wishspeed = pm->ps->speed * pm_duckScale;
 
 			// if player's speed is lowered by target_playerspeed, we can get excessively low movement speeds, so set a mimimum movement speed
-			if(wishspeed < 80)  // 80 is g_speed's default value (320) * pm_duckScale (0.25)
+			if(wishspeed < 80) // 80 is g_speed's default value (320) * pm_duckScale (0.25)
 				wishspeed = 80;
 
-			if(wishspeed > pm->ps->speed)  // we don't want the crouch movement speed to be higher than the player's normal movement speed
+			if(wishspeed > pm->ps->speed) // we don't want the crouch movement speed to be higher than the player's normal movement speed
 				wishspeed = pm->ps->speed;
 		}
 	}
@@ -763,7 +763,7 @@ static void PM_WalkMove(void) {
 	// full control, which allows them to be moved a bit
 	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK) {
 		accelerate = pm_airaccelerate;
-	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: accelerate for 1
+	} else if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: accelerate for 1
 		accelerate = pm_veh00001accelerate;
 	} else {
 		accelerate = pm_accelerate;
@@ -771,7 +771,7 @@ static void PM_WalkMove(void) {
 
 	PM_Accelerate(wishdir, wishspeed, accelerate);
 
-	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: slick move for 1
+	if((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: slick move for 1
 		pm->ps->velocity[2] -= (pm->ps->gravity * pml.frametime);
 	}
 
@@ -1087,12 +1087,12 @@ static void PM_CheckDuck(void) {
 		return;
 	}
 
-	if(pm->cmd.upmove < 0) {                // duck
-		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable duck for all
+	if(pm->cmd.upmove < 0) {               // duck
+		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable duck for all
 			pm->ps->pm_flags |= PMF_DUCKED;
 		} else {
 		}
-	} else {  // stand up if possible
+	} else { // stand up if possible
 		if(pm->ps->pm_flags & PMF_DUCKED) {
 			// try to stand up
 			pm->maxs[2] = 32;
@@ -1109,7 +1109,7 @@ static void PM_CheckDuck(void) {
 		pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
 	}
 
-	if(pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: collision for all
+	if(pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: collision for all
 		pm->mins[0] = -25;
 		pm->mins[1] = -25;
 		pm->mins[2] = -15;
@@ -1140,7 +1140,7 @@ static void PM_Footsteps(void) {
 	// if not trying to move
 	if(!pm->cmd.forwardmove && !pm->cmd.rightmove) {
 		if(pm->xyspeed < 5) {
-			pm->ps->bobCycle = 0;  // start at beginning of cycle again
+			pm->ps->bobCycle = 0; // start at beginning of cycle again
 			if(pm->ps->pm_flags & PMF_DUCKED) {
 				PM_ContinueLegsAnim(LEGS_IDLECR);
 			} else {
@@ -1153,7 +1153,7 @@ static void PM_Footsteps(void) {
 	footstep = qfalse;
 
 	if(pm->ps->pm_flags & PMF_DUCKED) {
-		bobmove = 0.5;  // ducked characters bob much faster
+		bobmove = 0.5; // ducked characters bob much faster
 		if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
 			PM_ContinueLegsAnim(LEGS_BACKCR);
 		} else {
@@ -1162,7 +1162,7 @@ static void PM_Footsteps(void) {
 		// ducked characters never play footsteps
 	} else {
 		if(!(pm->cmd.buttons & BUTTON_WALKING)) {
-			bobmove = 0.4f;  // faster speeds bob faster
+			bobmove = 0.4f; // faster speeds bob faster
 			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
 				PM_ContinueLegsAnim(LEGS_BACK);
 			} else {
@@ -1170,7 +1170,7 @@ static void PM_Footsteps(void) {
 			}
 			footstep = qtrue;
 		} else {
-			bobmove = 0.3f;  // walking bobs slow
+			bobmove = 0.3f; // walking bobs slow
 			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
 				PM_ContinueLegsAnim(LEGS_BACKWALK);
 			} else {
@@ -1405,14 +1405,14 @@ static void PM_Animate(void) {
 	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) pm->ps->pm_time = 5;
 
 	if(pm->cmd.buttons & (BUTTON_GESTURE | BUTTON_GETFLAG | BUTTON_GUARDBASE | BUTTON_PATROL | BUTTON_FOLLOWME | BUTTON_AFFIRMATIVE | BUTTON_NEGATIVE) && pm->cmd.weapon != WP_PHYSGUN) {
-		if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: disable gesture for all
+		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable gesture for all
 			if(pm->ps->torsoTimer == 0) {
 				PM_StartTorsoAnim(TORSO_GESTURE);
 				pm->ps->torsoTimer = TIMER_GESTURE;
 				PM_AddEvent(EV_TAUNT);
 			}
 		}
-		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {  // VEHICLE-SYSTEM: horn for 1
+		if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: horn for 1
 			if(pm->ps->torsoTimer == 0) {
 				pm->ps->torsoTimer = 300;
 				PM_AddEvent(EV_HORN);
@@ -1465,11 +1465,11 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
 	}
 
 	if(ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION) {
-		return;  // no view changes at all
+		return; // no view changes at all
 	}
 
 	if(ps->pm_type != PM_SPECTATOR && ps->stats[STAT_HEALTH] <= 0) {
-		return;  // no view changes at all
+		return; // no view changes at all
 	}
 
 	// circularly clamp the angles with deltas
@@ -1515,7 +1515,7 @@ static void PM_LadderMove(void) {
 		wishvel[0] = 0;
 		wishvel[1] = 0;
 		wishvel[2] = 0;
-	} else {  // if they're trying to move... lets calculate it
+	} else { // if they're trying to move... lets calculate it
 		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * pm->cmd.forwardmove + scale * pml.right[i] * pm->cmd.rightmove;
 		wishvel[2] += scale * pm->cmd.upmove;
 	}
@@ -1539,7 +1539,7 @@ static void PM_LadderMove(void) {
 		VectorScale(pm->ps->velocity, vel, pm->ps->velocity);
 	}
 
-	PM_SlideMove(qfalse);  // move without gravity
+	PM_SlideMove(qfalse); // move without gravity
 }
 
 static void CheckLadder(void) {
@@ -1570,7 +1570,7 @@ static void PmoveSingle(pmove_t *pmove) {
 	pm->waterlevel = 0;
 
 	if(pm->ps->stats[STAT_HEALTH] <= 0) {
-		pm->tracemask &= ~CONTENTS_BODY;  // corpses can fly through bodies
+		pm->tracemask &= ~CONTENTS_BODY; // corpses can fly through bodies
 	}
 
 	// make sure walking button is clear if they are running, to avoid
@@ -1672,12 +1672,12 @@ static void PmoveSingle(pmove_t *pmove) {
 	}
 
 	if(pm->ps->pm_type == PM_FREEZE) {
-		PM_CheckDuck();  // to make the player stand up, otherwise he'll be in a crouched position
-		return;          // no movement at all
+		PM_CheckDuck(); // to make the player stand up, otherwise he'll be in a crouched position
+		return;         // no movement at all
 	}
 
 	if(pm->ps->pm_type == PM_INTERMISSION || pm->ps->pm_type == PM_SPINTERMISSION) {
-		return;  // no movement at all
+		return; // no movement at all
 	}
 
 	// set watertype, and waterlevel
@@ -1695,7 +1695,7 @@ static void PmoveSingle(pmove_t *pmove) {
 	}
 
 	PM_DropTimers();
-	CheckLadder();  // ARTHUR TOMLIN check and see if they're on a ladder
+	CheckLadder(); // ARTHUR TOMLIN check and see if they're on a ladder
 
 	if(pm->ps->powerups[PW_INVULNERABILITY]) {
 		PM_InvulnerabilityMove();
@@ -1734,7 +1734,7 @@ static void PmoveSingle(pmove_t *pmove) {
 	PM_TorsoAnimation();
 
 	// footstep events / legs animations
-	if(!pm->ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: footsteps lock for all
+	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: footsteps lock for all
 		PM_Footsteps();
 	}
 
@@ -1755,7 +1755,7 @@ void Pmove(pmove_t *pmove) {
 	finalTime = pmove->cmd.serverTime;
 
 	if(finalTime < pmove->ps->commandTime) {
-		return;  // should not happen
+		return; // should not happen
 	}
 
 	if(finalTime > pmove->ps->commandTime + 1000) {
@@ -1772,9 +1772,9 @@ void Pmove(pmove_t *pmove) {
 		msec = finalTime - pmove->ps->commandTime;
 
 		if(msec < 1) {
-			msec = 1;  // ниже — нахер, баги, говно и обосрание
+			msec = 1; // ниже — нахер, баги, говно и обосрание
 		} else if(msec > 33) {
-			msec = 33;  // выше — значит просадка ниже 30 FPS, режем на 33, чтобы игрок не творил хуйню
+			msec = 33; // выше — значит просадка ниже 30 FPS, режем на 33, чтобы игрок не творил хуйню
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle(pmove);

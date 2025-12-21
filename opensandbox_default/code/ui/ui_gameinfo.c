@@ -7,19 +7,19 @@
 #define DIRLIST_SIZE 16384
 
 static int ui_numBots;
-static char* ui_botInfos[MAX_BOTS];
+static char *ui_botInfos[MAX_BOTS];
 
 static int ui_numArenas;
-static char* ui_arenaInfos[MAX_ARENAS];
+static char *ui_arenaInfos[MAX_ARENAS];
 
 static char dirlist[DIRLIST_SIZE];
 
-#define POOLSIZE (1024 * 1024)  // QVM_MEMORY: 1mb
+#define POOLSIZE (1024 * 1024) // QVM_MEMORY: 1mb
 static char memoryPool[POOLSIZE];
 static int allocPoint;
 
-void* UI_Alloc(int size) {
-	char* p;
+void *UI_Alloc(int size) {
+	char *p;
 
 	if(allocPoint + size > POOLSIZE) return NULL;
 
@@ -30,8 +30,8 @@ void* UI_Alloc(int size) {
 
 void UI_InitMemory(void) { allocPoint = 0; }
 
-static int UI_ParseInfos(char* buf, int max, char* infos[], qboolean arenas) {
-	char* token;
+static int UI_ParseInfos(char *buf, int max, char *infos[], qboolean arenas) {
+	char *token;
 	int count;
 	char key[MAX_TOKEN_CHARS], info[MAX_INFO_STRING];
 
@@ -71,7 +71,7 @@ static int UI_ParseInfos(char* buf, int max, char* infos[], qboolean arenas) {
 	return count;
 }
 
-static void UI_LoadArenasFromFile(char* filename) {
+static void UI_LoadArenasFromFile(char *filename) {
 	int len;
 	fileHandle_t f;
 	char buf[MAX_ARENAS_TEXT];
@@ -97,7 +97,7 @@ static void UI_LoadArenasFromFile(char* filename) {
 void UI_LoadArenas(void) {
 	int numdirs, i, dirlen;
 	char filename[128], dirlist[1024];
-	char* dirptr;
+	char *dirptr;
 
 	ui_numArenas = 0;
 
@@ -111,7 +111,7 @@ void UI_LoadArenas(void) {
 	}
 }
 
-static void UI_LoadBotsFromFile(char* filename) {
+static void UI_LoadBotsFromFile(char *filename) {
 	int len;
 	fileHandle_t f;
 	char buf[MAX_BOTS_TEXT];
@@ -135,7 +135,7 @@ static void UI_LoadBotsFromFile(char* filename) {
 void UI_LoadBots(void) {
 	int numdirs;
 	char filename[128];
-	char* dirptr;
+	char *dirptr;
 	int i;
 	int dirlen;
 
@@ -151,9 +151,9 @@ void UI_LoadBots(void) {
 	}
 }
 
-char* UI_GetBotInfoByName(const char* name) {
+char *UI_GetBotInfoByName(const char *name) {
 	int n;
-	char* value;
+	char *value;
 
 	for(n = 0; n < ui_numBots; n++) {
 		value = Info_ValueForKey(ui_botInfos[n], "name");
@@ -167,8 +167,8 @@ char* UI_GetBotInfoByName(const char* name) {
 
 int UI_GetNumBots(void) { return ui_numBots; }
 
-static qboolean MapHasGametype(char* typeString, const char* mode) {
-	char* token;
+static qboolean MapHasGametype(char *typeString, const char *mode) {
+	char *token;
 
 	while(1) {
 		token = COM_ParseExt(&typeString, qfalse);
@@ -179,15 +179,15 @@ static qboolean MapHasGametype(char* typeString, const char* mode) {
 	return qfalse;
 }
 
-void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesSize, char** configlist) {
+void UI_FillListOfMaps(menuelement_s *e, char *gametype, char *names, int namesSize, char **configlist) {
 	int i, count = 0;
-	char* map;
-	char* type;
-	char* out = names;
+	char *map;
+	char *type;
+	char *out = names;
 	int remaining = namesSize;
 
 	e->string = "levelshots";
-	e->itemnames = (const char**)configlist;
+	e->itemnames = (const char **)configlist;
 
 	for(i = 0; i < ui_numArenas; i++) {
 		map = Info_ValueForKey(ui_arenaInfos[i], "map");
@@ -219,14 +219,14 @@ void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesS
 	}
 }
 
-void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** configlist) {
+void UI_FillListOfBots(menuelement_s *e, char *names, int namesSize, char **configlist) {
 	int i, len, count = 0;
-	char* name;
-	char* out = names;
+	char *name;
+	char *out = names;
 	int remaining = namesSize;
 
 	e->string = "";
-	e->itemnames = (const char**)configlist;
+	e->itemnames = (const char **)configlist;
 
 	for(i = 0; i < ui_numBots; i++) {
 		name = Info_ValueForKey(ui_botInfos[i], "name");
@@ -241,10 +241,10 @@ void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** conf
 	e->numitems = i;
 }
 
-int UI_CountOfMaps(char* gametype) {
+int UI_CountOfMaps(char *gametype) {
 	int i, count = 0;
-	char* map;
-	char* type;
+	char *map;
+	char *type;
 
 	for(i = 0; i < ui_numArenas; i++) {
 		map = Info_ValueForKey(ui_arenaInfos[i], "map");

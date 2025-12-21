@@ -38,7 +38,7 @@ typedef struct {
 } consoleCommand_t;
 
 static consoleCommand_t commands[] = {
-	{"+scores", CG_ScoresDown_f},
+    {"+scores", CG_ScoresDown_f},
     {"-scores", CG_ScoresUp_f},
     {"+zoom", CG_ZoomDown_f},
     {"-zoom", CG_ZoomUp_f},

@@ -34,7 +34,7 @@ void TossClientItems(gentity_t *self) {
 	if(!gameInfoNPCTypes[self->npcType].dropItems) return;
 
 	// drop all weapons
-	if(gameInfoItems[self->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag != PW_AMMOREGEN){
+	if(gameInfoItems[self->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag != PW_AMMOREGEN) {
 		for(i = 1; i < WEAPONS_NUM; i++) {
 			if(self->swep_list[i] >= WS_HAVE) {
 				item = BG_FindItemForWeapon(i);
@@ -91,7 +91,7 @@ void TossClientCubes(gentity_t *self) {
 	}
 
 	angles[YAW] = (float)(level.time % 360);
-	angles[PITCH] = 0;  // always forward
+	angles[PITCH] = 0; // always forward
 	angles[ROLL] = 0;
 
 	AngleVectors(angles, velocity, NULL, NULL);
@@ -229,14 +229,14 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 	self->client->ps.pm_type = PM_DEAD;
 
-	if (attacker) killer = attacker->s.number;
+	if(attacker) killer = attacker->s.number;
 
 	// broadcast the death event to everyone
 	ent = G_TempEntity(self->r.currentOrigin, EV_OBITUARY);
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = killer;
 	ent->s.otherEntityNum2 = self->s.number;
-	ent->r.svFlags = SVF_BROADCAST;  // send to everyone
+	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
 	self->enemy = attacker;
 
@@ -269,7 +269,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		TossClientCubes(self);
 	}
 
-	Cmd_Score_f(self);  // show scores
+	Cmd_Score_f(self); // show scores
 	// send updated scores to any clients that are following this one,
 	// or they would get stale scoreboards
 	for(i = 0; i < level.maxclients; i++) {
@@ -287,7 +287,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		}
 	}
 
-	self->takedamage = qtrue;  // can still be gibbed
+	self->takedamage = qtrue; // can still be gibbed
 	self->s.weapon = WP_NONE;
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
@@ -298,7 +298,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	// g_forcerespawn may force spawning at some later time
 	self->client->respawnTime = level.time + 1700;
 
-	RespawnTimeMessage(self,self->client->respawnTime);
+	RespawnTimeMessage(self, self->client->respawnTime);
 
 	// remove powerups
 	memset(self->client->ps.powerups, 0, sizeof(self->client->ps.powerups));
@@ -312,10 +312,10 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		static int i;
 
 		switch(i) {
-			case 0: anim = BOTH_DEATH1; break;
-			case 1: anim = BOTH_DEATH2; break;
-			case 2:
-			default: anim = BOTH_DEATH3; break;
+		case 0: anim = BOTH_DEATH1; break;
+		case 1: anim = BOTH_DEATH2; break;
+		case 2:
+		default: anim = BOTH_DEATH3; break;
 		}
 
 		// for the no-blood option, we need to prevent the health
@@ -448,7 +448,7 @@ static qboolean G_EnterInCar(gentity_t *player, gentity_t *vehicle) {
 	// Position synchronization
 	VectorCopy(vehicle->s.origin, player->s.origin);
 	VectorCopy(vehicle->s.pos.trBase, player->s.pos.trBase);
-	player->s.apos.trBase[1] = vehicle->s.apos.trBase[1];  // Only copy yaw
+	player->s.apos.trBase[1] = vehicle->s.apos.trBase[1]; // Only copy yaw
 	VectorCopy(vehicle->r.currentOrigin, player->r.currentOrigin);
 
 	// Adjust player collision bounds
@@ -544,7 +544,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		if(targ->client) {
 			VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		}
-		if(targ->sandboxObject) {  // WELD-TOOL
+		if(targ->sandboxObject) { // WELD-TOOL
 			if(!targ->physParentEnt) {
 				Phys_Enable(targ);
 				targ->lastPlayer = attacker;
@@ -552,7 +552,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 			} else {
 				Phys_Enable(targ->physParentEnt);
 				targ->physParentEnt->lastPlayer = attacker;
-				if(targ->physParentEnt->phys_weldedObjectsNum > 0) {  // mass
+				if(targ->physParentEnt->phys_weldedObjectsNum > 0) { // mass
 					VectorScale(kvel, 1.0f / targ->physParentEnt->phys_weldedObjectsNum, kvel);
 				}
 				VectorAdd(targ->physParentEnt->s.pos.trDelta, kvel, targ->physParentEnt->s.pos.trDelta);

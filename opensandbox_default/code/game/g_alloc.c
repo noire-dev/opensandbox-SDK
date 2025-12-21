@@ -4,7 +4,7 @@
 
 #include "g_local.h"
 
-#define POOLSIZE (1024 * 1024)  // QVM_MEMORY: 1mb
+#define POOLSIZE (1024 * 1024) // QVM_MEMORY: 1mb
 static char memoryPool[POOLSIZE];
 static int allocPoint;
 

@@ -49,7 +49,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			// predict an explosion
 			CG_MissileHitWall(ent->weapon, cg.predictedPlayerState.clientNum, trace.endpos, trace.plane.normal, IMPACTSOUND_DEFAULT);
 		}
-	} else if(gameInfoWeapons[ent->weapon].wType == WT_SHOTGUN) {  // was it a shotgun attack?
+	} else if(gameInfoWeapons[ent->weapon].wType == WT_SHOTGUN) { // was it a shotgun attack?
 		int contents;
 		vec3_t endPoint, v;
 		vec3_t up;
@@ -73,7 +73,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 
 		// do the shotgun pellets
 		CG_ShotgunPattern(muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum, ent->weapon);
-	} else if(gameInfoWeapons[ent->weapon].wType == WT_BULLET) {  // was it a machinegun attack?
+	} else if(gameInfoWeapons[ent->weapon].wType == WT_BULLET) { // was it a machinegun attack?
 		int seed = cg.oldTime % 256;
 		float r, u;
 		trace_t tr;

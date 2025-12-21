@@ -33,7 +33,7 @@ static void CG_OffsetThirdPersonView(void) {
 
 	VectorCopy(cg.refdefViewAngles, focusAngles);
 
-	if(focusAngles[PITCH] > 45) focusAngles[PITCH] = 45;  // don't go too far overhead
+	if(focusAngles[PITCH] > 45) focusAngles[PITCH] = 45; // don't go too far overhead
 	AngleVectors(focusAngles, forward, right, NULL);
 
 	VectorMA(cg.refdef.vieworg, 512, forward, focusPoint);
@@ -78,7 +78,7 @@ static void CG_OffsetThirdPersonView(void) {
 	// select pitch to look at focus point from vieword
 	VectorSubtract(focusPoint, cg.refdef.vieworg, focusPoint);
 	focusDist = sqrt(focusPoint[0] * focusPoint[0] + focusPoint[1] * focusPoint[1]);
-	if(focusDist < 1) focusDist = 1;  // should never happen
+	if(focusDist < 1) focusDist = 1; // should never happen
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2(focusPoint[2], focusDist);
 	cg.refdefViewAngles[YAW] -= 0;
 }
@@ -121,10 +121,10 @@ static void CG_OffsetFirstPersonView(void) {
 		// make sure the bob is visible even at low speeds
 		speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
 		delta = cg.bobfracsin * 0.002 * speed;
-		if(cg.predictedPlayerState.pm_flags & PMF_DUCKED) delta *= 3;  // crouching
+		if(cg.predictedPlayerState.pm_flags & PMF_DUCKED) delta *= 3; // crouching
 		angles[PITCH] += delta;
 		delta = cg.bobfracsin * 0.002 * speed;
-		if(cg.predictedPlayerState.pm_flags & PMF_DUCKED) delta *= 3;  // crouching accentuates roll
+		if(cg.predictedPlayerState.pm_flags & PMF_DUCKED) delta *= 3; // crouching accentuates roll
 		if(cg.bobcycle & 1) delta = -delta;
 		angles[ROLL] += delta;
 	}

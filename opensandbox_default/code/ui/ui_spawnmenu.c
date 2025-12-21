@@ -28,6 +28,7 @@ typedef enum {
 int spawnmenu_sv_top[TB_MAX];
 int spawnmenu_sv_value[TB_MAX];
 
+// clang-format off
 char* spawnmenu_tabnames[] = {
 	"Props",
 	"Entities",
@@ -93,13 +94,14 @@ static const char* spawnmenu_skill[] = {
 	"5",
 	NULL
 };
+// clang-format on
 
 typedef struct {
-	menuframework_s	menu;
+	menuframework_s menu;
 	menuelement_s e[OSUI_MAX_ELEMENTS];
 
 	char names1[524288];
-	char* list1[524288];
+	char *list1[524288];
 } spawnmenu_t;
 
 static spawnmenu_t spawnmenu;
@@ -109,26 +111,26 @@ char spawnmenu_folder[32] = "";
 char spawnmenu_path_folder[32] = "";
 char spawnmenu_path_icons[32] = "";
 
-const char** SpawnMenu_SpawnDataStrings(int id) {
-    static const char* classes[SPAWNDATA_MAX][16];
-    int i;
-    
-    for (i = 0; i < 16; i++) {
-        if (cvarID(va("api.spawndata.string[%i][%i]", id, i)) == -1) {
-            classes[id][i] = NULL;
-            break;
-        }
-            
-        classes[id][i] = cvarString(va("api.spawndata.string[%i][%i]", id, i));
-    }
-    
-    return classes[id];
+const char **SpawnMenu_SpawnDataStrings(int id) {
+	static const char *classes[SPAWNDATA_MAX][16];
+	int i;
+
+	for(i = 0; i < 16; i++) {
+		if(cvarID(va("api.spawndata.string[%i][%i]", id, i)) == -1) {
+			classes[id][i] = NULL;
+			break;
+		}
+
+		classes[id][i] = cvarString(va("api.spawndata.string[%i][%i]", id, i));
+	}
+
+	return classes[id];
 }
 
-static void SpawnMenu_Event(void* ptr, int event) {
+static void SpawnMenu_Event(void *ptr, int event) {
 	if(event != QM_ACTIVATED) return;
 
-	if(((menucommon_s*)ptr)->callid == 0) {
+	if(((menucommon_s *)ptr)->callid == 0) {
 		spawnmenu_sv_top[spawnmenu_tab] = spawnmenu.e[0].top;
 		spawnmenu_sv_value[spawnmenu_tab] = spawnmenu.e[0].curvalue;
 		if(spawnmenu_tab == TB_PROPS) {
@@ -191,16 +193,16 @@ static void SpawnMenu_Event(void* ptr, int event) {
 		}
 	}
 
-	if(((menucommon_s*)ptr)->callid == 1) {
+	if(((menucommon_s *)ptr)->callid == 1) {
 		trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 	}
 
-	if(((menucommon_s*)ptr)->callid == 2) {
-	    trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.sbscript\n");
+	if(((menucommon_s *)ptr)->callid == 2) {
+		trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.sbscript\n");
 		trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 	}
 
-	if(((menucommon_s*)ptr)->callid == 3 && spawnmenu_tab == TB_SAVES) {
+	if(((menucommon_s *)ptr)->callid == 3 && spawnmenu_tab == TB_SAVES) {
 		trap_Cmd(EXEC_APPEND, va("savemap maps/%s.ent\n", spawnmenu.e[30].field.buffer));
 		UI_ForceMenuOff();
 		trap_Cmd(EXEC_APPEND, "cg_draw2D = 0\n");
@@ -210,10 +212,10 @@ static void SpawnMenu_Event(void* ptr, int event) {
 		trap_Cmd(EXEC_APPEND, "cg_draw2D = 1\n");
 	}
 
-	if(((menucommon_s*)ptr)->callid >= ID_TAB_SELECT) {
+	if(((menucommon_s *)ptr)->callid >= ID_TAB_SELECT) {
 		spawnmenu_sv_top[spawnmenu_tab] = spawnmenu.e[0].top;
 		spawnmenu_sv_value[spawnmenu_tab] = spawnmenu.e[0].curvalue;
-		spawnmenu_tab = ((menucommon_s*)ptr)->callid - ID_TAB_SELECT;
+		spawnmenu_tab = ((menucommon_s *)ptr)->callid - ID_TAB_SELECT;
 		if(spawnmenu_tab == TB_PROPS) {
 			Q_strncpyz(spawnmenu_folder, "", sizeof(spawnmenu_folder));
 			spawnmenu_sv_top[spawnmenu_tab] = 0;
@@ -261,9 +263,7 @@ static void SpawnMenu_Save(void) {
 }
 
 static sfxHandle_t SpawnMenu_Key(int key) {
-	if(key == K_MOUSE2 || key == K_ESCAPE) {
-		SpawnMenu_Save();
-	}
+	if(key == K_MOUSE2 || key == K_ESCAPE) SpawnMenu_Save();
 	return Menu_DefaultKey(&spawnmenu.menu, key);
 }
 
@@ -277,8 +277,8 @@ static void SpawnMenu_Draw(void) {
 	UI_DrawRoundedRect(10 - uis.wideoffset, 10, 440 + uis.wideoffset * 2, 480 - 38, 4, color_dim);
 	UI_DrawRoundedRect(640 + uis.wideoffset - 180, 10, 170, 480 - 38, 4, color_dim);
 
-	UI_DrawRoundedRect(640+uis.wideoffset-175, 15, 160, 16, 3, color3);
-	ST_DrawString(640+uis.wideoffset-95, 18, cvarString("toolgun_tooltext"), UI_CENTER, color_white, 1.00);
+	UI_DrawRoundedRect(640 + uis.wideoffset - 175, 15, 160, 16, 3, color3);
+	ST_DrawString(640 + uis.wideoffset - 95, 18, cvarString("toolgun_tooltext"), UI_CENTER, color_white, 1.00);
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
@@ -341,7 +341,8 @@ void UI_SpawnMenu(void) {
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
-		UI_CButton(&spawnmenu.e[ID_TAB_SELECT + i], 18 - uis.wideoffset, y + 4, spawnmenu_tabnames[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, SpawnMenu_Event, ID_TAB_SELECT + i); y += 20;
+		UI_CButton(&spawnmenu.e[ID_TAB_SELECT + i], 18 - uis.wideoffset, y + 4, spawnmenu_tabnames[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, SpawnMenu_Event, ID_TAB_SELECT + i);
+		y += 20;
 	}
 
 	if(spawnmenu_tab == TB_SAVES) {
@@ -354,17 +355,23 @@ void UI_SpawnMenu(void) {
 
 	y = 38;
 	if(spawnmenu_tab == TB_NPCS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, NULL, 0);
+		y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, NULL, 0);
+		y += 12;
 		y += 12;
 		cvarSet("uis_b1", "5");
 		cvarSet("uis_b2", "100");
 		cvarSet("uis_b3", "0");
 		cvarSet("uis_b4", "0");
-		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 100, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 100, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 100, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0); y += 12;
-		UI_CField(&spawnmenu.e[35], 640 + uis.wideoffset - 100, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0); y += 12;
+		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 100, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0);
+		y += 12;
+		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 100, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0);
+		y += 12;
+		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 100, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0);
+		y += 12;
+		UI_CField(&spawnmenu.e[35], 640 + uis.wideoffset - 100, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0);
+		y += 12;
 		y += 20;
 	}
 	if(spawnmenu_tab == TB_SAVES) {
@@ -372,26 +379,32 @@ void UI_SpawnMenu(void) {
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, NULL, 0); y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, NULL, 0); y += 12;
+		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, NULL, 0);
+		y += 12;
+		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, NULL, 0);
+		y += 12;
 		y += 20;
 	}
-	
+
 	for(i = 0; i < SPAWNDATA_MAX; i++) {
-	    if(cvarInt(va("api.spawndata.type[%i]", i)) == 1) {
-	        UI_CField(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0); y += 12;
-	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 2) {
-	        UI_CSpinControl(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), va("api.spawndata.value[%i]", i), NULL, 0); y += 12;
-	    } else if(cvarInt(va("api.spawndata.type[%i]", i)) == 3) {
-	        UI_CSlider(&spawnmenu.e[40+i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0); y += 12;
-	    }
+		if(cvarInt(va("api.spawndata.type[%i]", i)) == 1) {
+			UI_CField(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0);
+			y += 12;
+		} else if(cvarInt(va("api.spawndata.type[%i]", i)) == 2) {
+			UI_CSpinControl(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), va("api.spawndata.value[%i]", i), NULL, 0);
+			y += 12;
+		} else if(cvarInt(va("api.spawndata.type[%i]", i)) == 3) {
+			UI_CSlider(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0);
+			y += 12;
+		}
 	}
-	
+
 	UI_CreateUI(&spawnmenu.menu, spawnmenu.e);
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
-		UI_SetHitbox(&spawnmenu.e[ID_TAB_SELECT + i], 15 - uis.wideoffset, y, 125, 16); y += 20;
+		UI_SetHitbox(&spawnmenu.e[ID_TAB_SELECT + i], 15 - uis.wideoffset, y, 125, 16);
+		y += 20;
 	}
 	UI_SetHitbox(&spawnmenu.e[1], 640 + uis.wideoffset - 145, 375, 100, 24);
 	UI_SetHitbox(&spawnmenu.e[2], 640 + uis.wideoffset - 145, 415, 100, 24);

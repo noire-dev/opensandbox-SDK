@@ -11,214 +11,214 @@
 #include "../client/keycodes.h"
 #include "../game/bg_public.h"
 
-#define LOW_MEMORY			(5 * 1024 * 1024)
+#define LOW_MEMORY (5 * 1024 * 1024)
 
-#define	OSUI_STANDARD_Y 	145
-#define	OSUI_SPACING_Y 		18
-#define	OSUI_BIGSPACING_Y 	36
+#define OSUI_STANDARD_Y 145
+#define OSUI_SPACING_Y 18
+#define OSUI_BIGSPACING_Y 36
 
-#define	OSUI_MAX_ELEMENTS 	101
+#define OSUI_MAX_ELEMENTS 101
 
-#define LST_SIMPLE 		0
-#define LST_ICONS 		1
-#define LST_GRID 		2
+#define LST_SIMPLE 0
+#define LST_ICONS 1
+#define LST_GRID 2
 
-#define RBT_NONE 		0
-#define RBT_NORMAL 		1
-#define RBT_INVERSE 	2
+#define RBT_NONE 0
+#define RBT_NORMAL 1
+#define RBT_INVERSE 2
 
-#define AST_OSLOGO 		1
-#define AST_MOD 		2
-#define AST_LINK 		3
+#define AST_OSLOGO 1
+#define AST_MOD 2
+#define AST_LINK 3
 
-#define SLIDER_RANGE			8
-#define	MAX_EDIT_LINE			256
+#define SLIDER_RANGE 8
+#define MAX_EDIT_LINE 256
 
-#define MAX_MENUDEPTH			8
-#define MAX_MENUITEMS			128
+#define MAX_MENUDEPTH 8
+#define MAX_MENUITEMS 128
 
-#define MTYPE_NULL				0
+#define MTYPE_NULL 0
 
-#define MTYPE_SLIDER			1
-#define MTYPE_ACTION			2
-#define MTYPE_SPINCONTROL		3
-#define MTYPE_FIELD				4
-#define MTYPE_RADIOBUTTON		5
-#define MTYPE_BITMAP			6
-#define MTYPE_SCROLLLIST		7
-#define MTYPE_PTEXT				8
-#define MTYPE_TEXT				9
+#define MTYPE_SLIDER 1
+#define MTYPE_ACTION 2
+#define MTYPE_SPINCONTROL 3
+#define MTYPE_FIELD 4
+#define MTYPE_RADIOBUTTON 5
+#define MTYPE_BITMAP 6
+#define MTYPE_SCROLLLIST 7
+#define MTYPE_PTEXT 8
+#define MTYPE_TEXT 9
 
-#define MTYPE_MAX				10
+#define MTYPE_MAX 10
 
-#define QMF_LEFT_JUSTIFY		(1U << 0)
-#define QMF_CENTER_JUSTIFY		(1U << 1)
-#define QMF_RIGHT_JUSTIFY		(1U << 2)
-#define QMF_HIGHLIGHT			(1U << 3)
-#define QMF_HIGHLIGHT_IF_FOCUS	(1U << 4)	// steady focus
-#define QMF_PULSEIFFOCUS		(1U << 5)	// pulse if focus
-#define QMF_HASMOUSEFOCUS		(1U << 6)
-#define QMF_HIDDEN				(1U << 7)	// skips drawing
-#define QMF_GRAYED				(1U << 8)	// grays and disables
-#define QMF_INACTIVE			(1U << 9)	// disables any input
-#define QMF_NODEFAULTINIT		(1U << 10)	// skip default initialization
-#define QMF_PULSE				(1U << 11)
+#define QMF_LEFT_JUSTIFY (1U << 0)
+#define QMF_CENTER_JUSTIFY (1U << 1)
+#define QMF_RIGHT_JUSTIFY (1U << 2)
+#define QMF_HIGHLIGHT (1U << 3)
+#define QMF_HIGHLIGHT_IF_FOCUS (1U << 4) // steady focus
+#define QMF_PULSEIFFOCUS (1U << 5)       // pulse if focus
+#define QMF_HASMOUSEFOCUS (1U << 6)
+#define QMF_HIDDEN (1U << 7)         // skips drawing
+#define QMF_GRAYED (1U << 8)         // grays and disables
+#define QMF_INACTIVE (1U << 9)       // disables any input
+#define QMF_NODEFAULTINIT (1U << 10) // skip default initialization
+#define QMF_PULSE (1U << 11)
 
-#define QM_GOTFOCUS				1
-#define QM_LOSTFOCUS			2
-#define QM_ACTIVATED			3
+#define QM_GOTFOCUS 1
+#define QM_LOSTFOCUS 2
+#define QM_ACTIVATED 3
 
 // control event handler
-typedef void (*callbackFunc)(void* self, int event);
+typedef void (*callbackFunc)(void *self, int event);
 
 typedef struct _tag_menuframework {
-	int			cursor;
-	int 		cursor_prev;
+	int cursor;
+	int cursor_prev;
 
-	int			nitems;
-	void 		*items[MAX_MENUITEMS];
+	int nitems;
+	void *items[MAX_MENUITEMS];
 
-	void 		(*draw)(void);
-	sfxHandle_t (*key) (int key);
+	void (*draw)(void);
+	sfxHandle_t (*key)(int key);
 
-	qboolean	fullscreen;
+	qboolean fullscreen;
 } menuframework_s;
 
 typedef struct {
-	int 			type;
-	int 			style;
-	qhandle_t		shader;
-	qhandle_t		model;
+	int type;
+	int style;
+	qhandle_t shader;
+	qhandle_t model;
 
-	//extended callback
-	void 			(*excallback)( void *self, int event );
-	int				excallbacktype;
-	char*			cmd;
-	char*			var;
-	void 			(*func)( void );
+	// extended callback
+	void (*excallback)(void *self, int event);
+	int excallbacktype;
+	char *cmd;
+	char *var;
+	void (*func)(void);
 
-	const char 		*name;
-	int				id;
-	int				callid;
-	int 			x, y;
-	int 			left;
-	int				top;
-	int				right;
-	int				bottom;
+	const char *name;
+	int id;
+	int callid;
+	int x, y;
+	int left;
+	int top;
+	int right;
+	int bottom;
 	menuframework_s *parent;
-	int 			menuPosition;
-	unsigned 		flags;
+	int menuPosition;
+	unsigned flags;
 
-	int				mode;
-	char*			buffer;
-	int*			value;
+	int mode;
+	char *buffer;
+	int *value;
 
-	void 			(*callback)( void *self, int event );
-	void 			(*statusbar)( void *self );
-	void 			(*ownerdraw)( void *self );
+	void (*callback)(void *self, int event);
+	void (*statusbar)(void *self);
+	void (*ownerdraw)(void *self);
 } menucommon_s;
 
 typedef struct {
-	int		cursor;
-	int		scroll;
-	int		widthInChars;
-	char	buffer[MAX_EDIT_LINE];
-	int		maxchars;
+	int cursor;
+	int scroll;
+	int widthInChars;
+	char buffer[MAX_EDIT_LINE];
+	int maxchars;
 } mfield_t;
 
 typedef struct {
-	menucommon_s	generic;
-	char*			string;
-	int				style;
-	float			size;
-	float*			curColor;
-	float*			color;
-	float*			color2;
+	menucommon_s generic;
+	char *string;
+	int style;
+	float size;
+	float *curColor;
+	float *color;
+	float *color2;
 
-	char*			focuspic;	
-	char*			errorpic;
-	qhandle_t		shader;
-	qhandle_t		focusshader;
-	int				width;
-	int				height;
+	char *focuspic;
+	char *errorpic;
+	qhandle_t shader;
+	qhandle_t focusshader;
+	int width;
+	int height;
 
-	int 			curvalue;
+	int curvalue;
 
-	int				oldvalue;
-	int				numitems;
-	int				top;
-	const char 		**itemnames;
-	int				columns;
-	char 			*file;
-	char 			*extension;
+	int oldvalue;
+	int numitems;
+	int top;
+	const char **itemnames;
+	int columns;
+	char *file;
+	char *extension;
 
-	float 			minvalue;
-	float 			maxvalue;
-	float 			range;
+	float minvalue;
+	float maxvalue;
+	float range;
 
-	mfield_t		field;
+	mfield_t field;
 
-	int				corner;
+	int corner;
 
-	qboolean		drawText;
-	float 			padding_x;
-	float 			padding_y;
+	qboolean drawText;
+	float padding_x;
+	float padding_y;
 } menuelement_s;
 
-extern sfxHandle_t	menu_move_sound;
-extern sfxHandle_t	menu_out_sound;
-extern sfxHandle_t	menu_buzz_sound;
-extern sfxHandle_t	menu_null_sound;
+extern sfxHandle_t menu_move_sound;
+extern sfxHandle_t menu_out_sound;
+extern sfxHandle_t menu_buzz_sound;
+extern sfxHandle_t menu_null_sound;
 
 typedef struct {
-	int			oldFrame;
-	int			oldFrameTime;		// time when ->oldFrame was exactly on
+	int oldFrame;
+	int oldFrameTime; // time when ->oldFrame was exactly on
 
-	int			frame;
-	int			frameTime;			// time when ->frame will be exactly on
+	int frame;
+	int frameTime; // time when ->frame will be exactly on
 
-	float		backlerp;
+	float backlerp;
 
-	float		yawAngle;
-	qboolean	yawing;
-	float		pitchAngle;
-	qboolean	pitching;
+	float yawAngle;
+	qboolean yawing;
+	float pitchAngle;
+	qboolean pitching;
 
-	int			animationNumber;	// may include ANIM_TOGGLEBIT
-	animation_t	*animation;
-	int			animationTime;		// time when the first frame of the animation will be exact
+	int animationNumber; // may include ANIM_TOGGLEBIT
+	animation_t *animation;
+	int animationTime; // time when the first frame of the animation will be exact
 } lerpFrame_t;
 
 typedef struct {
 	// model info
-	qhandle_t		legsModel;
-	qhandle_t		legsSkin;
-	qhandle_t		legsShader;
-	lerpFrame_t		legs;
+	qhandle_t legsModel;
+	qhandle_t legsSkin;
+	qhandle_t legsShader;
+	lerpFrame_t legs;
 
-	qhandle_t		torsoModel;
-	qhandle_t		torsoSkin;
-	qhandle_t		torsoShader;
-	lerpFrame_t		torso;
+	qhandle_t torsoModel;
+	qhandle_t torsoSkin;
+	qhandle_t torsoShader;
+	lerpFrame_t torso;
 
-	qhandle_t		headModel;
-	qhandle_t		headSkin;
-	qhandle_t		headShader;
+	qhandle_t headModel;
+	qhandle_t headSkin;
+	qhandle_t headShader;
 
-	animation_t		animations[MAX_ANIMATIONS];
+	animation_t animations[MAX_ANIMATIONS];
 
 	// currently in use drawing parms
-	vec3_t			viewAngles;
-	vec3_t			moveAngles;
-	int				legsAnim;
-	int				torsoAnim;
+	vec3_t viewAngles;
+	vec3_t moveAngles;
+	int legsAnim;
+	int torsoAnim;
 
-	qboolean		fixedlegs;		// true if legs yaw is always the same as torso yaw
-	qboolean		fixedtorso;		// true if torso never changes yaw
+	qboolean fixedlegs;  // true if legs yaw is always the same as torso yaw
+	qboolean fixedtorso; // true if torso never changes yaw
 
-	qboolean		newModel;
+	qboolean newModel;
 
-	int 			oldFrame;
+	int oldFrame;
 } playerInfo_t;
 
 #define MODELNAME_BUFFER MAX_QPATH
@@ -231,7 +231,7 @@ typedef struct {
 	char team_modelskin[MODELNAME_BUFFER];
 	char team_headskin[MODELNAME_BUFFER];
 	char team_legsskin[MODELNAME_BUFFER];
-	
+
 	menuelement_s bitmap;
 
 	int anim;
@@ -251,36 +251,33 @@ typedef struct {
 	qboolean bForceUpdate;
 } modelAnim_t;
 
-enum {
-	DRAWMODEL_DM,
-	DRAWMODEL_TEAM
-};
+enum { DRAWMODEL_DM, DRAWMODEL_TEAM };
 
 extern qboolean drawTeamModel;
 
 typedef struct {
-	int					frametime;
-	int					realtime;
-	int					cursorx;
-	int					cursory;
-	int					menusp;
-	menuframework_s*	activemenu;
-	menuframework_s*	stack[MAX_MENUDEPTH];
-	qboolean			debug;
-	qhandle_t			whiteShader;
-	qhandle_t			menuWallpapers;
-	qhandle_t			cursor;
-	qhandle_t			corner;
-	qhandle_t			rb_on;
-	qhandle_t			rb_off;
-	float				scale;
-	float				bias;
-	float				wideoffset;
-	qboolean			firstdraw;
-	qboolean			onmap;
+	int frametime;
+	int realtime;
+	int cursorx;
+	int cursory;
+	int menusp;
+	menuframework_s *activemenu;
+	menuframework_s *stack[MAX_MENUDEPTH];
+	qboolean debug;
+	qhandle_t whiteShader;
+	qhandle_t menuWallpapers;
+	qhandle_t cursor;
+	qhandle_t corner;
+	qhandle_t rb_on;
+	qhandle_t rb_off;
+	float scale;
+	float bias;
+	float wideoffset;
+	qboolean firstdraw;
+	qboolean onmap;
 } uiStatic_t;
 
-// ui_atoms.c  
+// ui_atoms.c
 void QDECL Com_Error(int level, const char *error, ...);
 void QDECL Com_Printf(const char *msg, ...);
 void UI_UpdateState(void);
@@ -307,15 +304,15 @@ void UI_DrawConnectScreen(qboolean overlay);
 void UI_Controls(void);
 
 // ui_gameinfo.c
-void* UI_Alloc(int size);
+void *UI_Alloc(int size);
 void UI_InitMemory(void);
 void UI_LoadArenas(void);
 void UI_LoadBots(void);
-char* UI_GetBotInfoByName(const char* name);
+char *UI_GetBotInfoByName(const char *name);
 int UI_GetNumBots(void);
-void UI_FillListOfMaps(menuelement_s* e, char* gametype, char* names, int namesSize, char** configlist);
-void UI_FillListOfBots(menuelement_s* e, char* names, int namesSize, char** configlist);
-int UI_CountOfMaps(char* gametype);
+void UI_FillListOfMaps(menuelement_s *e, char *gametype, char *names, int namesSize, char **configlist);
+void UI_FillListOfBots(menuelement_s *e, char *names, int namesSize, char **configlist);
+int UI_CountOfMaps(char *gametype);
 
 // ui_main.c
 void UI_CreateCvars(void);
@@ -374,38 +371,38 @@ void UI_Settings(void);
 void UI_SpawnMenu(void);
 
 extern uiStatic_t uis;
-extern const char *gametype_items[GT_MAX_GAME_TYPE+1];
+extern const char *gametype_items[GT_MAX_GAME_TYPE + 1];
 
 #define CON_MAXLINES 16384
 #define CON_MAXLINE 256
 
 typedef struct console_s {
-    char lines[CON_MAXLINES][CON_MAXLINE];
-    int linescount;
+	char lines[CON_MAXLINES][CON_MAXLINE];
+	int linescount;
 } console_t;
 
 extern console_t console;
 extern int consoleLines;
 
-//syscalls
-void			trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
-void			trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
-void			trap_Key_SetBinding( int keynum, const char *binding );
-qboolean		trap_Key_IsDown( int keynum );
-qboolean		trap_Key_GetOverstrikeMode( void );
-void			trap_Key_SetOverstrikeMode( qboolean state );
-void			trap_Key_ClearStates( void );
-void			trap_Key_SetCatcher( int catcher );
-void			trap_GetClipboardData( char *buf, int bufsize );
-void			trap_GetClientState( uiClientState_t *state );
-int				trap_GetConfigString( int index, char* buff, int buffsize );
-int				trap_LAN_GetPingQueueCount( void );
-void			trap_LAN_ClearPing( int n );
-void			trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
-void			trap_LAN_GetPingInfo( int n, char *buf, int buflen );
-int				trap_MemoryRemaining( void );
-int				trap_LAN_GetServerCount( int source );
-void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
-void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
-void			consoleSync(console_t* vmconsole, int currentLines);
+// syscalls
+void trap_Key_KeynumToStringBuf(int keynum, char *buf, int buflen);
+void trap_Key_GetBindingBuf(int keynum, char *buf, int buflen);
+void trap_Key_SetBinding(int keynum, const char *binding);
+qboolean trap_Key_IsDown(int keynum);
+qboolean trap_Key_GetOverstrikeMode(void);
+void trap_Key_SetOverstrikeMode(qboolean state);
+void trap_Key_ClearStates(void);
+void trap_Key_SetCatcher(int catcher);
+void trap_GetClipboardData(char *buf, int bufsize);
+void trap_GetClientState(uiClientState_t *state);
+int trap_GetConfigString(int index, char *buff, int buffsize);
+int trap_LAN_GetPingQueueCount(void);
+void trap_LAN_ClearPing(int n);
+void trap_LAN_GetPing(int n, char *buf, int buflen, int *pingtime);
+void trap_LAN_GetPingInfo(int n, char *buf, int buflen);
+int trap_MemoryRemaining(void);
+int trap_LAN_GetServerCount(int source);
+void trap_LAN_GetServerAddressString(int source, int n, char *buf, int buflen);
+void trap_LAN_GetServerAddressString(int source, int n, char *buf, int buflen);
+void consoleSync(console_t *vmconsole, int currentLines);
 #endif

@@ -135,7 +135,7 @@ int CG_PointContents(const vec3_t point, int passEntityNum) {
 			continue;
 		}
 
-		if(ent->solid != SOLID_BMODEL) {  // special value for bmodel
+		if(ent->solid != SOLID_BMODEL) { // special value for bmodel
 			continue;
 		}
 
@@ -225,7 +225,7 @@ static void CG_TouchItem(centity_t *cent) {
 	}
 
 	if(!BG_CanItemBeGrabbed(cgs.gametype, &cent->currentState, &cg.predictedPlayerState)) {
-		return;  // can't hold it
+		return; // can't hold it
 	}
 
 	item = &gameInfoItems[cent->currentState.modelindex];
@@ -358,7 +358,7 @@ void CG_PredictPlayerState(void) {
 	}
 
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
-		cg_pmove.tracemask &= ~CONTENTS_BODY;  // spectators can fly through bodies
+		cg_pmove.tracemask &= ~CONTENTS_BODY; // spectators can fly through bodies
 	}
 
 	// save the state before the pmove so we can detect transitions
@@ -371,7 +371,7 @@ void CG_PredictPlayerState(void) {
 	// the last good position we had
 	cmdNum = current - CMD_BACKUP + 1;
 	trap_GetUserCmd(cmdNum, &oldestCmd);
-	if(oldestCmd.serverTime > cg.snap->ps.commandTime && oldestCmd.serverTime < cg.time) return;  // special check for map_restart
+	if(oldestCmd.serverTime > cg.snap->ps.commandTime && oldestCmd.serverTime < cg.time) return; // special check for map_restart
 
 	// get the latest command so we can know which commands are from previous map_restarts
 	trap_GetUserCmd(current, &latestCmd);

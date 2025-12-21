@@ -5,8 +5,8 @@
 #include "../qcommon/js_local.h"
 
 localEntity_t cg_localEntities[MAX_LOCAL_ENTITIES];
-localEntity_t cg_activeLocalEntities;  // double linked list
-localEntity_t *cg_freeLocalEntities;   // single linked list
+localEntity_t cg_activeLocalEntities; // double linked list
+localEntity_t *cg_freeLocalEntities;  // single linked list
 
 /*
 ===================
@@ -81,7 +81,11 @@ static void CG_PuffTrail(localEntity_t *le) {
 	if(le->leTrailType == LETT_NONE) return;
 
 	if(le->leTrailType == LETT_BLOOD) {
-		step = 150; r = 1; g = 1; b = 1; a = 1;
+		step = 150;
+		r = 1;
+		g = 1;
+		b = 1;
+		a = 1;
 		mediaShader = cgs.media.bloodTrailShader;
 		verticalMovement = 40;
 	}
@@ -453,7 +457,7 @@ static void CG_AddSpriteExplosion(localEntity_t *le) {
 
 	c = (le->endTime - cg.time) / (float)(le->endTime - le->startTime);
 	if(c > 1) {
-		c = 1.0;  // can happen during connection problems
+		c = 1.0; // can happen during connection problems
 	}
 
 	re.shaderRGBA[0] = 0xff;
@@ -639,19 +643,19 @@ void CG_AddLocalEntities(void) {
 			continue;
 		}
 		switch(le->leType) {
-			default: CG_Error("Bad leType: %i", le->leType); break;
-			case LE_SPRITE_EXPLOSION: CG_AddSpriteExplosion(le); break;
-			case LE_EXPLOSION: CG_AddExplosion(le); break;
-			case LE_FRAGMENT: CG_AddFragment(le); break;
-			case LE_FRAGMENT2: CG_AddFragment2(le); break;
-			case LE_MOVE_SCALE_FADE: CG_AddMoveScaleFade(le); break;
-			case LE_FADE_RGB: CG_AddFadeRGB(le); break;
-			case LE_FALL_SCALE_FADE: CG_AddFallScaleFade(le); break;
-			case LE_SCALE_FADE: CG_AddScaleFade(le); break;
-			case LE_KAMIKAZE: CG_AddKamikaze(le); break;
-			case LE_INVULIMPACT: CG_AddInvulnerabilityImpact(le); break;
-			case LE_INVULJUICED: CG_AddInvulnerabilityJuiced(le); break;
-			case LE_SHOWREFENTITY: CG_AddRefEntity(le); break;
+		default: CG_Error("Bad leType: %i", le->leType); break;
+		case LE_SPRITE_EXPLOSION: CG_AddSpriteExplosion(le); break;
+		case LE_EXPLOSION: CG_AddExplosion(le); break;
+		case LE_FRAGMENT: CG_AddFragment(le); break;
+		case LE_FRAGMENT2: CG_AddFragment2(le); break;
+		case LE_MOVE_SCALE_FADE: CG_AddMoveScaleFade(le); break;
+		case LE_FADE_RGB: CG_AddFadeRGB(le); break;
+		case LE_FALL_SCALE_FADE: CG_AddFallScaleFade(le); break;
+		case LE_SCALE_FADE: CG_AddScaleFade(le); break;
+		case LE_KAMIKAZE: CG_AddKamikaze(le); break;
+		case LE_INVULIMPACT: CG_AddInvulnerabilityImpact(le); break;
+		case LE_INVULJUICED: CG_AddInvulnerabilityJuiced(le); break;
+		case LE_SHOWREFENTITY: CG_AddRefEntity(le); break;
 		}
 	}
 }

@@ -322,7 +322,7 @@ static void CG_Item(centity_t *cent) {
 		CG_Error("Bad item index %i on entity", es->modelindex);
 		return;
 	}
-	
+
 	CG_RegisterItemVisuals(es->modelindex);
 
 	// if set to invisible, skip
@@ -351,7 +351,7 @@ static void CG_Item(centity_t *cent) {
 		cent->lerpOrigin[1] -= wi->weaponMidpoint[0] * ent.axis[0][1] + wi->weaponMidpoint[1] * ent.axis[1][1] + wi->weaponMidpoint[2] * ent.axis[2][1];
 		cent->lerpOrigin[2] -= wi->weaponMidpoint[0] * ent.axis[0][2] + wi->weaponMidpoint[1] * ent.axis[1][2] + wi->weaponMidpoint[2] * ent.axis[2][2];
 
-		cent->lerpOrigin[2] += 8;  // an extra height boost
+		cent->lerpOrigin[2] += 8; // an extra height boost
 	}
 
 	ent.hModel = cg_items[es->modelindex].model;
@@ -484,8 +484,7 @@ static void CG_Missile(centity_t *cent) {
 	ent.renderfx = weapon->missileRenderfx;
 
 	if(cent->currentState.weapon == WP_PROX_LAUNCHER) {
-		if(s1->generic1 == TEAM_BLUE)
-			ent.hModel = cgs.media.blueProxMine;
+		if(s1->generic1 == TEAM_BLUE) ent.hModel = cgs.media.blueProxMine;
 	}
 
 	// convert direction of travel into axis
@@ -539,23 +538,23 @@ static void CG_Grapple(centity_t *cent) {
 	trap_R_AddRefEntityToScene(&ent);
 }
 
-static void CG_Mover( centity_t *cent ) {
-	refEntity_t			ent;
-	entityState_t		*s1;
+static void CG_Mover(centity_t *cent) {
+	refEntity_t ent;
+	entityState_t *s1;
 
 	s1 = &cent->currentState;
 
 	// create the render entity
-	memset (&ent, 0, sizeof(ent));
-	VectorCopy( cent->lerpOrigin, ent.origin);
-	VectorCopy( cent->lerpOrigin, ent.oldorigin);
-	AnglesToAxis( cent->lerpAngles, ent.axis );
+	memset(&ent, 0, sizeof(ent));
+	VectorCopy(cent->lerpOrigin, ent.origin);
+	VectorCopy(cent->lerpOrigin, ent.oldorigin);
+	AnglesToAxis(cent->lerpAngles, ent.axis);
 
 	// flicker between two skins (FIXME?)
-	ent.skinNum = ( cg.time >> 6 ) & 1;
+	ent.skinNum = (cg.time >> 6) & 1;
 
 	// get the model, either as a bmodel or a modelindex
-	if ( s1->solid == SOLID_BMODEL ) {
+	if(s1->solid == SOLID_BMODEL) {
 		ent.hModel = cgs.inlineDrawModel[s1->modelindex];
 	} else {
 		ent.hModel = cgs.gameModels[s1->modelindex];
@@ -565,7 +564,7 @@ static void CG_Mover( centity_t *cent ) {
 	trap_R_AddRefEntityToScene(&ent);
 
 	// add the secondary model
-	if ( s1->modelindex2 ) {
+	if(s1->modelindex2) {
 		ent.skinNum = 0;
 		ent.hModel = cgs.gameModels[s1->modelindex2];
 		trap_R_AddRefEntityToScene(&ent);
@@ -592,8 +591,8 @@ static void CG_Portal(centity_t *cent) {
 	CrossProduct(ent.axis[0], ent.axis[1], ent.axis[2]);
 	ent.reType = RT_PORTALSURFACE;
 	ent.oldframe = s1->powerups;
-	ent.frame = s1->frame;                      // rotation speed
-	ent.skinNum = s1->clientNum / 256.0 * 360;  // roll offset
+	ent.frame = s1->frame;                     // rotation speed
+	ent.skinNum = s1->clientNum / 256.0 * 360; // roll offset
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -869,19 +868,19 @@ static void CG_AddCEntity(centity_t *cent) {
 	CG_EntityEffects(cent);
 
 	switch(cent->currentState.eType) {
-		default: CG_Error("Bad entity type: %i\n", cent->currentState.eType); break;
-		case ET_INVISIBLE:
-		case ET_PUSH_TRIGGER:
-		case ET_TELEPORT_TRIGGER: break;
-		case ET_GENERAL: CG_General(cent); break;
-		case ET_PLAYER: CG_Player(cent); break;
-		case ET_ITEM: CG_Item(cent); break;
-		case ET_MISSILE: CG_Missile(cent); break;
-		case ET_MOVER: CG_Mover(cent); break;
-		case ET_PORTAL: CG_Portal(cent); break;
-		case ET_SPEAKER: CG_Speaker(cent); break;
-		case ET_GRAPPLE: CG_Grapple(cent); break;
-		case ET_TEAM: CG_TeamBase(cent); break;
+	default: CG_Error("Bad entity type: %i\n", cent->currentState.eType); break;
+	case ET_INVISIBLE:
+	case ET_PUSH_TRIGGER:
+	case ET_TELEPORT_TRIGGER: break;
+	case ET_GENERAL: CG_General(cent); break;
+	case ET_PLAYER: CG_Player(cent); break;
+	case ET_ITEM: CG_Item(cent); break;
+	case ET_MISSILE: CG_Missile(cent); break;
+	case ET_MOVER: CG_Mover(cent); break;
+	case ET_PORTAL: CG_Portal(cent); break;
+	case ET_SPEAKER: CG_Speaker(cent); break;
+	case ET_GRAPPLE: CG_Grapple(cent); break;
+	case ET_TEAM: CG_TeamBase(cent); break;
 	}
 }
 
@@ -901,7 +900,7 @@ void CG_AddPacketEntities(void) {
 			cg.frameInterpolation = (float)(cg.time - cg.snap->serverTime) / delta;
 		}
 	} else {
-		cg.frameInterpolation = 0;  // actually, it should never be used, because no entities should be marked as interpolating
+		cg.frameInterpolation = 0; // actually, it should never be used, because no entities should be marked as interpolating
 	}
 
 	cg.autoAngles[0] = 0;

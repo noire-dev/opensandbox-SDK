@@ -5,20 +5,20 @@
 #ifndef __Q_CVARS_H
 #define __Q_CVARS_H
 
-#define	MAX_CVAR_VALUE_STRING	256
+#define MAX_CVAR_VALUE_STRING 256
 
-typedef int	cvarHandle_t;
+typedef int cvarHandle_t;
 
 typedef struct {
-	float		    value;
-	int			    integer;
-	char		    string[MAX_CVAR_VALUE_STRING];
+	float value;
+	int integer;
+	char string[MAX_CVAR_VALUE_STRING];
 } cvar_t;
 
 void ST_RegisterCvars(void);
 void ST_UpdateCvars(void);
 int cvarInt(const char *name);
 float cvarFloat(const char *name);
-char* cvarString(const char *name);
+char *cvarString(const char *name);
 
 #endif

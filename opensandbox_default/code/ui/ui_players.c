@@ -69,7 +69,7 @@ static void UI_RunLerpFrame(playerInfo_t *ci, lerpFrame_t *lf, int newAnimation)
 		// get the next frame based on the animation
 		anim = lf->animation;
 		if(dp_realtime < lf->animationTime) {
-			lf->frameTime = lf->animationTime;  // initial lerp
+			lf->frameTime = lf->animationTime; // initial lerp
 		} else {
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
@@ -232,9 +232,9 @@ static void UI_PlayerAngles(modelAnim_t *m, vec3_t legs[3], vec3_t torso[3], vec
 	// allow yaw to drift a bit
 	if((pi->legsAnim & ~ANIM_TOGGLEBIT) != LEGS_IDLE || (pi->torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND) {
 		// if not standing still, always point all in the same direction
-		pi->torso.yawing = qtrue;    // always center
-		pi->torso.pitching = qtrue;  // always center
-		pi->legs.yawing = qtrue;     // always center
+		pi->torso.yawing = qtrue;   // always center
+		pi->torso.pitching = qtrue; // always center
+		pi->legs.yawing = qtrue;    // always center
 	}
 
 	// adjust legs for movement dir
@@ -413,9 +413,9 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 	//
 	// add an accent light
 	//
-	origin[0] -= 100;  // + = behind, - = in front
-	origin[1] += 100;  // + = left, - = right
-	origin[2] += 100;  // + = above, - = below
+	origin[0] -= 100; // + = behind, - = in front
+	origin[1] += 100; // + = left, - = right
+	origin[2] += 100; // + = above, - = below
 	trap_R_AddLightToScene(origin, 500, 1.0, 1.0, 1.0);
 
 	origin[0] -= 100;
@@ -502,13 +502,13 @@ static qboolean UI_ParseAnimationFile(const char *filename, playerInfo_t *pi) {
 
 	// parse the text
 	text_p = text;
-	skip = 0;  // quite the compiler warning
+	skip = 0; // quite the compiler warning
 	pi->fixedtorso = qfalse;
 	pi->fixedlegs = qfalse;
 
 	// read optional parameters
 	while(1) {
-		prev = text_p;  // so we can unget
+		prev = text_p; // so we can unget
 		token = COM_Parse(&text_p);
 		if(!token) {
 			break;
@@ -543,7 +543,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, playerInfo_t *pi) {
 
 		// if it is a number, start parsing animations
 		if(token[0] >= '0' && token[0] <= '9') {
-			text_p = prev;  // unget the token
+			text_p = prev; // unget the token
 			break;
 		}
 

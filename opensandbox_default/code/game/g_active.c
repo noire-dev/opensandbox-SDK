@@ -69,7 +69,7 @@ static void P_WorldEffects(gentity_t *ent) {
 	int waterlevel;
 
 	if(ent->client->noclip) {
-		ent->client->airOutTime = level.time + 12000;  // don't need air
+		ent->client->airOutTime = level.time + 12000; // don't need air
 		return;
 	}
 
@@ -160,7 +160,7 @@ static void ClientImpacts(gentity_t *ent, pmove_t *pm) {
 			}
 		}
 		if(j != i) {
-			continue;  // duplicated
+			continue; // duplicated
 		}
 		other = &g_entities[pm->touchents[i]];
 
@@ -267,13 +267,13 @@ static void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
 
 	if(client->sess.spectatorState != SPECTATOR_FOLLOW) {
 		client->ps.pm_type = PM_SPECTATOR;
-		client->ps.speed = 900;  // faster than normal
+		client->ps.speed = 900; // faster than normal
 
 		// set up for pmove
 		memset(&pm, 0, sizeof(pm));
 		pm.ps = &client->ps;
 		pm.cmd = *ucmd;
-		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;  // spectators can fly through bodies
+		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY; // spectators can fly through bodies
 		pm.trace = trap_Trace;
 		pm.pointcontents = trap_PointContents;
 
@@ -349,8 +349,8 @@ static void ClientTimerActions(gentity_t *ent, int msec) {
 			}
 		}
 
-		G_SendGameCvars(ent);    // send game setting to client for sync
-		G_SendSwepWeapons(ent);  // send sweps list to client for sync
+		G_SendGameCvars(ent);   // send game setting to client for sync
+		G_SendSwepWeapons(ent); // send sweps list to client for sync
 	}
 }
 
@@ -402,49 +402,49 @@ static void ClientEvents(gentity_t *ent, int oldEventSequence) {
 		event = client->ps.events[i & (MAX_PS_EVENTS - 1)];
 
 		switch(event) {
-			case EV_FALL_MEDIUM:
-			case EV_FALL_FAR:
-				if(ent->s.eType != ET_PLAYER) {
-					break;  // not in the player model
-				}
-				if(event == EV_FALL_FAR) {
-					damage = 10;
-				} else {
-					damage = 5;
-				}
-				VectorSet(dir, 0, 0, 1);
-				ent->pain_debounce_time = level.time + 200;  // no normal pain sound
-				G_Damage(ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
-				break;
+		case EV_FALL_MEDIUM:
+		case EV_FALL_FAR:
+			if(ent->s.eType != ET_PLAYER) {
+				break; // not in the player model
+			}
+			if(event == EV_FALL_FAR) {
+				damage = 10;
+			} else {
+				damage = 5;
+			}
+			VectorSet(dir, 0, 0, 1);
+			ent->pain_debounce_time = level.time + 200; // no normal pain sound
+			G_Damage(ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
+			break;
 
-			case EV_FIRE_WEAPON: FireWeapon(ent); break;
+		case EV_FIRE_WEAPON: FireWeapon(ent); break;
 
-			case EV_USE_ITEM1:  // teleporter
-				SelectSpawnPoint(ent->client->ps.origin, origin, angles);
-				TeleportPlayer(ent, origin, angles, qfalse);
-				break;
+		case EV_USE_ITEM1: // teleporter
+			SelectSpawnPoint(ent->client->ps.origin, origin, angles);
+			TeleportPlayer(ent, origin, angles, qfalse);
+			break;
 
-			case EV_USE_ITEM2:  // medkit
-				ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
-				break;
+		case EV_USE_ITEM2: // medkit
+			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
+			break;
 
-			case EV_USE_ITEM3:  // kamikaze
-				ent->client->invulnerabilityTime = 0;
-				G_StartKamikaze(ent);
-				break;
+		case EV_USE_ITEM3: // kamikaze
+			ent->client->invulnerabilityTime = 0;
+			G_StartKamikaze(ent);
+			break;
 
-			case EV_USE_ITEM4:  // portal
-				if(ent->client->portalID) {
-					DropPortalSource(ent);
-				} else {
-					DropPortalDestination(ent);
-				}
-				break;
-			case EV_USE_ITEM5:  // invulnerability
-				ent->client->invulnerabilityTime = level.time + 10000;
-				break;
+		case EV_USE_ITEM4: // portal
+			if(ent->client->portalID) {
+				DropPortalSource(ent);
+			} else {
+				DropPortalDestination(ent);
+			}
+			break;
+		case EV_USE_ITEM5: // invulnerability
+			ent->client->invulnerabilityTime = level.time + 10000;
+			break;
 
-			default: break;
+		default: break;
 		}
 	}
 }
@@ -502,7 +502,7 @@ static void SendPendingPredictableEvents(playerState_t *ps) {
 		t->s.eFlags |= EF_PLAYER_EVENT;
 		t->s.otherEntityNum = ps->clientNum;
 		// send to everyone except the client who generated the event
-		t->r.singleClient = ps->clientNum+1;
+		t->r.singleClient = ps->clientNum + 1;
 		// set back external event
 		ps->externalEvent = extEvent;
 	}
@@ -624,7 +624,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	client->ps.gravity = cvarFloat("g_gravity") * gameInfoNPCTypes[ent->npcType].gravity;
 
-	if(client->vehicleNum) {  // VEHICLE-SYSTEM: setup physics for all
+	if(client->vehicleNum) { // VEHICLE-SYSTEM: setup physics for all
 		if(G_FindEntityForEntityNum(client->vehicleNum)) {
 			vehicle = G_FindEntityForEntityNum(client->vehicleNum);
 			client->ps.stats[STAT_VEHICLE] = vehicle->objectType;
@@ -644,8 +644,7 @@ static void ClientThink_real(gentity_t *ent) {
 	if(client->ps.powerups[PW_HASTE]) client->ps.speed *= 1.3;
 
 	// Let go of the hook if we aren't firing
-	if(client->ps.weapon == WP_GRAPPLING_HOOK && client->hook && !(ucmd->buttons & BUTTON_ATTACK))
-		Weapon_HookFree(client->hook);
+	if(client->ps.weapon == WP_GRAPPLING_HOOK && client->hook && !(ucmd->buttons & BUTTON_ATTACK)) Weapon_HookFree(client->hook);
 
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
@@ -654,8 +653,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0 && client->ps.pm_type != PM_DEAD)
-		pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
+	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0 && client->ps.pm_type != PM_DEAD) pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
 
 	// check for invulnerability expansion before doing the Pmove
 	if(client->ps.powerups[PW_INVULNERABILITY]) {
@@ -705,7 +703,7 @@ static void ClientThink_real(gentity_t *ent) {
 	SendPendingPredictableEvents(&ent->client->ps);
 
 	if(!(ent->client->ps.eFlags & EF_FIRING)) {
-		client->fireHeld = qfalse;  // for grapple
+		client->fireHeld = qfalse; // for grapple
 	}
 
 	// use the snapped origin for linking so it matches client predicted versions
@@ -737,8 +735,7 @@ static void ClientThink_real(gentity_t *ent) {
 	ClientImpacts(ent, &pm);
 
 	// save results of triggers and client events
-	if(ent->client->ps.eventSequence != oldEventSequence)
-		ent->eventTime = level.time;
+	if(ent->client->ps.eventSequence != oldEventSequence) ent->eventTime = level.time;
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
@@ -752,8 +749,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for respawning
 	if(client->ps.stats[STAT_HEALTH] <= 0) {
-		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE))
-			ClientRespawn(ent);
+		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE)) ClientRespawn(ent);
 		return;
 	}
 
@@ -915,7 +911,7 @@ void ClientEndFrame(gentity_t *ent) {
 	// apply all the damage taken this frame
 	P_DamageFeedback(ent);
 
-	ent->client->ps.stats[STAT_HEALTH] = ent->health;  // FIXME: get rid of ent->health...
+	ent->client->ps.stats[STAT_HEALTH] = ent->health; // FIXME: get rid of ent->health...
 
 	G_SetClientSound(ent);
 

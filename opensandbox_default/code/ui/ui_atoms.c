@@ -128,10 +128,10 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
 	UI_UpdateState();
 
 	switch(menu) {
-		case UIMENU_NONE: UI_ForceMenuOff(); return;
-		case UIMENU_MAIN: UI_MainMenu(); return;
-		case UIMENU_INGAME: UI_MainMenu(); return;
-		default: Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu); break;
+	case UIMENU_NONE: UI_ForceMenuOff(); return;
+	case UIMENU_MAIN: UI_MainMenu(); return;
+	case UIMENU_INGAME: UI_MainMenu(); return;
+	default: Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu); break;
 	}
 }
 
@@ -179,7 +179,7 @@ void UI_MouseEvent(int dx, int dy) {
 
 		if(m->flags & (QMF_GRAYED | QMF_INACTIVE)) continue;
 
-		if((uis.cursorx < m->left) || (uis.cursorx > m->right) || (uis.cursory < m->top) || (uis.cursory > m->bottom)) continue;  // cursor out of item bounds
+		if((uis.cursorx < m->left) || (uis.cursorx > m->right) || (uis.cursory < m->top) || (uis.cursory > m->bottom)) continue; // cursor out of item bounds
 
 		// set focus to item at cursor
 		if(uis.activemenu->cursor != i) {
@@ -192,7 +192,7 @@ void UI_MouseEvent(int dx, int dy) {
 	}
 
 	if(uis.activemenu->nitems > 0) {
-		((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS;  // out of any region
+		((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS; // out of any region
 	}
 }
 
@@ -280,7 +280,7 @@ void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
 	float t0;
 	float t1;
 
-	if(w < 0) {  // flip about vertical
+	if(w < 0) { // flip about vertical
 		w = -w;
 		s0 = 1;
 		s1 = 0;
@@ -289,7 +289,7 @@ void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
 		s1 = 1;
 	}
 
-	if(h < 0) {  // flip about horizontal
+	if(h < 0) { // flip about horizontal
 		h = -h;
 		t0 = 1;
 		t1 = 0;
@@ -314,7 +314,7 @@ void UI_DrawPictureElement(float x, float y, float w, float h, const char *file)
 
 	hShader = trap_R_RegisterShaderNoMip("menu/element");
 
-	if(w < 0) {  // flip about vertical
+	if(w < 0) { // flip about vertical
 		w = -w;
 		s0 = 1;
 		s1 = 0;
@@ -323,7 +323,7 @@ void UI_DrawPictureElement(float x, float y, float w, float h, const char *file)
 		s1 = 1;
 	}
 
-	if(h < 0) {  // flip about horizontal
+	if(h < 0) { // flip about horizontal
 		h = -h;
 		t0 = 1;
 		t1 = 0;
@@ -398,14 +398,14 @@ void UI_DrawRoundedRect(float x, float y, float width, float height, float radiu
 	radius *= uis.scale;
 
 	trap_R_SetColor(color);
-	trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, uis.corner);                                     // Левый верхний угол
-	trap_R_DrawStretchPic(x + width - radius, y, radius, radius, 0, 0, 1, 1, uis.corner);                    // Правый верхний угол
-	trap_R_DrawStretchPic(x, y + height - radius, radius, radius, 1, 1, 0, 0, uis.corner);                   // Левый нижний угол
-	trap_R_DrawStretchPic(x + width - radius, y + height - radius, radius, radius, 0, 1, 1, 0, uis.corner);  // Правый нижний угол
+	trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, uis.corner);                                    // Левый верхний угол
+	trap_R_DrawStretchPic(x + width - radius, y, radius, radius, 0, 0, 1, 1, uis.corner);                   // Правый верхний угол
+	trap_R_DrawStretchPic(x, y + height - radius, radius, radius, 1, 1, 0, 0, uis.corner);                  // Левый нижний угол
+	trap_R_DrawStretchPic(x + width - radius, y + height - radius, radius, radius, 0, 1, 1, 0, uis.corner); // Правый нижний угол
 
-	trap_R_DrawStretchPic(x, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader);                   // Левая сторона
-	trap_R_DrawStretchPic(x + width - radius, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader);  // Правая сторона
-	trap_R_DrawStretchPic(x + radius, y, width - (radius * 2), height, 0, 0, 0, 0, uis.whiteShader);                    // Верхняя сторона
+	trap_R_DrawStretchPic(x, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader);                  // Левая сторона
+	trap_R_DrawStretchPic(x + width - radius, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader); // Правая сторона
+	trap_R_DrawStretchPic(x + radius, y, width - (radius * 2), height, 0, 0, 0, 0, uis.whiteShader);                   // Верхняя сторона
 	trap_R_SetColor(NULL);
 }
 
@@ -423,7 +423,7 @@ void UI_Refresh(int realtime) {
 	ST_UpdateColors();
 	UI_UpdateState();
 	consoleSync(&console, console.linescount);
-	
+
 	if(uis.activemenu) {
 		if(uis.activemenu->fullscreen) {
 			if(!uis.onmap) {

@@ -4,21 +4,7 @@
 
 #include "../qcommon/js_local.h"
 
-char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
-	"*death1.wav",
-	"*death2.wav",
-	"*death3.wav",
-	"*jump1.wav",
-	"*pain25_1.wav",
-	"*pain50_1.wav",
-	"*pain75_1.wav",
-	"*pain100_1.wav",
-	"*falling1.wav",
-	"*gasp.wav",
-	"*drown.wav",
-	"*fall1.wav",
-	"*taunt.wav"
-};
+char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {"*death1.wav", "*death2.wav", "*death3.wav", "*jump1.wav", "*pain25_1.wav", "*pain50_1.wav", "*pain75_1.wav", "*pain100_1.wav", "*falling1.wav", "*gasp.wav", "*drown.wav", "*fall1.wav", "*taunt.wav"};
 
 vec3_t headpos;
 vec3_t headang;
@@ -82,7 +68,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
 	// parse the text
 	text_p = text;
-	skip = 0;  // quite the compiler warning
+	skip = 0; // quite the compiler warning
 
 	ci->footsteps = FOOTSTEP_NORMAL;
 	VectorClear(ci->headOffset);
@@ -92,7 +78,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
 	// read optional parameters
 	while(1) {
-		prev = text_p;  // so we can unget
+		prev = text_p; // so we can unget
 		token = COM_Parse(&text_p);
 		if(!token) break;
 		if(!Q_stricmp(token, "footsteps")) {
@@ -142,7 +128,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
 		// if it is a number, start parsing animations
 		if(token[0] >= '0' && token[0] <= '9') {
-			text_p = prev;  // unget the token
+			text_p = prev; // unget the token
 			break;
 		}
 		Com_Printf("unknown token '%s' is %s\n", token, filename);
@@ -369,12 +355,12 @@ static qboolean CG_ScanForExistingClientInfo(clientInfo_t *ci) {
 		match = &cgs.clientinfo[i];
 		if(!match->infoValid) continue;
 		if(!Q_stricmp(ci->modelName, match->modelName) && !Q_stricmp(ci->skinName, match->skinName) && !Q_stricmp(ci->headModelName, match->headModelName) && !Q_stricmp(ci->headSkinName, match->headSkinName) && (cgs.gametype < GT_TEAM || ci->team == match->team)) {
-			CG_CopyClientInfoModel(match, ci);  // this clientinfo is identical, so use it's handles
+			CG_CopyClientInfoModel(match, ci); // this clientinfo is identical, so use it's handles
 			return qtrue;
 		}
 	}
 
-	return qfalse;  // nothing matches, so defer the load
+	return qfalse; // nothing matches, so defer the load
 }
 
 void CG_NewClientInfo(int clientNum) {
@@ -389,7 +375,7 @@ void CG_NewClientInfo(int clientNum) {
 	configstring = CG_ConfigString(clientNum + CS_PLAYERS);
 	if(!configstring[0]) {
 		memset(ci, 0, sizeof(*ci));
-		return;  // player just left
+		return; // player just left
 	}
 
 	// build into a temp buffer so the defer checks can use
@@ -559,16 +545,16 @@ static void CG_RunLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation,
 		// get the next frame based on the animation
 		anim = lf->animation;
 
-		if(!anim->frameLerp) return;  // shouldn't happen
+		if(!anim->frameLerp) return; // shouldn't happen
 
 		if(cg.time < lf->animationTime) {
-			lf->frameTime = lf->animationTime;  // initial lerp
+			lf->frameTime = lf->animationTime; // initial lerp
 		} else {
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
 
 		f = (lf->frameTime - lf->animationTime) / anim->frameLerp;
-		f *= speedScale;  // adjust for haste, etc
+		f *= speedScale; // adjust for haste, etc
 
 		numFrames = anim->numFrames;
 		if(anim->flipflop) numFrames *= 2;
@@ -743,20 +729,20 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t legs[3], vec3_t torso[3], ve
 	VectorClear(torsoAngles);
 
 	camereyes = 0;
-	if(cent->currentState.number == cg.snap->ps.clientNum) camereyes = 1;  // it's me!
+	if(cent->currentState.number == cg.snap->ps.clientNum) camereyes = 1; // it's me!
 
 	// allow yaw to drift a bit
 	if(L_ANIM != LEGS_IDLE && L_ANIM != LEGS_IDLECR
 
 	   || T_ANIM == TORSO_ATTACK || T_ANIM == TORSO_ATTACK2) {
-		cent->pe.torso.yawing = qtrue;    // center
-		cent->pe.torso.pitching = qtrue;  // center
-		cent->pe.legs.yawing = qtrue;     // center
+		cent->pe.torso.yawing = qtrue;   // center
+		cent->pe.torso.pitching = qtrue; // center
+		cent->pe.legs.yawing = qtrue;    // center
 	}
 
 	// adjust legs for movement dir
 	if(cent->currentState.eFlags & EF_DEAD) {
-		dir = 0;  // don't let dead bodies twitch
+		dir = 0; // don't let dead bodies twitch
 	} else {
 		dir = cent->currentState.angles2[YAW];
 		if(dir < 0 || dir > 7) CG_Error("Bad player movement angle");
@@ -1110,8 +1096,8 @@ void CG_Player(centity_t *cent) {
 	// get the player model information
 	renderfx = 0;
 	if(cent->currentState.number == cg.snap->ps.clientNum) {
-		camereyes = 1;                                            // it's me!
-		if(!cg.renderingThirdPerson) renderfx = RF_THIRD_PERSON;  // only draw in mirrors
+		camereyes = 1;                                           // it's me!
+		if(!cg.renderingThirdPerson) renderfx = RF_THIRD_PERSON; // only draw in mirrors
 	}
 
 	memset(&legs, 0, sizeof(legs));
@@ -1127,7 +1113,7 @@ void CG_Player(centity_t *cent) {
 	// add the shadow
 	shadow = CG_PlayerShadow(cent);
 
-	renderfx |= RF_LIGHTING_ORIGIN;  // use the same origin for all
+	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 	if(cgs.gametype == GT_HARVESTER) CG_PlayerTokens(cent, renderfx);
 
 	legs.hModel = ci->legsModel;
@@ -1148,7 +1134,7 @@ void CG_Player(centity_t *cent) {
 	}
 
 	legs.renderfx = renderfx;
-	VectorCopy(legs.origin, legs.oldorigin);  // don't positionally lerp at all
+	VectorCopy(legs.origin, legs.oldorigin); // don't positionally lerp at all
 
 	if(cg.renderingEyesPerson) legs.renderfx &= RF_FIRST_PERSON;
 
@@ -1327,7 +1313,7 @@ void CG_Player(centity_t *cent) {
 		}
 	}
 
-	VectorCopy(cent->pe.eyepos, head.eyepos[0]);  // Copy it to our refdef for the renderer
+	VectorCopy(cent->pe.eyepos, head.eyepos[0]); // Copy it to our refdef for the renderer
 	head.renderfx = renderfx;
 	CG_AddRefEntityWithPowerups(&head, &cent->currentState, ci->team);
 	CG_BreathPuffs(cent, &head);

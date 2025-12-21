@@ -51,21 +51,21 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		lastLoadingText[0] = '\0';
 	}
 	lastConnState = cstate.connState;
-	
-	y = 460-BASEFONT_HEIGHT;
-	for(i = console.linescount; i > console.linescount-LOADING_LINES; i--) {
-	    if(i <= 0) break;
-	    ST_DrawString(15 - uis.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
-	    y -= BASEFONT_HEIGHT;
+
+	y = 460 - BASEFONT_HEIGHT;
+	for(i = console.linescount; i > console.linescount - LOADING_LINES; i--) {
+		if(i <= 0) break;
+		ST_DrawString(15 - uis.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
+		y -= BASEFONT_HEIGHT;
 	}
 
 	switch(cstate.connState) {
-		case CA_CONNECTING: s = va("Awaiting challenge...%i", cstate.connectPacketCount); break;
-		case CA_CHALLENGING: s = va("Awaiting connection...%i", cstate.connectPacketCount); break;
-		case CA_CONNECTED: s = "Awaiting gamestate..."; break;
-		case CA_LOADING: return;
-		case CA_PRIMED: return;
-		default: return;
+	case CA_CONNECTING: s = va("Awaiting challenge...%i", cstate.connectPacketCount); break;
+	case CA_CHALLENGING: s = va("Awaiting connection...%i", cstate.connectPacketCount); break;
+	case CA_CONNECTED: s = "Awaiting gamestate..."; break;
+	case CA_LOADING: return;
+	case CA_PRIMED: return;
+	default: return;
 	}
 
 	UI_DrawHandlePic(0 - (uis.wideoffset + 1), 0, SCREEN_WIDTH + (uis.wideoffset * 2) + 2, SCREEN_HEIGHT * 3, black);

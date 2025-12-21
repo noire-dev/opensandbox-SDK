@@ -102,7 +102,7 @@ static void CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops) {
 		CG_EntityEvent(cent, cent->lerpOrigin);
 	}
 
-	cent = &cg.predictedPlayerEntity;  // cg_entities[ ps->clientNum ];
+	cent = &cg.predictedPlayerEntity; // cg_entities[ ps->clientNum ];
 	// go through the predictable events buffer
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++) {
 		// if we have a new predictable event
@@ -159,7 +159,7 @@ static void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops, qboolean 
 void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
 	// check for changing follow mode
 	if(ps->clientNum != ops->clientNum) {
-		cg.thisFrameTeleport = qtrue;  // make sure we don't get any unwanted transition effects
+		cg.thisFrameTeleport = qtrue; // make sure we don't get any unwanted transition effects
 		*ops = *ps;
 	}
 

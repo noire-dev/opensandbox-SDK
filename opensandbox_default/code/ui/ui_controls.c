@@ -5,8 +5,8 @@
 #include "ui_local.h"
 
 typedef struct {
-	char* command;
-	char* label;
+	char *command;
+	char *label;
 	int id;
 	int bind1;
 	int bind2;
@@ -35,34 +35,10 @@ typedef struct {
 static controls_t controls;
 
 static bind_t g_bindings[] = {
-	{"+scores",					"show scores",			0,	-1, -1},
-	{"+button2",				"use item",				1,	-1, -1},
-	{"+speed", 					"run / walk",			2,	-1,	-1},
-	{"+forward", 				"walk forward",			3,	-1, -1},
-	{"+back", 					"walk back",			4,	-1, -1},
-	{"+moveleft", 				"walk left",			5,	-1, -1},
-	{"+moveright", 				"walk right",			6,	-1, -1},
-	{"+moveup",					"up / jump",			7,	-1, -1},
-	{"+movedown",				"down / crouch",		8,	-1, -1},
-	{"+zoom", 					"zoom view",			9,	-1, -1},
-	{"+attack", 				"attack",				10,	-1, -1},
-	{"weapprev",				"prev weapon",			11,	-1, -1},
-	{"weapnext", 				"next weapon",			12,	-1, -1},
-	{"+button3", 				"gesture / rotate",		13,	-1, -1},
-	{"messagemode", 			"chat",					14,	-1, -1},
-	{"messagemode2", 			"chat - team",			15,	-1, -1},
-	{"messagemode3", 			"chat - target",		16,	-1, -1},
-	{"flashlight", 				"flashlight",			17,	-1, -1},
-	{"ui_spawnmenu", 			"sandbox menu",			18,	-1, -1},
-	{"undo", 					"undone",				19,	-1, -1},
-	{"noclip", 					"toggle noclip",		20,	-1, -1},
-	{"toggle cl_run", 			"toggle run",			21,	-1, -1},
-	{"$uitoolmode$", 		    "switch toolgun mode",	22,	-1, -1},
-	{"exitvehicle", 			"exit vehicle",			23,	-1, -1},
-	{(char*)NULL,				(char*)NULL,			-1,	-1,	-1},
+    {"+scores", "show scores", 0, -1, -1}, {"+button2", "use item", 1, -1, -1}, {"+speed", "run / walk", 2, -1, -1}, {"+forward", "walk forward", 3, -1, -1}, {"+back", "walk back", 4, -1, -1}, {"+moveleft", "walk left", 5, -1, -1}, {"+moveright", "walk right", 6, -1, -1}, {"+moveup", "up / jump", 7, -1, -1}, {"+movedown", "down / crouch", 8, -1, -1}, {"+zoom", "zoom view", 9, -1, -1}, {"+attack", "attack", 10, -1, -1}, {"weapprev", "prev weapon", 11, -1, -1}, {"weapnext", "next weapon", 12, -1, -1}, {"+button3", "gesture / rotate", 13, -1, -1}, {"messagemode", "chat", 14, -1, -1}, {"messagemode2", "chat - team", 15, -1, -1}, {"messagemode3", "chat - target", 16, -1, -1}, {"flashlight", "flashlight", 17, -1, -1}, {"ui_spawnmenu", "sandbox menu", 18, -1, -1}, {"undo", "undone", 19, -1, -1}, {"noclip", "toggle noclip", 20, -1, -1}, {"toggle cl_run", "toggle run", 21, -1, -1}, {"$uitoolmode$", "switch toolgun mode", 22, -1, -1}, {"exitvehicle", "exit vehicle", 23, -1, -1}, {(char *)NULL, (char *)NULL, -1, -1, -1},
 };
 
-static const char* mousestyle_description[] = {"Win32", "Raw", NULL};
+static const char *mousestyle_description[] = {"Win32", "Raw", NULL};
 
 static void Controls_Update(void) {
 	int i, j, y;
@@ -119,30 +95,30 @@ static void Controls_Update(void) {
 	if(controls.waitingforkey) {
 		// disable everybody
 		for(i = 0; i < controls.menu.nitems; i++) {
-			((menucommon_s*)(controls.menu.items[i]))->flags |= QMF_GRAYED;
+			((menucommon_s *)(controls.menu.items[i]))->flags |= QMF_GRAYED;
 		}
 
 		// enable action item
-		((menucommon_s*)(controls.menu.items[controls.menu.cursor]))->flags &= ~QMF_GRAYED;
+		((menucommon_s *)(controls.menu.items[controls.menu.cursor]))->flags &= ~QMF_GRAYED;
 		return;
 	}
 
 	// enable everybody
 	for(i = 0; i < controls.menu.nitems; i++) {
-		((menucommon_s*)(controls.menu.items[i]))->flags &= ~QMF_GRAYED;
+		((menucommon_s *)(controls.menu.items[i]))->flags &= ~QMF_GRAYED;
 	}
 
 	for(i = 90; i < 100; i++) {
 		controls.e[i].generic.flags &= ~(QMF_GRAYED | QMF_INACTIVE);
 	}
 	switch(controls.section) {
-		case C_KEYS: controls.e[ID_KEYS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE); break;
-		case C_SETTINGS: controls.e[ID_SETTINGS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE); break;
+	case C_KEYS: controls.e[ID_KEYS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE); break;
+	case C_SETTINGS: controls.e[ID_SETTINGS].generic.flags |= (QMF_GRAYED | QMF_INACTIVE); break;
 	}
 }
 
-static void Controls_DrawKeyBinding(void* self) {
-	menuelement_s* a;
+static void Controls_DrawKeyBinding(void *self) {
+	menuelement_s *a;
 	int x;
 	int y;
 	int b1;
@@ -151,7 +127,7 @@ static void Controls_DrawKeyBinding(void* self) {
 	char name[32];
 	char name2[32];
 
-	a = (menuelement_s*)self;
+	a = (menuelement_s *)self;
 
 	x = a->generic.x;
 	y = a->generic.y;
@@ -199,7 +175,7 @@ static void Controls_DrawKeyBinding(void* self) {
 	}
 }
 
-static void Controls_GetKeyAssignment(char* command, int* twokeys) {
+static void Controls_GetKeyAssignment(char *command, int *twokeys) {
 	int count;
 	int j;
 	char b[256];
@@ -223,7 +199,7 @@ static void Controls_GetKeyAssignment(char* command, int* twokeys) {
 static void Controls_GetConfig(void) {
 	int i;
 	int twokeys[2];
-	bind_t* bindptr;
+	bind_t *bindptr;
 
 	// put the bindings into a local store
 	bindptr = g_bindings;
@@ -242,7 +218,7 @@ static void Controls_GetConfig(void) {
 
 static void Controls_SetConfig(void) {
 	int i;
-	bind_t* bindptr;
+	bind_t *bindptr;
 
 	// set the bindings from the local store
 	bindptr = g_bindings;
@@ -263,30 +239,30 @@ static sfxHandle_t Controls_MenuKey(int key) {
 	int id;
 	int i;
 	qboolean found;
-	bind_t* bindptr;
+	bind_t *bindptr;
 	found = qfalse;
 
 	if(!controls.waitingforkey) {
 		switch(key) {
-			case K_BACKSPACE:
-			case K_DEL:
-			case K_KP_DEL: key = -1; break;
+		case K_BACKSPACE:
+		case K_DEL:
+		case K_KP_DEL: key = -1; break;
 
-			case K_MOUSE2:
-			case K_ESCAPE: Controls_SetConfig(); goto ignorekey;
+		case K_MOUSE2:
+		case K_ESCAPE: Controls_SetConfig(); goto ignorekey;
 
-			default: goto ignorekey;
+		default: goto ignorekey;
 		}
 	} else {
 		if(key & K_CHAR_FLAG) goto ignorekey;
 
 		switch(key) {
-			case K_ESCAPE:
-				controls.waitingforkey = qfalse;
-				Controls_Update();
-				return (menu_out_sound);
+		case K_ESCAPE:
+			controls.waitingforkey = qfalse;
+			Controls_Update();
+			return (menu_out_sound);
 
-			case '`': goto ignorekey;
+		case '`': goto ignorekey;
 		}
 	}
 
@@ -306,7 +282,7 @@ static sfxHandle_t Controls_MenuKey(int key) {
 	}
 
 	// assign key to local store
-	id = ((menucommon_s*)(controls.menu.items[controls.menu.cursor]))->id;
+	id = ((menucommon_s *)(controls.menu.items[controls.menu.cursor]))->id;
 	bindptr = g_bindings;
 	for(i = 0;; i++, bindptr++) {
 		if(!bindptr->label) break;
@@ -347,32 +323,32 @@ ignorekey:
 	return Menu_DefaultKey(&controls.menu, key);
 }
 
-static void Controls_MenuEvent(void* ptr, int event) {
+static void Controls_MenuEvent(void *ptr, int event) {
 	if(event != QM_ACTIVATED) return;
-	switch(((menucommon_s*)ptr)->id) {
-		case ID_KEYS:
-			controls.section = C_KEYS;
-			Controls_Update();
-			break;
+	switch(((menucommon_s *)ptr)->id) {
+	case ID_KEYS:
+		controls.section = C_KEYS;
+		Controls_Update();
+		break;
 
-		case ID_SETTINGS:
-			controls.section = C_SETTINGS;
-			Controls_Update();
-			break;
+	case ID_SETTINGS:
+		controls.section = C_SETTINGS;
+		Controls_Update();
+		break;
 
-		case ID_BACK:
-			Controls_SetConfig();
-			UI_PopMenu();
-			break;
+	case ID_BACK:
+		Controls_SetConfig();
+		UI_PopMenu();
+		break;
 
-		case KEYS_NUM + 1:
-			cvarSet("in_mouse", va("%f", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1));
-			trap_Cmd(EXEC_APPEND, "in_restart\n");
-			break;
+	case KEYS_NUM + 1:
+		cvarSet("in_mouse", va("%f", (controls.e[KEYS_NUM + 1].curvalue == 1) ? 1 : -1));
+		trap_Cmd(EXEC_APPEND, "in_restart\n");
+		break;
 	}
 }
 
-static void Controls_ActionEvent(void* ptr, int event) {
+static void Controls_ActionEvent(void *ptr, int event) {
 	if((event == QM_ACTIVATED) && !controls.waitingforkey) {
 		controls.waitingforkey = 1;
 		Controls_Update();
@@ -389,8 +365,10 @@ void UI_Controls(void) {
 
 	UI_CText(&controls.e[89], 58 - uis.wideoffset, 64 + 24, "CONTROLS", UI_LEFT, 1.80);
 	y = OSUI_STANDARD_Y;
-	UI_CButton(&controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS); y += OSUI_SPACING_Y;
-	UI_CButton(&controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS);
+	y += OSUI_SPACING_Y;
+	UI_CButton(&controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS);
+	y += OSUI_BIGSPACING_Y;
 
 	UI_CButton(&controls.e[ID_BACK], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_BACK);
 

@@ -59,105 +59,9 @@ typedef struct {
 	int flags;
 } field_t;
 
-static field_t gameInfoFields[] = {
-	{"classname", 			FOFS(classname), 				F_STRING},
-	{"model", 				FOFS(model), 					F_STRING},
-	{"model2", 				FOFS(model2), 					F_STRING},
-	{"origin", 				FOFS(s.origin), 				F_VECTOR},
-	{"angles", 				FOFS(s.angles), 				F_VECTOR},
-	{"modelscale_vec", 		FOFS(s.scales), 				F_VECTOR},
-	{"spawnflags", 			FOFS(spawnflags), 				F_INT},
-	{"speed", 				FOFS(speed), 					F_FLOAT},
-	{"target", 				FOFS(target), 					F_STRING},
-	{"targetname", 			FOFS(targetname), 				F_STRING},
-	{"message", 			FOFS(message), 					F_STRING},
-	{"team", 				FOFS(team), 					F_STRING},
-	{"wait", 				FOFS(wait), 					F_FLOAT},
-	{"random", 				FOFS(random), 					F_FLOAT},
-	{"count", 				FOFS(count), 					F_INT},
-	{"health", 				FOFS(health), 					F_INT},
-	{"light", 				0, 								F_IGNORE},
-	{"dmg", 				FOFS(damage), 					F_INT},
-	{"angle", 				FOFS(s.angles), 				F_ANGLEHACK},
-	{"clientname", 			FOFS(clientname), 				F_STRING},
-	{"sb_class", 			FOFS(sb_class), 				F_STRING},
-	{"sb_sound", 			FOFS(sb_sound), 				F_STRING},
-	{"sb_coltype", 			FOFS(sb_coltype), 				F_FLOAT},
-	{"sb_material", 		FOFS(sb_material), 				F_INT},
-	{"sb_gravity", 			FOFS(sb_gravity), 				F_FLOAT},
-	{"sb_phys", 			FOFS(sb_phys), 					F_INT},
-	{"sb_coll", 			FOFS(sb_coll), 					F_INT},
-	{"sb_red", 				FOFS(sb_red), 					F_INT},
-	{"sb_green", 			FOFS(sb_green), 				F_INT},
-	{"sb_blue", 			FOFS(sb_blue), 					F_INT},
-	{"sb_radius", 			FOFS(sb_radius), 				F_INT},
-	{"sb_isnpc", 			FOFS(sb_isnpc), 				F_INT},
-	{"phys_relativeOrigin", FOFS(phys_relativeOrigin), 		F_VECTOR},
-	{"phys_rv_0", 			FOFS(phys_rv_0), 				F_VECTOR},
-	{"phys_rv_1", 			FOFS(phys_rv_1), 				F_VECTOR},
-	{"phys_rv_2", 			FOFS(phys_rv_2), 				F_VECTOR},
-	{"phys_bounce", 		FOFS(phys_bounce),				F_FLOAT},
-	{"phys_welded", 		FOFS(phys_welded), 				F_INT},
-	{"phys_parent", 		FOFS(phys_parent), 				F_INT},
-	{"objectType", 			FOFS(objectType), 				F_INT},
-	{"type", 				FOFS(type), 					F_INT},
-	{NULL}
-};
+static field_t gameInfoFields[] = {{"classname", FOFS(classname), F_STRING}, {"model", FOFS(model), F_STRING}, {"model2", FOFS(model2), F_STRING}, {"origin", FOFS(s.origin), F_VECTOR}, {"angles", FOFS(s.angles), F_VECTOR}, {"modelscale_vec", FOFS(s.scales), F_VECTOR}, {"spawnflags", FOFS(spawnflags), F_INT}, {"speed", FOFS(speed), F_FLOAT}, {"target", FOFS(target), F_STRING}, {"targetname", FOFS(targetname), F_STRING}, {"message", FOFS(message), F_STRING}, {"team", FOFS(team), F_STRING}, {"wait", FOFS(wait), F_FLOAT}, {"random", FOFS(random), F_FLOAT}, {"count", FOFS(count), F_INT}, {"health", FOFS(health), F_INT}, {"light", 0, F_IGNORE}, {"dmg", FOFS(damage), F_INT}, {"angle", FOFS(s.angles), F_ANGLEHACK}, {"clientname", FOFS(clientname), F_STRING}, {"sb_class", FOFS(sb_class), F_STRING}, {"sb_sound", FOFS(sb_sound), F_STRING}, {"sb_coltype", FOFS(sb_coltype), F_FLOAT}, {"sb_material", FOFS(sb_material), F_INT}, {"sb_gravity", FOFS(sb_gravity), F_FLOAT}, {"sb_phys", FOFS(sb_phys), F_INT}, {"sb_coll", FOFS(sb_coll), F_INT}, {"sb_red", FOFS(sb_red), F_INT}, {"sb_green", FOFS(sb_green), F_INT}, {"sb_blue", FOFS(sb_blue), F_INT}, {"sb_radius", FOFS(sb_radius), F_INT}, {"sb_isnpc", FOFS(sb_isnpc), F_INT}, {"phys_relativeOrigin", FOFS(phys_relativeOrigin), F_VECTOR}, {"phys_rv_0", FOFS(phys_rv_0), F_VECTOR}, {"phys_rv_1", FOFS(phys_rv_1), F_VECTOR}, {"phys_rv_2", FOFS(phys_rv_2), F_VECTOR}, {"phys_bounce", FOFS(phys_bounce), F_FLOAT}, {"phys_welded", FOFS(phys_welded), F_INT}, {"phys_parent", FOFS(phys_parent), F_INT}, {"objectType", FOFS(objectType), F_INT}, {"type", FOFS(type), F_INT}, {NULL}};
 
-spawn_t	gameInfoEntities[] = {
-	{"info_player_start", 			SP_info_player_start},
-	{"info_player_deathmatch", 		SP_info_player_deathmatch},
-	{"info_player_intermission", 	SP_EmptySpawn},
-	{"info_null", 					SP_DeleteSpawn},
-	{"info_notnull", 				SP_EmptySpawn},
-	{"info_camp", 					SP_EmptySpawn},
-	{"func_plat", 					SP_func_plat},
-	{"func_button", 				SP_func_button},
-	{"func_door", 					SP_func_door},
-	{"func_static", 				SP_func_static},
-	{"func_rotating", 				SP_func_rotating},
-	{"func_bobbing", 				SP_func_bobbing},
-	{"func_pendulum", 				SP_func_pendulum},
-	{"func_train", 					SP_func_train},
-	{"func_group", 					SP_DeleteSpawn},
-	{"trigger_always", 				SP_trigger_always},
-	{"trigger_multiple", 			SP_trigger_multiple},
-	{"trigger_push", 				SP_trigger_push},
-	{"trigger_teleport", 			SP_trigger_teleport},
-	{"trigger_hurt", 				SP_trigger_hurt},
-	{"target_give", 				SP_target_give},
-	{"target_delay", 				SP_target_delay},
-	{"target_speaker", 				SP_target_speaker},
-	{"target_print", 				SP_target_print},
-	{"target_teleporter", 			SP_target_teleporter},
-	{"target_relay", 				SP_target_relay},
-	{"target_kill", 				SP_target_kill},
-	{"target_position", 			SP_target_position},
-	{"target_location", 			SP_target_location},
-	{"target_push", 				SP_target_push},
-	{"light", 						SP_DeleteSpawn},
-	{"path_corner", 				SP_path_corner},
-	{"misc_teleporter_dest", 		SP_EmptySpawn},
-	{"misc_model", 					SP_DeleteSpawn},
-	{"misc_portal_surface", 		SP_misc_portal_surface},
-	{"misc_portal_camera", 			SP_misc_portal_camera},
-	{"shooter_rocket", 				SP_shooter_rocket},
-	{"shooter_grenade", 			SP_shooter_grenade},
-	{"shooter_plasma", 				SP_shooter_plasma},
-	{"team_CTF_redplayer", 			SP_EmptySpawn},
-	{"team_CTF_blueplayer", 		SP_EmptySpawn},
-	{"team_CTF_redspawn", 			SP_EmptySpawn},
-	{"team_CTF_bluespawn", 			SP_EmptySpawn},
-	{"team_redobelisk", 			SP_team_redobelisk},
-	{"team_blueobelisk", 			SP_team_blueobelisk},
-	{"team_neutralobelisk", 		SP_team_neutralobelisk},
-	{"script_variable", 			SP_script_variable},
-	{"script_cmd", 					SP_script_cmd},
-	{"sandbox_prop", 				SP_sandbox_prop},
-	{"sandbox_npc", 				SP_sandbox_npc},
-	{"item_botroam", 				SP_EmptySpawn},
-	{NULL, 0}
-};
+spawn_t gameInfoEntities[] = {{"info_player_start", SP_info_player_start}, {"info_player_deathmatch", SP_info_player_deathmatch}, {"info_player_intermission", SP_EmptySpawn}, {"info_null", SP_DeleteSpawn}, {"info_notnull", SP_EmptySpawn}, {"info_camp", SP_EmptySpawn}, {"func_plat", SP_func_plat}, {"func_button", SP_func_button}, {"func_door", SP_func_door}, {"func_static", SP_func_static}, {"func_rotating", SP_func_rotating}, {"func_bobbing", SP_func_bobbing}, {"func_pendulum", SP_func_pendulum}, {"func_train", SP_func_train}, {"func_group", SP_DeleteSpawn}, {"trigger_always", SP_trigger_always}, {"trigger_multiple", SP_trigger_multiple}, {"trigger_push", SP_trigger_push}, {"trigger_teleport", SP_trigger_teleport}, {"trigger_hurt", SP_trigger_hurt}, {"target_give", SP_target_give}, {"target_delay", SP_target_delay}, {"target_speaker", SP_target_speaker}, {"target_print", SP_target_print}, {"target_teleporter", SP_target_teleporter}, {"target_relay", SP_target_relay}, {"target_kill", SP_target_kill}, {"target_position", SP_target_position}, {"target_location", SP_target_location}, {"target_push", SP_target_push}, {"light", SP_DeleteSpawn}, {"path_corner", SP_path_corner}, {"misc_teleporter_dest", SP_EmptySpawn}, {"misc_model", SP_DeleteSpawn}, {"misc_portal_surface", SP_misc_portal_surface}, {"misc_portal_camera", SP_misc_portal_camera}, {"shooter_rocket", SP_shooter_rocket}, {"shooter_grenade", SP_shooter_grenade}, {"shooter_plasma", SP_shooter_plasma}, {"team_CTF_redplayer", SP_EmptySpawn}, {"team_CTF_blueplayer", SP_EmptySpawn}, {"team_CTF_redspawn", SP_EmptySpawn}, {"team_CTF_bluespawn", SP_EmptySpawn}, {"team_redobelisk", SP_team_redobelisk}, {"team_blueobelisk", SP_team_blueobelisk}, {"team_neutralobelisk", SP_team_neutralobelisk}, {"script_variable", SP_script_variable}, {"script_cmd", SP_script_cmd}, {"sandbox_prop", SP_sandbox_prop}, {"sandbox_npc", SP_sandbox_npc}, {"item_botroam", SP_EmptySpawn}, {NULL, 0}};
 
 /*
 ===============
@@ -289,23 +193,23 @@ static void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 			b = (byte *)ent;
 
 			switch(f->type) {
-				case F_STRING: *(char **)(b + f->ofs) = G_NewString(value); break;
-				case F_VECTOR:
-					sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-					((float *)(b + f->ofs))[0] = vec[0];
-					((float *)(b + f->ofs))[1] = vec[1];
-					((float *)(b + f->ofs))[2] = vec[2];
-					break;
-				case F_INT: *(int *)(b + f->ofs) = atoi(value); break;
-				case F_FLOAT: *(float *)(b + f->ofs) = atof(value); break;
-				case F_ANGLEHACK:
-					v = atof(value);
-					((float *)(b + f->ofs))[0] = 0;
-					((float *)(b + f->ofs))[1] = v;
-					((float *)(b + f->ofs))[2] = 0;
-					break;
-				default:
-				case F_IGNORE: break;
+			case F_STRING: *(char **)(b + f->ofs) = G_NewString(value); break;
+			case F_VECTOR:
+				sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
+				((float *)(b + f->ofs))[0] = vec[0];
+				((float *)(b + f->ofs))[1] = vec[1];
+				((float *)(b + f->ofs))[2] = vec[2];
+				break;
+			case F_INT: *(int *)(b + f->ofs) = atoi(value); break;
+			case F_FLOAT: *(float *)(b + f->ofs) = atof(value); break;
+			case F_ANGLEHACK:
+				v = atof(value);
+				((float *)(b + f->ofs))[0] = 0;
+				((float *)(b + f->ofs))[1] = v;
+				((float *)(b + f->ofs))[2] = 0;
+				break;
+			default:
+			case F_IGNORE: break;
 			}
 			return;
 		}
@@ -333,21 +237,33 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 
 	if(cvarInt("g_gametype") >= GT_TEAM) {
 		G_SpawnInt("notteam", "0", &i);
-		if(i){ G_FreeEntity(ent); return; }
+		if(i) {
+			G_FreeEntity(ent);
+			return;
+		}
 	} else {
 		G_SpawnInt("notfree", "0", &i);
-		if(i){ G_FreeEntity(ent); return; }
+		if(i) {
+			G_FreeEntity(ent);
+			return;
+		}
 	}
 
 	G_SpawnInt("notta", "0", &i);
-	if(i){ G_FreeEntity(ent); return; }
+	if(i) {
+		G_FreeEntity(ent);
+		return;
+	}
 
 	if(G_SpawnString("!gametype", NULL, &value)) {
 		if(cvarInt("g_gametype") >= GT_SANDBOX && cvarInt("g_gametype") < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[cvarInt("g_gametype")];
 
 			s = strstr(value, gametypeName);
-			if(s){ G_FreeEntity(ent); return; }
+			if(s) {
+				G_FreeEntity(ent);
+				return;
+			}
 		}
 	}
 
@@ -356,7 +272,10 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 			gametypeName = gametypeNames[cvarInt("g_gametype")];
 
 			s = strstr(value, gametypeName);
-			if(!s){ G_FreeEntity(ent); return; }
+			if(!s) {
+				G_FreeEntity(ent);
+				return;
+			}
 		}
 	}
 
@@ -501,11 +420,11 @@ void G_SpawnEntitiesFromString(void) {
 		G_SpawnGEntityFromSpawnVars();
 	}
 
-	level.spawning = qfalse;  // any future calls to G_Spawn*() will be errors
+	level.spawning = qfalse; // any future calls to G_Spawn*() will be errors
 }
 
 #define MAX_TOKENNUM 1000000
-#define MAX_MAPFILE_LENGTH (4 * 1024 * 1024)  // 1MB
+#define MAX_MAPFILE_LENGTH (4 * 1024 * 1024) // 1MB
 static char mapbuffer[MAX_MAPFILE_LENGTH];
 
 typedef enum { TOT_LPAREN, TOT_RPAREN, TOT_WORD, TOT_NUMBER, TOT_NIL, TOT_MAX } tokenType_t;
@@ -543,23 +462,23 @@ static qboolean G_ClassnameAllowed(char *input) {
 	int i;
 	char *classes_allowed[] = {"sandbox_prop", "sandbox_npc", 0};
 
-	for(i = 0; classes_allowed[i] != 0; i++) {  // Allowed classlist
+	for(i = 0; classes_allowed[i] != 0; i++) { // Allowed classlist
 		if(!strcmp(input, classes_allowed[i])) {
 			return qtrue;
 		}
 	}
 
-	return BG_CheckClassname(input);  // Items
+	return BG_CheckClassname(input); // Items
 }
 
 static void G_ClearEntities(void) {
 	int i;
-	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
+	for(i = 0; i < MAX_CLIENTS; i++) { // NPCs
 		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
-	for(i = 0; i < MAX_GENTITIES; i++) {  // Items and Other
+	for(i = 0; i < MAX_GENTITIES; i++) { // Items and Other
 		if(!G_ClassnameAllowed(g_entities[i].classname)) continue;
 		g_entities[i].nextthink = 0;
 		G_FreeEntity(&g_entities[i]);
@@ -660,22 +579,22 @@ static void G_LoadMapfileEntity(token_t *in, int min, int max) {
 			if(!strcmp(va("\"%s\"", field->name), in[i].value)) {
 				if(!strcmp(field->name, "team") || !strcmp(field->name, "angle")) break;
 				switch(field->type) {
-					case F_STRING: *(char **)(b + field->ofs) = G_NewString(G_ClearString(in[i + 1].value)); break;
-					case F_VECTOR:
-						buf = in[i + 1].value;
-						strcat(buf, " ");
-						strcat(buf, in[i + 2].value);
-						strcat(buf, " ");
-						strcat(buf, in[i + 3].value);
-						sscanf(G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
-						((float *)(b + field->ofs))[0] = vec[0];
-						((float *)(b + field->ofs))[1] = vec[1];
-						((float *)(b + field->ofs))[2] = vec[2];
-						break;
-					case F_INT: *(int *)(b + field->ofs) = atoi(G_ClearString(in[i + 1].value)); break;
-					case F_FLOAT: *(float *)(b + field->ofs) = atof(G_ClearString(in[i + 1].value)); break;
-					default:
-					case F_IGNORE: break;
+				case F_STRING: *(char **)(b + field->ofs) = G_NewString(G_ClearString(in[i + 1].value)); break;
+				case F_VECTOR:
+					buf = in[i + 1].value;
+					strcat(buf, " ");
+					strcat(buf, in[i + 2].value);
+					strcat(buf, " ");
+					strcat(buf, in[i + 3].value);
+					sscanf(G_ClearString(buf), "%f %f %f", &vec[0], &vec[1], &vec[2]);
+					((float *)(b + field->ofs))[0] = vec[0];
+					((float *)(b + field->ofs))[1] = vec[1];
+					((float *)(b + field->ofs))[2] = vec[2];
+					break;
+				case F_INT: *(int *)(b + field->ofs) = atoi(G_ClearString(in[i + 1].value)); break;
+				case F_FLOAT: *(float *)(b + field->ofs) = atof(G_ClearString(in[i + 1].value)); break;
+				default:
+				case F_IGNORE: break;
 				}
 				break;
 			}
@@ -823,32 +742,32 @@ void G_WriteMapfile_f(void) {
 
 		for(field = gameInfoFields; field->name; field++) {
 			switch(field->type) {
-				case F_STRING:
-					if(*(char **)(b + field->ofs)) {
-						string = va("   \"%s\"   \"%s\"\n", field->name, *(char **)(b + field->ofs));
-						FS_Write(string, strlen(string), f);
-					}
-					break;
-				case F_VECTOR:
-					if((((float *)(b + field->ofs))[0] || ((float *)(b + field->ofs))[1] || ((float *)(b + field->ofs))[2])) {
-						string = va("   \"%s\"   \"%f %f %f\"\n", field->name, ((float *)(b + field->ofs))[0], ((float *)(b + field->ofs))[1], ((float *)(b + field->ofs))[2]);
-						FS_Write(string, strlen(string), f);
-					}
-					break;
-				case F_INT:
-					if(*(int *)(b + field->ofs)) {
-						string = va("   \"%s\"   \"%i\"\n", field->name, *(int *)(b + field->ofs));
-						FS_Write(string, strlen(string), f);
-					}
-					break;
-				case F_FLOAT:
-					if(*(float *)(b + field->ofs)) {
-						string = va("   \"%s\"   \"%f\"\n", field->name, *(float *)(b + field->ofs));
-						FS_Write(string, strlen(string), f);
-					}
-					break;
-				default:
-				case F_IGNORE: break;
+			case F_STRING:
+				if(*(char **)(b + field->ofs)) {
+					string = va("   \"%s\"   \"%s\"\n", field->name, *(char **)(b + field->ofs));
+					FS_Write(string, strlen(string), f);
+				}
+				break;
+			case F_VECTOR:
+				if((((float *)(b + field->ofs))[0] || ((float *)(b + field->ofs))[1] || ((float *)(b + field->ofs))[2])) {
+					string = va("   \"%s\"   \"%f %f %f\"\n", field->name, ((float *)(b + field->ofs))[0], ((float *)(b + field->ofs))[1], ((float *)(b + field->ofs))[2]);
+					FS_Write(string, strlen(string), f);
+				}
+				break;
+			case F_INT:
+				if(*(int *)(b + field->ofs)) {
+					string = va("   \"%s\"   \"%i\"\n", field->name, *(int *)(b + field->ofs));
+					FS_Write(string, strlen(string), f);
+				}
+				break;
+			case F_FLOAT:
+				if(*(float *)(b + field->ofs)) {
+					string = va("   \"%s\"   \"%f\"\n", field->name, *(float *)(b + field->ofs));
+					FS_Write(string, strlen(string), f);
+				}
+				break;
+			default:
+			case F_IGNORE: break;
 			}
 		}
 		string = va("}\n\n");
@@ -881,12 +800,12 @@ void G_DeleteMapfile_f(void) {
 
 void G_ClearMap_f(void) {
 	int i;
-	for(i = 0; i < MAX_CLIENTS; i++) {  // NPCs
+	for(i = 0; i < MAX_CLIENTS; i++) { // NPCs
 		if(g_entities[i].npcType > NT_PLAYER) {
 			DropClientSilently(g_entities[i].client->ps.clientNum);
 		}
 	}
-	for(i = 0; i < MAX_GENTITIES; i++) {  // Sandbox objects
+	for(i = 0; i < MAX_GENTITIES; i++) { // Sandbox objects
 		if(g_entities[i].sandboxObject) {
 			g_entities[i].nextthink = 0;
 			G_FreeEntity(&g_entities[i]);

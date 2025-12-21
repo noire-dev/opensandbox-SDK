@@ -47,16 +47,16 @@ void G_SendSwepWeapons(gentity_t *ent) {
 	for(i = 1; i < WEAPONS_NUM; i++) {
 		if(ent->swep_list[i] >= WS_HAVE) {
 			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = WS_HAVE;  // we have weapon and ammo
+				ent->swep_list[i] = WS_HAVE; // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = WS_NOAMMO;  // we have weapon only
+				ent->swep_list[i] = WS_NOAMMO; // we have weapon only
 			}
 		}
 		if(ent->swep_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
 		if(ent->swep_list[i] == WS_NOAMMO) {
-			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send WS_NOAMMO
+			Q_strcat(string, sizeof(string), va("%i ", i * -1)); // use -id for send WS_NOAMMO
 		}
 	}
 	len = strlen(string);
@@ -75,16 +75,16 @@ void G_SendSpawnSwepWeapons(gentity_t *ent) {
 	for(i = 1; i < WEAPONS_NUM; i++) {
 		if(ent->swep_list[i] >= WS_HAVE) {
 			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = WS_HAVE;  // we have weapon and ammo
+				ent->swep_list[i] = WS_HAVE; // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = WS_NOAMMO;  // we have weapon only
+				ent->swep_list[i] = WS_NOAMMO; // we have weapon only
 			}
 		}
 		if(ent->swep_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
 		if(ent->swep_list[i] == WS_NOAMMO) {
-			Q_strcat(string, sizeof(string), va("%i ", i * -1));  // use -id for send WS_NOAMMO
+			Q_strcat(string, sizeof(string), va("%i ", i * -1)); // use -id for send WS_NOAMMO
 		}
 	}
 	len = strlen(string);
@@ -407,25 +407,25 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 	char location[64];
 
 	switch(mode) {
-		default:
-		case SAY_ALL:
-			Com_sprintf(name, sizeof(name), "%s%c%c" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_GREEN;
-			break;
-		case SAY_TEAM:
-			if(Team_GetLocationMsg(ent, location, sizeof(location)))
-				Com_sprintf(name, sizeof(name), EC "(%s%c%c" EC ") (%s)" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
-			else
-				Com_sprintf(name, sizeof(name), EC "(%s%c%c" EC ")" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_CYAN;
-			break;
-		case SAY_TELL:
-			if(target && target->client->sess.sessionTeam == ent->client->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location)))
-				Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "] (%s)" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
-			else
-				Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "]" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_MAGENTA;
-			break;
+	default:
+	case SAY_ALL:
+		Com_sprintf(name, sizeof(name), "%s%c%c" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_GREEN;
+		break;
+	case SAY_TEAM:
+		if(Team_GetLocationMsg(ent, location, sizeof(location)))
+			Com_sprintf(name, sizeof(name), EC "(%s%c%c" EC ") (%s)" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
+		else
+			Com_sprintf(name, sizeof(name), EC "(%s%c%c" EC ")" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_CYAN;
+		break;
+	case SAY_TELL:
+		if(target && target->client->sess.sessionTeam == ent->client->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location)))
+			Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "] (%s)" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
+		else
+			Com_sprintf(name, sizeof(name), EC "[%s%c%c" EC "]" EC ": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_MAGENTA;
+		break;
 	}
 
 	Q_strncpyz(text, chatText, sizeof(text));
@@ -558,9 +558,9 @@ static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 	if(!Q_stricmp(arg01, "prop")) {
 		tent = G_TempEntity(tr.endpos, EV_PARTICLES_GRAVITY);
 		tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8) | rand() % 256 << 16) | (255 << 24));
-		tent->s.eventParm = 24;  // eventParm is used to determine the number of particles
-		tent->s.generic1 = 500;  // generic1 is used to determine the speed of the particles
-		tent->s.generic2 = 16;   // generic2 is used to determine the size of the particles
+		tent->s.eventParm = 24; // eventParm is used to determine the number of particles
+		tent->s.generic1 = 500; // generic1 is used to determine the speed of the particles
+		tent->s.generic2 = 16;  // generic2 is used to determine the size of the particles
 		G_BuildProp(arg02, arg03, tr.endpos, ent, arg04, arg05, arg06, arg07, arg08, arg09, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 		return;
 	}
@@ -631,15 +631,15 @@ static void Cmd_Modify_Prop_f(gentity_t *ent) {
 	// Trace Position
 	trap_Trace(&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
-	traceEnt = &g_entities[tr.entityNum];  // entity for modding
+	traceEnt = &g_entities[tr.entityNum]; // entity for modding
 
 	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return;
 
 	tent = G_TempEntity(tr.endpos, EV_PARTICLES_GRAVITY);
 	tent->s.constantLight = (((rand() % 256 | rand() % 256 << 8) | rand() % 256 << 16) | (255 << 24));
-	tent->s.eventParm = 24;  // eventParm is used to determine the number of particles
-	tent->s.generic1 = 125;  // generic1 is used to determine the speed of the particles
-	tent->s.generic2 = 3;    // generic2 is used to determine the size of the particles
+	tent->s.eventParm = 24; // eventParm is used to determine the number of particles
+	tent->s.generic1 = 125; // generic1 is used to determine the speed of the particles
+	tent->s.generic2 = 3;   // generic2 is used to determine the size of the particles
 	G_ModProp(traceEnt, ent, arg01, arg02, arg03, arg04, arg05);
 	return;
 }
@@ -648,7 +648,7 @@ static void Cmd_Altfire_Physgun_f(gentity_t *ent) {
 	if(ent->client->ps.weapon == WP_PHYSGUN) {
 		if(ent->client->buttons & BUTTON_ATTACK) {
 			if(ent->grabbedEntity) {
-				ent->grabbedEntity->grabNewPhys = PHYS_STATIC;  // say physgun about freeze option
+				ent->grabbedEntity->grabNewPhys = PHYS_STATIC; // say physgun about freeze option
 			}
 		}
 	}
@@ -708,11 +708,16 @@ static void Cmd_Undo_f(gentity_t *ent) {
 
 		prop = G_FindEntityForEntityNum(id);
 		if(prop) {
-			if(!strcmp(prop->sb_class, "sb.shooter")) trap_SendServerCommand(ent - g_entities, "undo \"Undone Shooter\"\n");
-			else if(prop->objectType == OT_VEHICLE) trap_SendServerCommand(ent - g_entities, "undo \"Undone Vehicle\"\n");
-			else if(!strcmp(prop->classname, "sandbox_npc")) trap_SendServerCommand(ent - g_entities, "undo \"Undone NPC\"\n");
-			else if(!strcmp(prop->classname, "sandbox_prop")) trap_SendServerCommand(ent - g_entities, "undo \"Undone Prop\"\n");
-			else if(prop->s.eType == ET_ITEM) trap_SendServerCommand(ent - g_entities, va("undo \"Undone %s\"\n", prop->item->pickup_name ));
+			if(!strcmp(prop->sb_class, "sb.shooter"))
+				trap_SendServerCommand(ent - g_entities, "undo \"Undone Shooter\"\n");
+			else if(prop->objectType == OT_VEHICLE)
+				trap_SendServerCommand(ent - g_entities, "undo \"Undone Vehicle\"\n");
+			else if(!strcmp(prop->classname, "sandbox_npc"))
+				trap_SendServerCommand(ent - g_entities, "undo \"Undone NPC\"\n");
+			else if(!strcmp(prop->classname, "sandbox_prop"))
+				trap_SendServerCommand(ent - g_entities, "undo \"Undone Prop\"\n");
+			else if(prop->s.eType == ET_ITEM)
+				trap_SendServerCommand(ent - g_entities, va("undo \"Undone %s\"\n", prop->item->pickup_name));
 			G_FreeEntity(prop);
 		}
 		return;
@@ -779,8 +784,8 @@ commands_t cmds[] = {
     {"undo", CMD_LIVING, Cmd_Undo_f},
     {"activate", CMD_LIVING, Cmd_ActivateTarget_f},
 
-	// internal
-	{"sl", CMD_LIVING, Cmd_SpawnList_Item_f},
+    // internal
+    {"sl", CMD_LIVING, Cmd_SpawnList_Item_f},
     {"tm", CMD_LIVING, Cmd_Modify_Prop_f},
     {"altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f},
     {"physgun_dist", CMD_LIVING, Cmd_PhysgunDist_f},

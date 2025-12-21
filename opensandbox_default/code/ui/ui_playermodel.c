@@ -12,11 +12,9 @@
 #define MODELDIR "models/players"
 
 // common string names for all dm/team model changing
-const char* drawmodel_list[] = {
-	"DM",    // DRAWMODEL_DM
-    "Team",  // DRAWMODEL_TEAM
-    0
-};
+const char *drawmodel_list[] = {"DM",   // DRAWMODEL_DM
+                                "Team", // DRAWMODEL_TEAM
+                                0};
 
 #define PLAYERGRID_COLS 5
 #define PLAYERGRID_ROWS 4
@@ -104,24 +102,16 @@ static playermodel_t s_playermodel;
 
 enum { MODELCHANGE_BODY, MODELCHANGE_HEAD, MODELCHANGE_LEGS };
 
-static const char* model_partchange[] = {
-	"Choose Body",  // MODELCHANGE_BODY
-	"Choose Head",  // MODELCHANGE_HEAD
-	"Choose Legs",  // MODELCHANGE_LEGS
-	0
-};
+static const char *model_partchange[] = {"Choose Body", // MODELCHANGE_BODY
+                                         "Choose Head", // MODELCHANGE_HEAD
+                                         "Choose Legs", // MODELCHANGE_LEGS
+                                         0};
 
-static const char* model_dmteam[] = {
-	"DM model",    // DRAWMODEL_DM
-    "Team model",  // DRAWMODEL_TEAM
-    0
-};
+static const char *model_dmteam[] = {"DM model",   // DRAWMODEL_DM
+                                     "Team model", // DRAWMODEL_TEAM
+                                     0};
 
-static const char* model_simplesplit[] = {
-	"Split model",
-    "Simple model",
-    0
-};
+static const char *model_simplesplit[] = {"Split model", "Simple model", 0};
 
 static void PlayerModel_UpdateGrid(void) {
 	int i;
@@ -190,13 +180,13 @@ static void PlayerModel_BuildList(void) {
 	int numdirs;
 	int numfiles;
 	char skinname[512];
-	char* dirptr;
-	char* fileptr;
+	char *dirptr;
+	char *fileptr;
 	int i;
 	int j;
 	int dirlen;
 	int filelen;
-	char* defaultskin;
+	char *defaultskin;
 
 	s_playermodel.modelpage = 0;
 	s_playermodel.nummodels = 0;
@@ -241,9 +231,9 @@ static void PlayerModel_BuildList(void) {
 
 static void PlayerModel_LoadSkins(int modelnum) {
 	int numfiles;
-	char* fullmodelname;
+	char *fullmodelname;
 	char skinname[MODELNAME_BUFFER];
-	char* fileptr;
+	char *fileptr;
 	int i;
 	int filelen;
 
@@ -275,7 +265,7 @@ static void PlayerModel_LoadSkins(int modelnum) {
 
 static void PlayerModel_SaveChanges(void) {
 	char model[64];
-	char* legs;
+	char *legs;
 
 	strcpy(model, s_playermodel.model.team_modelskin);
 	Q_strlwr(model);
@@ -338,8 +328,8 @@ static qboolean PlayerModel_SetModelIconSelection(qboolean samepage) {
 	char modelname[64];
 	char skinname[64];
 	char search[64];
-	char* buffptr;
-	char* pdest;
+	char *buffptr;
+	char *pdest;
 	qboolean found;
 	qboolean teamModel;
 	int modelBody;
@@ -439,7 +429,7 @@ static qboolean PlayerModel_SetModelIconSelection(qboolean samepage) {
 
 static void PlayerModel_SwapOtherHeads(int modelchange) {
 	char tmp[MODELNAME_BUFFER];
-	char* thishead;
+	char *thishead;
 
 	// select set we are changing
 	if(drawTeamModel) {
@@ -459,84 +449,84 @@ static void PlayerModel_SwapOtherHeads(int modelchange) {
 	}
 }
 
-static void PlayerModel_MenuEvent(void* ptr, int event) {
+static void PlayerModel_MenuEvent(void *ptr, int event) {
 	static qboolean tmp;
 
 	if(event != QM_ACTIVATED) return;
 
-	switch(((menucommon_s*)ptr)->id) {
-		case ID_PREVPAGE:
-			if(s_playermodel.modelpage > 0) {
-				s_playermodel.modelpage--;
-				PlayerModel_UpdateGrid();
-			}
-			break;
-
-		case ID_NEXTPAGE:
-			if(s_playermodel.modelpage < s_playermodel.numpages - 1) {
-				s_playermodel.modelpage++;
-				PlayerModel_UpdateGrid();
-			}
-			break;
-
-		case ID_PREVSKINPAGE:
-			if(s_playermodel.skinpage > 0) {
-				s_playermodel.skinpage--;
-				PlayerModel_UpdateSkinGrid();
-			}
-			break;
-
-		case ID_NEXTSKINPAGE:
-			if(s_playermodel.skinpage < s_playermodel.numskinpages - 1) {
-				s_playermodel.skinpage++;
-				PlayerModel_UpdateSkinGrid();
-			}
-			break;
-
-		case ID_TEAMMODEL:
-			PlayerModel_SwapOtherHeads(1);
-
-			tmp = s_playermodel.otherheadstate;
-			s_playermodel.otherheadstate = s_playermodel.forceHeadMatch.curvalue;
-			s_playermodel.forceHeadMatch.curvalue = tmp;
-
-			GUI_PlayerInfo_DrawTeamModel(&s_playermodel.model, s_playermodel.teamModel.curvalue);
-
-			PlayerModel_SetModelIconSelection(qfalse);
+	switch(((menucommon_s *)ptr)->id) {
+	case ID_PREVPAGE:
+		if(s_playermodel.modelpage > 0) {
+			s_playermodel.modelpage--;
 			PlayerModel_UpdateGrid();
-			PlayerModel_UpdateSkinGrid();
-			PlayerModel_ShowControls();
-			break;
+		}
+		break;
 
-		case ID_MODELCHANGE:
-			PlayerModel_SetModelIconSelection(qtrue);
+	case ID_NEXTPAGE:
+		if(s_playermodel.modelpage < s_playermodel.numpages - 1) {
+			s_playermodel.modelpage++;
 			PlayerModel_UpdateGrid();
+		}
+		break;
+
+	case ID_PREVSKINPAGE:
+		if(s_playermodel.skinpage > 0) {
+			s_playermodel.skinpage--;
 			PlayerModel_UpdateSkinGrid();
-			break;
+		}
+		break;
 
-		case ID_FORCEHEADMATCH:
-			PlayerModel_SwapOtherHeads(0);
-			s_playermodel.model.bForceUpdate = qtrue;
-
-			// update only if model on same page
-			PlayerModel_SetModelIconSelection(qtrue);
-			PlayerModel_UpdateGrid();
+	case ID_NEXTSKINPAGE:
+		if(s_playermodel.skinpage < s_playermodel.numskinpages - 1) {
+			s_playermodel.skinpage++;
 			PlayerModel_UpdateSkinGrid();
+		}
+		break;
 
-			PlayerModel_ShowControls();
-			break;
+	case ID_TEAMMODEL:
+		PlayerModel_SwapOtherHeads(1);
+
+		tmp = s_playermodel.otherheadstate;
+		s_playermodel.otherheadstate = s_playermodel.forceHeadMatch.curvalue;
+		s_playermodel.forceHeadMatch.curvalue = tmp;
+
+		GUI_PlayerInfo_DrawTeamModel(&s_playermodel.model, s_playermodel.teamModel.curvalue);
+
+		PlayerModel_SetModelIconSelection(qfalse);
+		PlayerModel_UpdateGrid();
+		PlayerModel_UpdateSkinGrid();
+		PlayerModel_ShowControls();
+		break;
+
+	case ID_MODELCHANGE:
+		PlayerModel_SetModelIconSelection(qtrue);
+		PlayerModel_UpdateGrid();
+		PlayerModel_UpdateSkinGrid();
+		break;
+
+	case ID_FORCEHEADMATCH:
+		PlayerModel_SwapOtherHeads(0);
+		s_playermodel.model.bForceUpdate = qtrue;
+
+		// update only if model on same page
+		PlayerModel_SetModelIconSelection(qtrue);
+		PlayerModel_UpdateGrid();
+		PlayerModel_UpdateSkinGrid();
+
+		PlayerModel_ShowControls();
+		break;
 	}
 }
 
 static sfxHandle_t PlayerModel_MenuKey(int key) {
 	switch(key) {
-		case K_MOUSE2:
-		case K_ESCAPE: PlayerModel_SaveChanges(); break;
+	case K_MOUSE2:
+	case K_ESCAPE: PlayerModel_SaveChanges(); break;
 	}
 	return (Menu_DefaultKey(&s_playermodel.menu, key));
 }
 
-static void PlayerModel_PicInit(menuelement_s* b) {
+static void PlayerModel_PicInit(menuelement_s *b) {
 	int x;
 	int y;
 	int w;
@@ -568,14 +558,14 @@ static void PlayerModel_PicInit(menuelement_s* b) {
 	b->focusshader = 0;
 }
 
-static void PlayerModel_PicDraw(void* self) {
+static void PlayerModel_PicDraw(void *self) {
 	float x;
 	float y;
 	float w;
 	float h;
-	menuelement_s* b;
+	menuelement_s *b;
 
-	b = (menuelement_s*)self;
+	b = (menuelement_s *)self;
 
 	x = b->generic.x;
 	y = b->generic.y;
@@ -596,12 +586,12 @@ static void PlayerModel_PicDraw(void* self) {
 	}
 }
 
-static qboolean PlayerModel_SetModelFromSelection(char* model) {
-	char* buffptr;
-	char* pdest;
-	char* headmodel;
-	char* bodymodel;
-	char* legsmodel;
+static qboolean PlayerModel_SetModelFromSelection(char *model) {
+	char *buffptr;
+	char *pdest;
+	char *headmodel;
+	char *bodymodel;
+	char *legsmodel;
 
 	// get model and strip icon_
 	buffptr = model + strlen(MODELDIR) + 1;
@@ -649,7 +639,7 @@ static qboolean PlayerModel_SetModelFromSelection(char* model) {
 	return qfalse;
 }
 
-static void PlayerModel_PicEvent(void* ptr, int event) {
+static void PlayerModel_PicEvent(void *ptr, int event) {
 	int i;
 	int modelnum;
 
@@ -662,7 +652,7 @@ static void PlayerModel_PicEvent(void* ptr, int event) {
 	}
 
 	// set selected
-	i = ((menucommon_s*)ptr)->id - ID_PLAYERPIC0;
+	i = ((menucommon_s *)ptr)->id - ID_PLAYERPIC0;
 	s_playermodel.models[i].generic.flags |= QMF_HIGHLIGHT;
 	s_playermodel.models[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 
@@ -682,7 +672,7 @@ static void PlayerModel_PicEvent(void* ptr, int event) {
 	}
 }
 
-static void PlayerModel_SkinPicEvent(void* ptr, int event) {
+static void PlayerModel_SkinPicEvent(void *ptr, int event) {
 	int i;
 	int skinnum;
 
@@ -695,7 +685,7 @@ static void PlayerModel_SkinPicEvent(void* ptr, int event) {
 	}
 
 	// set selected
-	i = ((menucommon_s*)ptr)->id - ID_SKINPIC0;
+	i = ((menucommon_s *)ptr)->id - ID_SKINPIC0;
 	s_playermodel.skins[i].generic.flags |= QMF_HIGHLIGHT;
 	s_playermodel.skins[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 
@@ -705,7 +695,7 @@ static void PlayerModel_SkinPicEvent(void* ptr, int event) {
 	}
 }
 
-static void PlayerModel_DrawPlayer(void* self) {
+static void PlayerModel_DrawPlayer(void *self) {
 	int style;
 
 	style = MODELNAME_ALLBOLD;
@@ -723,13 +713,13 @@ static void PlayerModel_DrawPlayer(void* self) {
 }
 
 static void PlayerModel_SetMenuItems(void) {
-	char* thismodel;
-	char* thisheadmodel;
-	char* thislegsmodel;
-	char* othermodel;
-	char* otherheadmodel;
-	char* otherlegsmodel;
-	modelAnim_t* m;
+	char *thismodel;
+	char *thisheadmodel;
+	char *thislegsmodel;
+	char *othermodel;
+	char *otherheadmodel;
+	char *otherlegsmodel;
+	modelAnim_t *m;
 
 	// Hypo: 3d model already initialized
 	m = &s_playermodel.model;
@@ -785,29 +775,41 @@ static void PlayerModel_MenuInit(void) {
 	s_playermodel.menu.key = PlayerModel_MenuKey;
 
 	PlayerModel_BuildList();
-	for(i = 0; i < s_playermodel.nummodels; i++)
-		trap_R_RegisterShaderNoMip(s_playermodel.modelnames[i]);
+	for(i = 0; i < s_playermodel.nummodels; i++) trap_R_RegisterShaderNoMip(s_playermodel.modelnames[i]);
 
 	UI_CText(&s_playermodel.e[0], 320, 12, "PLAYER MODEL", UI_CENTER, 1.00);
 
-	UI_CField(&s_playermodel.e[100], 60, 48, "Name:", 24, 24, color_white, "name", NULL, 0); y += 12;
+	UI_CField(&s_playermodel.e[100], 60, 48, "Name:", 24, 24, color_white, "name", NULL, 0);
+	y += 12;
 
 	y = 68;
-	UI_CSlider(&s_playermodel.e[1], 60, y, "^1Head:", "headR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[2], 60, y, "^2Head:", "headG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[3], 60, y, "^4Head:", "headB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[1], 60, y, "^1Head:", "headR", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[2], 60, y, "^2Head:", "headG", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[3], 60, y, "^4Head:", "headB", 0, 255, 1, NULL, 0);
+	y = 68;
 
-	UI_CSlider(&s_playermodel.e[4], 185, y, "^1Torso:", "modelR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[5], 185, y, "^2Torso:", "modelG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[6], 185, y, "^4Torso:", "modelB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[4], 185, y, "^1Torso:", "modelR", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[5], 185, y, "^2Torso:", "modelG", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[6], 185, y, "^4Torso:", "modelB", 0, 255, 1, NULL, 0);
+	y = 68;
 
-	UI_CSlider(&s_playermodel.e[7], 310, y, "^1Legs:", "legsR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[8], 310, y, "^2Legs:", "legsG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[9], 310, y, "^4Legs:", "legsB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[7], 310, y, "^1Legs:", "legsR", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[8], 310, y, "^2Legs:", "legsG", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[9], 310, y, "^4Legs:", "legsB", 0, 255, 1, NULL, 0);
+	y = 68;
 
-	UI_CSlider(&s_playermodel.e[10], 435, y, "^1Phys:", "physR", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[11], 435, y, "^2Phys:", "physG", 0, 255, 1, NULL, 0); y += 18;
-	UI_CSlider(&s_playermodel.e[12], 435, y, "^4Phys:", "physB", 0, 255, 1, NULL, 0); y = 68;
+	UI_CSlider(&s_playermodel.e[10], 435, y, "^1Phys:", "physR", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[11], 435, y, "^2Phys:", "physG", 0, 255, 1, NULL, 0);
+	y += 18;
+	UI_CSlider(&s_playermodel.e[12], 435, y, "^4Phys:", "physB", 0, 255, 1, NULL, 0);
+	y = 68;
 
 	y = MODELARRAY_Y;
 	for(i = 0, k = 0; i < PLAYERGRID_ROWS; i++) {
@@ -928,11 +930,9 @@ static void PlayerModel_MenuInit(void) {
 
 	UI_CreateUI(&s_playermodel.menu, s_playermodel.e);
 
-	for(i = 0; i < MAX_MODELSPERPAGE; i++)
-		Menu_AddItem(&s_playermodel.menu, &s_playermodel.models[i]);
+	for(i = 0; i < MAX_MODELSPERPAGE; i++) Menu_AddItem(&s_playermodel.menu, &s_playermodel.models[i]);
 
-	for(i = 0; i < MAX_SKINSPERPAGE; i++)
-		Menu_AddItem(&s_playermodel.menu, &s_playermodel.skins[i]);
+	for(i = 0; i < MAX_SKINSPERPAGE; i++) Menu_AddItem(&s_playermodel.menu, &s_playermodel.skins[i]);
 
 	Menu_AddItem(&s_playermodel.menu, &s_playermodel.model.bitmap);
 	Menu_AddItem(&s_playermodel.menu, &s_playermodel.modelup);

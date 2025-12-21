@@ -67,11 +67,11 @@ int Q_vsnprintf(char *str, size_t length, const char *fmt, va_list args);
 int Q_snprintf(char *str, size_t length, const char *fmt, ...);
 int sscanf(const char *buffer, const char *fmt, ...);
 
-//sharedsyscalls
-double          sin(double x);
-double          cos(double x);
-double          acos(double x);
-double          atan2(double y, double x);
-double          sqrt(double x);
+// sharedsyscalls
+double sin(double x);
+double cos(double x);
+double acos(double x);
+double atan2(double y, double x);
+double sqrt(double x);
 
-#endif  // BG_LIB_H
+#endif // BG_LIB_H

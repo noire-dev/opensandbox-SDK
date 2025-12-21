@@ -3,7 +3,7 @@
 
 #include "js_local.h"
 
-const char* JS_Test(void) {
-    JS_Function(JSCALL_TEST);
-    return jsresult.value.s;
+const char *JS_Test(void) {
+	JS_Function(JSCALL_TEST);
+	return jsresult.value.s;
 }

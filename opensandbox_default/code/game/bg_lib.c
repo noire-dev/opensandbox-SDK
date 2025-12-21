@@ -8,6 +8,7 @@
 static char *med3(char *, char *, char *, cmp_t *);
 static void swapfunc(char *, char *, int, int);
 
+// clang-format off
 #define swapcode(TYPE, a, b, n)      \
 	{                                \
 		long i = (n) / sizeof(TYPE); \
@@ -19,13 +20,17 @@ static void swapfunc(char *, char *, int, int);
 			*pb++ = tmp;             \
 		} while(--i > 0);            \
 	}
+// clang-format on
 
+// clang-format off
 #define SWAPINIT(a, es) swaptype = ((char *)(a) - (char *)0) % sizeof(long) || (es) % sizeof(long) ? 2 : ((es) == sizeof(long) ? 0 : 1)
+// clang-format on
 
 static void swapfunc(char *a, char *b, int n, int swaptype) {
 	if(swaptype <= 1) swapcode(long, a, b, n) else swapcode(char, a, b, n)
 }
 
+// clang-format off
 #define swap(a, b)                    \
 	if(swaptype == 0) {               \
 		long t = *(long *)(a);        \
@@ -37,6 +42,7 @@ static void swapfunc(char *a, char *b, int n, int swaptype) {
 
 #define vecswap(a, b, n) \
 	if((n) > 0) swapfunc(a, b, n, swaptype)
+// clang-format on
 
 static char *med3(char *a, char *b, char *c, cmp_t *cmp) { return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c)); }
 
@@ -165,7 +171,7 @@ int ifstrlenru(const char *string) {
 	rucount = 0;
 
 	for(i = 0; i < n; i++) {
-		if(s[i] >= -64 && s[i] <= -1) {  // ебаный unicode
+		if(s[i] >= -64 && s[i] <= -1) { // ебаный unicode
 			rucount += 1;
 		}
 	}
@@ -305,15 +311,15 @@ double atof(const char *string) {
 
 	// check sign
 	switch(*string) {
-		case '+':
-			string++;
-			sign = 1;
-			break;
-		case '-':
-			string++;
-			sign = -1;
-			break;
-		default: sign = 1; break;
+	case '+':
+		string++;
+		sign = 1;
+		break;
+	case '-':
+		string++;
+		sign = -1;
+		break;
+	default: sign = 1; break;
 	}
 
 	// read digits
@@ -372,15 +378,15 @@ static double _atof(const char **stringPtr) {
 
 	// check sign
 	switch(*string) {
-		case '+':
-			string++;
-			sign = 1;
-			break;
-		case '-':
-			string++;
-			sign = -1;
-			break;
-		default: sign = 1; break;
+	case '+':
+		string++;
+		sign = 1;
+		break;
+	case '-':
+		string++;
+		sign = -1;
+		break;
+	default: sign = 1; break;
 	}
 
 	// read digits
@@ -433,15 +439,15 @@ int atoi(const char *string) {
 
 	// check sign
 	switch(*string) {
-		case '+':
-			string++;
-			sign = 1;
-			break;
-		case '-':
-			string++;
-			sign = -1;
-			break;
-		default: sign = 1; break;
+	case '+':
+		string++;
+		sign = 1;
+		break;
+	case '-':
+		string++;
+		sign = -1;
+		break;
+	default: sign = 1; break;
 	}
 
 	// read digits
@@ -478,15 +484,15 @@ static int _atoi(const char **stringPtr) {
 
 	// check sign
 	switch(*string) {
-		case '+':
-			string++;
-			sign = 1;
-			break;
-		case '-':
-			string++;
-			sign = -1;
-			break;
-		default: sign = 1; break;
+	case '+':
+		string++;
+		sign = 1;
+		break;
+	case '-':
+		string++;
+		sign = -1;
+		break;
+	default: sign = 1; break;
 	}
 
 	// read digits
@@ -586,216 +592,212 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 		if(ch == '\0') state = DP_S_DONE;
 
 		switch(state) {
-			case DP_S_DEFAULT:
-				if(ch == '%')
-					state = DP_S_FLAGS;
-				else
-					total += dopr_outch(buffer, &currlen, maxlen, ch);
+		case DP_S_DEFAULT:
+			if(ch == '%')
+				state = DP_S_FLAGS;
+			else
+				total += dopr_outch(buffer, &currlen, maxlen, ch);
+			ch = *format++;
+			break;
+		case DP_S_FLAGS:
+			switch(ch) {
+			case '-':
+				flags |= DP_F_MINUS;
 				ch = *format++;
 				break;
-			case DP_S_FLAGS:
-				switch(ch) {
-					case '-':
-						flags |= DP_F_MINUS;
-						ch = *format++;
-						break;
-					case '+':
-						flags |= DP_F_PLUS;
-						ch = *format++;
-						break;
-					case ' ':
-						flags |= DP_F_SPACE;
-						ch = *format++;
-						break;
-					case '#':
-						flags |= DP_F_NUM;
-						ch = *format++;
-						break;
-					case '0':
-						flags |= DP_F_ZERO;
-						ch = *format++;
-						break;
-					default: state = DP_S_MIN; break;
-				}
+			case '+':
+				flags |= DP_F_PLUS;
+				ch = *format++;
 				break;
-			case DP_S_MIN:
-				if('0' <= ch && ch <= '9') {
-					min = 10 * min + char_to_int(ch);
-					ch = *format++;
-				} else if(ch == '*') {
-					min = va_arg(args, int);
-					ch = *format++;
-					state = DP_S_DOT;
-				} else
-					state = DP_S_DOT;
+			case ' ':
+				flags |= DP_F_SPACE;
+				ch = *format++;
 				break;
-			case DP_S_DOT:
-				if(ch == '.') {
-					state = DP_S_MAX;
-					ch = *format++;
-				} else
-					state = DP_S_MOD;
+			case '#':
+				flags |= DP_F_NUM;
+				ch = *format++;
 				break;
-			case DP_S_MAX:
-				if('0' <= ch && ch <= '9') {
-					if(max < 0) max = 0;
-					max = 10 * max + char_to_int(ch);
-					ch = *format++;
-				} else if(ch == '*') {
-					max = va_arg(args, int);
-					ch = *format++;
-					state = DP_S_MOD;
-				} else
-					state = DP_S_MOD;
+			case '0':
+				flags |= DP_F_ZERO;
+				ch = *format++;
 				break;
-			case DP_S_MOD:
-				switch(ch) {
-					case 'h':
-						cflags = DP_C_SHORT;
-						ch = *format++;
-						break;
-					case 'l':
-						cflags = DP_C_LONG;
-						ch = *format++;
-						break;
-					case 'L':
-						cflags = DP_C_LDOUBLE;
-						ch = *format++;
-						break;
-					default: break;
-				}
-				if(cflags != DP_C_LONG)
-					state = DP_S_CONV;
-				else
-					state = DP_S_MOD_L;
+			default: state = DP_S_MIN; break;
+			}
+			break;
+		case DP_S_MIN:
+			if('0' <= ch && ch <= '9') {
+				min = 10 * min + char_to_int(ch);
+				ch = *format++;
+			} else if(ch == '*') {
+				min = va_arg(args, int);
+				ch = *format++;
+				state = DP_S_DOT;
+			} else
+				state = DP_S_DOT;
+			break;
+		case DP_S_DOT:
+			if(ch == '.') {
+				state = DP_S_MAX;
+				ch = *format++;
+			} else
+				state = DP_S_MOD;
+			break;
+		case DP_S_MAX:
+			if('0' <= ch && ch <= '9') {
+				if(max < 0) max = 0;
+				max = 10 * max + char_to_int(ch);
+				ch = *format++;
+			} else if(ch == '*') {
+				max = va_arg(args, int);
+				ch = *format++;
+				state = DP_S_MOD;
+			} else
+				state = DP_S_MOD;
+			break;
+		case DP_S_MOD:
+			switch(ch) {
+			case 'h':
+				cflags = DP_C_SHORT;
+				ch = *format++;
 				break;
-			case DP_S_MOD_L:
-				switch(ch) {
-					case 'l':
-						cflags = DP_C_LLONG;
-						ch = *format++;
-						break;
-					default: break;
-				}
+			case 'l':
+				cflags = DP_C_LONG;
+				ch = *format++;
+				break;
+			case 'L':
+				cflags = DP_C_LDOUBLE;
+				ch = *format++;
+				break;
+			default: break;
+			}
+			if(cflags != DP_C_LONG)
 				state = DP_S_CONV;
-				break;
-			case DP_S_CONV:
-				switch(ch) {
-					case 'd':
-					case 'i':
-						if(cflags == DP_C_SHORT)
-							value = (short int)va_arg(args, int);
-						else if(cflags == DP_C_LONG)
-							value = va_arg(args, long int);
-						else if(cflags == DP_C_LLONG)
-							value = va_arg(args, LLONG);
-						else
-							value = va_arg(args, int);
-						total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
-						break;
-					case 'o':
-						flags |= DP_F_UNSIGNED;
-						if(cflags == DP_C_SHORT)
-							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
-						else if(cflags == DP_C_LONG)
-							value = va_arg(args, unsigned long int);
-						else if(cflags == DP_C_LLONG)
-							value = va_arg(args, unsigned LLONG);
-						else
-							value = va_arg(args, unsigned int);
-						total += fmtint(buffer, &currlen, maxlen, value, 8, min, max, flags);
-						break;
-					case 'u':
-						flags |= DP_F_UNSIGNED;
-						if(cflags == DP_C_SHORT)
-							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
-						else if(cflags == DP_C_LONG)
-							value = va_arg(args, unsigned long int);
-						else if(cflags == DP_C_LLONG)
-							value = va_arg(args, unsigned LLONG);
-						else
-							value = va_arg(args, unsigned int);
-						total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
-						break;
-					case 'X': flags |= DP_F_UP;
-					case 'x':
-						flags |= DP_F_UNSIGNED;
-						if(cflags == DP_C_SHORT)
-							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
-						else if(cflags == DP_C_LONG)
-							value = va_arg(args, unsigned long int);
-						else if(cflags == DP_C_LLONG)
-							value = va_arg(args, unsigned LLONG);
-						else
-							value = va_arg(args, unsigned int);
-						total += fmtint(buffer, &currlen, maxlen, value, 16, min, max, flags);
-						break;
-					case 'f':
-						if(cflags == DP_C_LDOUBLE)
-							fvalue = va_arg(args, LDOUBLE);
-						else
-							fvalue = va_arg(args, double);
-						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
-						break;
-					case 'E': flags |= DP_F_UP;
-					case 'e':
-						if(cflags == DP_C_LDOUBLE)
-							fvalue = va_arg(args, LDOUBLE);
-						else
-							fvalue = va_arg(args, double);
-						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
-						break;
-					case 'G': flags |= DP_F_UP;
-					case 'g':
-						if(cflags == DP_C_LDOUBLE)
-							fvalue = va_arg(args, LDOUBLE);
-						else
-							fvalue = va_arg(args, double);
-						total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
-						break;
-					case 'c': total += dopr_outch(buffer, &currlen, maxlen, va_arg(args, int)); break;
-					case 's':
-						strvalue = va_arg(args, char *);
-						total += fmtstr(buffer, &currlen, maxlen, strvalue, flags, min, max);
-						break;
-					case 'p':
-						strvalue = va_arg(args, void *);
-						total += fmtint(buffer, &currlen, maxlen, (long)strvalue, 16, min, max, flags);
-						break;
-					case 'n':
-						if(cflags == DP_C_SHORT) {
-							short int *num;
-							num = va_arg(args, short int *);
-							*num = currlen;
-						} else if(cflags == DP_C_LONG) {
-							long int *num;
-							num = va_arg(args, long int *);
-							*num = currlen;
-						} else if(cflags == DP_C_LLONG) {
-							LLONG *num;
-							num = va_arg(args, LLONG *);
-							*num = currlen;
-						} else {
-							int *num;
-							num = va_arg(args, int *);
-							*num = currlen;
-						}
-						break;
-					case '%': total += dopr_outch(buffer, &currlen, maxlen, ch); break;
-					case 'w':
-						ch = *format++;
-						break;
-					default:
-						break;
-				}
+			else
+				state = DP_S_MOD_L;
+			break;
+		case DP_S_MOD_L:
+			switch(ch) {
+			case 'l':
+				cflags = DP_C_LLONG;
 				ch = *format++;
-				state = DP_S_DEFAULT;
-				flags = cflags = min = 0;
-				max = -1;
 				break;
-			case DP_S_DONE: break;
-			default:
+			default: break;
+			}
+			state = DP_S_CONV;
+			break;
+		case DP_S_CONV:
+			switch(ch) {
+			case 'd':
+			case 'i':
+				if(cflags == DP_C_SHORT)
+					value = (short int)va_arg(args, int);
+				else if(cflags == DP_C_LONG)
+					value = va_arg(args, long int);
+				else if(cflags == DP_C_LLONG)
+					value = va_arg(args, LLONG);
+				else
+					value = va_arg(args, int);
+				total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
 				break;
+			case 'o':
+				flags |= DP_F_UNSIGNED;
+				if(cflags == DP_C_SHORT)
+					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+				else if(cflags == DP_C_LONG)
+					value = va_arg(args, unsigned long int);
+				else if(cflags == DP_C_LLONG)
+					value = va_arg(args, unsigned LLONG);
+				else
+					value = va_arg(args, unsigned int);
+				total += fmtint(buffer, &currlen, maxlen, value, 8, min, max, flags);
+				break;
+			case 'u':
+				flags |= DP_F_UNSIGNED;
+				if(cflags == DP_C_SHORT)
+					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+				else if(cflags == DP_C_LONG)
+					value = va_arg(args, unsigned long int);
+				else if(cflags == DP_C_LLONG)
+					value = va_arg(args, unsigned LLONG);
+				else
+					value = va_arg(args, unsigned int);
+				total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
+				break;
+			case 'X': flags |= DP_F_UP;
+			case 'x':
+				flags |= DP_F_UNSIGNED;
+				if(cflags == DP_C_SHORT)
+					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+				else if(cflags == DP_C_LONG)
+					value = va_arg(args, unsigned long int);
+				else if(cflags == DP_C_LLONG)
+					value = va_arg(args, unsigned LLONG);
+				else
+					value = va_arg(args, unsigned int);
+				total += fmtint(buffer, &currlen, maxlen, value, 16, min, max, flags);
+				break;
+			case 'f':
+				if(cflags == DP_C_LDOUBLE)
+					fvalue = va_arg(args, LDOUBLE);
+				else
+					fvalue = va_arg(args, double);
+				total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+				break;
+			case 'E': flags |= DP_F_UP;
+			case 'e':
+				if(cflags == DP_C_LDOUBLE)
+					fvalue = va_arg(args, LDOUBLE);
+				else
+					fvalue = va_arg(args, double);
+				total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+				break;
+			case 'G': flags |= DP_F_UP;
+			case 'g':
+				if(cflags == DP_C_LDOUBLE)
+					fvalue = va_arg(args, LDOUBLE);
+				else
+					fvalue = va_arg(args, double);
+				total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
+				break;
+			case 'c': total += dopr_outch(buffer, &currlen, maxlen, va_arg(args, int)); break;
+			case 's':
+				strvalue = va_arg(args, char *);
+				total += fmtstr(buffer, &currlen, maxlen, strvalue, flags, min, max);
+				break;
+			case 'p':
+				strvalue = va_arg(args, void *);
+				total += fmtint(buffer, &currlen, maxlen, (long)strvalue, 16, min, max, flags);
+				break;
+			case 'n':
+				if(cflags == DP_C_SHORT) {
+					short int *num;
+					num = va_arg(args, short int *);
+					*num = currlen;
+				} else if(cflags == DP_C_LONG) {
+					long int *num;
+					num = va_arg(args, long int *);
+					*num = currlen;
+				} else if(cflags == DP_C_LLONG) {
+					LLONG *num;
+					num = va_arg(args, LLONG *);
+					*num = currlen;
+				} else {
+					int *num;
+					num = va_arg(args, int *);
+					*num = currlen;
+				}
+				break;
+			case '%': total += dopr_outch(buffer, &currlen, maxlen, ch); break;
+			case 'w': ch = *format++; break;
+			default: break;
+			}
+			ch = *format++;
+			state = DP_S_DEFAULT;
+			flags = cflags = min = 0;
+			max = -1;
+			break;
+		case DP_S_DONE: break;
+		default: break;
 		}
 	}
 	if(buffer != NULL) {
@@ -1079,17 +1081,17 @@ int sscanf(const char *buffer, const char *fmt, ...) {
 		}
 
 		switch(cmd) {
-			case 'i':
-			case 'd':
-			case 'u': *(va_arg(ap, int *)) = _atoi(&buffer); break;
-			case 'f': *(va_arg(ap, float *)) = _atof(&buffer); break;
-			case 's': {
-				char *s = va_arg(ap, char *);
-				while(isspace(*buffer)) buffer++;
-				while(*buffer && !isspace(*buffer) && len-- > 0) *s++ = *buffer++;
-				*s++ = '\0';
-				break;
-			}
+		case 'i':
+		case 'd':
+		case 'u': *(va_arg(ap, int *)) = _atoi(&buffer); break;
+		case 'f': *(va_arg(ap, float *)) = _atof(&buffer); break;
+		case 's': {
+			char *s = va_arg(ap, char *);
+			while(isspace(*buffer)) buffer++;
+			while(*buffer && !isspace(*buffer) && len-- > 0) *s++ = *buffer++;
+			*s++ = '\0';
+			break;
+		}
 		}
 	}
 

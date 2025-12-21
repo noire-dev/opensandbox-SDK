@@ -27,17 +27,17 @@ This must be the very first function compiled into the .q3vm file
 */
 intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	switch(command) {
-		case GAME_INIT: G_InitGame(arg0, arg1, arg2); return 0;
-		case GAME_SHUTDOWN: G_ShutdownGame(arg0); return 0;
-		case GAME_CLIENT_CONNECT: return (intptr_t)ClientConnect(arg0, arg1, arg2);
-		case GAME_CLIENT_THINK: ClientThink(arg0); return 0;
-		case GAME_CLIENT_USERINFO_CHANGED: ClientUserinfoChanged(arg0); return 0;
-		case GAME_CLIENT_DISCONNECT: ClientDisconnect(arg0); return 0;
-		case GAME_CLIENT_BEGIN: ClientBegin(arg0); return 0;
-		case GAME_CLIENT_COMMAND: ClientCommand(arg0); return 0;
-		case GAME_RUN_FRAME: G_RunFrame(arg0); return 0;
-		case GAME_CONSOLE_COMMAND: return ConsoleCommand();
-		case BOTAI_START_FRAME: return AI_Frame(arg0);
+	case GAME_INIT: G_InitGame(arg0, arg1, arg2); return 0;
+	case GAME_SHUTDOWN: G_ShutdownGame(arg0); return 0;
+	case GAME_CLIENT_CONNECT: return (intptr_t)ClientConnect(arg0, arg1, arg2);
+	case GAME_CLIENT_THINK: ClientThink(arg0); return 0;
+	case GAME_CLIENT_USERINFO_CHANGED: ClientUserinfoChanged(arg0); return 0;
+	case GAME_CLIENT_DISCONNECT: ClientDisconnect(arg0); return 0;
+	case GAME_CLIENT_BEGIN: ClientBegin(arg0); return 0;
+	case GAME_CLIENT_COMMAND: ClientCommand(arg0); return 0;
+	case GAME_RUN_FRAME: G_RunFrame(arg0); return 0;
+	case GAME_CONSOLE_COMMAND: return ConsoleCommand();
+	case BOTAI_START_FRAME: return AI_Frame(arg0);
 	}
 
 	return -1;
@@ -147,7 +147,7 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	level.time = levelTime;
 	level.startTime = levelTime;
 
-	level.snd_fry = G_SoundIndex("sound/player/fry.wav");  // FIXME standing in lava / slime
+	level.snd_fry = G_SoundIndex("sound/player/fry.wav"); // FIXME standing in lava / slime
 
 	G_InitWorldSession();
 
@@ -191,7 +191,7 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	}
 
 	if(strlen(cvarString("g_entitypack"))) {
-		trap_Cmd(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", cvarString("g_entitypack"), cvarString("sv_mapname")));  // load map file
+		trap_Cmd(EXEC_APPEND, va("loadmap maps/%s/%s.ent \n", cvarString("g_entitypack"), cvarString("sv_mapname"))); // load map file
 	}
 }
 
@@ -461,7 +461,7 @@ void FindIntermissionPoint(void) {
 
 	// find the intermission spot
 	ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
-	if(!ent) {  // the map creator forgot to put in an intermission point...
+	if(!ent) { // the map creator forgot to put in an intermission point...
 		SelectSpawnPoint(vec3_origin, level.intermission_origin, level.intermission_angle);
 	} else {
 		VectorCopy(ent->s.origin, level.intermission_origin);
@@ -486,7 +486,7 @@ static void BeginIntermission(void) {
 	int i;
 	gentity_t *client;
 
-	if(level.intermissiontime) return;  // already active
+	if(level.intermissiontime) return; // already active
 
 	level.intermissiontime = level.time;
 	FindIntermissionPoint();
@@ -804,7 +804,7 @@ void SetLeader(int team, int client) {
 		PrintTeam(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname));
 		return;
 	}
-	
+
 	ClientUserinfoChanged(client);
 }
 
@@ -873,7 +873,7 @@ static void G_RunFrame(int levelTime) {
 		// clear events that are too old
 		if(level.time - ent->eventTime > EVENT_VALID_MSEC) {
 			if(ent->s.event) {
-				ent->s.event = 0;  // &= EV_EVENT_BITS;
+				ent->s.event = 0; // &= EV_EVENT_BITS;
 				if(ent->client) {
 					ent->client->ps.externalEvent = 0;
 				}
@@ -910,8 +910,8 @@ static void G_RunFrame(int levelTime) {
 			G_RunClient(ent);
 			continue;
 		}
-		
-        if(ent->s.eType == ET_MISSILE) {
+
+		if(ent->s.eType == ET_MISSILE) {
 			G_RunMissile(ent);
 		}
 

@@ -228,8 +228,8 @@ gentity_t *G_Spawn(void) {
 	int i, force;
 	gentity_t *e;
 
-	e = NULL;  // shut up warning
-	i = 0;     // shut up warning
+	e = NULL; // shut up warning
+	i = 0;    // shut up warning
 	for(force = 0; force < 2; force++) {
 		// if we go through all entities and can't find one to free,
 		// override the normal minimum times before use
@@ -276,11 +276,11 @@ Marks the entity as free
 =================
 */
 void G_FreeEntity(gentity_t *ed) {
-	trap_UnlinkEntity(ed);  // unlink from world
+	trap_UnlinkEntity(ed); // unlink from world
 
 	if(ed->neverFree) return;
 
-	if(ed->objectType == OT_VEHICLE && ed->parent && ed->parent->client->vehicleNum == ed->s.number) {  // Reset vehicle
+	if(ed->objectType == OT_VEHICLE && ed->parent && ed->parent->client->vehicleNum == ed->s.number) { // Reset vehicle
 		ed->parent->client->vehicleNum = 0;
 		ClientUserinfoChanged(ed->parent->s.clientNum);
 		VectorSet(ed->parent->r.mins, -15, -15, -24);
@@ -290,7 +290,7 @@ void G_FreeEntity(gentity_t *ed) {
 
 	Phys_Unweld(ed);
 
-	if(!strcmp(ed->classname, "sandbox_npc")){
+	if(!strcmp(ed->classname, "sandbox_npc")) {
 		if(ed->parent && ed->parent->client && ed->parent->client->pers.connected == CON_CONNECTED) DropClientSilently(ed->parent->s.clientNum);
 	}
 
@@ -318,7 +318,7 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 	e->freeAfterEvent = qtrue;
 
 	VectorCopy(origin, snapped);
-	SnapVector(snapped);  // save network bandwidth
+	SnapVector(snapped); // save network bandwidth
 	G_SetOrigin(e, snapped);
 
 	// find cluster for PVS
@@ -431,13 +431,13 @@ gentity_t *FindEntityForPhysgun(gentity_t *ent, int range) {
 
 	ent->grabDist = Distance(start, tr.endpos);
 
-	traceEnt = &g_entities[tr.entityNum];  // entity for return
+	traceEnt = &g_entities[tr.entityNum]; // entity for return
 
 	if(traceEnt->grabbedEntity == ent) return NULL;
 
 	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return NULL;
 
-	if(traceEnt->physParentEnt) {  // WELD-TOOL
+	if(traceEnt->physParentEnt) { // WELD-TOOL
 		VectorSubtract(traceEnt->physParentEnt->r.currentOrigin, tr.endpos, ent->grabOffset);
 		return traceEnt->physParentEnt;
 	} else {
@@ -466,7 +466,7 @@ gentity_t *FindEntityForGravitygun(gentity_t *ent, int range) {
 
 	ent->grabDist = 128;
 
-	traceEnt = &g_entities[tr.entityNum];  // entity for return
+	traceEnt = &g_entities[tr.entityNum]; // entity for return
 
 	if(!traceEnt->sandboxObject && traceEnt->npcType <= NT_PLAYER && traceEnt->s.eType != ET_ITEM) return NULL;
 
@@ -529,12 +529,12 @@ qboolean G_PlayerIsOwner(gentity_t *player, gentity_t *ent) {
 	if(ent->owner) {
 		if(ent->owner != player) {
 			trap_SendServerCommand(player->s.clientNum, va("lp \"Owned by %s\n\"", ent->owner->client->pers.netname));
-			return qfalse;  // ent owned by another player
+			return qfalse; // ent owned by another player
 		} else {
-			return qtrue;  // ent owned by this player
+			return qtrue; // ent owned by this player
 		}
 	} else {
-		return qtrue;  // ent not owned
+		return qtrue; // ent not owned
 	}
 }
 
@@ -547,39 +547,39 @@ gentity_t *G_FindWeldEntity(gentity_t *ent) {
 }
 
 gentity_t *FindRandomItem(void) {
-    gentity_t *finded[MAX_GENTITIES];
-    int i, num_finded = 0;
-    
-    for (i = 0; i < level.num_entities; i++) {
-        gentity_t *ent = &g_entities[i];
-        
-        if (!ent->inuse) continue;
-        if (ent->s.eType == ET_ITEM) {
-            finded[num_finded++] = ent;
-            if (num_finded >= MAX_GENTITIES) break;
-        }
-    }
-    
-    if (num_finded > 0) return finded[rand() % num_finded];
-    
-    return NULL;
+	gentity_t *finded[MAX_GENTITIES];
+	int i, num_finded = 0;
+
+	for(i = 0; i < level.num_entities; i++) {
+		gentity_t *ent = &g_entities[i];
+
+		if(!ent->inuse) continue;
+		if(ent->s.eType == ET_ITEM) {
+			finded[num_finded++] = ent;
+			if(num_finded >= MAX_GENTITIES) break;
+		}
+	}
+
+	if(num_finded > 0) return finded[rand() % num_finded];
+
+	return NULL;
 }
 
 gentity_t *FindRandomSpawn(void) {
-    gentity_t *finded[MAX_GENTITIES];
-    int i, num_finded = 0;
-    
-    for (i = 0; i < level.num_entities; i++) {
-        gentity_t *ent = &g_entities[i];
-        
-        if (!ent->inuse) continue;
-        if (!strcmp(ent->classname, "info_player_deathmatch") || !strcmp(ent->classname, "team_CTF_redspawn") || !strcmp(ent->classname, "team_CTF_bluespawn")) {
-            finded[num_finded++] = ent;
-            if (num_finded >= MAX_GENTITIES) break;
-        }
-    }
-    
-    if (num_finded > 0) return finded[rand() % num_finded];
-    
-    return NULL;
+	gentity_t *finded[MAX_GENTITIES];
+	int i, num_finded = 0;
+
+	for(i = 0; i < level.num_entities; i++) {
+		gentity_t *ent = &g_entities[i];
+
+		if(!ent->inuse) continue;
+		if(!strcmp(ent->classname, "info_player_deathmatch") || !strcmp(ent->classname, "team_CTF_redspawn") || !strcmp(ent->classname, "team_CTF_bluespawn")) {
+			finded[num_finded++] = ent;
+			if(num_finded >= MAX_GENTITIES) break;
+		}
+	}
+
+	if(num_finded > 0) return finded[rand() % num_finded];
+
+	return NULL;
 }

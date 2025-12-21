@@ -330,9 +330,9 @@ static void CG_DrawStatusBar(void) {
 	}
 
 	if(!ps->stats[STAT_VEHICLE]) {
-		if(cent->currentState.weapon) {  // VEHICLE-SYSTEM: vehicle's speedmeter for all
+		if(cent->currentState.weapon) { // VEHICLE-SYSTEM: vehicle's speedmeter for all
 			value = ps->stats[STAT_AMMO];
-			if(value <= 0 && value != -1) {  // OpenSandbox weapon predict
+			if(value <= 0 && value != -1) { // OpenSandbox weapon predict
 				cg.swep_listcl[ps->weapon] = WS_NOAMMO;
 			} else {
 				cg.swep_listcl[ps->weapon] = WS_HAVE;
@@ -345,7 +345,7 @@ static void CG_DrawStatusBar(void) {
 		CG_DrawStatusElement(630 + cgs.wideoffset - 100, 440, value, "KM/H");
 	}
 
-	if(!ps->stats[STAT_VEHICLE]) {  // VEHICLE-SYSTEM: vehicle's hp instead player
+	if(!ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: vehicle's hp instead player
 		value = ps->stats[STAT_HEALTH];
 	} else {
 		value = ps->stats[STAT_VEHICLEHP];
@@ -711,7 +711,7 @@ static void CG_DrawCenterString(void) {
 		}
 		linebuffer[l] = 0;
 
-		ST_DrawString(SCREEN_WIDTH / 2, y, linebuffer, UI_CENTER|UI_DROPSHADOW, color_white, 1.25);
+		ST_DrawString(SCREEN_WIDTH / 2, y, linebuffer, UI_CENTER | UI_DROPSHADOW, color_white, 1.25);
 
 		y += cg.centerPrintCharWidth * 1.5;
 		while(*start && (*start != '\n')) {
@@ -728,10 +728,10 @@ static void CG_Draw1FCTF(void) {
 	if(cgs.gametype != GT_1FCTF) return;
 
 	switch(cgs.flagStatus) {
-		case 2: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_REDFLAG))].icon); break;
-		case 3: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_BLUEFLAG))].icon); break;
-		case 4: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_NEUTRALFLAG))].icon); break;
-		default: return;
+	case 2: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_REDFLAG))].icon); break;
+	case 3: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_BLUEFLAG))].icon); break;
+	case 4: CG_DrawPic(320 - (ICON_SIZE * 0.75), 50, ICON_SIZE * 1.50, ICON_SIZE * 1.50, cg_items[ITEM_INDEX(BG_FindItemForPowerup(PW_NEUTRALFLAG))].icon); break;
+	default: return;
 	};
 }
 
@@ -750,14 +750,12 @@ static void CG_ScanForCrosshairEntity(void) {
 	if(content & CONTENTS_FOG) return;
 
 	if(cg_entities[trace.entityNum].currentState.powerups & (1 << PW_INVIS)) return;
-
-	cg.crosshairClientNum = trace.entityNum;
 }
 
 static void CG_DrawCrosshair(void) {
 	float cSize;
 	qhandle_t hShader;
-	
+
 	if(!cvarInt("cg_drawCrosshair") || cg.renderingThirdPerson || cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return;
 
 	trap_R_SetColor(customcolor_crosshair);
@@ -765,7 +763,7 @@ static void CG_DrawCrosshair(void) {
 	if(cvarInt("cg_drawCrosshair") > 0) {
 		hShader = cgs.media.crosshairShader[cvarInt("cg_drawCrosshair") % NUM_CROSSHAIRS];
 		if(!hShader) hShader = cgs.media.crosshairShader[0];
-		CG_DrawPic(320-(cSize*0.5), 240-(cSize*0.5), cSize, cSize, hShader);
+		CG_DrawPic(320 - (cSize * 0.5), 240 - (cSize * 0.5), cSize, cSize, hShader);
 	}
 	trap_R_SetColor(NULL);
 }
@@ -800,7 +798,7 @@ static void CG_Draw3DCrosshair(float x, float y, float z) {
 	trap_R_SetColor(customcolor_crosshair);
 	cSize = cvarFloat("cg_crosshairScale");
 	hShader = cgs.media.crosshairShader[cvarInt("cg_drawCrosshair") % NUM_CROSSHAIRS];
-	CG_DrawPic(finalx-(cSize*0.5), finaly-(cSize*0.5), cSize, cSize, hShader);
+	CG_DrawPic(finalx - (cSize * 0.5), finaly - (cSize * 0.5), cSize, cSize, hShader);
 	trap_R_SetColor(NULL);
 }
 
@@ -967,9 +965,9 @@ static void CG_Notify(void) {
 
 static void CG_DrawDeathMessage(void) {
 	if(((double)cg.respawnTime - (double)cg.time) / 1000.0 <= 0) {
-		ST_DrawString(SCREEN_WIDTH / 2, 465, "Press fire key to respawn", UI_CENTER|UI_DROPSHADOW, color_white, 1.00);
+		ST_DrawString(SCREEN_WIDTH / 2, 465, "Press fire key to respawn", UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
 	} else {
-		ST_DrawString(SCREEN_WIDTH / 2, 465, va("Respawn: %6.2f", ((double)cg.respawnTime - (double)cg.time) / 1000.0), UI_CENTER|UI_DROPSHADOW, color_white, 1.00);
+		ST_DrawString(SCREEN_WIDTH / 2, 465, va("Respawn: %6.2f", ((double)cg.respawnTime - (double)cg.time) / 1000.0), UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
 	}
 }
 
@@ -989,14 +987,14 @@ static void CG_Draw2D(void) {
 	if(!cvarInt("cg_draw2D")) return;
 
 	if(!(catcher & KEYCATCH_MESSAGE)) CG_DrawGenericConsole(&cgs.console, 5, 10000, 0 - cgs.wideoffset, 0, 1.00);
-	if(!(catcher & KEYCATCH_UI)){
+	if(!(catcher & KEYCATCH_UI)) {
 		CG_DrawGenericConsole(&cgs.teamChat, 5, 10000, 0 - cgs.wideoffset, 80, 1.00);
 		CG_DrawGenericConsole(&cgs.chat, 5, 10000, 0 - cgs.wideoffset, 350, 1.00);
 	}
 
 	CG_DrawCrosshair();
 	CG_DrawCounters();
-	if(!(catcher & KEYCATCH_UI)){
+	if(!(catcher & KEYCATCH_UI)) {
 		CG_ScanForCrosshairEntity();
 		CG_DrawPowerups();
 		CG_DrawFollow();
@@ -1012,7 +1010,7 @@ static void CG_Draw2D(void) {
 
 	if(cg.snap->ps.pm_type != PM_INTERMISSION && cg.snap->ps.pm_type != PM_DEAD && cg.snap->ps.pm_type != PM_SPECTATOR) CG_DrawStatusBar();
 
-	if(!(catcher & KEYCATCH_UI)){
+	if(!(catcher & KEYCATCH_UI)) {
 		if(!cg.scoreBoardShowing) CG_DrawCenterString();
 		cg.scoreBoardShowing = CG_DrawScoreboard();
 		if(cgs.gametype != GT_SANDBOX) CG_DrawScores();

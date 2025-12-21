@@ -6,9 +6,9 @@
 
 #define SCOREBOARD_X (0 - cgs.wideoffset)
 
-#define SB_WIDTH (ICON_SIZE + 16 + ((BASEFONT_INDENT*35) + (BASEFONT_INDENT*6))*1.20)
+#define SB_WIDTH (ICON_SIZE + 16 + ((BASEFONT_INDENT * 35) + (BASEFONT_INDENT * 6)) * 1.20)
 #define SB_INTER_HEIGHT 16
-#define SB_X (320-SB_WIDTH/2)
+#define SB_X (320 - SB_WIDTH / 2)
 
 static void CG_DrawClientScore(int y, score_t *score) {
 	char nameText[36];
@@ -31,11 +31,11 @@ static void CG_DrawClientScore(int y, score_t *score) {
 		hcolor[2] = cvarFloat("cg_crosshairColorBlue");
 		hcolor[3] = 0.40;
 
-		CG_DrawRoundedRect(SB_X+4, y, SB_WIDTH-8, ICON_SIZE, 0, hcolor);
+		CG_DrawRoundedRect(SB_X + 4, y, SB_WIDTH - 8, ICON_SIZE, 0, hcolor);
 	}
 
 	ci = &cgs.clientinfo[score->client];
-	CG_DrawHead(SB_X+4, y, ICON_SIZE, ICON_SIZE, score->client);
+	CG_DrawHead(SB_X + 4, y, ICON_SIZE, ICON_SIZE, score->client);
 
 	// draw the score line
 	if(ci->team == TEAM_SPECTATOR) {
@@ -46,8 +46,8 @@ static void CG_DrawClientScore(int y, score_t *score) {
 		Com_sprintf(scoreText, sizeof(scoreText), "%i", score->score);
 	}
 
-	ST_DrawString(SB_X+8+ICON_SIZE, y + 2, nameText, UI_LEFT|UI_DROPSHADOW, color_white, 1.20);
-	ST_DrawString((SB_X+8+ICON_SIZE)+(BASEFONT_INDENT*35)*1.20, y + 2, scoreText, UI_LEFT|UI_DROPSHADOW, color_white, 1.20);
+	ST_DrawString(SB_X + 8 + ICON_SIZE, y + 2, nameText, UI_LEFT | UI_DROPSHADOW, color_white, 1.20);
+	ST_DrawString((SB_X + 8 + ICON_SIZE) + (BASEFONT_INDENT * 35) * 1.20, y + 2, scoreText, UI_LEFT | UI_DROPSHADOW, color_white, 1.20);
 }
 
 static int CG_TeamScoreboard(int y, team_t team, int maxClients, int lineHeight) {
@@ -80,7 +80,7 @@ qboolean CG_DrawScoreboard(void) {
 
 	if(!(cg.showScores || cg.predictedPlayerState.pm_type == PM_DEAD || cg.predictedPlayerState.pm_type == PM_INTERMISSION)) return qfalse;
 
-	CG_DrawRoundedRect(320-(SB_WIDTH/2), 50-8, SB_WIDTH, SB_INTER_HEIGHT*26, 6, color_dim);
+	CG_DrawRoundedRect(320 - (SB_WIDTH / 2), 50 - 8, SB_WIDTH, SB_INTER_HEIGHT * 26, 6, color_dim);
 
 	y = 50;
 	lineHeight = SB_INTER_HEIGHT;

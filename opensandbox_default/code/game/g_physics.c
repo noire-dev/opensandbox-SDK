@@ -30,7 +30,7 @@ void Phys_VehiclePlayer(gentity_t *self) {
 		VectorSet(self->parent->client->ps.origin, self->r.currentOrigin[0], self->r.currentOrigin[1], self->r.currentOrigin[2] + 40);
 		self->parent->client->vehicleNum = 0;
 		self->s.legsAnim = 0;
-		self->s.generic1 = 0;  // smooth vehicles
+		self->s.generic1 = 0; // smooth vehicles
 		self->parent->client->ps.gravity = cvarFloat("g_gravity");
 		return;
 	}
@@ -50,12 +50,12 @@ void Phys_VehiclePlayer(gentity_t *self) {
 		self->s.apos.trBase[1] = self->parent->s.apos.trBase[1];
 		self->s.apos.trBase[2] = 0;
 	}
-	if(engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900) <= 10) {              // 900 is car speed
-		self->s.legsAnim = engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900);  // 900 is car speed
+	if(engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900) <= 10) {             // 900 is car speed
+		self->s.legsAnim = engine10hook(sqrt(self->parent->client->ps.velocity[0] * self->parent->client->ps.velocity[0] + self->parent->client->ps.velocity[1] * self->parent->client->ps.velocity[1]), 0, 900); // 900 is car speed
 	}
 	VectorCopy(self->parent->r.currentOrigin, self->r.currentOrigin);
-	self->parent->client->ps.stats[STAT_VEHICLEHP] = self->health;  // VEHICLE-SYSTEM: vehicle's hp instead player
-	self->s.generic1 = self->parent->s.clientNum + 1;               // smooth vehicles
+	self->parent->client->ps.stats[STAT_VEHICLEHP] = self->health; // VEHICLE-SYSTEM: vehicle's hp instead player
+	self->s.generic1 = self->parent->s.clientNum + 1;              // smooth vehicles
 
 	trap_LinkEntity(self);
 
@@ -84,9 +84,9 @@ static void Phys_Smoke(gentity_t *ent, float impact) {
 
 	temp = G_TempEntity(ent->r.currentOrigin, EV_SMOKEPUFF);
 	temp->s.constantLight = (((70 | 64 << 8) | 64 << 16) | (255 << 24));
-	temp->s.eventParm = 2;                 // eventParm is used to determine the amount of time the smoke puff exists
-	temp->s.generic1 = 100;                // generic1 is used to determine the movement speed of the smoke puff
-	temp->s.otherEntityNum = (int)impact;  // otherEntityNum is used to determine the size of the smokepuff. The default is 32.
+	temp->s.eventParm = 2;                // eventParm is used to determine the amount of time the smoke puff exists
+	temp->s.generic1 = 100;               // generic1 is used to determine the movement speed of the smoke puff
+	temp->s.otherEntityNum = (int)impact; // otherEntityNum is used to determine the size of the smokepuff. The default is 32.
 	VectorCopy(ent->s.angles, temp->s.angles);
 }
 
@@ -123,7 +123,7 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 	if(tr.fraction < 1.0f && tr.entityNum != ENTITYNUM_NONE) {
 		hit = &g_entities[tr.entityNum];
 
-		if(hit->s.number != ent->s.number) {  // Ignore self
+		if(hit->s.number != ent->s.number) { // Ignore self
 			// Calculate the impact force
 			impactForce = sqrt(ent->client->ps.velocity[0] * ent->client->ps.velocity[0] + ent->client->ps.velocity[1] * ent->client->ps.velocity[1]);
 
@@ -136,10 +136,10 @@ void Phys_CheckCarCollisions(gentity_t *ent) {
 				VectorScale(impactVector, PHYS_PROP_IMPACT, impactVector);
 				impactVector[2] = impactForce * 0.15;
 				if(!hit->client) {
-					hit->lastPlayer = ent;                                            // for save attacker
-					VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
+					hit->lastPlayer = ent;                                           // for save attacker
+					VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta); // Transfer velocity from the prop to the hit entity
 				} else {
-					VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
+					VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity); // Transfer velocity from the prop to the hit player
 				}
 			}
 			if(impactForce > VEHICLE_DAMAGESENS) {
@@ -172,7 +172,7 @@ void Phys_HoldDropStatic(gentity_t *player, vec3_t velocity) {
 		ent->s.pos.trType = TR_STATIONARY;
 		ent->sb_phys = PHYS_STATIC;
 		if(ent->s.eType == ET_ITEM) {
-			ent->spawnflags = 1;  // for items phys
+			ent->spawnflags = 1; // for items phys
 		}
 		VectorClear(ent->s.pos.trDelta);
 	} else {
@@ -195,7 +195,7 @@ void Phys_HoldDropDynamic(gentity_t *player, vec3_t velocity, qboolean isPhysgun
 		ent->s.pos.trTime = level.time;
 		ent->sb_phys = PHYS_DYNAMIC;
 		if(ent->s.eType == ET_ITEM) {
-			ent->spawnflags = 0;  // for items phys
+			ent->spawnflags = 0; // for items phys
 		}
 		if(isPhysgun) {
 			VectorSubtract(ent->r.currentOrigin, ent->grabOldOrigin, velocity);
@@ -321,21 +321,21 @@ static void Phys_RestoreWeldedEntities(gentity_t *ent) {
 
 			OrthogonalizeMatrix(newForward, newRight, newUp);
 
-			matrix[0][0] = newForward[0];  // X forward
-			matrix[0][1] = newRight[0];    // X right
-			matrix[0][2] = newUp[0];       // X up
+			matrix[0][0] = newForward[0]; // X forward
+			matrix[0][1] = newRight[0];   // X right
+			matrix[0][2] = newUp[0];      // X up
 
-			matrix[1][0] = newForward[1];  // Y forward
-			matrix[1][1] = newRight[1];    // Y right
-			matrix[1][2] = newUp[1];       // Y up
+			matrix[1][0] = newForward[1]; // Y forward
+			matrix[1][1] = newRight[1];   // Y right
+			matrix[1][2] = newUp[1];      // Y up
 
-			matrix[2][0] = newForward[2];  // Z forward
-			matrix[2][1] = newRight[2];    // Z right
-			matrix[2][2] = newUp[2];       // Z up
+			matrix[2][0] = newForward[2]; // Z forward
+			matrix[2][1] = newRight[2];   // Z right
+			matrix[2][2] = newUp[2];      // Z up
 
 			AxisToAngles(matrix, newAngles);
 
-			newAngles[2] -= 180;  // it's work well
+			newAngles[2] -= 180; // it's work well
 
 			VectorCopy(newAngles, object->s.angles);
 			VectorCopy(newAngles, object->s.apos.trBase);
@@ -374,17 +374,17 @@ void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun) {
 	trap_LinkEntity(ent);
 	Phys_RestoreWeldedEntities(ent);
 	if(isPhysgun) {
-		VectorAdd(end, player->grabOffset, end);               // physgun offset
-		VectorCopy(ent->r.currentOrigin, ent->grabOldOrigin);  // save old frame for speed apply
+		VectorAdd(end, player->grabOffset, end);              // physgun offset
+		VectorCopy(ent->r.currentOrigin, ent->grabOldOrigin); // save old frame for speed apply
 	}
-	ent->lastPlayer = player;  // save attacker
+	ent->lastPlayer = player; // save attacker
 	if(!ent->client) {
 		VectorClear(ent->s.pos.trDelta);
 		VectorCopy(end, ent->s.origin);
 		VectorCopy(end, ent->s.pos.trBase);
 		VectorCopy(end, ent->r.currentOrigin);
 		Phys_Enable(ent);
-		if(player->client->pers.cmd.buttons & BUTTON_GESTURE && isPhysgun) {  // rotate
+		if(player->client->pers.cmd.buttons & BUTTON_GESTURE && isPhysgun) { // rotate
 			if(!ent->r.bmodel) {
 				ent->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
 			}
@@ -394,7 +394,7 @@ void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun) {
 		VectorClear(ent->client->ps.velocity);
 		VectorCopy(end, ent->client->ps.origin);
 		if(isPhysgun) {
-			end[2] += 1;  // player not stuck
+			end[2] += 1; // player not stuck
 		}
 		VectorCopy(end, ent->r.currentOrigin);
 		if(isPhysgun) {
@@ -438,8 +438,8 @@ Disables physics
 ================
 */
 void Phys_Disable(gentity_t *ent, vec3_t origin) {
-	VectorCopy(origin, ent->r.currentOrigin);  // physics origin
-	VectorCopy(origin, ent->s.pos.trBase);     // client origin
+	VectorCopy(origin, ent->r.currentOrigin); // physics origin
+	VectorCopy(origin, ent->s.pos.trBase);    // client origin
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
@@ -454,10 +454,10 @@ Enables physics
 ================
 */
 void Phys_Enable(gentity_t *ent) {
-	if(ent->sb_phys == PHYS_STATIC || !ent->sandboxObject) {  // if it's static object, not turn phys
+	if(ent->sb_phys == PHYS_STATIC || !ent->sandboxObject) { // if it's static object, not turn phys
 		return;
 	}
-	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);  // restore client origin from physics origin
+	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase); // restore client origin from physics origin
 	if(ent->phys_inWater) {
 		ent->s.pos.trType = TR_GRAVITY_WATER;
 	} else {
@@ -589,9 +589,9 @@ static void Phys_WaterSplash(gentity_t *ent, float impact) {
 	gentity_t *temp;
 
 	temp = G_TempEntity(ent->r.currentOrigin, EV_WATERPUFF);
-	temp->s.eventParm = 1;                 // eventParm is used to determine the amount of time the smoke puff exists
-	temp->s.generic1 = 100;                // generic1 is used to determine the movement speed of the smoke puff
-	temp->s.otherEntityNum = (int)impact;  // otherEntityNum is used to determine the size of the smokepuff. The default is 32.
+	temp->s.eventParm = 1;                // eventParm is used to determine the amount of time the smoke puff exists
+	temp->s.generic1 = 100;               // generic1 is used to determine the movement speed of the smoke puff
+	temp->s.otherEntityNum = (int)impact; // otherEntityNum is used to determine the size of the smokepuff. The default is 32.
 }
 
 /*
@@ -640,7 +640,7 @@ static void Phys_Bounce(gentity_t *ent, trace_t *tr) {
 	}
 
 	VectorAdd(ent->r.currentOrigin, tr->plane.normal, ent->r.currentOrigin);
-	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);  // update client origin from physics origin
+	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase); // update client origin from physics origin
 	ent->s.pos.trTime = level.time;
 }
 
@@ -695,7 +695,7 @@ static void Phys_SelectPhysModel(gentity_t *ent) {
 	}
 
 	if(ent->s.pos.trType != TR_STATIONARY) {
-		ent->s.pos.trType = TR_GRAVITY;  // default phys
+		ent->s.pos.trType = TR_GRAVITY; // default phys
 	}
 }
 
@@ -755,7 +755,7 @@ static qboolean Phys_UpdateState(gentity_t *ent) {
 	ent->s.apos.trBase[1] = AngleNormalize360(ent->s.apos.trBase[1]);
 	ent->s.apos.trBase[2] = AngleNormalize360(ent->s.apos.trBase[2]);
 
-	if(ent->sb_phys == PHYS_STATIC || ent->s.eType == ET_ITEM) {  // if it's static object, reset properties
+	if(ent->sb_phys == PHYS_STATIC || ent->s.eType == ET_ITEM) { // if it's static object, reset properties
 		ent->phys_inAir = qfalse;
 		ent->phys_inSolid = qfalse;
 	} else {
@@ -763,18 +763,18 @@ static qboolean Phys_UpdateState(gentity_t *ent) {
 		ent->phys_inSolid = Phys_Check(ent, 0.0f, PHYSCHECK_SOLID);
 	}
 
-	if(ent->sb_phys == PHYS_STATIC) {  // if it's static object, reset delta
+	if(ent->sb_phys == PHYS_STATIC) { // if it's static object, reset delta
 		VectorClear(ent->s.pos.trDelta);
 	}
 
 	// Update server and phys rotate
-	VectorCopy(ent->s.apos.trBase, ent->s.angles);  // update server angles from client angles
+	VectorCopy(ent->s.apos.trBase, ent->s.angles); // update server angles from client angles
 	if(ent->s.pos.trType == TR_STATIONARY) {
-		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);  // update physics angles from client angles
+		VectorCopy(ent->s.apos.trBase, ent->r.currentAngles); // update physics angles from client angles
 	}
 
 	// Update server origin
-	VectorCopy(ent->r.currentOrigin, ent->s.origin);  // update origin for save
+	VectorCopy(ent->r.currentOrigin, ent->s.origin); // update origin for save
 
 	// If the entity is stationary and not on air - disable physics
 	if(ent->s.pos.trType == TR_STATIONARY) {
@@ -817,12 +817,12 @@ static void Phys_Rotate(gentity_t *ent, trace_t *tr) {
 	float rotationMultiplier = (ent->s.pos.trType != TR_GRAVITY_WATER) ? PHYS_ROTATING : PHYS_ROTATING * 0.5;
 
 	if(ent->phys_think && !ent->isGrabbed && !tr->startsolid) {
-		VectorClear(ent->s.apos.trDelta);  // reset rotate for client
+		VectorClear(ent->s.apos.trDelta); // reset rotate for client
 		return;
 	}
 
 	// Type
-	VectorCopy(ent->s.pos.trDelta, ent->s.apos.trDelta);  // copy rotate for client
+	VectorCopy(ent->s.pos.trDelta, ent->s.apos.trDelta); // copy rotate for client
 
 	// Rotate
 	ent->s.apos.trBase[0] -= ent->s.apos.trDelta[0] * rotationMultiplier;
@@ -864,7 +864,7 @@ static void Phys_Impact(gentity_t *ent, trace_t *tr) {
 	if(tr->fraction < 1.0f && tr->entityNum != ENTITYNUM_NONE) {
 		hit = &g_entities[tr->entityNum];
 
-		if(hit->s.number != ent->s.number) {  // Ignore self, optionally apply a force or velocity to the hit entity to simulate the push
+		if(hit->s.number != ent->s.number) { // Ignore self, optionally apply a force or velocity to the hit entity to simulate the push
 			if(impactForce > PHYS_SENS) {
 				if(!hit->client) {
 					Phys_Enable(hit);
@@ -872,10 +872,10 @@ static void Phys_Impact(gentity_t *ent, trace_t *tr) {
 				VectorCopy(ent->s.pos.trDelta, impactVector);
 				VectorScale(impactVector, PHYS_PROP_IMPACT, impactVector);
 				if(!hit->client) {
-					VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta);  // Transfer velocity from the prop to the hit entity
+					VectorAdd(hit->s.pos.trDelta, impactVector, hit->s.pos.trDelta); // Transfer velocity from the prop to the hit entity
 				} else {
 					if(hit->grabbedEntity != ent) {
-						VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity);  // Transfer velocity from the prop to the hit player
+						VectorAdd(hit->client->ps.velocity, impactVector, hit->client->ps.velocity); // Transfer velocity from the prop to the hit player
 					}
 				}
 			}
@@ -942,7 +942,7 @@ void Phys_Frame(gentity_t *ent) {
 	trap_UnlinkEntity(ent);
 	Phys_CheckWeldedEntities(ent);
 
-	if(!Phys_UpdateState(ent)) {  // disable physics and update state
+	if(!Phys_UpdateState(ent)) { // disable physics and update state
 		return;
 	}
 
@@ -953,7 +953,7 @@ void Phys_Frame(gentity_t *ent) {
 	Phys_PointCheck(ent);
 
 	// Get current position based on the entity's trajectory
-	if(ent->s.eType == ET_GENERAL) {  // it's prop
+	if(ent->s.eType == ET_GENERAL) { // it's prop
 		ST_EvaluateTrajectory(&ent->s.pos, level.time, origin, ent->s.angles2[A2_MASS]);
 	} else {
 		BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);
@@ -964,7 +964,7 @@ void Phys_Frame(gentity_t *ent) {
 	trap_Trace(&tr, ent->r.currentOrigin, adjustedMins, adjustedMaxs, origin, ent->s.number, MASK_PLAYERSOLID);
 
 	// Update phys origin
-	VectorCopy(tr.endpos, ent->r.currentOrigin);  // update physics origin from trace endpos
+	VectorCopy(tr.endpos, ent->r.currentOrigin); // update physics origin from trace endpos
 
 	// Link the entity back into the world
 	trap_LinkEntity(ent);

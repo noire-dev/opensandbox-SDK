@@ -23,9 +23,9 @@
 typedef struct teamgame_s {
 	float last_flag_capture;
 	int last_capture_team;
-	flagStatus_t redStatus;   // CTF
-	flagStatus_t blueStatus;  // CTF
-	flagStatus_t flagStatus;  // One Flag CTF
+	flagStatus_t redStatus;  // CTF
+	flagStatus_t blueStatus; // CTF
+	flagStatus_t flagStatus; // One Flag CTF
 	int redTakenTime;
 	int blueTakenTime;
 	int redObeliskAttackedTime;
@@ -43,26 +43,26 @@ static void Team_SetFlagStatus(int team, flagStatus_t status) {
 	qboolean modified = qfalse;
 
 	switch(team) {
-		case TEAM_RED:  // CTF
-			if(teamgame.redStatus != status) {
-				teamgame.redStatus = status;
-				modified = qtrue;
-			}
-			break;
+	case TEAM_RED: // CTF
+		if(teamgame.redStatus != status) {
+			teamgame.redStatus = status;
+			modified = qtrue;
+		}
+		break;
 
-		case TEAM_BLUE:  // CTF
-			if(teamgame.blueStatus != status) {
-				teamgame.blueStatus = status;
-				modified = qtrue;
-			}
-			break;
+	case TEAM_BLUE: // CTF
+		if(teamgame.blueStatus != status) {
+			teamgame.blueStatus = status;
+			modified = qtrue;
+		}
+		break;
 
-		case TEAM_FREE:  // One Flag CTF
-			if(teamgame.flagStatus != status) {
-				teamgame.flagStatus = status;
-				modified = qtrue;
-			}
-			break;
+	case TEAM_FREE: // One Flag CTF
+		if(teamgame.flagStatus != status) {
+			teamgame.flagStatus = status;
+			modified = qtrue;
+		}
+		break;
 	}
 
 	if(modified) {
@@ -72,7 +72,7 @@ static void Team_SetFlagStatus(int team, flagStatus_t status) {
 			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
 			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
 			st[2] = 0;
-		} else {  // GT_1FCTF
+		} else { // GT_1FCTF
 			st[0] = oneFlagStatusRemap[teamgame.flagStatus];
 			st[1] = 0;
 		}
@@ -85,16 +85,16 @@ void Team_InitGame(void) {
 	memset(&teamgame, 0, sizeof teamgame);
 
 	switch(cvarInt("g_gametype")) {
-		case GT_CTF:
-			teamgame.redStatus = teamgame.blueStatus = -1;  // Invalid to force update
-			Team_SetFlagStatus(TEAM_RED, FLAG_ATBASE);
-			Team_SetFlagStatus(TEAM_BLUE, FLAG_ATBASE);
-			break;
-		case GT_1FCTF:
-			teamgame.flagStatus = -1;  // Invalid to force update
-			Team_SetFlagStatus(TEAM_FREE, FLAG_ATBASE);
-			break;
-		default: break;
+	case GT_CTF:
+		teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
+		Team_SetFlagStatus(TEAM_RED, FLAG_ATBASE);
+		Team_SetFlagStatus(TEAM_BLUE, FLAG_ATBASE);
+		break;
+	case GT_1FCTF:
+		teamgame.flagStatus = -1; // Invalid to force update
+		Team_SetFlagStatus(TEAM_FREE, FLAG_ATBASE);
+		break;
+	default: break;
 	}
 }
 
@@ -203,10 +203,10 @@ static gentity_t *Team_ResetFlag(int team) {
 	gentity_t *ent, *rent = NULL;
 
 	switch(team) {
-		case TEAM_RED: c = "team_CTF_redflag"; break;
-		case TEAM_BLUE: c = "team_CTF_blueflag"; break;
-		case TEAM_FREE: c = "team_CTF_neutralflag"; break;
-		default: return NULL;
+	case TEAM_RED: c = "team_CTF_redflag"; break;
+	case TEAM_BLUE: c = "team_CTF_blueflag"; break;
+	case TEAM_FREE: c = "team_CTF_neutralflag"; break;
+	default: return NULL;
 	}
 
 	ent = NULL;
@@ -261,19 +261,19 @@ static void Team_TakeFlagSound(gentity_t *ent, int team) {
 	// only play sound when the flag was at the base
 	// or not picked up the last 10 seconds
 	switch(team) {
-		case TEAM_RED:
-			if(teamgame.blueStatus != FLAG_ATBASE) {
-				if(teamgame.blueTakenTime > level.time - 10000) return;
-			}
-			teamgame.blueTakenTime = level.time;
-			break;
+	case TEAM_RED:
+		if(teamgame.blueStatus != FLAG_ATBASE) {
+			if(teamgame.blueTakenTime > level.time - 10000) return;
+		}
+		teamgame.blueTakenTime = level.time;
+		break;
 
-		case TEAM_BLUE:  // CTF
-			if(teamgame.redStatus != FLAG_ATBASE) {
-				if(teamgame.redTakenTime > level.time - 10000) return;
-			}
-			teamgame.redTakenTime = level.time;
-			break;
+	case TEAM_BLUE: // CTF
+		if(teamgame.redStatus != FLAG_ATBASE) {
+			if(teamgame.redTakenTime > level.time - 10000) return;
+		}
+		teamgame.redTakenTime = level.time;
+		break;
 	}
 
 	te = G_TempEntity(ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND);
@@ -375,7 +375,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 
 	// the flag is at home base.  if the player has the enemy
 	// flag, he's just won!
-	if(!cl->ps.powerups[enemy_flag]) return 0;  // We don't have the flag
+	if(!cl->ps.powerups[enemy_flag]) return 0; // We don't have the flag
 	if(cvarInt("g_gametype") == GT_1FCTF) {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname);
 	} else {
@@ -415,7 +415,7 @@ static int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 
 	CalculateRanks();
 
-	return 0;  // Do not respawn this automatically
+	return 0; // Do not respawn this automatically
 }
 
 static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
@@ -424,7 +424,7 @@ static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 	if(cvarInt("g_gametype") == GT_1FCTF) {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname);
 
-		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX;  // flags never expire
+		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
 
 		if(team == TEAM_RED) {
 			Team_SetFlagStatus(TEAM_FREE, FLAG_TAKEN_RED);
@@ -435,9 +435,9 @@ static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the %s flag!\n", other->client->pers.netname, TeamName(team));
 
 		if(team == TEAM_RED)
-			cl->ps.powerups[PW_REDFLAG] = INT_MAX;  // flags never expire
+			cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire
 		else
-			cl->ps.powerups[PW_BLUEFLAG] = INT_MAX;  // flags never expire
+			cl->ps.powerups[PW_BLUEFLAG] = INT_MAX; // flags never expire
 
 		Team_SetFlagStatus(team, FLAG_TAKEN);
 	}
@@ -445,7 +445,7 @@ static int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 	AddScore(other, CTF_FLAG_BONUS);
 	Team_TakeFlagSound(ent, team);
 
-	return -1;  // Do not respawn this automatically, but do delete it if it was FL_DROPPED
+	return -1; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
 }
 
 int Pickup_Team(gentity_t *ent, gentity_t *other) {
@@ -585,7 +585,7 @@ static gentity_t *SelectRandomTeamSpawnPoint(int teamstate, team_t team) {
 		if(++count == MAX_TEAM_SPAWN_POINTS) break;
 	}
 
-	if(!count) {  // no spots that won't telefrag
+	if(!count) { // no spots that won't telefrag
 		return G_Find(NULL, FOFS(classname), classname);
 	}
 

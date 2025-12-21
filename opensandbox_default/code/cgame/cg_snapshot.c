@@ -131,7 +131,7 @@ static void CG_TransitionSnapshot(void) {
 		ops = &oldFrame->ps;
 		ps = &cg.snap->ps;
 		// teleporting checks are irrespective of prediction
-		if((ps->eFlags ^ ops->eFlags) & EF_TELEPORT_BIT) cg.thisFrameTeleport = qtrue;  // will be cleared by prediction code
+		if((ps->eFlags ^ ops->eFlags) & EF_TELEPORT_BIT) cg.thisFrameTeleport = qtrue; // will be cleared by prediction code
 
 		// if we are not doing client side movement prediction for any
 		// reason, then the client events and view changes will be issued now
@@ -273,7 +273,7 @@ void CG_ProcessSnapshots(void) {
 	// always have valid data for the rest of the game
 	while(!cg.snap) {
 		snap = CG_ReadNextSnapshot();
-		if(!snap) return;  // we can't continue until we get a snapshot
+		if(!snap) return; // we can't continue until we get a snapshot
 
 		// set our weapon selection to what
 		// the playerstate is currently using

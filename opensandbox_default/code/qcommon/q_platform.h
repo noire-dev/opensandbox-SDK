@@ -8,10 +8,10 @@
 #define QDECL
 #define ID_INLINE
 
-//endianness
-short ShortSwap (short l);
-int LongSwap (int l);
-float FloatSwap (const float *f);
+// endianness
+short ShortSwap(short l);
+int LongSwap(int l);
+float FloatSwap(const float *f);
 
 #define LittleShort
 #define LittleLong

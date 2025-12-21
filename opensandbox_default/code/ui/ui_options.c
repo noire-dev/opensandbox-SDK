@@ -11,12 +11,6 @@ typedef struct {
 
 static options_t options;
 
-static void Options_Defaults_Action(void) {
-	trap_Cmd(EXEC_APPEND, "exec default.sbscript\n");
-	trap_Cmd(EXEC_APPEND, "cvar_restart\n");
-	trap_Cmd(EXEC_APPEND, "vid_restart\n");
-}
-
 void UI_Options(void) {
 	int y;
 
@@ -26,9 +20,12 @@ void UI_Options(void) {
 	UI_CText(&options.e[0], 58 - uis.wideoffset, 64 + 24, "OPTIONS", UI_LEFT, 1.80);
 
 	y = OSUI_STANDARD_Y;
-	UI_CButton(&options.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, color_white, NULL, NULL, UI_PlayerModelMenu, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&options.e[2], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Controls, NULL, 0); y += OSUI_SPACING_Y;
-	UI_CButton(&options.e[3], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Settings, NULL, 0); y += OSUI_BIGSPACING_Y;
+	UI_CButton(&options.e[1], 64 - uis.wideoffset, y, "Player", UI_LEFT, 1.00, color_white, NULL, NULL, UI_PlayerModelMenu, NULL, 0);
+	y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[2], 64 - uis.wideoffset, y, "Controls", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Controls, NULL, 0);
+	y += OSUI_SPACING_Y;
+	UI_CButton(&options.e[3], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, UI_Settings, NULL, 0);
+	y += OSUI_BIGSPACING_Y;
 
 	UI_CButton(&options.e[5], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, color_white, NULL, NULL, UI_PopMenu, NULL, 0);
 

@@ -350,7 +350,7 @@ static void G_MoverTeam(gentity_t *ent) {
 		VectorSubtract(origin, part->r.currentOrigin, move);
 		VectorSubtract(angles, part->r.currentAngles, amove);
 		if(!G_MoverPush(part, move, amove, &obstacle)) {
-			break;  // move was blocked
+			break; // move was blocked
 		}
 	}
 
@@ -416,28 +416,28 @@ static void SetMoverState(gentity_t *ent, moverState_t moverState, int time) {
 
 	ent->s.pos.trTime = time;
 	switch(moverState) {
-		case MOVER_POS1:
-			VectorCopy(ent->pos1, ent->s.pos.trBase);
-			ent->s.pos.trType = TR_STATIONARY;
-			break;
-		case MOVER_POS2:
-			VectorCopy(ent->pos2, ent->s.pos.trBase);
-			ent->s.pos.trType = TR_STATIONARY;
-			break;
-		case MOVER_1TO2:
-			VectorCopy(ent->pos1, ent->s.pos.trBase);
-			VectorSubtract(ent->pos2, ent->pos1, delta);
-			f = 1000.0 / ent->s.pos.trDuration;
-			VectorScale(delta, f, ent->s.pos.trDelta);
-			ent->s.pos.trType = TR_LINEAR_STOP;
-			break;
-		case MOVER_2TO1:
-			VectorCopy(ent->pos2, ent->s.pos.trBase);
-			VectorSubtract(ent->pos1, ent->pos2, delta);
-			f = 1000.0 / ent->s.pos.trDuration;
-			VectorScale(delta, f, ent->s.pos.trDelta);
-			ent->s.pos.trType = TR_LINEAR_STOP;
-			break;
+	case MOVER_POS1:
+		VectorCopy(ent->pos1, ent->s.pos.trBase);
+		ent->s.pos.trType = TR_STATIONARY;
+		break;
+	case MOVER_POS2:
+		VectorCopy(ent->pos2, ent->s.pos.trBase);
+		ent->s.pos.trType = TR_STATIONARY;
+		break;
+	case MOVER_1TO2:
+		VectorCopy(ent->pos1, ent->s.pos.trBase);
+		VectorSubtract(ent->pos2, ent->pos1, delta);
+		f = 1000.0 / ent->s.pos.trDuration;
+		VectorScale(delta, f, ent->s.pos.trDelta);
+		ent->s.pos.trType = TR_LINEAR_STOP;
+		break;
+	case MOVER_2TO1:
+		VectorCopy(ent->pos2, ent->s.pos.trBase);
+		VectorSubtract(ent->pos1, ent->pos2, delta);
+		f = 1000.0 / ent->s.pos.trDuration;
+		VectorScale(delta, f, ent->s.pos.trDelta);
+		ent->s.pos.trType = TR_LINEAR_STOP;
+		break;
 	}
 	BG_EvaluateTrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
 	trap_LinkEntity(ent);
@@ -681,7 +681,7 @@ static void Blocked_Door(gentity_t *ent, gentity_t *other) {
 		G_Damage(other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH);
 	}
 	if(ent->spawnflags & 4) {
-		return;  // crushers don't reverse
+		return; // crushers don't reverse
 	}
 
 	// reverse direction
@@ -926,7 +926,7 @@ void SP_func_plat(gentity_t *ent) {
 
 	ent->blocked = Blocked_Door;
 
-	ent->parent = ent;  // so it can be treated as a door
+	ent->parent = ent; // so it can be treated as a door
 
 	// spawn the trigger if one hasn't been custom made
 	if(!ent->targetname) {
@@ -1016,7 +1016,7 @@ static void Reached_Train(gentity_t *ent) {
 	// copy the apropriate values
 	next = ent->nextTrain;
 	if(!next || !next->nextTrain) {
-		return;  // just stop
+		return; // just stop
 	}
 
 	// fire all other targets

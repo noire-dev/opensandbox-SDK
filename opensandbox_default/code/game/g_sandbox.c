@@ -39,7 +39,7 @@ static spawn_t gameInfoSandboxEntities[] = {
 // clang-format on
 
 void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
-	if(self->objectType == OT_VEHICLE || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all
+	if(self->objectType == OT_VEHICLE || self->objectType == OT_TNT) { // VEHICLE-SYSTEM: vehicle's explode for all
 		G_StartCarExplode(self);
 	}
 	if(self->objectType == OT_NUKE) {
@@ -86,8 +86,7 @@ static void setModel(gentity_t *ent, char *modelName) {
 	ent->s.modelindex = G_ModelIndex(modelName);
 	CopyAlloc(ent->model, modelName);
 
-	if(len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3"))
-		ent->model[len - 4] = '\0';
+	if(len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3")) ent->model[len - 4] = '\0';
 
 	if(FS_FileExists(va("%s.bsp", ent->model))) {
 		trap_SetBrushModel(ent, va("%s.bsp", ent->model));
@@ -105,8 +104,8 @@ void SP_sandbox_prop(gentity_t *ent) {
 	CopyAlloc(ent->classname, ent->sb_class);
 
 	// Origin
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);     // Client
-	VectorCopy(ent->s.origin, ent->r.currentOrigin);  // Physics
+	VectorCopy(ent->s.origin, ent->s.pos.trBase);    // Client
+	VectorCopy(ent->s.origin, ent->r.currentOrigin); // Physics
 
 	// Type
 	ent->sandboxObject = qtrue;
@@ -217,7 +216,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 	ent = G_Spawn();
 	CopyAlloc(ent->classname, arg03);
 	CopyAlloc(ent->sb_class, arg03);
-	for(i = 0; i < gameInfoSandboxSpawnsNum; i++) {  // Check allowed sandbox list
+	for(i = 0; i < gameInfoSandboxSpawnsNum; i++) { // Check allowed sandbox list
 		if(!strcmp(ent->classname, gameInfoSandboxSpawns[i])) {
 			allow_spawn = qtrue;
 		}
@@ -225,7 +224,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 
 	if(!allow_spawn) {
 		trap_SendServerCommand(player->s.clientNum, va("lp \"Spawning of %s is not allowed\n\"", ent->classname));
-        G_FreeEntity(ent);
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -318,7 +317,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 
 			spawn_entity = qtrue;
 
-			if(!extended_spawn) {  // Standard spawn
+			if(!extended_spawn) { // Standard spawn
 				return;
 			}
 		}
@@ -331,7 +330,7 @@ void G_BuildProp(char *arg02, char *arg03, vec3_t xyz, gentity_t *player, char *
 
 			spawn_entity = qtrue;
 
-			if(!extended_spawn) {  // Standard spawn
+			if(!extended_spawn) { // Standard spawn
 				return;
 			}
 		}
@@ -449,7 +448,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 	}
 
 	if(attacker->tool_id == TL_ANGLE) {
-		entity = G_FindWeldEntity(entity);  // find weld root or return ent
+		entity = G_FindWeldEntity(entity); // find weld root or return ent
 		if(atoi(arg05) == 0) {
 			entity->s.apos.trBase[0] += atof(arg01);
 		}
@@ -518,7 +517,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 			return;
 		}
 
-		if(atoi(arg05) == 0) {  // Weld
+		if(atoi(arg05) == 0) { // Weld
 			if(!attacker->tool_entity) {
 				if(!entity->phys_weldedObjectsNum) {
 					attacker->tool_entity = entity;
@@ -528,7 +527,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 					return;
 				}
 			} else {
-				entity = G_FindWeldEntity(entity);  // find weld root or return ent
+				entity = G_FindWeldEntity(entity); // find weld root or return ent
 				attacker->tool_entity->physParentEnt = entity;
 
 				// Save origin
@@ -562,7 +561,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 				attacker->tool_entity = NULL;
 			}
 		}
-		if(atoi(arg05) == 1) {  // Unweld
+		if(atoi(arg05) == 1) { // Unweld
 			attacker->tool_entity = NULL;
 
 			if(!entity->phys_weldedObjectsNum && !entity->physParentEnt) {
@@ -587,8 +586,7 @@ void G_ModProp(gentity_t *targ, gentity_t *attacker, char *arg01, char *arg02, c
 static void Undo_ShiftStack(gentity_t *ent) {
 	int i;
 
-	for(i = MAX_UNDO_STACK - 1; i > 0; i--)
-		ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i - 1];
+	for(i = MAX_UNDO_STACK - 1; i > 0; i--) ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i - 1];
 }
 
 void Undo_AddElement(gentity_t *ent, int id) {
@@ -622,8 +620,7 @@ qboolean Undo_LastElement(gentity_t *ent, int *id, qboolean *isRemoved) {
 void Undo_RemoveElement(gentity_t *ent) {
 	int i;
 
-	for(i = 0; i < MAX_UNDO_STACK - 1; i++)
-		ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i + 1];
+	for(i = 0; i < MAX_UNDO_STACK - 1; i++) ent->client->pers.undoStack[i] = ent->client->pers.undoStack[i + 1];
 
 	ent->client->pers.undoStack[MAX_UNDO_STACK - 1].id = 0;
 	ent->client->pers.undoStack[MAX_UNDO_STACK - 1].isRemoved = qfalse;

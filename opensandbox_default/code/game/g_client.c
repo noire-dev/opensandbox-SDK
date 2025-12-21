@@ -158,7 +158,7 @@ void CopyToBodyQue(gentity_t *ent) {
 	trap_UnlinkEntity(body);
 
 	body->s = ent->s;
-	body->s.eFlags = EF_DEAD;  // clear EF_TALK, etc
+	body->s.eFlags = EF_DEAD; // clear EF_TALK, etc
 	if(ent->s.eFlags & EF_KAMIKAZE) {
 		body->s.eFlags |= EF_KAMIKAZE;
 
@@ -172,12 +172,12 @@ void CopyToBodyQue(gentity_t *ent) {
 			break;
 		}
 	}
-	body->s.powerups = 0;   // clear powerups
-	body->s.loopSound = 0;  // clear lava burning
+	body->s.powerups = 0;  // clear powerups
+	body->s.loopSound = 0; // clear lava burning
 	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
-	body->phys_bounce = 0;  // don't bounce
+	body->phys_bounce = 0; // don't bounce
 	if(body->s.groundEntityNum == ENTITYNUM_NONE) {
 		body->s.pos.trType = TR_GRAVITY;
 		body->s.pos.trTime = level.time;
@@ -190,13 +190,13 @@ void CopyToBodyQue(gentity_t *ent) {
 	// change the animation to the last-frame only, so the sequence
 	// doesn't repeat anew for the body
 	switch(body->s.legsAnim & ~ANIM_TOGGLEBIT) {
-		case BOTH_DEATH1:
-		case BOTH_DEAD1: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1; break;
-		case BOTH_DEATH2:
-		case BOTH_DEAD2: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2; break;
-		case BOTH_DEATH3:
-		case BOTH_DEAD3:
-		default: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3; break;
+	case BOTH_DEATH1:
+	case BOTH_DEAD1: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1; break;
+	case BOTH_DEATH2:
+	case BOTH_DEAD2: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2; break;
+	case BOTH_DEATH3:
+	case BOTH_DEAD3:
+	default: body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3; break;
 	}
 
 	body->r.svFlags = ent->r.svFlags;
@@ -322,11 +322,11 @@ void ClientUserinfoChanged(int clientNum) {
 
 	// set name
 	s = Info_ValueForKey(userinfo, "name");
-    if(strlen(s) > 0) {
-        strcpy(client->pers.netname, s);
-    } else {
-        strcpy(client->pers.netname, "noname");
-    }
+	if(strlen(s) > 0) {
+		strcpy(client->pers.netname, s);
+	} else {
+		strcpy(client->pers.netname, "noname");
+	}
 
 	ent->tool_id = atoi(Info_ValueForKey(userinfo, "toolgun_tool"));
 	ent->tool_entity = NULL;
@@ -348,7 +348,7 @@ void ClientUserinfoChanged(int clientNum) {
 	}
 
 	npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
-	if(npcType && ent->r.svFlags & SVF_BOT){
+	if(npcType && ent->r.svFlags & SVF_BOT) {
 		ent->npcType = npcType;
 	} else {
 		ent->npcType = NT_PLAYER;
@@ -374,7 +374,7 @@ void ClientUserinfoChanged(int clientNum) {
 			team = TEAM_RED;
 		} else if(!Q_stricmp(s, "blue") || !Q_stricmp(s, "b")) {
 			team = TEAM_BLUE;
-		} else if(!Q_stricmp(s, "free") && ent->npcType > NT_PLAYER) {  // FREE_TEAM
+		} else if(!Q_stricmp(s, "free") && ent->npcType > NT_PLAYER) { // FREE_TEAM
 			team = TEAM_FREE;
 		} else {
 			// pick the team with the least number of players
@@ -509,7 +509,7 @@ static void SetupCustomBot(gentity_t *bot) {
 
 	bot->health = bot->client->ps.stats[STAT_HEALTH] = bot->client->ps.stats[STAT_MAX_HEALTH] = bot->botspawn->health;
 
-	CopyAlloc(bot->target, bot->botspawn->target);  // noire.dev bot->target
+	CopyAlloc(bot->target, bot->botspawn->target); // noire.dev bot->target
 }
 
 void SetUnlimitedWeapons(gentity_t *ent) {
@@ -536,8 +536,8 @@ static void SetCustomWeapons(gentity_t *ent) {
 	Set_Ammo(ent, WP_PHYSGUN, -1);
 	Set_Ammo(ent, WP_GRAVITYGUN, -1);
 	Set_Weapon(ent, WP_GAUNTLET, WS_HAVE);
-		Set_Weapon(ent, WP_MACHINEGUN, WS_HAVE);
-		Set_Ammo(ent, WP_MACHINEGUN, 100);
+	Set_Weapon(ent, WP_MACHINEGUN, WS_HAVE);
+	Set_Ammo(ent, WP_MACHINEGUN, 100);
 
 	ent->health = ent->client->ps.stats[STAT_ARMOR] = 0;
 	ent->health = ent->client->ps.stats[STAT_HEALTH] = 100;
@@ -769,6 +769,6 @@ void ClientDisconnect(int clientNum) {
 	if(ent->r.svFlags & SVF_BOT) BotAIShutdownClient(clientNum, qfalse);
 }
 
-void DropClientSilently(int clientNum) { 
+void DropClientSilently(int clientNum) {
 	if(g_entities[clientNum].npcType > NT_PLAYER) trap_DropClient(clientNum, "DR_SILENT_DROP");
 }

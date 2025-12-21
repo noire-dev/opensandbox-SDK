@@ -67,9 +67,9 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 			sess->sessionTeam = TEAM_SPECTATOR;
 		} else {
 			switch(cvarInt("g_gametype")) {
-				default:
-				case GT_SANDBOX:
-				case GT_FFA: sess->sessionTeam = TEAM_FREE; break;
+			default:
+			case GT_SANDBOX:
+			case GT_FFA: sess->sessionTeam = TEAM_FREE; break;
 			}
 		}
 	}

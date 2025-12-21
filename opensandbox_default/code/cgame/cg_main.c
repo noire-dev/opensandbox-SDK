@@ -4,7 +4,6 @@
 
 #include "../qcommon/js_local.h"
 
-static int CG_CrosshairPlayer(void);
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
 static void CG_Shutdown(void);
 
@@ -21,13 +20,13 @@ This must be the very first function compiled into the .q3vm file
 */
 intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	switch(command) {
-		case CG_INIT: CG_Init(arg0, arg1, arg2); return 0;
-		case CG_SHUTDOWN: CG_Shutdown(); return 0;
-		case CG_CONSOLE_COMMAND: return CG_ConsoleCommand();
-		case CG_DRAW_ACTIVE_FRAME: CG_DrawActiveFrame(arg0, arg1); return 0;
-		case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
-		case VMCALL: VMCall(arg0); return 0;
-		default: CG_Error("vmMain: unknown command %i", command); break;
+	case CG_INIT: CG_Init(arg0, arg1, arg2); return 0;
+	case CG_SHUTDOWN: CG_Shutdown(); return 0;
+	case CG_CONSOLE_COMMAND: return CG_ConsoleCommand();
+	case CG_DRAW_ACTIVE_FRAME: CG_DrawActiveFrame(arg0, arg1); return 0;
+	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
+	case VMCALL: VMCall(arg0); return 0;
+	default: CG_Error("vmMain: unknown command %i", command); break;
 	}
 	return -1;
 }
@@ -51,8 +50,6 @@ static void CG_CreateCvars(void) {
 	cvarRegister("team_headmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
 	cvarRegister("team_legsmodel", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE);
 }
-
-static int CG_CrosshairPlayer(void) { return cg.crosshairClientNum; }
 
 void QDECL CG_PrintfChat(qboolean team, const char *msg, ...) {
 	va_list argptr;
@@ -232,7 +229,7 @@ static void CG_RegisterSounds(void) {
 	for(i = 1; i < MAX_SOUNDS; i++) {
 		soundName = CG_ConfigString(CS_SOUNDS + i);
 		if(!soundName[0]) break;
-		if(soundName[0] == '*') continue;  // custom sound
+		if(soundName[0] == '*') continue; // custom sound
 		cgs.gameSounds[i] = trap_S_RegisterSound(soundName, qfalse);
 	}
 
@@ -533,15 +530,15 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 
 	// load a few needed things before we do any screen updates
 	ST_RegisterFont("default");
-	cgs.media.defaultFont[0] = trap_R_RegisterShader("default_font");   // 256
-	cgs.media.defaultFont[1] = trap_R_RegisterShader("default_font1");  // 512
-	cgs.media.defaultFont[2] = trap_R_RegisterShader("default_font2");  // 1024
+	cgs.media.defaultFont[0] = trap_R_RegisterShader("default_font");  // 256
+	cgs.media.defaultFont[1] = trap_R_RegisterShader("default_font1"); // 512
+	cgs.media.defaultFont[2] = trap_R_RegisterShader("default_font2"); // 1024
 	cgs.media.whiteShader = trap_R_RegisterShader("white");
 	cgs.media.corner = trap_R_RegisterShader("menu/corner");
 
 	CG_LoadingString("sourcetech.script", 0.20);
 
-	cgs.redflag = cgs.blueflag = -1;  // For compatibily, default to unset for
+	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
 	cgs.flagStatus = -1;
 
 	// setup screen
@@ -560,9 +557,9 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	resbiasy = 0.5 * (newresy - (newresx * (640.0 / 480.0)));
 
 	if(glconfig.vidWidth * 480 > glconfig.vidHeight * 640) {
-		cgs.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0 / 480.0)));  // wide screen
+		cgs.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0 / 480.0))); // wide screen
 	} else {
-		cgs.bias = 0;  // no wide screen
+		cgs.bias = 0; // no wide screen
 	}
 
 	// get the gamestate from the client system
@@ -581,8 +578,8 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	CG_LoadingString("graphics", 0.60);
 	CG_RegisterGraphics();
 	CG_LoadingString("clients", 0.80);
-	CG_RegisterClients();  // if low on memory, some clients will be deferred
-	cg.loading = qfalse;   // future players will be deferred
+	CG_RegisterClients(); // if low on memory, some clients will be deferred
+	cg.loading = qfalse;  // future players will be deferred
 	CG_LoadingString("entities", 0.90);
 	CG_InitLocalEntities();
 	CG_InitMarkPolys();

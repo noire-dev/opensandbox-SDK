@@ -36,29 +36,29 @@ static int Pickup_PersistantPowerup(gentity_t *ent, gentity_t *other) {
 	other->client->persistantPowerup = ent;
 
 	switch(ent->item->giTag) {
-		case PW_GUARD:
-			other->health = 200;
-			other->client->ps.stats[STAT_HEALTH] = 200;
-			other->client->ps.stats[STAT_MAX_HEALTH] = 200;
-			other->client->ps.stats[STAT_ARMOR] = 200;
-			other->client->pers.maxHealth = 200;
-			break;
+	case PW_GUARD:
+		other->health = 200;
+		other->client->ps.stats[STAT_HEALTH] = 200;
+		other->client->ps.stats[STAT_MAX_HEALTH] = 200;
+		other->client->ps.stats[STAT_ARMOR] = 200;
+		other->client->pers.maxHealth = 200;
+		break;
 
-		case PW_SCOUT:
-			other->client->pers.maxHealth = 100;
-			other->client->ps.stats[STAT_ARMOR] = 0;
-			break;
+	case PW_SCOUT:
+		other->client->pers.maxHealth = 100;
+		other->client->ps.stats[STAT_ARMOR] = 0;
+		break;
 
-		case PW_DOUBLER: other->client->pers.maxHealth = 100; break;
-		case PW_AMMOREGEN:
-		 	if(other->health > 100){
-				other->health = 100;
-				other->client->ps.stats[STAT_HEALTH] = 100;
-			}
-			other->client->ps.stats[STAT_MAX_HEALTH] = 50;
-			other->client->pers.maxHealth = 50; 
-			break;
-		default: other->client->pers.maxHealth = 100; break;
+	case PW_DOUBLER: other->client->pers.maxHealth = 100; break;
+	case PW_AMMOREGEN:
+		if(other->health > 100) {
+			other->health = 100;
+			other->client->ps.stats[STAT_HEALTH] = 100;
+		}
+		other->client->ps.stats[STAT_MAX_HEALTH] = 50;
+		other->client->pers.maxHealth = 50;
+		break;
+	default: other->client->pers.maxHealth = 100; break;
 	}
 
 	return -1;
@@ -147,7 +147,7 @@ static int Pickup_Health(gentity_t *ent, gentity_t *other) {
 	}
 	other->client->ps.stats[STAT_HEALTH] = other->health;
 
-	if(ent->item->quantity == 100) {  // mega health respawns slow
+	if(ent->item->quantity == 100) { // mega health respawns slow
 		return RESPAWN_MEGAHEALTH;
 	}
 
@@ -214,15 +214,15 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 	// call the item-specific pickup function
 	switch(ent->item->giType) {
-		case IT_WEAPON: respawn = Pickup_Weapon(ent, other); break;
-		case IT_AMMO: respawn = Pickup_Ammo(ent, other); break;
-		case IT_ARMOR: respawn = Pickup_Armor(ent, other); break;
-		case IT_HEALTH: respawn = Pickup_Health(ent, other); break;
-		case IT_POWERUP: respawn = Pickup_Powerup(ent, other); break;
-		case IT_RUNE: respawn = Pickup_PersistantPowerup(ent, other); break;
-		case IT_TEAM: respawn = Pickup_Team(ent, other); break;
-		case IT_HOLDABLE: respawn = Pickup_Holdable(ent, other); break;
-		default: return;
+	case IT_WEAPON: respawn = Pickup_Weapon(ent, other); break;
+	case IT_AMMO: respawn = Pickup_Ammo(ent, other); break;
+	case IT_ARMOR: respawn = Pickup_Armor(ent, other); break;
+	case IT_HEALTH: respawn = Pickup_Health(ent, other); break;
+	case IT_POWERUP: respawn = Pickup_Powerup(ent, other); break;
+	case IT_RUNE: respawn = Pickup_PersistantPowerup(ent, other); break;
+	case IT_TEAM: respawn = Pickup_Team(ent, other); break;
+	case IT_HOLDABLE: respawn = Pickup_Holdable(ent, other); break;
+	default: return;
 	}
 
 	if(!respawn) return;
@@ -282,8 +282,8 @@ gentity_t *LaunchItem(item_t *item, vec3_t origin, vec3_t velocity) {
 	dropped = G_Spawn();
 
 	dropped->s.eType = ET_ITEM;
-	dropped->s.modelindex = item - gameInfoItems;  // store item number in modelindex
-	dropped->s.modelindex2 = 1;                    // This is non-zero is it's a dropped item
+	dropped->s.modelindex = item - gameInfoItems; // store item number in modelindex
+	dropped->s.modelindex2 = 1;                   // This is non-zero is it's a dropped item
 
 	dropped->classname = item->classname;
 	dropped->item = item;
@@ -299,11 +299,11 @@ gentity_t *LaunchItem(item_t *item, vec3_t origin, vec3_t velocity) {
 	VectorCopy(velocity, dropped->s.pos.trDelta);
 
 	dropped->s.eFlags |= EF_BOUNCE;
-	if((cvarInt("g_gametype") == GT_CTF || cvarInt("g_gametype") == GT_1FCTF) && item->giType == IT_TEAM) {  // Special case for CTF flags
+	if((cvarInt("g_gametype") == GT_CTF || cvarInt("g_gametype") == GT_1FCTF) && item->giType == IT_TEAM) { // Special case for CTF flags
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
 		Team_CheckDroppedItem(dropped);
-	} else {  // auto-remove after 30 seconds
+	} else { // auto-remove after 30 seconds
 		dropped->think = G_FreeEntity;
 		dropped->nextthink = level.time + 30000;
 	}
@@ -328,7 +328,7 @@ gentity_t *Drop_Item(gentity_t *ent, item_t *item) {
 
 	VectorCopy(ent->s.apos.trBase, angles);
 	angles[YAW] += random() * 360.0f;
-	angles[PITCH] = 0;  // always forward
+	angles[PITCH] = 0; // always forward
 
 	AngleVectors(angles, velocity, NULL, NULL);
 	VectorScale(velocity, 320, velocity);
@@ -362,8 +362,8 @@ void FinishSpawningItem(gentity_t *ent) {
 	VectorSet(ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
 
 	ent->s.eType = ET_ITEM;
-	ent->s.modelindex = ent->item - gameInfoItems;  // store item number in modelindex
-	ent->s.modelindex2 = 0;                         // zero indicates this isn't a dropped item
+	ent->s.modelindex = ent->item - gameInfoItems; // store item number in modelindex
+	ent->s.modelindex2 = 0;                        // zero indicates this isn't a dropped item
 
 	ent->r.contents = CONTENTS_TRIGGER;
 	ent->touch = Touch_Item;
@@ -503,7 +503,7 @@ void G_SpawnItem(gentity_t *ent, item_t *item) {
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
 	ent->think = FinishSpawningItem;
-	ent->phys_bounce = 0.50;  // items are bouncy
+	ent->phys_bounce = 0.50; // items are bouncy
 
 	if(item->giType == IT_RUNE) ent->s.generic1 = ent->spawnflags;
 }
@@ -524,7 +524,7 @@ static void G_BounceItem(gentity_t *ent, trace_t *trace) {
 
 	// check for stop
 	if(trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40) {
-		trace->endpos[2] += 1.0;  // make sure it is off ground
+		trace->endpos[2] += 1.0; // make sure it is off ground
 		SnapVector(trace->endpos);
 		G_SetOrigin(ent, trace->endpos);
 		ent->s.groundEntityNum = trace->entityNum;
@@ -563,7 +563,7 @@ void G_RunItem(gentity_t *ent) {
 	if(ent->clipmask) {
 		mask = ent->clipmask;
 	} else {
-		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;  // MASK_SOLID;
+		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY; // MASK_SOLID;
 	}
 	trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->r.ownerNum, mask);
 
@@ -571,7 +571,7 @@ void G_RunItem(gentity_t *ent) {
 
 	if(tr.startsolid) tr.fraction = 0;
 
-	trap_LinkEntity(ent);  // FIXME: avoid this for stationary?
+	trap_LinkEntity(ent); // FIXME: avoid this for stationary?
 
 	// check think function
 	G_RunThink(ent);

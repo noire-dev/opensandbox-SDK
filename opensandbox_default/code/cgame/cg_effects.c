@@ -155,7 +155,7 @@ void CG_KamikazeEffect(vec3_t org) {
 	le->leFlags = 0;
 	le->leType = LE_KAMIKAZE;
 	le->startTime = cg.time;
-	le->endTime = cg.time + 3000;  // 2250;
+	le->endTime = cg.time + 3000; // 2250;
 	le->lifeRate = 1.0 / (le->endTime - le->startTime);
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 
@@ -435,8 +435,8 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 }
 
 static void CG_Particles(vec3_t origin, int count, int speed, int lifetime, int radius, int type, byte r, byte g, byte b) {
-	int jump;          // amount to nudge the particles trajectory vector up by
-	qhandle_t shader;  // shader to use for the particles
+	int jump;         // amount to nudge the particles trajectory vector up by
+	qhandle_t shader; // shader to use for the particles
 	int index;
 	vec3_t randVec, tempVec;
 	qboolean moveUp;
@@ -448,12 +448,12 @@ static void CG_Particles(vec3_t origin, int count, int speed, int lifetime, int 
 		localEntity_t *le;
 		refEntity_t *re;
 
-		le = CG_AllocLocalEntity();  // allocate a local entity
+		le = CG_AllocLocalEntity(); // allocate a local entity
 		re = &le->refEntity;
-		le->leFlags = LEF_PUFF_DONT_SCALE;                               // don't change the particle size
-		le->leType = LE_MOVE_SCALE_FADE;                                 // particle should fade over time
-		le->startTime = cg.time;                                         // set the start time of the particle to the current time
-		le->endTime = cg.time + lifetime + (random() * (lifetime / 2));  // life time will be anywhere between [lifetime] and [lifetime * 1.5]
+		le->leFlags = LEF_PUFF_DONT_SCALE;                              // don't change the particle size
+		le->leType = LE_MOVE_SCALE_FADE;                                // particle should fade over time
+		le->startTime = cg.time;                                        // set the start time of the particle to the current time
+		le->endTime = cg.time + lifetime + (random() * (lifetime / 2)); // life time will be anywhere between [lifetime] and [lifetime * 1.5]
 		le->lifeRate = 1.0 / (le->endTime - le->startTime);
 		re = &le->refEntity;
 		re->shaderTime = cg.time / 1000.0f;
@@ -467,14 +467,14 @@ static void CG_Particles(vec3_t origin, int count, int speed, int lifetime, int 
 		re->shaderRGBA[3] = 0xFF;
 		le->color[3] = 1.0;
 		if(type == PT_GRAVITY)
-			le->pos.trType = TR_GRAVITY;  // moves in a gravity affected arc
+			le->pos.trType = TR_GRAVITY; // moves in a gravity affected arc
 		else
-			le->pos.trType = TR_LINEAR;  // moves in straight line, outward from the origin
+			le->pos.trType = TR_LINEAR; // moves in straight line, outward from the origin
 		le->pos.trTime = cg.time;
 		VectorCopy(origin, le->pos.trBase);
 		VectorCopy(origin, re->origin);
 
-		tempVec[0] = crandom();  // between 1 and -1
+		tempVec[0] = crandom(); // between 1 and -1
 		tempVec[1] = crandom();
 		tempVec[2] = crandom();
 		VectorNormalize(tempVec);
@@ -490,9 +490,9 @@ static void CG_Particles(vec3_t origin, int count, int speed, int lifetime, int 
 			moveUp = qfalse;
 
 		if(moveUp)
-			randVec[2] += jump;  // nudge the particles up a bit
+			randVec[2] += jump; // nudge the particles up a bit
 		else
-			randVec[2] -= jump;  // nudge the particles down a bit
+			randVec[2] -= jump; // nudge the particles down a bit
 
 		VectorCopy(randVec, le->pos.trDelta);
 	}
