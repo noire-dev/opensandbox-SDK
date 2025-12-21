@@ -30,11 +30,13 @@ static void SB_Shooter(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
+// clang-format off
 static spawn_t gameInfoSandboxEntities[] = {
 	{"sb.shooter", 				SB_Shooter},
 
 	{NULL, 0}
 };
+// clang-format on
 
 void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
 	if(self->objectType == OT_VEHICLE || self->objectType == OT_TNT) {  // VEHICLE-SYSTEM: vehicle's explode for all

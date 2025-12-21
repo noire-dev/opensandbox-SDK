@@ -6,6 +6,7 @@
 #include "bg_public.h"
 #include "g_local.h"
 
+// clang-format off
 item_t gameInfoItems[] = {
 	{ NULL, 						NULL, 											NULL, 						NULL, 					0, 		IT_NULL, 		0 },
 	{ "item_armor_shard", 			"models/powerups/armor/shard.md3", 				"icons/iconr_shard", 		"Armor Shard", 			5, 		IT_ARMOR, 		0 },
@@ -73,8 +74,11 @@ item_t gameInfoItems[] = {
 	{ "item_redcube",				"models/powerups/orb/r_orb.md3",				"icons/iconh_rorb",			"Red Cube",				0,		IT_TEAM,		0 },
 	{ "item_bluecube",				"models/powerups/orb/b_orb.md3",				"icons/iconh_borb",			"Blue Cube",			0,		IT_TEAM,		0 },
 };
+// clang-format on
+
 int	gameInfoItemsNum = ARRAY_SIZE(gameInfoItems);
 
+// clang-format off
 weaponProperties_t gameInfoWeapons[] = {
 // 	wType 			mType 			mEffect 				classname 		delay 	count 	dmg 	sDmg 	sRadius range 	mod 					speed	sRandom spread	timeout guided	gravity	bounce	bMod 
 	{ WT_NONE, 		MT_NONE, 		WP_NONE, 				NULL, 			0, 		0,		0, 		0, 		0,		0,		MOD_UNKNOWN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
@@ -105,8 +109,11 @@ weaponProperties_t gameInfoWeapons[] = {
 	{ WT_EMPTY, 	MT_NONE, 		WP_GRAVITYGUN, 			NULL, 			100, 	1, 		0, 		0, 		0,		1024,	WP_GRAVITYGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
 	{ WT_TOOLGUN, 	MT_NONE, 		WP_TOOLGUN, 			NULL, 			200, 	1, 		0, 		0, 		0,		4096,	WP_TOOLGUN, 			0, 		0, 		0, 		0, 		qfalse,	qfalse,	qfalse,	0.0 },
 };
+// clang-format on
+
 int	gameInfoWeaponsNum = ARRAY_SIZE(gameInfoWeapons);
 
+// clang-format off
 wPropProperties_t gameInfoWProps[] = {
 // 	oType 				modelname 								mtMin 		mtMax 		health 	gravity 	scale 		colSize		solid
 	{ OT_VANILLAQ3, 	"none", 								0, 			0, 			0, 		0.00,		0.00, 		0.00, 		qfalse }, //MT_NONE
@@ -118,8 +125,11 @@ wPropProperties_t gameInfoWProps[] = {
 	{ OT_BASIC, 		"props/cube", 							1, 			15, 		-1, 	1.00,		0.50, 		25, 		qtrue }, //MT_PROPGUN
 	{ OT_NUKE, 			"models/ammo/rocket/rocket", 			0, 			0, 			1, 		1.00,		4.00, 		25, 		qfalse }, //MT_NUKE
 };
+// clang-format on
+
 int	gameInfoWPropsNum = ARRAY_SIZE(gameInfoWProps);
 
+// clang-format off
 NPCTypes_t gameInfoNPCTypes[] = {
 //	name				faction				gravity		damage		speed		drop		push		frFire		pickup		chat
 	{ "none",			FRAC_NONE,			1.00,		1.00,		1.00,		qfalse,		qfalse,		qtrue,		qtrue,		qtrue }, //NT_NONE
@@ -130,8 +140,11 @@ NPCTypes_t gameInfoNPCTypes[] = {
 	{ "partner",		FRAC_PARTNER,		1.00,		1.00,		1.00,		qtrue,		qfalse,		qfalse,		qtrue,		qtrue }, //NT_PARTNER
 	{ "nextbot",		FRAC_NEXTBOT,		1.00,		5.00,		1.80,		qfalse,		qtrue,		qfalse,		qfalse,		qfalse }, //NT_NEXTBOT
 };
+// clang-format on
+
 int	gameInfoNPCTypesNum = ARRAY_SIZE(gameInfoNPCTypes);
 
+// clang-format off
 NPCFactions_t gameInfoFactions[] = {
 //	faction				attackMask																				
 	{ FRAC_NONE,		FRAC_NONE,																											}, //NT_NONE
@@ -142,8 +155,11 @@ NPCFactions_t gameInfoFactions[] = {
 	{ FRAC_PARTNER,		FRAC_ENEMY,																											}, //NT_PARTNER
 	{ FRAC_NEXTBOT,		FRAC_PLAYER|FRAC_ENEMY|FRAC_CITIZEN|FRAC_GUARD|FRAC_PARTNER,														}, //NT_NEXTBOT
 };
+// clang-format on
+
 int	gameInfoFactionsNum = ARRAY_SIZE(gameInfoFactions);
 
+// clang-format off
 char* gameInfoSandboxSpawns[] = {
 	"none",
 	"weapon_machinegun",
@@ -207,8 +223,11 @@ char* gameInfoSandboxSpawns[] = {
 
 	"sb.shooter",
 };
+// clang-format on
+
 int	gameInfoSandboxSpawnsNum = ARRAY_SIZE(gameInfoSandboxSpawns);
 
+// clang-format off
 char* gametypes_names[] = {
 	"Sandbox",
 	"Free for All",
@@ -218,7 +237,9 @@ char* gametypes_names[] = {
 	"Overload",
 	"Harvester",
 };
+// clang-format on
 
+// clang-format off
 char* gametypes_mapnames[] = {
 	"sandbox",
 	"ffa",
@@ -228,6 +249,7 @@ char* gametypes_mapnames[] = {
 	"overload",
 	"harvester",
 };
+// clang-format on
 
 int BG_FindNPCTypeID(const char *name) {
 	int i;

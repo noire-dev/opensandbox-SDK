@@ -4,6 +4,9 @@ TabWidth: 4
 UseTab: ForIndentation
 
 SpaceBeforeParens: Never
+SpaceInEmptyParentheses: false
+SpacesInAngles: Never
+SpacesInCStyleCastParentheses: false
 
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
@@ -11,6 +14,7 @@ AllowShortFunctionsOnASingleLine: All
 AllowShortCaseLabelsOnASingleLine: true
 
 SortIncludes: false
+MaxEmptyLinesToKeep: 1
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Attach
