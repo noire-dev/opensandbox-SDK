@@ -11,18 +11,21 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/game
 
-cp linux_scripts/asm linux/build/game/
-cp linux_scripts/lcc linux/build/game/
-cp linux_scripts/cpp linux/build/game/
-cp linux_scripts/rcc linux/build/game/
-cp linux_scripts/game.q3asm linux/build/
+cp make_scripts/asm linux/build/game/
+cp make_scripts/lcc linux/build/game/
+cp make_scripts/cpp linux/build/game/
+cp make_scripts/rcc linux/build/game/
+cp make_scripts/game.q3asm linux/build/
 
-cc="lcc -DGAME -DQVM -S -I../../../code/game -I../../../code/qcommon $1"
+LIBRARY=""
+INCLUDE=""
+
+cc="./linux_arm/lcc -DGAME -DQVM -S -I../../../code/game -I../../../code/qcommon $1"
 
 cd linux/build/game
 
 # ########################################
-# Files to compile to             game.qvm
+# Files to compile to           qagame.qvm
 # ########################################
 
 $cc ../../../code/game/ai_main.c
@@ -65,27 +68,30 @@ echo "-----------------"
 echo "game.qvm compiled"
 echo "-----------------"
 
-asm -f ../game
+./linux_arm/asm -f ../game
 
 # ########################################
 # End of compilation files, add yours here
 # ########################################
 
 cd ../../..
-cd linux_scripts
+cd make_scripts
 cd ..
 
 mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/cgame
 
-cp linux_scripts/asm linux/build/cgame/
-cp linux_scripts/lcc linux/build/cgame/
-cp linux_scripts/cpp linux/build/cgame/
-cp linux_scripts/rcc linux/build/cgame/
-cp linux_scripts/cgame.q3asm linux/build/
+cp make_scripts/asm linux/build/cgame/
+cp make_scripts/lcc linux/build/cgame/
+cp make_scripts/cpp linux/build/cgame/
+cp make_scripts/rcc linux/build/cgame/
+cp make_scripts/cgame.q3asm linux/build/
 
-cc="lcc -DCGAME -DQVM -S -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
+LIBRARY=""
+INCLUDE=""
+
+cc="./linux_arm/lcc -DCGAME -DQVM -S -I..\..\..\code\cgame -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/cgame
 
@@ -132,27 +138,30 @@ echo "-----------------"
 echo "cgame.qvm compiled"
 echo "-----------------"
 
-asm -f ../cgame
+./linux_arm/asm -f ../cgame
 
 # ########################################
 # End of compilation files, add yours here
 # ########################################
 
 cd ../../..
-cd linux_scripts
+cd make_scripts
 cd ..
 
 mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/ui
 
-cp linux_scripts/asm linux/build/ui/
-cp linux_scripts/lcc linux/build/ui/
-cp linux_scripts/cpp linux/build/ui/
-cp linux_scripts/rcc linux/build/ui/
-cp linux_scripts/ui.q3asm linux/build/
+cp make_scripts/asm linux/build/ui/
+cp make_scripts/lcc linux/build/ui/
+cp make_scripts/cpp linux/build/ui/
+cp make_scripts/rcc linux/build/ui/
+cp make_scripts/ui.q3asm linux/build/
 
-cc="lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
+LIBRARY=""
+INCLUDE=""
+
+cc="./linux_arm/lcc -DUI -DQVM -S -I..\..\..\code\ui -I..\..\..\code\qcommon $1"
 
 cd linux/build/ui
 
@@ -192,15 +201,15 @@ echo "-----------------"
 echo "ui.qvm compiled"
 echo "-----------------"
 
-asm -f ../ui
+./linux_arm/asm -f ../ui
 
 # ########################################
 # End of compilation files, add yours here
 # ########################################
 
 cd ../../..
-cd linux_scripts
-cd ../../..
+cd make_scripts
+cd ../..
 
 # ##############################################################
 # Replace "default" here with the name of your mod
@@ -208,7 +217,7 @@ cd ../../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/opensandbox_default/linux/game/qvm/game.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/opensandbox_default/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/opensandbox_default/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/opensandbox_default/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
 

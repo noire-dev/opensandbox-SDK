@@ -11,11 +11,11 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/game
 
-cp linux_scripts/asm linux/build/game/
-cp linux_scripts/lcc linux/build/game/
-cp linux_scripts/cpp linux/build/game/
-cp linux_scripts/rcc linux/build/game/
-cp linux_scripts/game.q3asm linux/build/
+cp make_scripts/asm linux/build/game/
+cp make_scripts/lcc linux/build/game/
+cp make_scripts/cpp linux/build/game/
+cp make_scripts/rcc linux/build/game/
+cp make_scripts/game.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
@@ -28,18 +28,13 @@ cd linux/build/game
 # Files to compile to           qagame.qvm
 # ########################################
 
-$cc ../../../code/game/ai_chat.c
-$cc ../../../code/game/ai_cmd.c
-$cc ../../../code/game/ai_dmnet.c
-$cc ../../../code/game/ai_dmq3.c
 $cc ../../../code/game/ai_main.c
-$cc ../../../code/game/ai_team.c
-$cc ../../../code/game/bg_alloc.c
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 $cc ../../../code/game/bg_pmove.c
 $cc ../../../code/game/bg_slidemove.c
 $cc ../../../code/game/g_active.c
+$cc ../../../code/game/g_alloc.c
 $cc ../../../code/game/g_bot.c
 $cc ../../../code/game/g_client.c
 $cc ../../../code/game/g_cmds.c
@@ -62,11 +57,11 @@ $cc ../../../code/game/g_weapon.c
 cp ../../../code/game/g_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..
 
-$cc ../../../code/qcommon/ns_func_game.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 
 echo "-----------------"
@@ -80,18 +75,18 @@ echo "-----------------"
 # ########################################
 
 cd ../../..
-cd linux_scripts
+cd make_scripts
 cd ..
 
 mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/cgame
 
-cp linux_scripts/asm linux/build/cgame/
-cp linux_scripts/lcc linux/build/cgame/
-cp linux_scripts/cpp linux/build/cgame/
-cp linux_scripts/rcc linux/build/cgame/
-cp linux_scripts/cgame.q3asm linux/build/
+cp make_scripts/asm linux/build/cgame/
+cp make_scripts/lcc linux/build/cgame/
+cp make_scripts/cpp linux/build/cgame/
+cp make_scripts/rcc linux/build/cgame/
+cp make_scripts/cgame.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
@@ -133,11 +128,11 @@ cp ../../../code/cgame/cg_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..
 cp ../../../code/q_sharedsyscalls_client.asm ..
 
-$cc ../../../code/qcommon/ns_func_cgame.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 echo "-----------------"
 echo "cgame.qvm compiled"
@@ -150,18 +145,18 @@ echo "-----------------"
 # ########################################
 
 cd ../../..
-cd linux_scripts
+cd make_scripts
 cd ..
 
 mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/ui
 
-cp linux_scripts/asm linux/build/ui/
-cp linux_scripts/lcc linux/build/ui/
-cp linux_scripts/cpp linux/build/ui/
-cp linux_scripts/rcc linux/build/ui/
-cp linux_scripts/ui.q3asm linux/build/
+cp make_scripts/asm linux/build/ui/
+cp make_scripts/lcc linux/build/ui/
+cp make_scripts/cpp linux/build/ui/
+cp make_scripts/rcc linux/build/ui/
+cp make_scripts/ui.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
@@ -196,11 +191,11 @@ cp ../../../code/q_sharedsyscalls_client.asm ..
 $cc ../../../code/game/bg_lib.c
 $cc ../../../code/game/bg_misc.c
 
-$cc ../../../code/qcommon/ns_func_ui.c
-$cc ../../../code/qcommon/ns_main.c
 $cc ../../../code/qcommon/q_cvars.c
 $cc ../../../code/qcommon/q_math.c
 $cc ../../../code/qcommon/q_shared.c
+$cc ../../../code/qcommon/js_main.c
+$cc ../../../code/qcommon/js_func.c
 
 echo "-----------------"
 echo "ui.qvm compiled"
@@ -213,8 +208,8 @@ echo "-----------------"
 # ########################################
 
 cd ../../..
-cd linux_scripts
-cd ../../..
+cd make_scripts
+cd ../..
 
 # ##############################################################
 # Replace "default" here with the name of your mod
