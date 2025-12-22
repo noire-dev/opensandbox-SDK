@@ -1,0 +1,32 @@
+code
+
+equ	trap_AddCommand						-1
+equ	trap_SendClientCommand				-2
+equ	trap_CM_LoadMap						-3
+equ	trap_CM_NumInlineModels				-4
+equ	trap_CM_InlineModel					-5
+equ	trap_CM_TempBoxModel				-6
+equ	trap_CM_PointContents				-7
+equ	trap_CM_TransformedPointContents	-8
+equ	trap_CM_BoxTrace					-9
+equ	trap_CM_TransformedBoxTrace			-10
+equ	trap_CM_MarkFragments				-11
+equ	trap_S_StartSound					-12
+equ	trap_S_ClearLoopingSounds			-13
+equ	trap_S_AddLoopingSound				-14
+equ	trap_S_UpdateEntityPosition			-15
+equ	trap_S_Respatialize					-16
+equ	trap_S_StartBackgroundTrack			-17
+equ	trap_R_LoadWorldMap					-18
+equ	trap_R_ModelBounds					-19
+equ	trap_GetGameState					-20
+equ	trap_GetCurrentSnapshotNumber		-21
+equ	trap_GetSnapshot					-22
+equ	trap_GetServerCommand				-23
+equ	trap_GetCurrentCmdNumber			-24
+equ	trap_GetUserCmd						-25
+equ	trap_SetUserCmdValue				-26
+equ trap_Key_GetKey						-27
+equ	trap_S_AddRealLoopingSound			-28
+equ trap_S_StopLoopingSound				-29
+equ trap_ImportOBJ                      -30

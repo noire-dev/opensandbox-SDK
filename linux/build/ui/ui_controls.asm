@@ -1,0 +1,3507 @@
+data
+align 4
+LABELV g_bindings
+address $61
+address $62
+byte 4 0
+byte 4 -1
+byte 4 -1
+address $63
+address $64
+byte 4 1
+byte 4 -1
+byte 4 -1
+address $65
+address $66
+byte 4 2
+byte 4 -1
+byte 4 -1
+address $67
+address $68
+byte 4 3
+byte 4 -1
+byte 4 -1
+address $69
+address $70
+byte 4 4
+byte 4 -1
+byte 4 -1
+address $71
+address $72
+byte 4 5
+byte 4 -1
+byte 4 -1
+address $73
+address $74
+byte 4 6
+byte 4 -1
+byte 4 -1
+address $75
+address $76
+byte 4 7
+byte 4 -1
+byte 4 -1
+address $77
+address $78
+byte 4 8
+byte 4 -1
+byte 4 -1
+address $79
+address $80
+byte 4 9
+byte 4 -1
+byte 4 -1
+address $81
+address $82
+byte 4 10
+byte 4 -1
+byte 4 -1
+address $83
+address $84
+byte 4 11
+byte 4 -1
+byte 4 -1
+address $85
+address $86
+byte 4 12
+byte 4 -1
+byte 4 -1
+address $87
+address $88
+byte 4 13
+byte 4 -1
+byte 4 -1
+address $89
+address $90
+byte 4 14
+byte 4 -1
+byte 4 -1
+address $91
+address $92
+byte 4 15
+byte 4 -1
+byte 4 -1
+address $93
+address $94
+byte 4 16
+byte 4 -1
+byte 4 -1
+address $95
+address $95
+byte 4 17
+byte 4 -1
+byte 4 -1
+address $96
+address $97
+byte 4 18
+byte 4 -1
+byte 4 -1
+address $98
+address $99
+byte 4 19
+byte 4 -1
+byte 4 -1
+address $100
+address $101
+byte 4 20
+byte 4 -1
+byte 4 -1
+address $102
+address $103
+byte 4 21
+byte 4 -1
+byte 4 -1
+address $104
+address $105
+byte 4 22
+byte 4 -1
+byte 4 -1
+address $106
+address $107
+byte 4 23
+byte 4 -1
+byte 4 -1
+byte 4 0
+byte 4 0
+byte 4 -1
+byte 4 -1
+byte 4 -1
+align 4
+LABELV mousestyle_description
+address $108
+address $109
+byte 4 0
+code
+proc Controls_Update 24 0
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $111
+ADDRLP4 4
+INDIRI4
+CNSTI4 0
+NEI4 $115
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+LABELV $117
+ADDRLP4 12
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 640
+BORU4
+ASGNU4
+LABELV $118
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 23
+LEI4 $117
+LABELV $115
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+NEI4 $123
+ADDRLP4 0
+CNSTI4 24
+ASGNI4
+LABELV $125
+ADDRLP4 12
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 640
+BORU4
+ASGNU4
+LABELV $126
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 28
+LEI4 $125
+LABELV $123
+LABELV $112
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+LTI4 $111
+ADDRGP4 controls+49824
+INDIRI4
+CNSTI4 0
+NEI4 $131
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+LABELV $134
+ADDRLP4 12
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 4294966399
+BANDU4
+ASGNU4
+LABELV $135
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 23
+LEI4 $134
+LABELV $131
+ADDRGP4 controls+49824
+INDIRI4
+CNSTI4 1
+NEI4 $140
+ADDRLP4 0
+CNSTI4 24
+ASGNI4
+LABELV $143
+ADDRLP4 12
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 4294966399
+BANDU4
+ASGNU4
+LABELV $144
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 28
+LEI4 $143
+LABELV $140
+ADDRLP4 8
+CNSTI4 80
+ASGNI4
+ADDRGP4 controls+49824
+INDIRI4
+CNSTI4 0
+NEI4 $149
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+LABELV $152
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+48
+ADDP4
+CNSTI4 409
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+52
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+56
+ADDP4
+CNSTI4 300
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+64
+ADDP4
+CNSTI4 530
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+60
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+68
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+CNSTI4 11
+ADDI4
+ASGNI4
+LABELV $153
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 8
+ADDRLP4 8
+INDIRI4
+CNSTI4 11
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 23
+LEI4 $152
+LABELV $149
+ADDRGP4 controls+49824
+INDIRI4
+CNSTI4 1
+NEI4 $168
+ADDRLP4 0
+CNSTI4 24
+ASGNI4
+LABELV $171
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+48
+ADDP4
+CNSTI4 409
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+52
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+56
+ADDP4
+CNSTI4 300
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+64
+ADDP4
+CNSTI4 530
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+60
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+68
+ADDP4
+ADDRLP4 8
+INDIRI4
+CNSTI4 30
+SUBI4
+CNSTI4 11
+ADDI4
+ASGNI4
+LABELV $172
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 8
+ADDRLP4 8
+INDIRI4
+CNSTI4 11
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 28
+LEI4 $171
+LABELV $168
+ADDRGP4 controls+49828
+INDIRI4
+CNSTI4 0
+EQI4 $187
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $193
+JUMPV
+LABELV $190
+ADDRLP4 12
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 controls+12
+ADDP4
+INDIRP4
+CNSTI4 80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 256
+BORU4
+ASGNU4
+LABELV $191
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $193
+ADDRLP4 4
+INDIRI4
+ADDRGP4 controls+8
+INDIRI4
+LTI4 $190
+ADDRLP4 12
+ADDRGP4 controls
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 controls+12
+ADDP4
+INDIRP4
+CNSTI4 80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 4294967039
+BANDU4
+ASGNU4
+ADDRGP4 $110
+JUMPV
+LABELV $187
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $200
+JUMPV
+LABELV $197
+ADDRLP4 12
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 controls+12
+ADDP4
+INDIRP4
+CNSTI4 80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 4294967039
+BANDU4
+ASGNU4
+LABELV $198
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $200
+ADDRLP4 4
+INDIRI4
+ADDRGP4 controls+8
+INDIRI4
+LTI4 $197
+ADDRLP4 4
+CNSTI4 90
+ASGNI4
+LABELV $203
+ADDRLP4 12
+CNSTI4 488
+ADDRLP4 4
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRU4
+CNSTU4 4294966527
+BANDU4
+ASGNU4
+LABELV $204
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 100
+LTI4 $203
+ADDRLP4 12
+ADDRGP4 controls+49824
+INDIRI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+EQI4 $212
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+EQI4 $216
+ADDRGP4 $209
+JUMPV
+LABELV $212
+ADDRLP4 16
+ADDRGP4 controls+536+43920+80
+ASGNP4
+ADDRLP4 16
+INDIRP4
+ADDRLP4 16
+INDIRP4
+INDIRU4
+CNSTU4 768
+BORU4
+ASGNU4
+ADDRGP4 $210
+JUMPV
+LABELV $216
+ADDRLP4 20
+ADDRGP4 controls+536+44408+80
+ASGNP4
+ADDRLP4 20
+INDIRP4
+ADDRLP4 20
+INDIRP4
+INDIRU4
+CNSTU4 768
+BORU4
+ASGNU4
+LABELV $209
+LABELV $210
+LABELV $110
+endproc Controls_Update 24 0
+proc Controls_DrawKeyBinding 116 24
+ADDRLP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 0
+INDIRP4
+CNSTI4 48
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+CNSTI4 52
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 72
+ADDP4
+INDIRP4
+ARGP4
+ADDRLP4 96
+ADDRGP4 Menu_ItemAtCursor
+CALLP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+ADDRLP4 96
+INDIRP4
+CVPU4 4
+NEU4 $222
+ADDRLP4 88
+CNSTI4 1
+ASGNI4
+ADDRGP4 $223
+JUMPV
+LABELV $222
+ADDRLP4 88
+CNSTI4 0
+ASGNI4
+LABELV $223
+ADDRLP4 48
+ADDRLP4 88
+INDIRI4
+ASGNI4
+ADDRLP4 44
+CNSTI4 20
+ADDRLP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+MULI4
+ADDRGP4 g_bindings+12
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 44
+INDIRI4
+CNSTI4 -1
+NEI4 $225
+ADDRLP4 12
+ARGP4
+ADDRGP4 $227
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRGP4 $226
+JUMPV
+LABELV $225
+ADDRLP4 44
+INDIRI4
+ARGI4
+ADDRLP4 12
+ARGP4
+CNSTI4 32
+ARGI4
+ADDRGP4 trap_Key_KeynumToStringBuf
+CALLV
+pop
+ADDRLP4 12
+ARGP4
+ADDRGP4 Q_strupr
+CALLP4
+pop
+ADDRLP4 52
+CNSTI4 20
+ADDRLP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+MULI4
+ADDRGP4 g_bindings+16
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 52
+INDIRI4
+CNSTI4 -1
+EQI4 $229
+ADDRLP4 52
+INDIRI4
+ARGI4
+ADDRLP4 56
+ARGP4
+CNSTI4 32
+ARGI4
+ADDRGP4 trap_Key_KeynumToStringBuf
+CALLV
+pop
+ADDRLP4 56
+ARGP4
+ADDRGP4 Q_strupr
+CALLP4
+pop
+ADDRLP4 12
+ARGP4
+ADDRGP4 $231
+ARGP4
+ADDRGP4 strcat
+CALLP4
+pop
+ADDRLP4 12
+ARGP4
+ADDRLP4 56
+ARGP4
+ADDRGP4 strcat
+CALLP4
+pop
+LABELV $229
+LABELV $226
+ADDRLP4 48
+INDIRI4
+CNSTI4 0
+EQI4 $232
+ADDRLP4 104
+ADDRLP4 0
+INDIRP4
+CNSTI4 56
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 104
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 108
+ADDRLP4 0
+INDIRP4
+CNSTI4 60
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 108
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 112
+CNSTI4 1
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 64
+ADDP4
+INDIRI4
+ADDRLP4 104
+INDIRI4
+SUBI4
+ADDRLP4 112
+INDIRI4
+ADDI4
+CVIF4 4
+ARGF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 68
+ADDP4
+INDIRI4
+ADDRLP4 108
+INDIRI4
+SUBI4
+ADDRLP4 112
+INDIRI4
+ADDI4
+CVIF4 4
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 color_select
+ARGP4
+ADDRGP4 UI_DrawRoundedRect
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+SUBF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+CNSTI4 20
+ADDRLP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+MULI4
+ADDRGP4 g_bindings+4
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 color_highlight
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+ADDF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 12
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 color_highlight
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRGP4 controls+49828
+INDIRI4
+CNSTI4 0
+EQI4 $235
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+CNSTI4 61
+ARGI4
+CNSTI4 1
+ARGI4
+ADDRGP4 color_highlight
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawChar
+CALLV
+pop
+CNSTF4 1137495245
+ARGF4
+CNSTF4 1138229248
+ARGF4
+ADDRGP4 $238
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 color_white
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRGP4 $233
+JUMPV
+LABELV $235
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+CNSTI4 13
+ARGI4
+CNSTI4 1
+ARGI4
+ADDRGP4 color_highlight
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawChar
+CALLV
+pop
+CNSTF4 1137495245
+ARGF4
+CNSTF4 1138229248
+ARGF4
+ADDRGP4 $239
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 color_white
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+CNSTF4 1137495245
+ARGF4
+CNSTF4 1139015680
+ARGF4
+ADDRGP4 $240
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 color_white
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRGP4 $233
+JUMPV
+LABELV $232
+ADDRLP4 0
+INDIRP4
+CNSTI4 80
+ADDP4
+INDIRU4
+CNSTU4 256
+BANDU4
+CNSTU4 0
+EQU4 $241
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+SUBF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+CNSTI4 20
+ADDRLP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+MULI4
+ADDRGP4 g_bindings+4
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 color_disabled
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+ADDF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 12
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 color_disabled
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRGP4 $242
+JUMPV
+LABELV $241
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+SUBF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+CNSTI4 20
+ADDRLP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+MULI4
+ADDRGP4 g_bindings+4
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 color_white
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+CNSTF4 1085821420
+ADDF4
+ARGF4
+ADDRLP4 8
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRLP4 12
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 color_white
+ARGP4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 ST_DrawString
+CALLV
+pop
+LABELV $242
+LABELV $233
+LABELV $220
+endproc Controls_DrawKeyBinding 116 24
+proc Controls_GetKeyAssignment 280 12
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 4
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRLP4 268
+CNSTI4 -1
+ASGNI4
+ADDRFP4 4
+INDIRP4
+CNSTI4 4
+ADDP4
+ADDRLP4 268
+INDIRI4
+ASGNI4
+ADDRFP4 4
+INDIRP4
+ADDRLP4 268
+INDIRI4
+ASGNI4
+ADDRLP4 272
+CNSTI4 0
+ASGNI4
+ADDRLP4 260
+ADDRLP4 272
+INDIRI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 272
+INDIRI4
+ASGNI4
+LABELV $246
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRLP4 4
+ARGP4
+CNSTI4 256
+ARGI4
+ADDRGP4 trap_Key_GetBindingBuf
+CALLV
+pop
+ADDRLP4 4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $250
+ADDRGP4 $247
+JUMPV
+LABELV $250
+ADDRLP4 4
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 276
+ADDRGP4 Q_stricmp
+CALLI4
+ASGNI4
+ADDRLP4 276
+INDIRI4
+CNSTI4 0
+NEI4 $252
+ADDRLP4 260
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 4
+INDIRP4
+ADDP4
+ADDRLP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 260
+ADDRLP4 260
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 260
+INDIRI4
+CNSTI4 2
+NEI4 $254
+ADDRGP4 $248
+JUMPV
+LABELV $254
+LABELV $252
+LABELV $247
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 256
+LTI4 $246
+LABELV $248
+LABELV $245
+endproc Controls_GetKeyAssignment 280 12
+proc Controls_GetConfig 24 8
+ADDRLP4 0
+ADDRGP4 g_bindings
+ASGNP4
+ADDRLP4 12
+CNSTI4 0
+ASGNI4
+LABELV $257
+ADDRLP4 0
+INDIRP4
+CNSTI4 4
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $261
+ADDRGP4 $259
+JUMPV
+LABELV $261
+ADDRLP4 0
+INDIRP4
+INDIRP4
+ARGP4
+ADDRLP4 4
+ARGP4
+ADDRGP4 Controls_GetKeyAssignment
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+ADDRLP4 4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+ADDRLP4 4+4
+INDIRI4
+ASGNI4
+LABELV $258
+ADDRLP4 12
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 0
+INDIRP4
+CNSTI4 20
+ADDP4
+ASGNP4
+ADDRGP4 $257
+JUMPV
+LABELV $259
+ADDRGP4 $267
+ARGP4
+ADDRLP4 20
+ADDRGP4 cvarInt
+CALLI4
+ASGNI4
+ADDRLP4 20
+INDIRI4
+CNSTI4 0
+LEI4 $269
+ADDRLP4 16
+CNSTI4 1
+ASGNI4
+ADDRGP4 $270
+JUMPV
+LABELV $269
+ADDRLP4 16
+CNSTI4 0
+ASGNI4
+LABELV $270
+ADDRGP4 controls+536+11712+156
+ADDRLP4 16
+INDIRI4
+ASGNI4
+LABELV $256
+endproc Controls_GetConfig 24 8
+proc Controls_SetConfig 16 8
+ADDRLP4 0
+ADDRGP4 g_bindings
+ASGNP4
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $272
+ADDRLP4 0
+INDIRP4
+CNSTI4 4
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $276
+ADDRGP4 $274
+JUMPV
+LABELV $276
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+CNSTI4 -1
+EQI4 $278
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+INDIRP4
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+CNSTI4 -1
+EQI4 $280
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+INDIRP4
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+LABELV $280
+LABELV $278
+LABELV $273
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 0
+INDIRP4
+CNSTI4 20
+ADDP4
+ASGNP4
+ADDRGP4 $272
+JUMPV
+LABELV $274
+LABELV $271
+endproc Controls_SetConfig 16 8
+proc Controls_MenuKey 44 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 16
+CNSTI4 0
+ASGNI4
+ADDRLP4 12
+ADDRLP4 16
+INDIRI4
+ASGNI4
+ADDRGP4 controls+49828
+INDIRI4
+ADDRLP4 16
+INDIRI4
+NEI4 $283
+ADDRLP4 24
+CNSTI4 140
+ASGNI4
+ADDRFP4 0
+INDIRI4
+ADDRLP4 24
+INDIRI4
+EQI4 $288
+ADDRFP4 0
+INDIRI4
+ADDRLP4 24
+INDIRI4
+GTI4 $292
+LABELV $291
+ADDRLP4 32
+CNSTI4 27
+ASGNI4
+ADDRFP4 0
+INDIRI4
+ADDRLP4 32
+INDIRI4
+EQI4 $289
+ADDRFP4 0
+INDIRI4
+ADDRLP4 32
+INDIRI4
+LTI4 $290
+LABELV $293
+ADDRFP4 0
+INDIRI4
+CNSTI4 127
+EQI4 $288
+ADDRGP4 $290
+JUMPV
+LABELV $292
+ADDRLP4 40
+CNSTI4 171
+ASGNI4
+ADDRFP4 0
+INDIRI4
+ADDRLP4 40
+INDIRI4
+EQI4 $288
+ADDRFP4 0
+INDIRI4
+ADDRLP4 40
+INDIRI4
+LTI4 $290
+LABELV $294
+ADDRFP4 0
+INDIRI4
+CNSTI4 179
+EQI4 $289
+ADDRGP4 $290
+JUMPV
+LABELV $288
+ADDRFP4 0
+CNSTI4 -1
+ASGNI4
+ADDRGP4 $284
+JUMPV
+LABELV $289
+ADDRGP4 Controls_SetConfig
+CALLV
+pop
+ADDRGP4 $290
+JUMPV
+LABELV $283
+ADDRFP4 0
+INDIRI4
+CNSTI4 1024
+BANDI4
+CNSTI4 0
+EQI4 $295
+ADDRGP4 $290
+JUMPV
+LABELV $295
+ADDRLP4 24
+CNSTI4 27
+ASGNI4
+ADDRFP4 0
+INDIRI4
+ADDRLP4 24
+INDIRI4
+EQI4 $299
+ADDRFP4 0
+INDIRI4
+ADDRLP4 24
+INDIRI4
+LTI4 $297
+LABELV $302
+ADDRFP4 0
+INDIRI4
+CNSTI4 96
+EQI4 $290
+ADDRGP4 $297
+JUMPV
+LABELV $299
+ADDRGP4 controls+49828
+CNSTI4 0
+ASGNI4
+ADDRGP4 Controls_Update
+CALLV
+pop
+ADDRGP4 menu_out_sound
+INDIRI4
+RETI4
+ADDRGP4 $282
+JUMPV
+LABELV $297
+LABELV $284
+ADDRFP4 0
+INDIRI4
+CNSTI4 -1
+EQI4 $303
+ADDRLP4 0
+ADDRGP4 g_bindings
+ASGNP4
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $305
+ADDRLP4 0
+INDIRP4
+CNSTI4 4
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $309
+ADDRGP4 $307
+JUMPV
+LABELV $309
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRI4
+NEI4 $311
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+CNSTI4 -1
+ASGNI4
+LABELV $311
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRI4
+NEI4 $313
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+CNSTI4 -1
+ASGNI4
+LABELV $313
+LABELV $306
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 0
+INDIRP4
+CNSTI4 20
+ADDP4
+ASGNP4
+ADDRGP4 $305
+JUMPV
+LABELV $307
+LABELV $303
+ADDRLP4 8
+ADDRGP4 controls
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 controls+12
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+ADDRGP4 g_bindings
+ASGNP4
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $316
+ADDRLP4 0
+INDIRP4
+CNSTI4 4
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $320
+ADDRGP4 $318
+JUMPV
+LABELV $320
+ADDRLP4 0
+INDIRP4
+CNSTI4 8
+ADDP4
+INDIRI4
+ADDRLP4 8
+INDIRI4
+NEI4 $322
+ADDRLP4 12
+CNSTI4 1
+ASGNI4
+ADDRFP4 0
+INDIRI4
+CNSTI4 -1
+NEI4 $324
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+CNSTI4 -1
+EQI4 $326
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 $328
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+CNSTI4 -1
+ASGNI4
+LABELV $326
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+CNSTI4 -1
+EQI4 $318
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 $328
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+CNSTI4 -1
+ASGNI4
+ADDRGP4 $318
+JUMPV
+LABELV $324
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+CNSTI4 -1
+NEI4 $331
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRGP4 $318
+JUMPV
+LABELV $331
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRI4
+EQI4 $333
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+CNSTI4 -1
+NEI4 $333
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRGP4 $318
+JUMPV
+LABELV $333
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 $328
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 $328
+ARGP4
+ADDRGP4 trap_Key_SetBinding
+CALLV
+pop
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 16
+ADDP4
+CNSTI4 -1
+ASGNI4
+ADDRGP4 $318
+JUMPV
+LABELV $322
+LABELV $317
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 0
+INDIRP4
+CNSTI4 20
+ADDP4
+ASGNP4
+ADDRGP4 $316
+JUMPV
+LABELV $318
+ADDRGP4 controls+49828
+CNSTI4 0
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+EQI4 $336
+ADDRGP4 Controls_Update
+CALLV
+pop
+ADDRGP4 menu_out_sound
+INDIRI4
+RETI4
+ADDRGP4 $282
+JUMPV
+LABELV $336
+LABELV $290
+ADDRGP4 controls
+ARGP4
+ADDRFP4 0
+INDIRI4
+ARGI4
+ADDRLP4 20
+ADDRGP4 Menu_DefaultKey
+CALLI4
+ASGNI4
+ADDRLP4 20
+INDIRI4
+RETI4
+LABELV $282
+endproc Controls_MenuKey 44 8
+proc Controls_MenuEvent 24 8
+ADDRFP4 4
+INDIRI4
+CNSTI4 3
+EQI4 $339
+ADDRGP4 $338
+JUMPV
+LABELV $339
+ADDRLP4 0
+ADDRFP4 0
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 8
+CNSTI4 24
+ASGNI4
+ADDRLP4 0
+INDIRI4
+ADDRLP4 8
+INDIRI4
+EQI4 $349
+ADDRLP4 0
+INDIRI4
+ADDRLP4 8
+INDIRI4
+LTI4 $341
+LABELV $358
+ADDRLP4 0
+INDIRI4
+CNSTI4 88
+EQI4 $348
+ADDRLP4 0
+INDIRI4
+CNSTI4 90
+EQI4 $344
+ADDRLP4 0
+INDIRI4
+CNSTI4 91
+EQI4 $346
+ADDRGP4 $341
+JUMPV
+LABELV $344
+ADDRGP4 controls+49824
+CNSTI4 0
+ASGNI4
+ADDRGP4 Controls_Update
+CALLV
+pop
+ADDRGP4 $342
+JUMPV
+LABELV $346
+ADDRGP4 controls+49824
+CNSTI4 1
+ASGNI4
+ADDRGP4 Controls_Update
+CALLV
+pop
+ADDRGP4 $342
+JUMPV
+LABELV $348
+ADDRGP4 Controls_SetConfig
+CALLV
+pop
+ADDRGP4 UI_PopMenu
+CALLV
+pop
+ADDRGP4 $342
+JUMPV
+LABELV $349
+ADDRGP4 $350
+ARGP4
+ADDRGP4 controls+536+11712+156
+INDIRI4
+CNSTI4 1
+NEI4 $355
+ADDRLP4 16
+CNSTI4 1
+ASGNI4
+ADDRGP4 $356
+JUMPV
+LABELV $355
+ADDRLP4 16
+CNSTI4 -1
+ASGNI4
+LABELV $356
+ADDRLP4 16
+INDIRI4
+ARGI4
+ADDRLP4 20
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRGP4 $267
+ARGP4
+ADDRLP4 20
+INDIRP4
+ARGP4
+ADDRGP4 cvarSet
+CALLV
+pop
+CNSTI4 2
+ARGI4
+ADDRGP4 $357
+ARGP4
+ADDRGP4 trap_Cmd
+CALLV
+pop
+LABELV $341
+LABELV $342
+LABELV $338
+endproc Controls_MenuEvent 24 8
+proc Controls_ActionEvent 0 0
+ADDRFP4 4
+INDIRI4
+CNSTI4 3
+NEI4 $360
+ADDRGP4 controls+49828
+INDIRI4
+CNSTI4 0
+NEI4 $360
+ADDRGP4 controls+49828
+CNSTI4 1
+ASGNI4
+ADDRGP4 Controls_Update
+CALLV
+pop
+LABELV $360
+LABELV $359
+endproc Controls_ActionEvent 0 0
+export UI_Controls
+proc UI_Controls 24 48
+ADDRGP4 controls
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTI4 49832
+ARGI4
+ADDRGP4 memset
+CALLP4
+pop
+ADDRGP4 controls+528
+ADDRGP4 Controls_MenuKey
+ASGNP4
+ADDRGP4 controls+532
+CNSTI4 1
+ASGNI4
+ADDRGP4 controls+536+43432
+ARGP4
+CNSTF4 1114112000
+ADDRGP4 uis+92
+INDIRF4
+SUBF4
+ARGF4
+CNSTF4 1118830592
+ARGF4
+ADDRGP4 $370
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTF4 1072064102
+ARGF4
+ADDRGP4 UI_CText
+CALLV
+pop
+ADDRLP4 4
+CNSTI4 145
+ASGNI4
+ADDRGP4 controls+536+43920
+ARGP4
+CNSTF4 1115684864
+ADDRGP4 uis+92
+INDIRF4
+SUBF4
+ARGF4
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRGP4 $374
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 color_white
+ARGP4
+ADDRLP4 8
+CNSTP4 0
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRLP4 8
+INDIRP4
+ARGP4
+CNSTP4 0
+ARGP4
+ADDRGP4 Controls_MenuEvent
+ARGP4
+CNSTI4 90
+ARGI4
+ADDRGP4 UI_CButton
+CALLV
+pop
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 18
+ADDI4
+ASGNI4
+ADDRGP4 controls+536+44408
+ARGP4
+CNSTF4 1115684864
+ADDRGP4 uis+92
+INDIRF4
+SUBF4
+ARGF4
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRGP4 $378
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 color_white
+ARGP4
+ADDRLP4 12
+CNSTP4 0
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ARGP4
+ADDRLP4 12
+INDIRP4
+ARGP4
+CNSTP4 0
+ARGP4
+ADDRGP4 Controls_MenuEvent
+ARGP4
+CNSTI4 91
+ARGI4
+ADDRGP4 UI_CButton
+CALLV
+pop
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 36
+ADDI4
+ASGNI4
+ADDRGP4 controls+536+42944
+ARGP4
+CNSTF4 1115684864
+ADDRGP4 uis+92
+INDIRF4
+SUBF4
+ARGF4
+ADDRLP4 4
+INDIRI4
+CVIF4 4
+ARGF4
+ADDRGP4 $382
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTF4 1065353216
+ARGF4
+ADDRGP4 color_white
+ARGP4
+ADDRLP4 16
+CNSTP4 0
+ASGNP4
+ADDRLP4 16
+INDIRP4
+ARGP4
+ADDRLP4 16
+INDIRP4
+ARGP4
+CNSTP4 0
+ARGP4
+ADDRGP4 Controls_MenuEvent
+ARGP4
+CNSTI4 88
+ARGI4
+ADDRGP4 UI_CButton
+CALLV
+pop
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+LABELV $383
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536
+ADDP4
+CNSTI4 2
+ASGNI4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+80
+ADDP4
+CNSTU4 417
+ASGNU4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+96
+ADDP4
+ADDRGP4 Controls_ActionEvent
+ASGNP4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+104
+ADDP4
+ADDRGP4 Controls_DrawKeyBinding
+ASGNP4
+CNSTI4 488
+ADDRLP4 0
+INDIRI4
+MULI4
+ADDRGP4 controls+536+40
+ADDP4
+ADDRLP4 0
+INDIRI4
+ASGNI4
+LABELV $384
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 23
+LEI4 $383
+ADDRGP4 controls+536+11712
+ARGP4
+CNSTF4 1137495245
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 $398
+ARGP4
+ADDRGP4 mousestyle_description
+ARGP4
+CNSTP4 0
+ARGP4
+ADDRGP4 Controls_MenuEvent
+ARGP4
+CNSTI4 24
+ARGI4
+ADDRGP4 UI_CSpinControl
+CALLV
+pop
+ADDRGP4 controls+536+12200
+ARGP4
+CNSTF4 1137495245
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 $401
+ARGP4
+ADDRGP4 $402
+ARGP4
+CNSTI4 1
+ARGI4
+CNSTP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 UI_CRadioButton
+CALLV
+pop
+ADDRGP4 controls+536+12688
+ARGP4
+CNSTF4 1137495245
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 $405
+ARGP4
+ADDRGP4 $406
+ARGP4
+CNSTI4 1
+ARGI4
+CNSTP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 UI_CRadioButton
+CALLV
+pop
+ADDRGP4 controls+536+13176
+ARGP4
+CNSTF4 1137495245
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 $409
+ARGP4
+ADDRGP4 $410
+ARGP4
+CNSTI4 1
+ARGI4
+CNSTP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 UI_CRadioButton
+CALLV
+pop
+ADDRGP4 controls+536+13664
+ARGP4
+CNSTF4 1137495245
+ARGF4
+CNSTF4 0
+ARGF4
+ADDRGP4 $413
+ARGP4
+ADDRGP4 $414
+ARGP4
+CNSTF4 1073741824
+ARGF4
+CNSTF4 1106247680
+ARGF4
+CNSTF4 1065353216
+ARGF4
+CNSTP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 UI_CSlider
+CALLV
+pop
+ADDRGP4 controls
+ARGP4
+ADDRGP4 controls+536
+ARGP4
+ADDRGP4 UI_CreateUI
+CALLV
+pop
+ADDRGP4 Controls_GetConfig
+CALLV
+pop
+ADDRGP4 controls+49824
+CNSTI4 0
+ASGNI4
+ADDRGP4 Controls_Update
+CALLV
+pop
+ADDRGP4 controls
+ARGP4
+ADDRGP4 UI_PushMenu
+CALLV
+pop
+LABELV $364
+endproc UI_Controls 24 48
+bss
+align 4
+LABELV controls
+skip 49832
+import consoleSync
+import trap_LAN_GetServerAddressString
+import trap_LAN_GetServerCount
+import trap_MemoryRemaining
+import trap_LAN_GetPingInfo
+import trap_LAN_GetPing
+import trap_LAN_ClearPing
+import trap_LAN_GetPingQueueCount
+import trap_GetConfigString
+import trap_GetClientState
+import trap_GetClipboardData
+import trap_Key_SetCatcher
+import trap_Key_ClearStates
+import trap_Key_SetOverstrikeMode
+import trap_Key_GetOverstrikeMode
+import trap_Key_IsDown
+import trap_Key_SetBinding
+import trap_Key_GetBindingBuf
+import trap_Key_KeynumToStringBuf
+import consoleLines
+import console
+import gametype_items
+import uis
+import UI_SpawnMenu
+import UI_Settings
+import UI_ArenaServersMenu
+import UI_CPicture
+import UI_CBitmap
+import UI_CText
+import UI_CField
+import UI_CList
+import UI_CSpinControl
+import UI_CRadioButton
+import UI_CSlider
+import UI_CButton
+import UI_CreateUI
+import UI_SetHitbox
+import UI_ListPlayerCount
+import UI_FillListPlayers
+import UI_FillListOfItems
+import UI_FillListFromArray
+import UI_CountFiles
+import UI_FillList
+import Menu_Cache
+import Menu_DefaultKey
+import Menu_ItemAtCursor
+import Menu_Draw
+import Menu_SetCursor
+import Menu_AddItem
+import ScrollList_Key
+import GUI_PlayerInfo_AnimateModel
+import GUI_ModelName
+import GUI_PlayerInfo_DrawTeamModel
+import GUI_PlayerInfo_InitModel
+import UI_PlayerModelMenu
+import UI_Options
+import UI_NewGame
+import UI_MainMenu
+import UI_CreateCvars
+import UI_CountOfMaps
+import UI_FillListOfBots
+import UI_FillListOfMaps
+import UI_GetNumBots
+import UI_GetBotInfoByName
+import UI_LoadBots
+import UI_LoadArenas
+import UI_InitMemory
+import UI_Alloc
+import UI_DrawConnectScreen
+import UI_DrawRoundedRect
+import UI_DrawModelElement
+import UI_DrawPictureElement
+import UI_DrawHandlePic
+import UI_AdjustFrom640
+import UI_Init
+import UI_Shutdown
+import UI_ConsoleCommand
+import UI_MouseEvent
+import UI_KeyEvent
+import UI_SetActiveMenu
+import UI_IsFullscreen
+import UI_ForceMenuOff
+import UI_PopMenu
+import UI_PushMenu
+import UI_UpdateState
+import drawTeamModel
+import menu_null_sound
+import menu_buzz_sound
+import menu_out_sound
+import menu_move_sound
+import Pmove
+import PM_UpdateViewAngles
+import BG_InVehicle
+import BG_PlayerStateToEntityState
+import BG_TouchJumpPad
+import BG_AddPredictableEventToPlayerstate
+import ST_EvaluateTrajectoryDelta
+import ST_EvaluateTrajectory
+import BG_EvaluateTrajectoryDelta
+import BG_EvaluateTrajectory
+import BG_CanItemBeGrabbed
+import BG_PlayerTouchesItem
+import BG_FindAmmo
+import BG_FindWeapon
+import BG_CheckClassname
+import BG_FindItem
+import BG_FindItemForWeapon
+import BG_FindItemForHoldable
+import BG_FindItemForPowerup
+import BG_FactionShouldAttack
+import BG_FindNPCTypeID
+import G_InitMemory
+import G_Alloc
+import gameInfoSandboxSpawnsNum
+import gameInfoSandboxSpawns
+import gameInfoFactionsNum
+import gameInfoFactions
+import gameInfoNPCTypesNum
+import gameInfoNPCTypes
+import gameInfoWPropsNum
+import gameInfoWProps
+import gameInfoWeaponsNum
+import gameInfoWeapons
+import gameInfoItemsNum
+import gameInfoItems
+import gametypes_mapnames
+import gametypes_names
+import trap_R_RemapShader
+import trap_Key_GetCatcher
+import trap_GetGlconfig
+import trap_R_LerpTag
+import trap_R_DrawStretchPic
+import trap_R_SetColor
+import trap_R_RenderScene
+import trap_R_AddLinearLightToScene
+import trap_R_AddLightToScene
+import trap_R_AddPolyToScene
+import trap_R_AddRefEntityToScene
+import trap_R_ClearScene
+import trap_R_RegisterShaderNoMip
+import trap_R_RegisterShader
+import trap_R_RegisterSkin
+import trap_R_RegisterModel
+import trap_S_RegisterSound
+import trap_S_StartLocalSound
+import trap_UpdateScreen
+import glconfig
+import strncpy
+import memcpy
+import memset
+import trap_System
+import trap_RealTime
+import trap_Cmd
+import FS_List
+import FS_Close
+import FS_Write
+import FS_Read
+import FS_Open
+import trap_Args
+import trap_Argv
+import trap_Argc
+import cvarSet
+import cvarReload
+import cvarUpdate
+import cvarID
+import cvarRegister
+import trap_Milliseconds
+import trap_Error
+import trap_Print
+import ST_AnimValue
+import ST_AnimStart
+import ST_DrawString
+import ST_StringWidth
+import ST_DrawChar
+import ST_StringCount
+import ST_UpdateColors
+import ST_RegisterFont
+import ST_ColorEscapes
+import defaultFont
+import anim_weaponSelect
+import weaponSelectOut
+import weaponSelectIn
+import customcolor_crosshair
+import color_highlight
+import color_select
+import color_disabled
+import color_dim
+import color_grey
+import color_white
+import color_black
+import VectorDistance
+import Com_Printf
+import Com_Error
+import Info_NextPair
+import Info_Validate
+import Info_SetValueForKey_Big
+import Info_SetValueForKey
+import Info_RemoveKey_big
+import Info_RemoveKey
+import Info_ValueForKey
+import VectorToYaw
+import AngleDifference
+import va
+import Q_CleanStr
+import Q_strcat
+import Q_strncpyz
+import Q_stristr
+import Q_strupr
+import Q_strlwr
+import Q_stricmpn
+import Q_strncmp
+import Q_stricmp
+import Q_isalpha
+import Q_isupper
+import Q_islower
+import Q_isprint
+import Com_sprintf
+import COM_Compress
+import COM_ParseExt
+import COM_Parse
+import COM_DefaultExtension
+import COM_StripExtension
+import COM_GetExtension
+import COM_SkipPath
+import Com_Clamp
+import SnapVectorTowards
+import PerpendicularVector
+import AngleVectors
+import MatrixMultiply
+import RotateAroundDirection
+import RotatePointAroundVector
+import ProjectPointOnPlane
+import PlaneFromPoints
+import AngleDelta
+import AngleNormalize180
+import AngleNormalize360
+import LerpAngles
+import AngleMA
+import AngleAdd
+import AnglesSubtract
+import AngleSubtract
+import LerpAngle
+import AngleMod
+import AxisCopy
+import AxisClear
+import Lerp
+import VelocityToAxis
+import OrthogonalizeMatrix
+import AxisToAngles
+import AnglesToAxis
+import vectoangles
+import Q_crandom
+import Q_random
+import Q_rand
+import Vector4Scale
+import VectorNormalize2
+import VectorNormalize
+import CrossProduct
+import VectorInverse
+import VectorNormalizeFast
+import DistanceSquared
+import Distance
+import VectorLengthSquared
+import VectorLength
+import VectorCompare
+import AddPointToBounds
+import RadiusFromBounds
+import NormalizeColor
+import _VectorMA
+import _VectorScale
+import _VectorCopy
+import _VectorAdd
+import _VectorSubtract
+import _DotProduct
+import ByteToDir
+import DirToByte
+import Q_rsqrt
+import Q_fabs
+import axisDefault
+import vec3_origin
+import g_color_table
+import bytedirs
+import cvarString
+import cvarFloat
+import cvarInt
+import ST_UpdateCvars
+import ST_RegisterCvars
+import FloatSwap
+import LongSwap
+import ShortSwap
+import sqrt
+import atan2
+import acos
+import cos
+import sin
+import sscanf
+import Q_snprintf
+import Q_vsnprintf
+import fabs
+import abs
+import atoi
+import atof
+import rand
+import srand
+import tan
+import memmove
+import toupper
+import tolower
+import strstr
+import strrchr
+import strchr
+import strcmp
+import strcpy
+import strcat
+import ifstrlenru
+import strlenru
+import strlen
+import qsort
+lit
+align 1
+LABELV $414
+byte 1 115
+byte 1 101
+byte 1 110
+byte 1 115
+byte 1 105
+byte 1 116
+byte 1 105
+byte 1 118
+byte 1 105
+byte 1 116
+byte 1 121
+byte 1 0
+align 1
+LABELV $413
+byte 1 109
+byte 1 111
+byte 1 117
+byte 1 115
+byte 1 101
+byte 1 32
+byte 1 115
+byte 1 112
+byte 1 101
+byte 1 101
+byte 1 100
+byte 1 0
+align 1
+LABELV $410
+byte 1 99
+byte 1 108
+byte 1 95
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 0
+align 1
+LABELV $409
+byte 1 97
+byte 1 108
+byte 1 119
+byte 1 97
+byte 1 121
+byte 1 115
+byte 1 32
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 0
+align 1
+LABELV $406
+byte 1 109
+byte 1 95
+byte 1 102
+byte 1 105
+byte 1 108
+byte 1 116
+byte 1 101
+byte 1 114
+byte 1 0
+align 1
+LABELV $405
+byte 1 115
+byte 1 109
+byte 1 111
+byte 1 111
+byte 1 116
+byte 1 104
+byte 1 32
+byte 1 109
+byte 1 111
+byte 1 117
+byte 1 115
+byte 1 101
+byte 1 0
+align 1
+LABELV $402
+byte 1 99
+byte 1 108
+byte 1 95
+byte 1 102
+byte 1 114
+byte 1 101
+byte 1 101
+byte 1 108
+byte 1 111
+byte 1 111
+byte 1 107
+byte 1 0
+align 1
+LABELV $401
+byte 1 102
+byte 1 114
+byte 1 101
+byte 1 101
+byte 1 32
+byte 1 108
+byte 1 111
+byte 1 111
+byte 1 107
+byte 1 0
+align 1
+LABELV $398
+byte 1 105
+byte 1 110
+byte 1 112
+byte 1 117
+byte 1 116
+byte 1 32
+byte 1 109
+byte 1 101
+byte 1 116
+byte 1 104
+byte 1 111
+byte 1 100
+byte 1 0
+align 1
+LABELV $382
+byte 1 66
+byte 1 97
+byte 1 99
+byte 1 107
+byte 1 0
+align 1
+LABELV $378
+byte 1 83
+byte 1 101
+byte 1 116
+byte 1 116
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 115
+byte 1 0
+align 1
+LABELV $374
+byte 1 75
+byte 1 101
+byte 1 121
+byte 1 115
+byte 1 0
+align 1
+LABELV $370
+byte 1 67
+byte 1 79
+byte 1 78
+byte 1 84
+byte 1 82
+byte 1 79
+byte 1 76
+byte 1 83
+byte 1 0
+align 1
+LABELV $357
+byte 1 105
+byte 1 110
+byte 1 95
+byte 1 114
+byte 1 101
+byte 1 115
+byte 1 116
+byte 1 97
+byte 1 114
+byte 1 116
+byte 1 10
+byte 1 0
+align 1
+LABELV $350
+byte 1 37
+byte 1 102
+byte 1 0
+align 1
+LABELV $328
+byte 1 0
+align 1
+LABELV $267
+byte 1 105
+byte 1 110
+byte 1 95
+byte 1 109
+byte 1 111
+byte 1 117
+byte 1 115
+byte 1 101
+byte 1 0
+align 1
+LABELV $240
+byte 1 80
+byte 1 114
+byte 1 101
+byte 1 115
+byte 1 115
+byte 1 32
+byte 1 66
+byte 1 65
+byte 1 67
+byte 1 75
+byte 1 83
+byte 1 80
+byte 1 65
+byte 1 67
+byte 1 69
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 99
+byte 1 108
+byte 1 101
+byte 1 97
+byte 1 114
+byte 1 0
+align 1
+LABELV $239
+byte 1 80
+byte 1 114
+byte 1 101
+byte 1 115
+byte 1 115
+byte 1 32
+byte 1 69
+byte 1 78
+byte 1 84
+byte 1 69
+byte 1 82
+byte 1 32
+byte 1 111
+byte 1 114
+byte 1 32
+byte 1 67
+byte 1 76
+byte 1 73
+byte 1 67
+byte 1 75
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 99
+byte 1 104
+byte 1 97
+byte 1 110
+byte 1 103
+byte 1 101
+byte 1 0
+align 1
+LABELV $238
+byte 1 87
+byte 1 97
+byte 1 105
+byte 1 116
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 32
+byte 1 102
+byte 1 111
+byte 1 114
+byte 1 32
+byte 1 110
+byte 1 101
+byte 1 119
+byte 1 32
+byte 1 107
+byte 1 101
+byte 1 121
+byte 1 32
+byte 1 46
+byte 1 46
+byte 1 46
+byte 1 32
+byte 1 69
+byte 1 83
+byte 1 67
+byte 1 65
+byte 1 80
+byte 1 69
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 99
+byte 1 97
+byte 1 110
+byte 1 99
+byte 1 101
+byte 1 108
+byte 1 0
+align 1
+LABELV $231
+byte 1 32
+byte 1 111
+byte 1 114
+byte 1 32
+byte 1 0
+align 1
+LABELV $227
+byte 1 63
+byte 1 63
+byte 1 63
+byte 1 0
+align 1
+LABELV $109
+byte 1 82
+byte 1 97
+byte 1 119
+byte 1 0
+align 1
+LABELV $108
+byte 1 87
+byte 1 105
+byte 1 110
+byte 1 51
+byte 1 50
+byte 1 0
+align 1
+LABELV $107
+byte 1 101
+byte 1 120
+byte 1 105
+byte 1 116
+byte 1 32
+byte 1 118
+byte 1 101
+byte 1 104
+byte 1 105
+byte 1 99
+byte 1 108
+byte 1 101
+byte 1 0
+align 1
+LABELV $106
+byte 1 101
+byte 1 120
+byte 1 105
+byte 1 116
+byte 1 118
+byte 1 101
+byte 1 104
+byte 1 105
+byte 1 99
+byte 1 108
+byte 1 101
+byte 1 0
+align 1
+LABELV $105
+byte 1 115
+byte 1 119
+byte 1 105
+byte 1 116
+byte 1 99
+byte 1 104
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 111
+byte 1 108
+byte 1 103
+byte 1 117
+byte 1 110
+byte 1 32
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 0
+align 1
+LABELV $104
+byte 1 36
+byte 1 117
+byte 1 105
+byte 1 116
+byte 1 111
+byte 1 111
+byte 1 108
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 36
+byte 1 0
+align 1
+LABELV $103
+byte 1 116
+byte 1 111
+byte 1 103
+byte 1 103
+byte 1 108
+byte 1 101
+byte 1 32
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 0
+align 1
+LABELV $102
+byte 1 116
+byte 1 111
+byte 1 103
+byte 1 103
+byte 1 108
+byte 1 101
+byte 1 32
+byte 1 99
+byte 1 108
+byte 1 95
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 0
+align 1
+LABELV $101
+byte 1 116
+byte 1 111
+byte 1 103
+byte 1 103
+byte 1 108
+byte 1 101
+byte 1 32
+byte 1 110
+byte 1 111
+byte 1 99
+byte 1 108
+byte 1 105
+byte 1 112
+byte 1 0
+align 1
+LABELV $100
+byte 1 110
+byte 1 111
+byte 1 99
+byte 1 108
+byte 1 105
+byte 1 112
+byte 1 0
+align 1
+LABELV $99
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 111
+byte 1 110
+byte 1 101
+byte 1 0
+align 1
+LABELV $98
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 111
+byte 1 0
+align 1
+LABELV $97
+byte 1 115
+byte 1 97
+byte 1 110
+byte 1 100
+byte 1 98
+byte 1 111
+byte 1 120
+byte 1 32
+byte 1 109
+byte 1 101
+byte 1 110
+byte 1 117
+byte 1 0
+align 1
+LABELV $96
+byte 1 117
+byte 1 105
+byte 1 95
+byte 1 115
+byte 1 112
+byte 1 97
+byte 1 119
+byte 1 110
+byte 1 109
+byte 1 101
+byte 1 110
+byte 1 117
+byte 1 0
+align 1
+LABELV $95
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 115
+byte 1 104
+byte 1 108
+byte 1 105
+byte 1 103
+byte 1 104
+byte 1 116
+byte 1 0
+align 1
+LABELV $94
+byte 1 99
+byte 1 104
+byte 1 97
+byte 1 116
+byte 1 32
+byte 1 45
+byte 1 32
+byte 1 116
+byte 1 97
+byte 1 114
+byte 1 103
+byte 1 101
+byte 1 116
+byte 1 0
+align 1
+LABELV $93
+byte 1 109
+byte 1 101
+byte 1 115
+byte 1 115
+byte 1 97
+byte 1 103
+byte 1 101
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 51
+byte 1 0
+align 1
+LABELV $92
+byte 1 99
+byte 1 104
+byte 1 97
+byte 1 116
+byte 1 32
+byte 1 45
+byte 1 32
+byte 1 116
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 0
+align 1
+LABELV $91
+byte 1 109
+byte 1 101
+byte 1 115
+byte 1 115
+byte 1 97
+byte 1 103
+byte 1 101
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 50
+byte 1 0
+align 1
+LABELV $90
+byte 1 99
+byte 1 104
+byte 1 97
+byte 1 116
+byte 1 0
+align 1
+LABELV $89
+byte 1 109
+byte 1 101
+byte 1 115
+byte 1 115
+byte 1 97
+byte 1 103
+byte 1 101
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 0
+align 1
+LABELV $88
+byte 1 103
+byte 1 101
+byte 1 115
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 101
+byte 1 32
+byte 1 47
+byte 1 32
+byte 1 114
+byte 1 111
+byte 1 116
+byte 1 97
+byte 1 116
+byte 1 101
+byte 1 0
+align 1
+LABELV $87
+byte 1 43
+byte 1 98
+byte 1 117
+byte 1 116
+byte 1 116
+byte 1 111
+byte 1 110
+byte 1 51
+byte 1 0
+align 1
+LABELV $86
+byte 1 110
+byte 1 101
+byte 1 120
+byte 1 116
+byte 1 32
+byte 1 119
+byte 1 101
+byte 1 97
+byte 1 112
+byte 1 111
+byte 1 110
+byte 1 0
+align 1
+LABELV $85
+byte 1 119
+byte 1 101
+byte 1 97
+byte 1 112
+byte 1 110
+byte 1 101
+byte 1 120
+byte 1 116
+byte 1 0
+align 1
+LABELV $84
+byte 1 112
+byte 1 114
+byte 1 101
+byte 1 118
+byte 1 32
+byte 1 119
+byte 1 101
+byte 1 97
+byte 1 112
+byte 1 111
+byte 1 110
+byte 1 0
+align 1
+LABELV $83
+byte 1 119
+byte 1 101
+byte 1 97
+byte 1 112
+byte 1 112
+byte 1 114
+byte 1 101
+byte 1 118
+byte 1 0
+align 1
+LABELV $82
+byte 1 97
+byte 1 116
+byte 1 116
+byte 1 97
+byte 1 99
+byte 1 107
+byte 1 0
+align 1
+LABELV $81
+byte 1 43
+byte 1 97
+byte 1 116
+byte 1 116
+byte 1 97
+byte 1 99
+byte 1 107
+byte 1 0
+align 1
+LABELV $80
+byte 1 122
+byte 1 111
+byte 1 111
+byte 1 109
+byte 1 32
+byte 1 118
+byte 1 105
+byte 1 101
+byte 1 119
+byte 1 0
+align 1
+LABELV $79
+byte 1 43
+byte 1 122
+byte 1 111
+byte 1 111
+byte 1 109
+byte 1 0
+align 1
+LABELV $78
+byte 1 100
+byte 1 111
+byte 1 119
+byte 1 110
+byte 1 32
+byte 1 47
+byte 1 32
+byte 1 99
+byte 1 114
+byte 1 111
+byte 1 117
+byte 1 99
+byte 1 104
+byte 1 0
+align 1
+LABELV $77
+byte 1 43
+byte 1 109
+byte 1 111
+byte 1 118
+byte 1 101
+byte 1 100
+byte 1 111
+byte 1 119
+byte 1 110
+byte 1 0
+align 1
+LABELV $76
+byte 1 117
+byte 1 112
+byte 1 32
+byte 1 47
+byte 1 32
+byte 1 106
+byte 1 117
+byte 1 109
+byte 1 112
+byte 1 0
+align 1
+LABELV $75
+byte 1 43
+byte 1 109
+byte 1 111
+byte 1 118
+byte 1 101
+byte 1 117
+byte 1 112
+byte 1 0
+align 1
+LABELV $74
+byte 1 119
+byte 1 97
+byte 1 108
+byte 1 107
+byte 1 32
+byte 1 114
+byte 1 105
+byte 1 103
+byte 1 104
+byte 1 116
+byte 1 0
+align 1
+LABELV $73
+byte 1 43
+byte 1 109
+byte 1 111
+byte 1 118
+byte 1 101
+byte 1 114
+byte 1 105
+byte 1 103
+byte 1 104
+byte 1 116
+byte 1 0
+align 1
+LABELV $72
+byte 1 119
+byte 1 97
+byte 1 108
+byte 1 107
+byte 1 32
+byte 1 108
+byte 1 101
+byte 1 102
+byte 1 116
+byte 1 0
+align 1
+LABELV $71
+byte 1 43
+byte 1 109
+byte 1 111
+byte 1 118
+byte 1 101
+byte 1 108
+byte 1 101
+byte 1 102
+byte 1 116
+byte 1 0
+align 1
+LABELV $70
+byte 1 119
+byte 1 97
+byte 1 108
+byte 1 107
+byte 1 32
+byte 1 98
+byte 1 97
+byte 1 99
+byte 1 107
+byte 1 0
+align 1
+LABELV $69
+byte 1 43
+byte 1 98
+byte 1 97
+byte 1 99
+byte 1 107
+byte 1 0
+align 1
+LABELV $68
+byte 1 119
+byte 1 97
+byte 1 108
+byte 1 107
+byte 1 32
+byte 1 102
+byte 1 111
+byte 1 114
+byte 1 119
+byte 1 97
+byte 1 114
+byte 1 100
+byte 1 0
+align 1
+LABELV $67
+byte 1 43
+byte 1 102
+byte 1 111
+byte 1 114
+byte 1 119
+byte 1 97
+byte 1 114
+byte 1 100
+byte 1 0
+align 1
+LABELV $66
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 32
+byte 1 47
+byte 1 32
+byte 1 119
+byte 1 97
+byte 1 108
+byte 1 107
+byte 1 0
+align 1
+LABELV $65
+byte 1 43
+byte 1 115
+byte 1 112
+byte 1 101
+byte 1 101
+byte 1 100
+byte 1 0
+align 1
+LABELV $64
+byte 1 117
+byte 1 115
+byte 1 101
+byte 1 32
+byte 1 105
+byte 1 116
+byte 1 101
+byte 1 109
+byte 1 0
+align 1
+LABELV $63
+byte 1 43
+byte 1 98
+byte 1 117
+byte 1 116
+byte 1 116
+byte 1 111
+byte 1 110
+byte 1 50
+byte 1 0
+align 1
+LABELV $62
+byte 1 115
+byte 1 104
+byte 1 111
+byte 1 119
+byte 1 32
+byte 1 115
+byte 1 99
+byte 1 111
+byte 1 114
+byte 1 101
+byte 1 115
+byte 1 0
+align 1
+LABELV $61
+byte 1 43
+byte 1 115
+byte 1 99
+byte 1 111
+byte 1 114
+byte 1 101
+byte 1 115
+byte 1 0

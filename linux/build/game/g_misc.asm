@@ -1,0 +1,2739 @@
+export TeleportPlayer
+code
+proc TeleportPlayer 28 16
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 4
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1512
+ADDP4
+INDIRI4
+CNSTI4 3
+EQI4 $55
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 20
+ADDP4
+ARGP4
+CNSTI4 42
+ARGI4
+ADDRLP4 4
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+ADDRLP4 8
+CNSTI4 180
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 8
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 8
+INDIRI4
+ADDP4
+INDIRI4
+ASGNI4
+ADDRFP4 4
+INDIRP4
+ARGP4
+CNSTI4 41
+ARGI4
+ADDRLP4 12
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 12
+INDIRP4
+ASGNP4
+ADDRLP4 16
+CNSTI4 180
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 16
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 16
+INDIRI4
+ADDP4
+INDIRI4
+ASGNI4
+LABELV $55
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_UnlinkEntity
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 20
+ADDP4
+ADDRFP4 4
+INDIRP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 24
+ADDP4
+ADDRFP4 4
+INDIRP4
+CNSTI4 4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 28
+ADDP4
+ADDRFP4 4
+INDIRP4
+CNSTI4 8
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 28
+ADDP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 4
+INDIRP4
+INDIRF4
+CNSTF4 1065353216
+ADDF4
+ASGNF4
+ADDRFP4 12
+INDIRI4
+CNSTI4 0
+NEI4 $57
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 32
+ADDP4
+ARGP4
+ADDRLP4 8
+CNSTP4 0
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRGP4 AngleVectors
+CALLV
+pop
+ADDRLP4 12
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 32
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+CNSTF4 1137180672
+ADDRLP4 12
+INDIRP4
+INDIRF4
+MULF4
+ASGNF4
+ADDRLP4 16
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 36
+ADDP4
+ASGNP4
+ADDRLP4 16
+INDIRP4
+CNSTF4 1137180672
+ADDRLP4 16
+INDIRP4
+INDIRF4
+MULF4
+ASGNF4
+ADDRLP4 20
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+ASGNP4
+ADDRLP4 20
+INDIRP4
+CNSTF4 1137180672
+ADDRLP4 20
+INDIRP4
+INDIRF4
+MULF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 16
+ADDP4
+CNSTI4 160
+ASGNI4
+ADDRLP4 24
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 12
+ADDP4
+ASGNP4
+ADDRLP4 24
+INDIRP4
+ADDRLP4 24
+INDIRP4
+INDIRI4
+CNSTI4 32
+BORI4
+ASGNI4
+LABELV $57
+ADDRLP4 8
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ADDRLP4 8
+INDIRP4
+INDIRI4
+CNSTI4 4
+BXORI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRGP4 SetClientViewAngle
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1512
+ADDP4
+INDIRI4
+CNSTI4 3
+EQI4 $59
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 G_KillBox
+CALLV
+pop
+LABELV $59
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 BG_PlayerStateToEntityState
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 520
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 20
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 24
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 528
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 28
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1512
+ADDP4
+INDIRI4
+CNSTI4 3
+EQI4 $61
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+LABELV $61
+LABELV $54
+endproc TeleportPlayer 28 16
+proc locateCamera 52 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 676
+ADDP4
+INDIRP4
+ARGP4
+ADDRLP4 20
+ADDRGP4 G_PickTarget
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 20
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $64
+ADDRGP4 $66
+ARGP4
+ADDRGP4 G_Printf
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 G_FreeEntity
+CALLV
+pop
+ADDRGP4 $63
+JUMPV
+LABELV $64
+ADDRFP4 0
+INDIRP4
+CNSTI4 544
+ADDP4
+ADDRLP4 0
+INDIRP4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 560
+ADDP4
+INDIRI4
+CNSTI4 1
+BANDI4
+CNSTI4 0
+EQI4 $67
+ADDRFP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 25
+ASGNI4
+ADDRGP4 $68
+JUMPV
+LABELV $67
+ADDRLP4 0
+INDIRP4
+CNSTI4 560
+ADDP4
+INDIRI4
+CNSTI4 2
+BANDI4
+CNSTI4 0
+EQI4 $69
+ADDRFP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 75
+ASGNI4
+LABELV $69
+LABELV $68
+ADDRLP4 0
+INDIRP4
+CNSTI4 560
+ADDP4
+INDIRI4
+CNSTI4 4
+BANDI4
+CNSTI4 0
+EQI4 $71
+ADDRFP4 0
+INDIRP4
+CNSTI4 200
+ADDP4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $72
+JUMPV
+LABELV $71
+ADDRFP4 0
+INDIRP4
+CNSTI4 200
+ADDP4
+CNSTI4 1
+ASGNI4
+LABELV $72
+ADDRLP4 24
+CNSTI4 180
+ASGNI4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 24
+INDIRI4
+ADDP4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 24
+INDIRI4
+ADDP4
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 104
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 92
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 108
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 96
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 112
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 100
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 676
+ADDP4
+INDIRP4
+ARGP4
+ADDRLP4 28
+ADDRGP4 G_PickTarget
+CALLP4
+ASGNP4
+ADDRLP4 16
+ADDRLP4 28
+INDIRP4
+ASGNP4
+ADDRLP4 16
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $73
+ADDRLP4 36
+CNSTI4 92
+ASGNI4
+ADDRLP4 4
+ADDRLP4 16
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+INDIRF4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 44
+CNSTI4 96
+ASGNI4
+ADDRLP4 4+4
+ADDRLP4 16
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+INDIRF4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 48
+CNSTI4 100
+ASGNI4
+ADDRLP4 4+8
+ADDRLP4 16
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+INDIRF4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 4
+ARGP4
+ADDRGP4 VectorNormalize
+CALLF4
+pop
+ADDRGP4 $74
+JUMPV
+LABELV $73
+ADDRLP4 0
+INDIRP4
+CNSTI4 128
+ADDP4
+ARGP4
+ADDRLP4 4
+ARGP4
+ADDRGP4 G_SetMovedir
+CALLV
+pop
+LABELV $74
+ADDRLP4 4
+ARGP4
+ADDRLP4 32
+ADDRGP4 DirToByte
+CALLI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 196
+ADDP4
+ADDRLP4 32
+INDIRI4
+ASGNI4
+LABELV $63
+endproc locateCamera 52 8
+export SP_misc_portal_surface
+proc SP_misc_portal_surface 28 4
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 4
+CNSTF4 0
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 476
+ADDP4
+ADDRLP4 4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 472
+ADDP4
+ADDRLP4 4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 468
+ADDP4
+ADDRLP4 4
+INDIRF4
+ASGNF4
+ADDRLP4 12
+CNSTF4 0
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ADDRLP4 12
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 484
+ADDP4
+ADDRLP4 12
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 480
+ADDP4
+ADDRLP4 12
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 456
+ADDP4
+CNSTI4 8
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 4
+ADDP4
+CNSTI4 5
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 676
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $78
+ADDRFP4 0
+INDIRP4
+CNSTI4 104
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 92
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 108
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 96
+ADDP4
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 112
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 100
+ADDP4
+INDIRF4
+ASGNF4
+ADDRGP4 $79
+JUMPV
+LABELV $78
+ADDRFP4 0
+INDIRP4
+CNSTI4 712
+ADDP4
+ADDRGP4 locateCamera
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 708
+ADDP4
+ADDRGP4 level+24
+INDIRI4
+CNSTI4 100
+ADDI4
+ASGNI4
+LABELV $79
+LABELV $77
+endproc SP_misc_portal_surface 28 4
+export SP_misc_portal_camera
+proc SP_misc_portal_camera 20 12
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 8
+CNSTF4 0
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 476
+ADDP4
+ADDRLP4 8
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 472
+ADDP4
+ADDRLP4 8
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 468
+ADDP4
+ADDRLP4 8
+INDIRF4
+ASGNF4
+ADDRLP4 16
+CNSTF4 0
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ADDRLP4 16
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 484
+ADDP4
+ADDRLP4 16
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 480
+ADDP4
+ADDRLP4 16
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+ADDRGP4 $82
+ARGP4
+ADDRGP4 $83
+ARGP4
+ADDRLP4 0
+ARGP4
+ADDRGP4 G_SpawnFloat
+CALLI4
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 180
+ADDP4
+CNSTF4 1132462080
+ADDRLP4 0
+INDIRF4
+CNSTF4 1135869952
+DIVF4
+MULF4
+CVFI4 4
+ASGNI4
+LABELV $81
+endproc SP_misc_portal_camera 20 12
+proc Use_Shooter 60 24
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 784
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $85
+ADDRLP4 44
+ADDRFP4 0
+INDIRP4
+CNSTI4 784
+ADDP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 44
+INDIRP4
+INDIRP4
+CNSTI4 520
+ADDP4
+INDIRF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 92
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 0+4
+ADDRLP4 44
+INDIRP4
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 96
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 0+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 784
+ADDP4
+INDIRP4
+CNSTI4 528
+ADDP4
+INDIRF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 100
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 0
+ARGP4
+ADDRGP4 VectorNormalize
+CALLF4
+pop
+ADDRGP4 $86
+JUMPV
+LABELV $85
+ADDRLP4 0
+ADDRFP4 0
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0+4
+ADDRFP4 0
+INDIRP4
+CNSTI4 700
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 704
+ADDP4
+INDIRF4
+ASGNF4
+LABELV $86
+ADDRLP4 16
+ARGP4
+ADDRLP4 0
+ARGP4
+ADDRGP4 PerpendicularVector
+CALLV
+pop
+ADDRLP4 16
+ARGP4
+ADDRLP4 0
+ARGP4
+ADDRLP4 28
+ARGP4
+ADDRGP4 CrossProduct
+CALLV
+pop
+ADDRLP4 40
+ADDRGP4 rand
+CALLI4
+ASGNI4
+ADDRLP4 12
+CNSTF4 1073741824
+ADDRLP4 40
+INDIRI4
+CNSTI4 32767
+BANDI4
+CVIF4 4
+CNSTF4 1191181824
+DIVF4
+CNSTF4 1056964608
+SUBF4
+MULF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+INDIRF4
+MULF4
+ASGNF4
+ADDRLP4 0
+ADDRLP4 0
+INDIRF4
+ADDRLP4 16
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 0+4
+ADDRLP4 0+4
+INDIRF4
+ADDRLP4 16+4
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 0+8
+ADDRLP4 0+8
+INDIRF4
+ADDRLP4 16+8
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 48
+ADDRGP4 rand
+CALLI4
+ASGNI4
+ADDRLP4 12
+CNSTF4 1073741824
+ADDRLP4 48
+INDIRI4
+CNSTI4 32767
+BANDI4
+CVIF4 4
+CNSTF4 1191181824
+DIVF4
+CNSTF4 1056964608
+SUBF4
+MULF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+INDIRF4
+MULF4
+ASGNF4
+ADDRLP4 0
+ADDRLP4 0
+INDIRF4
+ADDRLP4 28
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 0+4
+ADDRLP4 0+4
+INDIRF4
+ADDRLP4 28+4
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 0+8
+ADDRLP4 0+8
+INDIRF4
+ADDRLP4 28+8
+INDIRF4
+ADDRLP4 12
+INDIRF4
+MULF4
+ADDF4
+ASGNF4
+ADDRLP4 0
+ARGP4
+ADDRGP4 VectorNormalize
+CALLF4
+pop
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 92
+ADDP4
+ARGP4
+ADDRLP4 0
+ARGP4
+ADDRLP4 28
+ARGP4
+ADDRLP4 16
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 204
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 fire_missile
+CALLP4
+pop
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 22
+ARGI4
+CNSTI4 0
+ARGI4
+ADDRGP4 G_AddEvent
+CALLV
+pop
+LABELV $84
+endproc Use_Shooter 60 24
+proc InitShooter_Finish 8 4
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 676
+ADDP4
+INDIRP4
+ARGP4
+ADDRLP4 4
+ADDRGP4 G_PickTarget
+CALLP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 784
+ADDP4
+ADDRLP4 4
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 712
+ADDP4
+CNSTP4 0
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 708
+ADDP4
+CNSTI4 0
+ASGNI4
+LABELV $103
+endproc InitShooter_Finish 8 4
+proc InitShooter 12 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 728
+ADDP4
+ADDRGP4 Use_Shooter
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 204
+ADDP4
+ADDRFP4 4
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 128
+ADDP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 696
+ADDP4
+ARGP4
+ADDRGP4 G_SetMovedir
+CALLV
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+INDIRF4
+CNSTF4 0
+NEF4 $105
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+CNSTF4 1065353216
+ASGNF4
+LABELV $105
+ADDRLP4 4
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+ASGNP4
+CNSTF4 1078530011
+ADDRLP4 4
+INDIRP4
+INDIRF4
+MULF4
+CNSTF4 1127481344
+DIVF4
+ARGF4
+ADDRLP4 8
+ADDRGP4 sin
+CALLF4
+ASGNF4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 8
+INDIRF4
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 676
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $107
+ADDRFP4 0
+INDIRP4
+CNSTI4 712
+ADDP4
+ADDRGP4 InitShooter_Finish
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 708
+ADDP4
+ADDRGP4 level+24
+INDIRI4
+CNSTI4 500
+ADDI4
+ASGNI4
+LABELV $107
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+LABELV $104
+endproc InitShooter 12 8
+export SP_shooter_rocket
+proc SP_shooter_rocket 0 8
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 5
+ARGI4
+ADDRGP4 InitShooter
+CALLV
+pop
+LABELV $110
+endproc SP_shooter_rocket 0 8
+export SP_shooter_plasma
+proc SP_shooter_plasma 0 8
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 8
+ARGI4
+ADDRGP4 InitShooter
+CALLV
+pop
+LABELV $111
+endproc SP_shooter_plasma 0 8
+export SP_shooter_grenade
+proc SP_shooter_grenade 0 8
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 4
+ARGI4
+ADDRGP4 InitShooter
+CALLV
+pop
+LABELV $112
+endproc SP_shooter_grenade 0 8
+proc PortalDie 0 4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 G_FreeEntity
+CALLV
+pop
+LABELV $113
+endproc PortalDie 0 4
+export DropPortalDestination
+proc DropPortalDestination 64 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 16
+ADDRGP4 G_Spawn
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 16
+INDIRP4
+ASGNP4
+ADDRGP4 $115
+ARGP4
+ADDRLP4 20
+ADDRGP4 G_ModelIndex
+CALLI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+ADDRLP4 20
+INDIRI4
+ASGNI4
+ADDRLP4 4
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4+4
+ADDRFP4 0
+INDIRP4
+CNSTI4 28
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 32
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4
+ADDRLP4 4
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 4+4
+ADDRLP4 4+4
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 4+8
+ADDRLP4 4+8
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRLP4 4
+ARGP4
+ADDRGP4 G_SetOrigin
+CALLV
+pop
+ADDRLP4 28
+CNSTI4 468
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 28
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 28
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 32
+CNSTI4 472
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 32
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 32
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 36
+CNSTI4 476
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 40
+CNSTI4 480
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 40
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 40
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 44
+CNSTI4 484
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 48
+CNSTI4 488
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 556
+ADDP4
+ADDRGP4 $122
+ASGNP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 12
+ADDP4
+CNSTI4 0
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 492
+ADDP4
+CNSTI4 67108864
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 756
+ADDP4
+CNSTI4 1
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 752
+ADDP4
+CNSTI4 200
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 736
+ADDP4
+ADDRGP4 PortalDie
+ASGNP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 128
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 60
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 132
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 64
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 136
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 68
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 712
+ADDP4
+ADDRGP4 G_FreeEntity
+ASGNP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 708
+ADDP4
+ADDRGP4 level+24
+INDIRI4
+CNSTI4 120000
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+ADDRLP4 52
+ADDRGP4 level+5304
+ASGNP4
+ADDRLP4 56
+ADDRLP4 52
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 52
+INDIRP4
+ADDRLP4 56
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1632
+ADDP4
+ADDRLP4 56
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 776
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1632
+ADDP4
+INDIRI4
+ASGNI4
+ADDRGP4 $125
+ARGP4
+ADDRLP4 60
+ADDRGP4 BG_FindItem
+CALLP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 200
+ADDP4
+ADDRLP4 60
+INDIRP4
+CVPU4 4
+ADDRGP4 gameInfoItems
+CVPU4 4
+SUBU4
+CVUI4 4
+CNSTI4 28
+DIVI4
+ASGNI4
+LABELV $114
+endproc DropPortalDestination 64 8
+proc PortalTouch 28 32
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 4
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRFP4 4
+INDIRP4
+CNSTI4 752
+ADDP4
+INDIRI4
+CNSTI4 0
+LEI4 $129
+ADDRFP4 4
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $127
+LABELV $129
+ADDRGP4 $126
+JUMPV
+LABELV $127
+ADDRLP4 0
+CNSTP4 0
+ASGNP4
+ADDRGP4 $131
+JUMPV
+LABELV $130
+ADDRLP4 8
+CNSTI4 776
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 8
+INDIRI4
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 8
+INDIRI4
+ADDP4
+INDIRI4
+NEI4 $133
+ADDRGP4 $132
+JUMPV
+LABELV $133
+LABELV $131
+ADDRLP4 0
+INDIRP4
+ARGP4
+CNSTI4 556
+ARGI4
+ADDRGP4 $122
+ARGP4
+ADDRLP4 8
+ADDRGP4 G_Find
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $130
+LABELV $132
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $135
+ADDRLP4 16
+CNSTF4 0
+ASGNF4
+ADDRFP4 0
+INDIRP4
+CNSTI4 640
+ADDP4
+INDIRF4
+ADDRLP4 16
+INDIRF4
+NEF4 $140
+ADDRFP4 0
+INDIRP4
+CNSTI4 644
+ADDP4
+INDIRF4
+ADDRLP4 16
+INDIRF4
+NEF4 $140
+ADDRFP4 0
+INDIRP4
+CNSTI4 648
+ADDP4
+INDIRF4
+ADDRLP4 16
+INDIRF4
+EQF4 $137
+LABELV $140
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 640
+ADDP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 128
+ADDP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 TeleportPlayer
+CALLV
+pop
+LABELV $137
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 24
+CNSTP4 0
+ASGNP4
+ADDRLP4 24
+INDIRP4
+ARGP4
+ADDRLP4 24
+INDIRP4
+ARGP4
+CNSTI4 100000
+ARGI4
+CNSTI4 8
+ARGI4
+CNSTI4 32
+ARGI4
+ADDRGP4 G_Damage
+CALLV
+pop
+ADDRGP4 $126
+JUMPV
+LABELV $135
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+ARGP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 128
+ADDP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 TeleportPlayer
+CALLV
+pop
+LABELV $126
+endproc PortalTouch 28 32
+proc PortalEnable 0 0
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 724
+ADDP4
+ADDRGP4 PortalTouch
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 712
+ADDP4
+ADDRGP4 G_FreeEntity
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 708
+ADDP4
+ADDRGP4 level+24
+INDIRI4
+CNSTI4 120000
+ADDI4
+ASGNI4
+LABELV $141
+endproc PortalEnable 0 0
+export DropPortalSource
+proc DropPortalSource 60 12
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 20
+ADDRGP4 G_Spawn
+CALLP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 20
+INDIRP4
+ASGNP4
+ADDRGP4 $144
+ARGP4
+ADDRLP4 24
+ADDRGP4 G_ModelIndex
+CALLI4
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 172
+ADDP4
+ADDRLP4 24
+INDIRI4
+ASGNI4
+ADDRLP4 8
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 8+4
+ADDRFP4 0
+INDIRP4
+CNSTI4 28
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 8+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 32
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 8
+ADDRLP4 8
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 8+4
+ADDRLP4 8+4
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 8+8
+ADDRLP4 8+8
+INDIRF4
+CVFI4 4
+CVIF4 4
+ASGNF4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRLP4 8
+ARGP4
+ADDRGP4 G_SetOrigin
+CALLV
+pop
+ADDRLP4 32
+CNSTI4 468
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 32
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 32
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 36
+CNSTI4 472
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 36
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 40
+CNSTI4 476
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 40
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 40
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 44
+CNSTI4 480
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 44
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 48
+CNSTI4 484
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 48
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 52
+CNSTI4 488
+ASGNI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 52
+INDIRI4
+ADDP4
+ADDRFP4 0
+INDIRP4
+ADDRLP4 52
+INDIRI4
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 556
+ADDP4
+ADDRGP4 $151
+ASGNP4
+ADDRLP4 4
+INDIRP4
+CNSTI4 12
+ADDP4
+CNSTI4 0
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 492
+ADDP4
+CNSTI4 1140850688
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 756
+ADDP4
+CNSTI4 1
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 752
+ADDP4
+CNSTI4 200
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 736
+ADDP4
+ADDRGP4 PortalDie
+ASGNP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRGP4 trap_LinkEntity
+CALLV
+pop
+ADDRLP4 4
+INDIRP4
+CNSTI4 776
+ADDP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1632
+ADDP4
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 548
+ADDP4
+INDIRP4
+CNSTI4 1632
+ADDP4
+CNSTI4 0
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 708
+ADDP4
+ADDRGP4 level+24
+INDIRI4
+CNSTI4 1000
+ADDI4
+ASGNI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 712
+ADDP4
+ADDRGP4 PortalEnable
+ASGNP4
+ADDRLP4 0
+CNSTP4 0
+ASGNP4
+ADDRGP4 $154
+JUMPV
+LABELV $153
+ADDRLP4 56
+CNSTI4 776
+ASGNI4
+ADDRLP4 0
+INDIRP4
+ADDRLP4 56
+INDIRI4
+ADDP4
+INDIRI4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 56
+INDIRI4
+ADDP4
+INDIRI4
+NEI4 $156
+ADDRLP4 4
+INDIRP4
+CNSTI4 640
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 644
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 28
+ADDP4
+INDIRF4
+ASGNF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 648
+ADDP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 32
+ADDP4
+INDIRF4
+ASGNF4
+ADDRGP4 $155
+JUMPV
+LABELV $156
+LABELV $154
+ADDRLP4 0
+INDIRP4
+ARGP4
+CNSTI4 556
+ARGI4
+ADDRGP4 $122
+ARGP4
+ADDRLP4 56
+ADDRGP4 G_Find
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 56
+INDIRP4
+ASGNP4
+ADDRLP4 56
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $153
+LABELV $155
+LABELV $143
+endproc DropPortalSource 60 12
+import trap_BotInitMoveState
+import trap_BotFreeMoveState
+import trap_BotAllocMoveState
+import trap_BotResetMoveState
+import trap_BotMoveToGoal
+import trap_EA_ResetInput
+import trap_EA_GetInput
+import trap_EA_View
+import trap_EA_SelectWeapon
+import trap_EA_Use
+import trap_EA_Attack
+import trap_EA_Gesture
+import trap_EA_Command
+import trap_AAS_TraceAreas
+import trap_AAS_PointAreaNum
+import trap_AAS_Time
+import trap_AAS_Initialized
+import trap_BotUpdateEntity
+import trap_BotUserCommand
+import trap_BotGetServerCommand
+import trap_BotLibLoadMap
+import trap_BotLibStartFrame
+import trap_BotLibShutdown
+import trap_BotLibSetup
+import trap_GetEntityToken
+import trap_GetUsercmd
+import trap_BotAllocateClient
+import trap_EntityContact
+import trap_EntitiesInBox
+import trap_UnlinkEntity
+import trap_LinkEntity
+import trap_AdjustAreaPortalState
+import trap_InPVS
+import trap_PointContents
+import trap_Trace
+import trap_SetBrushModel
+import trap_GetServerinfo
+import trap_SetUserinfo
+import trap_GetUserinfo
+import trap_GetConfigstring
+import trap_SetConfigstring
+import trap_SendServerCommand
+import trap_DropClient
+import trap_LocateGameData
+import mod_gravity
+import mod_jumpheight
+import g_entities
+import level
+import G_StartNukeExplode
+import G_StartCarExplode
+import G_StartKamikaze
+import FireWeapon
+import fire_missile
+import G_RunMissile
+import ProximityMine_Trigger
+import Weapon_Toolgun_Info
+import Weapon_HookFree
+import Melee_Fire
+import G_ExplodeMissile
+import CalcMuzzlePoint
+import FindRandomSpawn
+import FindRandomItem
+import G_FindWeldEntity
+import G_PlayerIsOwner
+import G_FindEntityForEntityNum
+import CrosshairPointGravity
+import CrosshairPointPhys
+import FindEntityForGravitygun
+import FindEntityForPhysgun
+import G_SetOrigin
+import G_Sound
+import G_AddEvent
+import G_AddPredictableEvent
+import G_KillBox
+import G_TempEntity
+import G_FreeEntity
+import G_Spawn
+import G_InitGentity
+import G_SetMovedir
+import vtos
+import G_UseTargets
+import G_PickAllTargets
+import G_PickTarget
+import G_Find
+import G_TeamCommand
+import G_SoundIndex
+import G_ModelIndex
+import SP_trigger_hurt
+import SP_trigger_teleport
+import SP_target_push
+import SP_trigger_push
+import SP_trigger_always
+import SP_trigger_multiple
+import CheckObeliskAttack
+import SP_team_neutralobelisk
+import SP_team_blueobelisk
+import SP_team_redobelisk
+import SelectCTFSpawnPoint
+import Team_GetLocationMsg
+import Pickup_Team
+import Team_DroppedFlagThink
+import Team_FreeEntity
+import Team_ReturnFlag
+import Team_CheckDroppedItem
+import OnSameTeam
+import Team_InitGame
+import SP_script_cmd
+import SP_script_variable
+import SP_target_location
+import SP_target_position
+import SP_target_kill
+import SP_target_relay
+import SP_target_teleporter
+import SP_target_speaker
+import SP_target_print
+import SP_target_delay
+import SP_target_give
+import ConsoleCommand
+import G_ClearMap_f
+import G_DeleteMapfile_f
+import G_WriteMapfile_f
+import G_LoadMapfile_f
+import G_SpawnEntitiesFromString
+import G_SpawnVector
+import G_SpawnInt
+import G_SpawnFloat
+import G_SpawnString
+import gameInfoEntities
+import G_WriteSessionData
+import G_InitWorldSession
+import G_InitSessionData
+import G_ReadSessionData
+import Undo_RemoveElement
+import Undo_LastElement
+import Undo_AddElement
+import G_ModProp
+import G_BuildProp
+import SP_sandbox_prop
+import SP_sandbox_npc
+import G_DieProp
+import Phys_Frame
+import Phys_Unweld
+import Phys_Enable
+import Phys_Disable
+import Phys_HoldFrame
+import Phys_HoldSetup
+import Phys_HoldDropDynamic
+import Phys_HoldDropStatic
+import Phys_CheckCarCollisions
+import Phys_VehiclePlayer
+import SP_func_pendulum
+import SP_func_bobbing
+import SP_func_rotating
+import SP_func_static
+import SP_func_train
+import SP_path_corner
+import SP_func_button
+import SP_func_plat
+import SP_func_door
+import Touch_DoorTrigger
+import G_RunMover
+import G_RunThink
+import SetLeader
+import FindIntermissionPoint
+import MoveClientToIntermission
+import CalculateRanks
+import G_Error
+import G_Printf
+import G_RunItem
+import G_SpawnItem
+import G_CheckTeamItems
+import FinishSpawningItem
+import Drop_Item
+import LaunchItem
+import Touch_Item
+import RespawnItem
+import Set_Ammo
+import Set_Weapon
+import G_RadiusDamage
+import CanDamage
+import G_Damage
+import G_InvulnerabilityEffect
+import player_die
+import body_die
+import TossClientPersistantPowerups
+import TossClientCubes
+import TossClientItems
+import AddScore
+import ClientCommand
+import Cmd_FollowCycle_f
+import StopFollowing
+import SetTeam
+import ConcatArgs
+import Cmd_Score_f
+import ObeliskHealthMessage
+import RespawnTimeMessage
+import G_SendSpawnSwepWeapons
+import G_SendSwepWeapons
+import G_SendGameCvars
+import DeathmatchScoreboardMessage
+import SetUnlimitedWeapons
+import DropClientSilently
+import ClientDisconnect
+import ClientSpawn
+import ClientBegin
+import ClientConnect
+import ClientUserinfoChanged
+import PickTeam
+import ClientRespawn
+import SetClientViewAngle
+import CopyToBodyQue
+import InitBodyQue
+import SelectSpawnPoint
+import SpotWouldTelefrag
+import SP_info_player_start
+import SP_info_player_deathmatch
+import SandboxBotSpawn
+import Svcmd_AddBot_f
+import G_AddBot
+import G_BotConnect
+import ClientEndFrame
+import PM_Add_SwepAmmo
+import G_CheckWeaponAmmo
+import G_CheckWeapon
+import G_RunClient
+import ClientThink
+import AI_Frame
+import BotAIShutdownClient
+import BotAISetupClient
+import BotAILoadMap
+import BotAIShutdown
+import BotAISetup
+import SourceTechEntityList
+import Pmove
+import PM_UpdateViewAngles
+import BG_InVehicle
+import BG_PlayerStateToEntityState
+import BG_TouchJumpPad
+import BG_AddPredictableEventToPlayerstate
+import ST_EvaluateTrajectoryDelta
+import ST_EvaluateTrajectory
+import BG_EvaluateTrajectoryDelta
+import BG_EvaluateTrajectory
+import BG_CanItemBeGrabbed
+import BG_PlayerTouchesItem
+import BG_FindAmmo
+import BG_FindWeapon
+import BG_CheckClassname
+import BG_FindItem
+import BG_FindItemForWeapon
+import BG_FindItemForHoldable
+import BG_FindItemForPowerup
+import BG_FactionShouldAttack
+import BG_FindNPCTypeID
+import G_InitMemory
+import G_Alloc
+import gameInfoSandboxSpawnsNum
+import gameInfoSandboxSpawns
+import gameInfoFactionsNum
+import gameInfoFactions
+import gameInfoNPCTypesNum
+import gameInfoNPCTypes
+import gameInfoWPropsNum
+import gameInfoWProps
+import gameInfoWeaponsNum
+import gameInfoWeapons
+import gameInfoItemsNum
+import gameInfoItems
+import gametypes_mapnames
+import gametypes_names
+import strncpy
+import memcpy
+import memset
+import trap_System
+import trap_RealTime
+import trap_Cmd
+import FS_List
+import FS_Close
+import FS_Write
+import FS_Read
+import FS_Open
+import trap_Args
+import trap_Argv
+import trap_Argc
+import cvarSet
+import cvarReload
+import cvarUpdate
+import cvarID
+import cvarRegister
+import trap_Milliseconds
+import trap_Error
+import trap_Print
+import customcolor_crosshair
+import color_highlight
+import color_select
+import color_disabled
+import color_dim
+import color_grey
+import color_white
+import color_black
+import VectorDistance
+import Com_Printf
+import Com_Error
+import Info_NextPair
+import Info_Validate
+import Info_SetValueForKey_Big
+import Info_SetValueForKey
+import Info_RemoveKey_big
+import Info_RemoveKey
+import Info_ValueForKey
+import VectorToYaw
+import AngleDifference
+import va
+import Q_CleanStr
+import Q_strcat
+import Q_strncpyz
+import Q_stristr
+import Q_strupr
+import Q_strlwr
+import Q_stricmpn
+import Q_strncmp
+import Q_stricmp
+import Q_isalpha
+import Q_isupper
+import Q_islower
+import Q_isprint
+import Com_sprintf
+import COM_Compress
+import COM_ParseExt
+import COM_Parse
+import COM_DefaultExtension
+import COM_StripExtension
+import COM_GetExtension
+import COM_SkipPath
+import Com_Clamp
+import SnapVectorTowards
+import PerpendicularVector
+import AngleVectors
+import MatrixMultiply
+import RotateAroundDirection
+import RotatePointAroundVector
+import ProjectPointOnPlane
+import PlaneFromPoints
+import AngleDelta
+import AngleNormalize180
+import AngleNormalize360
+import LerpAngles
+import AngleMA
+import AngleAdd
+import AnglesSubtract
+import AngleSubtract
+import LerpAngle
+import AngleMod
+import AxisCopy
+import AxisClear
+import Lerp
+import VelocityToAxis
+import OrthogonalizeMatrix
+import AxisToAngles
+import AnglesToAxis
+import vectoangles
+import Q_crandom
+import Q_random
+import Q_rand
+import Vector4Scale
+import VectorNormalize2
+import VectorNormalize
+import CrossProduct
+import VectorInverse
+import VectorNormalizeFast
+import DistanceSquared
+import Distance
+import VectorLengthSquared
+import VectorLength
+import VectorCompare
+import AddPointToBounds
+import RadiusFromBounds
+import NormalizeColor
+import _VectorMA
+import _VectorScale
+import _VectorCopy
+import _VectorAdd
+import _VectorSubtract
+import _DotProduct
+import ByteToDir
+import DirToByte
+import Q_rsqrt
+import Q_fabs
+import axisDefault
+import vec3_origin
+import g_color_table
+import bytedirs
+import cvarString
+import cvarFloat
+import cvarInt
+import ST_UpdateCvars
+import ST_RegisterCvars
+import FloatSwap
+import LongSwap
+import ShortSwap
+import sqrt
+import atan2
+import acos
+import cos
+import sin
+import sscanf
+import Q_snprintf
+import Q_vsnprintf
+import fabs
+import abs
+import atoi
+import atof
+import rand
+import srand
+import tan
+import memmove
+import toupper
+import tolower
+import strstr
+import strrchr
+import strchr
+import strcmp
+import strcpy
+import strcat
+import ifstrlenru
+import strlenru
+import strlen
+import qsort
+lit
+align 1
+LABELV $151
+byte 1 104
+byte 1 105
+byte 1 95
+byte 1 112
+byte 1 111
+byte 1 114
+byte 1 116
+byte 1 97
+byte 1 108
+byte 1 32
+byte 1 115
+byte 1 111
+byte 1 117
+byte 1 114
+byte 1 99
+byte 1 101
+byte 1 0
+align 1
+LABELV $144
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 108
+byte 1 115
+byte 1 47
+byte 1 112
+byte 1 111
+byte 1 119
+byte 1 101
+byte 1 114
+byte 1 117
+byte 1 112
+byte 1 115
+byte 1 47
+byte 1 116
+byte 1 101
+byte 1 108
+byte 1 101
+byte 1 112
+byte 1 111
+byte 1 114
+byte 1 116
+byte 1 101
+byte 1 114
+byte 1 47
+byte 1 116
+byte 1 101
+byte 1 108
+byte 1 101
+byte 1 95
+byte 1 101
+byte 1 110
+byte 1 116
+byte 1 101
+byte 1 114
+byte 1 46
+byte 1 109
+byte 1 100
+byte 1 51
+byte 1 0
+align 1
+LABELV $125
+byte 1 80
+byte 1 111
+byte 1 114
+byte 1 116
+byte 1 97
+byte 1 108
+byte 1 0
+align 1
+LABELV $122
+byte 1 104
+byte 1 105
+byte 1 95
+byte 1 112
+byte 1 111
+byte 1 114
+byte 1 116
+byte 1 97
+byte 1 108
+byte 1 32
+byte 1 100
+byte 1 101
+byte 1 115
+byte 1 116
+byte 1 105
+byte 1 110
+byte 1 97
+byte 1 116
+byte 1 105
+byte 1 111
+byte 1 110
+byte 1 0
+align 1
+LABELV $115
+byte 1 109
+byte 1 111
+byte 1 100
+byte 1 101
+byte 1 108
+byte 1 115
+byte 1 47
+byte 1 112
+byte 1 111
+byte 1 119
+byte 1 101
+byte 1 114
+byte 1 117
+byte 1 112
+byte 1 115
+byte 1 47
+byte 1 116
+byte 1 101
+byte 1 108
+byte 1 101
+byte 1 112
+byte 1 111
+byte 1 114
+byte 1 116
+byte 1 101
+byte 1 114
+byte 1 47
+byte 1 116
+byte 1 101
+byte 1 108
+byte 1 101
+byte 1 95
+byte 1 101
+byte 1 120
+byte 1 105
+byte 1 116
+byte 1 46
+byte 1 109
+byte 1 100
+byte 1 51
+byte 1 0
+align 1
+LABELV $83
+byte 1 48
+byte 1 0
+align 1
+LABELV $82
+byte 1 114
+byte 1 111
+byte 1 108
+byte 1 108
+byte 1 0
+align 1
+LABELV $66
+byte 1 67
+byte 1 111
+byte 1 117
+byte 1 108
+byte 1 100
+byte 1 110
+byte 1 39
+byte 1 116
+byte 1 32
+byte 1 102
+byte 1 105
+byte 1 110
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 97
+byte 1 114
+byte 1 103
+byte 1 101
+byte 1 116
+byte 1 32
+byte 1 102
+byte 1 111
+byte 1 114
+byte 1 32
+byte 1 109
+byte 1 105
+byte 1 115
+byte 1 99
+byte 1 95
+byte 1 112
+byte 1 97
+byte 1 114
+byte 1 116
+byte 1 97
+byte 1 108
+byte 1 95
+byte 1 115
+byte 1 117
+byte 1 114
+byte 1 102
+byte 1 97
+byte 1 99
+byte 1 101
+byte 1 10
+byte 1 0

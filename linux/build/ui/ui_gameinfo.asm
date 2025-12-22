@@ -1,0 +1,1964 @@
+export UI_Alloc
+code
+proc UI_Alloc 12 0
+ADDRGP4 allocPoint
+INDIRI4
+ADDRFP4 0
+INDIRI4
+ADDI4
+CNSTI4 1048576
+LEI4 $60
+CNSTP4 0
+RETP4
+ADDRGP4 $59
+JUMPV
+LABELV $60
+ADDRLP4 4
+ADDRGP4 allocPoint
+ASGNP4
+ADDRLP4 8
+ADDRLP4 4
+INDIRP4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 8
+INDIRI4
+ADDRGP4 memoryPool
+ADDP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+ADDRLP4 8
+INDIRI4
+ADDRFP4 0
+INDIRI4
+CNSTI4 31
+ADDI4
+CNSTI4 -32
+BANDI4
+ADDI4
+ASGNI4
+ADDRLP4 0
+INDIRP4
+RETP4
+LABELV $59
+endproc UI_Alloc 12 0
+export UI_InitMemory
+proc UI_InitMemory 0 0
+ADDRGP4 allocPoint
+CNSTI4 0
+ASGNI4
+LABELV $62
+endproc UI_InitMemory 0 0
+proc UI_ParseInfos 2084 12
+ADDRFP4 4
+ADDRFP4 4
+INDIRI4
+ASGNI4
+ADDRFP4 8
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRFP4 12
+ADDRFP4 12
+INDIRI4
+ASGNI4
+ADDRLP4 2052
+CNSTI4 0
+ASGNI4
+ADDRGP4 $65
+JUMPV
+LABELV $64
+ADDRFP4 0
+ARGP4
+ADDRLP4 2056
+ADDRGP4 COM_Parse
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 2056
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $67
+ADDRGP4 $66
+JUMPV
+LABELV $67
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 $71
+ARGP4
+ADDRLP4 2060
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 2060
+INDIRI4
+CNSTI4 0
+EQI4 $69
+ADDRGP4 $72
+ARGP4
+ADDRGP4 Com_Printf
+CALLV
+pop
+ADDRGP4 $66
+JUMPV
+LABELV $69
+ADDRLP4 2052
+INDIRI4
+ADDRFP4 4
+INDIRI4
+NEI4 $73
+ADDRGP4 $75
+ARGP4
+ADDRGP4 Com_Printf
+CALLV
+pop
+ADDRGP4 $66
+JUMPV
+LABELV $73
+ADDRLP4 1028
+CNSTI1 0
+ASGNI1
+ADDRGP4 $77
+JUMPV
+LABELV $76
+ADDRFP4 0
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRLP4 2064
+ADDRGP4 COM_ParseExt
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 2064
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $79
+ADDRGP4 $81
+ARGP4
+ADDRGP4 Com_Printf
+CALLV
+pop
+ADDRGP4 $78
+JUMPV
+LABELV $79
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 $84
+ARGP4
+ADDRLP4 2068
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 2068
+INDIRI4
+CNSTI4 0
+NEI4 $82
+ADDRGP4 $78
+JUMPV
+LABELV $82
+ADDRLP4 4
+ARGP4
+ADDRLP4 0
+INDIRP4
+ARGP4
+CNSTI4 1024
+ARGI4
+ADDRGP4 Q_strncpyz
+CALLV
+pop
+ADDRFP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 2072
+ADDRGP4 COM_ParseExt
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 2072
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $85
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 $87
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+LABELV $85
+ADDRFP4 12
+INDIRI4
+CNSTI4 0
+EQI4 $93
+ADDRLP4 4
+ARGP4
+ADDRGP4 $90
+ARGP4
+ADDRLP4 2076
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 2076
+INDIRI4
+CNSTI4 0
+EQI4 $93
+ADDRLP4 4
+ARGP4
+ADDRGP4 $91
+ARGP4
+ADDRLP4 2080
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 2080
+INDIRI4
+CNSTI4 0
+NEI4 $88
+LABELV $93
+ADDRLP4 1028
+ARGP4
+ADDRLP4 4
+ARGP4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 Info_SetValueForKey
+CALLV
+pop
+LABELV $88
+LABELV $77
+ADDRGP4 $76
+JUMPV
+LABELV $78
+ADDRLP4 1028
+ARGP4
+ADDRLP4 2064
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 2064
+INDIRI4
+CNSTI4 1
+ADDI4
+ARGI4
+ADDRLP4 2068
+ADDRGP4 UI_Alloc
+CALLP4
+ASGNP4
+ADDRLP4 2052
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 8
+INDIRP4
+ADDP4
+ADDRLP4 2068
+INDIRP4
+ASGNP4
+ADDRLP4 2052
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 8
+INDIRP4
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $94
+ADDRLP4 2052
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 8
+INDIRP4
+ADDP4
+INDIRP4
+ARGP4
+ADDRLP4 1028
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRLP4 2052
+ADDRLP4 2052
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $94
+LABELV $65
+ADDRGP4 $64
+JUMPV
+LABELV $66
+ADDRLP4 2052
+INDIRI4
+RETI4
+LABELV $63
+endproc UI_ParseInfos 2084 12
+proc UI_LoadArenasFromFile 25024 16
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 25008
+ADDRGP4 FS_Open
+CALLI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 25008
+INDIRI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 0
+NEI4 $97
+ADDRGP4 $99
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 25012
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRLP4 25012
+INDIRP4
+ARGP4
+ADDRGP4 trap_Print
+CALLV
+pop
+ADDRGP4 $96
+JUMPV
+LABELV $97
+ADDRLP4 0
+INDIRI4
+CNSTI4 25000
+LTI4 $100
+ADDRGP4 $102
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 0
+INDIRI4
+ARGI4
+CNSTI4 25000
+ARGI4
+ADDRLP4 25012
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRLP4 25012
+INDIRP4
+ARGP4
+ADDRGP4 trap_Print
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRGP4 FS_Close
+CALLV
+pop
+ADDRGP4 $96
+JUMPV
+LABELV $100
+ADDRLP4 8
+ARGP4
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRGP4 FS_Read
+CALLV
+pop
+ADDRLP4 0
+INDIRI4
+ADDRLP4 8
+ADDP4
+CNSTI1 0
+ASGNI1
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRGP4 FS_Close
+CALLV
+pop
+ADDRLP4 8
+ARGP4
+ADDRLP4 25012
+ADDRGP4 ui_numArenas
+ASGNP4
+ADDRLP4 25016
+ADDRLP4 25012
+INDIRP4
+INDIRI4
+ASGNI4
+CNSTI4 8192
+ADDRLP4 25016
+INDIRI4
+SUBI4
+ARGI4
+ADDRLP4 25016
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_arenaInfos
+ADDP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRLP4 25020
+ADDRGP4 UI_ParseInfos
+CALLI4
+ASGNI4
+ADDRLP4 25012
+INDIRP4
+ADDRLP4 25016
+INDIRI4
+ADDRLP4 25020
+INDIRI4
+ADDI4
+ASGNI4
+LABELV $96
+endproc UI_LoadArenasFromFile 25024 16
+export UI_LoadArenas
+proc UI_LoadArenas 1176 16
+ADDRGP4 ui_numArenas
+CNSTI4 0
+ASGNI4
+ADDRGP4 $104
+ARGP4
+ADDRGP4 $105
+ARGP4
+ADDRLP4 144
+ARGP4
+CNSTI4 1024
+ARGI4
+ADDRLP4 1168
+ADDRGP4 FS_List
+CALLI4
+ASGNI4
+ADDRLP4 140
+ADDRLP4 1168
+INDIRI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 144
+ASGNP4
+ADDRLP4 132
+CNSTI4 0
+ASGNI4
+ADDRGP4 $109
+JUMPV
+LABELV $106
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRLP4 1172
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 136
+ADDRLP4 1172
+INDIRI4
+ASGNI4
+ADDRLP4 4
+ARGP4
+ADDRGP4 $110
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRLP4 4
+ARGP4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 strcat
+CALLP4
+pop
+ADDRLP4 4
+ARGP4
+ADDRGP4 UI_LoadArenasFromFile
+CALLV
+pop
+LABELV $107
+ADDRLP4 1172
+CNSTI4 1
+ASGNI4
+ADDRLP4 132
+ADDRLP4 132
+INDIRI4
+ADDRLP4 1172
+INDIRI4
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 136
+INDIRI4
+ADDRLP4 1172
+INDIRI4
+ADDI4
+ADDRLP4 0
+INDIRP4
+ADDP4
+ASGNP4
+LABELV $109
+ADDRLP4 132
+INDIRI4
+ADDRLP4 140
+INDIRI4
+LTI4 $106
+LABELV $103
+endproc UI_LoadArenas 1176 16
+proc UI_LoadBotsFromFile 25024 16
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 25008
+ADDRGP4 FS_Open
+CALLI4
+ASGNI4
+ADDRLP4 4
+ADDRLP4 25008
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 0
+NEI4 $112
+ADDRLP4 4
+INDIRI4
+CNSTI4 25000
+LTI4 $114
+ADDRGP4 $102
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 4
+INDIRI4
+ARGI4
+CNSTI4 25000
+ARGI4
+ADDRLP4 25012
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRLP4 25012
+INDIRP4
+ARGP4
+ADDRGP4 trap_Print
+CALLV
+pop
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRGP4 FS_Close
+CALLV
+pop
+ADDRGP4 $111
+JUMPV
+LABELV $114
+LABELV $112
+ADDRLP4 8
+ARGP4
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRGP4 FS_Read
+CALLV
+pop
+ADDRLP4 4
+INDIRI4
+ADDRLP4 8
+ADDP4
+CNSTI1 0
+ASGNI1
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRGP4 FS_Close
+CALLV
+pop
+ADDRLP4 8
+ARGP4
+ADDRLP4 25012
+ADDRGP4 ui_numBots
+ASGNP4
+ADDRLP4 25016
+ADDRLP4 25012
+INDIRP4
+INDIRI4
+ASGNI4
+CNSTI4 8192
+ADDRLP4 25016
+INDIRI4
+SUBI4
+ARGI4
+ADDRLP4 25016
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_botInfos
+ADDP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 25020
+ADDRGP4 UI_ParseInfos
+CALLI4
+ASGNI4
+ADDRLP4 25012
+INDIRP4
+ADDRLP4 25016
+INDIRI4
+ADDRLP4 25020
+INDIRI4
+ADDI4
+ASGNI4
+LABELV $111
+endproc UI_LoadBotsFromFile 25024 16
+export UI_LoadBots
+proc UI_LoadBots 152 16
+ADDRGP4 ui_numBots
+CNSTI4 0
+ASGNI4
+ADDRGP4 $104
+ARGP4
+ADDRGP4 $117
+ARGP4
+ADDRGP4 dirlist
+ARGP4
+CNSTI4 16384
+ARGI4
+ADDRLP4 144
+ADDRGP4 FS_List
+CALLI4
+ASGNI4
+ADDRLP4 140
+ADDRLP4 144
+INDIRI4
+ASGNI4
+ADDRLP4 0
+ADDRGP4 dirlist
+ASGNP4
+ADDRLP4 132
+CNSTI4 0
+ASGNI4
+ADDRGP4 $121
+JUMPV
+LABELV $118
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRLP4 148
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 136
+ADDRLP4 148
+INDIRI4
+ASGNI4
+ADDRLP4 4
+ARGP4
+ADDRGP4 $110
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRLP4 4
+ARGP4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 strcat
+CALLP4
+pop
+ADDRLP4 4
+ARGP4
+ADDRGP4 UI_LoadBotsFromFile
+CALLV
+pop
+LABELV $119
+ADDRLP4 148
+CNSTI4 1
+ASGNI4
+ADDRLP4 132
+ADDRLP4 132
+INDIRI4
+ADDRLP4 148
+INDIRI4
+ADDI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 136
+INDIRI4
+ADDRLP4 148
+INDIRI4
+ADDI4
+ADDRLP4 0
+INDIRP4
+ADDP4
+ASGNP4
+LABELV $121
+ADDRLP4 132
+INDIRI4
+ADDRLP4 140
+INDIRI4
+LTI4 $118
+LABELV $116
+endproc UI_LoadBots 152 16
+export UI_GetBotInfoByName
+proc UI_GetBotInfoByName 16 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $126
+JUMPV
+LABELV $123
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_botInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $127
+ARGP4
+ADDRLP4 8
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 12
+ADDRGP4 Q_stricmp
+CALLI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+NEI4 $128
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_botInfos
+ADDP4
+INDIRP4
+RETP4
+ADDRGP4 $122
+JUMPV
+LABELV $128
+LABELV $124
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $126
+ADDRLP4 0
+INDIRI4
+ADDRGP4 ui_numBots
+INDIRI4
+LTI4 $123
+CNSTP4 0
+RETP4
+LABELV $122
+endproc UI_GetBotInfoByName 16 8
+export UI_GetNumBots
+proc UI_GetNumBots 0 0
+ADDRGP4 ui_numBots
+INDIRI4
+RETI4
+LABELV $130
+endproc UI_GetNumBots 0 0
+proc MapHasGametype 12 8
+ADDRFP4 4
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRGP4 $133
+JUMPV
+LABELV $132
+ADDRFP4 0
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 4
+ADDRGP4 COM_ParseExt
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $137
+ADDRLP4 0
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $135
+LABELV $137
+ADDRGP4 $134
+JUMPV
+LABELV $135
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 8
+ADDRGP4 Q_stricmp
+CALLI4
+ASGNI4
+ADDRLP4 8
+INDIRI4
+CNSTI4 0
+NEI4 $138
+CNSTI4 1
+RETI4
+ADDRGP4 $131
+JUMPV
+LABELV $138
+LABELV $133
+ADDRGP4 $132
+JUMPV
+LABELV $134
+CNSTI4 0
+RETI4
+LABELV $131
+endproc MapHasGametype 12 8
+export UI_FillListOfMaps
+proc UI_FillListOfMaps 56 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRFP4 4
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRLP4 12
+CNSTI4 0
+ASGNI4
+ADDRLP4 16
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 20
+ADDRFP4 12
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 108
+ADDP4
+ADDRGP4 $141
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+ADDRFP4 16
+INDIRP4
+ASGNP4
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $145
+JUMPV
+LABELV $142
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_arenaInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $90
+ARGP4
+ADDRLP4 24
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 24
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_arenaInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $91
+ARGP4
+ADDRLP4 28
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 8
+ADDRLP4 28
+INDIRP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $146
+ADDRGP4 $143
+JUMPV
+LABELV $146
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 32
+ADDRGP4 MapHasGametype
+CALLI4
+ASGNI4
+ADDRLP4 32
+INDIRI4
+CNSTI4 0
+NEI4 $151
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRGP4 $150
+ARGP4
+ADDRLP4 36
+ADDRGP4 Q_stricmp
+CALLI4
+ASGNI4
+ADDRLP4 36
+INDIRI4
+CNSTI4 0
+NEI4 $148
+LABELV $151
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRLP4 44
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 40
+ADDRLP4 44
+INDIRI4
+ASGNI4
+ADDRLP4 40
+INDIRI4
+CNSTI4 1
+ADDI4
+ADDRLP4 20
+INDIRI4
+LTI4 $152
+ADDRGP4 $144
+JUMPV
+LABELV $152
+ADDRLP4 16
+INDIRP4
+ARGP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRLP4 12
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+INDIRP4
+ADDP4
+ADDRLP4 16
+INDIRP4
+ASGNP4
+ADDRLP4 48
+CNSTI4 1
+ASGNI4
+ADDRLP4 52
+ADDRLP4 40
+INDIRI4
+ADDRLP4 48
+INDIRI4
+ADDI4
+ASGNI4
+ADDRLP4 16
+ADDRLP4 52
+INDIRI4
+ADDRLP4 16
+INDIRP4
+ADDP4
+ASGNP4
+ADDRLP4 20
+ADDRLP4 20
+INDIRI4
+ADDRLP4 52
+INDIRI4
+SUBI4
+ASGNI4
+ADDRLP4 12
+ADDRLP4 12
+INDIRI4
+ADDRLP4 48
+INDIRI4
+ADDI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 65536
+LTI4 $154
+ADDRGP4 $144
+JUMPV
+LABELV $154
+LABELV $148
+LABELV $143
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $145
+ADDRLP4 0
+INDIRI4
+ADDRGP4 ui_numArenas
+INDIRI4
+LTI4 $142
+LABELV $144
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+NEI4 $156
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRGP4 $158
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRFP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+INDIRP4
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 164
+ADDP4
+CNSTI4 1
+ASGNI4
+ADDRGP4 $157
+JUMPV
+LABELV $156
+ADDRFP4 0
+INDIRP4
+CNSTI4 164
+ADDP4
+ADDRLP4 12
+INDIRI4
+ASGNI4
+LABELV $157
+LABELV $140
+endproc UI_FillListOfMaps 56 8
+export UI_FillListOfBots
+proc UI_FillListOfBots 32 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 16
+CNSTI4 0
+ASGNI4
+ADDRLP4 8
+ADDRFP4 4
+INDIRP4
+ASGNP4
+ADDRLP4 20
+ADDRFP4 8
+INDIRI4
+ASGNI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 108
+ADDP4
+ADDRGP4 $160
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+ADDRFP4 12
+INDIRP4
+ASGNP4
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $164
+JUMPV
+LABELV $161
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_botInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $127
+ARGP4
+ADDRLP4 24
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 24
+INDIRP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $165
+ADDRGP4 $162
+JUMPV
+LABELV $165
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRLP4 28
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 12
+ADDRLP4 28
+INDIRI4
+ASGNI4
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 172
+ADDP4
+INDIRP4
+ADDP4
+ADDRLP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 8
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+ADDI4
+ADDRLP4 8
+INDIRP4
+ADDP4
+ASGNP4
+LABELV $162
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $164
+ADDRLP4 0
+INDIRI4
+ADDRGP4 ui_numBots
+INDIRI4
+LTI4 $161
+ADDRFP4 0
+INDIRP4
+CNSTI4 164
+ADDP4
+ADDRLP4 0
+INDIRI4
+ASGNI4
+LABELV $159
+endproc UI_FillListOfBots 32 8
+export UI_CountOfMaps
+proc UI_CountOfMaps 32 8
+ADDRFP4 0
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 12
+CNSTI4 0
+ASGNI4
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $171
+JUMPV
+LABELV $168
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_arenaInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $90
+ARGP4
+ADDRLP4 16
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 4
+ADDRLP4 16
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 ui_arenaInfos
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $91
+ARGP4
+ADDRLP4 20
+ADDRGP4 Info_ValueForKey
+CALLP4
+ASGNP4
+ADDRLP4 8
+ADDRLP4 20
+INDIRP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+INDIRI1
+CVII4 1
+CNSTI4 0
+NEI4 $172
+ADDRGP4 $169
+JUMPV
+LABELV $172
+ADDRLP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 24
+ADDRGP4 MapHasGametype
+CALLI4
+ASGNI4
+ADDRLP4 24
+INDIRI4
+CNSTI4 0
+NEI4 $176
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRGP4 $150
+ARGP4
+ADDRLP4 28
+ADDRGP4 Q_stricmp
+CALLI4
+ASGNI4
+ADDRLP4 28
+INDIRI4
+CNSTI4 0
+NEI4 $174
+LABELV $176
+ADDRLP4 12
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $174
+LABELV $169
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $171
+ADDRLP4 0
+INDIRI4
+ADDRGP4 ui_numArenas
+INDIRI4
+LTI4 $168
+ADDRLP4 12
+INDIRI4
+RETI4
+LABELV $167
+endproc UI_CountOfMaps 32 8
+bss
+align 4
+LABELV allocPoint
+skip 4
+align 1
+LABELV memoryPool
+skip 1048576
+align 1
+LABELV dirlist
+skip 16384
+align 4
+LABELV ui_arenaInfos
+skip 32768
+align 4
+LABELV ui_numArenas
+skip 4
+align 4
+LABELV ui_botInfos
+skip 32768
+align 4
+LABELV ui_numBots
+skip 4
+import consoleSync
+import trap_LAN_GetServerAddressString
+import trap_LAN_GetServerCount
+import trap_MemoryRemaining
+import trap_LAN_GetPingInfo
+import trap_LAN_GetPing
+import trap_LAN_ClearPing
+import trap_LAN_GetPingQueueCount
+import trap_GetConfigString
+import trap_GetClientState
+import trap_GetClipboardData
+import trap_Key_SetCatcher
+import trap_Key_ClearStates
+import trap_Key_SetOverstrikeMode
+import trap_Key_GetOverstrikeMode
+import trap_Key_IsDown
+import trap_Key_SetBinding
+import trap_Key_GetBindingBuf
+import trap_Key_KeynumToStringBuf
+import consoleLines
+import console
+import gametype_items
+import uis
+import UI_SpawnMenu
+import UI_Settings
+import UI_ArenaServersMenu
+import UI_CPicture
+import UI_CBitmap
+import UI_CText
+import UI_CField
+import UI_CList
+import UI_CSpinControl
+import UI_CRadioButton
+import UI_CSlider
+import UI_CButton
+import UI_CreateUI
+import UI_SetHitbox
+import UI_ListPlayerCount
+import UI_FillListPlayers
+import UI_FillListOfItems
+import UI_FillListFromArray
+import UI_CountFiles
+import UI_FillList
+import Menu_Cache
+import Menu_DefaultKey
+import Menu_ItemAtCursor
+import Menu_Draw
+import Menu_SetCursor
+import Menu_AddItem
+import ScrollList_Key
+import GUI_PlayerInfo_AnimateModel
+import GUI_ModelName
+import GUI_PlayerInfo_DrawTeamModel
+import GUI_PlayerInfo_InitModel
+import UI_PlayerModelMenu
+import UI_Options
+import UI_NewGame
+import UI_MainMenu
+import UI_CreateCvars
+import UI_Controls
+import UI_DrawConnectScreen
+import UI_DrawRoundedRect
+import UI_DrawModelElement
+import UI_DrawPictureElement
+import UI_DrawHandlePic
+import UI_AdjustFrom640
+import UI_Init
+import UI_Shutdown
+import UI_ConsoleCommand
+import UI_MouseEvent
+import UI_KeyEvent
+import UI_SetActiveMenu
+import UI_IsFullscreen
+import UI_ForceMenuOff
+import UI_PopMenu
+import UI_PushMenu
+import UI_UpdateState
+import drawTeamModel
+import menu_null_sound
+import menu_buzz_sound
+import menu_out_sound
+import menu_move_sound
+import Pmove
+import PM_UpdateViewAngles
+import BG_InVehicle
+import BG_PlayerStateToEntityState
+import BG_TouchJumpPad
+import BG_AddPredictableEventToPlayerstate
+import ST_EvaluateTrajectoryDelta
+import ST_EvaluateTrajectory
+import BG_EvaluateTrajectoryDelta
+import BG_EvaluateTrajectory
+import BG_CanItemBeGrabbed
+import BG_PlayerTouchesItem
+import BG_FindAmmo
+import BG_FindWeapon
+import BG_CheckClassname
+import BG_FindItem
+import BG_FindItemForWeapon
+import BG_FindItemForHoldable
+import BG_FindItemForPowerup
+import BG_FactionShouldAttack
+import BG_FindNPCTypeID
+import G_InitMemory
+import G_Alloc
+import gameInfoSandboxSpawnsNum
+import gameInfoSandboxSpawns
+import gameInfoFactionsNum
+import gameInfoFactions
+import gameInfoNPCTypesNum
+import gameInfoNPCTypes
+import gameInfoWPropsNum
+import gameInfoWProps
+import gameInfoWeaponsNum
+import gameInfoWeapons
+import gameInfoItemsNum
+import gameInfoItems
+import gametypes_mapnames
+import gametypes_names
+import trap_R_RemapShader
+import trap_Key_GetCatcher
+import trap_GetGlconfig
+import trap_R_LerpTag
+import trap_R_DrawStretchPic
+import trap_R_SetColor
+import trap_R_RenderScene
+import trap_R_AddLinearLightToScene
+import trap_R_AddLightToScene
+import trap_R_AddPolyToScene
+import trap_R_AddRefEntityToScene
+import trap_R_ClearScene
+import trap_R_RegisterShaderNoMip
+import trap_R_RegisterShader
+import trap_R_RegisterSkin
+import trap_R_RegisterModel
+import trap_S_RegisterSound
+import trap_S_StartLocalSound
+import trap_UpdateScreen
+import glconfig
+import strncpy
+import memcpy
+import memset
+import trap_System
+import trap_RealTime
+import trap_Cmd
+import FS_List
+import FS_Close
+import FS_Write
+import FS_Read
+import FS_Open
+import trap_Args
+import trap_Argv
+import trap_Argc
+import cvarSet
+import cvarReload
+import cvarUpdate
+import cvarID
+import cvarRegister
+import trap_Milliseconds
+import trap_Error
+import trap_Print
+import ST_AnimValue
+import ST_AnimStart
+import ST_DrawString
+import ST_StringWidth
+import ST_DrawChar
+import ST_StringCount
+import ST_UpdateColors
+import ST_RegisterFont
+import ST_ColorEscapes
+import defaultFont
+import anim_weaponSelect
+import weaponSelectOut
+import weaponSelectIn
+import customcolor_crosshair
+import color_highlight
+import color_select
+import color_disabled
+import color_dim
+import color_grey
+import color_white
+import color_black
+import VectorDistance
+import Com_Printf
+import Com_Error
+import Info_NextPair
+import Info_Validate
+import Info_SetValueForKey_Big
+import Info_SetValueForKey
+import Info_RemoveKey_big
+import Info_RemoveKey
+import Info_ValueForKey
+import VectorToYaw
+import AngleDifference
+import va
+import Q_CleanStr
+import Q_strcat
+import Q_strncpyz
+import Q_stristr
+import Q_strupr
+import Q_strlwr
+import Q_stricmpn
+import Q_strncmp
+import Q_stricmp
+import Q_isalpha
+import Q_isupper
+import Q_islower
+import Q_isprint
+import Com_sprintf
+import COM_Compress
+import COM_ParseExt
+import COM_Parse
+import COM_DefaultExtension
+import COM_StripExtension
+import COM_GetExtension
+import COM_SkipPath
+import Com_Clamp
+import SnapVectorTowards
+import PerpendicularVector
+import AngleVectors
+import MatrixMultiply
+import RotateAroundDirection
+import RotatePointAroundVector
+import ProjectPointOnPlane
+import PlaneFromPoints
+import AngleDelta
+import AngleNormalize180
+import AngleNormalize360
+import LerpAngles
+import AngleMA
+import AngleAdd
+import AnglesSubtract
+import AngleSubtract
+import LerpAngle
+import AngleMod
+import AxisCopy
+import AxisClear
+import Lerp
+import VelocityToAxis
+import OrthogonalizeMatrix
+import AxisToAngles
+import AnglesToAxis
+import vectoangles
+import Q_crandom
+import Q_random
+import Q_rand
+import Vector4Scale
+import VectorNormalize2
+import VectorNormalize
+import CrossProduct
+import VectorInverse
+import VectorNormalizeFast
+import DistanceSquared
+import Distance
+import VectorLengthSquared
+import VectorLength
+import VectorCompare
+import AddPointToBounds
+import RadiusFromBounds
+import NormalizeColor
+import _VectorMA
+import _VectorScale
+import _VectorCopy
+import _VectorAdd
+import _VectorSubtract
+import _DotProduct
+import ByteToDir
+import DirToByte
+import Q_rsqrt
+import Q_fabs
+import axisDefault
+import vec3_origin
+import g_color_table
+import bytedirs
+import cvarString
+import cvarFloat
+import cvarInt
+import ST_UpdateCvars
+import ST_RegisterCvars
+import FloatSwap
+import LongSwap
+import ShortSwap
+import sqrt
+import atan2
+import acos
+import cos
+import sin
+import sscanf
+import Q_snprintf
+import Q_vsnprintf
+import fabs
+import abs
+import atoi
+import atof
+import rand
+import srand
+import tan
+import memmove
+import toupper
+import tolower
+import strstr
+import strrchr
+import strchr
+import strcmp
+import strcpy
+import strcat
+import ifstrlenru
+import strlenru
+import strlen
+import qsort
+lit
+align 1
+LABELV $160
+byte 1 0
+align 1
+LABELV $158
+byte 1 69
+byte 1 109
+byte 1 112
+byte 1 116
+byte 1 121
+byte 1 0
+align 1
+LABELV $150
+byte 1 97
+byte 1 108
+byte 1 108
+byte 1 0
+align 1
+LABELV $141
+byte 1 108
+byte 1 101
+byte 1 118
+byte 1 101
+byte 1 108
+byte 1 115
+byte 1 104
+byte 1 111
+byte 1 116
+byte 1 115
+byte 1 0
+align 1
+LABELV $127
+byte 1 110
+byte 1 97
+byte 1 109
+byte 1 101
+byte 1 0
+align 1
+LABELV $117
+byte 1 46
+byte 1 98
+byte 1 111
+byte 1 116
+byte 1 0
+align 1
+LABELV $110
+byte 1 115
+byte 1 99
+byte 1 114
+byte 1 105
+byte 1 112
+byte 1 116
+byte 1 115
+byte 1 47
+byte 1 0
+align 1
+LABELV $105
+byte 1 46
+byte 1 97
+byte 1 114
+byte 1 101
+byte 1 110
+byte 1 97
+byte 1 0
+align 1
+LABELV $104
+byte 1 115
+byte 1 99
+byte 1 114
+byte 1 105
+byte 1 112
+byte 1 116
+byte 1 115
+byte 1 0
+align 1
+LABELV $102
+byte 1 94
+byte 1 49
+byte 1 102
+byte 1 105
+byte 1 108
+byte 1 101
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 111
+byte 1 32
+byte 1 108
+byte 1 97
+byte 1 114
+byte 1 103
+byte 1 101
+byte 1 58
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 32
+byte 1 105
+byte 1 115
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 44
+byte 1 32
+byte 1 109
+byte 1 97
+byte 1 120
+byte 1 32
+byte 1 97
+byte 1 108
+byte 1 108
+byte 1 111
+byte 1 119
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 105
+byte 1 115
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 0
+align 1
+LABELV $99
+byte 1 94
+byte 1 49
+byte 1 102
+byte 1 105
+byte 1 108
+byte 1 101
+byte 1 32
+byte 1 110
+byte 1 111
+byte 1 116
+byte 1 32
+byte 1 102
+byte 1 111
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 58
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 10
+byte 1 0
+align 1
+LABELV $91
+byte 1 116
+byte 1 121
+byte 1 112
+byte 1 101
+byte 1 0
+align 1
+LABELV $90
+byte 1 109
+byte 1 97
+byte 1 112
+byte 1 0
+align 1
+LABELV $87
+byte 1 60
+byte 1 78
+byte 1 85
+byte 1 76
+byte 1 76
+byte 1 62
+byte 1 0
+align 1
+LABELV $84
+byte 1 125
+byte 1 0
+align 1
+LABELV $81
+byte 1 85
+byte 1 110
+byte 1 101
+byte 1 120
+byte 1 112
+byte 1 101
+byte 1 99
+byte 1 116
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 101
+byte 1 110
+byte 1 100
+byte 1 32
+byte 1 111
+byte 1 102
+byte 1 32
+byte 1 105
+byte 1 110
+byte 1 102
+byte 1 111
+byte 1 32
+byte 1 102
+byte 1 105
+byte 1 108
+byte 1 101
+byte 1 10
+byte 1 0
+align 1
+LABELV $75
+byte 1 77
+byte 1 97
+byte 1 120
+byte 1 32
+byte 1 105
+byte 1 110
+byte 1 102
+byte 1 111
+byte 1 115
+byte 1 32
+byte 1 101
+byte 1 120
+byte 1 99
+byte 1 101
+byte 1 101
+byte 1 100
+byte 1 101
+byte 1 100
+byte 1 10
+byte 1 0
+align 1
+LABELV $72
+byte 1 77
+byte 1 105
+byte 1 115
+byte 1 115
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 32
+byte 1 123
+byte 1 32
+byte 1 105
+byte 1 110
+byte 1 32
+byte 1 105
+byte 1 110
+byte 1 102
+byte 1 111
+byte 1 32
+byte 1 102
+byte 1 105
+byte 1 108
+byte 1 101
+byte 1 10
+byte 1 0
+align 1
+LABELV $71
+byte 1 123
+byte 1 0

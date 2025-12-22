@@ -11,11 +11,11 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/game
 
-cp make_scripts/asm linux/build/game/
-cp make_scripts/lcc linux/build/game/
-cp make_scripts/cpp linux/build/game/
-cp make_scripts/rcc linux/build/game/
-cp make_scripts/game.q3asm linux/build/
+cp -p make_scripts/asm linux/build/game/
+cp -p make_scripts/lcc linux/build/game/
+cp -p make_scripts/cpp linux/build/game/
+cp -p make_scripts/rcc linux/build/game/
+cp -p make_scripts/game.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
@@ -82,11 +82,11 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/cgame
 
-cp make_scripts/asm linux/build/cgame/
-cp make_scripts/lcc linux/build/cgame/
-cp make_scripts/cpp linux/build/cgame/
-cp make_scripts/rcc linux/build/cgame/
-cp make_scripts/cgame.q3asm linux/build/
+cp -p make_scripts/asm linux/build/cgame/
+cp -p make_scripts/lcc linux/build/cgame/
+cp -p make_scripts/cpp linux/build/cgame/
+cp -p make_scripts/rcc linux/build/cgame/
+cp -p make_scripts/cgame.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
@@ -152,11 +152,11 @@ mkdir -p linux/build
 mkdir -p linux/game/qvm
 mkdir -p linux/build/ui
 
-cp make_scripts/asm linux/build/ui/
-cp make_scripts/lcc linux/build/ui/
-cp make_scripts/cpp linux/build/ui/
-cp make_scripts/rcc linux/build/ui/
-cp make_scripts/ui.q3asm linux/build/
+cp -p make_scripts/asm linux/build/ui/
+cp -p make_scripts/lcc linux/build/ui/
+cp -p make_scripts/cpp linux/build/ui/
+cp -p make_scripts/rcc linux/build/ui/
+cp -p make_scripts/ui.q3asm linux/build/
 
 LIBRARY=""
 INCLUDE=""
