@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 qboolean G_BotConnect(int clientNum) {
 	bot_settings_t settings;

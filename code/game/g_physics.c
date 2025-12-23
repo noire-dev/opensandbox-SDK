@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 #define PHYS_COL 0.75
 #define PHYS_COL_CHECK 0.75

@@ -2,9 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/q_shared.h"
-#include "bg_public.h"
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 // clang-format off
 item_t gameInfoItems[] = {

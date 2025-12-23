@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 static void InitTrigger(gentity_t *self) {
 	if(!VectorCompare(self->s.angles, vec3_origin)) G_SetMovedir(self->s.angles, self->movedir);

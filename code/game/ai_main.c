@@ -2,9 +2,7 @@
 // Copyright (C) 2023-2026 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/q_shared.h"
-#include "g_local.h"
-#include "ai_main.h"
+#include "../qcommon/js_local.h"
 
 #define AI_THINKTIME 300
 

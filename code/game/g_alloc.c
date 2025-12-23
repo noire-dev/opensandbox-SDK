@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 #define POOLSIZE (1024 * 1024) // QVM_MEMORY: 1mb
 static char memoryPool[POOLSIZE];

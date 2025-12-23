@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 static int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
 	int i;

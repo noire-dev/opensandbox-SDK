@@ -2,9 +2,8 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#if defined(BG_PUBLIC_H)
-#else
-#define BG_PUBLIC_H 1
+#ifndef __BG_PUBLIC_H
+#define __BG_PUBLIC_H
 
 #define GIB_HEALTH -66
 #define MAX_ITEMS 256

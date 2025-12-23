@@ -2,10 +2,6 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/q_shared.h"
-#include "bg_public.h"
-#include "g_public.h"
-
 extern int SourceTechEntityList[MAX_GENTITIES];
 
 #define BODY_QUEUE_SIZE 8

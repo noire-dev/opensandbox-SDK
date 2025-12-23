@@ -3,7 +3,10 @@
 
 #include "q_shared.h"
 #ifdef GAME
+#include "../game/bg_public.h"
+#include "../game/g_public.h"
 #include "../game/g_local.h"
+#include "../game/ai_main.h"
 #endif
 #ifdef CGAME
 #include "../renderer/tr_types.h"

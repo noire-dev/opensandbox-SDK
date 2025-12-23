@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "g_local.h"
+#include "../qcommon/js_local.h"
 
 void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles, qboolean noKnockback) {
 	gentity_t *tent;
