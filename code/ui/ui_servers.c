@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-
+#include "../qcommon/js_local.h"
 
 #define MAX_GLOBALSERVERS 128
 #define MAX_PINGREQUESTS 32
