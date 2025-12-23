@@ -3,7 +3,7 @@
 // OpenSandbox — GPLv2; see LICENSE for details.
 // ui_players.c
 
-#include "ui_local.h"
+
 
 #define SWINGSPEED 0.3f
 

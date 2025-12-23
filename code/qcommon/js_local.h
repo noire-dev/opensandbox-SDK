@@ -12,6 +12,10 @@
 #include "../cgame/cg_local.h"
 #endif
 #ifdef UI
+#include "../renderer/tr_types.h"
+#include "../game/bg_public.h"
+#include "../ui/ui_public.h"
+#include "../client/keycodes.h"
 #include "../ui/ui_local.h"
 #endif
 
