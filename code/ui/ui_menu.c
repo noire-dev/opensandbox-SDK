@@ -37,7 +37,7 @@ static void Main_MenuDraw(void) {
 	Menu_Draw(&main.menu);
 
 	if(strlen(main.error)) ST_DrawString(0 - uis.wideoffset, 0, main.error, UI_DROPSHADOW, color, 1.00);
-	ST_DrawString(635 + uis.wideoffset, 2, "2025.10.26", UI_RIGHT, color, 1.00);
+	ST_DrawString(635 + uis.wideoffset, 2, "2025.12.25", UI_RIGHT, color, 1.00);
 
 	UI_DrawRoundedRect(10 - uis.wideoffset, 10, 135, (mainmenu_items * (20)) + 6, 4, color_dim);
 
