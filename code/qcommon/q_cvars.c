@@ -12,7 +12,7 @@ typedef struct {
 
 cvar_t cvarStorage[MAX_CVARS];
 
-static cvarTable_t cvarTable[] = {
+static cvarTable_t cvarTable[] = { // make this in JS
     // game.qvm
     {"gamename", "opensandbox", 0},
     {"gamedate", __DATE__, 0},
@@ -24,12 +24,12 @@ static cvarTable_t cvarTable[] = {
     {"capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE},
     {"g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH},
     {"g_entitypack", "default", CVAR_ARCHIVE},
-    {"g_jumpheight", "270", 0},
+    {"g_jumpheight", "270", CVAR_SYSTEMINFO},
     {"g_friendlyFire", "0", CVAR_ARCHIVE},
     {"g_password", "", CVAR_USERINFO},
     {"dedicated", "0", 0},
     {"g_speed", "320", CVAR_ARCHIVE},
-    {"g_gravity", "800", CVAR_ARCHIVE},
+    {"g_gravity", "800", CVAR_SYSTEMINFO},
     {"g_knockback", "1000", 0},
     {"com_blood", "1", 0},
     {"g_enableDust", "0", CVAR_SERVERINFO},

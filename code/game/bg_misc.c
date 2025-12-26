@@ -519,7 +519,7 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result) {
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-		result[2] -= 0.5 * mod_gravity * deltaTime * deltaTime;
+		result[2] -= 0.5 * cvarFloat("g_gravity") * deltaTime * deltaTime;
 		break;
 	case TR_ROTATING:
 		if(tr->trTime > 0)
@@ -533,7 +533,7 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result) {
 	case TR_GRAVITY_WATER:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-		result[2] -= 0.5 * (mod_gravity * 0.50) * deltaTime * deltaTime;
+		result[2] -= 0.5 * (cvarFloat("g_gravity") * 0.50) * deltaTime * deltaTime;
 		break;
 	default: break;
 	}
@@ -571,12 +571,12 @@ void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorCopy(tr->trDelta, result);
-		result[2] -= mod_gravity * deltaTime;
+		result[2] -= cvarFloat("g_gravity") * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorCopy(tr->trDelta, result);
-		result[2] -= (mod_gravity * 0.50) * deltaTime;
+		result[2] -= (cvarFloat("g_gravity") * 0.50) * deltaTime;
 		break;
 	default: break;
 	}
@@ -611,12 +611,12 @@ void ST_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result, fl
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-		result[2] -= 0.5 * (mod_gravity * mass) * deltaTime * deltaTime;
+		result[2] -= 0.5 * (cvarFloat("g_gravity") * mass) * deltaTime * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
-		result[2] -= 0.5 * (mod_gravity * (mass * 0.50)) * deltaTime * deltaTime;
+		result[2] -= 0.5 * (cvarFloat("g_gravity") * (mass * 0.50)) * deltaTime * deltaTime;
 		break;
 	case TR_ROTATING:
 		if(tr->trTime > 0)
@@ -665,12 +665,12 @@ void ST_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorCopy(tr->trDelta, result);
-		result[2] -= (mod_gravity * mass) * deltaTime;
+		result[2] -= (cvarFloat("g_gravity") * mass) * deltaTime;
 		break;
 	case TR_GRAVITY_WATER:
 		deltaTime = (atTime - tr->trTime) * 0.001; // milliseconds to seconds
 		VectorCopy(tr->trDelta, result);
-		result[2] -= (mod_gravity * (mass * 0.50)) * deltaTime;
+		result[2] -= (cvarFloat("g_gravity") * (mass * 0.50)) * deltaTime;
 		break;
 	default:
 		// Com_Error( ERR_DROP, "ST_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
