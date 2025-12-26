@@ -217,8 +217,8 @@ cd ../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/opensandbox_default/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
-cp opensandbox-SDK/opensandbox_default/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
-cp opensandbox-SDK/opensandbox_default/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
 
 read -n 1

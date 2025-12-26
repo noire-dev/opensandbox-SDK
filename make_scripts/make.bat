@@ -222,9 +222,9 @@ cd ..\..
 :: Replace "opensandbox" here with the name of your game folder
 :: ##############################################################
 
-copy opensandbox-SDK\opensandbox_default\windows\game\qvm\qagame.qvm opensandbox\game\core.default\qvm\qagame.qvm
-copy opensandbox-SDK\opensandbox_default\windows\game\qvm\cgame.qvm opensandbox\game\core.default\qvm\cgame.qvm
-copy opensandbox-SDK\opensandbox_default\windows\game\qvm\ui.qvm opensandbox\game\core.default\qvm\ui.qvm
+copy opensandbox-SDK\windows\game\qvm\qagame.qvm opensandbox\game\core.default\qvm\qagame.qvm
+copy opensandbox-SDK\windows\game\qvm\cgame.qvm opensandbox\game\core.default\qvm\cgame.qvm
+copy opensandbox-SDK\windows\game\qvm\ui.qvm opensandbox\game\core.default\qvm\ui.qvm
 
 color 0A
 pause
