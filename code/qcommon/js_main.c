@@ -15,9 +15,17 @@ void JS_Function(int func_id) {
 }
 
 void VMCall(int func_id) {
+    switch(func_id) {
 #ifdef GAME
-	switch(func_id) {
-	case VMCALL_TEST: G_Printf("QVM Test String!\n");
-	}
+    case VMCALL_TEST: trap_Print("QVM Test String from game.qvm!\n");
 #endif
+#ifdef CGAME
+    case VMCALL_TEST: trap_Print("QVM Test String from cgame.qvm!\n");
+    case VMCALL_DRAWSTRING: ST_DrawString(vmargs.value[0].f, vmargs.value[1].f, vmargs.value[2].s, vmargs.value[3].i, color_white, vmargs.value[4].f);
+#endif
+#ifdef UI
+    case VMCALL_TEST: trap_Print("QVM Test String from ui.qvm!\n");
+    case VMCALL_DRAWSTRING: ST_DrawString(vmargs.value[0].f, vmargs.value[1].f, vmargs.value[2].s, vmargs.value[3].i, color_white, vmargs.value[4].f);
+#endif
+	}
 }

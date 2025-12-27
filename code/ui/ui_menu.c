@@ -38,6 +38,8 @@ static void Main_MenuDraw(void) {
 		UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
 		y += 20;
 	}
+	
+	JS_MenuDraw();
 
 	Menu_Draw(&ui.menu);
 }

@@ -4,6 +4,12 @@
 #include "js_local.h"
 
 const char *JS_Test(void) {
+    JS_StackClean();
 	JS_Function(JSCALL_TEST);
 	return jsresult.value.s;
+}
+
+void JS_MenuDraw(void) {
+    JS_StackClean();
+    JS_Function(JSCALL_MENUDRAW);
 }

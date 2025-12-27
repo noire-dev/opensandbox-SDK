@@ -29,11 +29,13 @@
 
 typedef enum {
 	JSCALL_TEST = 0,
-	JSCALL_MENU = 1,
+	JSCALL_MENUINIT = 1,
+	JSCALL_MENUDRAW = 2,
 } jscall_t;
 
 typedef enum {
 	VMCALL_TEST = 0,
+	VMCALL_DRAWSTRING = 1,
 } vmcall_t;
 
 typedef enum { JS_TYPE_NONE, JS_TYPE_INT, JS_TYPE_FLOAT, JS_TYPE_BOOL, JS_TYPE_STRING } js_type_t;
@@ -60,6 +62,7 @@ void JS_Function(int func_id);
 
 // JS Functions
 const char *JS_Test(void);
+void JS_MenuDraw(void);
 
 extern js_args_t vmargs;
 extern js_result_t vmresult;
