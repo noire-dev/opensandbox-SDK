@@ -220,5 +220,3 @@ cd ../..
 cp opensandbox-SDK/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
-
-read -n 1

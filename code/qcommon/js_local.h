@@ -29,6 +29,7 @@
 
 typedef enum {
 	JSCALL_TEST = 0,
+	JSCALL_MENU = 1,
 } jscall_t;
 
 typedef enum {

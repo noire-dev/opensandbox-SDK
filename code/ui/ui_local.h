@@ -378,6 +378,15 @@ typedef struct console_s {
 extern console_t console;
 extern int consoleLines;
 
+typedef struct {
+	menuframework_s menu;
+	menuelement_s e[OSUI_MAX_ELEMENTS];
+
+	char *error;
+} uimenu_t;
+
+extern uimenu_t ui;
+
 // syscalls
 void trap_Key_KeynumToStringBuf(int keynum, char *buf, int buflen);
 void trap_Key_GetBindingBuf(int keynum, char *buf, int buflen);
