@@ -384,7 +384,7 @@ void CG_NewClientInfo(int clientNum) {
 
 	// isolate the player's name
 	v = Info_ValueForKey(configstring, "n");
-	Q_strncpyz(newInfo.name, v, sizeof(newInfo.name));
+	Q_StringCopy(newInfo.name, v, sizeof(newInfo.name));
 
 	v = Info_ValueForKey(configstring, "vn");
 	newInfo.vehicleNum = atoi(v);
@@ -404,14 +404,14 @@ void CG_NewClientInfo(int clientNum) {
 	// model
 	v = Info_ValueForKey(configstring, "m");
 
-	Q_strncpyz(newInfo.modelName, v, sizeof(newInfo.modelName));
+	Q_StringCopy(newInfo.modelName, v, sizeof(newInfo.modelName));
 
 	slash = strchr(newInfo.modelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_strncpyz(newInfo.skinName, "default", sizeof(newInfo.skinName));
+		Q_StringCopy(newInfo.skinName, "default", sizeof(newInfo.skinName));
 	} else {
-		Q_strncpyz(newInfo.skinName, slash + 1, sizeof(newInfo.skinName));
+		Q_StringCopy(newInfo.skinName, slash + 1, sizeof(newInfo.skinName));
 		// truncate modelName
 		*slash = 0;
 	}
@@ -419,14 +419,14 @@ void CG_NewClientInfo(int clientNum) {
 	// head model
 	v = Info_ValueForKey(configstring, "hm");
 
-	Q_strncpyz(newInfo.headModelName, v, sizeof(newInfo.headModelName));
+	Q_StringCopy(newInfo.headModelName, v, sizeof(newInfo.headModelName));
 
 	slash = strchr(newInfo.headModelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_strncpyz(newInfo.headSkinName, "default", sizeof(newInfo.headSkinName));
+		Q_StringCopy(newInfo.headSkinName, "default", sizeof(newInfo.headSkinName));
 	} else {
-		Q_strncpyz(newInfo.headSkinName, slash + 1, sizeof(newInfo.headSkinName));
+		Q_StringCopy(newInfo.headSkinName, slash + 1, sizeof(newInfo.headSkinName));
 		// truncate modelName
 		*slash = 0;
 	}
@@ -434,14 +434,14 @@ void CG_NewClientInfo(int clientNum) {
 	// legs model
 	v = Info_ValueForKey(configstring, "lm");
 
-	Q_strncpyz(newInfo.legsModelName, v, sizeof(newInfo.legsModelName));
+	Q_StringCopy(newInfo.legsModelName, v, sizeof(newInfo.legsModelName));
 
 	slash = strchr(newInfo.legsModelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_strncpyz(newInfo.legsSkinName, "default", sizeof(newInfo.legsSkinName));
+		Q_StringCopy(newInfo.legsSkinName, "default", sizeof(newInfo.legsSkinName));
 	} else {
-		Q_strncpyz(newInfo.legsSkinName, slash + 1, sizeof(newInfo.legsSkinName));
+		Q_StringCopy(newInfo.legsSkinName, slash + 1, sizeof(newInfo.legsSkinName));
 		// truncate modelName
 		*slash = 0;
 	}

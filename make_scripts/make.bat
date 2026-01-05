@@ -27,7 +27,7 @@ set cc=lcc -DGAME -DQVM -S -I..\..\..\code\game -I..\..\..\code\qcommon %1
 cd windows\build\game
 
 :: ########################################
-:: Files to compile to           qagame.qvm
+:: Files to compile to           game.qvm
 :: ########################################
 
 %cc% ../../../code/game/ai_main.c
@@ -222,7 +222,7 @@ cd ..\..
 :: Replace "opensandbox" here with the name of your game folder
 :: ##############################################################
 
-copy opensandbox-SDK\windows\game\qvm\qagame.qvm opensandbox\game\core.default\qvm\qagame.qvm
+copy opensandbox-SDK\windows\game\qvm\game.qvm opensandbox\game\core.default\qvm\qagame.qvm
 copy opensandbox-SDK\windows\game\qvm\cgame.qvm opensandbox\game\core.default\qvm\cgame.qvm
 copy opensandbox-SDK\windows\game\qvm\ui.qvm opensandbox\game\core.default\qvm\ui.qvm
 

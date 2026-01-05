@@ -28,7 +28,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	qhandle_t loading;
 	int i, y;
 
-	UI_UpdateState();
 	consoleSync(&console, console.linescount);
 
 	// see what information we should display
@@ -45,7 +44,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 
 	// print any server info (server full, bad version, etc)
 	if(cstate.connState < CA_CONNECTED) {
-		ST_DrawString(2 - uis.wideoffset, 2, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
+		ST_DrawString(2 - cgui.wideoffset, 2, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
 	}
 	if(lastConnState > cstate.connState) {
 		lastLoadingText[0] = '\0';
@@ -55,7 +54,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	y = 460 - BASEFONT_HEIGHT;
 	for(i = console.linescount; i > console.linescount - LOADING_LINES; i--) {
 		if(i <= 0) break;
-		ST_DrawString(15 - uis.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
+		ST_DrawString(15 - cgui.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
 		y -= BASEFONT_HEIGHT;
 	}
 
@@ -68,9 +67,9 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	default: return;
 	}
 
-	UI_DrawHandlePic(0 - (uis.wideoffset + 1), 0, SCREEN_WIDTH + (uis.wideoffset * 2) + 2, SCREEN_HEIGHT * 3, black);
+	UI_DrawHandlePic(0 - (cgui.wideoffset + 1), 0, SCREEN_WIDTH + (cgui.wideoffset * 2) + 2, SCREEN_HEIGHT * 3, black);
 	UI_DrawHandlePic(320 - 50, 240 - 75, 100, 100, logo);
 	UI_DrawHandlePic(320 - 24, 320 - 48, 48, 48, loading);
 
-	ST_DrawString(2 - uis.wideoffset, 2, s, UI_DROPSHADOW, color_white, 1.00);
+	ST_DrawString(2 - cgui.wideoffset, 2, s, UI_DROPSHADOW, color_white, 1.00);
 }

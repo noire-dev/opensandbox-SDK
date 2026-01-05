@@ -299,7 +299,7 @@ static void UI_DrawPlayer(float x, float y, float w, float h, modelAnim_t *m, in
 
 	dp_realtime = time;
 
-	UI_AdjustFrom640(&x, &y, &w, &h);
+	ST_AdjustFrom640(&x, &y, &w, &h);
 
 	memset(&refdef, 0, sizeof(refdef));
 	memset(&legs, 0, sizeof(legs));
@@ -636,40 +636,40 @@ static qboolean UI_RegisterClientModelname(modelAnim_t *m) {
 	m->bUnknownLegsModel = qfalse;
 
 	// do the body model
-	Q_strncpyz(bodyName, modelSkinName, sizeof(bodyName));
+	Q_StringCopy(bodyName, modelSkinName, sizeof(bodyName));
 
 	slash = strchr(bodyName, '/');
 	if(!slash) {
 		// modelName did not include a skin name
-		Q_strncpyz(skinBodyName, "default", sizeof(skinBodyName));
+		Q_StringCopy(skinBodyName, "default", sizeof(skinBodyName));
 	} else {
-		Q_strncpyz(skinBodyName, slash + 1, sizeof(skinBodyName));
+		Q_StringCopy(skinBodyName, slash + 1, sizeof(skinBodyName));
 		// truncate bodyName
 		*slash = 0;
 	}
 
 	// do the legs model
-	Q_strncpyz(legsName, modelLegsName, sizeof(legsName));
+	Q_StringCopy(legsName, modelLegsName, sizeof(legsName));
 
 	slash = strchr(legsName, '/');
 	if(!slash) {
 		// modelName did not include a skin name
-		Q_strncpyz(skinLegsName, "default", sizeof(skinLegsName));
+		Q_StringCopy(skinLegsName, "default", sizeof(skinLegsName));
 	} else {
-		Q_strncpyz(skinLegsName, slash + 1, sizeof(skinLegsName));
+		Q_StringCopy(skinLegsName, slash + 1, sizeof(skinLegsName));
 		// truncate bodyName
 		*slash = 0;
 	}
 
 	// do the head model separately
-	Q_strncpyz(headName, modelHeadName, sizeof(headName));
+	Q_StringCopy(headName, modelHeadName, sizeof(headName));
 
 	slash = strchr(headName, '/');
 	if(!slash) {
 		// modelName did not include a skin name
-		Q_strncpyz(skinHeadName, "default", sizeof(skinHeadName));
+		Q_StringCopy(skinHeadName, "default", sizeof(skinHeadName));
 	} else {
-		Q_strncpyz(skinHeadName, slash + 1, sizeof(skinHeadName));
+		Q_StringCopy(skinHeadName, slash + 1, sizeof(skinHeadName));
 		// truncate modelName
 		*slash = 0;
 	}
@@ -901,7 +901,7 @@ const char *GUI_ModelName(const char *modelname) {
 	ptr = strchr(modelname, '/');
 
 	if(ptr)
-		Q_strncpyz(model, modelname, ptr - modelname + 1);
+		Q_StringCopy(model, modelname, ptr - modelname + 1);
 	else {
 		strcpy(model, modelname);
 	}

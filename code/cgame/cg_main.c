@@ -488,8 +488,8 @@ static void CG_StartMusic(void) {
 
 	// start the background music
 	s = (char *)CG_ConfigString(CS_MUSIC);
-	Q_strncpyz(parm1, COM_Parse(&s), sizeof(parm1));
-	Q_strncpyz(parm2, COM_Parse(&s), sizeof(parm2));
+	Q_StringCopy(parm1, COM_Parse(&s), sizeof(parm1));
+	Q_StringCopy(parm2, COM_Parse(&s), sizeof(parm2));
 	trap_S_StartBackgroundTrack(parm1, parm2);
 }
 
@@ -503,17 +503,11 @@ Will perform callbacks to make the loading info screen update.
 */
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
 	const char *s;
-	float resbias, resbiasy;
-	float rex, rey;
-	int newresx, newresy;
-
+	
 	// init cvars and commands
 	ST_RegisterCvars();
 	CG_CreateCvars();
 	CG_InitConsoleCommands();
-
-	// cache glconfig
-	trap_GetGlconfig(&glconfig);
 
 	// clear state
 	memset(&cgs, 0, sizeof(cgs));
@@ -529,38 +523,12 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
-	ST_RegisterFont("default");
-	cgs.media.defaultFont[0] = trap_R_RegisterShader("default_font");  // 256
-	cgs.media.defaultFont[1] = trap_R_RegisterShader("default_font1"); // 512
-	cgs.media.defaultFont[2] = trap_R_RegisterShader("default_font2"); // 1024
-	cgs.media.whiteShader = trap_R_RegisterShader("white");
-	cgs.media.corner = trap_R_RegisterShader("menu/corner");
+	ST_InitCGUI("default");
 
 	CG_LoadingString("sourcetech.script", 0.20);
 
 	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
 	cgs.flagStatus = -1;
-
-	// setup screen
-	cgs.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
-
-	realVidWidth = glconfig.vidWidth;
-	realVidHeight = glconfig.vidHeight;
-
-	rex = 640.0f / realVidWidth;
-	rey = 480.0f / realVidHeight;
-	newresx = 640.0f * (rex);
-	newresy = 480.0f * (rey);
-	newresx = realVidWidth * rey;
-	newresy = realVidHeight * rey;
-	resbias = 0.5 * (newresx - (newresy * (640.0 / 480.0)));
-	resbiasy = 0.5 * (newresy - (newresx * (640.0 / 480.0)));
-
-	if(glconfig.vidWidth * 480 > glconfig.vidHeight * 640) {
-		cgs.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0 / 480.0))); // wide screen
-	} else {
-		cgs.bias = 0; // no wide screen
-	}
 
 	// get the gamestate from the client system
 	trap_GetGameState(&cgs.gameState);
@@ -595,7 +563,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cg.infoScreenText[0] = 0;
 	cg.infoScreenValue = 0.0;
 
-	trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.sbscript\n");
+	trap_Cmd(EXEC_INSERT, "exec scripts/tools/create.cfg\n");
 	trap_Cmd(EXEC_INSERT, va("weapon %i\n", WP_TOOLGUN));
 }
 

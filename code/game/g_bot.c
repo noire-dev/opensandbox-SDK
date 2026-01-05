@@ -10,7 +10,7 @@ qboolean G_BotConnect(int clientNum) {
 
 	trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
 
-	Q_strncpyz(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
+	Q_StringCopy(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
 
 	if(!BotAISetupClient(clientNum, &settings)) {
 		trap_DropClient(clientNum, "BotAISetupClient failed");

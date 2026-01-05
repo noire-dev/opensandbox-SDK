@@ -3,13 +3,18 @@
 
 #include "js_local.h"
 
-const char *JS_Test(void) {
+int JS_MenuCheck(void) {
     JS_StackClean();
-	JS_Function(JSCALL_TEST);
-	return jsresult.value.s;
+    JS_Function(JS_MENUCHECK);
+    return jsresult.v.i;
+}
+
+void JS_MenuInit(void) {
+    JS_StackClean();
+    JS_Function(JS_MENUINIT);
 }
 
 void JS_MenuDraw(void) {
     JS_StackClean();
-    JS_Function(JSCALL_MENUDRAW);
+    JS_Function(JS_MENUDRAW);
 }

@@ -100,13 +100,6 @@ typedef struct {
 	char text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
 } refdef_t;
 
-/*
-** glconfig_t
-**
-** Contains variables specific to the OpenGL configuration
-** being run right now.  These are constant once the OpenGL
-** subsystem is initialized.
-*/
 typedef enum {
 	TC_NONE,
 	TC_S3TC,    // this is for the GL_S3_s3tc extension.

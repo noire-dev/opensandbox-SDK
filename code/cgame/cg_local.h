@@ -460,10 +460,6 @@ typedef struct {
 // Other media that can be tied to clients, weapons, or items are
 // stored in the clientInfo_t, itemInfo_t, weaponInfo_t, and powerupInfo_t
 typedef struct {
-	qhandle_t defaultFont[3];
-	qhandle_t whiteShader;
-	qhandle_t corner;
-
 	qhandle_t redCubeModel;
 	qhandle_t blueCubeModel;
 	qhandle_t redCubeIcon;
@@ -700,9 +696,6 @@ typedef struct {
 // all clients to begin playing instantly
 typedef struct {
 	gameState_t gameState; // gamestate from server
-	float scale;
-	float bias;
-	float wideoffset;
 
 	int serverCommandSequence; // reliable command stream counter
 	int processedSnapshotNum;  // the number of snapshots cgame has requested
@@ -767,8 +760,6 @@ void CG_AddNotify(const char *text, int type, int number);
 void CG_DrawActive(void);
 
 // cg_drawtools.c
-void CG_AdjustFrom640(float *x, float *y, float *w, float *h);
-void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
 void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor);
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader);
 void CG_Draw3DString(float x, float y, float z, const char *str, int style, vec4_t color, float fontSize, float min, float max, qboolean useTrace);

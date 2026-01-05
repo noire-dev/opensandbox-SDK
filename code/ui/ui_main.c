@@ -23,6 +23,8 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 	case UI_SET_ACTIVE_MENU: UI_SetActiveMenu(arg0); return 0;
 	case UI_CONSOLE_COMMAND: return UI_ConsoleCommand(arg0);
 	case UI_DRAW_CONNECT_SCREEN: UI_DrawConnectScreen(arg0); return 0;
+	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
+	case VMCALL: VMCall(arg0); return 0;
 	}
 	return -1;
 }
@@ -32,6 +34,8 @@ const char *gametype_items[GT_MAX_GAME_TYPE + 1] = {"Sandbox", "Free For All", "
 console_t console;
 int consoleLines = 0;
 
+uimenu_t ui;
+
 int mod_gravity = 800;
 
-void UI_CreateCvars(void) { trap_Cmd(EXEC_APPEND, "exec uiautoexec.sbscript\n"); }
+void UI_CreateCvars(void) { trap_Cmd(EXEC_APPEND, "exec uiautoexec.cfg\n"); }

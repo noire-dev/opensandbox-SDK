@@ -38,6 +38,8 @@ intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	case GAME_RUN_FRAME: G_RunFrame(arg0); return 0;
 	case GAME_CONSOLE_COMMAND: return ConsoleCommand();
 	case BOTAI_START_FRAME: return AI_Frame(arg0);
+	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
+	case VMCALL: VMCall(arg0); return 0;
 	}
 
 	return -1;

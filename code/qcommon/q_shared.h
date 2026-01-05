@@ -412,7 +412,7 @@ char *Q_strupr(char *s1);
 const char *Q_stristr(const char *s, const char *find);
 
 // buffer size safe library replacements
-void Q_strncpyz(char *dest, const char *src, int destsize);
+void Q_StringCopy(char *dest, const char *src, int destsize);
 void Q_strcat(char *dest, int size, const char *src);
 char *Q_CleanStr(char *string);
 
@@ -795,17 +795,6 @@ typedef struct qtime_s {
 #define AS_GLOBAL 1
 #define AS_FAVORITES 2
 
-// cinematic states
-typedef enum {
-	FMV_IDLE,
-	FMV_PLAY, // play
-	FMV_EOF,  // all other conditions, i.e. stop/EOF/abort
-	FMV_ID_BLT,
-	FMV_ID_IDLE,
-	FMV_LOOPED,
-	FMV_ID_WAIT
-} e_status;
-
 typedef enum _flag_status {
 	FLAG_ATBASE = 0,
 	FLAG_TAKEN,      // CTF
@@ -824,7 +813,7 @@ float VectorDistance(const vec3_t v1, const vec3_t v2);
 
 /*
 =====================
-OpenSandbox UI colors
+UI colors
 =====================
 */
 extern vec4_t color_black;
@@ -839,11 +828,23 @@ extern vec4_t customcolor_crosshair;
 
 /*
 ======================
-SourceTech font and UI system
+Font and UI system
 ======================
 */
 #ifndef GAME
 
+#define CGUI_COLORCOUNT 128
+typedef struct {
+    qhandle_t defaultFont[5];
+	qhandle_t whiteShader;
+	qhandle_t corner;
+	float scale;
+	float bias;
+	float wideoffset;
+	float colors[CGUI_COLORCOUNT][4];
+} cgui_t;
+
+extern cgui_t cgui;
 typedef struct {
 	int startTime;
 	int duration;
@@ -854,26 +855,25 @@ extern stAnim_t weaponSelectOut;
 
 extern int anim_weaponSelect;
 
-extern qhandle_t defaultFont[5];
-
 #define BASEFONT_WIDTH 9
 #define BASEFONT_HEIGHT 11
 #define FONT_WIDTH 0.64
 #define BASEFONT_INDENT (BASEFONT_WIDTH * FONT_WIDTH)
 
+void ST_AdjustFrom640(float *x, float *y, float *w, float *h);
+void ST_DrawRoundedRect(float x, float y, float width, float height, float radius, float *color);
 int ST_ColorEscapes(const char *str);
-void ST_RegisterFont(const char *font);
-void ST_UpdateColors(void);
+void ST_InitCGUI(const char *font);
+void ST_UpdateCGUI(void);
 int ST_StringCount(const char *str);
-void ST_DrawChar(float x, float y, int ch, int style, vec4_t color, float size);
+void ST_DrawChar(float x, float y, int ch, int style, float *color, float size);
 float ST_StringWidth(const char *str, float size);
-void ST_DrawString(float x, float y, const char *str, int style, vec4_t color, float fontSize);
+void ST_DrawString(float x, float y, const char *str, int style, float *color, float fontSize);
 
 void ST_AnimStart(stAnim_t *anim, int timeNow, int duration);
 float ST_AnimValue(stAnim_t *anim, int timeNow);
-#endif
 
-// JavaScript API
+#endif
 
 // sharedsyscalls
 void trap_Print(const char *string);

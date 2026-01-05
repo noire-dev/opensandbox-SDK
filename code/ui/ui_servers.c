@@ -208,17 +208,17 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 		(*g_arenaservers.numservers)++;
 	}
 
-	Q_strncpyz(servernodeptr->adrstr, adrstr, MAX_ADDRESSLENGTH);
+	Q_StringCopy(servernodeptr->adrstr, adrstr, MAX_ADDRESSLENGTH);
 
-	Q_strncpyz(servernodeptr->hostname, Info_ValueForKey(info, "hostname"), 22);
+	Q_StringCopy(servernodeptr->hostname, Info_ValueForKey(info, "hostname"), 22);
 	Q_CleanStr(servernodeptr->hostname);
 	Q_strupr(servernodeptr->hostname);
 
-	Q_strncpyz(servernodeptr->mapname, Info_ValueForKey(info, "mapname"), 22);
+	Q_StringCopy(servernodeptr->mapname, Info_ValueForKey(info, "mapname"), 22);
 	Q_CleanStr(servernodeptr->mapname);
 	Q_strupr(servernodeptr->mapname);
 
-	Q_strncpyz(servernodeptr->addonname, Info_ValueForKey(info, "addonname"), 22);
+	Q_StringCopy(servernodeptr->addonname, Info_ValueForKey(info, "addonname"), 22);
 	Q_CleanStr(servernodeptr->addonname);
 	Q_strupr(servernodeptr->addonname);
 
@@ -232,7 +232,7 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 
 	i = atoi(Info_ValueForKey(info, "gametype"));
 	servernodeptr->gametype = i;
-	Q_strncpyz(servernodeptr->gamename, gametype_items[i], sizeof(servernodeptr->gamename));
+	Q_StringCopy(servernodeptr->gamename, gametype_items[i], sizeof(servernodeptr->gamename));
 }
 
 static void ArenaServers_StopRefresh(void) {
@@ -476,7 +476,7 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.domain.field.widthInChars = 38;
 	g_arenaservers.domain.field.maxchars = 80;
 
-	g_arenaservers.connect.generic.type = MTYPE_PTEXT;
+	g_arenaservers.connect.generic.type = MTYPE_BUTTON;
 	g_arenaservers.connect.string = "Connect";
 	g_arenaservers.connect.generic.flags = QMF_PULSEIFFOCUS;
 	g_arenaservers.connect.generic.callback = ArenaServers_Event;
@@ -508,7 +508,7 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.mappic.height = 75;
 	g_arenaservers.mappic.errorpic = ART_UNKNOWNMAP;
 
-	g_arenaservers.refresh.generic.type = MTYPE_PTEXT;
+	g_arenaservers.refresh.generic.type = MTYPE_BUTTON;
 	g_arenaservers.refresh.string = "Refresh";
 	g_arenaservers.refresh.generic.flags = QMF_PULSEIFFOCUS | QMF_CENTER_JUSTIFY;
 	g_arenaservers.refresh.generic.callback = ArenaServers_Event;

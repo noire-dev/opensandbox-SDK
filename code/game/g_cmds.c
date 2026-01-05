@@ -428,7 +428,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 		break;
 	}
 
-	Q_strncpyz(text, chatText, sizeof(text));
+	Q_StringCopy(text, chatText, sizeof(text));
 
 	if(target) {
 		G_SayTo(ent, target, mode, color, name, text);

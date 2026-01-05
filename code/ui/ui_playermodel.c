@@ -365,7 +365,7 @@ static qboolean PlayerModel_SetModelIconSelection(qboolean samepage) {
 
 	pdest = strchr(buffptr, '/');
 	if(pdest) {
-		Q_strncpyz(modelname, buffptr, pdest - buffptr + 1);
+		Q_StringCopy(modelname, buffptr, pdest - buffptr + 1);
 		strcpy(skinname, pdest + 1);
 	} else {
 		strcpy(modelname, buffptr);
@@ -439,13 +439,13 @@ static void PlayerModel_SwapOtherHeads(int modelchange) {
 	}
 
 	if(modelchange) {
-		Q_strncpyz(tmp, s_playermodel.other_head, MODELNAME_BUFFER);
-		Q_strncpyz(s_playermodel.other_head, s_playermodel.prevother_head, MODELNAME_BUFFER);
-		Q_strncpyz(s_playermodel.prevother_head, tmp, MODELNAME_BUFFER);
+		Q_StringCopy(tmp, s_playermodel.other_head, MODELNAME_BUFFER);
+		Q_StringCopy(s_playermodel.other_head, s_playermodel.prevother_head, MODELNAME_BUFFER);
+		Q_StringCopy(s_playermodel.prevother_head, tmp, MODELNAME_BUFFER);
 	} else {
-		Q_strncpyz(tmp, thishead, MODELNAME_BUFFER);
-		Q_strncpyz(thishead, s_playermodel.other_head, MODELNAME_BUFFER);
-		Q_strncpyz(s_playermodel.other_head, tmp, MODELNAME_BUFFER);
+		Q_StringCopy(tmp, thishead, MODELNAME_BUFFER);
+		Q_StringCopy(thishead, s_playermodel.other_head, MODELNAME_BUFFER);
+		Q_StringCopy(s_playermodel.other_head, tmp, MODELNAME_BUFFER);
 	}
 }
 
@@ -610,24 +610,24 @@ static qboolean PlayerModel_SetModelFromSelection(char *model) {
 
 		// track the whole model/skin name
 		if(s_playermodel.forceHeadMatch.curvalue || s_playermodel.modelChange.curvalue == MODELCHANGE_LEGS) {
-			Q_strncpyz(legsmodel, buffptr, pdest - buffptr + 1);
+			Q_StringCopy(legsmodel, buffptr, pdest - buffptr + 1);
 			strcat(legsmodel, pdest + 5);
 		}
 
 		if(s_playermodel.forceHeadMatch.curvalue || s_playermodel.modelChange.curvalue == MODELCHANGE_HEAD) {
-			Q_strncpyz(headmodel, buffptr, pdest - buffptr + 1);
+			Q_StringCopy(headmodel, buffptr, pdest - buffptr + 1);
 			strcat(headmodel, pdest + 5);
 		}
 
 		if(s_playermodel.forceHeadMatch.curvalue || s_playermodel.modelChange.curvalue == MODELCHANGE_BODY) {
-			Q_strncpyz(bodymodel, buffptr, pdest - buffptr + 1);
+			Q_StringCopy(bodymodel, buffptr, pdest - buffptr + 1);
 			strcat(bodymodel, pdest + 5);
 		}
 
 		// update the other_head value so toggling forceHeadMatch
 		// switches in the correct model
 		if(!s_playermodel.forceHeadMatch.curvalue && s_playermodel.modelChange.curvalue == MODELCHANGE_BODY) {
-			Q_strncpyz(s_playermodel.other_head, bodymodel, MODELNAME_BUFFER);
+			Q_StringCopy(s_playermodel.other_head, bodymodel, MODELNAME_BUFFER);
 		}
 
 		if(trap_MemoryRemaining() > LOW_MEMORY) {
@@ -760,8 +760,8 @@ static void PlayerModel_SetMenuItems(void) {
 
 	// We need to copy current head selections into history buffers
 	// Copy over the body model/skin, this is a good default
-	Q_strncpyz(s_playermodel.other_head, thismodel, MODELNAME_BUFFER);
-	Q_strncpyz(s_playermodel.prevother_head, othermodel, MODELNAME_BUFFER);
+	Q_StringCopy(s_playermodel.other_head, thismodel, MODELNAME_BUFFER);
+	Q_StringCopy(s_playermodel.prevother_head, othermodel, MODELNAME_BUFFER);
 
 	// find model in our list
 	PlayerModel_SetModelIconSelection(qfalse);

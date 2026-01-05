@@ -23,11 +23,11 @@ static void CG_Obituary(entityState_t *ent) {
 
 	targetInfo = CG_ConfigString(CS_PLAYERS + target);
 	if(!targetInfo) return;
-	Q_strncpyz(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
+	Q_StringCopy(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
 	strcat(targetName, S_COLOR_WHITE);
 
 	if(attackerInfo) {
-		Q_strncpyz(attackerName, Info_ValueForKey(attackerInfo, "n"), sizeof(attackerName) - 2);
+		Q_StringCopy(attackerName, Info_ValueForKey(attackerInfo, "n"), sizeof(attackerName) - 2);
 		strcat(attackerName, S_COLOR_WHITE);
 	}
 

@@ -4,51 +4,24 @@
 
 #include "../qcommon/js_local.h"
 
-void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
-	*x = *x * cgs.scale + cgs.bias;
-	*y *= cgs.scale;
-	*w *= cgs.scale;
-	*h *= cgs.scale;
-}
-
-void CG_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color) {
-	CG_AdjustFrom640(&x, &y, &width, &height);
-
-	if(radius * 2 > height) radius = height * 0.5;
-	if(radius * 2 > width) radius = width * 0.5;
-
-	radius *= cgs.scale;
-
-	trap_R_SetColor(color);
-	trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, cgs.media.corner);
-	trap_R_DrawStretchPic(x + width - radius, y, radius, radius, 0, 0, 1, 1, cgs.media.corner);
-	trap_R_DrawStretchPic(x, y + height - radius, radius, radius, 1, 1, 0, 0, cgs.media.corner);
-	trap_R_DrawStretchPic(x + width - radius, y + height - radius, radius, radius, 0, 1, 1, 0, cgs.media.corner);
-
-	trap_R_DrawStretchPic(x, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, cgs.media.whiteShader);
-	trap_R_DrawStretchPic(x + width - radius, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, cgs.media.whiteShader);
-	trap_R_DrawStretchPic(x + radius, y, width - (radius * 2), height, 0, 0, 0, 0, cgs.media.whiteShader);
-	trap_R_SetColor(NULL);
-}
-
 void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor) {
 	int numSegments;
 	int filledSegments;
 	float segmentX;
 	int i;
-	int xy_offset = 2 * cgs.scale;
-	int w_offset = 3 * cgs.scale;
-	int h_offset = 3.75 * cgs.scale;
+	int xy_offset = 2 * cgui.scale;
+	int w_offset = 3 * cgui.scale;
+	int h_offset = 3.75 * cgui.scale;
 
 	if(progress < 0.0f) progress = 0.0f;
 	if(progress > 1.0f) progress = 1.0f;
 
-	CG_AdjustFrom640(&x, &y, &width, &height);
+	ST_AdjustFrom640(&x, &y, &width, &height);
 
-	segmentWidth *= cgs.scale;
+	segmentWidth *= cgui.scale;
 
 	trap_R_SetColor(bgColor);
-	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, cgs.media.whiteShader);
+	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, cgui.whiteShader);
 	trap_R_SetColor(NULL);
 
 	numSegments = (int)(width / segmentWidth);
@@ -57,13 +30,13 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
 	trap_R_SetColor(barColor);
 	for(i = 0; i < filledSegments; i++) {
 		segmentX = x + i * segmentWidth;
-		trap_R_DrawStretchPic(segmentX + xy_offset, y + xy_offset, segmentWidth - w_offset, height - h_offset, 0, 0, 1, 1, cgs.media.whiteShader);
+		trap_R_DrawStretchPic(segmentX + xy_offset, y + xy_offset, segmentWidth - w_offset, height - h_offset, 0, 0, 1, 1, cgui.whiteShader);
 	}
 	trap_R_SetColor(NULL);
 }
 
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) {
-	CG_AdjustFrom640(&x, &y, &width, &height);
+	ST_AdjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 
@@ -97,7 +70,7 @@ void CG_Draw3DString(float x, float y, float z, const char *str, int style, vec4
 	tanFovX = tan(DEG2RAD(cg.refdef.fov_x * 0.5f));
 	tanFovY = tan(DEG2RAD(cg.refdef.fov_y * 0.5f));
 
-	finalx = (localX / (localZ * tanFovX)) * (320 + cgs.wideoffset) + 320;
+	finalx = (localX / (localZ * tanFovX)) * (320 + cgui.wideoffset) + 320;
 	finaly = (-localY / (localZ * tanFovY)) * 240 + 240;
 
 	dist = VectorLength(dir);

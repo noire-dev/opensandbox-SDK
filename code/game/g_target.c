@@ -99,7 +99,7 @@ void SP_target_speaker(gentity_t *ent) {
 	if(!strstr(s, ".wav")) {
 		Com_sprintf(buffer, sizeof(buffer), "%s.wav", s);
 	} else {
-		Q_strncpyz(buffer, s, sizeof(buffer));
+		Q_StringCopy(buffer, s, sizeof(buffer));
 	}
 	ent->noise_index = G_SoundIndex(buffer);
 

@@ -40,7 +40,7 @@
 #define MTYPE_RADIOBUTTON 5
 #define MTYPE_BITMAP 6
 #define MTYPE_SCROLLLIST 7
-#define MTYPE_PTEXT 8
+#define MTYPE_BUTTON 8
 #define MTYPE_TEXT 9
 
 #define MTYPE_MAX 10
@@ -85,16 +85,14 @@ typedef struct {
 	qhandle_t model;
 
 	// extended callback
-	void (*excallback)(void *self, int event);
-	int excallbacktype;
-	char *cmd;
-	char *var;
+	int general_cbtype;
+	char* cmd;
+	char* var;
 	void (*func)(void);
 
-	const char *name;
 	int id;
 	int callid;
-	int x, y;
+	int x, y, w, h;
 	int left;
 	int top;
 	int right;
@@ -108,7 +106,6 @@ typedef struct {
 	int *value;
 
 	void (*callback)(void *self, int event);
-	void (*statusbar)(void *self);
 	void (*ownerdraw)(void *self);
 } menucommon_s;
 
@@ -120,15 +117,27 @@ typedef struct {
 	int maxchars;
 } mfield_t;
 
+#define UI_STRINGLENGTH 128
+#define UI_ACTIONLENGTH 256
 typedef struct {
 	menucommon_s generic;
 	char *string;
+	
+	int type;
+	int id;
+	float x, y, w, h;
+	char text[UI_STRINGLENGTH];
 	int style;
 	float size;
+	float *color, *color2;
+	int corner;
+	int margin;
+	char action[UI_ACTIONLENGTH];
+	void (*callback)(void *self, int event);
+	
+	float autowh;
 	float *curColor;
-	float *color;
-	float *color2;
-
+	
 	char *focuspic;
 	char *errorpic;
 	qhandle_t shader;
@@ -151,8 +160,6 @@ typedef struct {
 	float range;
 
 	mfield_t field;
-
-	int corner;
 
 	qboolean drawText;
 	float padding_x;
@@ -258,15 +265,10 @@ typedef struct {
 	menuframework_s *activemenu;
 	menuframework_s *stack[MAX_MENUDEPTH];
 	qboolean debug;
-	qhandle_t whiteShader;
 	qhandle_t menuWallpapers;
 	qhandle_t cursor;
-	qhandle_t corner;
 	qhandle_t rb_on;
 	qhandle_t rb_off;
-	float scale;
-	float bias;
-	float wideoffset;
 	qboolean firstdraw;
 	qboolean onmap;
 } uiStatic_t;
@@ -274,7 +276,6 @@ typedef struct {
 // ui_atoms.c
 void QDECL Com_Error(int level, const char *error, ...);
 void QDECL Com_Printf(const char *msg, ...);
-void UI_UpdateState(void);
 void UI_PushMenu(menuframework_s *menu);
 void UI_PopMenu(void);
 void UI_ForceMenuOff(void);
@@ -285,11 +286,9 @@ void UI_MouseEvent(int dx, int dy);
 qboolean UI_ConsoleCommand(int realTime);
 void UI_Shutdown(void);
 void UI_Init(void);
-void UI_AdjustFrom640(float *x, float *y, float *w, float *h);
 void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader);
 void UI_DrawPictureElement(float x, float y, float w, float h, const char *file);
 void UI_DrawModelElement(float x, float y, float w, float h, const char *model, float scale);
-void UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color);
 
 // ui_connect.c
 void UI_DrawConnectScreen(qboolean overlay);
@@ -312,7 +311,7 @@ int UI_CountOfMaps(char *gametype);
 void UI_CreateCvars(void);
 
 // ui_menu.c
-void UI_MainMenu(void);
+void UI_Menu(void);
 
 // ui_newgame.c
 void UI_NewGame(void);
@@ -343,9 +342,9 @@ void UI_FillListFromArray(menuelement_s *e, char **configlist, char **items, int
 void UI_FillListOfItems(menuelement_s *e, char *names, int namesSize, char **configlist);
 void UI_FillListPlayers(menuelement_s *e, char **configlist, char *names, int namesSize);
 int UI_ListPlayerCount(void);
-void UI_SetHitbox(menuelement_s *e, float x, float y, float w, float h);
+void UI_SetHitbox(int id, float x, float y, float w, float h);
 void UI_CreateUI(menuframework_s *menu, menuelement_s *e);
-void UI_CButton(menuelement_s *e, float x, float y, char *text, int style, float size, float *color, char *cmd, char *var, void (*func)(void), void (*callback)(void *self, int event), int callid);
+void UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int color, int color2, int corner, int margin, char *action, void (*callback)(void *self, int event));
 void UI_CSlider(menuelement_s *e, float x, float y, char *text, char *var, float min, float max, float mod, void (*callback)(void *self, int event), int callid);
 void UI_CRadioButton(menuelement_s *e, float x, float y, char *text, char *var, int mod, void (*callback)(void *self, int event), int callid);
 void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char **list, char *var, void (*callback)(void *self, int event), int callid);
@@ -381,8 +380,6 @@ extern int consoleLines;
 typedef struct {
 	menuframework_s menu;
 	menuelement_s e[OSUI_MAX_ELEMENTS];
-
-	char *error;
 } uimenu_t;
 
 extern uimenu_t ui;

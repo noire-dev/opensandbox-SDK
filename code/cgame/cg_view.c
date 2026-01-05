@@ -360,26 +360,11 @@ static void CG_PlayBufferedSounds(void) {
 	}
 }
 
-static void CG_UpdateState(void) {
-	float scrx;
-	float scry;
-
-	scrx = glconfig.vidWidth;
-	scry = glconfig.vidHeight;
-
-	if((scrx / (scry / 480) - 640) / 2 >= 0) {
-		cgs.wideoffset = (scrx / (scry / 480) - 640) / 2;
-	} else {
-		cgs.wideoffset = 0;
-	}
-}
-
 void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	ST_UpdateColors();
-	CG_UpdateState();
+	ST_UpdateCGUI();
 
 	if(cg.infoScreenText[0] != 0) {
 		CG_DrawInformation();

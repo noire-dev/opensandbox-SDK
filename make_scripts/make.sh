@@ -25,7 +25,7 @@ cc="./lcc -DGAME -DQVM -S -I../../../code/game -I../../../code/qcommon $1"
 cd linux/build/game
 
 # ########################################
-# Files to compile to           qagame.qvm
+# Files to compile to           game.qvm
 # ########################################
 
 $cc ../../../code/game/ai_main.c
@@ -217,6 +217,6 @@ cd ../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/game.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/

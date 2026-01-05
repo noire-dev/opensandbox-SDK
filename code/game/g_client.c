@@ -333,18 +333,18 @@ void ClientUserinfoChanged(int clientNum) {
 
 	// set model
 	if(cvarInt("g_gametype") >= GT_TEAM) {
-		Q_strncpyz(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
-		Q_strncpyz(headModel, Info_ValueForKey(userinfo, "team_headmodel"), sizeof(headModel));
-		Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "team_legsmodel"), sizeof(legsModel));
+		Q_StringCopy(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
+		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "team_headmodel"), sizeof(headModel));
+		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "team_legsmodel"), sizeof(legsModel));
 	} else {
-		Q_strncpyz(model, Info_ValueForKey(userinfo, "model"), sizeof(model));
-		Q_strncpyz(headModel, Info_ValueForKey(userinfo, "headmodel"), sizeof(headModel));
-		Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "legsmodel"), sizeof(legsModel));
+		Q_StringCopy(model, Info_ValueForKey(userinfo, "model"), sizeof(model));
+		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "headmodel"), sizeof(headModel));
+		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "legsmodel"), sizeof(legsModel));
 	}
 
 	if(ent->r.svFlags & SVF_BOT) {
-		Q_strncpyz(headModel, Info_ValueForKey(userinfo, "model"), sizeof(headModel));
-		Q_strncpyz(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
+		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "model"), sizeof(headModel));
+		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
 	}
 
 	npcType = atoi(Info_ValueForKey(userinfo, "npcType"));

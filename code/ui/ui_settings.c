@@ -188,7 +188,7 @@ void UI_Settings(void) {
 	UI_CField(&settings.e[76], x, y, "Zoom FoV:", 4, 4, color_white, "cg_zoomfov", NULL, 0);
 	y += 12;
 
-	UI_CButton(&settings.e[100], 320, 450, "Apply", UI_CENTER, 1.50, color_white, "vid_restart;", NULL, NULL, NULL, 0);
+	UI_CButton(100, 320, 450, "Apply", UI_CENTER, 1.50, color_white, "vid_restart;", NULL, NULL, NULL, 0);
 
 	UI_CreateUI(&settings.menu, settings.e);
 	UI_PushMenu(&settings.menu);

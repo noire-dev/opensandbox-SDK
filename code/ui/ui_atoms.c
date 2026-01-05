@@ -27,19 +27,8 @@ void QDECL Com_Printf(const char *msg, ...) {
 	trap_Print(va("%s", text));
 }
 
-void UI_UpdateState(void) {
-	float scrx;
-	float scry;
+void UI_OnMapStatus(void) {
 	char svinfo[MAX_INFO_STRING];
-
-	scrx = glconfig.vidWidth;
-	scry = glconfig.vidHeight;
-
-	if((scrx / (scry / 480) - 640) / 2 >= 0) {
-		uis.wideoffset = (scrx / (scry / 480) - 640) / 2;
-	} else {
-		uis.wideoffset = 0;
-	}
 
 	trap_GetConfigString(CS_SERVERINFO, svinfo, MAX_INFO_STRING);
 	if(strlen(svinfo) <= 0) {
@@ -124,13 +113,14 @@ qboolean UI_IsFullscreen(void) {
 }
 
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
+    ST_UpdateCGUI();
+    UI_OnMapStatus();
 	Menu_Cache();
-	UI_UpdateState();
 
 	switch(menu) {
 	case UIMENU_NONE: UI_ForceMenuOff(); return;
-	case UIMENU_MAIN: UI_MainMenu(); return;
-	case UIMENU_INGAME: UI_MainMenu(); return;
+	case UIMENU_MAIN: UI_Menu(); return;
+	case UIMENU_INGAME: UI_Menu(); return;
 	default: Com_Printf("UI_SetActiveMenu: bad enum %d\n", menu); break;
 	}
 }
@@ -162,10 +152,10 @@ void UI_MouseEvent(int dx, int dy) {
 
 	// update mouse screen position
 	uis.cursorx += dx;
-	if(uis.cursorx < 0 - uis.wideoffset)
-		uis.cursorx = 0 - uis.wideoffset;
-	else if(uis.cursorx > 640 + uis.wideoffset)
-		uis.cursorx = 640 + uis.wideoffset;
+	if(uis.cursorx < 0 - cgui.wideoffset)
+		uis.cursorx = 0 - cgui.wideoffset;
+	else if(uis.cursorx > 640 + cgui.wideoffset)
+		uis.cursorx = 640 + cgui.wideoffset;
 
 	uis.cursory += dy;
 	if(uis.cursory < 0)
@@ -212,7 +202,7 @@ qboolean UI_ConsoleCommand(int realTime) {
 	Menu_Cache();
 
 	if(Q_stricmp(UI_Argv(0), "ui_spawnmenu") == 0) {
-		UI_SpawnMenu();
+		//UI_SpawnMenu();
 		return qtrue;
 	}
 
@@ -234,44 +224,14 @@ void UI_Init(void) {
 	UI_InitMemory();
 	UI_LoadArenas();
 	UI_LoadBots();
-
-	// cache glconfig
-	trap_GetGlconfig(&glconfig);
-
-	uis.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
-
-	if(glconfig.vidWidth * 480 > glconfig.vidHeight * 640) {
-		// wide screen
-		uis.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0 / 480.0)));
-	} else if(glconfig.vidWidth * 480 < glconfig.vidHeight * 640) {
-		// 5:4 screen
-		uis.bias = 0;
-	} else {
-		// no wide screen
-		uis.bias = 0;
-	}
+	
+	ST_InitCGUI("default");
 
 	// initialize the menu system
 	Menu_Cache();
 
-	ST_RegisterFont("default");
-
 	uis.activemenu = NULL;
 	uis.menusp = 0;
-}
-
-/*
-================
-UI_AdjustFrom640
-
-Adjusted for resolution and screen aspect ratio
-================
-*/
-void UI_AdjustFrom640(float *x, float *y, float *w, float *h) {
-	*x = *x * uis.scale + uis.bias;
-	*y *= uis.scale;
-	*w *= uis.scale;
-	*h *= uis.scale;
 }
 
 void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
@@ -298,7 +258,7 @@ void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
 		t1 = 1;
 	}
 
-	UI_AdjustFrom640(&x, &y, &w, &h);
+	ST_AdjustFrom640(&x, &y, &w, &h);
 	trap_R_DrawStretchPic(x, y, w, h, s0, t0, s1, t1, hShader);
 }
 
@@ -332,7 +292,7 @@ void UI_DrawPictureElement(float x, float y, float w, float h, const char *file)
 		t1 = 1;
 	}
 
-	UI_AdjustFrom640(&x, &y, &w, &h);
+	ST_AdjustFrom640(&x, &y, &w, &h);
 	trap_R_DrawStretchPic(x, y, w, h, s0, t0, s1, t1, hShader);
 }
 
@@ -346,7 +306,7 @@ void UI_DrawModelElement(float x, float y, float w, float h, const char *model, 
 	refdef.rdflags = RDF_NOWORLDMODEL;
 	AxisClear(refdef.viewaxis);
 
-	UI_AdjustFrom640(&x, &y, &w, &h);
+	ST_AdjustFrom640(&x, &y, &w, &h);
 	refdef.x = x;
 	refdef.y = y;
 	refdef.width = w;
@@ -385,30 +345,6 @@ void UI_DrawModelElement(float x, float y, float w, float h, const char *model, 
 	trap_R_RenderScene(&refdef);
 }
 
-void UI_DrawRoundedRect(float x, float y, float width, float height, float radius, const float *color) {
-	UI_AdjustFrom640(&x, &y, &width, &height);
-
-	if(radius * 2 > height) {
-		radius = height * 0.5;
-	}
-	if(radius * 2 > width) {
-		radius = width * 0.5;
-	}
-
-	radius *= uis.scale;
-
-	trap_R_SetColor(color);
-	trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, uis.corner);                                    // Левый верхний угол
-	trap_R_DrawStretchPic(x + width - radius, y, radius, radius, 0, 0, 1, 1, uis.corner);                   // Правый верхний угол
-	trap_R_DrawStretchPic(x, y + height - radius, radius, radius, 1, 1, 0, 0, uis.corner);                  // Левый нижний угол
-	trap_R_DrawStretchPic(x + width - radius, y + height - radius, radius, radius, 0, 1, 1, 0, uis.corner); // Правый нижний угол
-
-	trap_R_DrawStretchPic(x, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader);                  // Левая сторона
-	trap_R_DrawStretchPic(x + width - radius, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, uis.whiteShader); // Правая сторона
-	trap_R_DrawStretchPic(x + radius, y, width - (radius * 2), height, 0, 0, 0, 0, uis.whiteShader);                   // Верхняя сторона
-	trap_R_SetColor(NULL);
-}
-
 void UI_UpdateScreen(void) { trap_UpdateScreen(); }
 
 void UI_Refresh(int realtime) {
@@ -420,8 +356,8 @@ void UI_Refresh(int realtime) {
 		return;
 	}
 
-	ST_UpdateColors();
-	UI_UpdateState();
+	ST_UpdateCGUI();
+	UI_OnMapStatus();
 	consoleSync(&console, console.linescount);
 
 	if(uis.activemenu) {
@@ -448,7 +384,7 @@ void UI_Refresh(int realtime) {
 	UI_DrawHandlePic(uis.cursorx - 16, uis.cursory - 16, 32, 32, uis.cursor);
 
 	if(uis.debug) {
-		x = 0 - uis.wideoffset;
+		x = 0 - cgui.wideoffset;
 		ST_DrawString(x, 0, va("cursor xy: (%d,%d)", uis.cursorx, uis.cursory), UI_LEFT, color_white, 1.00);
 		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT, color_white, 1.00);
 		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT, color_white, 1.00);

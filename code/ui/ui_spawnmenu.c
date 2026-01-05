@@ -139,7 +139,7 @@ static void SpawnMenu_Event(void *ptr, int event) {
 					trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
 					trap_Cmd(EXEC_INSERT, va("%s\n", cvarString("spawn_cmd")));
 				} else {
-					Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
+					Q_StringCopy(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 					UI_SpawnMenu();
 				}
 			} else {
@@ -160,7 +160,7 @@ static void SpawnMenu_Event(void *ptr, int event) {
 		}
 		if(spawnmenu_tab == TB_SPAWNLISTS) {
 			if(!strlen(spawnmenu_folder)) {
-				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
+				Q_StringCopy(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			} else {
 				trap_Cmd(EXEC_NOW, va("spawn_cmd = exec spawnlists/%s/%s.sbscript\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
@@ -217,12 +217,12 @@ static void SpawnMenu_Event(void *ptr, int event) {
 		spawnmenu_sv_value[spawnmenu_tab] = spawnmenu.e[0].curvalue;
 		spawnmenu_tab = ((menucommon_s *)ptr)->callid - ID_TAB_SELECT;
 		if(spawnmenu_tab == TB_PROPS) {
-			Q_strncpyz(spawnmenu_folder, "", sizeof(spawnmenu_folder));
+			Q_StringCopy(spawnmenu_folder, "", sizeof(spawnmenu_folder));
 			spawnmenu_sv_top[spawnmenu_tab] = 0;
 			spawnmenu_sv_value[spawnmenu_tab] = 0;
 		}
 		if(spawnmenu_tab == TB_SPAWNLISTS) {
-			Q_strncpyz(spawnmenu_folder, "", sizeof(spawnmenu_folder));
+			Q_StringCopy(spawnmenu_folder, "", sizeof(spawnmenu_folder));
 			spawnmenu_sv_top[spawnmenu_tab] = 0;
 			spawnmenu_sv_value[spawnmenu_tab] = 0;
 		}
@@ -237,7 +237,7 @@ static void SpawnMenu_Save(void) {
 			if(UI_CountFiles(va("mtr/%s", spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]), "$image") <= 1) {
 				trap_Cmd(EXEC_NOW, va(cvarString("spawn_preset"), spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], "none", "0"));
 			} else {
-				Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
+				Q_StringCopy(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 				UI_SpawnMenu();
 			}
 		} else {
@@ -252,7 +252,7 @@ static void SpawnMenu_Save(void) {
 	}
 	if(spawnmenu_tab == TB_SPAWNLISTS) {
 		if(!strlen(spawnmenu_folder)) {
-			Q_strncpyz(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
+			Q_StringCopy(spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue], sizeof(spawnmenu_folder));
 			UI_SpawnMenu();
 		} else {
 			trap_Cmd(EXEC_NOW, va("spawn_cmd = exec spawnlists/%s/%s.sbscript\n", spawnmenu_folder, spawnmenu.e[0].itemnames[spawnmenu.e[0].curvalue]));
@@ -274,27 +274,27 @@ static void SpawnMenu_Draw(void) {
 	vec4_t color3 = {0.60, 0.75, 1.00, 0.40};
 	vec4_t color4 = {0.50, 0.60, 0.80, 1.00};
 
-	UI_DrawRoundedRect(10 - uis.wideoffset, 10, 440 + uis.wideoffset * 2, 480 - 38, 4, color_dim);
-	UI_DrawRoundedRect(640 + uis.wideoffset - 180, 10, 170, 480 - 38, 4, color_dim);
+	ST_DrawRoundedRect(10 - cgui.wideoffset, 10, 440 + cgui.wideoffset * 2, 480 - 38, 4, color_dim);
+	ST_DrawRoundedRect(640 + cgui.wideoffset - 180, 10, 170, 480 - 38, 4, color_dim);
 
-	UI_DrawRoundedRect(640 + uis.wideoffset - 175, 15, 160, 16, 3, color3);
-	ST_DrawString(640 + uis.wideoffset - 95, 18, cvarString("toolgun_tooltext"), UI_CENTER, color_white, 1.00);
+	ST_DrawRoundedRect(640 + cgui.wideoffset - 175, 15, 160, 16, 3, color3);
+	ST_DrawString(640 + cgui.wideoffset - 95, 18, cvarString("toolgun_tooltext"), UI_CENTER, color_white, 1.00);
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
 		if(i == spawnmenu_tab) {
-			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color3);
+			ST_DrawRoundedRect(15 - cgui.wideoffset, y, 125, 16, 3, color3);
 		} else {
-			UI_DrawRoundedRect(15 - uis.wideoffset, y, 125, 16, 3, color2);
+			ST_DrawRoundedRect(15 - cgui.wideoffset, y, 125, 16, 3, color2);
 		}
 		y += 20;
 	}
 
-	ST_DrawString(148 - uis.wideoffset, 20, spawnmenu_tabnames[spawnmenu_tab], UI_LEFT, color_white, 1.50);
-	ST_DrawString(152 + (BASEFONT_INDENT * ST_StringCount(spawnmenu_tabnames[spawnmenu_tab]) * 1.50) - uis.wideoffset, 26, va("%i items", spawnmenu.e[0].numitems), UI_LEFT, color_grey, 0.80);
+	ST_DrawString(148 - cgui.wideoffset, 20, spawnmenu_tabnames[spawnmenu_tab], UI_LEFT, color_white, 1.50);
+	ST_DrawString(152 + (BASEFONT_INDENT * ST_StringCount(spawnmenu_tabnames[spawnmenu_tab]) * 1.50) - cgui.wideoffset, 26, va("%i items", spawnmenu.e[0].numitems), UI_LEFT, color_grey, 0.80);
 
-	UI_DrawRoundedRect(640 + uis.wideoffset - 145, 375, 100, 24, 3, color4);
-	UI_DrawRoundedRect(640 + uis.wideoffset - 145, 415, 100, 24, 3, color4);
+	ST_DrawRoundedRect(640 + cgui.wideoffset - 145, 375, 100, 24, 3, color4);
+	ST_DrawRoundedRect(640 + cgui.wideoffset - 145, 415, 100, 24, 3, color4);
 
 	Menu_Draw(&spawnmenu.menu);
 }
@@ -308,9 +308,9 @@ void UI_SpawnMenu(void) {
 	spawnmenu.menu.key = SpawnMenu_Key;
 
 	if(spawnmenu_tab == TB_SCRIPTS || spawnmenu_tab == TB_TOOLS || spawnmenu_tab == TB_MUSIC) {
-		UI_CList(&spawnmenu.e[0], 150 - uis.wideoffset, 42, (((10 - uis.wideoffset + 440 + uis.wideoffset * 2) - 150 + uis.wideoffset) / BASEFONT_INDENT) - 2, 36, 1, 0, 0, LST_SIMPLE, qfalse, 0, color_white, SpawnMenu_Event, 0);
+		UI_CList(&spawnmenu.e[0], 150 - cgui.wideoffset, 42, (((10 - cgui.wideoffset + 440 + cgui.wideoffset * 2) - 150 + cgui.wideoffset) / BASEFONT_INDENT) - 2, 36, 1, 0, 0, LST_SIMPLE, qfalse, 0, color_white, SpawnMenu_Event, 0);
 	} else {
-		UI_CList(&spawnmenu.e[0], 150 - uis.wideoffset, 42, SPAWNGRID_SIZE, 5, ((10 - uis.wideoffset + 440 + uis.wideoffset * 2) - 150 + uis.wideoffset) / SPAWNGRID_SIZE, 6, 8, LST_GRID, qtrue, 4, color_white, SpawnMenu_Event, 0);
+		UI_CList(&spawnmenu.e[0], 150 - cgui.wideoffset, 42, SPAWNGRID_SIZE, 5, ((10 - cgui.wideoffset + 440 + cgui.wideoffset * 2) - 150 + cgui.wideoffset) / SPAWNGRID_SIZE, 6, 8, LST_GRID, qtrue, 4, color_white, SpawnMenu_Event, 0);
 	}
 	if(spawnmenu_tab == TB_PROPS) {
 		if(!strlen(spawnmenu_folder)) {
@@ -325,7 +325,7 @@ void UI_SpawnMenu(void) {
 	if(spawnmenu_tab == TB_ITEMS) UI_FillListOfItems(&spawnmenu.e[0], spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 	if(spawnmenu_tab == TB_SPAWNLISTS) {
 		if(!strlen(spawnmenu_folder)) {
-			UI_FillList(&spawnmenu.e[0], "spawnlists", "spawnlists/icons", ".cfg", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
+			UI_FillList(&spawnmenu.e[0], "spawnlists", "spawnlists/icons", ".list", spawnmenu.names1, sizeof(spawnmenu.names1), spawnmenu.list1);
 		} else {
 			Com_sprintf(spawnmenu_path_folder, sizeof(spawnmenu_path_folder), "spawnlists/%s", spawnmenu_folder);
 			Com_sprintf(spawnmenu_path_icons, sizeof(spawnmenu_path_icons), "spawnlists/%s/icons", spawnmenu_folder);
@@ -341,60 +341,60 @@ void UI_SpawnMenu(void) {
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
-		UI_CButton(&spawnmenu.e[ID_TAB_SELECT + i], 18 - uis.wideoffset, y + 4, spawnmenu_tabnames[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, SpawnMenu_Event, ID_TAB_SELECT + i);
+		UI_CButton(ID_TAB_SELECT + i, 18 - cgui.wideoffset, y + 4, spawnmenu_tabnames[i], UI_LEFT, 0.78, color_white, NULL, NULL, NULL, SpawnMenu_Event, ID_TAB_SELECT + i);
 		y += 20;
 	}
 
 	if(spawnmenu_tab == TB_SAVES) {
-		UI_CButton(&spawnmenu.e[1], (640 + uis.wideoffset - 155) + 60, 380, "Save", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 3);
-		UI_CButton(&spawnmenu.e[2], (640 + uis.wideoffset - 155) + 60, 420, "Load", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 0);
+		UI_CButton(1, (640 + cgui.wideoffset - 155) + 60, 380, "Save", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 3);
+		UI_CButton(2, (640 + cgui.wideoffset - 155) + 60, 420, "Load", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 0);
 	} else {
-		UI_CButton(&spawnmenu.e[1], (640 + uis.wideoffset - 155) + 60, 380, "Spawn", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 1);
-		UI_CButton(&spawnmenu.e[2], (640 + uis.wideoffset - 155) + 60, 420, "Create", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 2);
+		UI_CButton(1, (640 + cgui.wideoffset - 155) + 60, 380, "Spawn", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 1);
+		UI_CButton(2, (640 + cgui.wideoffset - 155) + 60, 420, "Create", UI_CENTER, 1.45, color_white, NULL, NULL, NULL, SpawnMenu_Event, 2);
 	}
 
 	y = 38;
 	if(spawnmenu_tab == TB_NPCS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, NULL, 0);
+		UI_CSpinControl(&spawnmenu.e[30], 640 + cgui.wideoffset - 100, y, "Class:", spawnmenu_npsclasses, NULL, NULL, 0);
 		y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, NULL, 0);
+		UI_CSpinControl(&spawnmenu.e[31], 640 + cgui.wideoffset - 100, y, "Weapon:", spawnmenu_npsweapons, NULL, NULL, 0);
 		y += 12;
 		y += 12;
 		cvarSet("uis_b1", "5");
 		cvarSet("uis_b2", "100");
 		cvarSet("uis_b3", "0");
 		cvarSet("uis_b4", "0");
-		UI_CField(&spawnmenu.e[32], 640 + uis.wideoffset - 100, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0);
+		UI_CField(&spawnmenu.e[32], 640 + cgui.wideoffset - 100, y, "Skill:", 5, 5, color_white, "uis_b1", NULL, 0);
 		y += 12;
-		UI_CField(&spawnmenu.e[33], 640 + uis.wideoffset - 100, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0);
+		UI_CField(&spawnmenu.e[33], 640 + cgui.wideoffset - 100, y, "Health:", 9, 9, color_white, "uis_b2", NULL, 0);
 		y += 12;
-		UI_CField(&spawnmenu.e[34], 640 + uis.wideoffset - 100, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0);
+		UI_CField(&spawnmenu.e[34], 640 + cgui.wideoffset - 100, y, "Name:", 16, 16, color_white, "uis_b3", NULL, 0);
 		y += 12;
-		UI_CField(&spawnmenu.e[35], 640 + uis.wideoffset - 100, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0);
+		UI_CField(&spawnmenu.e[35], 640 + cgui.wideoffset - 100, y, "Music:", 16, 16, color_white, "uis_b4", NULL, 0);
 		y += 12;
 		y += 20;
 	}
 	if(spawnmenu_tab == TB_SAVES) {
-		UI_CField(&spawnmenu.e[30], (640 + uis.wideoffset - 150) + 14, 350, "Name:", 16, 16, color_white, "uis_sv1", NULL, 0);
+		UI_CField(&spawnmenu.e[30], (640 + cgui.wideoffset - 150) + 14, 350, "Name:", 16, 16, color_white, "uis_sv1", NULL, 0);
 		y += 12;
 	}
 	if(spawnmenu_tab == TB_ADDBOTS) {
-		UI_CSpinControl(&spawnmenu.e[30], 640 + uis.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, NULL, 0);
+		UI_CSpinControl(&spawnmenu.e[30], 640 + cgui.wideoffset - 100, y, "Skill:", spawnmenu_skill, NULL, NULL, 0);
 		y += 12;
-		UI_CSpinControl(&spawnmenu.e[31], 640 + uis.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, NULL, 0);
+		UI_CSpinControl(&spawnmenu.e[31], 640 + cgui.wideoffset - 100, y, "Team:", spawnmenu_team, NULL, NULL, 0);
 		y += 12;
 		y += 20;
 	}
 
 	for(i = 0; i < SPAWNDATA_MAX; i++) {
 		if(cvarInt(va("api.spawndata.type[%i]", i)) == 1) {
-			UI_CField(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0);
+			UI_CField(&spawnmenu.e[40 + i], 640 + cgui.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), 16, 16, color_white, va("api.spawndata.value[%i]", i), NULL, 0);
 			y += 12;
 		} else if(cvarInt(va("api.spawndata.type[%i]", i)) == 2) {
-			UI_CSpinControl(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), va("api.spawndata.value[%i]", i), NULL, 0);
+			UI_CSpinControl(&spawnmenu.e[40 + i], 640 + cgui.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), SpawnMenu_SpawnDataStrings(i), va("api.spawndata.value[%i]", i), NULL, 0);
 			y += 12;
 		} else if(cvarInt(va("api.spawndata.type[%i]", i)) == 3) {
-			UI_CSlider(&spawnmenu.e[40 + i], 640 + uis.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0);
+			UI_CSlider(&spawnmenu.e[40 + i], 640 + cgui.wideoffset - 100, y, cvarString(va("api.spawndata.name[%i]", i)), va("api.spawndata.value[%i]", i), cvarFloat(va("api.spawndata.value[%i].min", i)), cvarFloat(va("api.spawndata.value[%i].max", i)), cvarFloat(va("api.spawndata.value[%i].mod", i)), NULL, 0);
 			y += 12;
 		}
 	}
@@ -403,11 +403,11 @@ void UI_SpawnMenu(void) {
 
 	y = 15;
 	for(i = 0; i < TB_MAX; i++) {
-		UI_SetHitbox(&spawnmenu.e[ID_TAB_SELECT + i], 15 - uis.wideoffset, y, 125, 16);
+		UI_SetHitbox(&spawnmenu.e[ID_TAB_SELECT + i], 15 - cgui.wideoffset, y, 125, 16);
 		y += 20;
 	}
-	UI_SetHitbox(&spawnmenu.e[1], 640 + uis.wideoffset - 145, 375, 100, 24);
-	UI_SetHitbox(&spawnmenu.e[2], 640 + uis.wideoffset - 145, 415, 100, 24);
+	UI_SetHitbox(&spawnmenu.e[1], 640 + cgui.wideoffset - 145, 375, 100, 24);
+	UI_SetHitbox(&spawnmenu.e[2], 640 + cgui.wideoffset - 145, 415, 100, 24);
 
 	spawnmenu.e[0].top = spawnmenu_sv_top[spawnmenu_tab];
 	spawnmenu.e[0].curvalue = spawnmenu_sv_value[spawnmenu_tab];

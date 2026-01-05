@@ -395,17 +395,17 @@ void CG_RegisterWeapon(int weaponNum) {
 	}
 	if(ammo->classname && ammo->world_model) weaponInfo->ammoModel = trap_R_RegisterModel(ammo->world_model);
 
-	Q_strncpyz(path, item->world_model, MAX_QPATH);
+	Q_StringCopy(path, item->world_model, MAX_QPATH);
 	COM_StripExtension(path, path, sizeof(path));
 	strcat(path, "_flash.md3");
 	weaponInfo->flashModel = trap_R_RegisterModel(path);
 
-	Q_strncpyz(path, item->world_model, MAX_QPATH);
+	Q_StringCopy(path, item->world_model, MAX_QPATH);
 	COM_StripExtension(path, path, sizeof(path));
 	strcat(path, "_barrel.md3");
 	weaponInfo->barrelModel = trap_R_RegisterModel(path);
 
-	Q_strncpyz(path, item->world_model, MAX_QPATH);
+	Q_StringCopy(path, item->world_model, MAX_QPATH);
 	COM_StripExtension(path, path, sizeof(path));
 	strcat(path, "_hand.md3");
 	weaponInfo->handsModel = trap_R_RegisterModel(path);

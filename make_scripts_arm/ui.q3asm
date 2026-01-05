@@ -5,17 +5,10 @@ ui_main
 ..\q_sharedsyscalls_client
 ui_atoms
 ui_connect
-ui_controls
 ui_gameinfo
 ui_menu
-ui_newgame
-ui_options
-ui_playermodel
 ui_players
 ui_qmenu
-ui_servers
-ui_settings
-ui_spawnmenu
 bg_lib
 bg_misc
 q_cvars

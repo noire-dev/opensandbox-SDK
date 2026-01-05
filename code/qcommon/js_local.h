@@ -28,40 +28,42 @@
 #define VMCALL 1001
 
 typedef enum {
-	JSCALL_TEST = 0,
-	JSCALL_MENUINIT = 1,
-	JSCALL_MENUDRAW = 2,
+	JS_MENUCHECK = 1,
+	JS_MENUINIT = 2,
+	JS_MENUDRAW = 3,
 } jscall_t;
 
 typedef enum {
-	VMCALL_TEST = 0,
-	VMCALL_DRAWSTRING = 1,
+    VM_ENTRY = 0,
+	VM_DRAWSTRING = 1,
+	VM_DRAWRECT = 2,
+	VM_CREATEBUTTON = 3,
 } vmcall_t;
 
-typedef enum { JS_TYPE_NONE, JS_TYPE_INT, JS_TYPE_FLOAT, JS_TYPE_BOOL, JS_TYPE_STRING } js_type_t;
+typedef enum { JS_TYPE_NONE, JS_TYPE_INT, JS_TYPE_FLOAT, JS_TYPE_STRING } js_type_t;
 
-typedef union {
-	int i;
-	float f;
-	qboolean b;
-	char s[MAX_JS_STRINGSIZE];
+typedef struct {
+    int i;
+    float f;
+    char s[MAX_JS_STRINGSIZE];
 } js_value_t;
 
 typedef struct {
-	js_type_t type[MAX_JS_ARGS];
-	js_value_t value[MAX_JS_ARGS];
+    js_type_t t[MAX_JS_ARGS];
+    js_value_t v[MAX_JS_ARGS];
 } js_args_t;
 
 typedef struct {
-	js_type_t type;
-	js_value_t value;
+    js_type_t t;
+    js_value_t v;
 } js_result_t;
 
 void JS_StackClean(void);
 void JS_Function(int func_id);
 
 // JS Functions
-const char *JS_Test(void);
+int JS_MenuCheck(void);
+void JS_MenuInit(void);
 void JS_MenuDraw(void);
 
 extern js_args_t vmargs;

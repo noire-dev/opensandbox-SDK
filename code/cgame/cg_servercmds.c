@@ -220,7 +220,7 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "chat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		Q_strncpyz(text, CG_Argv(1), MAX_SAY_TEXT);
+		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qfalse, "%s\n", text);
 		return;
@@ -228,7 +228,7 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "tchat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		Q_strncpyz(text, CG_Argv(1), MAX_SAY_TEXT);
+		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qtrue, "%s\n", text);
 		return;
@@ -270,7 +270,7 @@ static void CG_ServerCommand(void) {
 	}
 
 	if(!strcmp(cmd, "t_info")) {
-		Q_strncpyz(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
+		Q_StringCopy(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
 		return;
 	}
 

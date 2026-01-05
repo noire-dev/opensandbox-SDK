@@ -101,7 +101,7 @@ void COM_StripExtension(const char *in, char *out, int destsize) {
 
 	if(!in || !out || destsize <= 0) return;
 
-	Q_strncpyz(out, in, destsize);
+	Q_StringCopy(out, in, destsize);
 
 	length = strlen(out);
 	if(length == 0) return;
@@ -138,7 +138,7 @@ void COM_DefaultExtension(char *path, int maxSize, const char *extension) {
 		src--;
 	}
 
-	Q_strncpyz(oldPath, path, sizeof(oldPath));
+	Q_StringCopy(oldPath, path, sizeof(oldPath));
 	Com_sprintf(path, maxSize, "%s%s", oldPath, extension);
 }
 
@@ -430,25 +430,26 @@ char *Q_strrchr(const char *string, int c) {
 
 /*
 =============
-Q_strncpyz
+Q_StringCopy
 
 Safe strncpy that ensures a trailing zero
 =============
 */
-void Q_strncpyz(char *dest, const char *src, int destsize) {
+void Q_StringCopy(char *dest, const char *source, int destsize) {
 	if(!dest) {
-		Com_Printf("Q_strncpyz: NULL dest \n");
+		Com_Printf("Q_StringCopy: NULL dest \n");
 		return;
 	}
-	if(!src) {
+	if(!source) {
+	    Com_Printf("Q_StringCopy: NULL source \n");
 		return;
 	}
 	if(destsize < 1) {
-		Com_Printf("Q_strncpyz: destsize < 1 \n");
+		Com_Printf("Q_StringCopy: destsize < 1 \n");
 		return;
 	}
 
-	strncpy(dest, src, destsize - 1);
+	strncpy(dest, source, destsize - 1);
 	dest[destsize - 1] = 0;
 }
 
@@ -538,7 +539,7 @@ void Q_strcat(char *dest, int size, const char *src) {
 	if(l1 >= size) {
 		Com_Error(ERR_FATAL, "Q_strcat: already overflowed");
 	}
-	Q_strncpyz(dest + l1, src, size - l1);
+	Q_StringCopy(dest + l1, src, size - l1);
 }
 
 /*
@@ -605,7 +606,7 @@ void QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 		}
 #endif
 	}
-	Q_strncpyz(dest, bigbuffer, size);
+	Q_StringCopy(dest, bigbuffer, size);
 }
 
 /*
@@ -1002,13 +1003,8 @@ vec4_t color_highlight = {0.50f, 0.50f, 0.50f, 1.00f};
 
 vec4_t customcolor_crosshair = {1.00f, 1.00f, 1.00f, 1.00f};
 
-/*
-======================
-SourceTech font system
-======================
-*/
 #ifndef GAME
-qhandle_t defaultFont[5];
+cgui_t cgui;
 glconfig_t glconfig;
 
 int ST_ColorEscapes(const char *str) {
@@ -1036,20 +1032,38 @@ static int ST_GetFontRes(float fontSize) {
 	return 0;                                // 256 default
 }
 
-void ST_RegisterFont(const char *font) {
-	defaultFont[0] = trap_R_RegisterShaderNoMip(va("%s_font0", font));
-	defaultFont[1] = trap_R_RegisterShaderNoMip(va("%s_font1", font));
-	defaultFont[2] = trap_R_RegisterShaderNoMip(va("%s_font2", font));
-	defaultFont[3] = trap_R_RegisterShaderNoMip(va("%s_font3", font));
-	defaultFont[4] = trap_R_RegisterShaderNoMip(va("%s_font4", font));
+void ST_InitCGUI(const char *font) {
+    trap_GetGlconfig(&glconfig);
+    
+    cgui.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
+    
+    if(glconfig.vidWidth * 480 > glconfig.vidHeight * 640) {
+		// wide screen
+		cgui.bias = 0.5 * (glconfig.vidWidth - (glconfig.vidHeight * (640.0 / 480.0)));
+	} else {
+		// no wide screen
+		cgui.bias = 0;
+	}
+	
+	if(((float)glconfig.vidWidth / ((float)glconfig.vidHeight / 480) - 640) / 2 >= 0) {
+		cgui.wideoffset = ((float)glconfig.vidWidth / ((float)glconfig.vidHeight / 480) - 640) / 2;
+	} else {
+		cgui.wideoffset = 0;
+	}
+	
+	cgui.defaultFont[0] = trap_R_RegisterShaderNoMip(va("%s_font0", font));
+	cgui.defaultFont[1] = trap_R_RegisterShaderNoMip(va("%s_font1", font));
+	cgui.defaultFont[2] = trap_R_RegisterShaderNoMip(va("%s_font2", font));
+	cgui.defaultFont[3] = trap_R_RegisterShaderNoMip(va("%s_font3", font));
+	cgui.defaultFont[4] = trap_R_RegisterShaderNoMip(va("%s_font4", font));
+	cgui.whiteShader = trap_R_RegisterShaderNoMip("white");
+	cgui.corner = trap_R_RegisterShaderNoMip("menu/corner");
 }
 
-void ST_UpdateColors(void) {
-#ifdef CGAME
+void ST_UpdateCGUI(void) {
 	customcolor_crosshair[0] = cvarFloat("cg_crosshairColorRed");
 	customcolor_crosshair[1] = cvarFloat("cg_crosshairColorGreen");
 	customcolor_crosshair[2] = cvarFloat("cg_crosshairColorBlue");
-#endif
 }
 
 int ST_StringCount(const char *str) {
@@ -1124,12 +1138,8 @@ static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw,
 	ay = y;
 	aw = charw;
 	ah = charh;
-#ifdef CGAME
-	CG_AdjustFrom640(&ax, &ay, &aw, &ah);
-#endif
-#ifdef UI
-	UI_AdjustFrom640(&ax, &ay, &aw, &ah);
-#endif
+	
+	ST_AdjustFrom640(&ax, &ay, &aw, &ah);
 
 	s = str;
 	while(*s) {
@@ -1176,7 +1186,7 @@ static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw,
 
 			frow = (ch >> 4) * 0.0625;
 			fcol = (ch & 15) * 0.0625;
-			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, defaultFont[fontRes]);
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, cgui.defaultFont[fontRes]);
 		}
 
 		ax += aw * FONT_WIDTH;
@@ -1186,7 +1196,7 @@ static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw,
 	trap_R_SetColor(NULL);
 }
 
-void ST_DrawChar(float x, float y, int ch, int style, vec4_t color, float size) {
+void ST_DrawChar(float x, float y, int ch, int style, float *color, float size) {
 	char buff[2];
 
 	buff[0] = ch;
@@ -1223,7 +1233,7 @@ float ST_StringWidth(const char *str, float size) {
 	}
 }
 
-void ST_DrawString(float x, float y, const char *str, int style, vec4_t color, float fontSize) {
+void ST_DrawString(float x, float y, const char *str, int style, float *color, float fontSize) {
 	float charw;
 	float charh;
 	float *drawcolor;
@@ -1286,6 +1296,33 @@ float ST_AnimValue(stAnim_t *anim, int timeNow) {
 
 	t = (float)elapsed / (float)anim->duration;
 	return 1.0f - t;
+}
+
+void ST_AdjustFrom640(float *x, float *y, float *w, float *h) {
+	*x = *x * cgui.scale + cgui.bias;
+	*y *= cgui.scale;
+	*w *= cgui.scale;
+	*h *= cgui.scale;
+}
+
+void ST_DrawRoundedRect(float x, float y, float width, float height, float radius, float *color) {
+	ST_AdjustFrom640(&x, &y, &width, &height);
+
+	if(radius * 2 > height) radius = height * 0.5;
+	if(radius * 2 > width) radius = width * 0.5;
+
+	radius *= cgui.scale;
+
+	trap_R_SetColor(color);
+	trap_R_DrawStretchPic(x, y, radius, radius, 1, 0, 0, 1, cgui.corner);                                    // Левый верхний угол
+	trap_R_DrawStretchPic(x + width - radius, y, radius, radius, 0, 0, 1, 1, cgui.corner);                   // Правый верхний угол
+	trap_R_DrawStretchPic(x, y + height - radius, radius, radius, 1, 1, 0, 0, cgui.corner);                  // Левый нижний угол
+	trap_R_DrawStretchPic(x + width - radius, y + height - radius, radius, radius, 0, 1, 1, 0, cgui.corner); // Правый нижний угол
+
+	trap_R_DrawStretchPic(x, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, cgui.whiteShader);                  // Левая сторона
+	trap_R_DrawStretchPic(x + width - radius, y + radius, radius, height - (radius * 2), 0, 0, 0, 0, cgui.whiteShader); // Правая сторона
+	trap_R_DrawStretchPic(x + radius, y, width - (radius * 2), height, 0, 0, 0, 0, cgui.whiteShader);                   // Верхняя сторона
+	trap_R_SetColor(NULL);
 }
 
 #endif

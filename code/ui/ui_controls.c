@@ -152,7 +152,7 @@ static void Controls_DrawKeyBinding(void *self) {
 	}
 
 	if(c) {
-		UI_DrawRoundedRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, 0, color_select);
+		ST_DrawRoundedRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, 0, color_select);
 		ST_DrawString(x - BASEFONT_INDENT, y, g_bindings[a->generic.id].label, UI_RIGHT, color_highlight, 1.00);
 		ST_DrawString(x + BASEFONT_INDENT, y, name, UI_LEFT, color_highlight, 1.00);
 
@@ -363,14 +363,14 @@ void UI_Controls(void) {
 	controls.menu.key = Controls_MenuKey;
 	controls.menu.fullscreen = qtrue;
 
-	UI_CText(&controls.e[89], 58 - uis.wideoffset, 64 + 24, "CONTROLS", UI_LEFT, 1.80);
+	UI_CText(&controls.e[89], 58 - cgui.wideoffset, 64 + 24, "CONTROLS", UI_LEFT, 1.80);
 	y = OSUI_STANDARD_Y;
-	UI_CButton(&controls.e[ID_KEYS], 64 - uis.wideoffset, y, "Keys", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS);
+	UI_CButton(ID_KEYS, 64 - cgui.wideoffset, y, "Keys", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_KEYS);
 	y += OSUI_SPACING_Y;
-	UI_CButton(&controls.e[ID_SETTINGS], 64 - uis.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS);
+	UI_CButton(ID_SETTINGS, 64 - cgui.wideoffset, y, "Settings", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_SETTINGS);
 	y += OSUI_BIGSPACING_Y;
 
-	UI_CButton(&controls.e[ID_BACK], 64 - uis.wideoffset, y, "Back", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_BACK);
+	UI_CButton(ID_BACK, 64 - cgui.wideoffset, y, "Back", UI_LEFT, 1.00, color_white, NULL, NULL, NULL, Controls_MenuEvent, ID_BACK);
 
 	for(i = 0; i <= KEYS_NUM; i++) {
 		controls.e[i].generic.type = MTYPE_ACTION;

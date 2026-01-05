@@ -25,7 +25,7 @@ cc="./lcc -DGAME -DQVM -S -I../../../code/game -I../../../code/qcommon $1"
 cd linux/build/game
 
 # ########################################
-# Files to compile to           qagame.qvm
+# Files to compile to           game.qvm
 # ########################################
 
 $cc ../../../code/game/ai_main.c
@@ -171,18 +171,18 @@ cd linux/build/ui
 
 $cc ../../../code/ui/ui_atoms.c
 $cc ../../../code/ui/ui_connect.c
-$cc ../../../code/ui/ui_controls.c
+#$cc ../../../code/ui/ui_controls.c
 $cc ../../../code/ui/ui_gameinfo.c
 $cc ../../../code/ui/ui_main.c
 $cc ../../../code/ui/ui_menu.c
-$cc ../../../code/ui/ui_newgame.c
-$cc ../../../code/ui/ui_options.c
-$cc ../../../code/ui/ui_playermodel.c
+#$cc ../../../code/ui/ui_newgame.c
+#$cc ../../../code/ui/ui_options.c
+#$cc ../../../code/ui/ui_playermodel.c
 $cc ../../../code/ui/ui_players.c
 $cc ../../../code/ui/ui_qmenu.c
-$cc ../../../code/ui/ui_servers.c
-$cc ../../../code/ui/ui_settings.c
-$cc ../../../code/ui/ui_spawnmenu.c
+#$cc ../../../code/ui/ui_servers.c
+#$cc ../../../code/ui/ui_settings.c
+#$cc ../../../code/ui/ui_spawnmenu.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..
@@ -217,6 +217,6 @@ cd ../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/linux/game/qvm/qagame.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/game.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
 cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/

@@ -5,7 +5,7 @@
 #include "../qcommon/js_local.h"
 
 void CG_LoadingString(const char *s, float value) {
-	Q_strncpyz(cg.infoScreenText, va("Loading... %s", s), sizeof(cg.infoScreenText));
+	Q_StringCopy(cg.infoScreenText, va("Loading... %s", s), sizeof(cg.infoScreenText));
 	if(value != -1) cg.infoScreenValue = value;
 	trap_UpdateScreen();
 }
@@ -15,7 +15,7 @@ void CG_LoadingClient(int clientNum) {
 	char personality[MAX_QPATH];
 
 	info = CG_ConfigString(CS_PLAYERS + clientNum);
-	Q_strncpyz(personality, Info_ValueForKey(info, "n"), sizeof(personality));
+	Q_StringCopy(personality, Info_ValueForKey(info, "n"), sizeof(personality));
 	Q_CleanStr(personality);
 	CG_LoadingString(personality, -1);
 }
@@ -46,28 +46,28 @@ void CG_DrawInformation(void) {
 	loading = trap_R_RegisterShaderNoMip("menu/assets/loading");
 	trap_R_SetColor(NULL);
 
-	CG_DrawPic(0 - cgs.wideoffset, 0, 640 + (cgs.wideoffset * 2), 480, levelshot);
-	CG_DrawPic(0 - cgs.wideoffset, 0, 640 + (cgs.wideoffset * 2), 480, detail);
+	CG_DrawPic(0 - cgui.wideoffset, 0, 640 + (cgui.wideoffset * 2), 480, levelshot);
+	CG_DrawPic(0 - cgui.wideoffset, 0, 640 + (cgui.wideoffset * 2), 480, detail);
 
-	CG_DrawRoundedRect(410 + cgs.wideoffset, 445, 220, 30, 1, color_lightgrey);
-	CG_DrawProgressBar(415 + cgs.wideoffset, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
-	ST_DrawString(415 + cgs.wideoffset, 449, cg.infoScreenText, UI_LEFT, color_whiteblack, 0.80);
+	ST_DrawRoundedRect(410 + cgui.wideoffset, 445, 220, 30, 1, color_lightgrey);
+	CG_DrawProgressBar(415 + cgui.wideoffset, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
+	ST_DrawString(415 + cgui.wideoffset, 449, cg.infoScreenText, UI_LEFT, color_whiteblack, 0.80);
 
 	CG_DrawPic(320 - 50, 240 - 75, 100, 100, logo);
 	CG_DrawPic(320 - 24, 320 - 48, 48, 48, loading);
 
-	CG_DrawPic(0 - cgs.wideoffset, 0, 300, 85, fade);
-	CG_DrawPic(5 - cgs.wideoffset, 5, 100, 75, levelshot);
+	CG_DrawPic(0 - cgui.wideoffset, 0, 300, 85, fade);
+	CG_DrawPic(5 - cgui.wideoffset, 5, 100, 75, levelshot);
 
 	y = 10;
-	Q_strncpyz(buf, Info_ValueForKey(info, "sv_hostname"), 64);
+	Q_StringCopy(buf, Info_ValueForKey(info, "sv_hostname"), 64);
 	Q_CleanStr(buf);
-	ST_DrawString(110 - cgs.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
+	ST_DrawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
 
-	Q_strncpyz(buf, Info_ValueForKey(info, "sv_mapname"), 64);
+	Q_StringCopy(buf, Info_ValueForKey(info, "sv_mapname"), 64);
 	Q_CleanStr(buf);
-	ST_DrawString(110 - cgs.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
+	ST_DrawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
 
 	switch(cgs.gametype) {
@@ -81,5 +81,5 @@ void CG_DrawInformation(void) {
 	default: s = "Unknown Gametype"; break;
 	}
 
-	ST_DrawString(110 - cgs.wideoffset, y, s, UI_LEFT, color_white, 1.50);
+	ST_DrawString(110 - cgui.wideoffset, y, s, UI_LEFT, color_white, 1.50);
 }

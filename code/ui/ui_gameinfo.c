@@ -57,7 +57,7 @@ static int UI_ParseInfos(char *buf, int max, char *infos[], qboolean arenas) {
 				break;
 			}
 			if(!strcmp(token, "}")) break;
-			Q_strncpyz(key, token, sizeof(key));
+			Q_StringCopy(key, token, sizeof(key));
 			token = COM_ParseExt(&buf, qfalse);
 			if(!token[0]) strcpy(token, "<NULL>");
 			if(!arenas || (!strcmp(key, "map") || !strcmp(key, "type"))) Info_SetValueForKey(info, key, token);
