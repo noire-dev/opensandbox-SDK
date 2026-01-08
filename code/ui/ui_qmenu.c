@@ -15,6 +15,16 @@ static qhandle_t sliderButton_1;
 
 static void MField_CharEvent(mfield_t *edit, int ch);
 
+static qboolean Menu_CursorInRect(int x, int y, int width, int height) {
+	if(uis.cursorx < x || uis.cursory < y || uis.cursorx > x + width || uis.cursory > y + height) return qfalse;
+	return qtrue;
+}
+
+qboolean Menu_CursorOnItem(int id) {
+	if(uis.cursorx < uis.items[id].x || uis.cursory < uis.items[id].y || uis.cursorx > uis.items[id].x + uis.items[id].w || uis.cursory > uis.items[id].y + uis.items[id].h) return qfalse;
+	return qtrue;
+}
+
 static item_t *UI_FindItem(const char *pickupName) {
 	item_t *it;
 
@@ -40,44 +50,10 @@ static item_t *UI_FindItemClassname(const char *classname) {
 #define CB_VARIABLE 2
 #define CB_FUNC 3
 
-static void UI_GeneralCallback(void *ptr, int event) {
-	if(event != QM_ACTIVATED) return;
-
-	switch(((menucommon_s *)ptr)->general_cbtype) {
-	case CB_COMMAND: trap_Cmd(EXEC_INSERT, ((menucommon_s *)ptr)->cmd); break;
-
-	case CB_VARIABLE:
-		if(((menucommon_s *)ptr)->type == MTYPE_SLIDER) {
-			cvarSet(((menucommon_s *)ptr)->var, va("%f", (float)*((menucommon_s *)ptr)->value / (float)((menucommon_s *)ptr)->mode));
-		}
-		if(((menucommon_s *)ptr)->type == MTYPE_FIELD) {
-			cvarSet(((menucommon_s *)ptr)->var, ((menucommon_s *)ptr)->buffer);
-		}
-		if(((menucommon_s *)ptr)->type == MTYPE_RADIOBUTTON) {
-			if(((menucommon_s *)ptr)->mode == RBT_NORMAL) {
-				cvarSet(((menucommon_s *)ptr)->var, va("%i", (float)*((menucommon_s *)ptr)->value));
-			}
-			if(((menucommon_s *)ptr)->mode == RBT_INVERSE) {
-				cvarSet(((menucommon_s *)ptr)->var, va("%i", -(float)*((menucommon_s *)ptr)->value));
-			}
-		}
-		if(((menucommon_s *)ptr)->type == MTYPE_SPINCONTROL) {
-			cvarSet(((menucommon_s *)ptr)->var, va("%i", ((menucommon_s *)ptr)->value));
-		}
-		break;
-
-	case CB_FUNC: ((menucommon_s *)ptr)->func(); break;
-	}
-}
-
-static sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s *item) {
-    UI_GeneralCallback(item, QM_ACTIVATED);
-	if(item->callback) {
-		item->callback(item, QM_ACTIVATED);
-		return menu_move_sound;
-	}
-
-	return 0;
+static sfxHandle_t UI_GeneralCallback(menuelement_s *item) {
+	if(strlen(item->action)) trap_Cmd(EXEC_INSERT, (item->action));
+	JS_MenuCallback(item->id);
+	return menu_move_sound;
 }
 
 static void BText_Init(menuelement_s *t) { t->generic.flags |= QMF_INACTIVE; }
@@ -105,20 +81,20 @@ static void Button_Init(menuelement_s *t) {
 static void Button_Draw(menuelement_s *t) {
     float text_y;
     
-	if(t->generic.flags & QMF_GRAYED) t->curColor = color_disabled;
-	else t->curColor = t->color;
+	if(t->generic.flags & QMF_GRAYED) t->curColortext = JSCOLOR_DISABLED;
+	else t->curColortext = t->colortext;
 
-	if(UI_CursorInRect(t->x, t->y, t->w, t->h)) t->curColor = color_highlight;
-	else t->curColor = t->color;
+	if(Menu_CursorOnItem(t->id)) t->curColortext = JSCOLOR_SELECTED;
+	else t->curColortext = t->colortext;
 	
 	if(t->autowh) {
-	    ST_DrawString(t->x, text_y, t->text, t->style, t->curColor, t->size);
+	    ST_DrawString(t->x, text_y, t->text, t->style, cgui.colors[t->curColortext], t->size);
 	} else {
     	text_y = t->y+(t->h-(BASEFONT_HEIGHT*t->size))*0.5;
-        ST_DrawRoundedRect(t->x, t->y, t->w+(BASEFONT_INDENT*t->size)*0.64, t->h, t->corner, t->color2);
-    	if(t->style & UI_CENTER) ST_DrawString(t->x+(t->w*0.5), text_y, t->text, UI_CENTER, t->curColor, t->size);
-    	else if(t->style & UI_RIGHT) ST_DrawString((t->x+t->w)-t->margin, text_y, t->text, UI_RIGHT, t->curColor, t->size);
-    	else ST_DrawString(t->x+t->margin, text_y, t->text, UI_LEFT, t->curColor, t->size);
+        ST_DrawRoundedRect(t->x, t->y, t->w, t->h, t->corner, cgui.colors[t->colorbg]);
+    	if(t->style & UI_CENTER) ST_DrawString(t->x+(t->w*0.5), text_y, t->text, UI_CENTER, cgui.colors[t->curColortext], t->size);
+    	else if(t->style & UI_RIGHT) ST_DrawString((t->x+t->w)-t->margin, text_y, t->text, UI_RIGHT, cgui.colors[t->curColortext], t->size);
+    	else ST_DrawString(t->x+t->margin, text_y, t->text, UI_LEFT, cgui.colors[t->curColortext], t->size);
 	}
 }
 
@@ -192,14 +168,14 @@ static void Bitmap_Draw(menuelement_s *b) {
 	} else {
 		if(b->shader) UI_DrawHandlePic(x, y, w, h, b->shader);
 
-		if((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS) && (Menu_ItemAtCursor(b->generic.parent) == b)) {
+		if((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS) && (Menu_CurrentItem() == b)) {
 			color = tempcolor;
 			color[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
 
 			trap_R_SetColor(color);
 			UI_DrawHandlePic(x, y, w, h, b->focusshader);
 			trap_R_SetColor(NULL);
-		} else if((b->generic.flags & QMF_HIGHLIGHT) || ((b->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (Menu_ItemAtCursor(b->generic.parent) == b))) {
+		} else if((b->generic.flags & QMF_HIGHLIGHT) || ((b->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (Menu_CurrentItem() == b))) {
 			UI_DrawHandlePic(x, y, w, h, b->focusshader);
 		}
 	}
@@ -270,7 +246,7 @@ static sfxHandle_t RadioButton_Key(menuelement_s *rb, int key) {
 	case K_ENTER:
 		rb->curvalue = !rb->curvalue;
 		if(rb->generic.callback) rb->generic.callback(rb, QM_ACTIVATED);
-		UI_GeneralCallback(rb, QM_ACTIVATED);
+		UI_GeneralCallback(rb);
 
 		return (menu_move_sound);
 	}
@@ -376,7 +352,7 @@ static sfxHandle_t Slider_Key(menuelement_s *s, int key) {
 	}
 
 	if(sound && s->generic.callback) s->generic.callback(s, QM_ACTIVATED);
-	UI_GeneralCallback(s, QM_ACTIVATED);
+	UI_GeneralCallback(s);
 
 	return (sound);
 }
@@ -491,7 +467,7 @@ static sfxHandle_t SpinControl_Key(menuelement_s *s, int key) {
 	}
 
 	if(sound && s->generic.callback) s->generic.callback(s, QM_ACTIVATED);
-	UI_GeneralCallback(s, QM_ACTIVATED);
+	UI_GeneralCallback(s);
 	
 	return (sound);
 }
@@ -570,7 +546,7 @@ sfxHandle_t ScrollList_Key(menuelement_s *l, int key) {
 				total_w = l->width * l->columns * item_w;
 			}
 
-			if(UI_CursorInRect(x, y, total_w, l->height * item_h)) {
+			if(Menu_CursorInRect(x, y, total_w, l->height * item_h)) {
 				cursorx = (uis.cursorx - x) / item_w;
 				cursory = (uis.cursory - y) / item_h;
 
@@ -591,7 +567,7 @@ sfxHandle_t ScrollList_Key(menuelement_s *l, int key) {
 						return menu_move_sound;
 					} else {
 						if((clickdelay < 350) && !(l->generic.flags & (QMF_GRAYED | QMF_INACTIVE))) {
-							return Menu_ActivateItem(l->generic.parent, &l->generic);
+							return UI_GeneralCallback(l);
 						}
 					}
 				}
@@ -705,8 +681,6 @@ static void DrawListItemImage(int x, int y, int w, int h, const char *path, menu
 			return;
 		}
 	}
-
-	UI_DrawPictureElement(x, y, w, h, path);
 }
 
 static void UI_DrawListItemSelection(menuelement_s *l, int i, int x, int y, int item_h, int grid_w) {
@@ -770,7 +744,7 @@ static void ScrollList_Draw(menuelement_s *l) {
 				DrawListItemImage(x + l->padding_x, y + l->padding_y, grid_w - (l->padding_x * 2), grid_w - (l->padding_y * 2), va("%s/%s", l->string, item), l, item);
 				if(l->drawText) ST_DrawString(x + (grid_w * 0.5), (y + grid_w) - (l->padding_y * 0.80), item, UI_CENTER, color, 0.75);
 
-				if(UI_CursorInRect(x, y, grid_w, grid_w) && hasfocus) {
+				if(Menu_CursorInRect(x, y, grid_w, grid_w) && hasfocus) {
 					select_x = x;
 					select_y = y;
 					select_i = i;
@@ -981,7 +955,7 @@ static void MenuField_Draw(menuelement_s *f) {
 	x = f->generic.x;
 	y = f->generic.y;
 
-	if(Menu_ItemAtCursor(f->generic.parent) == f) {
+	if(Menu_CurrentItem() == f) {
 		focus = qtrue;
 	}
 
@@ -1022,38 +996,6 @@ static sfxHandle_t MenuField_Key(menuelement_s *m, int *key) {
 	lastKeypress = uis.realtime;
 
 	return (0);
-}
-
-void Menu_AddItem(menuframework_s *menu, menuelement_s *item) {
-	menucommon_s *itemptr;
-
-	if(menu->nitems >= MAX_MENUITEMS) trap_Error("Menu_AddItem: excessive items");
-
-	menu->items[menu->nitems] = item;
-	((menucommon_s *)menu->items[menu->nitems])->parent = menu;
-	((menucommon_s *)menu->items[menu->nitems])->menuPosition = menu->nitems;
-	((menucommon_s *)menu->items[menu->nitems])->flags &= ~QMF_HASMOUSEFOCUS;
-
-	if(!item->size) item->size = 1.00;
-
-	// perform any item specific initializations
-	itemptr = (menucommon_s *)item;
-	if(!(itemptr->flags & QMF_NODEFAULTINIT)) {
-		switch(item->type) {
-		case MTYPE_ACTION: Action_Init((menuelement_s *)item); break;
-		case MTYPE_FIELD: MenuField_Init((menuelement_s *)item); break;
-		case MTYPE_SPINCONTROL: SpinControl_Init((menuelement_s *)item); break;
-		case MTYPE_RADIOBUTTON: RadioButton_Init((menuelement_s *)item); break;
-		case MTYPE_SLIDER: Slider_Init((menuelement_s *)item); break;
-		case MTYPE_BITMAP: Bitmap_Init((menuelement_s *)item); break;
-		case MTYPE_SCROLLLIST: ScrollList_Init((menuelement_s *)item); break;
-		case MTYPE_BUTTON: Button_Init((menuelement_s *)item); break;
-		case MTYPE_TEXT: BText_Init((menuelement_s *)item); break;
-		default: trap_Error(va("Menu_Init: unknown type %d", itemptr->type));
-		}
-	}
-
-	menu->nitems++;
 }
 
 static void Menu_CursorMoved(menuframework_s *m) {
@@ -1121,133 +1063,73 @@ wrap:
 	}
 }
 
-void Menu_Draw(menuframework_s *menu) {
+void Menu_ElementsDraw(void) {
 	int i;
-	menucommon_s *itemptr;
-	menuelement_s *elementptr;
 
-	// draw menu
-	for(i = 0; i < menu->nitems; i++) {
-		itemptr = (menucommon_s *)menu->items[i];
-		elementptr = (menuelement_s *)menu->items[i];
+	for(i = 0; i < MAX_MENUITEMS; i++) {
+		if(uis.items[i].flags & QMF_HIDDEN) continue;
 
-		if(itemptr->flags & QMF_HIDDEN) continue;
-
-		if(itemptr->ownerdraw) {
-			itemptr->ownerdraw(itemptr); // total subclassing, owner draws everything
-		} else {
-			switch(elementptr->type) {
-			case MTYPE_RADIOBUTTON: RadioButton_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_FIELD: MenuField_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_SLIDER: Slider_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_SPINCONTROL: SpinControl_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_ACTION: Action_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_BITMAP: Bitmap_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_SCROLLLIST: ScrollList_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_BUTTON: Button_Draw((menuelement_s *)itemptr); break;
-			case MTYPE_TEXT: Text_Draw((menuelement_s *)itemptr); break;
-			default: trap_Error(va("Menu_Draw: unknown type %d", itemptr->type));
-			}
+		switch(uis.items[i].type) {
+		    case MTYPE_BUTTON: Button_Draw(&uis.items[i]); break;
+			case MTYPE_RADIOBUTTON: RadioButton_Draw(&uis.items[i]); break;
+			case MTYPE_FIELD: MenuField_Draw(&uis.items[i]); break;
+			case MTYPE_SLIDER: Slider_Draw(&uis.items[i]); break;
+			case MTYPE_SPINCONTROL: SpinControl_Draw(&uis.items[i]); break;
+			case MTYPE_ACTION: Action_Draw(&uis.items[i]); break;
+			case MTYPE_BITMAP: Bitmap_Draw(&uis.items[i]); break;
+			case MTYPE_SCROLLLIST: ScrollList_Draw(&uis.items[i]); break;
+			case MTYPE_TEXT: Text_Draw(&uis.items[i]); break;
 		}
+		
 		if(uis.debug) {
-			int x, y, w, h;
-
-			if(!(itemptr->flags & QMF_INACTIVE)) {
-				x = itemptr->left;
-				y = itemptr->top;
-				w = itemptr->right - itemptr->left + 1;
-				h = itemptr->bottom - itemptr->top + 1;
-				ST_DrawRoundedRect(x, y, w, h, 0, color_dim);
+			if(!(uis.items[i].flags & QMF_INACTIVE)) {
+				ST_DrawRoundedRect(uis.items[i].x, uis.items[i].y, uis.items[i].w, uis.items[i].h, 0, color_dim);
 			}
 		}
 	}
 }
 
-void *Menu_ItemAtCursor(menuframework_s *m) {
-	if(m->cursor < 0 || m->cursor >= m->nitems) return 0;
-
-	return m->items[m->cursor];
+void *Menu_CurrentItem(void) {
+	if(uis.currentItem < 0 || uis.currentItem >= MAX_MENUITEMS) return 0;
+	return &uis.items[uis.currentItem];
 }
 
-sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key) {
+sfxHandle_t Menu_DefaultKey(int key) {
 	sfxHandle_t sound = 0;
-	menucommon_s *item;
-	int cursor_prev;
-	menuelement_s *b;
+	menuelement_s *item;
 
 	// menu system keys
 	switch(key) {
-	case K_MOUSE2:
 	case K_ESCAPE: UI_PopMenu(); return menu_out_sound;
 	}
 
-	if(!m || !m->nitems) return 0;
-
 	// route key stimulus to widget
-	item = Menu_ItemAtCursor(m);
-	b = (menuelement_s *)item;
-	if(item && !(item->flags & (QMF_GRAYED | QMF_INACTIVE))) {
+	item = Menu_CurrentItem();
+	if(item && !(item->flags & (QMF_INACTIVE))) {
 		switch(item->type) {
-		case MTYPE_SPINCONTROL: sound = SpinControl_Key((menuelement_s *)item, key); break;
-
-		case MTYPE_RADIOBUTTON: sound = RadioButton_Key((menuelement_s *)item, key); break;
-
-		case MTYPE_SLIDER: sound = Slider_Key((menuelement_s *)item, key); break;
-
-		case MTYPE_SCROLLLIST: sound = ScrollList_Key((menuelement_s *)item, key); break;
-
+		case MTYPE_SPINCONTROL: sound = SpinControl_Key(item, key); break;
+		case MTYPE_RADIOBUTTON: sound = RadioButton_Key(item, key); break;
+		case MTYPE_SLIDER: sound = Slider_Key(item, key); break;
+		case MTYPE_SCROLLLIST: sound = ScrollList_Key(item, key); break;
 		case MTYPE_FIELD:
-			sound = MenuField_Key((menuelement_s *)item, &key);
+			sound = MenuField_Key(item, &key);
 			item->callback(item, QM_ACTIVATED);
-			UI_GeneralCallback(item, QM_ACTIVATED);
+			UI_GeneralCallback(item);
 			break;
 		}
 
-		if(sound) {
-			// key was handled
-			return sound;
-		}
+		if(sound) return sound;
 	}
 
 	// default handling
 	switch(key) {
-	case K_F5: trap_Cmd(EXEC_APPEND, "js.restart\n"); break;
 	case K_F11: uis.debug ^= 1; break;
 	case K_F12: trap_Cmd(EXEC_APPEND, "screenshotJPEG\n"); break;
-
-	case K_UPARROW:
-		cursor_prev = m->cursor;
-		m->cursor_prev = m->cursor;
-		m->cursor--;
-		Menu_AdjustCursor(m, -1);
-		if(cursor_prev != m->cursor) {
-			Menu_CursorMoved(m);
-			sound = menu_move_sound;
-		}
-		break;
-
-	case K_TAB:
-	case K_DOWNARROW:
-		cursor_prev = m->cursor;
-		m->cursor_prev = m->cursor;
-		m->cursor++;
-		Menu_AdjustCursor(m, 1);
-		if(cursor_prev != m->cursor) {
-			Menu_CursorMoved(m);
-			sound = menu_move_sound;
-		}
-		break;
-
-	case K_MOUSE1:
-		if(item)
-			if((item->flags & QMF_HASMOUSEFOCUS) && !(item->flags & (QMF_GRAYED | QMF_INACTIVE))) return (Menu_ActivateItem(m, item));
-		break;
-
-	case K_ENTER:
-		if(item)
-			if(!(item->flags & (QMF_GRAYED | QMF_INACTIVE))) return (Menu_ActivateItem(m, item));
-		break;
+	case K_MOUSE1: if(Menu_CursorOnItem(item->id) && !(item->flags & QMF_INACTIVE)) return UI_GeneralCallback(item); break;
+	case K_ENTER: if(!(item->flags & QMF_INACTIVE)) return UI_GeneralCallback(item); break;
 	}
+	
+	JS_MenuKey(key);
 
 	return sound;
 }
@@ -1469,34 +1351,28 @@ void UI_SetHitbox(int id, float x, float y, float w, float h) {
 	ui.e[id].generic.bottom = y + h;
 }
 
-void UI_CreateUI(menuframework_s *menu, menuelement_s *e) {
-	int i;
-
-	for(i = 0; i <= OSUI_MAX_ELEMENTS - 1; i++) {
-		if(e[i].type) {
-			// ID
-			e[i].id = i;
-			Menu_AddItem(menu, &e[i]);
-		}
-	}
-}
-
-void UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int color, int color2, int corner, int margin, char *action, void (*callback)(void *self, int event)) {
-    ui.e[id].type = MTYPE_BUTTON;
-    ui.e[id].id = id;
-	ui.e[id].x = x;
-	ui.e[id].y = y;
-	ui.e[id].w = w;
-	ui.e[id].h = h;
-	Q_StringCopy(ui.e[id].text, text, UI_STRINGLENGTH);
-	ui.e[id].style = style;
-	ui.e[id].size = size;
-	ui.e[id].color = cgui.colors[color];
-	ui.e[id].color2 = cgui.colors[color2];
-	ui.e[id].corner = corner;
-	ui.e[id].margin = margin;
-	Q_StringCopy(ui.e[id].action, action, UI_ACTIONLENGTH);
-	ui.e[id].callback = callback;
+int UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int colortext, int colorbg, int corner, int margin, char *action, void (*callback)(void *self, int event)) {
+    if(id >= MAX_MENUITEMS) {
+        trap_Print("^3Menu item limit exceeded");
+        return -1;
+    }
+    uis.items[id].type = MTYPE_BUTTON;
+    uis.items[id].id = id;
+	uis.items[id].x = x;
+	uis.items[id].y = y;
+	uis.items[id].w = w;
+	uis.items[id].h = h;
+	Q_StringCopy(uis.items[id].text, text, UI_STRINGLENGTH);
+	uis.items[id].style = style;
+	uis.items[id].size = size;
+	uis.items[id].colortext = colortext;
+	uis.items[id].colorbg = colorbg;
+	uis.items[id].corner = corner;
+	uis.items[id].margin = margin;
+	Q_StringCopy(uis.items[id].action, action, UI_ACTIONLENGTH);
+	uis.items[id].callback = callback;
+	Button_Init(&uis.items[id]);
+	return id;
 }
 
 void UI_CSlider(menuelement_s *e, float x, float y, char *text, char *var, float min, float max, float mod, void (*callback)(void *self, int event), int callid) {

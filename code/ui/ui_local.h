@@ -29,18 +29,18 @@
 #define MAX_EDIT_LINE 256
 
 #define MAX_MENUDEPTH 8
-#define MAX_MENUITEMS 128
+#define MAX_MENUITEMS 500
 
 #define MTYPE_NULL 0
 
-#define MTYPE_SLIDER 1
-#define MTYPE_ACTION 2
-#define MTYPE_SPINCONTROL 3
-#define MTYPE_FIELD 4
-#define MTYPE_RADIOBUTTON 5
-#define MTYPE_BITMAP 6
-#define MTYPE_SCROLLLIST 7
-#define MTYPE_BUTTON 8
+#define MTYPE_BUTTON 1
+#define MTYPE_SLIDER 2
+#define MTYPE_ACTION 3
+#define MTYPE_SPINCONTROL 4
+#define MTYPE_FIELD 5
+#define MTYPE_RADIOBUTTON 6
+#define MTYPE_BITMAP 7
+#define MTYPE_SCROLLLIST 8
 #define MTYPE_TEXT 9
 
 #define MTYPE_MAX 10
@@ -65,7 +65,7 @@
 // control event handler
 typedef void (*callbackFunc)(void *self, int event);
 
-typedef struct _tag_menuframework {
+typedef struct {
 	int cursor;
 	int cursor_prev;
 
@@ -74,8 +74,6 @@ typedef struct _tag_menuframework {
 
 	void (*draw)(void);
 	sfxHandle_t (*key)(int key);
-
-	qboolean fullscreen;
 } menuframework_s;
 
 typedef struct {
@@ -129,14 +127,18 @@ typedef struct {
 	char text[UI_STRINGLENGTH];
 	int style;
 	float size;
-	float *color, *color2;
+	int colortext, colorbg;
 	int corner;
 	int margin;
 	char action[UI_ACTIONLENGTH];
+	
+	
 	void (*callback)(void *self, int event);
 	
 	float autowh;
-	float *curColor;
+	int curColortext, curColorbg;
+	
+	float *color;
 	
 	char *focuspic;
 	char *errorpic;
@@ -164,6 +166,7 @@ typedef struct {
 	qboolean drawText;
 	float padding_x;
 	float padding_y;
+	unsigned flags;
 } menuelement_s;
 
 extern sfxHandle_t menu_move_sound;
@@ -261,8 +264,6 @@ typedef struct {
 	int realtime;
 	int cursorx;
 	int cursory;
-	int menusp;
-	menuframework_s *activemenu;
 	menuframework_s *stack[MAX_MENUDEPTH];
 	qboolean debug;
 	qhandle_t menuWallpapers;
@@ -271,6 +272,10 @@ typedef struct {
 	qhandle_t rb_off;
 	qboolean firstdraw;
 	qboolean onmap;
+	
+	int currentItem;
+	menuelement_s items[MAX_MENUITEMS];
+	qboolean fullscreen;
 } uiStatic_t;
 
 // ui_atoms.c
@@ -279,7 +284,6 @@ void QDECL Com_Printf(const char *msg, ...);
 void UI_PushMenu(menuframework_s *menu);
 void UI_PopMenu(void);
 void UI_ForceMenuOff(void);
-qboolean UI_IsFullscreen(void);
 void UI_SetActiveMenu(uiMenuCommand_t menu);
 void UI_KeyEvent(int key, int down);
 void UI_MouseEvent(int dx, int dy);
@@ -287,7 +291,6 @@ qboolean UI_ConsoleCommand(int realTime);
 void UI_Shutdown(void);
 void UI_Init(void);
 void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader);
-void UI_DrawPictureElement(float x, float y, float w, float h, const char *file);
 void UI_DrawModelElement(float x, float y, float w, float h, const char *model, float scale);
 
 // ui_connect.c
@@ -311,6 +314,7 @@ int UI_CountOfMaps(char *gametype);
 void UI_CreateCvars(void);
 
 // ui_menu.c
+void MenuDraw(void);
 void UI_Menu(void);
 
 // ui_newgame.c
@@ -329,12 +333,12 @@ const char *GUI_ModelName(const char *modelname);
 void GUI_PlayerInfo_AnimateModel(modelAnim_t *m);
 
 // ui_qmenu.c
+qboolean Menu_CursorOnItem(int id);
 sfxHandle_t ScrollList_Key(menuelement_s *l, int key);
-void Menu_AddItem(menuframework_s *menu, menuelement_s *item);
 void Menu_SetCursor(menuframework_s *m, int cursor);
-void Menu_Draw(menuframework_s *menu);
-void *Menu_ItemAtCursor(menuframework_s *m);
-sfxHandle_t Menu_DefaultKey(menuframework_s *m, int key);
+void Menu_ElementsDraw(void);
+void *Menu_CurrentItem(void);
+sfxHandle_t Menu_DefaultKey(int key);
 void Menu_Cache(void);
 void UI_FillList(menuelement_s *e, char *location, char *itemsLocation, char *extension, char *names, int namesSize, char **configlist);
 int UI_CountFiles(const char *location, const char *extension);
@@ -343,8 +347,7 @@ void UI_FillListOfItems(menuelement_s *e, char *names, int namesSize, char **con
 void UI_FillListPlayers(menuelement_s *e, char **configlist, char *names, int namesSize);
 int UI_ListPlayerCount(void);
 void UI_SetHitbox(int id, float x, float y, float w, float h);
-void UI_CreateUI(menuframework_s *menu, menuelement_s *e);
-void UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int color, int color2, int corner, int margin, char *action, void (*callback)(void *self, int event));
+int UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int colortext, int colorbg, int corner, int margin, char *action, void (*callback)(void *self, int event));
 void UI_CSlider(menuelement_s *e, float x, float y, char *text, char *var, float min, float max, float mod, void (*callback)(void *self, int event), int callid);
 void UI_CRadioButton(menuelement_s *e, float x, float y, char *text, char *var, int mod, void (*callback)(void *self, int event), int callid);
 void UI_CSpinControl(menuelement_s *e, float x, float y, char *text, const char **list, char *var, void (*callback)(void *self, int event), int callid);

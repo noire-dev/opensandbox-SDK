@@ -19,7 +19,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 	case UI_KEY_EVENT: UI_KeyEvent(arg0, arg1); return 0;
 	case UI_MOUSE_EVENT: UI_MouseEvent(arg0, arg1); return 0;
 	case UI_REFRESH: UI_Refresh(arg0); return 0;
-	case UI_IS_FULLSCREEN: return UI_IsFullscreen();
+	case UI_IS_FULLSCREEN: return ((trap_Key_GetCatcher() & KEYCATCH_UI) && !uis.onmap);
 	case UI_SET_ACTIVE_MENU: UI_SetActiveMenu(arg0); return 0;
 	case UI_CONSOLE_COMMAND: return UI_ConsoleCommand(arg0);
 	case UI_DRAW_CONNECT_SCREEN: UI_DrawConnectScreen(arg0); return 0;

@@ -862,6 +862,7 @@ extern int anim_weaponSelect;
 
 void ST_AdjustFrom640(float *x, float *y, float *w, float *h);
 void ST_DrawRoundedRect(float x, float y, float width, float height, float radius, float *color);
+void ST_DrawShader(float x, float y, float w, float h, const char *file);
 int ST_ColorEscapes(const char *str);
 void ST_InitCGUI(const char *font);
 void ST_UpdateCGUI(void);

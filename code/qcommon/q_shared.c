@@ -1325,4 +1325,9 @@ void ST_DrawRoundedRect(float x, float y, float width, float height, float radiu
 	trap_R_SetColor(NULL);
 }
 
+void ST_DrawShader(float x, float y, float w, float h, const char *file) {
+	ST_AdjustFrom640(&x, &y, &w, &h);
+	trap_R_DrawStretchPic(x, y, w, h, 0, 0, 1, 1, trap_R_RegisterShaderNoMip(file));
+}
+
 #endif

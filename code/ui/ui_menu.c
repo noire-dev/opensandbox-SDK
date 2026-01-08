@@ -4,21 +4,7 @@
 
 #include "../qcommon/js_local.h"
 
-#define ID_LINK 100
-
-static void MenuEvent(void *ptr, int event) {
-	if(event != QM_ACTIVATED) return;
-
-	switch(((menucommon_s *)ptr)->callid) {
-	case ID_LINK:
-		if(cvarInt("os_windows")) trap_System("start https://opensandbox.neocities.org/");
-		if(cvarInt("os_linux")) trap_System("xdg-open https://opensandbox.neocities.org/");
-		if(cvarInt("os_macos")) trap_System("open https://opensandbox.neocities.org/");
-		break;
-	}
-}
-
-static void MenuDraw(void) {
+void MenuDraw(void) {
 	vec4_t color = {0.85, 0.9, 1.0, 1};
 	qboolean JSWork = JS_MenuCheck();
 	int y, i;
@@ -37,21 +23,12 @@ static void MenuDraw(void) {
 	if(strlen(cvarString("com_errorMessage"))) ST_DrawString(0 - cgui.wideoffset, 0, cvarString("com_errorMessage"), UI_DROPSHADOW, color, 1.00);
 	
 	JS_MenuDraw();
-	Menu_Draw(&ui.menu);
+	Menu_ElementsDraw();
 }
 
 void UI_Menu(void) {
-	memset(&ui, 0, sizeof(uimenu_t));
-	ui.menu.draw = MenuDraw;
-	ui.menu.fullscreen = qtrue;
-
-	UI_CPicture(&ui.e[ID_LINK], 465 + cgui.wideoffset, 410, 158, 55, AST_OSLOGO, 0, NULL, NULL, NULL, MenuEvent, ID_LINK);
-
+    if(trap_Key_GetCatcher() & KEYCATCH_UI) return;
+	memset(&uis.items, 0, sizeof(menuelement_s)*MAX_MENUITEMS);
     JS_MenuInit();
-	UI_CreateUI(&ui.menu, ui.e);
-
-	uis.menusp = 0;
-
 	trap_Key_SetCatcher(KEYCATCH_UI);
-	UI_PushMenu(&ui.menu);
 }

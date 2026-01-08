@@ -42,22 +42,6 @@ void UI_PushMenu(menuframework_s *menu) {
 	int i;
 	menucommon_s *item;
 
-	// avoid stacking menus invoked by hotkeys
-	for(i = 0; i < uis.menusp; i++) {
-		if(uis.stack[i] == menu) {
-			uis.menusp = i;
-			break;
-		}
-	}
-
-	if(i == uis.menusp) {
-		if(uis.menusp >= MAX_MENUDEPTH) trap_Error("UI_PushMenu: menu stack overflow");
-
-		uis.stack[uis.menusp++] = menu;
-	}
-
-	uis.activemenu = menu;
-
 	// default cursor position
 	menu->cursor = 0;
 	menu->cursor_prev = 0;
@@ -79,37 +63,12 @@ void UI_PushMenu(menuframework_s *menu) {
 
 void UI_PopMenu(void) {
 	trap_S_StartLocalSound(menu_out_sound, CHAN_LOCAL_SOUND);
-
-	uis.menusp--;
-
-	if(uis.menusp < 0) UI_ForceMenuOff();
-
-	if(uis.menusp) {
-		uis.activemenu = uis.stack[uis.menusp - 1];
-		uis.firstdraw = qtrue;
-	} else {
-		UI_ForceMenuOff();
-	}
+	UI_ForceMenuOff();
 }
 
 void UI_ForceMenuOff(void) {
-	uis.menusp = 0;
-	uis.activemenu = NULL;
-
 	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
 	trap_Key_ClearStates();
-}
-
-qboolean UI_IsFullscreen(void) {
-	if(uis.activemenu && (trap_Key_GetCatcher() & KEYCATCH_UI)) {
-		if(!uis.onmap) {
-			return uis.activemenu->fullscreen;
-		} else {
-			return 0;
-		}
-	}
-
-	return qfalse;
 }
 
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
@@ -128,61 +87,30 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
 void UI_KeyEvent(int key, int down) {
 	sfxHandle_t s;
 
-	if(!uis.activemenu) {
-		return;
-	}
+	if(!down) return;
 
-	if(!down) {
-		return;
-	}
-
-	if(uis.activemenu->key)
-		s = uis.activemenu->key(key);
-	else
-		s = Menu_DefaultKey(uis.activemenu, key);
+	s = Menu_DefaultKey(key);
 
 	if((s > 0) && (s != menu_null_sound)) trap_S_StartLocalSound(s, CHAN_LOCAL_SOUND);
 }
 
 void UI_MouseEvent(int dx, int dy) {
 	int i;
-	menucommon_s *m;
-
-	if(!uis.activemenu) return;
 
 	// update mouse screen position
 	uis.cursorx += dx;
-	if(uis.cursorx < 0 - cgui.wideoffset)
-		uis.cursorx = 0 - cgui.wideoffset;
-	else if(uis.cursorx > 640 + cgui.wideoffset)
-		uis.cursorx = 640 + cgui.wideoffset;
+	if(uis.cursorx < 0 - cgui.wideoffset) uis.cursorx = 0 - cgui.wideoffset;
+	else if(uis.cursorx > 640 + cgui.wideoffset) uis.cursorx = 640 + cgui.wideoffset;
 
 	uis.cursory += dy;
-	if(uis.cursory < 0)
-		uis.cursory = 0;
-	else if(uis.cursory > 480)
-		uis.cursory = 480;
+	if(uis.cursory < 0) uis.cursory = 0;
+	else if(uis.cursory > 480) uis.cursory = 480;
 
-	// region test the active menu items
-	for(i = 0; i < uis.activemenu->nitems; i++) {
-		m = (menucommon_s *)uis.activemenu->items[i];
-
-		if(m->flags & (QMF_GRAYED | QMF_INACTIVE)) continue;
-
-		if((uis.cursorx < m->left) || (uis.cursorx > m->right) || (uis.cursory < m->top) || (uis.cursory > m->bottom)) continue; // cursor out of item bounds
-
-		// set focus to item at cursor
-		if(uis.activemenu->cursor != i) {
-			Menu_SetCursor(uis.activemenu, i);
-			((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor_prev]))->flags &= ~QMF_HASMOUSEFOCUS;
-		}
-
-		((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags |= QMF_HASMOUSEFOCUS;
+	for(i = 0; i < MAX_MENUITEMS; i++) {
+		if(uis.items[i].flags & (QMF_INACTIVE)) continue;
+		if(!Menu_CursorOnItem(uis.items[i].id)) continue;
+		uis.currentItem = i;
 		return;
-	}
-
-	if(uis.activemenu->nitems > 0) {
-		((menucommon_s *)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS; // out of any region
 	}
 }
 
@@ -229,9 +157,6 @@ void UI_Init(void) {
 
 	// initialize the menu system
 	Menu_Cache();
-
-	uis.activemenu = NULL;
-	uis.menusp = 0;
 }
 
 void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
@@ -239,40 +164,6 @@ void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader) {
 	float s1;
 	float t0;
 	float t1;
-
-	if(w < 0) { // flip about vertical
-		w = -w;
-		s0 = 1;
-		s1 = 0;
-	} else {
-		s0 = 0;
-		s1 = 1;
-	}
-
-	if(h < 0) { // flip about horizontal
-		h = -h;
-		t0 = 1;
-		t1 = 0;
-	} else {
-		t0 = 0;
-		t1 = 1;
-	}
-
-	ST_AdjustFrom640(&x, &y, &w, &h);
-	trap_R_DrawStretchPic(x, y, w, h, s0, t0, s1, t1, hShader);
-}
-
-void UI_DrawPictureElement(float x, float y, float w, float h, const char *file) {
-	float s0;
-	float s1;
-	float t0;
-	float t1;
-	int file_len;
-	qhandle_t hShader;
-
-	file_len = strlen(file);
-
-	hShader = trap_R_RegisterShaderNoMip("menu/element");
 
 	if(w < 0) { // flip about vertical
 		w = -w;
@@ -352,31 +243,20 @@ void UI_Refresh(int realtime) {
 	uis.frametime = realtime - uis.realtime;
 	uis.realtime = realtime;
 
-	if(!(trap_Key_GetCatcher() & KEYCATCH_UI)) {
-		return;
-	}
+	if(!(trap_Key_GetCatcher() & KEYCATCH_UI)) return;
 
 	ST_UpdateCGUI();
 	UI_OnMapStatus();
 	consoleSync(&console, console.linescount);
 
-	if(uis.activemenu) {
-		if(uis.activemenu->fullscreen) {
-			if(!uis.onmap) {
-				trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
-			}
-			trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
-		}
+	if(!uis.onmap) trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 1, 1, uis.menuWallpapers);
+	trap_R_DrawStretchPic(0.0, 0.0, glconfig.vidWidth, glconfig.vidHeight, 0, 0, 0.5, 1, trap_R_RegisterShaderNoMip("menu/assets/blacktrans2"));
 
-		if(uis.activemenu->draw)
-			uis.activemenu->draw();
-		else
-			Menu_Draw(uis.activemenu);
+	MenuDraw();
 
-		if(uis.firstdraw) {
-			UI_MouseEvent(0, 0);
-			uis.firstdraw = qfalse;
-		}
+	if(uis.firstdraw) {
+		UI_MouseEvent(0, 0);
+		uis.firstdraw = qfalse;
 	}
 
 	// draw cursor
@@ -389,10 +269,4 @@ void UI_Refresh(int realtime) {
 		ST_DrawString(x, 10, va("screen: %ix%i", glconfig.vidWidth, glconfig.vidHeight), UI_LEFT, color_white, 1.00);
 		ST_DrawString(x, 20, va("map running: %i", uis.onmap), UI_LEFT, color_white, 1.00);
 	}
-}
-
-qboolean UI_CursorInRect(int x, int y, int width, int height) {
-	if(uis.cursorx < x || uis.cursory < y || uis.cursorx > x + width || uis.cursory > y + height) return qfalse;
-
-	return qtrue;
 }

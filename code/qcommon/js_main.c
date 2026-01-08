@@ -57,18 +57,30 @@ static void JSEntry(const char *entry, const char *name, int idx1, int idx2, int
     foundEntry = qfalse;
 #ifndef GAME
     if(!strcmp(entry, "cgui")) {
-        if(!strcmp(name, "defaultFont[]")) JSE_Int(&cgui.defaultFont[idx1]);
-        if(!strcmp(name, "whiteShader")) JSE_Int(&cgui.whiteShader);
-        if(!strcmp(name, "corner")) JSE_Int(&cgui.corner);
-        if(!strcmp(name, "scale")) JSE_Float(&cgui.scale);
-        if(!strcmp(name, "bias")) JSE_Float(&cgui.bias);
         if(!strcmp(name, "wideoffset")) JSE_Float(&cgui.wideoffset);
         if(!strcmp(name, "colors[][]")) JSE_Float(&cgui.colors[idx1][idx2]);
     }
 #endif
 #ifdef UI
     if(!strcmp(entry, "uis")) {
+        if(!strcmp(name, "cursorx")) JSE_Int(&uis.cursorx);
+        if(!strcmp(name, "cursory")) JSE_Int(&uis.cursory);
         if(!strcmp(name, "onmap")) JSE_Int(&uis.onmap);
+        if(!strcmp(name, "currentItem")) JSE_Int(&uis.currentItem);
+    }
+    if(!strcmp(entry, "uis.items[]")) {
+        if(!strcmp(name, "x")) JSE_Float(&uis.items[idx1].x);
+        if(!strcmp(name, "y")) JSE_Float(&uis.items[idx1].y);
+        if(!strcmp(name, "w")) JSE_Float(&uis.items[idx1].w);
+        if(!strcmp(name, "h")) JSE_Float(&uis.items[idx1].h);
+        if(!strcmp(name, "text")) JSE_String(uis.items[idx1].text, sizeof(uis.items[idx1].text));
+        if(!strcmp(name, "style")) JSE_Int(&uis.items[idx1].style);
+        if(!strcmp(name, "size")) JSE_Float(&uis.items[idx1].size);
+        if(!strcmp(name, "colortext")) JSE_Int(&uis.items[idx1].colortext);
+        if(!strcmp(name, "colorbg")) JSE_Int(&uis.items[idx1].colorbg);
+        if(!strcmp(name, "corner")) JSE_Int(&uis.items[idx1].corner);
+        if(!strcmp(name, "margin")) JSE_Int(&uis.items[idx1].margin);
+        if(!strcmp(name, "action")) JSE_String(uis.items[idx1].action, sizeof(uis.items[idx1].action));
     }
     if(!strcmp(entry, "console")) {
         if(!strcmp(name, "lines[]")) JSE_String(console.lines[idx1], sizeof(console.lines[idx1]));
@@ -81,13 +93,14 @@ static void JSEntry(const char *entry, const char *name, int idx1, int idx2, int
 void VMCall(int func_id) {
     switch(func_id) {
     case VM_ENTRY: JSEntry(vmargs.v[0].s, vmargs.v[1].s, vmargs.v[3].i, vmargs.v[4].i, vmargs.v[5].i, vmargs.v[6].i); break;
-#ifdef CGAME
-    case VM_DRAWSTRING: ST_DrawString(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].s, vmargs.v[3].i, color_white, vmargs.v[4].f); break;
+#ifndef GAME
+    case VM_DRAWSTRING: ST_DrawString(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].s, vmargs.v[3].i, cgui.colors[vmargs.v[4].i], vmargs.v[5].f); break;
+    case VM_DRAWRECTANGLE: ST_DrawRoundedRect(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, cgui.colors[vmargs.v[5].i]); break;
+    case VM_DRAWSHADER: ST_DrawShader(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].s); break;
 #endif
 #ifdef UI
-    case VM_DRAWSTRING: ST_DrawString(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].s, vmargs.v[3].i, color_white, vmargs.v[4].f); break;
-    case VM_DRAWRECT: ST_DrawRoundedRect(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, color_dim); break;
-    case VM_CREATEBUTTON: UI_CButton(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].i, vmargs.v[7].f, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].i, vmargs.v[12].s, NULL); break;
+    case VM_UIRESET: memset(&uis.items, 0, sizeof(menuelement_s)*MAX_MENUITEMS); break;
+    case VM_CREATEBUTTON: vmresult.v.i = UI_CButton(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].i, vmargs.v[7].f, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].i, vmargs.v[12].s, NULL); vmresult.t = JS_TYPE_INT; break;
 #endif
 	}
 }

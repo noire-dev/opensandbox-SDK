@@ -31,13 +31,17 @@ typedef enum {
 	JS_MENUCHECK = 1,
 	JS_MENUINIT = 2,
 	JS_MENUDRAW = 3,
+	JS_MENUKEY = 4,
+	JS_MENUCALLBACK = 5,
 } jscall_t;
 
 typedef enum {
     VM_ENTRY = 0,
-	VM_DRAWSTRING = 1,
-	VM_DRAWRECT = 2,
-	VM_CREATEBUTTON = 3,
+    VM_UIRESET = 1,
+	VM_DRAWSTRING = 2,
+	VM_DRAWRECTANGLE = 3,
+	VM_DRAWSHADER = 4,
+	VM_CREATEBUTTON = 5,
 } vmcall_t;
 
 typedef enum { JS_TYPE_NONE, JS_TYPE_INT, JS_TYPE_FLOAT, JS_TYPE_STRING } js_type_t;
@@ -65,6 +69,12 @@ void JS_Function(int func_id);
 int JS_MenuCheck(void);
 void JS_MenuInit(void);
 void JS_MenuDraw(void);
+void JS_MenuKey(int key);
+void JS_MenuCallback(int id);
+
+// JS Definitions
+#define JSCOLOR_DISABLED 101
+#define JSCOLOR_SELECTED 102
 
 extern js_args_t vmargs;
 extern js_result_t vmresult;
