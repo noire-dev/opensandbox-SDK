@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 void CG_PredictWeaponEffects(centity_t *cent) {
 	vec3_t muzzlePoint, forward, right, up;

@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 static void SB_Shooter_Use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	vec3_t dir;
@@ -39,6 +39,12 @@ static spawn_t gameInfoSandboxEntities[] = {
 // clang-format on
 
 void G_DieProp(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
+	if(self->objectType == OT_VEHICLE || self->objectType == OT_TNT) { // VEHICLE-SYSTEM: vehicle's explode for all
+		G_StartCarExplode(self);
+	}
+	if(self->objectType == OT_NUKE) {
+		G_StartNukeExplode(self);
+	}
 	G_FreeEntity(self);
 }
 
@@ -67,13 +73,13 @@ static void G_TouchProp(gentity_t *self, gentity_t *other, trace_t *trace) {
 static void setModel(gentity_t *ent, char *modelName) {
 	int len;
 	if(!ent || !modelName) {
-		print("Invalid entity or model name\n");
+		Com_Printf("Invalid entity or model name\n");
 		return;
 	}
 
 	len = strlen(modelName);
 	if(len == 0) {
-		print("Model name is empty\n");
+		Com_Printf("Model name is empty\n");
 		return;
 	}
 

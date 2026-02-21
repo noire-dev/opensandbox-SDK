@@ -2,10 +2,10 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 void CG_LoadingString(const char *s, float value) {
-	StringCopy(cg.infoScreenText, va("Loading... %s", s), sizeof(cg.infoScreenText));
+	Q_StringCopy(cg.infoScreenText, va("Loading... %s", s), sizeof(cg.infoScreenText));
 	if(value != -1) cg.infoScreenValue = value;
 	trap_UpdateScreen();
 }
@@ -15,7 +15,7 @@ void CG_LoadingClient(int clientNum) {
 	char personality[MAX_QPATH];
 
 	info = CG_ConfigString(CS_PLAYERS + clientNum);
-	StringCopy(personality, Info_ValueForKey(info, "n"), sizeof(personality));
+	Q_StringCopy(personality, Info_ValueForKey(info, "n"), sizeof(personality));
 	Q_CleanStr(personality);
 	CG_LoadingString(personality, -1);
 }
@@ -60,12 +60,12 @@ void CG_DrawInformation(void) {
 	CG_DrawPic(5 - cgui.wideoffset, 5, 100, 75, levelshot);
 
 	y = 10;
-	StringCopy(buf, Info_ValueForKey(info, "sv_hostname"), 64);
+	Q_StringCopy(buf, Info_ValueForKey(info, "sv_hostname"), 64);
 	Q_CleanStr(buf);
 	ST_DrawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
 
-	StringCopy(buf, Info_ValueForKey(info, "sv_mapname"), 64);
+	Q_StringCopy(buf, Info_ValueForKey(info, "sv_mapname"), 64);
 	Q_CleanStr(buf);
 	ST_DrawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
@@ -74,6 +74,10 @@ void CG_DrawInformation(void) {
 	case GT_SANDBOX: s = "Sandbox"; break;
 	case GT_FFA: s = "Free For All"; break;
 	case GT_TEAM: s = "Team Deathmatch"; break;
+	case GT_CTF: s = "Capture The Flag"; break;
+	case GT_1FCTF: s = "One Flag CTF"; break;
+	case GT_OBELISK: s = "Overload"; break;
+	case GT_HARVESTER: s = "Harvester"; break;
 	default: s = "Unknown Gametype"; break;
 	}
 

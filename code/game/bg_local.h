@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 #define MIN_WALK_NORMAL 0.7f // can't walk on very steep slopes
 #define STEPSIZE 18
@@ -22,6 +22,7 @@ typedef struct {
 	qboolean walking;
 	qboolean groundPlane;
 	trace_t groundTrace;
+	qboolean ladder;
 
 	float impactSpeed;
 

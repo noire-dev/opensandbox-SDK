@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
 static void CG_Shutdown(void);
@@ -26,7 +26,7 @@ intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	case CG_DRAW_ACTIVE_FRAME: CG_DrawActiveFrame(arg0, arg1); return 0;
 	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
 	case VMCALL: VMCall(arg0); return 0;
-	default: err("cgame.qvm: unknown command"); break;
+	default: CG_Error("vmMain: unknown command %i", command); break;
 	}
 	return -1;
 }
@@ -67,6 +67,51 @@ void QDECL CG_PrintfChat(qboolean team, const char *msg, ...) {
 	trap_Print(text);
 }
 
+void QDECL CG_Printf(const char *msg, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, msg);
+	Q_vsnprintf(text, sizeof(text), msg, argptr);
+	va_end(argptr);
+
+	CG_AddToGenericConsole(text, &cgs.console);
+	trap_Print(text);
+}
+
+void QDECL CG_Error(const char *msg, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, msg);
+	Q_vsnprintf(text, sizeof(text), msg, argptr);
+	va_end(argptr);
+
+	trap_Error(text);
+}
+
+void QDECL Com_Error(int level, const char *error, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, error);
+	Q_vsnprintf(text, sizeof(text), error, argptr);
+	va_end(argptr);
+
+	CG_Error("%s", text);
+}
+
+void QDECL Com_Printf(const char *msg, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, msg);
+	Q_vsnprintf(text, sizeof(text), msg, argptr);
+	va_end(argptr);
+
+	CG_Printf("%s", text);
+}
+
 char *CG_Argv(int arg) {
 	static char buffer[MAX_STRING_CHARS];
 
@@ -94,6 +139,22 @@ static void CG_RegisterSounds(void) {
 
 		cgs.media.returnYourTeamSound = trap_S_RegisterSound("sound/teamplay/flagreturn_yourteam.wav", qtrue);
 		cgs.media.returnOpponentSound = trap_S_RegisterSound("sound/teamplay/flagreturn_opponent.wav", qtrue);
+
+		if(cgs.gametype == GT_CTF) {
+			cgs.media.redFlagReturnedSound = trap_S_RegisterSound("sound/teamplay/voc_red_returned.wav", qtrue);
+			cgs.media.blueFlagReturnedSound = trap_S_RegisterSound("sound/teamplay/voc_blue_returned.wav", qtrue);
+			cgs.media.enemyTookYourFlagSound = trap_S_RegisterSound("sound/teamplay/voc_enemy_flag.wav", qtrue);
+			cgs.media.yourTeamTookEnemyFlagSound = trap_S_RegisterSound("sound/teamplay/voc_team_flag.wav", qtrue);
+		}
+
+		if(cgs.gametype == GT_1FCTF) {
+			cgs.media.yourTeamTookTheFlagSound = trap_S_RegisterSound("sound/teamplay/voc_team_1flag.wav", qtrue);
+			cgs.media.enemyTookTheFlagSound = trap_S_RegisterSound("sound/teamplay/voc_enemy_1flag.wav", qtrue);
+		}
+
+		if(cgs.gametype == GT_OBELISK) {
+			cgs.media.yourBaseIsUnderAttackSound = trap_S_RegisterSound("sound/teamplay/voc_base_attack.wav", qtrue);
+		}
 	}
 
 	cgs.media.tracerSound = trap_S_RegisterSound("sound/weapons/machinegun/buletby1.wav", qfalse);
@@ -103,6 +164,17 @@ static void CG_RegisterSounds(void) {
 	cgs.media.gibBounce1Sound = trap_S_RegisterSound("sound/player/gibimp1.wav", qfalse);
 	cgs.media.gibBounce2Sound = trap_S_RegisterSound("sound/player/gibimp2.wav", qfalse);
 	cgs.media.gibBounce3Sound = trap_S_RegisterSound("sound/player/gibimp3.wav", qfalse);
+
+	cgs.media.useInvulnerabilitySound = trap_S_RegisterSound("sound/items/invul_activate.wav", qfalse);
+	cgs.media.invulnerabilityImpactSound1 = trap_S_RegisterSound("sound/items/invul_impact_01.wav", qfalse);
+	cgs.media.invulnerabilityImpactSound2 = trap_S_RegisterSound("sound/items/invul_impact_02.wav", qfalse);
+	cgs.media.invulnerabilityImpactSound3 = trap_S_RegisterSound("sound/items/invul_impact_03.wav", qfalse);
+	cgs.media.invulnerabilityJuicedSound = trap_S_RegisterSound("sound/items/invul_juiced.wav", qfalse);
+
+	cgs.media.obeliskHitSound1 = trap_S_RegisterSound("sound/items/obelisk_hit_01.wav", qfalse);
+	cgs.media.obeliskHitSound2 = trap_S_RegisterSound("sound/items/obelisk_hit_02.wav", qfalse);
+	cgs.media.obeliskHitSound3 = trap_S_RegisterSound("sound/items/obelisk_hit_03.wav", qfalse);
+	cgs.media.obeliskRespawnSound = trap_S_RegisterSound("sound/items/obelisk_respawn.wav", qfalse);
 
 	cgs.media.teleInSound = trap_S_RegisterSound("sound/world/telein.wav", qfalse);
 	cgs.media.teleOutSound = trap_S_RegisterSound("sound/world/teleout.wav", qfalse);
@@ -175,6 +247,9 @@ static void CG_RegisterSounds(void) {
 	cgs.media.sfx_chghit = trap_S_RegisterSound("sound/weapons/vulcan/wvulimpd.wav", qfalse);
 	cgs.media.sfx_chghitflesh = trap_S_RegisterSound("sound/weapons/vulcan/wvulimpl.wav", qfalse);
 	cgs.media.sfx_chghitmetal = trap_S_RegisterSound("sound/weapons/vulcan/wvulimpm.wav", qfalse);
+	cgs.media.kamikazeExplodeSound = trap_S_RegisterSound("sound/items/kam_explode.wav", qfalse);
+	cgs.media.kamikazeImplodeSound = trap_S_RegisterSound("sound/items/kam_implode.wav", qfalse);
+	cgs.media.kamikazeFarSound = trap_S_RegisterSound("sound/items/kam_explode_far.wav", qfalse);
 
 	cgs.media.wstbimplSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbimpl.wav", qfalse);
 	cgs.media.wstbimpmSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbimpm.wav", qfalse);
@@ -233,6 +308,47 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.ptexShader[0] = trap_R_RegisterShader("trans");
 	cgs.media.ptexShader[1] = trap_R_RegisterShader("powerups/quad");
 
+	if(cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER) {
+		cgs.media.redCubeModel = trap_R_RegisterModel("models/powerups/orb/r_orb.md3");
+		cgs.media.blueCubeModel = trap_R_RegisterModel("models/powerups/orb/b_orb.md3");
+		cgs.media.redCubeIcon = trap_R_RegisterShader("icons/skull_red");
+		cgs.media.blueCubeIcon = trap_R_RegisterShader("icons/skull_blue");
+	}
+
+	if(cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF || cgs.gametype == GT_HARVESTER) {
+		cgs.media.redFlagModel = trap_R_RegisterModel("models/flags/r_flag.md3");
+		cgs.media.blueFlagModel = trap_R_RegisterModel("models/flags/b_flag.md3");
+		cgs.media.neutralFlagModel = trap_R_RegisterModel("models/flags/n_flag.md3");
+		cgs.media.redFlagShader[0] = trap_R_RegisterShaderNoMip("icons/iconf_red1");
+		cgs.media.redFlagShader[1] = trap_R_RegisterShaderNoMip("icons/iconf_red2");
+		cgs.media.redFlagShader[2] = trap_R_RegisterShaderNoMip("icons/iconf_red3");
+		cgs.media.blueFlagShader[0] = trap_R_RegisterShaderNoMip("icons/iconf_blu1");
+		cgs.media.blueFlagShader[1] = trap_R_RegisterShaderNoMip("icons/iconf_blu2");
+		cgs.media.blueFlagShader[2] = trap_R_RegisterShaderNoMip("icons/iconf_blu3");
+		cgs.media.redFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/red_base.md3");
+		cgs.media.blueFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/blue_base.md3");
+		cgs.media.neutralFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/ntrl_base.md3");
+	}
+
+	if(cgs.gametype == GT_1FCTF) {
+		cgs.media.neutralFlagModel = trap_R_RegisterModel("models/flags/n_flag.md3");
+	}
+
+	if(cgs.gametype == GT_OBELISK) {
+		cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
+		cgs.media.overloadBaseModel = trap_R_RegisterModel("models/powerups/overload_base.md3");
+		cgs.media.overloadTargetModel = trap_R_RegisterModel("models/powerups/overload_target.md3");
+		cgs.media.overloadLightsModel = trap_R_RegisterModel("models/powerups/overload_lights.md3");
+		cgs.media.overloadEnergyModel = trap_R_RegisterModel("models/powerups/overload_energy.md3");
+	}
+
+	if(cgs.gametype == GT_HARVESTER) {
+		cgs.media.harvesterModel = trap_R_RegisterModel("models/powerups/harvester/harvester.md3");
+		cgs.media.harvesterRedSkin = trap_R_RegisterSkin("models/powerups/harvester/red.skin");
+		cgs.media.harvesterBlueSkin = trap_R_RegisterSkin("models/powerups/harvester/blue.skin");
+		cgs.media.harvesterNeutralModel = trap_R_RegisterModel("models/powerups/obelisk/obelisk.md3");
+	}
+
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff");
 
 	if(cgs.gametype >= GT_TEAM) {
@@ -261,11 +377,24 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");
 	cgs.media.dishFlashModel = trap_R_RegisterModel("models/weaphits/boom01.md3");
 	cgs.media.teleportEffectModel = trap_R_RegisterModel("models/powerups/pop.md3");
+	cgs.media.kamikazeEffectModel = trap_R_RegisterModel("models/weaphits/kamboom2.md3");
+	cgs.media.kamikazeShockWave = trap_R_RegisterModel("models/weaphits/kamwave.md3");
+	cgs.media.kamikazeHeadModel = trap_R_RegisterModel("models/powerups/kamikazi.md3");
+	cgs.media.kamikazeHeadTrail = trap_R_RegisterModel("models/powerups/trailtest.md3");
+	cgs.media.guardPowerupModel = trap_R_RegisterModel("models/powerups/guard_player.md3");
+	cgs.media.scoutPowerupModel = trap_R_RegisterModel("models/powerups/scout_player.md3");
+	cgs.media.doublerPowerupModel = trap_R_RegisterModel("models/powerups/doubler_player.md3");
+	cgs.media.ammoRegenPowerupModel = trap_R_RegisterModel("models/powerups/ammo_player.md3");
+	cgs.media.invulnerabilityImpactModel = trap_R_RegisterModel("models/powerups/shield/impact.md3");
+	cgs.media.invulnerabilityJuicedModel = trap_R_RegisterModel("models/powerups/shield/juicer.md3");
+
+	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel("models/powerups/shield/shield.md3");
 
 	cgs.media.lsmkShader1 = trap_R_RegisterShader("leismoke1");
 	cgs.media.lsmkShader2 = trap_R_RegisterShader("leismoke2");
 	cgs.media.lsmkShader3 = trap_R_RegisterShader("leismoke3");
 	cgs.media.lsmkShader4 = trap_R_RegisterShader("leismoke4");
+	cgs.media.grappleShader = trap_R_RegisterShader("grappleRope");
 
 	cgs.media.lsplShader = trap_R_RegisterShader("leisplash");
 
@@ -318,13 +447,17 @@ static void CG_RegisterGraphics(void) {
 static void CG_RegisterClients(void) {
 	int i;
 
+	CG_LoadingClient(cg.clientNum);
+	CG_NewClientInfo(cg.clientNum);
+
 	for(i = 0; i < MAX_CLIENTS; i++) {
 		const char *clientInfo;
 
+		if(cg.clientNum == i) continue;
 		clientInfo = CG_ConfigString(CS_PLAYERS + i);
 		if(!clientInfo[0]) continue;
 		CG_LoadingClient(i);
-		CG_UpdateClientInfo(i);
+		CG_NewClientInfo(i);
 	}
 }
 
@@ -345,8 +478,19 @@ static void CG_ImportModelsOBJ(void) {
 }
 
 const char *CG_ConfigString(int index) {
-	iferr(index < 0 || index >= MAX_CONFIGSTRINGS);
+	if(index < 0 || index >= MAX_CONFIGSTRINGS) CG_Error("CG_ConfigString: bad index: %i", index);
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[index];
+}
+
+static void CG_StartMusic(void) {
+	char *s;
+	char parm1[MAX_QPATH], parm2[MAX_QPATH];
+
+	// start the background music
+	s = (char *)CG_ConfigString(CS_MUSIC);
+	Q_StringCopy(parm1, COM_Parse(&s), sizeof(parm1));
+	Q_StringCopy(parm2, COM_Parse(&s), sizeof(parm2));
+	trap_S_StartBackgroundTrack(parm1, parm2);
 }
 
 /*
@@ -411,6 +555,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 	CG_LoadingString("Loaded!", 1.00);
+	CG_StartMusic();
 	CG_LoadingString("", 0.0);
 	trap_S_ClearLoopingSounds(qtrue);
 

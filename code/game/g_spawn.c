@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 	int i;
@@ -46,6 +46,9 @@ qboolean G_SpawnVector(const char *key, const char *defaultString, float *out) {
 	sscanf(s, "%f %f %f", &out[0], &out[1], &out[2]);
 	return present;
 }
+
+static void SP_EmptySpawn(gentity_t *ent) { G_SetOrigin(ent, ent->s.origin); }
+static void SP_DeleteSpawn(gentity_t *ent) { G_FreeEntity(ent); }
 
 typedef enum { F_INT, F_FLOAT, F_STRING, F_VECTOR, F_ANGLEHACK, F_IGNORE } fieldtype_t;
 
@@ -105,9 +108,57 @@ static field_t gameInfoFields[] = {
 
 // clang-format off
 spawn_t	gameInfoEntities[] = {
+	{"info_player_start", 			SP_info_player_start},
 	{"info_player_deathmatch", 		SP_info_player_deathmatch},
+	{"info_player_intermission", 	SP_EmptySpawn},
+	{"info_null", 					SP_DeleteSpawn},
+	{"info_notnull", 				SP_EmptySpawn},
+	{"info_camp", 					SP_EmptySpawn},
+	{"func_plat", 					SP_func_plat},
+	{"func_button", 				SP_func_button},
+	{"func_door", 					SP_func_door},
+	{"func_static", 				SP_func_static},
+	{"func_rotating", 				SP_func_rotating},
+	{"func_bobbing", 				SP_func_bobbing},
+	{"func_pendulum", 				SP_func_pendulum},
+	{"func_train", 					SP_func_train},
+	{"func_group", 					SP_DeleteSpawn},
+	{"trigger_always", 				SP_trigger_always},
+	{"trigger_multiple", 			SP_trigger_multiple},
+	{"trigger_push", 				SP_trigger_push},
+	{"trigger_teleport", 			SP_trigger_teleport},
+	{"trigger_hurt", 				SP_trigger_hurt},
+	{"target_give", 				SP_target_give},
+	{"target_delay", 				SP_target_delay},
+	{"target_speaker", 				SP_target_speaker},
+	{"target_print", 				SP_target_print},
+	{"target_teleporter", 			SP_target_teleporter},
+	{"target_relay", 				SP_target_relay},
+	{"target_kill", 				SP_target_kill},
+	{"target_position", 			SP_target_position},
+	{"target_location", 			SP_target_location},
+	{"target_push", 				SP_target_push},
+	{"light", 						SP_DeleteSpawn},
+	{"path_corner", 				SP_path_corner},
+	{"misc_teleporter_dest", 		SP_EmptySpawn},
+	{"misc_model", 					SP_DeleteSpawn},
+	{"misc_portal_surface", 		SP_misc_portal_surface},
+	{"misc_portal_camera", 			SP_misc_portal_camera},
+	{"shooter_rocket", 				SP_shooter_rocket},
+	{"shooter_grenade", 			SP_shooter_grenade},
+	{"shooter_plasma", 				SP_shooter_plasma},
+	{"team_CTF_redplayer", 			SP_EmptySpawn},
+	{"team_CTF_blueplayer", 		SP_EmptySpawn},
+	{"team_CTF_redspawn", 			SP_EmptySpawn},
+	{"team_CTF_bluespawn", 			SP_EmptySpawn},
+	{"team_redobelisk", 			SP_team_redobelisk},
+	{"team_blueobelisk", 			SP_team_blueobelisk},
+	{"team_neutralobelisk", 		SP_team_neutralobelisk},
+	{"script_variable", 			SP_script_variable},
+	{"script_cmd", 					SP_script_cmd},
 	{"sandbox_prop", 				SP_sandbox_prop},
 	{"sandbox_npc", 				SP_sandbox_npc},
+	{"item_botroam", 				SP_EmptySpawn},
 	{NULL, 0}
 };
 // clang-format on
@@ -129,8 +180,42 @@ static qboolean G_CallSpawn(gentity_t *ent) {
 
 	Com_sprintf(itemname, sizeof(itemname), "%s", ent->classname);
 
+	if(cvarInt("g_gametype") == GT_OBELISK) {
+		if(strcmp(itemname, "team_CTF_redflag") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
+		}
+		if(strcmp(itemname, "team_CTF_blueflag") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
+		}
+	}
+	if(cvarInt("g_gametype") == GT_HARVESTER) {
+		if(strcmp(itemname, "team_CTF_redflag") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_redobelisk");
+		}
+		if(strcmp(itemname, "team_CTF_blueflag") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_blueobelisk");
+		}
+		if(strcmp(itemname, "team_CTF_neutralflag") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "team_neutralobelisk");
+		}
+	}
+	if(cvarInt("g_gametype") == GT_FFA || cvarInt("g_gametype") == GT_TEAM) {
+		if(strcmp(itemname, "team_CTF_redplayer") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if(strcmp(itemname, "team_CTF_blueplayer") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if(strcmp(itemname, "team_CTF_redspawn") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+		if(strcmp(itemname, "team_CTF_bluespawn") == 0) {
+			Com_sprintf(itemname, sizeof(itemname), "%s", "info_player_deathmatch");
+		}
+	}
+
 	if(itemname[0] == 0) {
-		print("G_CallSpawn: NULL classname\n");
+		G_Printf("G_CallSpawn: NULL classname\n");
 		return qfalse;
 	}
 
@@ -151,7 +236,7 @@ static qboolean G_CallSpawn(gentity_t *ent) {
 		}
 	}
 
-	print("%s doesn't have a spawn function\n", itemname);
+	G_Printf("%s doesn't have a spawn function\n", itemname);
 	return qfalse;
 }
 
@@ -243,7 +328,7 @@ static void G_SpawnGEntityFromSpawnVars(void) {
 	int i;
 	gentity_t *ent;
 	char *s, *value, *gametypeName;
-	static char *gametypeNames[] = {"sandbox", "ffa", "team"};
+	static char *gametypeNames[] = {"sandbox", "ffa", "team", "ctf", "oneflag", "obelisk", "harvester"};
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -307,7 +392,9 @@ static char *G_AddSpawnVarToken(const char *string) {
 	char *dest;
 
 	l = strlen(string);
-	iferr(level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS);
+	if(level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS) {
+		G_Error("G_AddSpawnVarToken: MAX_SPAWN_VARS");
+	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
 	memcpy(dest, string, l + 1);
@@ -339,22 +426,32 @@ static qboolean G_ParseSpawnVars(void) {
 		// end of spawn string
 		return qfalse;
 	}
-	iferr(com_token[0] != '{');
+	if(com_token[0] != '{') {
+		G_Error("G_ParseSpawnVars: found %s when expecting {", com_token);
+	}
 
 	// go through all the key / value pairs
 	while(1) {
 		// parse key
-		iferr(!trap_GetEntityToken(keyname, sizeof(keyname)));
+		if(!trap_GetEntityToken(keyname, sizeof(keyname))) {
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
+		}
 
 		if(keyname[0] == '}') {
 			break;
 		}
 
 		// parse value
-		iferr(!trap_GetEntityToken(com_token, sizeof(com_token)));
+		if(!trap_GetEntityToken(com_token, sizeof(com_token))) {
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
+		}
 
-		iferr(com_token[0] == '}');
-		iferr(level.numSpawnVars == MAX_SPAWN_VARS);
+		if(com_token[0] == '}') {
+			G_Error("G_ParseSpawnVars: closing brace without data");
+		}
+		if(level.numSpawnVars == MAX_SPAWN_VARS) {
+			G_Error("G_ParseSpawnVars: MAX_SPAWN_VARS");
+		}
 		level.spawnVars[level.numSpawnVars][0] = G_AddSpawnVarToken(keyname);
 		level.spawnVars[level.numSpawnVars][1] = G_AddSpawnVarToken(com_token);
 		level.numSpawnVars++;
@@ -367,7 +464,9 @@ static void SP_worldspawn(void) {
 	char *s;
 
 	G_SpawnString("classname", "", &s);
-	iferr(Q_stricmp(s, "worldspawn"));
+	if(Q_stricmp(s, "worldspawn")) {
+		G_Error("SP_worldspawn: The first entity isn't 'worldspawn'");
+	}
 
 	// make some data visible to connecting client
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
@@ -411,7 +510,9 @@ void G_SpawnEntitiesFromString(void) {
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	iferr(!G_ParseSpawnVars());
+	if(!G_ParseSpawnVars()) {
+		G_Error("SpawnEntities: no entities");
+	}
 	SP_worldspawn();
 
 	// parse ents
@@ -619,11 +720,15 @@ static void G_LoadMapfile(char *filename) {
 	len = FS_Open(filename, &f, FS_READ);
 
 	if(!f) {
-		print("%s", va(S_COLOR_YELLOW "mapfile not found: %s\n", filename));
+		G_Printf("%s", va(S_COLOR_YELLOW "mapfile not found: %s\n", filename));
 		return;
 	}
 
-	iferr(len >= 2500000 * 6);
+	if(len >= 2500000 * 6) {
+		trap_Error(va(S_COLOR_RED "map file too large: %s is %i, max allowed is %i", filename, len, 2500000 * 6));
+		FS_Close(f);
+		return;
+	}
 
 	FS_Read(mapbuffer, len, f);
 	if(len <= 10) return;
@@ -631,6 +736,8 @@ static void G_LoadMapfile(char *filename) {
 	FS_Close(f);
 
 	G_ClearEntities();
+
+	COM_Compress(mapbuffer);
 
 	for(i = 0; i < MAX_MAPFILE_LENGTH; i++) {
 		// Filter comments( start at # and end at break )
@@ -665,13 +772,13 @@ static void G_LoadMapfile(char *filename) {
 	}
 	maxTokennum = tokenNum;
 
-	print("Mapfile parser found %i tokens\n", maxTokennum);
+	G_Printf("Mapfile parser found %i tokens\n", maxTokennum);
 
 	for(tokenNum = 0; tokenNum < maxTokennum; tokenNum++) {
 		if(strcmp(tokens2[tokenNum].value, "{") == 0) {
 			lpar = tokenNum;
 			if(G_AbeforeB2((char *)"{", (char *)"}", tokens2, tokenNum + 2)) {
-				print("error: \"}\" expected at %s\n", tokens2[tokenNum].value);
+				G_Printf("error: \"}\" expected at %s\n", tokens2[tokenNum].value);
 				break;
 			}
 			rpar = G_FindNextToken2((char *)"}", tokens2, tokenNum + 2);
@@ -687,7 +794,7 @@ void G_LoadMapfile_f(void) {
 	char filename[MAX_QPATH];
 
 	if(trap_Argc() < 2) {
-		print("Usage: loadmap <filename>\n");
+		G_Printf("Usage: loadmap <filename>\n");
 		return;
 	}
 
@@ -711,7 +818,7 @@ void G_WriteMapfile_f(void) {
 	byte *b;
 
 	if(trap_Argc() < 2) {
-		print("Usage: savemap <filename>\n");
+		G_Printf("Usage: savemap <filename>\n");
 		return;
 	}
 
@@ -776,7 +883,7 @@ void G_DeleteMapfile_f(void) {
 	char *string;
 
 	if(trap_Argc() < 2) {
-		print("Usage: deletemap <filename>\n");
+		G_Printf("Usage: deletemap <filename>\n");
 		return;
 	}
 

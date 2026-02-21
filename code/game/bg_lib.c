@@ -2,7 +2,8 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/js_local.h"
+#include "../qcommon/q_shared.h"
+#include "bg_lib.h"
 
 static char *med3(char *, char *, char *, cmp_t *);
 static void swapfunc(char *, char *, int, int);
@@ -157,13 +158,22 @@ int strlenru(const char *string) {
 }
 
 int ifstrlenru(const char *string) {
-	int n, i, rucount;
+	int result;
+	int n;
+	int i;
+	int rucount;
+	const char *s;
 
-	n = strlen(string);
+	s = string;
+	result = strlen(s);
+
+	n = strlen(s);
 	rucount = 0;
 
 	for(i = 0; i < n; i++) {
-		if(string[i] >= -64 && string[i] <= -1) rucount += 1;
+		if(s[i] >= -64 && s[i] <= -1) { // ебаный unicode
+			rucount += 1;
+		}
 	}
 	return rucount;
 }

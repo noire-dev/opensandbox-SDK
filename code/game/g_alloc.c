@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 #define POOLSIZE (1024 * 1024) // QVM_MEMORY: 1mb
 static char memoryPool[POOLSIZE];
@@ -11,7 +11,10 @@ static int allocPoint;
 void *G_Alloc(int size) {
 	char *p;
 
-	iferr(allocPoint + size > POOLSIZE);
+	if(allocPoint + size > POOLSIZE) {
+		G_Error("G_Alloc: failed on allocation of %i bytes\n", size);
+		return NULL;
+	}
 
 	p = &memoryPool[allocPoint];
 	allocPoint += (size + 31) & ~31;

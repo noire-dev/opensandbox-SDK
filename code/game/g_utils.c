@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 static int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
 	int i;
@@ -26,7 +26,9 @@ static int G_FindConfigstringIndex(char *name, int start, int max, qboolean crea
 		return 0;
 	}
 
-	iferr(i == max);
+	if(i == max) {
+		G_Error("G_FindConfigstringIndex: overflow");
+	}
 
 	trap_SetConfigstring(start + i, name);
 
@@ -99,7 +101,7 @@ gentity_t *G_PickTarget(char *targetname) {
 	gentity_t *choice[MAXCHOICES];
 
 	if(!targetname) {
-		print("G_PickTarget called with NULL targetname\n");
+		G_Printf("G_PickTarget called with NULL targetname\n");
 		return NULL;
 	}
 
@@ -111,7 +113,7 @@ gentity_t *G_PickTarget(char *targetname) {
 	}
 
 	if(!num_choices) {
-		print("G_PickTarget: target %s not found\n", targetname);
+		G_Printf("G_PickTarget: target %s not found\n", targetname);
 		return NULL;
 	}
 
@@ -150,14 +152,14 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 	t = NULL;
 	while((t = G_Find(t, FOFS(targetname), ent->target)) != NULL) {
 		if(t == ent) {
-			print("WARNING: Entity used itself.\n");
+			G_Printf("WARNING: Entity used itself.\n");
 		} else {
 			if(t->use) {
 				t->use(t, ent, activator);
 			}
 		}
 		if(!ent->inuse) {
-			print("entity was removed while using targets\n");
+			G_Printf("entity was removed while using targets\n");
 			return;
 		}
 	}
@@ -252,7 +254,7 @@ gentity_t *G_Spawn(void) {
 		}
 	}
 	if(i >= cvarInt("g_maxEntities") - 1) {
-		print("G_Spawn: no free entities. Check g_maxEntities cvar\n");
+		G_Printf("G_Spawn: no free entities. Check g_maxEntities cvar\n");
 		G_FreeEntity(e);
 		return e;
 	}
@@ -370,7 +372,7 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	int bits;
 
 	if(!event) {
-		print("G_AddEvent: zero event added for entity %i\n", ent->s.number);
+		G_Printf("G_AddEvent: zero event added for entity %i\n", ent->s.number);
 		return;
 	}
 
@@ -566,33 +568,12 @@ gentity_t *FindRandomItem(void) {
 gentity_t *FindRandomSpawn(void) {
 	gentity_t *finded[MAX_GENTITIES];
 	int i, num_finded = 0;
-	const char *classname = "info_player_deathmatch";
 
 	for(i = 0; i < level.num_entities; i++) {
 		gentity_t *ent = &g_entities[i];
 
 		if(!ent->inuse) continue;
-		if(!strcmp(ent->classname, classname)) {
-			finded[num_finded++] = ent;
-			if(num_finded >= MAX_GENTITIES) break;
-		}
-	}
-
-	if(num_finded > 0) return finded[rand() % num_finded];
-
-	return NULL;
-}
-
-gentity_t *FindRandomTeamSpawn(team_t team) {
-	gentity_t *finded[MAX_GENTITIES];
-	int i, num_finded = 0;
-	const char *classname = (team == TEAM_RED) ? "info_player_redspawn" : "info_player_bluespawn";
-
-	for(i = 0; i < level.num_entities; i++) {
-		gentity_t *ent = &g_entities[i];
-
-		if(!ent->inuse) continue;
-		if(!strcmp(ent->classname, classname)) {
+		if(!strcmp(ent->classname, "info_player_deathmatch") || !strcmp(ent->classname, "team_CTF_redspawn") || !strcmp(ent->classname, "team_CTF_bluespawn")) {
 			finded[num_finded++] = ent;
 			if(num_finded >= MAX_GENTITIES) break;
 		}

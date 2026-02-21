@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 qboolean G_BotConnect(int clientNum) {
 	bot_settings_t settings;
@@ -10,7 +10,7 @@ qboolean G_BotConnect(int clientNum) {
 
 	trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
 
-	StringCopy(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
+	Q_StringCopy(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
 
 	if(!BotAISetupClient(clientNum, &settings)) {
 		trap_DropClient(clientNum, "BotAISetupClient failed");
@@ -49,14 +49,14 @@ void G_AddBot(char *model, char *name, char *team, gentity_t *spawn) {
 
 	// dynamic limit
 	if(level.numConnectedClients >= cvarInt("g_maxClients")) {
-		print(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
+		G_Printf(S_COLOR_YELLOW "Server is full, increase g_maxClients.\n");
 		return;
 	}
 
 	// have the server allocate a client slot
 	clientNum = trap_BotAllocateClient();
 	if(clientNum == -1) {
-		print(S_COLOR_YELLOW "Server is full, increase engine limit.\n");
+		G_Printf(S_COLOR_YELLOW "Server is full, increase engine limit.\n");
 		return;
 	}
 
@@ -106,7 +106,7 @@ void Svcmd_AddBot_f(void) {
 
 	trap_Argv(1, model, sizeof(model));
 	if(!model[0]) {
-		print("Usage: addbot <model/skin> [name] [team]\n");
+		trap_Print("Usage: addbot <model/skin> [name] [team]\n");
 		return;
 	}
 

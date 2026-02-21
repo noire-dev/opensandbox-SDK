@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 level_locals_t level;
 gentity_t g_entities[MAX_GENTITIES];
@@ -40,10 +40,31 @@ intptr_t vmMain(int command, int arg0, int arg1, int arg2) {
 	case BOTAI_START_FRAME: return AI_Frame(arg0);
 	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
 	case VMCALL: VMCall(arg0); return 0;
-	default: err("game.qvm: unknown command"); break;
 	}
 
 	return -1;
+}
+
+void QDECL G_Printf(const char *fmt, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(text, sizeof(text), fmt, argptr);
+	va_end(argptr);
+
+	trap_Print(text);
+}
+
+void QDECL G_Error(const char *fmt, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(text, sizeof(text), fmt, argptr);
+	va_end(argptr);
+
+	trap_Error(text);
 }
 
 /*
@@ -90,7 +111,7 @@ static void G_FindTeams(void) {
 		}
 	}
 
-	print("%i teams with %i entities\n", c, c2);
+	G_Printf("%i teams with %i entities\n", c, c2);
 }
 
 /*
@@ -101,7 +122,7 @@ G_CheckCvars
 static void G_CheckCvars(void) {
 	// check some things
 	if(cvarInt("g_gametype") < 0 || cvarInt("g_gametype") >= GT_MAX_GAME_TYPE) {
-		print("g_gametype %i is out of range, defaulting to 0\n", cvarInt("g_gametype"));
+		G_Printf("g_gametype %i is out of range, defaulting to 0\n", cvarInt("g_gametype"));
 		cvarSet("g_gametype", "0");
 	}
 }
@@ -114,8 +135,8 @@ G_InitGame
 static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	int i;
 
-	print("------- Game Initialization -------\n");
-	print("gamedate: %s\n", __DATE__);
+	G_Printf("------- Game Initialization -------\n");
+	G_Printf("gamedate: %s\n", __DATE__);
 
 	srand(randomSeed);
 
@@ -161,6 +182,11 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 	// general initialization
 	G_FindTeams();
 
+	// make sure we have flags for CTF, etc
+	if(cvarInt("g_gametype") >= GT_TEAM) {
+		G_CheckTeamItems();
+	}
+
 	if(cvarInt("bot_enable")) {
 		BotAISetup(restart);
 		BotAILoadMap(restart);
@@ -179,7 +205,7 @@ G_ShutdownGame
 static void G_ShutdownGame(int restart) {
 	int i;
 
-	print("==== ShutdownGame ====\n");
+	G_Printf("==== ShutdownGame ====\n");
 
 	// drop all bots from game in single player
 	for(i = 0; i < MAX_CLIENTS; i++) {
@@ -191,6 +217,28 @@ static void G_ShutdownGame(int restart) {
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 	BotAIShutdown(restart);
+}
+
+void QDECL Com_Error(int level, const char *error, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, error);
+	Q_vsnprintf(text, sizeof(text), error, argptr);
+	va_end(argptr);
+
+	G_Error("%s", text);
+}
+
+void QDECL Com_Printf(const char *msg, ...) {
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, msg);
+	Q_vsnprintf(text, sizeof(text), msg, argptr);
+	va_end(argptr);
+
+	G_Printf("%s", text);
 }
 
 /*
@@ -402,10 +450,33 @@ void MoveClientToIntermission(gentity_t *ent) {
 	ent->r.contents = 0;
 }
 
+/*
+==================
+FindIntermissionPoint
+
+This is also used for spectator spawns
+==================
+*/
 void FindIntermissionPoint(void) {
-	VectorClear(level.intermission_origin);
-	level.intermission_origin[2] = 16384;
-	VectorClear(level.intermission_angle);
+	gentity_t *ent, *target;
+	vec3_t dir;
+
+	// find the intermission spot
+	ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
+	if(!ent) { // the map creator forgot to put in an intermission point...
+		SelectSpawnPoint(vec3_origin, level.intermission_origin, level.intermission_angle);
+	} else {
+		VectorCopy(ent->s.origin, level.intermission_origin);
+		VectorCopy(ent->s.angles, level.intermission_angle);
+		// if it has a target, look towards it
+		if(ent->target) {
+			target = G_PickTarget(ent->target);
+			if(target) {
+				VectorSubtract(target->s.origin, level.intermission_origin, dir);
+				vectoangles(dir, level.intermission_angle);
+			}
+		}
+	}
 }
 
 /*
@@ -672,7 +743,7 @@ static void CheckExitRules(void) {
 		return;
 	}
 
-	if(cvarInt("g_gametype") <= GT_TEAM && cvarInt("g_fraglimit")) {
+	if(cvarInt("g_gametype") < GT_CTF && cvarInt("g_fraglimit")) {
 		if(level.teamScores[TEAM_RED] >= cvarInt("g_fraglimit")) {
 			trap_SendServerCommand(-1, "print \"Red hit the fraglimit.\n\"");
 			LevelExit();
@@ -699,6 +770,20 @@ static void CheckExitRules(void) {
 				trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " hit the fraglimit.\n\"", cl->pers.netname));
 				return;
 			}
+		}
+	}
+
+	if(cvarInt("g_gametype") >= GT_CTF && cvarInt("g_capturelimit")) {
+		if(level.teamScores[TEAM_RED] >= cvarInt("g_capturelimit")) {
+			trap_SendServerCommand(-1, "print \"Red hit the capturelimit.\n\"");
+			LevelExit();
+			return;
+		}
+
+		if(level.teamScores[TEAM_BLUE] >= cvarInt("g_capturelimit")) {
+			trap_SendServerCommand(-1, "print \"Blue hit the capturelimit.\n\"");
+			LevelExit();
+			return;
 		}
 	}
 }
@@ -744,7 +829,9 @@ void G_RunThink(gentity_t *ent) {
 	}
 
 	ent->nextthink = 0;
-	iferr(!ent->think);
+	if(!ent->think) {
+		G_Error("NULL ent->think");
+	}
 	ent->think(ent);
 }
 
@@ -813,6 +900,11 @@ static void G_RunFrame(int levelTime) {
 
 		if(ent->s.eType == ET_ITEM && ent->sandboxObject || ent->sandboxObject) {
 			Phys_Frame(ent);
+			continue;
+		}
+
+		if(ent->s.eType == ET_MOVER) {
+			G_RunMover(ent);
 			continue;
 		}
 

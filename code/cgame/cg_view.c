@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 static void CG_CalcVrect(void) {
 	cg.refdef.width = glconfig.vidWidth;
@@ -14,6 +14,9 @@ static void CG_CalcVrect(void) {
 	cg.refdef.x = (glconfig.vidWidth - cg.refdef.width) / 2;
 	cg.refdef.y = (glconfig.vidHeight - cg.refdef.height) / 2;
 }
+
+extern vec3_t headpos;
+extern vec3_t headang;
 
 static void CG_OffsetThirdPersonView(void) {
 	vec3_t forward, right, up;
@@ -313,6 +316,24 @@ static void CG_CalcViewValues(void) {
 		CG_OffsetFirstPersonView();
 	}
 
+	// leilei - View-from-the-model-eyes feature, aka "fullbody awareness" lol
+	if(cg.renderingEyesPerson && !cg.renderingThirdPerson) {
+		vec3_t forward, up;
+		cg.refdefViewAngles[ROLL] = headang[ROLL];
+		cg.refdefViewAngles[PITCH] = headang[PITCH];
+		cg.refdefViewAngles[YAW] = headang[YAW];
+
+		AngleVectors(headang, forward, NULL, up);
+		if(cg.renderingEyesPerson) {
+			VectorMA(headpos, cvarFloat("cg_cameraEyes_Fwd"), forward, headpos);
+			VectorMA(headpos, cvarFloat("cg_cameraEyes_Up"), up, headpos);
+		}
+
+		cg.refdef.vieworg[0] = ps->origin[0] + headpos[0];
+		cg.refdef.vieworg[1] = ps->origin[1] + headpos[1];
+		cg.refdef.vieworg[2] = ps->origin[2] + headpos[2];
+	}
+
 	// position eye reletive to origin
 	AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
 
@@ -359,7 +380,7 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 		return;
 	}
 
-	trap_SetUserCmdValue(cg.zoomSensitivity);
+	trap_SetUserCmdValue(cg.weaponSelect, cg.zoomSensitivity);
 	cg.clientFrame++;
 	CG_PredictPlayerState();
 

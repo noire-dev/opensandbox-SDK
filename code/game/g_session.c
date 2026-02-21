@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 /*
 ================
@@ -90,7 +90,7 @@ void G_InitWorldSession(void) {
 	// if the gametype changed since the last session, don't use any client sessions
 	if(cvarInt("g_gametype") != gt) {
 		level.newSession = qtrue;
-		print("Gametype changed, clearing session data.\n");
+		G_Printf("Gametype changed, clearing session data.\n");
 	}
 }
 

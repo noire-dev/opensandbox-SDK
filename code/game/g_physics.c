@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 #define PHYS_COL 0.75
 #define PHYS_COL_CHECK 0.75
@@ -384,7 +384,7 @@ void Phys_HoldFrame(gentity_t *player, vec3_t velocity, qboolean isPhysgun) {
 		VectorCopy(end, ent->s.pos.trBase);
 		VectorCopy(end, ent->r.currentOrigin);
 		Phys_Enable(ent);
-		if(player->client->pers.cmd.buttons & BUTTON_USE && isPhysgun) { // rotate
+		if(player->client->pers.cmd.buttons & BUTTON_GESTURE && isPhysgun) { // rotate
 			if(!ent->r.bmodel) {
 				ent->s.apos.trBase[0] = player->client->pers.cmd.angles[0];
 			}
@@ -424,7 +424,9 @@ static void Phys_RunPhysThink(gentity_t *ent) {
 	}
 
 	ent->phys_nextthink = 0;
-	iferr(!ent->phys_think);
+	if(!ent->phys_think) {
+		G_Error("NULL ent->phys_think");
+	}
 	ent->phys_think(ent);
 }
 
@@ -886,6 +888,14 @@ static void Phys_Impact(gentity_t *ent, trace_t *tr) {
 				if(hit->grabbedEntity != ent) {
 					if(ent->s.pos.trType != TR_GRAVITY_WATER) {
 						if(ent->objectType == OT_BASIC) {
+							G_AddEvent(ent, EV_OT1_IMPACT, 0);
+							Phys_Smoke(ent, impactForceAll * 0.20);
+						}
+						if(ent->objectType == OT_VEHICLE) {
+							G_AddEvent(ent, EV_CRASH25, 0);
+							Phys_Smoke(ent, impactForceAll * 0.20);
+						}
+						if(ent->objectType == OT_TNT) {
 							G_AddEvent(ent, EV_OT1_IMPACT, 0);
 							Phys_Smoke(ent, impactForceAll * 0.20);
 						}

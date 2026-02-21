@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 markPoly_t cg_activeMarkPolys; // double linked list
 markPoly_t *cg_freeMarkPolys;  // single linked list
@@ -29,7 +29,7 @@ void CG_InitMarkPolys(void) {
 }
 
 static void CG_FreeMarkPoly(markPoly_t *le) {
-	iferr(!le->prevMark);
+	if(!le->prevMark) CG_Error("CG_FreeLocalEntity: not active");
 
 	// remove from the doubly linked active list
 	le->prevMark->nextMark = le->nextMark;

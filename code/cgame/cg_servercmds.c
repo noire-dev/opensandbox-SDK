@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 #define NUM_DATA 2
 #define FIRST_DATA 3
@@ -24,6 +24,11 @@ static void CG_ParseScores(void) {
 
 		if(cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS) cg.scores[i].client = 0;
 	}
+}
+
+static void CG_ParseObeliskHealth(void) {
+	cg.redObeliskHealth = atoi(CG_Argv(1));
+	cg.blueObeliskHealth = atoi(CG_Argv(2));
 }
 
 static void CG_ParseRespawnTime(void) { cg.respawnTime = atoi(CG_Argv(1)); }
@@ -90,9 +95,19 @@ void CG_ParseServerinfo(void) {
 }
 
 void CG_SetConfigValues(void) {
+	const char *s;
+
 	cgs.scores1 = atoi(CG_ConfigString(CS_SCORES1));
 	cgs.scores2 = atoi(CG_ConfigString(CS_SCORES2));
 	cgs.levelStartTime = atoi(CG_ConfigString(CS_LEVEL_START_TIME));
+	if(cgs.gametype == GT_CTF) {
+		s = CG_ConfigString(CS_FLAGSTATUS);
+		cgs.redflag = s[0] - '0';
+		cgs.blueflag = s[1] - '0';
+	} else if(cgs.gametype == GT_1FCTF) {
+		s = CG_ConfigString(CS_FLAGSTATUS);
+		cgs.flagStatus = s[0] - '0';
+	}
 }
 
 static void CG_ConfigStringModified(void) {
@@ -109,7 +124,9 @@ static void CG_ConfigStringModified(void) {
 	str = CG_ConfigString(num);
 
 	// do something with it if necessary
-	if(num == CS_SERVERINFO) {
+	if(num == CS_MUSIC) {
+		CG_StartMusic();
+	} else if(num == CS_SERVERINFO) {
 		CG_ParseServerinfo();
 	} else if(num == CS_SCORES1) {
 		cgs.scores1 = atoi(str);
@@ -124,7 +141,15 @@ static void CG_ConfigStringModified(void) {
 	} else if(num >= CS_SOUNDS && num < CS_SOUNDS + MAX_SOUNDS) {
 		if(str[0] != '*') cgs.gameSounds[num - CS_SOUNDS] = trap_S_RegisterSound(str, qfalse); // player specific sounds don't register here
 	} else if(num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS) {
-		CG_UpdateClientInfo(num - CS_PLAYERS);
+		CG_NewClientInfo(num - CS_PLAYERS);
+	} else if(num == CS_FLAGSTATUS) {
+		if(cgs.gametype == GT_CTF) {
+			// format is rb where its red/blue, 0 is at base, 1 is taken, 2 is dropped
+			cgs.redflag = str[0] - '0';
+			cgs.blueflag = str[1] - '0';
+		} else if(cgs.gametype == GT_1FCTF) {
+			cgs.flagStatus = str[0] - '0';
+		}
 	}
 }
 
@@ -133,6 +158,7 @@ static void CG_MapRestart(void) {
 	CG_InitMarkPolys();
 	cg.intermissionStarted = qfalse;
 	cg.mapRestart = qtrue;
+	CG_StartMusic();
 	trap_S_ClearLoopingSounds(qtrue);
 }
 
@@ -157,6 +183,16 @@ static void CG_ServerCommand(void) {
 
 	if(!cmd[0]) return;
 
+	if(!strcmp(cmd, "cp")) {
+		CG_CenterPrint(CG_Argv(1), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+		return;
+	}
+
+	if(!strcmp(cmd, "lp")) {
+		CG_CenterPrint(CG_Argv(1), SCREEN_HEIGHT * 0.85, BASEFONT_INDENT);
+		return;
+	}
+
 	if(!strcmp(cmd, "clcmd")) {
 		trap_Cmd(EXEC_INSERT, CG_Argv(1));
 		return;
@@ -172,19 +208,19 @@ static void CG_ServerCommand(void) {
 		return;
 	}
 
-	if(!strcmp(cmd, "bc")) {
+	if(!strcmp(cmd, "print")) {
 		// if the message to print is about a client being dropped after a silent drop, suppress the drop message
 		arg = CG_Argv(1);
 		offset = strlen(arg) - strlen("DR_SILENT_DROP") - 1;
 		if(!strcmp(&arg[offset], "DR_SILENT_DROP\n")) return;
 
-		print("%s", CG_Argv(1));
+		CG_Printf("%s", CG_Argv(1));
 		return;
 	}
 
 	if(!strcmp(cmd, "chat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
+		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qfalse, "%s\n", text);
 		return;
@@ -192,7 +228,7 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "tchat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
+		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qtrue, "%s\n", text);
 		return;
@@ -205,6 +241,11 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "map_restart")) {
 		CG_MapRestart();
+		return;
+	}
+
+	if(!strcmp(cmd, "oh")) {
+		CG_ParseObeliskHealth();
 		return;
 	}
 
@@ -229,11 +270,11 @@ static void CG_ServerCommand(void) {
 	}
 
 	if(!strcmp(cmd, "t_info")) {
-		StringCopy(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
+		Q_StringCopy(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
 		return;
 	}
 
-	print("Unknown client game command: %s\n", cmd);
+	CG_Printf("Unknown client game command: %s\n", cmd);
 }
 
 void CG_ExecuteNewServerCommands(int latestSequence) {

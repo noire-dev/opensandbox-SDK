@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 /*
 ================
@@ -25,12 +25,11 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 	case UI_DRAW_CONNECT_SCREEN: UI_DrawConnectScreen(arg0); return 0;
 	case GETVMCONTEXT: VMContext(&vmargs, &vmresult); return 0;
 	case VMCALL: VMCall(arg0); return 0;
-	default: err("ui.qvm: unknown command"); break;
 	}
 	return -1;
 }
 
-const char *gametype_items[GT_MAX_GAME_TYPE + 1] = {"Sandbox", "Free For All", "Team Deathmatch", 0};
+const char *gametype_items[GT_MAX_GAME_TYPE + 1] = {"Sandbox", "Free For All", "Team Deathmatch", "Capture the Flag", "One Flag Capture", "Overload", "Harvester", 0};
 
 console_t console;
 int consoleLines = 0;

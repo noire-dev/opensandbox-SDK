@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 static void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 	float left, front, up;
@@ -139,6 +139,17 @@ static void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops, qboolean 
 		}
 	} else if(ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS]) {
 		trap_S_StartLocalSound(cgs.media.hitTeamSound, CHAN_LOCAL_SOUND);
+	}
+
+	// health change check
+	if(isVehicle) {
+		if(ps->stats[STAT_VEHICLEHP] < ops->stats[STAT_VEHICLEHP] - 1 && ps->stats[STAT_VEHICLEHP] > 0) {
+			trap_S_StartSound(NULL, cg.predictedPlayerEntity.currentState.number, CHAN_VOICE, CG_CustomSound(cg.predictedPlayerEntity.currentState.number, "sound/vehicle/damage50.ogg"));
+		}
+	} else {
+		if(ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH] - 1 && ps->stats[STAT_HEALTH] > 0) {
+			CG_PainEvent(&cg.predictedPlayerEntity, ps->stats[STAT_HEALTH]);
+		}
 	}
 
 	// don't start voice in intermission

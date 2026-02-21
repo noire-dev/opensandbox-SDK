@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/javascript.h"
+#include "../qcommon/js_local.h"
 
 void MenuDraw(void) {
 	vec4_t color = {0.85, 0.9, 1.0, 1};
@@ -28,13 +28,6 @@ void MenuDraw(void) {
 
 void UI_Menu(void) {
     if(trap_Key_GetCatcher() & KEYCATCH_UI) return;
-	memset(&uis.items, 0, sizeof(menuelement_s)*MAX_MENUITEMS);
-    JS_MenuInit();
-	trap_Key_SetCatcher(KEYCATCH_UI);
-}
-
-void UI_HotReloadJS(void) {
-    trap_Cmd(EXEC_NOW, "js.restart \n");
 	memset(&uis.items, 0, sizeof(menuelement_s)*MAX_MENUITEMS);
     JS_MenuInit();
 	trap_Key_SetCatcher(KEYCATCH_UI);

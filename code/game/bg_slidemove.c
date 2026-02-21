@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../shared/engine.h"
+#include "../qcommon/q_shared.h"
 #include "bg_local.h"
 #include "bg_public.h"
 
