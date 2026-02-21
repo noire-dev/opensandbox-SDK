@@ -14,8 +14,25 @@ typedef struct {
 	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
 
-typedef enum { UIMENU_NONE, UIMENU_MAIN, UIMENU_INGAME } uiMenuCommand_t;
+// clang-format off
+typedef enum {
+    UI_DISABLE,
+    UI_ENABLE
+} uiMenuCommand_t;
+// clang-format on
 
-typedef enum { UI_INIT = 0, UI_SHUTDOWN, UI_KEY_EVENT, UI_MOUSE_EVENT, UI_REFRESH, UI_IS_FULLSCREEN, UI_SET_ACTIVE_MENU, UI_CONSOLE_COMMAND, UI_DRAW_CONNECT_SCREEN } uiExport_t;
+// clang-format off
+typedef enum {
+    UI_INIT = 0,
+    UI_SHUTDOWN,
+    UI_KEY_EVENT,
+    UI_MOUSE_EVENT,
+    UI_REFRESH,
+    UI_IS_FULLSCREEN,
+    UI_SET_ACTIVE_MENU,
+    UI_CONSOLE_COMMAND,
+    UI_DRAW_CONNECT_SCREEN
+} uiExport_t;
+// clang-format on
 
 #endif

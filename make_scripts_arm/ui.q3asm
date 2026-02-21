@@ -5,9 +5,7 @@ ui_main
 ..\q_sharedsyscalls_client
 ui_atoms
 ui_connect
-ui_gameinfo
 ui_menu
-ui_players
 ui_qmenu
 bg_misc
 javascript

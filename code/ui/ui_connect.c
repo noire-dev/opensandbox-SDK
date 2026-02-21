@@ -2,7 +2,7 @@
 // Copyright (C) 2023-2025 Noire.dev
 // OpenSandbox — GPLv2; see LICENSE for details.
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 qboolean passwordNeeded = qtrue;
 menuelement_s passwordField;
@@ -36,25 +36,18 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	info[0] = '\0';
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 
-	Menu_Cache();
-
 	black = trap_R_RegisterShaderNoMip("gfx/colors/black");
 	logo = trap_R_RegisterShaderNoMip("menu/logo");
-	loading = trap_R_RegisterShaderNoMip("menu/assets/loading");
+	loading = trap_R_RegisterShaderNoMip("menu/loading");
 
-	// print any server info (server full, bad version, etc)
-	if(cstate.connState < CA_CONNECTED) {
-		ST_DrawString(2 - cgui.wideoffset, 2, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
-	}
-	if(lastConnState > cstate.connState) {
-		lastLoadingText[0] = '\0';
-	}
+	if(cstate.connState < CA_CONNECTED) drawString(320, 200, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
+	if(lastConnState > cstate.connState) lastLoadingText[0] = '\0';
 	lastConnState = cstate.connState;
 
 	y = 460 - BASEFONT_HEIGHT;
 	for(i = console.linescount; i > console.linescount - LOADING_LINES; i--) {
 		if(i <= 0) break;
-		ST_DrawString(15 - cgui.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
+		drawString(15 - cgui.wideoffset, y, console.lines[i], UI_DROPSHADOW, color_white, 0.90);
 		y -= BASEFONT_HEIGHT;
 	}
 
@@ -67,9 +60,8 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	default: return;
 	}
 
-	UI_DrawHandlePic(0 - (cgui.wideoffset + 1), 0, SCREEN_WIDTH + (cgui.wideoffset * 2) + 2, SCREEN_HEIGHT * 3, black);
-	UI_DrawHandlePic(320 - 50, 240 - 75, 100, 100, logo);
-	UI_DrawHandlePic(320 - 24, 320 - 48, 48, 48, loading);
+	drawShader(320 - 50, 240 - 75, 100, 100, "menu/logo");
+	drawShader(320 - 24, 320 - 48, 48, 48, "menu/loading");
 
-	ST_DrawString(2 - cgui.wideoffset, 2, s, UI_DROPSHADOW, color_white, 1.00);
+	drawString(2 - cgui.wideoffset, 2, s, UI_DROPSHADOW, color_white, 1.00);
 }

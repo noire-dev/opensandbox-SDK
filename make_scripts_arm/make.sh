@@ -165,7 +165,6 @@ cd linux/build/ui
 
 $cc ../../../code/ui/ui_atoms.c
 $cc ../../../code/ui/ui_connect.c
-$cc ../../../code/ui/ui_gameinfo.c
 $cc ../../../code/ui/ui_main.c
 $cc ../../../code/ui/ui_menu.c
 $cc ../../../code/ui/ui_qmenu.c
