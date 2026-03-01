@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static pmove_t cg_pmove;
 
@@ -397,7 +396,7 @@ void CG_PredictPlayerState(void) {
 		if(trap_Key_GetCatcher() == KEYCATCH_UI || trap_Key_GetCatcher() & KEYCATCH_CONSOLE) {
 			cg.savedSens = 0;
 		} else {
-			if(cg_pmove.cmd.buttons & BUTTON_GESTURE && cg_pmove.cmd.buttons & BUTTON_ATTACK && cg_pmove.cmd.weapon == WP_PHYSGUN) {
+			if(cg_pmove.cmd.buttons & BUTTON_GESTURE && cg_pmove.cmd.buttons & BUTTON_ATTACK && cg_pmove.ps->weapon == WP_PHYSGUN) {
 				cvarSet("sensitivity", "0.025");
 			} else {
 				if(cg.savedSens && cg.savedSens != 0.025) cvarSet("sensitivity", va("%.3f", cg.savedSens));

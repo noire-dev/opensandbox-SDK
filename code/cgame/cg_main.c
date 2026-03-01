@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum);
 static void CG_Shutdown(void);
@@ -99,17 +98,6 @@ void QDECL Com_Error(int level, const char *error, ...) {
 	va_end(argptr);
 
 	CG_Error("%s", text);
-}
-
-void QDECL Com_Printf(const char *msg, ...) {
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr, msg);
-	Q_vsnprintf(text, sizeof(text), msg, argptr);
-	va_end(argptr);
-
-	CG_Printf("%s", text);
 }
 
 char *CG_Argv(int arg) {
@@ -488,8 +476,8 @@ static void CG_StartMusic(void) {
 
 	// start the background music
 	s = (char *)CG_ConfigString(CS_MUSIC);
-	Q_StringCopy(parm1, COM_Parse(&s), sizeof(parm1));
-	Q_StringCopy(parm2, COM_Parse(&s), sizeof(parm2));
+	StringCopy(parm1, Q3Parse(&s), sizeof(parm1));
+	StringCopy(parm2, Q3Parse(&s), sizeof(parm2));
 	trap_S_StartBackgroundTrack(parm1, parm2);
 }
 
@@ -505,7 +493,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	const char *s;
 	
 	// init cvars and commands
-	ST_RegisterCvars();
+	registerCvars();
 	CG_CreateCvars();
 	CG_InitConsoleCommands();
 
@@ -523,7 +511,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
-	ST_InitCGUI("default");
+	initCGUI("default");
 
 	CG_LoadingString("sourcetech.script", 0.20);
 

@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #define FADE_TIME 500
 #define DAMAGE_TIME 500
@@ -386,8 +385,8 @@ typedef struct {
 	// input state sent to server
 	int weaponSelect;
 
-	int swep_listcl[WEAPONS_NUM];
-	int swep_spawncl[WEAPONS_NUM]; // stores spawn weapons
+	int weapon_list[WEAPONS_NUM];
+	int weapon_spawn[WEAPONS_NUM]; // stores spawn weapons
 
 	float savedSens; // physgun
 
@@ -805,7 +804,6 @@ void QDECL CG_PrintfChat(qboolean team, const char *msg, ...);
 void QDECL CG_Printf(const char *msg, ...);
 void QDECL CG_Error(const char *msg, ...);
 void QDECL Com_Error(int level, const char *error, ...);
-void QDECL Com_Printf(const char *msg, ...);
 char *CG_Argv(int arg);
 const char *CG_ConfigString(int index);
 
@@ -895,7 +893,7 @@ qboolean trap_GetSnapshot(int snapshotNumber, snapshot_t *snapshot);
 qboolean trap_GetServerCommand(int serverCommandNumber);
 int trap_GetCurrentCmdNumber(void);
 qboolean trap_GetUserCmd(int cmdNumber, usercmd_t *ucmd);
-void trap_SetUserCmdValue(int stateValue, float sensitivityScale);
+void trap_SetUserCmdValue(float sensitivityScale);
 int trap_Key_GetKey(const char *binding);
 void trap_S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 void trap_S_StopLoopingSound(int entnum);

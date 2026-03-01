@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
@@ -389,7 +388,6 @@ int Q_strncmp(const char *s1, const char *s2, int n);
 int Q_stricmpn(const char *s1, const char *s2, int n);
 char *Q_strlwr(char *s1);
 char *Q_strupr(char *s1);
-const char *Q_stristr(const char *s, const char *find);
 
 // buffer size safe library replacements
 void StringCopy(char *dest, const char *src, int destsize);
@@ -410,6 +408,9 @@ void Info_SetValueForKey(char *s, const char *key, const char *value);
 void Info_SetValueForKey_Big(char *s, const char *key, const char *value);
 qboolean Info_Validate(const char *s);
 void Info_NextPair(const char **s, char *key, char *value);
+
+// functions
+char *Q3Parse(char **data_p);
 
 /*
 ==========================================================
@@ -671,15 +672,16 @@ typedef struct playerState_s {
 	int entityEventSequence;
 } playerState_t;
 
-#define BUTTON_ATTACK 1
-#define BUTTON_ATTACK2 2
-#define BUTTON_USE 4
-#define BMOVE_W 8
-#define BMOVE_A 16
-#define BMOVE_S 32
-#define BMOVE_D 64
-#define BMOVE_J 128
-#define BMOVE_C 256
+#define BMOVE_W 1
+#define BMOVE_A 2
+#define BMOVE_S 4
+#define BMOVE_D 8
+#define BMOVE_J 16
+#define BMOVE_C 32
+#define BUTTON_ATTACK 64
+#define BUTTON_ATTACK2 128
+#define BUTTON_USE 256
+#define BUTTON_GESTURE 512
 
 #define PLAYER_MOVE_F   0
 #define PLAYER_MOVE_R   1

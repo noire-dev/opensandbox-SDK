@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 qboolean G_BotConnect(int clientNum) {
 	bot_settings_t settings;
@@ -10,7 +9,7 @@ qboolean G_BotConnect(int clientNum) {
 
 	trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
 
-	Q_StringCopy(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
+	StringCopy(settings.team, Info_ValueForKey(userinfo, "team"), sizeof(settings.team));
 
 	if(!BotAISetupClient(clientNum, &settings)) {
 		trap_DropClient(clientNum, "BotAISetupClient failed");

@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #ifndef __BG_PUBLIC_H
 #define __BG_PUBLIC_H
@@ -227,7 +226,6 @@ typedef enum {
 #define EF_NODRAW 32 // may have an event, but no model (unspawned items)
 #define EF_FIRING 64 // for lightning gun
 #define EF_KAMIKAZE 128
-#define EF_TALK 256 // draw a talk balloon
 
 typedef enum {
 	PW_NONE,

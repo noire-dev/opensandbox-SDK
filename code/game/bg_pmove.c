@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/q_shared.h"
+#include "../shared/engine.h"
 #include "bg_local.h"
 #include "bg_public.h"
 
@@ -169,7 +168,7 @@ static void PM_Friction(void) {
 				// if getting knocked back, no friction
 				if(!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)) {
 					control = speed < pm_veh00001stopspeed ? pm_veh00001stopspeed : speed;
-					if(pm->cmd.upmove > 0) { // VEHICLE-SYSTEM: space break
+					if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U) > 0) { // VEHICLE-SYSTEM: space break
 						drop += pm_veh00001stopspeed * pm_veh00001friction * 16 * pml.frametime;
 					} else {
 						drop += control * pm_veh00001friction * pml.frametime;
@@ -266,25 +265,12 @@ without getting a sqrt(2) distortion in speed.
 ============
 */
 static float PM_CmdScale(usercmd_t *cmd) {
-	int max;
-	float total;
-	float scale;
-
-	max = abs(cmd->forwardmove);
-	if(abs(cmd->rightmove) > max) {
-		max = abs(cmd->rightmove);
-	}
-	if(abs(cmd->upmove) > max) {
-		max = abs(cmd->upmove);
-	}
-	if(!max) {
-		return 0;
-	}
-
-	total = sqrt(cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove + cmd->upmove * cmd->upmove);
-	scale = (float)pm->ps->speed * max / (127.0 * total);
-
-	return scale;
+    float forward = ST_GetPlayerMove(cmd->buttons, PLAYER_MOVE_F);
+    float right = ST_GetPlayerMove(cmd->buttons, PLAYER_MOVE_R);
+    float total = sqrt(forward * forward + right * right);
+    
+    if(total == 0) return 0;
+    return 320 * 127 / (127.0 * total);
 }
 
 /*
@@ -297,22 +283,22 @@ to the facing dir
 */
 static void PM_SetMovementDir(void) {
 	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable player-move for all
-		if(pm->cmd.forwardmove || pm->cmd.rightmove) {
-			if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0) {
+		if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) || ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R)) {
+			if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) == 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) > 0) {
 				pm->ps->movementDir = 0;
-			} else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove > 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) < 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) > 0) {
 				pm->ps->movementDir = 1;
-			} else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove == 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) < 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) == 0) {
 				pm->ps->movementDir = 2;
-			} else if(pm->cmd.rightmove < 0 && pm->cmd.forwardmove < 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) < 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) < 0) {
 				pm->ps->movementDir = 3;
-			} else if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) == 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) < 0) {
 				pm->ps->movementDir = 4;
-			} else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove < 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) > 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) < 0) {
 				pm->ps->movementDir = 5;
-			} else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove == 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) > 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) == 0) {
 				pm->ps->movementDir = 6;
-			} else if(pm->cmd.rightmove > 0 && pm->cmd.forwardmove > 0) {
+			} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) > 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) > 0) {
 				pm->ps->movementDir = 7;
 			}
 		} else {
@@ -326,36 +312,25 @@ static void PM_SetMovementDir(void) {
 			}
 		}
 	} else { // VEHICLE-SYSTEM: turn vehicle-move for all
-		if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0) {
+		if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) == 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) > 0) {
 			pm->ps->movementDir = 0;
-		} else if(pm->cmd.rightmove < 0) {
+		} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) < 0) {
 			pm->ps->delta_angles[1] += 200;
-		} else if(pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0) {
+		} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) == 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) < 0) {
 			pm->ps->movementDir = 4;
-		} else if(pm->cmd.rightmove > 0) {
+		} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R) > 0) {
 			pm->ps->delta_angles[1] -= 200;
 		}
 	}
 }
 
 static qboolean PM_CheckJump(void) {
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) { // VEHICLE-SYSTEM: disable jump for 1
-		return qfalse;                              // don't allow jump for vehicle
-	}
+	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) return qfalse;
+	if(pm->ps->pm_flags & PMF_RESPAWNED) return qfalse;
+	if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U) < 10) return qfalse;
 
-	if(pm->ps->pm_flags & PMF_RESPAWNED) {
-		return qfalse; // don't allow jump until all buttons are up
-	}
-
-	if(pm->cmd.upmove < 10) {
-		// not holding jump
-		return qfalse;
-	}
-
-	// must wait for jump to be released
 	if(pm->ps->pm_flags & PMF_JUMP_HELD) {
-		// clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
+        pm->cmd.buttons &= ~BMOVE_J;
 		return qfalse;
 	}
 
@@ -367,7 +342,7 @@ static qboolean PM_CheckJump(void) {
 	pm->ps->velocity[2] = mod_jumpheight;
 	PM_AddEvent(EV_JUMP);
 
-	if(pm->cmd.forwardmove >= 0) {
+	if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) >= 0) {
 		PM_ForceLegsAnim(LEGS_JUMP);
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 	} else {
@@ -466,9 +441,9 @@ static void PM_WaterMove(void) {
 			wishvel[2] = -2; // sink towards bottom
 		}
 	} else {
-		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * pm->cmd.forwardmove + scale * pml.right[i] * pm->cmd.rightmove;
+		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) + scale * pml.right[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
 
-		wishvel[2] += scale * pm->cmd.upmove;
+		wishvel[2] += scale * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U);
 	}
 
 	VectorCopy(wishvel, wishdir);
@@ -530,11 +505,11 @@ static void PM_NoclipMove(void) {
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
 
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
+	fmove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F);
+	smove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
 
 	for(i = 0; i < 3; i++) wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
-	wishvel[2] += pm->cmd.upmove;
+	wishvel[2] += ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U);
 
 	VectorCopy(wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
@@ -554,9 +529,7 @@ Only with the invulnerability powerup
 ===================
 */
 static void PM_InvulnerabilityMove(void) {
-	pm->cmd.forwardmove = 0;
-	pm->cmd.rightmove = 0;
-	pm->cmd.upmove = 0;
+    pm->cmd.buttons &= ~(BMOVE_W | BMOVE_A | BMOVE_S | BMOVE_D | BMOVE_J | BMOVE_C);
 	VectorClear(pm->ps->velocity);
 }
 
@@ -587,9 +560,9 @@ static void PM_FlyMove(void) {
 		wishvel[2] = 0;
 	} else {
 		for(i = 0; i < 3; i++) {
-			wishvel[i] = scale * pml.forward[i] * pm->cmd.forwardmove + scale * pml.right[i] * pm->cmd.rightmove;
+			wishvel[i] = scale * pml.forward[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) + scale * pml.right[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
 		}
-		wishvel[2] += scale * pm->cmd.upmove;
+		wishvel[2] += scale * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U);
 	}
 
 	VectorCopy(wishvel, wishdir);
@@ -612,8 +585,8 @@ static void PM_AirMove(void) {
 	PM_Friction();
 
 	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable air move for all
-		smove = pm->cmd.rightmove;
-		fmove = pm->cmd.forwardmove;
+		smove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
+		fmove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F);
 	} else {
 		smove = 0;
 		fmove = 0;
@@ -702,9 +675,9 @@ static void PM_WalkMove(void) {
 
 	PM_Friction();
 
-	fmove = pm->cmd.forwardmove;
+	fmove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F);
 	if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable strafe for all
-		smove = pm->cmd.rightmove;
+		smove = ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
 	} else {
 		smove = 0;
 	}
@@ -967,7 +940,7 @@ static void PM_GroundTrace(void) {
 	// check if getting thrown off the ground
 	if(pm->ps->velocity[2] > 0 && DotProduct(pm->ps->velocity, trace.plane.normal) > 10) {
 		// go into jump animation
-		if(pm->cmd.forwardmove >= 0) {
+		if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) >= 0) {
 			PM_ForceLegsAnim(LEGS_JUMP);
 			pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 		} else {
@@ -1087,7 +1060,7 @@ static void PM_CheckDuck(void) {
 		return;
 	}
 
-	if(pm->cmd.upmove < 0) {               // duck
+	if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U) < 0) {               // duck
 		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable duck for all
 			pm->ps->pm_flags |= PMF_DUCKED;
 		} else {
@@ -1138,7 +1111,7 @@ static void PM_Footsteps(void) {
 	}
 
 	// if not trying to move
-	if(!pm->cmd.forwardmove && !pm->cmd.rightmove) {
+	if(!ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) && !ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R)) {
 		if(pm->xyspeed < 5) {
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 			if(pm->ps->pm_flags & PMF_DUCKED) {
@@ -1161,22 +1134,13 @@ static void PM_Footsteps(void) {
 		}
 		// ducked characters never play footsteps
 	} else {
-		if(!(pm->cmd.buttons & BUTTON_WALKING)) {
-			bobmove = 0.4f; // faster speeds bob faster
-			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
-				PM_ContinueLegsAnim(LEGS_BACK);
-			} else {
-				PM_ContinueLegsAnim(LEGS_RUN);
-			}
-			footstep = qtrue;
+		bobmove = 0.4f; // faster speeds bob faster
+		if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
+			PM_ContinueLegsAnim(LEGS_BACK);
 		} else {
-			bobmove = 0.3f; // walking bobs slow
-			if(pm->ps->pm_flags & PMF_BACKWARDS_RUN) {
-				PM_ContinueLegsAnim(LEGS_BACKWALK);
-			} else {
-				PM_ContinueLegsAnim(LEGS_WALK);
-			}
+			PM_ContinueLegsAnim(LEGS_RUN);
 		}
+		footstep = qtrue;
 	}
 
 	// check for footstep / splash sounds
@@ -1224,49 +1188,6 @@ static void PM_WaterEvents(void) {
 	}
 }
 
-static void PM_BeginWeaponChange(int weapon) {
-	item_t *item;
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {
-		return;
-	}
-	if(weapon > WP_NONE || weapon < WEAPONS_NUM) {
-		item = BG_FindWeapon(weapon);
-		if(pm->ps->weaponstate == WEAPON_DROPPING) {
-			return;
-		}
-		pm->ps->weaponstate = WEAPON_DROPPING;
-		PM_AddEvent(EV_CHANGE_WEAPON);
-		pm->ps->weaponstate = WEAPON_DROPPING;
-		pm->ps->weaponTime += 200;
-		PM_StartTorsoAnim(TORSO_DROP);
-		return;
-	}
-}
-
-static void PM_FinishWeaponChange(void) {
-	item_t *item;
-	int weapon;
-
-	weapon = pm->cmd.weapon;
-	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) {
-		return;
-	}
-	if(weapon > WP_NONE || weapon < WEAPONS_NUM) {
-		item = BG_FindWeapon(weapon);
-#ifdef GAME
-		if(G_CheckWeapon(pm->ps->clientNum, weapon, 1)) {
-			pm->ps->weapon = item->giTag;
-			pm->ps->weaponstate = WEAPON_RAISING;
-		}
-#endif
-		if(pm->ps->weaponstate == WEAPON_RAISING) {
-			pm->ps->weaponTime += 500;
-			PM_StartTorsoAnim(TORSO_RAISE);
-		}
-		return;
-	}
-}
-
 static void PM_TorsoAnimation(void) {
 	if(pm->ps->weaponstate == WEAPON_READY) {
 		if(pm->ps->weapon == WP_GAUNTLET) {
@@ -1301,40 +1222,12 @@ static void PM_Weapon(void) {
 	}
 
 	// check for item using
-	if(pm->cmd.buttons & BUTTON_USE_HOLDABLE) {
-		if(!(pm->ps->pm_flags & PMF_USE_ITEM_HELD)) {
-			if(gameInfoItems[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT && pm->ps->stats[STAT_HEALTH] >= (pm->ps->stats[STAT_MAX_HEALTH] + 25)) {
-				// don't use medkit if at max health
-			} else {
-				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-				PM_AddEvent(EV_USE_ITEM0 + gameInfoItems[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag);
-				pm->ps->stats[STAT_HOLDABLE_ITEM] = 0;
-			}
-			return;
-		}
-	} else {
-		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-	}
+	pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 
 	// make weapon function
 	if(pm->ps->weaponTime > 0) pm->ps->weaponTime -= pml.msec;
 
-	// check for weapon change
-	// can't change if weapon is firing, but can change
-	// again if lowering or raising
-	if(pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING) {
-		if(pm->ps->weapon != pm->cmd.weapon) {
-			PM_BeginWeaponChange(pm->cmd.weapon);
-		}
-	}
-
 	if(pm->ps->weaponTime > 0) return;
-
-	// change weapon if time
-	if(pm->ps->weaponstate == WEAPON_DROPPING) {
-		PM_FinishWeaponChange();
-		return;
-	}
 
 	if(pm->ps->weaponstate == WEAPON_RAISING) {
 		pm->ps->weaponstate = WEAPON_READY;
@@ -1404,7 +1297,7 @@ static void PM_Weapon(void) {
 static void PM_Animate(void) {
 	if(BG_InVehicle(pm->ps->stats[STAT_VEHICLE])) pm->ps->pm_time = 5;
 
-	if(pm->cmd.buttons & (BUTTON_GESTURE | BUTTON_GETFLAG | BUTTON_GUARDBASE | BUTTON_PATROL | BUTTON_FOLLOWME | BUTTON_AFFIRMATIVE | BUTTON_NEGATIVE) && pm->cmd.weapon != WP_PHYSGUN) {
+	if(pm->cmd.buttons & BUTTON_GESTURE && pm->ps->weapon != WP_PHYSGUN) {
 		if(!pm->ps->stats[STAT_VEHICLE]) { // VEHICLE-SYSTEM: disable gesture for all
 			if(pm->ps->torsoTimer == 0) {
 				PM_StartTorsoAnim(TORSO_GESTURE);
@@ -1460,7 +1353,7 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
 	short temp;
 	int i;
 
-	if(pm->cmd.buttons & BUTTON_GESTURE && pm->cmd.buttons & BUTTON_ATTACK && pm->cmd.weapon == WP_PHYSGUN) {
+	if(pm->cmd.buttons & BUTTON_GESTURE && pm->cmd.buttons & BUTTON_ATTACK && pm->ps->weapon == WP_PHYSGUN) {
 		return;
 	}
 
@@ -1516,8 +1409,8 @@ static void PM_LadderMove(void) {
 		wishvel[1] = 0;
 		wishvel[2] = 0;
 	} else { // if they're trying to move... lets calculate it
-		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * pm->cmd.forwardmove + scale * pml.right[i] * pm->cmd.rightmove;
-		wishvel[2] += scale * pm->cmd.upmove;
+		for(i = 0; i < 3; i++) wishvel[i] = scale * pml.forward[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) + scale * pml.right[i] * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R);
+		wishvel[2] += scale * ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U);
 	}
 
 	VectorCopy(wishvel, wishdir);
@@ -1573,19 +1466,6 @@ static void PmoveSingle(pmove_t *pmove) {
 		pm->tracemask &= ~CONTENTS_BODY; // corpses can fly through bodies
 	}
 
-	// make sure walking button is clear if they are running, to avoid
-	// proxy no-footsteps cheats
-	if(abs(pm->cmd.forwardmove) > 64 || abs(pm->cmd.rightmove) > 64) {
-		pm->cmd.buttons &= ~BUTTON_WALKING;
-	}
-
-	// set the talk balloon flag
-	if(pm->cmd.buttons & BUTTON_TALK) {
-		pm->ps->eFlags |= EF_TALK;
-	} else {
-		pm->ps->eFlags &= ~EF_TALK;
-	}
-
 	// set the firing flag for continuous beam weapons
 	if(!(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && (pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->stats[STAT_AMMO]) {
 		pm->ps->eFlags |= EF_FIRING;
@@ -1594,20 +1474,8 @@ static void PmoveSingle(pmove_t *pmove) {
 	}
 
 	// clear the respawned flag if attack and use are cleared
-	if(pm->ps->stats[STAT_HEALTH] > 0 && !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE))) {
+	if(pm->ps->stats[STAT_HEALTH] > 0 && !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE))) {
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
-	}
-
-	// if talk button is down, dissallow all other input
-	// this is to prevent any possible intercept proxy from
-	// adding fake talk balloons
-	if(pmove->cmd.buttons & BUTTON_TALK) {
-		// keep the talk button set tho for when the cmd.serverTime > 66 msec
-		// and the same cmd is used multiple times in Pmove
-		pmove->cmd.buttons = BUTTON_TALK;
-		pmove->cmd.forwardmove = 0;
-		pmove->cmd.rightmove = 0;
-		pmove->cmd.upmove = 0;
 	}
 
 	// clear all pmove local vars
@@ -1635,23 +1503,19 @@ static void PmoveSingle(pmove_t *pmove) {
 
 	AngleVectors(pm->ps->viewangles, pml.forward, pml.right, pml.up);
 
-	if(pm->cmd.upmove < 10) {
+	if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_U) < 10) {
 		// not holding jump
 		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
 	}
 
 	// decide if backpedaling animations should be used
-	if(pm->cmd.forwardmove < 0) {
+	if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) < 0) {
 		pm->ps->pm_flags |= PMF_BACKWARDS_RUN;
-	} else if(pm->cmd.forwardmove > 0 || (pm->cmd.forwardmove == 0 && pm->cmd.rightmove)) {
+	} else if(ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) > 0 || (ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_F) == 0 && ST_GetPlayerMove(pm->cmd.buttons, PLAYER_MOVE_R))) {
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_RUN;
 	}
 
-	if(pm->ps->pm_type >= PM_DEAD) {
-		pm->cmd.forwardmove = 0;
-		pm->cmd.rightmove = 0;
-		pm->cmd.upmove = 0;
-	}
+	if(pm->ps->pm_type >= PM_DEAD) pm->cmd.buttons &= ~(BMOVE_W | BMOVE_A | BMOVE_S | BMOVE_D | BMOVE_J | BMOVE_C);
 
 	if(pm->ps->pm_type == PM_SPECTATOR) {
 		PM_CheckDuck();
@@ -1778,9 +1642,5 @@ void Pmove(pmove_t *pmove) {
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle(pmove);
-
-		if(pmove->ps->pm_flags & PMF_JUMP_HELD) {
-			pmove->cmd.upmove = 20;
-		}
 	}
 }

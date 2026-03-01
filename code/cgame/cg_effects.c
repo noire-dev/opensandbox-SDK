@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 	vec3_t move;

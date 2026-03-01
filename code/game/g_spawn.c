@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 	int i;
@@ -154,8 +153,6 @@ spawn_t	gameInfoEntities[] = {
 	{"team_redobelisk", 			SP_team_redobelisk},
 	{"team_blueobelisk", 			SP_team_blueobelisk},
 	{"team_neutralobelisk", 		SP_team_neutralobelisk},
-	{"script_variable", 			SP_script_variable},
-	{"script_cmd", 					SP_script_cmd},
 	{"sandbox_prop", 				SP_sandbox_prop},
 	{"sandbox_npc", 				SP_sandbox_npc},
 	{"item_botroam", 				SP_EmptySpawn},
@@ -736,8 +733,6 @@ static void G_LoadMapfile(char *filename) {
 	FS_Close(f);
 
 	G_ClearEntities();
-
-	COM_Compress(mapbuffer);
 
 	for(i = 0; i < MAX_MAPFILE_LENGTH; i++) {
 		// Filter comments( start at # and end at break )

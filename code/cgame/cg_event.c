@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void CG_Obituary(entityState_t *ent) {
 	int mod, target, attacker;
@@ -23,11 +22,11 @@ static void CG_Obituary(entityState_t *ent) {
 
 	targetInfo = CG_ConfigString(CS_PLAYERS + target);
 	if(!targetInfo) return;
-	Q_StringCopy(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
+	StringCopy(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
 	strcat(targetName, S_COLOR_WHITE);
 
 	if(attackerInfo) {
-		Q_StringCopy(attackerName, Info_ValueForKey(attackerInfo, "n"), sizeof(attackerName) - 2);
+		StringCopy(attackerName, Info_ValueForKey(attackerInfo, "n"), sizeof(attackerName) - 2);
 		strcat(attackerName, S_COLOR_WHITE);
 	}
 
@@ -74,8 +73,8 @@ static void CG_ItemPickup(int itemNum) {
 
 	// see if it should be the grabbed weapon
 	if(gameInfoItems[itemNum].giType == IT_AMMO)
-		if(cg.swep_listcl[gameInfoItems[itemNum].giTag] == WS_NOAMMO) cg.swep_listcl[gameInfoItems[itemNum].giTag] = WS_HAVE;
-	if(gameInfoItems[itemNum].giType == IT_WEAPON) cg.swep_listcl[gameInfoItems[itemNum].giTag] = WS_HAVE;
+		if(cg.weapon_list[gameInfoItems[itemNum].giTag] == WS_NOAMMO) cg.weapon_list[gameInfoItems[itemNum].giTag] = WS_HAVE;
+	if(gameInfoItems[itemNum].giType == IT_WEAPON) cg.weapon_list[gameInfoItems[itemNum].giTag] = WS_HAVE;
 }
 
 static int CG_WaterLevel(centity_t *cent) {

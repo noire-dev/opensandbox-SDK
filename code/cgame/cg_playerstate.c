@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 	float left, front, up;
@@ -83,7 +82,7 @@ void CG_Respawn(void) {
 	// no error decay on player movement
 	cg.thisFrameTeleport = qtrue;
 
-	for(i = 1; i < WEAPONS_NUM; i++) cg.swep_listcl[i] = cg.swep_spawncl[i]; // OpenSandbox weapon predict
+	for(i = 1; i < WEAPONS_NUM; i++) cg.weapon_list[i] = cg.weapon_spawn[i]; // OpenSandbox weapon predict
 
 	// select WP_NONE for updating from server
 	cg.weaponSelect = 0;

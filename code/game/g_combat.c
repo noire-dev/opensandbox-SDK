@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 /*
 ============
@@ -36,11 +35,11 @@ void TossClientItems(gentity_t *self) {
 	// drop all weapons
 	if(gameInfoItems[self->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag != PW_AMMOREGEN) {
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			if(self->swep_list[i] >= WS_HAVE) {
+			if(self->weapon_list[i] >= WS_HAVE) {
 				item = BG_FindItemForWeapon(i);
 				if(!item || i == WP_GAUNTLET || i == WP_PHYSGUN || i == WP_GRAVITYGUN || i == WP_TOOLGUN) continue;
 				drop = Drop_Item(self, item);
-				drop->count = (self->swep_ammo[i]);
+				drop->count = (self->weapon_ammo[i]);
 				if(drop->count < 1) {
 					drop->count = 1;
 				}

@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 level_locals_t level;
 gentity_t g_entities[MAX_GENTITIES];
@@ -140,7 +139,7 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 
 	srand(randomSeed);
 
-	ST_RegisterCvars();
+	registerCvars();
 	G_CheckCvars();
 	G_InitMemory();
 
@@ -228,17 +227,6 @@ void QDECL Com_Error(int level, const char *error, ...) {
 	va_end(argptr);
 
 	G_Error("%s", text);
-}
-
-void QDECL Com_Printf(const char *msg, ...) {
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr, msg);
-	Q_vsnprintf(text, sizeof(text), msg, argptr);
-	va_end(argptr);
-
-	G_Printf("%s", text);
 }
 
 /*

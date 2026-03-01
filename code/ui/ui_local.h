@@ -37,6 +37,8 @@ typedef struct {
 	
 	float min, max;
 	int mode;
+	
+	char bind[256];
 } menuelement_s;
 
 typedef struct {
@@ -72,8 +74,8 @@ qboolean Menu_CursorOnItem(int id);
 void Menu_ElementsDraw(void);
 void Menu_DefaultKey(int key);
 int UI_CButton(int id, float x, float y, float w, float h, char *text, int style, float size, int colortext, int colorbg, int corner, int margin, char *action);
-int UI_CCheckbox(int id, float x, float y, float w, float h, char *text, float size, int colortext, int colorbg, int corner, int margin, char *action);
-int UI_CSlider(int id, float x, float y, float w, float h, char *text, float size, int colortext, int colorbg, int corner, int margin, char *action, float min, float max, int mode);
+int UI_CCheckbox(int id, float x, float y, float w, float h, char *text, int style, float size, int colortext, int colorbg, int corner, int margin, char *action);
+int UI_CSlider(int id, float x, float y, float w, float h, char *text, int style, float size, int colortext, int colorbg, int corner, int margin, char *action, float min, float max, int mode);
 
 extern uiStatic_t uis;
 extern const char *gametype_items[GT_MAX_GAME_TYPE + 1];

@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void CG_CalcVrect(void) {
 	cg.refdef.width = glconfig.vidWidth;
@@ -364,7 +363,7 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	ST_UpdateCGUI();
+	updateCGUI();
 
 	if(cg.infoScreenText[0] != 0) {
 		CG_DrawInformation();
@@ -380,7 +379,7 @@ void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 		return;
 	}
 
-	trap_SetUserCmdValue(cg.weaponSelect, cg.zoomSensitivity);
+	trap_SetUserCmdValue(cg.zoomSensitivity);
 	cg.clientFrame++;
 	CG_PredictPlayerState();
 

@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static float s_quadFactor;
 static vec3_t forward, right, up;
@@ -438,7 +437,7 @@ void Weapon_Toolgun_Info(gentity_t *ent) {
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-	VectorMA(muzzle, gameInfoWeapons[ent->swep_id].range, forward, end);
+	VectorMA(muzzle, gameInfoWeapons[ent->client->ps.weapon].range, forward, end);
 	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
 	traceEnt = &g_entities[tr.entityNum];
@@ -448,7 +447,7 @@ void Weapon_Toolgun_Info(gentity_t *ent) {
 		return;
 	}
 
-	if(gameInfoWeapons[ent->swep_id].wType == WT_TOOLGUN) {
+	if(gameInfoWeapons[ent->client->ps.weapon].wType == WT_TOOLGUN) {
 		// Classname
 		if(!strcmp(traceEnt->sb_class, "none") || !strcmp(traceEnt->sb_class, "")) {
 			strcpy(info_entity[0], traceEnt->classname);
@@ -1014,14 +1013,14 @@ void FireWeapon(gentity_t *ent) {
 
 	CalcMuzzlePointOrigin(ent, ent->client->oldOrigin, forward, right, up, muzzle);
 
-	switch(gameInfoWeapons[ent->swep_id].wType) {
-	case WT_BULLET: Bullet_Fire(ent, ent->swep_id); break;
-	case WT_SHOTGUN: Shotgun_Fire(ent, ent->swep_id); break;
-	case WT_LIGHTNING: Lightning_Fire(ent, ent->swep_id); break;
-	case WT_RAILGUN: Railgun_Fire(ent, ent->swep_id); break;
+	switch(gameInfoWeapons[ent->client->ps.weapon].wType) {
+	case WT_BULLET: Bullet_Fire(ent, ent->client->ps.weapon); break;
+	case WT_SHOTGUN: Shotgun_Fire(ent, ent->client->ps.weapon); break;
+	case WT_LIGHTNING: Lightning_Fire(ent, ent->client->ps.weapon); break;
+	case WT_RAILGUN: Railgun_Fire(ent, ent->client->ps.weapon); break;
 	case WT_EMPTY: break;
 	case WT_TOOLGUN: break;
-	case WT_MISSILE: Missile_Fire(ent, ent->swep_id); break;
+	case WT_MISSILE: Missile_Fire(ent, ent->client->ps.weapon); break;
 	default: break;
 	}
 }

@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 #define NUM_DATA 2
 #define FIRST_DATA 3
@@ -43,16 +42,16 @@ static void CG_ParseSweps(void) {
 	int weaponIndex;
 	int numArgs = trap_Argc();
 
-	for(i = 0; i < WEAPONS_NUM; i++) cg.swep_listcl[i] = WS_NONE;
+	for(i = 0; i < WEAPONS_NUM; i++) cg.weapon_list[i] = WS_NONE;
 
 	for(i = 1; i < numArgs; i++) {
 		weaponIndex = atoi(CG_Argv(i));
 
 		if(weaponIndex >= -WEAPONS_NUM && weaponIndex < WEAPONS_NUM) {
 			if(weaponIndex > 0) {
-				cg.swep_listcl[weaponIndex] = WS_HAVE;
+				cg.weapon_list[weaponIndex] = WS_HAVE;
 			} else if(weaponIndex < 0) {
-				cg.swep_listcl[-weaponIndex] = WS_NOAMMO;
+				cg.weapon_list[-weaponIndex] = WS_NOAMMO;
 			}
 		}
 	}
@@ -63,16 +62,16 @@ static void CG_ParseSpawnSweps(void) {
 	int weaponIndex;
 	int numArgs = trap_Argc();
 
-	for(i = 0; i < WEAPONS_NUM; i++) cg.swep_spawncl[i] = WS_NONE;
+	for(i = 0; i < WEAPONS_NUM; i++) cg.weapon_spawn[i] = WS_NONE;
 
 	for(i = 1; i < numArgs; i++) {
 		weaponIndex = atoi(CG_Argv(i));
 
 		if(weaponIndex >= -WEAPONS_NUM && weaponIndex < WEAPONS_NUM) {
 			if(weaponIndex > 0) {
-				cg.swep_spawncl[weaponIndex] = WS_HAVE;
+				cg.weapon_spawn[weaponIndex] = WS_HAVE;
 			} else if(weaponIndex < 0) {
-				cg.swep_spawncl[-weaponIndex] = WS_NOAMMO;
+				cg.weapon_spawn[-weaponIndex] = WS_NOAMMO;
 			}
 		}
 	}
@@ -220,7 +219,7 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "chat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
+		StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qfalse, "%s\n", text);
 		return;
@@ -228,7 +227,7 @@ static void CG_ServerCommand(void) {
 
 	if(!strcmp(cmd, "tchat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-		Q_StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
+		StringCopy(text, CG_Argv(1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_PrintfChat(qtrue, "%s\n", text);
 		return;
@@ -259,7 +258,7 @@ static void CG_ServerCommand(void) {
 		return;
 	}
 
-	if(!strcmp(cmd, "sweps")) {
+	if(!strcmp(cmd, "wl")) {
 		CG_ParseSweps();
 		return;
 	}
@@ -270,7 +269,7 @@ static void CG_ServerCommand(void) {
 	}
 
 	if(!strcmp(cmd, "t_info")) {
-		Q_StringCopy(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
+		StringCopy(cg.entityInfo, CG_Argv(1), sizeof(cg.entityInfo));
 		return;
 	}
 

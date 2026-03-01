@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	gentity_t *t;
@@ -99,7 +98,7 @@ void SP_target_speaker(gentity_t *ent) {
 	if(!strstr(s, ".wav")) {
 		Com_sprintf(buffer, sizeof(buffer), "%s.wav", s);
 	} else {
-		Q_StringCopy(buffer, s, sizeof(buffer));
+		StringCopy(buffer, s, sizeof(buffer));
 	}
 	ent->noise_index = G_SoundIndex(buffer);
 
@@ -197,89 +196,4 @@ void SP_target_location(gentity_t *self) {
 	self->nextthink = level.time + 200; // Let them all spawn first
 
 	G_SetOrigin(self, self->s.origin);
-}
-
-static void script_variable_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
-	char *value;
-
-	if(self->spawnflags & 1 || self->spawnflags & 2) {
-		value = cvarString(self->key);
-
-		if((self->spawnflags & 1) && !strcmp(value, self->value)) {
-			G_UseTargets(self, activator);
-		}
-
-		if((self->spawnflags & 2) && strcmp(value, self->value)) {
-			G_UseTargets(self, activator);
-		}
-
-		if((self->spawnflags & 4) && (atoi(value) <= atoi(self->value))) {
-			G_UseTargets(self, activator);
-		}
-
-		if((self->spawnflags & 8) && (atoi(value) >= atoi(self->value))) {
-			G_UseTargets(self, activator);
-		}
-
-		return;
-	}
-	if(self->spawnflags & 8192) {
-		trap_Cmd(EXEC_APPEND, va("%s - %s\n", self->key, self->value));
-	} else {
-		cvarSet(self->key, self->value);
-	}
-}
-
-static void script_variable_think(gentity_t *self) {
-	self->nextthink = 0;
-	script_variable_use(self, NULL, self);
-}
-
-void SP_script_variable(gentity_t *self) {
-	if(!self->key) {
-		G_Printf("WARNING: script_variable without key at %s\n", vtos(self->s.origin));
-		G_FreeEntity(self);
-		return;
-	}
-
-	if(!self->key) {
-		G_Printf("WARNING: script_variable without value at %s\n", vtos(self->s.origin));
-		G_FreeEntity(self);
-		return;
-	}
-
-	self->use = script_variable_use;
-
-	if((self->spawnflags & 4096)) {
-		self->nextthink = level.time + FRAMETIME * 3; // trigger entities next frame so they can spawn first
-		self->think = script_variable_think;
-	}
-}
-
-static void use_script_cmd(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->spawnflags & 1) {
-		trap_Cmd(EXEC_APPEND, va("%s\n", ent->target));
-	}
-	if(ent->spawnflags & 2) {
-		trap_SendServerCommand(activator - g_entities, va("clcmd \"%s\"", ent->target));
-	}
-	if(ent->spawnflags & 4) {
-		trap_SendServerCommand(-1, va("clcmd \"%s\"", ent->target));
-	}
-}
-
-static void script_cmd_think(gentity_t *ent) {
-	ent->nextthink = 0;
-	use_script_cmd(ent, NULL, ent);
-}
-
-void SP_script_cmd(gentity_t *ent) {
-	if(!ent->target) {
-		G_Printf("No target in script_cmd\n");
-	}
-	if(ent->spawnflags & 4096) {
-		ent->nextthink = level.time + FRAMETIME * 10; // trigger entities next frame so they can spawn first
-		ent->think = script_cmd_think;
-	}
-	ent->use = use_script_cmd;
 }

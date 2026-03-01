@@ -14,11 +14,15 @@ g_cmds
 g_combat
 g_items
 g_misc
+g_mover
 g_physics
 g_sandbox
 g_session
 g_spawn
 g_svcmds
+g_target
+g_team
+g_trigger
 g_utils
 g_weapon
 javascript

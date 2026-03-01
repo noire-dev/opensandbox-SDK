@@ -41,11 +41,15 @@ $cc ../../../code/game/g_combat.c
 $cc ../../../code/game/g_items.c
 $cc ../../../code/game/g_main.c
 $cc ../../../code/game/g_misc.c
+$cc ../../../code/game/g_mover.c
 $cc ../../../code/game/g_physics.c
 $cc ../../../code/game/g_sandbox.c
 $cc ../../../code/game/g_session.c
 $cc ../../../code/game/g_spawn.c
 $cc ../../../code/game/g_svcmds.c
+$cc ../../../code/game/g_target.c
+$cc ../../../code/game/g_team.c
+$cc ../../../code/game/g_trigger.c
 $cc ../../../code/game/g_utils.c
 $cc ../../../code/game/g_weapon.c
 
@@ -201,6 +205,6 @@ cd ../..
 # Replace "opensandbox" here with the name of your game folder
 # ##############################################################
 
-cp opensandbox-SDK/linux/game/qvm/game.qvm opensandbox/game/core.default/qvm/
-cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/game/core.default/qvm/
-cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/game/core.default/qvm/
+cp opensandbox-SDK/linux/game/qvm/game.qvm opensandbox/qvm/
+cp opensandbox-SDK/linux/game/qvm/cgame.qvm opensandbox/qvm/
+cp opensandbox-SDK/linux/game/qvm/ui.qvm opensandbox/qvm/

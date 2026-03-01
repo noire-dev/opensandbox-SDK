@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 void DeathmatchScoreboardMessage(gentity_t *ent) {
 	char entry[64];
@@ -39,23 +38,23 @@ void G_SendGameCvars(gentity_t *ent) {
 	trap_SendServerCommand(ent - g_entities, va("gCvars %s", string));
 }
 
-void G_SendSwepWeapons(gentity_t *ent) {
+void G_SendWeapons(gentity_t *ent) {
 	char string[4096] = "";
 	int i;
 	int len;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
-		if(ent->swep_list[i] >= WS_HAVE) {
-			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = WS_HAVE; // we have weapon and ammo
+		if(ent->weapon_list[i] >= WS_HAVE) {
+			if(ent->weapon_ammo[i] > 0 || ent->weapon_ammo[i] == -1) {
+				ent->weapon_list[i] = WS_HAVE; // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = WS_NOAMMO; // we have weapon only
+				ent->weapon_list[i] = WS_NOAMMO; // we have weapon only
 			}
 		}
-		if(ent->swep_list[i] == WS_HAVE) {
+		if(ent->weapon_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
-		if(ent->swep_list[i] == WS_NOAMMO) {
+		if(ent->weapon_list[i] == WS_NOAMMO) {
 			Q_strcat(string, sizeof(string), va("%i ", i * -1)); // use -id for send WS_NOAMMO
 		}
 	}
@@ -64,7 +63,7 @@ void G_SendSwepWeapons(gentity_t *ent) {
 		string[len - 1] = '\0';
 	}
 
-	trap_SendServerCommand(ent - g_entities, va("sweps %s", string));
+	trap_SendServerCommand(ent - g_entities, va("wl %s", string));
 }
 
 void G_SendSpawnSwepWeapons(gentity_t *ent) {
@@ -73,17 +72,17 @@ void G_SendSpawnSwepWeapons(gentity_t *ent) {
 	int len;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
-		if(ent->swep_list[i] >= WS_HAVE) {
-			if(ent->swep_ammo[i] > 0 || ent->swep_ammo[i] == -1) {
-				ent->swep_list[i] = WS_HAVE; // we have weapon and ammo
+		if(ent->weapon_list[i] >= WS_HAVE) {
+			if(ent->weapon_ammo[i] > 0 || ent->weapon_ammo[i] == -1) {
+				ent->weapon_list[i] = WS_HAVE; // we have weapon and ammo
 			} else {
-				ent->swep_list[i] = WS_NOAMMO; // we have weapon only
+				ent->weapon_list[i] = WS_NOAMMO; // we have weapon only
 			}
 		}
-		if(ent->swep_list[i] == WS_HAVE) {
+		if(ent->weapon_list[i] == WS_HAVE) {
 			Q_strcat(string, sizeof(string), va("%i ", i));
 		}
-		if(ent->swep_list[i] == WS_NOAMMO) {
+		if(ent->weapon_list[i] == WS_NOAMMO) {
 			Q_strcat(string, sizeof(string), va("%i ", i * -1)); // use -id for send WS_NOAMMO
 		}
 	}
@@ -166,8 +165,8 @@ static void Cmd_Give_f(gentity_t *ent) {
 
 	if(give_all || Q_strequal(name, "weapons")) {
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			ent->swep_list[i] = WS_HAVE;
-			ent->swep_ammo[i] = 9999;
+			ent->weapon_list[i] = WS_HAVE;
+			ent->weapon_ammo[i] = 9999;
 		}
 		SetUnlimitedWeapons(ent);
 		if(!give_all) return;
@@ -175,7 +174,7 @@ static void Cmd_Give_f(gentity_t *ent) {
 
 	if(give_all || Q_strequal(name, "ammo")) {
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			ent->swep_ammo[i] = 9999;
+			ent->weapon_ammo[i] = 9999;
 		}
 		SetUnlimitedWeapons(ent);
 		if(!give_all) return;
@@ -428,7 +427,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 		break;
 	}
 
-	Q_StringCopy(text, chatText, sizeof(text));
+	StringCopy(text, chatText, sizeof(text));
 
 	if(target) {
 		G_SayTo(ent, target, mode, color, name, text);
@@ -491,6 +490,16 @@ static void Cmd_Tell_f(gentity_t *ent) {
 static void Cmd_RunSay_f(gentity_t *ent) { Cmd_Say_f(ent, SAY_ALL, qfalse); }
 
 static void Cmd_RunSayTeam_f(gentity_t *ent) { Cmd_Say_f(ent, SAY_TEAM, qfalse); }
+
+static void Cmd_Weapon_f(gentity_t *ent) {
+	char str[64];
+	int id;
+	
+	trap_Argv(1, str, sizeof(str));
+	id = atoi(str);
+
+	if(id >= 0 && id < WEAPONS_NUM) ent->client->ps.weapon = id;
+}
 
 static void Cmd_SpawnList_Item_f(gentity_t *ent) {
 	vec3_t end, start, forward, up, right;
@@ -785,6 +794,7 @@ commands_t cmds[] = {
     {"activate", CMD_LIVING, Cmd_ActivateTarget_f},
 
     // internal
+    {"wp", CMD_LIVING, Cmd_Weapon_f},
     {"sl", CMD_LIVING, Cmd_SpawnList_Item_f},
     {"tm", CMD_LIVING, Cmd_Modify_Prop_f},
     {"altfire_physgun", CMD_LIVING, Cmd_Altfire_Physgun_f},

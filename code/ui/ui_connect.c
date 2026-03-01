@@ -23,9 +23,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	char *s;
 	uiClientState_t cstate;
 	char info[MAX_INFO_VALUE];
-	qhandle_t black;
-	qhandle_t logo;
-	qhandle_t loading;
 	int i, y;
 
 	consoleSync(&console, console.linescount);
@@ -35,10 +32,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 
 	info[0] = '\0';
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
-
-	black = trap_R_RegisterShaderNoMip("gfx/colors/black");
-	logo = trap_R_RegisterShaderNoMip("menu/logo");
-	loading = trap_R_RegisterShaderNoMip("menu/loading");
 
 	if(cstate.connState < CA_CONNECTED) drawString(320, 200, cstate.messageString, UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
 	if(lastConnState > cstate.connState) lastLoadingText[0] = '\0';

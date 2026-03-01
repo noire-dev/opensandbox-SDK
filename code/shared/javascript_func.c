@@ -1,5 +1,4 @@
-// Copyright (C) 2023-2026 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #include "javascript.h"
 

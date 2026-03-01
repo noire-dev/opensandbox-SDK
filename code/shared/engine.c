@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #include "javascript.h"
 
@@ -110,29 +109,124 @@ void Q_strcat(char *dest, int size, const char *src) {
 	StringCopy(dest + l1, src, size - l1);
 }
 
-/*
- * Find the first occurrence of find in s.
- */
-const char *Q_stristr(const char *s, const char *find) {
-	char c, sc;
-	size_t len;
+static	char	com_token[MAX_TOKEN_CHARS];
+static	int		com_lines;
 
-	if((c = *find++) != 0) {
-		if(c >= 'a' && c <= 'z') {
-			c -= ('a' - 'A');
+static char *SkipWhitespace( char *data, qboolean *hasNewLines ) {
+	int c;
+
+	while( (c = *data) <= ' ') {
+		if( !c ) {
+			return NULL;
 		}
-		len = strlen(find);
-		do {
-			do {
-				if((sc = *s++) == 0) return NULL;
-				if(sc >= 'a' && sc <= 'z') {
-					sc -= ('a' - 'A');
-				}
-			} while(sc != c);
-		} while(Q_stricmpn(s, find, len) != 0);
-		s--;
+		if( c == '\n' ) {
+			com_lines++;
+			*hasNewLines = qtrue;
+		}
+		data++;
 	}
-	return s;
+
+	return data;
+}
+
+char *Q3Parse(char **data_p) {
+	int c = 0, len;
+	qboolean hasNewLines = qfalse;
+	char *data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+
+	// make sure incoming data is valid
+	if ( !data )
+	{
+		*data_p = NULL;
+		return com_token;
+	}
+
+	while ( 1 )
+	{
+		// skip whitespace
+		data = SkipWhitespace( data, &hasNewLines );
+		if ( !data )
+		{
+			*data_p = NULL;
+			return com_token;
+		}
+
+		c = *data;
+
+		// skip double slash comments
+		if ( c == '/' && data[1] == '/' )
+		{
+			data += 2;
+			while (*data && *data != '\n') {
+				data++;
+			}
+		}
+		// skip /* */ comments
+		else if ( c=='/' && data[1] == '*' ) 
+		{
+			data += 2;
+			while ( *data && ( *data != '*' || data[1] != '/' ) ) 
+			{
+				data++;
+			}
+			if ( *data ) 
+			{
+				data += 2;
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// handle quoted strings
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = ( char * ) data;
+				return com_token;
+			}
+			if (len < MAX_TOKEN_CHARS)
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+	// parse a regular word
+	do
+	{
+		if (len < MAX_TOKEN_CHARS)
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+		if ( c == '\n' )
+			com_lines++;
+	} while (c>32);
+
+	if (len == MAX_TOKEN_CHARS)
+	{
+	    len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = ( char * ) data;
+	return com_token;
 }
 
 char *Q_CleanStr(char *string) {

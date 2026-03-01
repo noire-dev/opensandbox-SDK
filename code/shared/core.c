@@ -49,9 +49,10 @@ static int ST_GetFontRes(float fontSize) {
 	return 0;                                // 256 default
 }
 
-void ST_InitCGUI(const char *font) {
+void initCGUI(const char *font) {
+    int i;
+
     trap_GetGlconfig(&glconfig);
-    
     cgui.scale = (glconfig.vidWidth * (1.0 / 640.0) < glconfig.vidHeight * (1.0 / 480.0)) ? glconfig.vidWidth * (1.0 / 640.0) : glconfig.vidHeight * (1.0 / 480.0);
     cgui.wideoffset = 0;
     cgui.bias = 0;
@@ -62,22 +63,20 @@ void ST_InitCGUI(const char *font) {
 	if(((float)glconfig.vidWidth / ((float)glconfig.vidHeight / 480) - 640) / 2 >= 0) 
 		cgui.wideoffset = ((float)glconfig.vidWidth / ((float)glconfig.vidHeight / 480) - 640) / 2;
 	
-	cgui.defaultFont[0] = trap_R_RegisterShaderNoMip(va("%s_font0", font));
-	cgui.defaultFont[1] = trap_R_RegisterShaderNoMip(va("%s_font1", font));
-	cgui.defaultFont[2] = trap_R_RegisterShaderNoMip(va("%s_font2", font));
-	cgui.defaultFont[3] = trap_R_RegisterShaderNoMip(va("%s_font3", font));
-	cgui.defaultFont[4] = trap_R_RegisterShaderNoMip(va("%s_font4", font));
+	for(i = 0; i <= 4; i++) cgui.defaultFont[i] = trap_R_RegisterShaderNoMip(va("%s_font%i", font, i));
 	cgui.whiteShader = trap_R_RegisterShaderNoMip("white");
 	cgui.corner = trap_R_RegisterShaderNoMip("menu/corner");
+	
+	for(i = 0; i < 256; i++) trap_Key_GetBindingBuf(i, cgui.binds[i], 256);
 }
 
-void ST_UpdateCGUI(void) {
+void updateCGUI(void) {
 	customcolor_crosshair[0] = cvarFloat("cg_crosshairColorRed");
 	customcolor_crosshair[1] = cvarFloat("cg_crosshairColorGreen");
 	customcolor_crosshair[2] = cvarFloat("cg_crosshairColorBlue");
 }
 
-int ST_StringCount(const char *str) {
+int stringCount(const char *str) {
 	const char *s;
 	char ch;
 	int prev_unicode = 0;
@@ -121,7 +120,7 @@ int ST_StringCount(const char *str) {
 	return i;
 }
 
-static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw, int charh, int style, qboolean drawShadow) {
+static void drawChars(int x, int y, const char *str, vec4_t color, int charw, int charh, int style, qboolean drawShadow) {
 	const char *s;
 	char ch;
 	int prev_unicode = 0;
@@ -150,7 +149,7 @@ static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw,
 	aw = charw;
 	ah = charh;
 	
-	ST_AdjustFrom640(&ax, &ay, &aw, &ah);
+	adjustFrom640(&ax, &ay, &aw, &ah);
 
 	s = str;
 	while(*s) {
@@ -207,16 +206,16 @@ static void ST_DrawChars(int x, int y, const char *str, vec4_t color, int charw,
 	trap_R_SetColor(NULL);
 }
 
-void ST_DrawChar(float x, float y, int ch, int style, float *color, float size) {
+void drawChar(float x, float y, int ch, int style, float *color, float size) {
 	char buff[2];
 
 	buff[0] = ch;
 	buff[1] = '\0';
 
-	ST_DrawString(x, y, buff, style, color, size);
+	drawString(x, y, buff, style, color, size);
 }
 
-float ST_StringWidth(const char *str, float size) {
+float stringWidth(const char *str, float size) {
 	const char *s;
 	float width;
 
@@ -235,12 +234,12 @@ float ST_StringWidth(const char *str, float size) {
 	else return width + BASEFONT_HEIGHT*(1.00-FONT_WIDTH);
 }
 
-void ST_DrawString(float x, float y, const char *str, int style, float *color, float fontSize) {
+void drawString(float x, float y, const char *str, int style, float *color, float fontSize) {
 	float charw;
 	float charh;
 	float *drawcolor;
 	vec4_t dropcolor;
-	int len = ST_StringCount(str);
+	int len = stringCount(str);
 	int esc = ST_ColorEscapes(str);
 
 	if(!str) return;
@@ -270,21 +269,21 @@ void ST_DrawString(float x, float y, const char *str, int style, float *color, f
 	if(style & UI_DROPSHADOW) {
 		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
 		dropcolor[3] = drawcolor[3];
-		ST_DrawChars(x + 1, y + 1, str, dropcolor, charw, charh, style, qtrue);
+		drawChars(x + 1, y + 1, str, dropcolor, charw, charh, style, qtrue);
 	}
 
-	ST_DrawChars(x, y, str, drawcolor, charw, charh, style, qfalse);
+	drawChars(x, y, str, drawcolor, charw, charh, style, qfalse);
 }
 
-void ST_AdjustFrom640(float *x, float *y, float *w, float *h) {
+void adjustFrom640(float *x, float *y, float *w, float *h) {
 	*x = *x * cgui.scale + cgui.bias;
 	*y *= cgui.scale;
 	*w *= cgui.scale;
 	*h *= cgui.scale;
 }
 
-void ST_DrawRoundedRect(float x, float y, float width, float height, float radius, float *color) {
-	ST_AdjustFrom640(&x, &y, &width, &height);
+void drawRoundedRect(float x, float y, float width, float height, float radius, float *color) {
+	adjustFrom640(&x, &y, &width, &height);
 
 	if(radius * 2 > height) radius = height * 0.5;
 	if(radius * 2 > width) radius = width * 0.5;
@@ -303,9 +302,60 @@ void ST_DrawRoundedRect(float x, float y, float width, float height, float radiu
 	trap_R_SetColor(NULL);
 }
 
-void ST_DrawShader(float x, float y, float w, float h, const char *file) {
-	ST_AdjustFrom640(&x, &y, &w, &h);
+void drawShader(float x, float y, float w, float h, const char *file) {
+	adjustFrom640(&x, &y, &w, &h);
 	trap_R_DrawStretchPic(x, y, w, h, 0, 0, 1, 1, trap_R_RegisterShaderNoMip(file));
+}
+
+static float SliderProgress(float value, float min, float max) {
+    float result;
+    float clamp;
+    
+    if(value < min) clamp = min;
+    else if(value > max) clamp = max;
+    else clamp = value;
+    
+    result = (clamp - min) / (max - min);
+    
+    if(result <= 0.0f) return 0.0f;
+    if(result >= 1.0f) return 1.0f;
+    
+    return result;
+}
+
+void drawButton(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text) {
+    float text_y = y+(h-(BASEFONT_HEIGHT*size))*0.5;
+    
+    drawRoundedRect(x, y, w, h, corner, cgui.colors[colorbg]);
+    if(style & UI_CENTER) drawString(x+(w*0.5), text_y, text, UI_CENTER, cgui.colors[tcolor], size);
+    else if(style & UI_RIGHT) drawString((x+w)-margin, text_y, text, UI_RIGHT, cgui.colors[tcolor], size);
+    else drawString(x+margin, text_y, text, UI_LEFT, cgui.colors[tcolor], size);
+}
+
+void drawCheckbox(float x, float y, float w, float h, int corner, int tcolor, int scolor, int colorbg, float size, int margin, int style, const char *text) {
+    float text_y = y+(h-(BASEFONT_HEIGHT*size))*0.5;
+
+    drawRoundedRect(x, y, w, h, corner, cgui.colors[colorbg]);
+    drawRoundedRect((x+w)-(h*0.90), (y+(h*0.5))-h*0.35, h*0.70, h*0.70, corner, cgui.colors[scolor]);
+    drawString(x+margin, text_y, text, UI_LEFT, cgui.colors[tcolor], size);
+}
+
+void drawSlider(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, float value, float min, float max) {
+    float text_y = y+(h-(BASEFONT_HEIGHT*size))*0.5;
+    
+    drawRoundedRect(x, y, w, h, corner, cgui.colors[colorbg]);
+    drawRoundedRect(x+corner, (y+h)-h*0.20, w-(corner*2), h*0.10, 0, cgui.colors[JSCOLOR_DISABLED]);
+    drawRoundedRect(x+corner, (y+h)-h*0.20, (w-(corner*2))*SliderProgress(value, min, max), h*0.10, 0, cgui.colors[JSCOLOR_ENABLED]);
+    drawString(x+margin, text_y, text, UI_LEFT, cgui.colors[tcolor], size);
+}
+
+void drawAction(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, const char *bindkey) {
+    float text_y = y+(h-(BASEFONT_HEIGHT*size))*0.5;
+
+    drawRoundedRect(x, y, w, h, corner, cgui.colors[colorbg]);
+    drawRoundedRect((x+w)-(h*0.90), (y+(h*0.5))-h*0.35, h*0.70, h*0.70, corner, cgui.colors[scolor]);
+    drawString(x+margin, text_y, text, UI_LEFT, cgui.colors[tcolor], size);
+    drawString((x+w)-(h*0.90)-2, text_y, bindkey, UI_LEFT, cgui.colors[tcolor], size);
 }
 #endif
 
@@ -317,12 +367,12 @@ Console Variables
 
 cvar_t cvarStorage[MAX_CVARS];
 
-void ST_RegisterCvars(void) {
+void registerCvars(void) {
 	cvarReload();
-	ST_UpdateCvars();
+	updateCvars();
 }
 
-void ST_UpdateCvars(void) {
+void updateCvars(void) {
 	int i;
 
 	for(i = 0; i < MAX_CVARS; i++) {

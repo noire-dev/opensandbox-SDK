@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 char *cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {"*death1.wav", "*death2.wav", "*death3.wav", "*jump1.wav", "*pain25_1.wav", "*pain50_1.wav", "*pain75_1.wav", "*pain100_1.wav", "*falling1.wav", "*gasp.wav", "*drown.wav", "*fall1.wav", "*taunt.wav"};
 
@@ -79,10 +78,10 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 	// read optional parameters
 	while(1) {
 		prev = text_p; // so we can unget
-		token = COM_Parse(&text_p);
+		token = Q3Parse(&text_p);
 		if(!token) break;
 		if(!Q_stricmp(token, "footsteps")) {
-			token = COM_Parse(&text_p);
+			token = Q3Parse(&text_p);
 			if(!token) {
 				break;
 			}
@@ -102,13 +101,13 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 			continue;
 		} else if(!Q_stricmp(token, "headoffset")) {
 			for(i = 0; i < 3; i++) {
-				token = COM_Parse(&text_p);
+				token = Q3Parse(&text_p);
 				if(!token) break;
 				ci->headOffset[i] = atof(token);
 			}
 			continue;
 		} else if(!Q_stricmp(token, "sex")) {
-			token = COM_Parse(&text_p);
+			token = Q3Parse(&text_p);
 			if(!token) break;
 			if(token[0] == 'f' || token[0] == 'F') {
 				ci->gender = GENDER_FEMALE;
@@ -131,19 +130,19 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 			text_p = prev; // unget the token
 			break;
 		}
-		Com_Printf("unknown token '%s' is %s\n", token, filename);
+		print("unknown token '%s' is %s\n", token, filename);
 	}
 
 	// read information for each frame
 	for(i = 0; i < MAX_ANIMATIONS; i++) {
-		token = COM_Parse(&text_p);
+		token = Q3Parse(&text_p);
 
 		animations[i].firstFrame = atoi(token);
 		// leg only frames are adjusted to not count the upper body only frames
 		if(i == LEGS_WALKCR) skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
 		if(i >= LEGS_WALKCR && i < MAX_ANIMATIONS) animations[i].firstFrame -= skip;
 
-		token = COM_Parse(&text_p);
+		token = Q3Parse(&text_p);
 		if(!*token) break;
 		animations[i].numFrames = atoi(token);
 
@@ -155,11 +154,11 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 			animations[i].reversed = qtrue;
 		}
 
-		token = COM_Parse(&text_p);
+		token = Q3Parse(&text_p);
 		if(!*token) break;
 		animations[i].loopFrames = atoi(token);
 
-		token = COM_Parse(&text_p);
+		token = Q3Parse(&text_p);
 		if(!*token) break;
 		fps = atof(token);
 		if(fps == 0) fps = 1;
@@ -233,21 +232,21 @@ static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelNa
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/lower.md3", modelName);
 	ci->legsModel = trap_R_RegisterModel(filename);
 	if(!ci->legsModel) {
-		Com_Printf("Failed to load model file %s\n", filename);
+		print("Failed to load model file %s\n", filename);
 		return qfalse;
 	}
 
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/upper.md3", modelName);
 	ci->torsoModel = trap_R_RegisterModel(filename);
 	if(!ci->torsoModel) {
-		Com_Printf("Failed to load model file %s\n", filename);
+		print("Failed to load model file %s\n", filename);
 		return qfalse;
 	}
 
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/head.md3", headName);
 	ci->headModel = trap_R_RegisterModel(filename);
 	if(!ci->headModel) {
-		Com_Printf("Failed to load model file %s\n", filename);
+		print("Failed to load model file %s\n", filename);
 		return qfalse;
 	}
 
@@ -259,7 +258,7 @@ static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelNa
 	if(!CG_ParseAnimationFile(filename, ci)) {
 		Com_sprintf(filename, sizeof(filename), "models/players/characters/%s/animation.cfg", modelName);
 		if(!CG_ParseAnimationFile(filename, ci)) {
-			Com_Printf("Failed to load animation file %s\n", filename);
+			print("Failed to load animation file %s\n", filename);
 			return qfalse;
 		}
 	}
@@ -384,7 +383,7 @@ void CG_NewClientInfo(int clientNum) {
 
 	// isolate the player's name
 	v = Info_ValueForKey(configstring, "n");
-	Q_StringCopy(newInfo.name, v, sizeof(newInfo.name));
+	StringCopy(newInfo.name, v, sizeof(newInfo.name));
 
 	v = Info_ValueForKey(configstring, "vn");
 	newInfo.vehicleNum = atoi(v);
@@ -404,14 +403,14 @@ void CG_NewClientInfo(int clientNum) {
 	// model
 	v = Info_ValueForKey(configstring, "m");
 
-	Q_StringCopy(newInfo.modelName, v, sizeof(newInfo.modelName));
+	StringCopy(newInfo.modelName, v, sizeof(newInfo.modelName));
 
 	slash = strchr(newInfo.modelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_StringCopy(newInfo.skinName, "default", sizeof(newInfo.skinName));
+		StringCopy(newInfo.skinName, "default", sizeof(newInfo.skinName));
 	} else {
-		Q_StringCopy(newInfo.skinName, slash + 1, sizeof(newInfo.skinName));
+		StringCopy(newInfo.skinName, slash + 1, sizeof(newInfo.skinName));
 		// truncate modelName
 		*slash = 0;
 	}
@@ -419,14 +418,14 @@ void CG_NewClientInfo(int clientNum) {
 	// head model
 	v = Info_ValueForKey(configstring, "hm");
 
-	Q_StringCopy(newInfo.headModelName, v, sizeof(newInfo.headModelName));
+	StringCopy(newInfo.headModelName, v, sizeof(newInfo.headModelName));
 
 	slash = strchr(newInfo.headModelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_StringCopy(newInfo.headSkinName, "default", sizeof(newInfo.headSkinName));
+		StringCopy(newInfo.headSkinName, "default", sizeof(newInfo.headSkinName));
 	} else {
-		Q_StringCopy(newInfo.headSkinName, slash + 1, sizeof(newInfo.headSkinName));
+		StringCopy(newInfo.headSkinName, slash + 1, sizeof(newInfo.headSkinName));
 		// truncate modelName
 		*slash = 0;
 	}
@@ -434,14 +433,14 @@ void CG_NewClientInfo(int clientNum) {
 	// legs model
 	v = Info_ValueForKey(configstring, "lm");
 
-	Q_StringCopy(newInfo.legsModelName, v, sizeof(newInfo.legsModelName));
+	StringCopy(newInfo.legsModelName, v, sizeof(newInfo.legsModelName));
 
 	slash = strchr(newInfo.legsModelName, '/');
 	if(!slash) {
 		// modelName didn not include a skin name
-		Q_StringCopy(newInfo.legsSkinName, "default", sizeof(newInfo.legsSkinName));
+		StringCopy(newInfo.legsSkinName, "default", sizeof(newInfo.legsSkinName));
 	} else {
-		Q_StringCopy(newInfo.legsSkinName, slash + 1, sizeof(newInfo.legsSkinName));
+		StringCopy(newInfo.legsSkinName, slash + 1, sizeof(newInfo.legsSkinName));
 		// truncate modelName
 		*slash = 0;
 	}

@@ -28,6 +28,7 @@ typedef struct {
 	float bias;
 	float wideoffset;
 	float colors[CGUI_COLORCOUNT][4];
+	char binds[256][256];
 } cgui_t;
 extern cgui_t cgui;
 
@@ -36,17 +37,21 @@ extern cgui_t cgui;
 #define FONT_WIDTH 0.64
 #define BASEFONT_INDENT (BASEFONT_WIDTH * FONT_WIDTH)
 
-int ST_GetPlayerMove(int buttons, int type);
-void ST_AdjustFrom640(float *x, float *y, float *w, float *h);
-void ST_DrawRoundedRect(float x, float y, float width, float height, float radius, float *color);
-void ST_DrawShader(float x, float y, float w, float h, const char *file);
-int ST_ColorEscapes(const char *str);
-void ST_InitCGUI(const char *font);
-void ST_UpdateCGUI(void);
-int ST_StringCount(const char *str);
-void ST_DrawChar(float x, float y, int ch, int style, float *color, float size);
-float ST_StringWidth(const char *str, float size);
-void ST_DrawString(float x, float y, const char *str, int style, float *color, float fontSize);
+int getPlayerMove(int buttons, int type);
+void adjustFrom640(float *x, float *y, float *w, float *h);
+void drawRoundedRect(float x, float y, float width, float height, float radius, float *color);
+void drawShader(float x, float y, float w, float h, const char *file);
+int colorEscapes(const char *str);
+void initCGUI(const char *font);
+void updateCGUI(void);
+int stringCount(const char *str);
+void drawChar(float x, float y, int ch, int style, float *color, float size);
+float stringWidth(const char *str, float size);
+void drawString(float x, float y, const char *str, int style, float *color, float fontSize);
+void drawButton(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text);
+void drawCheckbox(float x, float y, float w, float h, int corner, int tcolor, int scolor, int colorbg, float size, int margin, int style, const char *text);
+void drawSlider(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, float value, float min, float max);
+void drawAction(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, const char *bindkey);
 #endif
 
 /*
@@ -65,8 +70,8 @@ typedef struct {
 	char string[MAX_CVAR_STRING];
 } cvar_t;
 
-void ST_RegisterCvars(void);
-void ST_UpdateCvars(void);
+void registerCvars(void);
+void updateCvars(void);
 int cvarInt(const char *name);
 float cvarFloat(const char *name);
 char *cvarString(const char *name);

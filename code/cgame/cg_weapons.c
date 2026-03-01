@@ -1,8 +1,12 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
+
+static void CG_WeaponSelect(int id) {
+    cg.weaponSelect = id;
+    trap_Cmd(EXEC_NOW, va("wp %i", id));
+}
 
 static void CG_MachineGunEjectBrass(centity_t *cent) {
 	localEntity_t *le;
@@ -395,19 +399,16 @@ void CG_RegisterWeapon(int weaponNum) {
 	}
 	if(ammo->classname && ammo->world_model) weaponInfo->ammoModel = trap_R_RegisterModel(ammo->world_model);
 
-	Q_StringCopy(path, item->world_model, MAX_QPATH);
-	COM_StripExtension(path, path, sizeof(path));
-	strcat(path, "_flash.md3");
+	StringCopy(path, item->world_model, MAX_QPATH);
+	strcat(path, "_flash");
 	weaponInfo->flashModel = trap_R_RegisterModel(path);
 
-	Q_StringCopy(path, item->world_model, MAX_QPATH);
-	COM_StripExtension(path, path, sizeof(path));
-	strcat(path, "_barrel.md3");
+	StringCopy(path, item->world_model, MAX_QPATH);
+	strcat(path, "_barrel");
 	weaponInfo->barrelModel = trap_R_RegisterModel(path);
 
-	Q_StringCopy(path, item->world_model, MAX_QPATH);
-	COM_StripExtension(path, path, sizeof(path));
-	strcat(path, "_hand.md3");
+	StringCopy(path, item->world_model, MAX_QPATH);
+	strcat(path, "_hand");
 	weaponInfo->handsModel = trap_R_RegisterModel(path);
 
 	if(!weaponInfo->handsModel) weaponInfo->handsModel = trap_R_RegisterModel("models/weapons2/shotgun/shotgun_hand.md3");
@@ -1116,26 +1117,20 @@ void CG_NextWeapon_f(void) {
 		return;
 	}
 
-	if(cg.time - anim_weaponSelect >= 250 + 2000) {
-		ST_AnimStart(&weaponSelectIn, cg.time, 250);
-		anim_weaponSelect = cg.time;
-	} else {
-		anim_weaponSelect = cg.time + 250;
-	}
-
 	original = cg.weaponSelect;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
 		cg.weaponSelect++;
 		if(cg.weaponSelect >= WEAPONS_NUM) cg.weaponSelect = 1;
 
-		if(cg.swep_listcl[cg.weaponSelect]) {
+		if(cg.weapon_list[cg.weaponSelect]) {
 			weaponFound = qtrue;
 			break;
 		}
 	}
 
-	if(!weaponFound) cg.weaponSelect = original;
+	if(!weaponFound) CG_WeaponSelect(original);
+	else CG_WeaponSelect(cg.weaponSelect);
 }
 
 void CG_PrevWeapon_f(void) {
@@ -1149,26 +1144,20 @@ void CG_PrevWeapon_f(void) {
 		return;
 	}
 
-	if(cg.time - anim_weaponSelect >= 250 + 2000) {
-		ST_AnimStart(&weaponSelectIn, cg.time, 250);
-		anim_weaponSelect = cg.time;
-	} else {
-		anim_weaponSelect = cg.time + 250;
-	}
-
 	original = cg.weaponSelect;
 
 	for(i = 1; i < WEAPONS_NUM; i++) {
 		cg.weaponSelect--;
 		if(cg.weaponSelect <= 0) cg.weaponSelect = WEAPONS_NUM;
 
-		if(cg.swep_listcl[cg.weaponSelect]) {
+		if(cg.weapon_list[cg.weaponSelect]) {
 			weaponFound = qtrue;
 			break;
 		}
 	}
 
-	if(!weaponFound) cg.weaponSelect = original;
+	if(!weaponFound) CG_WeaponSelect(original);
+	else CG_WeaponSelect(cg.weaponSelect);
 }
 
 void CG_Weapon_f(void) {
@@ -1178,16 +1167,9 @@ void CG_Weapon_f(void) {
 
 	num = atoi(CG_Argv(1));
 
-	if(cg.time - anim_weaponSelect >= 250 + 2000) {
-		ST_AnimStart(&weaponSelectIn, cg.time, 250);
-		anim_weaponSelect = cg.time;
-	} else {
-		anim_weaponSelect = cg.time + 250;
-	}
+	if(!cg.weapon_list[num]) return;
 
-	if(!cg.swep_listcl[num]) return;
-
-	cg.weaponSelect = num;
+	CG_WeaponSelect(num);
 }
 
 void CG_FireWeapon(centity_t *cent) {

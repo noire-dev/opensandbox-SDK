@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static void Svcmd_EntityList_f(void) {
 	int e;
@@ -27,7 +26,7 @@ static gclient_t *ClientForString(const char *s) {
 	if(s[0] >= '0' && s[0] <= '9') {
 		idnum = atoi(s);
 		if(idnum < 0 || idnum >= level.maxclients) {
-			Com_Printf("Bad client slot: %i\n", idnum);
+			print("Bad client slot: %i\n", idnum);
 			return NULL;
 		}
 

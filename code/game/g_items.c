@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 #define RESPAWN_ARMOR 25
 #define RESPAWN_HEALTH 35
@@ -74,20 +73,20 @@ static int Pickup_Holdable(gentity_t *ent, gentity_t *other) {
 	return RESPAWN_HOLDABLE;
 }
 
-void Set_Weapon(gentity_t *ent, int weapon, int status) { ent->swep_list[weapon] = status; }
+void Set_Weapon(gentity_t *ent, int weapon, int status) { ent->weapon_list[weapon] = status; }
 
 static void Add_Ammo(gentity_t *ent, int weapon, int count) {
 	if(count == 9999) {
-		ent->swep_ammo[weapon] = 9999;
+		ent->weapon_ammo[weapon] = 9999;
 	} else {
-		ent->swep_ammo[weapon] += count;
-		if(ent->swep_ammo[weapon] > 9000) {
-			ent->swep_ammo[weapon] = 9000;
+		ent->weapon_ammo[weapon] += count;
+		if(ent->weapon_ammo[weapon] > 9000) {
+			ent->weapon_ammo[weapon] = 9000;
 		}
 	}
 }
 
-void Set_Ammo(gentity_t *ent, int weapon, int count) { ent->swep_ammo[weapon] = count; }
+void Set_Ammo(gentity_t *ent, int weapon, int count) { ent->weapon_ammo[weapon] = count; }
 
 static int Pickup_Ammo(gentity_t *ent, gentity_t *other) {
 	int quantity;

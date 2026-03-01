@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 /*
 ===============
@@ -305,7 +304,7 @@ static void G_KillVoid(gentity_t *ent) {
 static void G_MakeUnlimitedAmmo(gentity_t *ent) {
 	int i;
 	for(i = 1; i < WEAPONS_NUM; i++) {
-		ent->swep_ammo[i] = 9999;
+		ent->weapon_ammo[i] = 9999;
 	}
 	SetUnlimitedWeapons(ent);
 }
@@ -350,7 +349,7 @@ static void ClientTimerActions(gentity_t *ent, int msec) {
 		}
 
 		G_SendGameCvars(ent);   // send game setting to client for sync
-		G_SendSwepWeapons(ent); // send sweps list to client for sync
+		G_SendWeapons(ent); // send weapon list to client for sync
 	}
 }
 
@@ -367,7 +366,6 @@ static void SendEntityInfoToClient(gentity_t *ent, int msec) {
 }
 
 static void ClientIntermissionThink(gclient_t *client) {
-	client->ps.eFlags &= ~EF_TALK;
 	client->ps.eFlags &= ~EF_FIRING;
 
 	// the level will exit when everyone wants to or after timeouts
@@ -376,7 +374,7 @@ static void ClientIntermissionThink(gclient_t *client) {
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
 	client->buttons = client->pers.cmd.buttons;
-	if(client->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) & (client->oldbuttons ^ client->buttons)) {
+	if(client->buttons & (BUTTON_ATTACK | BUTTON_USE) & (client->oldbuttons ^ client->buttons)) {
 		client->readyToExit = 1;
 	}
 }
@@ -653,7 +651,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0 && client->ps.pm_type != PM_DEAD) pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
+	if(gameInfoWeapons[client->ps.weapon].wType == WT_MELEE && (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0 && client->ps.pm_type != PM_DEAD) pm.gauntletHit = Melee_Fire(ent, client->ps.weapon);
 
 	// check for invulnerability expansion before doing the Pmove
 	if(client->ps.powerups[PW_INVULNERABILITY]) {
@@ -714,9 +712,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	ent->waterlevel = pm.waterlevel;
 	ent->watertype = pm.watertype;
-	ent->client->ps.weapon = ent->swep_id;
-	ent->client->ps.stats[STAT_AMMO] = ent->swep_ammo[ent->swep_id];
-	ent->s.weapon = ent->swep_ammo[ent->swep_id];
+	ent->client->ps.stats[STAT_AMMO] = ent->weapon_ammo[ent->client->ps.weapon];
 
 	// execute client events
 	ClientEvents(ent, oldEventSequence);
@@ -749,7 +745,7 @@ static void ClientThink_real(gentity_t *ent) {
 
 	// check for respawning
 	if(client->ps.stats[STAT_HEALTH] <= 0) {
-		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE)) ClientRespawn(ent);
+		if(level.time > client->respawnTime && ucmd->buttons & (BUTTON_ATTACK | BUTTON_USE)) ClientRespawn(ent);
 		return;
 	}
 
@@ -784,33 +780,20 @@ void G_RunClient(gentity_t *ent) {
 	ClientThink_real(ent);
 }
 
-qboolean G_CheckWeapon(int clientNum, int wp, int finish) {
-	gentity_t *ent;
-
-	ent = g_entities + clientNum;
-	if(ent->swep_list[wp] >= WS_HAVE) {
-		if(finish) ent->swep_id = wp;
-		ClientUserinfoChanged(clientNum);
-		return qtrue;
-	} else {
-		return qfalse;
-	}
-}
-
 int G_CheckWeaponAmmo(int clientNum, int wp) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
-	return ent->swep_ammo[wp];
+	return ent->weapon_ammo[wp];
 }
 
 void PM_Add_SwepAmmo(int clientNum, int wp, int count) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
-	if(!(ent->swep_ammo[wp] == -1)) {
-		if(!(ent->swep_ammo[wp] >= 9999)) {
-			ent->swep_ammo[wp] += count;
+	if(!(ent->weapon_ammo[wp] == -1)) {
+		if(!(ent->weapon_ammo[wp] >= 9999)) {
+			ent->weapon_ammo[wp] += count;
 		}
 	}
 }

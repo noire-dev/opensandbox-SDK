@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 extern int SourceTechEntityList[MAX_GENTITIES];
 
@@ -174,9 +173,8 @@ struct gentity_s {
 	char *value;      // value for target_modify to change to
 	int weapon;
 
-	int swep_list[WEAPONS_NUM];
-	int swep_ammo[WEAPONS_NUM];
-	int swep_id;
+	int weapon_list[WEAPONS_NUM];
+	int weapon_ammo[WEAPONS_NUM];
 
 	// Physgun and Gravitygun
 	gentity_t *grabbedEntity; // physgun object for player
@@ -496,7 +494,6 @@ void G_RunItem(gentity_t *ent);
 void QDECL G_Printf(const char *fmt, ...);
 void QDECL G_Error(const char *fmt, ...);
 void QDECL Com_Error(int level, const char *error, ...);
-void QDECL Com_Printf(const char *msg, ...);
 void CalculateRanks(void);
 void MoveClientToIntermission(gentity_t *ent);
 void FindIntermissionPoint(void);
@@ -704,11 +701,8 @@ int trap_AAS_Initialized(void);
 float trap_AAS_Time(void);
 int trap_AAS_PointAreaNum(vec3_t point);
 int trap_AAS_TraceAreas(vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas);
+void trap_EA_Button(int client, int button);
 void trap_EA_Command(int client, char *command);
-void trap_EA_Gesture(int client);
-void trap_EA_Attack(int client);
-void trap_EA_Use(int client);
-void trap_EA_SelectWeapon(int client, int weapon);
 void trap_EA_View(int client, vec3_t viewangles);
 void trap_EA_GetInput(int client, float thinktime, void *input);
 void trap_EA_ResetInput(int client);

@@ -1,5 +1,4 @@
-// Copyright (C) 2023-2026 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #include "javascript.h"
 
@@ -94,15 +93,15 @@ void VMCall(int func_id) {
     switch(func_id) {
     case VM_ENTRY: JSEntry(vmargs.v[0].s, vmargs.v[1].s, vmargs.v[3].i, vmargs.v[4].i, vmargs.v[5].i, vmargs.v[6].i); break;
 #ifndef GAME
-    case VM_DRAWSTRING: ST_DrawString(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].s, vmargs.v[3].i, cgui.colors[vmargs.v[4].i], vmargs.v[5].f); break;
-    case VM_DRAWRECTANGLE: ST_DrawRoundedRect(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, cgui.colors[vmargs.v[5].i]); break;
-    case VM_DRAWSHADER: ST_DrawShader(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].s); break;
+    case VM_DRAWSTRING: drawString(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].s, vmargs.v[3].i, cgui.colors[vmargs.v[4].i], vmargs.v[5].f); break;
+    case VM_DRAWRECTANGLE: drawRoundedRect(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, cgui.colors[vmargs.v[5].i]); break;
+    case VM_DRAWSHADER: drawShader(vmargs.v[0].f, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].s); break;
 #endif
 #ifdef UI
     case VM_UIRESET: memset(&uis.items, 0, sizeof(menuelement_s)*MAX_MENUITEMS); break;
     case VM_CREATEBUTTON: vmresult.v.i = UI_CButton(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].i, vmargs.v[7].f, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].i, vmargs.v[12].s); vmresult.t = JS_TYPE_INT; break;
-    case VM_CREATECHECKBOX: vmresult.v.i = UI_CCheckbox(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].f, vmargs.v[7].i, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].s); vmresult.t = JS_TYPE_INT; break;
-    case VM_CREATESLIDER: vmresult.v.i = UI_CSlider(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].f, vmargs.v[7].i, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].s, vmargs.v[12].f, vmargs.v[13].f, vmargs.v[14].i); vmresult.t = JS_TYPE_INT; break;
+    case VM_CREATECHECKBOX: vmresult.v.i = UI_CCheckbox(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].i, vmargs.v[7].f, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].i, vmargs.v[12].s); vmresult.t = JS_TYPE_INT; break;
+    case VM_CREATESLIDER: vmresult.v.i = UI_CSlider(vmargs.v[0].i, vmargs.v[1].f, vmargs.v[2].f, vmargs.v[3].f, vmargs.v[4].f, vmargs.v[5].s, vmargs.v[6].i, vmargs.v[7].f, vmargs.v[8].i, vmargs.v[9].i, vmargs.v[10].i, vmargs.v[11].i, vmargs.v[12].s, vmargs.v[13].f, vmargs.v[14].f, vmargs.v[15].i); vmresult.t = JS_TYPE_INT; break;
 #endif
 	}
 }

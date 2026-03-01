@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 static vec3_t playerMins = {-15, -15, -24};
 static vec3_t playerMaxs = {15, 15, 32};
@@ -158,7 +157,7 @@ void CopyToBodyQue(gentity_t *ent) {
 	trap_UnlinkEntity(body);
 
 	body->s = ent->s;
-	body->s.eFlags = EF_DEAD; // clear EF_TALK, etc
+	body->s.eFlags = EF_DEAD;
 	if(ent->s.eFlags & EF_KAMIKAZE) {
 		body->s.eFlags |= EF_KAMIKAZE;
 
@@ -308,7 +307,6 @@ void ClientUserinfoChanged(int clientNum) {
 	char modelR[16], modelG[16], modelB[16];
 	char legsR[16], legsG[16], legsB[16];
 	char physR[16], physG[16], physB[16];
-	char swep_id[16];
 	gclient_t *client;
 	char userinfo[MAX_INFO_STRING];
 
@@ -333,18 +331,18 @@ void ClientUserinfoChanged(int clientNum) {
 
 	// set model
 	if(cvarInt("g_gametype") >= GT_TEAM) {
-		Q_StringCopy(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
-		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "team_headmodel"), sizeof(headModel));
-		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "team_legsmodel"), sizeof(legsModel));
+		StringCopy(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
+		StringCopy(headModel, Info_ValueForKey(userinfo, "team_headmodel"), sizeof(headModel));
+		StringCopy(legsModel, Info_ValueForKey(userinfo, "team_legsmodel"), sizeof(legsModel));
 	} else {
-		Q_StringCopy(model, Info_ValueForKey(userinfo, "model"), sizeof(model));
-		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "headmodel"), sizeof(headModel));
-		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "legsmodel"), sizeof(legsModel));
+		StringCopy(model, Info_ValueForKey(userinfo, "model"), sizeof(model));
+		StringCopy(headModel, Info_ValueForKey(userinfo, "headmodel"), sizeof(headModel));
+		StringCopy(legsModel, Info_ValueForKey(userinfo, "legsmodel"), sizeof(legsModel));
 	}
 
 	if(ent->r.svFlags & SVF_BOT) {
-		Q_StringCopy(headModel, Info_ValueForKey(userinfo, "model"), sizeof(headModel));
-		Q_StringCopy(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
+		StringCopy(headModel, Info_ValueForKey(userinfo, "model"), sizeof(headModel));
+		StringCopy(legsModel, Info_ValueForKey(userinfo, "model"), sizeof(legsModel));
 	}
 
 	npcType = atoi(Info_ValueForKey(userinfo, "npcType"));
@@ -385,12 +383,10 @@ void ClientUserinfoChanged(int clientNum) {
 		team = client->sess.sessionTeam;
 	}
 
-	strcpy(swep_id, va("%i", ent->swep_id));
-
 	if(ent->r.svFlags & SVF_BOT) {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\si\\%s\\vn\\%i\\nt\\%i", client->pers.netname, team, model, headModel, legsModel, swep_id, client->vehicleNum, ent->npcType);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\vn\\%i\\nt\\%i", client->pers.netname, team, model, headModel, legsModel, client->vehicleNum, ent->npcType);
 	} else {
-		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\si\\%s\\vn\\%i\\nt\\%i\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, swep_id, client->vehicleNum, ent->npcType, ent->flashlight);
+		s = va("n\\%s\\t\\%i\\m\\%s\\hm\\%s\\lm\\%s\\hr\\%s\\hg\\%s\\hb\\%s\\mr\\%s\\mg\\%s\\mb\\%s\\lr\\%s\\lg\\%s\\lb\\%s\\pr\\%s\\pg\\%s\\pb\\%s\\vn\\%i\\nt\\%i\\f\\%i", client->pers.netname, client->sess.sessionTeam, model, headModel, legsModel, headR, headG, headB, modelR, modelG, modelB, legsR, legsG, legsB, physR, physG, physB, client->vehicleNum, ent->npcType, ent->flashlight);
 	}
 
 	trap_SetConfigstring(CS_PLAYERS + clientNum, s);
@@ -503,7 +499,7 @@ static void SetupCustomBot(gentity_t *bot) {
 		Set_Weapon(bot, WP_GAUNTLET, WS_HAVE);
 	}
 	Set_Weapon(bot, bot->botspawn->weapon, WS_HAVE);
-	if(bot->swep_ammo[bot->botspawn->weapon] != -1) {
+	if(bot->weapon_ammo[bot->botspawn->weapon] != -1) {
 		Set_Ammo(bot, bot->botspawn->weapon, 9999);
 	}
 
@@ -543,20 +539,17 @@ static void SetCustomWeapons(gentity_t *ent) {
 	ent->health = ent->client->ps.stats[STAT_HEALTH] = 100;
 	// Set spawnweapon
 	if(cvarInt("g_gametype") == GT_SANDBOX) {
-		ent->swep_id = WP_PHYSGUN;
 		ent->client->ps.weapon = WP_PHYSGUN;
 		ClientUserinfoChanged(ent->s.clientNum);
 		return;
 	} else {
 		for(i = WEAPONS_NUM; i > 1; i--) {
-			if(ent->swep_list[i] == WS_HAVE) {
-				ent->swep_id = i;
+			if(ent->weapon_list[i] == WS_HAVE) {
 				ent->client->ps.weapon = i;
 				ClientUserinfoChanged(ent->s.clientNum);
 				return;
 			}
 		}
-		ent->swep_id = 1;
 		ent->client->ps.weapon = 1;
 		ClientUserinfoChanged(ent->s.clientNum);
 	}
@@ -676,8 +669,8 @@ void ClientSpawn(gentity_t *ent) {
 
 		client->ps.weaponstate = WEAPON_READY;
 		for(i = 1; i < WEAPONS_NUM; i++) {
-			ent->swep_list[i] = WS_NONE;
-			ent->swep_ammo[i] = 0;
+			ent->weapon_list[i] = WS_NONE;
+			ent->weapon_ammo[i] = 0;
 		}
 		SetUnlimitedWeapons(ent);
 		SetSandboxWeapons(ent);

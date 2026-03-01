@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 void CG_DrawProgressBar(float x, float y, float width, float height, float progress, float segmentWidth, const float *barColor, const float *bgColor) {
 	int numSegments;
@@ -16,7 +15,7 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
 	if(progress < 0.0f) progress = 0.0f;
 	if(progress > 1.0f) progress = 1.0f;
 
-	ST_AdjustFrom640(&x, &y, &width, &height);
+	adjustFrom640(&x, &y, &width, &height);
 
 	segmentWidth *= cgui.scale;
 
@@ -36,7 +35,7 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
 }
 
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) {
-	ST_AdjustFrom640(&x, &y, &width, &height);
+	adjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 
@@ -82,7 +81,7 @@ void CG_Draw3DString(float x, float y, float z, const char *str, int style, vec4
 		if(finalColor[3] < 0.0f) finalColor[3] = 0.0f;
 	}
 
-	ST_DrawString(finalx, finaly, str, style | UI_CENTER, finalColor, fontSize);
+	drawString(finalx, finaly, str, style | UI_CENTER, finalColor, fontSize);
 }
 
 float *CG_FadeColor(int startMsec, int totalMsec) {

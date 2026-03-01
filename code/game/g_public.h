@@ -1,6 +1,5 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
 #define SVF_NOCLIENT 1            // don't send entity to clients, even if it has effects
 #define SVF_BOT 2                 // set if the entity is a bot

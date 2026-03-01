@@ -1,8 +1,7 @@
 // Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2026 Noire.dev
-// OpenSandbox — GPLv2; see LICENSE for details.
+// OpenSandbox by noire.dev — GPLv2
 
-#include "../qcommon/js_local.h"
+#include "../shared/javascript.h"
 
 #define AI_THINKTIME 300
 
@@ -43,47 +42,49 @@ static qboolean EntityIsShooting(gentity_t *ent) {
 	return qfalse;
 }
 
-static int weaponOrder[] = {WP_NONE,
-
-                            // Quake weapons here!
-                            WP_GRAPPLING_HOOK,
-                            WP_GAUNTLET,
-                            WP_GRENADE_LAUNCHER,
-                            WP_PROX_LAUNCHER,
-                            WP_MACHINEGUN,
-                            WP_LIGHTNING,
-                            WP_PLASMAGUN,
-                            WP_ROCKET_LAUNCHER,
-                            WP_SHOTGUN,
-                            WP_CHAINGUN,
-                            WP_NAILGUN,
-                            WP_RAILGUN,
-                            WP_BFG,
-
-                            // New weapons here!
-                            WP_FLAMETHROWER,
-                            WP_ANTIMATTER,
-                            WP_THROWER,
-                            WP_BOUNCER,
-                            WP_THUNDER,
-                            WP_EXPLODER,
-                            WP_KNOCKER,
-                            WP_PROPGUN,
-                            WP_REGENERATOR,
-                            WP_NUKE,
-
-                            // Sandbox weapons here!
-                            WP_PHYSGUN,
-                            WP_GRAVITYGUN,
-                            WP_TOOLGUN,
-
-                            WEAPONS_NUM};
+static int weaponOrder[] = {
+    WP_NONE,
+    
+    // Quake weapons here!
+    WP_GRAPPLING_HOOK,
+    WP_GAUNTLET,
+    WP_GRENADE_LAUNCHER,
+    WP_PROX_LAUNCHER,
+    WP_MACHINEGUN,
+    WP_LIGHTNING,
+    WP_PLASMAGUN,
+    WP_ROCKET_LAUNCHER,
+    WP_SHOTGUN,
+    WP_CHAINGUN,
+    WP_NAILGUN,
+    WP_RAILGUN,
+    WP_BFG,
+    
+    // New weapons here!
+    WP_FLAMETHROWER,
+    WP_ANTIMATTER,
+    WP_THROWER,
+    WP_BOUNCER,
+    WP_THUNDER,
+    WP_EXPLODER,
+    WP_KNOCKER,
+    WP_PROPGUN,
+    WP_REGENERATOR,
+    WP_NUKE,
+    
+    // Sandbox weapons here!
+    WP_PHYSGUN,
+    WP_GRAVITYGUN,
+    WP_TOOLGUN,
+    
+    WEAPONS_NUM
+};
 
 static int BotSelectWeapon(bot_state_t *bs) {
 	int i, weaponID;
 	for(i = WEAPONS_NUM - 1; i > 0; i--) {
 		weaponID = weaponOrder[i];
-		if(bs->ent->swep_list[weaponID] == WS_HAVE && (bs->ent->swep_ammo[weaponID] > 0 || bs->ent->swep_ammo[weaponID] == -1)) {
+		if(bs->ent->weapon_list[weaponID] == WS_HAVE && (bs->ent->weapon_ammo[weaponID] > 0 || bs->ent->weapon_ammo[weaponID] == -1)) {
 			if(weaponID != WP_NONE && weaponID != WP_GRAPPLING_HOOK && weaponID != WP_PHYSGUN && weaponID != WP_GRAVITYGUN && weaponID != WP_TOOLGUN && weaponID != WP_REGENERATOR) {
 				return weaponID;
 			}
@@ -261,7 +262,7 @@ static int AI_Battle(bot_state_t *bs) {
 	trap_BotMoveToGoal(bs->ms, &bs->maingoal, bs->tfl);
 
 	BotAimAtEnemy(bs);
-	trap_EA_Attack(bs->ent->client->ps.clientNum);
+	trap_EA_Button(bs->ent->client->ps.clientNum, BUTTON_ATTACK);
 	return qtrue;
 }
 
@@ -271,7 +272,7 @@ static int AINode_Default(bot_state_t *bs) {
 
 	if(BotIsDead(bs)) {
 		trap_BotResetMoveState(bs->ms);
-		trap_EA_Attack(bs->ent->client->ps.clientNum);
+		trap_EA_Button(bs->ent->client->ps.clientNum, BUTTON_ATTACK);
 		return qfalse;
 	}
 
@@ -351,26 +352,14 @@ static void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 }
 
 static void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3], int time) {
-	vec3_t angles, forward, right;
+	vec3_t angles;
 	short temp;
 	int j;
 
 	memset(ucmd, 0, sizeof(usercmd_t));
 
 	ucmd->serverTime = time;
-
-	if(bi->actionflags & ACTION_DELAYEDJUMP) {
-		bi->actionflags |= ACTION_JUMP;
-		bi->actionflags &= ~ACTION_DELAYEDJUMP;
-	}
-
-	if(bi->actionflags & ACTION_ATTACK) ucmd->buttons |= BUTTON_ATTACK;
-	if(bi->actionflags & ACTION_TALK) ucmd->buttons |= BUTTON_TALK;
-	if(bi->actionflags & ACTION_GESTURE) ucmd->buttons |= BUTTON_GESTURE;
-	if(bi->actionflags & ACTION_USE) ucmd->buttons |= BUTTON_USE_HOLDABLE;
-	if(bi->actionflags & ACTION_WALK) ucmd->buttons |= BUTTON_WALKING;
-
-	ucmd->weapon = bi->weapon;
+	ucmd->buttons = bi->actionflags;
 
 	ucmd->angles[PITCH] = ANGLE2SHORT(bi->viewangles[PITCH]);
 	ucmd->angles[YAW] = ANGLE2SHORT(bi->viewangles[YAW]);
@@ -381,26 +370,11 @@ static void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_an
 		ucmd->angles[j] = temp;
 	}
 
-	if(bi->dir[2])
-		angles[PITCH] = bi->viewangles[PITCH];
-	else
-		angles[PITCH] = 0;
+	if(bi->dir[2]) angles[PITCH] = bi->viewangles[PITCH];
+	else angles[PITCH] = 0;
 
 	angles[YAW] = bi->viewangles[YAW];
 	angles[ROLL] = 0;
-	AngleVectors(angles, forward, right, NULL);
-
-	bi->speed = bi->speed * 127 / 400;
-	ucmd->forwardmove = DotProduct(forward, bi->dir) * bi->speed;
-	ucmd->rightmove = DotProduct(right, bi->dir) * bi->speed;
-	ucmd->upmove = abs(forward[2]) * bi->dir[2] * bi->speed;
-
-	if(bi->actionflags & ACTION_MOVEFORWARD) ucmd->forwardmove += 127;
-	if(bi->actionflags & ACTION_MOVEBACK) ucmd->forwardmove -= 127;
-	if(bi->actionflags & ACTION_MOVELEFT) ucmd->rightmove -= 127;
-	if(bi->actionflags & ACTION_MOVERIGHT) ucmd->rightmove += 127;
-	if(bi->actionflags & ACTION_JUMP) ucmd->upmove += 127;
-	if(bi->actionflags & ACTION_CROUCH) ucmd->upmove -= 127;
 }
 
 static void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
@@ -414,8 +388,8 @@ static void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
 	BotChangeViewAngles(bs, (float)elapsed_time / 1000);
 	trap_EA_GetInput(bs->ent->client->ps.clientNum, (float)time / 1000, &bi);
 
-	if(bi.actionflags & ACTION_RESPAWN) {
-		if(bs->ent->client->pers.cmd.buttons & BUTTON_ATTACK) bi.actionflags &= ~(ACTION_RESPAWN | ACTION_ATTACK);
+	if(bi.actionflags & BUTTON_ATTACK) {
+		if(bs->ent->client->pers.cmd.buttons & BUTTON_ATTACK) bi.actionflags &= ~(BUTTON_ATTACK);
 	}
 
 	BotInputToUserCommand(&bi, &bs->ent->client->pers.cmd, bs->ent->client->ps.delta_angles, time);
@@ -450,7 +424,7 @@ static int BotAI(int client, float thinktime) {
 	bs->eye[2] += bs->ent->client->ps.viewheight;
 
 	BotDeathmatchAI(bs);
-	trap_EA_SelectWeapon(bs->ent->client->ps.clientNum, BotSelectWeapon(bs));
+	bs->ent->client->ps.weapon = BotSelectWeapon(bs);
 
 	for(i = 0; i < 3; i++) bs->viewangles[i] = AngleMod(bs->viewangles[i] - SHORT2ANGLE(bs->ent->client->ps.delta_angles[i]));
 
@@ -551,6 +525,8 @@ int AI_Frame(int time) {
 	gentity_t *ent;
 	int i, elapsed_time, thinktime;
 	static int local_time, botlib_residual;
+	
+	return;
 
 	elapsed_time = time - local_time;
 	local_time = time;
