@@ -8,16 +8,12 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
 	int filledSegments;
 	float segmentX;
 	int i;
-	int xy_offset = 2 * cgui.scale;
-	int w_offset = 3 * cgui.scale;
-	int h_offset = 3.75 * cgui.scale;
+	int xy_offset = 2;
+	int w_offset = 3;
+	int h_offset = 3.75;
 
 	if(progress < 0.0f) progress = 0.0f;
 	if(progress > 1.0f) progress = 1.0f;
-
-	adjustFrom640(&x, &y, &width, &height);
-
-	segmentWidth *= cgui.scale;
 
 	trap_R_SetColor(bgColor);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, cgui.whiteShader);
@@ -35,7 +31,6 @@ void CG_DrawProgressBar(float x, float y, float width, float height, float progr
 }
 
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) {
-	adjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 

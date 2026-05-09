@@ -338,7 +338,7 @@ void CG_GrappleTrail(centity_t *ent, const weaponInfo_t *wi) {
 	VectorMA(beam.origin, -6, up, beam.origin);
 	VectorCopy(origin, beam.oldorigin);
 
-	if(Distance(beam.origin, beam.oldorigin) < 64) return; // Don't draw if close
+	if(VectorDistance(beam.origin, beam.oldorigin) < 64) return; // Don't draw if close
 
 	beam.reType = RT_RAIL_CORE;
 	beam.customShader = cgs.media.grappleShader;

@@ -493,7 +493,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	const char *s;
 	
 	// init cvars and commands
-	registerCvars();
+	VM_RegisterCvars();
 	CG_CreateCvars();
 	CG_InitConsoleCommands();
 
@@ -511,7 +511,7 @@ static void CG_Init(int serverMessageNum, int serverCommandSequence, int clientN
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// load a few needed things before we do any screen updates
-	initCGUI("default");
+	CL_Init();
 
 	CG_LoadingString("sourcetech.script", 0.20);
 

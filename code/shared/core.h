@@ -1,6 +1,4 @@
-// Copyright (C) 1999-2005 ID Software, Inc.
-// Copyright (C) 2023-2025 blqck.Cøre
-// Void Sandbox — GPLv2; see LICENSE for details.
+// Copyright (C) 2023-2026 Noire's Mod — GPLv2
 
 /*
 ====================
@@ -9,6 +7,130 @@ Font, Text, Colors, CGUI
 */
 
 #ifndef GAME
+typedef enum {
+	K_TAB = 9,
+	K_ENTER = 13,
+	K_ESCAPE = 27,
+	K_SPACE = 32,
+	K_QUOTE = '\'',
+	K_PLUS = '+',
+	K_COMMA = ',',
+	K_MINUS = '-',
+	K_DOT = '.',
+	K_SLASH = '/',
+	K_SEMICOLON = ';',
+	K_EQUAL = '=',
+	K_BACKSLASH = '\\',
+	K_UNDERSCORE = '_',
+	K_BRACKET_OPEN = '[',
+	K_BRACKET_CLOSE = ']',
+
+	K_A = 'a',
+	K_B = 'b',
+	K_C = 'c',
+	K_D = 'd',
+	K_E = 'e',
+	K_F = 'f',
+	K_G = 'g',
+	K_H = 'h',
+	K_I = 'i',
+	K_J = 'j',
+	K_K = 'k',
+	K_L = 'l',
+	K_M = 'm',
+	K_N = 'n',
+	K_O = 'o',
+	K_P = 'p',
+	K_Q = 'q',
+	K_R = 'r',
+	K_S = 's',
+	K_T = 't',
+	K_U = 'u',
+	K_V = 'v',
+	K_W = 'w',
+	K_X = 'x',
+	K_Y = 'y',
+	K_Z = 'z',
+
+	K_BACKSPACE = 127,
+	K_COMMAND,
+	K_CAPSLOCK,
+	K_POWER,
+	K_PAUSE,
+
+	K_UPARROW,
+	K_DOWNARROW,
+	K_LEFTARROW,
+	K_RIGHTARROW,
+
+	K_ALT,
+	K_CTRL,
+	K_SHIFT,
+	K_INS,
+	K_DEL,
+	K_PGDN,
+	K_PGUP,
+	K_HOME,
+	K_END,
+
+	K_F1,
+	K_F2,
+	K_F3,
+	K_F4,
+	K_F5,
+	K_F6,
+	K_F7,
+	K_F8,
+	K_F9,
+	K_F10,
+	K_F11,
+	K_F12,
+	K_F13,
+	K_F14,
+	K_F15,
+
+	K_KP_HOME,
+	K_KP_UPARROW,
+	K_KP_PGUP,
+	K_KP_LEFTARROW,
+	K_KP_5,
+	K_KP_RIGHTARROW,
+	K_KP_END,
+	K_KP_DOWNARROW,
+	K_KP_PGDN,
+	K_KP_ENTER,
+	K_KP_INS,
+	K_KP_DEL,
+	K_KP_SLASH,
+	K_KP_MINUS,
+	K_KP_PLUS,
+	K_KP_NUMLOCK,
+	K_KP_STAR,
+	K_KP_EQUALS,
+
+	K_MOUSE1,
+	K_MOUSE2,
+	K_MOUSE3,
+	K_MOUSE4,
+	K_MOUSE5,
+	K_MWHEELDOWN,
+	K_MWHEELUP,
+
+	K_SUPER,
+	K_COMPOSE,
+	K_MODE,
+	K_HELP,
+	K_PRINT,
+	K_SYSREQ,
+	K_SCROLLOCK,
+	K_BREAK,
+	K_MENU,
+	K_EURO,
+	K_UNDO,
+
+	MAX_KEYS
+} keyNum_t;
+
 extern vec4_t color_black;
 extern vec4_t color_white;
 extern vec4_t color_grey;
@@ -19,39 +141,60 @@ extern vec4_t color_highlight;
 
 extern vec4_t customcolor_crosshair;
 
-#define CGUI_COLORCOUNT 200
+#define CGUI_COLORCOUNT 1024
+
 typedef struct {
-    qhandle_t defaultFont[5];
 	qhandle_t whiteShader;
 	qhandle_t corner;
 	float scale;
-	float bias;
 	float wideoffset;
 	float colors[CGUI_COLORCOUNT][4];
-	char binds[256][256];
+	char binds[MAX_KEYS][256];
 } cgui_t;
 extern cgui_t cgui;
 
-#define BASEFONT_WIDTH 9
-#define BASEFONT_HEIGHT 11
-#define FONT_WIDTH 0.64
-#define BASEFONT_INDENT (BASEFONT_WIDTH * FONT_WIDTH)
+// Element style
+// Text
+#define UI_LEFT 0
+#define UI_CENTER 1
+#define UI_RIGHT 2
+#define UI_BOLD 4
+#define UI_ITALIC 8
+#define UI_UNDERLINE 16
+#define UI_STRIKETHROUGH 32
+#define UI_MAGIC 64
+#define UI_SHAKE 128
+#define UI_LOCKSTYLE 256
+#define UI_LOCKEFFECTS 512
+#define UI_LOCKCOLOR 1024
+#define UI_LOCKEMOJI 2048
+// Other
+#define UI_NODRAW 4096
+#define NO_TOP_LEFT 8192
+#define NO_TOP_RIGHT 16384
+#define NO_BOTTOM_LEFT 32768
+#define NO_BOTTOM_RIGHT 65536
+#define UI_ACCENT 131072
+
+// Window style
+#define UI_NOTITLE 1
+#define UI_NOSCALE 2
+#define UI_NOZORDER 4
+
+#define BASEFONT_WIDTH 24.00
+#define BASEFONT_HEIGHT 24.00
+#define FONT_SIZE 24.00
+#define FONT_WIDTH 0.50
 
 int getPlayerMove(int buttons, int type);
-void adjustFrom640(float *x, float *y, float *w, float *h);
-void drawRoundedRect(float x, float y, float width, float height, float radius, float *color);
+void drawRoundedRect(float x, float y, float width, float height, float radius, float *color, int style);
+void drawOutline(float x, float y, float width, float height, float thickness, float *color);
 void drawShader(float x, float y, float w, float h, const char *file);
-int colorEscapes(const char *str);
-void initCGUI(const char *font);
-void updateCGUI(void);
-int stringCount(const char *str);
-void drawChar(float x, float y, int ch, int style, float *color, float size);
-float stringWidth(const char *str, float size);
+void drawColoredShader(float x, float y, float w, float h, const char *file, float *color);
+void CL_Init(void);
+float stringWidth(const char *str, float fontSize, int style);
 void drawString(float x, float y, const char *str, int style, float *color, float fontSize);
-void drawButton(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text);
-void drawCheckbox(float x, float y, float w, float h, int corner, int tcolor, int scolor, int colorbg, float size, int margin, int style, const char *text);
-void drawSlider(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, float value, float min, float max);
-void drawAction(float x, float y, float w, float h, int corner, int tcolor, int colorbg, float size, int margin, int style, const char *text, const char *bindkey);
+void drawStringField(float x, float y, const char *str, int style, float *color, float fontSize, int position);
 #endif
 
 /*
@@ -70,7 +213,7 @@ typedef struct {
 	char string[MAX_CVAR_STRING];
 } cvar_t;
 
-void registerCvars(void);
+void VM_RegisterCvars(void);
 void updateCvars(void);
 int cvarInt(const char *name);
 float cvarFloat(const char *name);
@@ -93,7 +236,7 @@ void cvarSet(const char *name, const char *value);
 int trap_Argc(void);
 void trap_Argv(int n, char *buffer, int bufferLength);
 void trap_Args(char *buffer, int bufferLength);
-int FS_Open(const char *qpatph, fileHandle_t *f, fsMode_t mode);
+int FS_Open(const char *qpath, fileHandle_t *f, fsMode_t mode);
 void FS_Read(void *buffer, int len, fileHandle_t f);
 void FS_Write(const void *buffer, int len, fileHandle_t f);
 void FS_Close(fileHandle_t f);

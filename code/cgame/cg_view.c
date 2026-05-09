@@ -4,14 +4,14 @@
 #include "../shared/javascript.h"
 
 static void CG_CalcVrect(void) {
-	cg.refdef.width = glconfig.vidWidth;
+	cg.refdef.width = glconfig.width;
 	cg.refdef.width &= ~1;
 
-	cg.refdef.height = glconfig.vidHeight;
+	cg.refdef.height = glconfig.height;
 	cg.refdef.height &= ~1;
 
-	cg.refdef.x = (glconfig.vidWidth - cg.refdef.width) / 2;
-	cg.refdef.y = (glconfig.vidHeight - cg.refdef.height) / 2;
+	cg.refdef.x = (glconfig.width - cg.refdef.width) / 2;
+	cg.refdef.y = (glconfig.height - cg.refdef.height) / 2;
 }
 
 extern vec3_t headpos;
@@ -362,8 +362,6 @@ static void CG_PlayBufferedSounds(void) {
 void CG_DrawActiveFrame(int serverTime, qboolean demoPlayback) {
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
-
-	updateCGUI();
 
 	if(cg.infoScreenText[0] != 0) {
 		CG_DrawInformation();

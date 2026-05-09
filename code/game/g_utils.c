@@ -428,7 +428,7 @@ gentity_t *FindEntityForPhysgun(gentity_t *ent, int range) {
 	// Trace Position
 	trap_Trace(&tr, start, NULL, NULL, end, ent->s.number, MASK_SELECT);
 
-	ent->grabDist = Distance(start, tr.endpos);
+	ent->grabDist = VectorDistance(start, tr.endpos);
 
 	traceEnt = &g_entities[tr.entityNum]; // entity for return
 

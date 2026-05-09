@@ -86,11 +86,6 @@ static void setModel(gentity_t *ent, char *modelName) {
 	CopyAlloc(ent->model, modelName);
 
 	if(len >= 4 && !Q_stricmp(ent->model + len - 4, ".md3")) ent->model[len - 4] = '\0';
-
-	if(FS_FileExists(va("%s.bsp", ent->model))) {
-		trap_SetBrushModel(ent, va("%s.bsp", ent->model));
-		ent->s.modelindex2 = G_ModelIndex(modelName);
-	}
 }
 
 void SP_sandbox_npc(gentity_t *ent) { G_AddBot(ent->clientname, ent->message, "Blue", ent); }

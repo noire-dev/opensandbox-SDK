@@ -120,7 +120,7 @@ typedef struct {
 	textureCompression_t textureCompression;
 	qboolean textureEnvAddAvailable;
 
-	int vidWidth, vidHeight;
+	int width, height;
 	float windowAspect;
 	int displayFrequency;
 

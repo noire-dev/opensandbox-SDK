@@ -1322,9 +1322,9 @@ void CG_Player(centity_t *cent) {
 
 	if(cent->currentState.number != cg.snap->ps.clientNum) {
 		if(ci->team == cg.snap->ps.persistant[PERS_TEAM] && ci->team != TEAM_FREE) {
-			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2] + 48, ci->name, UI_DROPSHADOW, color_white, 1.00, 2048, 3072, qfalse);
+			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2] + 48, ci->name, UI_LEFT, color_white, 1.00, 2048, 3072, qfalse);
 		} else if(ci->team == TEAM_FREE) {
-			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2] + 48, ci->name, UI_DROPSHADOW, color_white, 1.00, 512, 768, qtrue);
+			CG_Add3DString(cent->lerpOrigin[0], cent->lerpOrigin[1], cent->lerpOrigin[2] + 48, ci->name, UI_LEFT, color_white, 1.00, 512, 768, qtrue);
 		}
 	}
 

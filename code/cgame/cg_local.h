@@ -687,7 +687,7 @@ typedef struct {
 	int msgTimes[CONSOLE_MAXHEIGHT];
 	int insertIdx;
 	int displayIdx;
-} console_t;
+} console_s;
 
 // The client game static (cgs) structure hold everything
 // loaded or calculated from the gamestate.  It will NOT
@@ -728,9 +728,9 @@ typedef struct {
 
 	clientInfo_t clientinfo[MAX_CLIENTS];
 
-	console_t console;
-	console_t chat;
-	console_t teamChat;
+	console_s console;
+	console_s chat;
+	console_s teamChat;
 
 	// media
 	cgMedia_t media;
@@ -753,7 +753,7 @@ void CG_InitConsoleCommands(void);
 // cg_draw.c
 void CG_Add3DString(float x, float y, float z, const char *str, int style, const vec4_t color, float fontSize, float min, float max, qboolean useTrace);
 void CG_DrawHead(float x, float y, float w, float h, int clientNum);
-void CG_AddToGenericConsole(const char *str, console_t *console);
+void CG_AddToGenericConsole(const char *str, console_s *console);
 void CG_CenterPrint(const char *str, int y, int charWidth);
 void CG_AddNotify(const char *text, int type, int number);
 void CG_DrawActive(void);

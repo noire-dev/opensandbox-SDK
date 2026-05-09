@@ -229,26 +229,6 @@ char *Q3Parse(char **data_p) {
 	return com_token;
 }
 
-char *Q_CleanStr(char *string) {
-	char *d;
-	char *s;
-	int c;
-
-	s = string;
-	d = string;
-	while((c = *s) != 0) {
-		if(Q_IsColorString(s)) {
-			s++;
-		} else if(c >= 0x20 && c <= 0x7E) {
-			*d++ = c;
-		}
-		s++;
-	}
-	*d = '\0';
-
-	return string;
-}
-
 void QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 	int len;
 	va_list argptr;
@@ -260,105 +240,25 @@ void QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 	iferr(len >= sizeof(bigbuffer));
 	if(len >= size) {
 		print("Com_sprintf: overflow of %i in %i\n", len, size);
-#ifdef _DEBUG
-		__asm {
-			int 3;
-		}
-#endif
 	}
 	StringCopy(dest, bigbuffer, size);
 }
 
-/*
-============
-va
-
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-============
-*/
-void convert_to_negative(char *str) {
-	size_t i;
-	for(i = 0; str[i] != '\0';) {
-		unsigned char c = (unsigned char)str[i];
-		if(c >= 128) {
-			str[i] = (char)(c - 256);
-		}
-		if(c >= 0xC0) {
-			if(c >= 0xF0) {
-				i += 4;
-			} else if(c >= 0xE0) {
-				i += 3;
-			} else {
-				i += 2;
-			}
-		} else {
-			i++;
-		}
-	}
-}
-
-void convert_to_positive(char *str) {
-	size_t i;
-	for(i = 0; str[i] != '\0';) {
-		signed char c = (signed char)str[i];
-		if(c < 0) {
-			str[i] = (char)(c + 256);
-		}
-		if((unsigned char)c >= 0xC0) {
-			if(c >= 0xF0) {
-				i += 4;
-			} else if(c >= 0xE0) {
-				i += 3;
-			} else {
-				i += 2;
-			}
-		} else {
-			i++;
-		}
-	}
-}
-
-// Ваша функция va
 char *QDECL va(char *format, ...) {
 	va_list argptr;
-	static char string[2][32000]; // В случае, если va будет вызвана из вложенных функций
-	static int index = 0;
-	char *buf;
-
-	buf = string[index & 1];
-	index++;
+	static char string[4096][256];
+    static int index = 0;
+    
+    char *buf = string[index];
+    index = (index + 1) % 4096;
 
 	va_start(argptr, format);
-
-	convert_to_negative(buf);
-
 	Q_vsnprintf(buf, sizeof(string[0]), format, argptr);
-
-	convert_to_positive(buf);
-
 	va_end(argptr);
 
 	return buf;
 }
 
-/*
-=====================================================================
-
-  INFO STRINGS
-
-=====================================================================
-*/
-
-/*
-===============
-Info_ValueForKey
-
-Searches the string for the given
-key and returns the associated value, or an empty string.
-FIXME: overflow check?
-===============
-*/
 char *Info_ValueForKey(const char *s, const char *key) {
 	char pkey[BIG_INFO_KEY];
 	static char value[2][BIG_INFO_VALUE]; // use two buffers so compares
@@ -399,51 +299,6 @@ char *Info_ValueForKey(const char *s, const char *key) {
 	return "";
 }
 
-/*
-===================
-Info_NextPair
-
-Used to itterate through all the key/value pairs in an info string
-===================
-*/
-void Info_NextPair(const char **head, char *key, char *value) {
-	char *o;
-	const char *s;
-
-	s = *head;
-
-	if(*s == '\\') {
-		s++;
-	}
-	key[0] = 0;
-	value[0] = 0;
-
-	o = key;
-	while(*s != '\\') {
-		if(!*s) {
-			*o = 0;
-			*head = s;
-			return;
-		}
-		*o++ = *s++;
-	}
-	*o = 0;
-	s++;
-
-	o = value;
-	while(*s != '\\' && *s) {
-		*o++ = *s++;
-	}
-	*o = 0;
-
-	*head = s;
-}
-
-/*
-===================
-Info_RemoveKey
-===================
-*/
 void Info_RemoveKey(char *s, const char *key) {
 	char *start;
 	char pkey[MAX_INFO_KEY];
@@ -484,75 +339,12 @@ void Info_RemoveKey(char *s, const char *key) {
 	}
 }
 
-/*
-===================
-Info_RemoveKey_Big
-===================
-*/
-void Info_RemoveKey_Big(char *s, const char *key) {
-	char *start;
-	char pkey[BIG_INFO_KEY];
-	char value[BIG_INFO_VALUE];
-	char *o;
-
-	iferr(strlen(s) >= BIG_INFO_STRING);
-
-	if(strchr(key, '\\')) {
-		return;
-	}
-
-	while(1) {
-		start = s;
-		if(*s == '\\') s++;
-		o = pkey;
-		while(*s != '\\') {
-			if(!*s) return;
-			*o++ = *s++;
-		}
-		*o = 0;
-		s++;
-
-		o = value;
-		while(*s != '\\' && *s) {
-			if(!*s) return;
-			*o++ = *s++;
-		}
-		*o = 0;
-
-		if(!strcmp(key, pkey)) {
-			strcpy(start, s); // remove this part
-			return;
-		}
-
-		if(!*s) return;
-	}
-}
-
-/*
-==================
-Info_Validate
-
-Some characters are illegal in info strings because they
-can mess up the server's parsing
-==================
-*/
 qboolean Info_Validate(const char *s) {
-	if(strchr(s, '\"')) {
-		return qfalse;
-	}
-	if(strchr(s, ';')) {
-		return qfalse;
-	}
+	if(strchr(s, '\"')) return qfalse;
+	if(strchr(s, ';')) return qfalse;
 	return qtrue;
 }
 
-/*
-==================
-Info_SetValueForKey
-
-Changes or adds a key/value pair
-==================
-*/
 void Info_SetValueForKey(char *s, const char *key, const char *value) {
 	char newi[MAX_INFO_STRING];
 	const char *blacklist = "\\;\"";
@@ -578,64 +370,6 @@ void Info_SetValueForKey(char *s, const char *key, const char *value) {
 
 	strcat(newi, s);
 	strcpy(s, newi);
-}
-
-/*
-==================
-Info_SetValueForKey_Big
-
-Changes or adds a key/value pair
-==================
-*/
-void Info_SetValueForKey_Big(char *s, const char *key, const char *value) {
-	char newi[BIG_INFO_STRING];
-	const char *blacklist = "\\;\"";
-
-	iferr(strlen(s) >= BIG_INFO_STRING);
-
-	for(; *blacklist; ++blacklist) {
-		if(strchr(key, *blacklist) || strchr(value, *blacklist)) {
-			print(S_COLOR_YELLOW "Can't use keys or values with a '%c': %s = %s\n", *blacklist, key, value);
-			return;
-		}
-	}
-
-	Info_RemoveKey_Big(s, key);
-	if(!value || !strlen(value)) return;
-
-	Com_sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
-
-	if(strlen(newi) + strlen(s) >= BIG_INFO_STRING) {
-		print("BIG Info string length exceeded\n");
-		return;
-	}
-
-	strcat(s, newi);
-}
-
-float VectorDistance(const vec3_t v1, const vec3_t v2) {
-	vec3_t diff;
-
-	diff[0] = v1[0] - v2[0];
-	diff[1] = v1[1] - v2[1];
-	diff[2] = v1[2] - v2[2];
-
-	return sqrt(diff[0] * diff[0] + diff[1] * diff[1] + diff[2] * diff[2]);
-}
-
-/*
-==========================
-FS_FileExists
-==========================
-*/
-qboolean FS_FileExists(const char *filename) {
-	int len;
-
-	len = FS_Open(filename, NULL, FS_READ);
-	if(len > 0) {
-		return qtrue;
-	}
-	return qfalse;
 }
 
 void QDECL print(const char *msg, ...) {
@@ -719,14 +453,11 @@ float Q_random(int *seed) { return (Q_rand(seed) & 0xffff) / (float)0x10000; }
 
 float Q_crandom(int *seed) { return 2.0 * (Q_random(seed) - 0.5); }
 
-// this isn't a real cheap function to call!
 int DirToByte(vec3_t dir) {
 	int i, best;
 	float d, bestd;
 
-	if(!dir) {
-		return 0;
-	}
+	if(!dir) return 0;
 
 	bestd = 0;
 	best = 0;
@@ -749,56 +480,6 @@ void ByteToDir(int b, vec3_t dir) {
 	VectorCopy(bytedirs[b], dir);
 }
 
-float NormalizeColor(const vec3_t in, vec3_t out) {
-	float max;
-
-	max = in[0];
-	if(in[1] > max) {
-		max = in[1];
-	}
-	if(in[2] > max) {
-		max = in[2];
-	}
-
-	if(!max) {
-		VectorClear(out);
-	} else {
-		out[0] = in[0] / max;
-		out[1] = in[1] / max;
-		out[2] = in[2] / max;
-	}
-	return max;
-}
-
-/*
-=====================
-PlaneFromPoints
-
-Returns false if the triangle is degenrate.
-The normal will point out of the clock for clockwise ordered points
-=====================
-*/
-qboolean PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c) {
-	vec3_t d1, d2;
-
-	VectorSubtract(b, a, d1);
-	VectorSubtract(c, a, d2);
-	CrossProduct(d2, d1, plane);
-	if(VectorNormalize(plane) == 0) {
-		return qfalse;
-	}
-
-	plane[3] = DotProduct(a, plane);
-	return qtrue;
-}
-
-/*
-===============
-RotatePointAroundVector
-
-This is not implemented very well...
-===============
-*/
 void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees) {
 	float m[3][3];
 	float im[3][3];
@@ -854,25 +535,16 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, f
 	}
 }
 
-/*
-===============
-RotateAroundDirection
-===============
-*/
 void RotateAroundDirection(vec3_t axis[3], float yaw) {
-
-	// create an arbitrary axis[1]
 	PerpendicularVector(axis[1], axis[0]);
 
-	// rotate it around axis[0] by yaw
 	if(yaw) {
 		vec3_t temp;
 
 		VectorCopy(axis[1], temp);
 		RotatePointAroundVector(axis[1], axis[0], temp, yaw);
 	}
-
-	// cross to get axis[2]
+	
 	CrossProduct(axis[0], axis[1], axis[2]);
 }
 
@@ -882,28 +554,17 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 
 	if(value1[1] == 0 && value1[0] == 0) {
 		yaw = 0;
-		if(value1[2] > 0) {
-			pitch = 90;
-		} else {
-			pitch = 270;
-		}
+		if(value1[2] > 0) pitch = 90;
+		else pitch = 270;
 	} else {
-		if(value1[0]) {
-			yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
-		} else if(value1[1] > 0) {
-			yaw = 90;
-		} else {
-			yaw = 270;
-		}
-		if(yaw < 0) {
-			yaw += 360;
-		}
+		if(value1[0]) yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
+		else if(value1[1] > 0) yaw = 90;
+		else yaw = 270;
+		if(yaw < 0) yaw += 360;
 
 		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
 		pitch = (atan2(value1[2], forward) * 180 / M_PI);
-		if(pitch < 0) {
-			pitch += 360;
-		}
+		if(pitch < 0) pitch += 360;
 	}
 
 	angles[PITCH] = -pitch;
@@ -911,51 +572,19 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 	angles[ROLL] = 0;
 }
 
-/*
-=================
-AnglesToAxis
-=================
-*/
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3]) {
 	vec3_t right;
 
-	// angle vectors returns "right" instead of "y axis"
 	AngleVectors(angles, axis[0], right, axis[2]);
 	VectorSubtract(vec3_origin, right, axis[1]);
 }
 
-/*
-=================
-AxisToAngles
-
-Converts a 3x3 rotation matrix back to Euler angles (in degrees)
-=================
-*/
 void AxisToAngles(vec3_t axis[3], vec3_t angles) {
-	float yaw, pitch, roll;
-
-	// Extract yaw (around Z axis)
-	yaw = atan2(axis[1][0], axis[0][0]) * (180 / M_PI);
-
-	// Extract pitch (around Y axis)
-	pitch = atan2(-axis[2][0], sqrt(axis[2][1] * axis[2][1] + axis[2][2] * axis[2][2])) * (180 / M_PI);
-
-	// Extract roll (around X axis)
-	roll = atan2(axis[2][1], axis[2][2]) * (180 / M_PI);
-
-	angles[0] = pitch;
-	angles[1] = yaw;
-	angles[2] = roll;
+    angles[0] = atan2(-axis[2][0], sqrt(axis[2][1] * axis[2][1] + axis[2][2] * axis[2][2])) * (180 / M_PI);
+	angles[1] = atan2(axis[1][0], axis[0][0]) * (180 / M_PI);
+	angles[2] = atan2(axis[2][1], axis[2][2]) * (180 / M_PI);
 }
 
-/*
-=================
-OrthogonalizeMatrix
-
-Makes sure the axis vectors are perpendicular to each other
-and normalized. Uses Gram-Schmidt process.
-=================
-*/
 void OrthogonalizeMatrix(vec3_t forward, vec3_t right, vec3_t up) {
 	vec3_t testUp;
 	float dot;
@@ -968,18 +597,14 @@ void OrthogonalizeMatrix(vec3_t forward, vec3_t right, vec3_t up) {
 	CrossProduct(forward, right, up);
 
 	CrossProduct(forward, right, testUp);
-	if(DotProduct(testUp, up) < 0.0f) {
-		VectorNegate(up, up);
-	}
+	if(DotProduct(testUp, up) < 0.0f) VectorNegate(up, up);
 }
 
 void VelocityToAxis(const vec3_t velocity, vec3_t axis[3], float lerpFactor) {
 	vec3_t up, targetForward, targetRight, targetUp;
 	int i;
 
-	if(VectorLength(velocity) == 0) {
-		return;
-	}
+	if(VectorLength(velocity) == 0) return;
 
 	VectorNormalize2(velocity, targetForward);
 
@@ -1042,70 +667,22 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal) {
 	dst[2] = p[2] - d * n[2];
 }
 
-/*
-** float q_rsqrt( float number )
-*/
-float Q_rsqrt(float number) {
-	union {
-		float f;
-		int i;
-	} t;
-	float x2, y;
-	const float threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	t.f = number;
-	t.i = 0x5f3759df - (t.i >> 1); // what the fuck?
-	y = t.f;
-	y = y * (threehalfs - (x2 * y * y)); // 1st iteration
-	                                     //	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-	return y;
-}
-
-float Q_fabs(float f) {
-	int tmp = *(int *)&f;
-	tmp &= 0x7FFFFFFF;
-	return *(float *)&tmp;
-}
-
-/*
-===============
-LerpAngle
-
-===============
-*/
 float LerpAngle(float from, float to, float frac) {
 	float a;
 
-	if(to - from > 180) {
-		to -= 360;
-	}
-	if(to - from < -180) {
-		to += 360;
-	}
+	if(to - from > 180) to -= 360;
+	if(to - from < -180) to += 360;
 	a = from + frac * (to - from);
 
 	return a;
 }
 
-/*
-=================
-AngleSubtract
-
-Always returns a value from -180 to 180
-=================
-*/
 float AngleSubtract(float a1, float a2) {
 	float a;
 
 	a = a1 - a2;
-	while(a > 180) {
-		a -= 360;
-	}
-	while(a < -180) {
-		a += 360;
-	}
+	while(a > 180) a -= 360;
+	while(a < -180) a += 360;
 	return a;
 }
 
@@ -1120,84 +697,37 @@ float AngleMod(float a) {
 	return a;
 }
 
-/*
-=================
-AngleAdd
-=================
-*/
 float AngleAdd(float a1, float a2) {
 	float a;
 
 	a = a1 + a2;
-	while(a > 180.0) {
-		a -= 360.0;
-	}
-	while(a < -180.0) {
-		a += 360.0;
-	}
+	while(a > 180.0) a -= 360.0;
+	while(a < -180.0) a += 360.0;
 	return a;
 }
 
-/*
-=================
-AngleMA
-=================
-*/
 void AngleMA(vec3_t aa, float scale, vec3_t ab, vec3_t ac) {
 	ac[0] = AngleAdd(aa[0], scale * ab[0]);
 	ac[1] = AngleAdd(aa[1], scale * ab[1]);
 	ac[2] = AngleAdd(aa[2], scale * ab[2]);
 }
 
-/*
-=================
-LerpAngles
-=================
-*/
 void LerpAngles(vec3_t from, vec3_t to, vec3_t dest, float frac) {
 	dest[0] = LerpAngle(from[0], to[0], frac);
 	dest[1] = LerpAngle(from[1], to[1], frac);
 	dest[2] = LerpAngle(from[2], to[2], frac);
 }
 
-/*
-=================
-AngleNormalize360
-
-returns angle normalized to the range [0 <= angle < 360]
-=================
-*/
 float AngleNormalize360(float angle) { return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535); }
 
-/*
-=================
-AngleNormalize180
-
-returns angle normalized to the range [-180 < angle <= 180]
-=================
-*/
 float AngleNormalize180(float angle) {
 	angle = AngleNormalize360(angle);
-	if(angle > 180.0) {
-		angle -= 360.0;
-	}
+	if(angle > 180.0) angle -= 360.0;
 	return angle;
 }
 
-/*
-=================
-AngleDelta
-
-returns the normalized delta from angle1 to angle2
-=================
-*/
 float AngleDelta(float angle1, float angle2) { return AngleNormalize180(angle1 - angle2); }
 
-/*
-=================
-RadiusFromBounds
-=================
-*/
 float RadiusFromBounds(const vec3_t mins, const vec3_t maxs) {
 	int i;
 	vec3_t corner;
@@ -1213,30 +743,15 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs) {
 }
 
 void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs) {
-	if(v[0] < mins[0]) {
-		mins[0] = v[0];
-	}
-	if(v[0] > maxs[0]) {
-		maxs[0] = v[0];
-	}
-
-	if(v[1] < mins[1]) {
-		mins[1] = v[1];
-	}
-	if(v[1] > maxs[1]) {
-		maxs[1] = v[1];
-	}
-
-	if(v[2] < mins[2]) {
-		mins[2] = v[2];
-	}
-	if(v[2] > maxs[2]) {
-		maxs[2] = v[2];
-	}
+	if(v[0] < mins[0]) mins[0] = v[0];
+	if(v[0] > maxs[0]) maxs[0] = v[0];
+	if(v[1] < mins[1]) mins[1] = v[1];
+	if(v[1] > maxs[1]) maxs[1] = v[1];
+	if(v[2] < mins[2]) mins[2] = v[2];
+	if(v[2] > maxs[2]) maxs[2] = v[2];
 }
 
 vec_t VectorNormalize(vec3_t v) {
-	// NOTE: TTimo - Apple G4 altivec source uses double?
 	float length, ilength;
 
 	length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
@@ -1270,50 +785,6 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 	return length;
 }
 
-void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
-	vecc[0] = veca[0] + scale * vecb[0];
-	vecc[1] = veca[1] + scale * vecb[1];
-	vecc[2] = veca[2] + scale * vecb[2];
-}
-
-vec_t _DotProduct(const vec3_t v1, const vec3_t v2) { return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]; }
-
-void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out) {
-	out[0] = veca[0] - vecb[0];
-	out[1] = veca[1] - vecb[1];
-	out[2] = veca[2] - vecb[2];
-}
-
-void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out) {
-	out[0] = veca[0] + vecb[0];
-	out[1] = veca[1] + vecb[1];
-	out[2] = veca[2] + vecb[2];
-}
-
-void _VectorCopy(const vec3_t in, vec3_t out) {
-	out[0] = in[0];
-	out[1] = in[1];
-	out[2] = in[2];
-}
-
-void _VectorScale(const vec3_t in, vec_t scale, vec3_t out) {
-	out[0] = in[0] * scale;
-	out[1] = in[1] * scale;
-	out[2] = in[2] * scale;
-}
-
-void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out) {
-	out[0] = in[0] * scale;
-	out[1] = in[1] * scale;
-	out[2] = in[2] * scale;
-	out[3] = in[3] * scale;
-}
-
-/*
-================
-MatrixMultiply
-================
-*/
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]) {
 	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] + in1[0][2] * in2[2][0];
 	out[0][1] = in1[0][0] * in2[0][1] + in1[0][1] * in2[1][1] + in1[0][2] * in2[2][1];
@@ -1358,18 +829,12 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) 
 	}
 }
 
-/*
-** assumes "src" is normalized
-*/
 void PerpendicularVector(vec3_t dst, const vec3_t src) {
 	int pos;
 	int i;
 	float minelem = 1.0F;
 	vec3_t tempvec;
 
-	/*
-	** find the smallest magnitude axially aligned vector
-	*/
 	for(pos = 0, i = 0; i < 3; i++) {
 		if(fabs(src[i]) < minelem) {
 			pos = i;
@@ -1388,18 +853,13 @@ void SnapVectorTowards(vec3_t v, vec3_t to) {
 	int i;
 
 	for(i = 0; i < 3; i++) {
-		if(to[i] <= v[i]) {
-			v[i] = (int)v[i];
-		} else {
-			v[i] = (int)v[i] + 1;
-		}
+		if(to[i] <= v[i]) v[i] = (int)v[i];
+		else v[i] = (int)v[i] + 1;
 	}
 }
 
 int VectorCompare(const vec3_t v1, const vec3_t v2) {
-	if(v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
-		return 0;
-	}
+	if(v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) return 0;
 	return 1;
 }
 
@@ -1407,30 +867,11 @@ vec_t VectorLength(const vec3_t v) { return (vec_t)sqrt(v[0] * v[0] + v[1] * v[1
 
 vec_t VectorLengthSquared(const vec3_t v) { return (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); }
 
-vec_t Distance(const vec3_t p1, const vec3_t p2) {
+float VectorDistance(const vec3_t v1, const vec3_t v2) {
 	vec3_t v;
 
-	VectorSubtract(p2, p1, v);
+	VectorSubtract(v2, v1, v);
 	return VectorLength(v);
-}
-
-vec_t DistanceSquared(const vec3_t p1, const vec3_t p2) {
-	vec3_t v;
-
-	VectorSubtract(p2, p1, v);
-	return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-}
-
-// fast vector normalize routine that does not check to make sure
-// that length != 0, nor does it return length, uses rsqrt approximation
-void VectorNormalizeFast(vec3_t v) {
-	float ilength;
-
-	ilength = Q_rsqrt(DotProduct(v, v));
-
-	v[0] *= ilength;
-	v[1] *= ilength;
-	v[2] *= ilength;
 }
 
 void VectorInverse(vec3_t v) {

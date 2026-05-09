@@ -15,7 +15,6 @@ void CG_LoadingClient(int clientNum) {
 
 	info = CG_ConfigString(CS_PLAYERS + clientNum);
 	StringCopy(personality, Info_ValueForKey(info, "n"), sizeof(personality));
-	Q_CleanStr(personality);
 	CG_LoadingString(personality, -1);
 }
 
@@ -32,9 +31,9 @@ void CG_DrawInformation(void) {
 	info = CG_ConfigString(CS_SERVERINFO);
 	s = Info_ValueForKey(info, "sv_mapname");
 
-	drawShader(0 - cgui.wideoffset, 0, 640 + (cgui.wideoffset * 2), 480, va("levelshots/%s", s));
-	drawShader(0 - cgui.wideoffset, 0, 640 + (cgui.wideoffset * 2), 480, "menu/vignette_loading");
-	drawRoundedRect(410 + cgui.wideoffset, 445, 220, 30, 1, color_lightgrey);
+	drawShader(0, 0, glconfig.width, glconfig.height, va("levelshots/%s", s));
+	drawShader(0, 0, glconfig.width, glconfig.height, "menu/vignette_loading");
+	drawRoundedRect(410 + cgui.wideoffset, 445, 220, 30, 1, color_lightgrey, 0);
 	CG_DrawProgressBar(415 + cgui.wideoffset, 459, 210, 12, cg.infoScreenValue, 8, color_white, color_grey);
 	drawString(415 + cgui.wideoffset, 449, cg.infoScreenText, UI_LEFT, color_whiteblack, 0.80);
 	drawShader(320 - 50, 240 - 75, 100, 100, "menu/logo");
@@ -45,12 +44,10 @@ void CG_DrawInformation(void) {
 
 	y = 10;
 	StringCopy(buf, Info_ValueForKey(info, "sv_hostname"), 64);
-	Q_CleanStr(buf);
 	drawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
 
 	StringCopy(buf, Info_ValueForKey(info, "sv_mapname"), 64);
-	Q_CleanStr(buf);
 	drawString(110 - cgui.wideoffset, y, buf, UI_LEFT, color_white, 1.50);
 	y += 25;
 

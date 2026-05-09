@@ -167,11 +167,7 @@ cd linux/build/ui
 # Files to compile to               ui.qvm
 # ########################################
 
-$cc ../../../code/ui/ui_atoms.c
-$cc ../../../code/ui/ui_connect.c
 $cc ../../../code/ui/ui_main.c
-$cc ../../../code/ui/ui_menu.c
-$cc ../../../code/ui/ui_qmenu.c
 
 cp ../../../code/ui/ui_syscalls.asm ..
 cp ../../../code/q_sharedsyscalls.asm ..

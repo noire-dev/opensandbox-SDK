@@ -35,8 +35,6 @@ static void CG_Draw3DModelToolgun(float x, float y, float w, float h, qhandle_t 
 	refEntity_t ent;
 	vec3_t origin, angles;
 
-	adjustFrom640(&x, &y, &w, &h);
-
 	memset(&refdef, 0, sizeof(refdef));
 	memset(&ent, 0, sizeof(ent));
 
@@ -125,7 +123,7 @@ static void CG_DrawWeaponSelect(void) {
 	y = originalY + (WICON_SELECT * 0.25);
 	x = originalX + (WICON_SELECT / 2) + WICON_SPACE;
 
-	drawRoundedRect((originalX - WICONS_SIDES) - ((WICON_SIDE + WICON_SPACE) * WICONS_SIDES) - ((WICON_SELECT / 2) + WICON_SPACE), originalY, ((WICON_SIDE + WICON_SPACE) * WICONS_SIDES * 2) + WICON_SELECT + WICON_SPACE * 2 + WICONS_SIDES, WICON_SELECT + WICON_SPACE, 4, color_dim);
+	drawRoundedRect((originalX - WICONS_SIDES) - ((WICON_SIDE + WICON_SPACE) * WICONS_SIDES) - ((WICON_SELECT / 2) + WICON_SPACE), originalY, ((WICON_SIDE + WICON_SPACE) * WICONS_SIDES * 2) + WICON_SELECT + WICON_SPACE * 2 + WICONS_SIDES, WICON_SELECT + WICON_SPACE, 4, color_dim, 0);
 
 	for(i = cg.weaponSelect + 1, j = 0; i <= WEAPONS_NUM; i++) {
 		if(j >= WICONS_SIDES) {
@@ -217,7 +215,7 @@ static void CG_DrawToolgun() {
 
 		x = 340;
 		y = 260 + 48;
-		drawRoundedRect(x - 5, y - 48 - 5, 300, 48 + 15 + (MAX_ENTITYINFO * 10), 6, colorblk);
+		drawRoundedRect(x - 5, y - 48 - 5, 300, 48 + 15 + (MAX_ENTITYINFO * 10), 6, colorblk, 0);
 
 		if(strcmp(entityInfos[0], "<NULL>")) {
 			if(!BG_CheckClassname(entityInfos[0])) {
@@ -270,13 +268,13 @@ static void CG_DrawToolgun() {
 }
 
 static void CG_DrawStatusElement(float x, float y, int value, const char *text) {
-	drawRoundedRect(x, y, 100, 32, 4, color_dim);
+	drawRoundedRect(x, y, 100, 32, 4, color_dim, 0);
 	drawString(x + 4, y + 18, text, UI_LEFT, customcolor_crosshair, 0.90);
 	drawString(x + 42, y + 6, va("%i", value), UI_LEFT, customcolor_crosshair, 2.32);
 }
 
 static void CG_DrawCounterElement(float x, float y, const char *value, const char *text) {
-	drawRoundedRect(x, y, 80, 15, 2, color_dim);
+	drawRoundedRect(x, y, 80, 15, 2, color_dim, 0);
 	drawString(x + 2, y + 5, text, UI_LEFT, customcolor_crosshair, 0.90);
 	drawString(x + 40, y + 3, value, UI_LEFT, customcolor_crosshair, 1.20);
 }
@@ -294,7 +292,7 @@ static void CG_DrawStatusBar(void) {
 	if(cg.showScores || !cvarInt("cg_draw2D")) return;
 	if(cent->currentState.weapon == WP_TOOLGUN) CG_DrawToolgun();
 
-	if(cg.snap->ps.stats[STAT_HOLDABLE_ITEM] || cg.snap->ps.stats[STAT_PERSISTANT_POWERUP] || cg.predictedPlayerState.powerups[PW_REDFLAG] || cg.predictedPlayerState.powerups[PW_BLUEFLAG] || cg.predictedPlayerState.powerups[PW_NEUTRALFLAG]) drawRoundedRect(10 - cgui.wideoffset, 420 - 2, (ICON_SIZE + 4) * 3, ICON_SIZE + 4, 4, color_dim);
+	if(cg.snap->ps.stats[STAT_HOLDABLE_ITEM] || cg.snap->ps.stats[STAT_PERSISTANT_POWERUP] || cg.predictedPlayerState.powerups[PW_REDFLAG] || cg.predictedPlayerState.powerups[PW_BLUEFLAG] || cg.predictedPlayerState.powerups[PW_NEUTRALFLAG]) drawRoundedRect(10 - cgui.wideoffset, 420 - 2, (ICON_SIZE + 4) * 3, ICON_SIZE + 4, 4, color_dim, 0);
 
 	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 	if(value) CG_DrawPic((10 - cgui.wideoffset) + 4, 420, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
@@ -459,7 +457,7 @@ static void CG_DrawScores(void) {
 		// blue score
 		x = 320;
 		s = va("%i", s2);
-		drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorb);
+		drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorb, 0);
 		drawString(x + 16, y + 3, s, UI_CENTER, color_white, 1.20);
 
 		// blue flag
@@ -473,14 +471,14 @@ static void CG_DrawScores(void) {
 
 		if(cgs.gametype == GT_OBELISK) {
 			s = va("%i%%", cg.blueObeliskHealth);
-			drawRoundedRect(x + SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT - 4, 0, color_dim);
+			drawRoundedRect(x + SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT - 4, 0, color_dim, 0);
 			drawString(x + (SCORES_WIDTH * 1.50), y + 2, s, UI_CENTER, color_white, 1.20);
 		}
 
 		// red score
 		s = va("%i", s1);
 		x = 320 - SCORES_WIDTH;
-		drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorr);
+		drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorr, 0);
 		drawString(x + 16, y + 3, s, UI_CENTER, color_white, 1.20);
 
 		// red flag
@@ -494,7 +492,7 @@ static void CG_DrawScores(void) {
 
 		if(cgs.gametype == GT_OBELISK) {
 			s = va("%i%%", cg.redObeliskHealth);
-			drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT - 4, 0, color_dim);
+			drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT - 4, 0, color_dim, 0);
 			drawString(x - (SCORES_WIDTH * 0.50), y + 2, s, UI_CENTER, color_white, 1.20);
 		}
 
@@ -507,7 +505,7 @@ static void CG_DrawScores(void) {
 		if(v) {
 			s = va("%i", v);
 			x = 320 - 32;
-			drawRoundedRect(x, y + SCORES_HEIGHT, SCORES_WIDTH * 2, SCORES_HEIGHT, 0, color_dim);
+			drawRoundedRect(x, y + SCORES_HEIGHT, SCORES_WIDTH * 2, SCORES_HEIGHT, 0, color_dim, 0);
 			drawString(x + SCORES_WIDTH, y + 23, s, UI_CENTER, color_white, 1.20);
 		}
 
@@ -524,9 +522,9 @@ static void CG_DrawScores(void) {
 		if(s2 != SCORE_NOT_PRESENT) {
 			s = va("%i", s2);
 			if(s1 != score) {
-				drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr);
+				drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr, 0);
 			} else {
-				drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);
+				drawRoundedRect(x, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg, 0);
 			}
 			drawString(x + 16, y + 3, s, UI_CENTER, color_white, 1.20);
 		}
@@ -535,11 +533,11 @@ static void CG_DrawScores(void) {
 		if(s1 != SCORE_NOT_PRESENT) {
 			s = va("%i", s1);
 			if(s1 == score) {
-				drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr);
+				drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorgr, 0);
 			} else {
-				drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);
+				drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg, 0);
 			}
-			drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg);
+			drawRoundedRect(x - SCORES_WIDTH, y, SCORES_WIDTH, SCORES_HEIGHT, 0, colorg, 0);
 			drawString((x + 16) - SCORES_WIDTH, y + 3, s, UI_CENTER, color_white, 1.20);
 		}
 
@@ -547,7 +545,7 @@ static void CG_DrawScores(void) {
 		if(cgs.fraglimit) {
 			s = va("%i", cgs.fraglimit);
 			x = 320 - 32;
-			drawRoundedRect(x, y + SCORES_HEIGHT, 64, 20, 0, color_dim);
+			drawRoundedRect(x, y + SCORES_HEIGHT, 64, 20, 0, color_dim, 0);
 			drawString(x + SCORES_WIDTH, y + 23, s, UI_CENTER, color_white, 1.20);
 		}
 	}
@@ -571,19 +569,19 @@ static void CG_DrawPowerups(void) {
 		if(!item || item->giType == IT_RUNE) continue;
 
 		y += ICON_SIZE + 2;
-		drawRoundedRect(2 - cgui.wideoffset, y, 64, ICON_SIZE, 4, color_dim);
+		drawRoundedRect(2 - cgui.wideoffset, y, 64, ICON_SIZE, 4, color_dim, 0);
 		CG_DrawPic(3 - cgui.wideoffset, y, ICON_SIZE, ICON_SIZE, trap_R_RegisterShader(item->icon));
 		drawString((4 - cgui.wideoffset) + ICON_SIZE, y + 3, va("%i", t / 1000), UI_LEFT, color_white, 1.25);
 	}
 }
 
-static void CG_ConsoleUpdateIdx(console_t *console, int chatHeight) {
+static void CG_ConsoleUpdateIdx(console_s *console, int chatHeight) {
 	if(console->insertIdx < console->displayIdx) console->displayIdx = console->insertIdx;
 
 	if(console->insertIdx - console->displayIdx > chatHeight) console->displayIdx = console->insertIdx - chatHeight;
 }
 
-static void CG_DrawGenericConsole(console_t *console, int maxlines, int time, int x, int y, float size) {
+static void CG_DrawGenericConsole(console_s *console, int maxlines, int time, int x, int y, float size) {
 	int i, j;
 	vec4_t hcolor;
 
@@ -593,12 +591,12 @@ static void CG_DrawGenericConsole(console_t *console, int maxlines, int time, in
 	j = 0;
 	for(i = console->displayIdx; i < console->insertIdx; ++i) {
 		if(console->msgTimes[i % CONSOLE_MAXHEIGHT] + time < cg.time) continue;
-		drawString(x + 1, y + (j * (BASEFONT_HEIGHT * size)), console->msgs[i % CONSOLE_MAXHEIGHT], UI_LEFT | UI_DROPSHADOW, color_white, size);
+		drawString(x + 1, y + (j * (BASEFONT_HEIGHT * size)), console->msgs[i % CONSOLE_MAXHEIGHT], UI_LEFT, color_white, size);
 		j++;
 	}
 }
 
-void CG_AddToGenericConsole(const char *str, console_t *console) {
+void CG_AddToGenericConsole(const char *str, console_s *console) {
 	int len;
 	char *p, *ls;
 	int lastcolor;
@@ -692,7 +690,7 @@ static void CG_DrawCenterString(void) {
 		}
 		linebuffer[l] = 0;
 
-		drawString(SCREEN_WIDTH / 2, y, linebuffer, UI_CENTER | UI_DROPSHADOW, color_white, 1.25);
+		drawString(SCREEN_WIDTH / 2, y, linebuffer, UI_CENTER, color_white, 1.25);
 
 		y += cg.centerPrintCharWidth * 1.5;
 		while(*start && (*start != '\n')) {
@@ -870,8 +868,8 @@ static void CG_NSErrors(void) {
 	if(cvarInt("script.error") == 1) sizeX = 180;
 	if(cvarInt("script.error") == 2) sizeX = 205;
 	if(cvarInt("script.error") == 3) sizeX = 210;
-	drawRoundedRect(21 - cgui.wideoffset, 21, sizeX, 16, 0, colord);
-	drawRoundedRect(20 - cgui.wideoffset, 20, sizeX, 16, 0, color);
+	drawRoundedRect(21 - cgui.wideoffset, 21, sizeX, 16, 0, colord, 0);
+	drawRoundedRect(20 - cgui.wideoffset, 20, sizeX, 16, 0, color, 0);
 	trap_R_SetColor(colorpic);
 	CG_DrawPic(23 - cgui.wideoffset, 23, 10, 10, cgs.media.errIcon);
 	trap_R_SetColor(NULL);
@@ -927,11 +925,11 @@ static void CG_Notify(void) {
 		textColor[3] = alpha;
 		picColor[3] = alpha;
 
-		boxWidth = (BASEFONT_INDENT * stringCount(cg.notifications[i].text)) + 32;
+		boxWidth = stringWidth(cg.notifications[i].text, 1.00, 0);
 
 		yOffset = startY - (20 + margin) * i;
 
-		drawRoundedRect(startX - boxWidth + offsetX, yOffset, boxWidth, 20, 6, backgroundColor);
+		drawRoundedRect(startX - boxWidth + offsetX, yOffset, boxWidth, 20, 6, backgroundColor, 0);
 
 		trap_R_SetColor(picColor);
 		if(cg.notifications[i].type == NOTIFY_INFO && cgs.media.notifyIcon) CG_DrawPic(startX - boxWidth + offsetX + 5, yOffset + 2.5, 16, 16, cgs.media.notifyIcon);
@@ -946,9 +944,9 @@ static void CG_Notify(void) {
 
 static void CG_DrawDeathMessage(void) {
 	if(((double)cg.respawnTime - (double)cg.time) / 1000.0 <= 0) {
-		drawString(SCREEN_WIDTH / 2, 465, "Press fire key to respawn", UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
+		drawString(SCREEN_WIDTH / 2, 465, "Press fire key to respawn", UI_CENTER, color_white, 1.00);
 	} else {
-		drawString(SCREEN_WIDTH / 2, 465, va("Respawn: %6.2f", ((double)cg.respawnTime - (double)cg.time) / 1000.0), UI_CENTER | UI_DROPSHADOW, color_white, 1.00);
+		drawString(SCREEN_WIDTH / 2, 465, va("Respawn: %6.2f", ((double)cg.respawnTime - (double)cg.time) / 1000.0), UI_CENTER, color_white, 1.00);
 	}
 }
 

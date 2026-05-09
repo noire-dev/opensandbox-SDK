@@ -177,13 +177,6 @@ typedef enum {
 
 #define PULSE_DIVISOR 75
 
-#define UI_LEFT 0x00000000 // format mask
-#define UI_CENTER 0x00000001
-#define UI_RIGHT 0x00000002
-#define UI_FORMATMASK 0x00000007
-#define UI_DROPSHADOW 0x00000010 // other
-#define UI_PULSE 0x00000020
-
 #define Com_Memset memset
 #define Com_Memcpy memcpy
 
@@ -256,9 +249,6 @@ struct cplane_s;
 extern vec3_t vec3_origin;
 extern vec3_t axisDefault[3];
 
-float Q_fabs(float f);
-float Q_rsqrt(float f); // reciprocal square root
-
 // this isn't a real cheap function to call!
 int DirToByte(vec3_t dir);
 void ByteToDir(int b, vec3_t dir);
@@ -310,25 +300,13 @@ typedef struct {
 #define	SnapVector(v) {v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
 // clang-format on
 
-// just in case you do't want to use the macros
-vec_t _DotProduct(const vec3_t v1, const vec3_t v2);
-void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out);
-void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out);
-void _VectorCopy(const vec3_t in, vec3_t out);
-void _VectorScale(const vec3_t in, float scale, vec3_t out);
-void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc);
-
-float NormalizeColor(const vec3_t in, vec3_t out);
-
 float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
 void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
 
 int VectorCompare(const vec3_t v1, const vec3_t v2);
 vec_t VectorLength(const vec3_t v);
 vec_t VectorLengthSquared(const vec3_t v);
-vec_t Distance(const vec3_t p1, const vec3_t p2);
-vec_t DistanceSquared(const vec3_t p1, const vec3_t p2);
-void VectorNormalizeFast(vec3_t v);
+float VectorDistance(const vec3_t v1, const vec3_t v2);
 void VectorInverse(vec3_t v);
 void CrossProduct(const vec3_t v1, const vec3_t v2, vec3_t cross);
 
@@ -365,7 +343,6 @@ float AngleNormalize360(float angle);
 float AngleNormalize180(float angle);
 float AngleDelta(float angle1, float angle2);
 
-qboolean PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c);
 void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
 void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
 void RotateAroundDirection(vec3_t axis[3], float yaw);
@@ -392,7 +369,6 @@ char *Q_strupr(char *s1);
 // buffer size safe library replacements
 void StringCopy(char *dest, const char *src, int destsize);
 void Q_strcat(char *dest, int size, const char *src);
-char *Q_CleanStr(char *string);
 
 char *QDECL va(char *format, ...) __attribute__((format(printf, 1, 2)));
 
@@ -403,9 +379,7 @@ float AngleDifference(float ang1, float ang2);
 //
 char *Info_ValueForKey(const char *s, const char *key);
 void Info_RemoveKey(char *s, const char *key);
-void Info_RemoveKey_big(char *s, const char *key);
 void Info_SetValueForKey(char *s, const char *key, const char *value);
-void Info_SetValueForKey_Big(char *s, const char *key, const char *value);
 qboolean Info_Validate(const char *s);
 void Info_NextPair(const char **s, char *key, char *value);
 
@@ -805,7 +779,6 @@ typedef struct qtime_s {
 #define SAY_TEAM 1
 #define SAY_TELL 2
 
-float VectorDistance(const vec3_t v1, const vec3_t v2);
 void QDECL print(const char *msg, ...);
 void QDECL broadcast(const char *msg, ...);
 void QDECL error(const char *msg, ...);

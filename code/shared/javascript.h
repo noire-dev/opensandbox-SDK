@@ -1,4 +1,9 @@
-// OpenSandbox by noire.dev — GPLv2
+// Copyright (C) 2023-2026 Noire's Mod — GPLv2
+
+#define MAX_JS_ARGS 16
+#define MAX_JS_STRINGSIZE 256
+#define GETVMCONTEXT 1000
+#define VMCALL 1001
 
 #include "system.h"
 #include "engine.h"
@@ -13,39 +18,59 @@
 #include "../shared/client/renderer.h"
 #include "../game/bg_public.h"
 #include "../cgame/cg_public.h"
-#include "../shared/client/input.h"
 #include "../cgame/cg_local.h"
 #endif
 #ifdef UI
 #include "../shared/client/renderer.h"
 #include "../game/bg_public.h"
-#include "../ui/ui_public.h"
-#include "../shared/client/input.h"
 #include "../ui/ui_local.h"
 #endif
 
-#define MAX_JS_ARGS 32
-#define MAX_JS_STRINGSIZE 4096
-#define GETVMCONTEXT 1000
-#define VMCALL 1001
-
 typedef enum {
-	JS_MENUCHECK = 1,
-	JS_MENUINIT = 2,
-	JS_MENUDRAW = 3,
-	JS_MENUKEY = 4,
-	JS_MENUCALLBACK = 5,
+	JS_SHELLINIT,
+	JS_SHELLDRAW,
+	JS_SHELLKEY,
+	JS_SHELLCALLBACK,
+	JS_SHELLUPDATE,
+	JS_GETAPP,
+	JS_GETAPPNAME,
+	JS_GETAPPICON,
+	JS_LAUNCHAPP,
 } jscall_t;
 
 typedef enum {
-    VM_ENTRY = 0,
-    VM_UIRESET = 1,
-	VM_DRAWSTRING = 2,
-	VM_DRAWRECTANGLE = 3,
-	VM_DRAWSHADER = 4,
-	VM_CREATEBUTTON = 5,
-	VM_CREATECHECKBOX = 6,
-	VM_CREATESLIDER = 7,
+    // General
+    VM_CMD,
+    
+    // cgame.qvm + ui.qvm
+    VM_APICGUI,
+    VM_APIGLCONFIG,
+    VM_DRAWSTRING,
+	VM_DRAWRECTANGLE,
+	VM_DRAWSHADER,
+	VM_DRAWCOLOREDSHADER,
+    
+    // ui.qvm
+    VM_APISHELL,
+    VM_APIWINDOW,
+    VM_APIELEMENT,
+    VM_APICONSOLE,
+	VM_CLOSEWINDOW,
+	VM_CLEARWINDOW,
+	VM_GETFREEELEMENT,
+	VM_CREATEWINDOW,
+	VM_CREATEWINDOWBUTTON,
+	VM_CREATEPICTURE,
+	VM_CREATEBUTTON,
+	VM_CREATECHECKBOX,
+	VM_CREATESLIDER,
+	VM_CREATEACTION,
+	VM_CREATESPIN,
+	VM_CREATEFIELD,
+	VM_CREATELIST,
+	VM_CREATELISTFILES,
+	VM_FILLLISTFILES,
+	VM_SETMARGIN,
 } vmcall_t;
 
 typedef enum { JS_TYPE_NONE, JS_TYPE_INT, JS_TYPE_FLOAT, JS_TYPE_STRING } js_type_t;
@@ -70,19 +95,30 @@ void JS_StackClean(void);
 void JS_Function(int func_id);
 
 // JS Functions
-int JS_MenuCheck(void);
-void JS_MenuInit(void);
-void JS_MenuDraw(void);
-void JS_MenuKey(int key);
-void JS_MenuCallback(int id);
+void JS_ShellInit(void);
+void JS_ShellDraw(void);
+void JS_ShellKey(int key, int windowID);
+void JS_ShellCallback(int windowID, int elementID, int key);
+void JS_ShellUpdate(int windowID);
+int JS_GetApp(int id);
+const char *JS_GetAppName(int id);
+const char *JS_GetAppIcon(int id);
+void JS_LaunchApp(char *nameID);
 
-// JS Definitions
-#define JSCOLOR_DISABLED 101
-#define JSCOLOR_SELECTED 102
-#define JSCOLOR_ENABLED 103
-#define JSCOLOR_TIP 104
-#define JSCOLOR_TIPSHADOW 105
-#define JSCOLOR_TIPTEXT 106
+// JS shared colors
+#define JSC_EMPTY 0
+#define JSC_BLACK 1
+#define JSC_WHITE 2
+#define JSC_GREY 3
+#define JSC_RED 4
+#define JSC_GREEN 5
+#define JSC_BLUE 6
+#define JSC_DISABLED 7
+#define JSC_ENABLED 8
+#define JSC_CONTEXTMENU 9
+#define JSC_WINDOWBUTTON 10
+#define JSC_DEBUG1 11
+#define JSC_DEBUG2 12
 
 extern js_args_t vmargs;
 extern js_result_t vmresult;

@@ -139,7 +139,7 @@ static void G_InitGame(int levelTime, int randomSeed, int restart) {
 
 	srand(randomSeed);
 
-	registerCvars();
+	VM_RegisterCvars();
 	G_CheckCvars();
 	G_InitMemory();
 
