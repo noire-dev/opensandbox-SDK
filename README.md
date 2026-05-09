@@ -1,4 +1,4 @@
-# OpenSandbox 2
+# OpenSandbox
 
 <a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="OpenSandbox 2 Discord" /></a>
 
